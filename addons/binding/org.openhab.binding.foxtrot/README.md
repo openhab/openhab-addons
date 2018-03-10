@@ -1,17 +1,39 @@
 # Foxtrot Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-The Foxtrot binding allows interaction with [PLC Tecomat Foxtrot](https://www.tecomat.com/products/cat/cz/plc-tecomat-foxtrot-3/) system from Czech company [Teco](https://www.tecomat.com).
+The Foxtrot binding allows interaction with [Tecomat Foxtrot](https://www.tecomat.com/products/cat/cz/plc-tecomat-foxtrot-3/) system from Czech company [Teco](https://www.tecomat.com).
 Tecomat Foxtrot is a compact modular control and regulation system with powerful processor, mature communications, original two-wires and wireless connection with intelligent electroinstallation elements and peripherals. 
 
+**Important features**
+* High performance
+* Modularity
+* Installation design („circuit breakers“)
+* Up to 270 inputs and outputs / 320 modules on CIB bus
+* Built-in ethernet, web server, web pages
+* On-line programming using Mosaic software
+* Possibility of simple parameterization using FoxTool software
+* Application software back-up in the internal memory
+* Native Reliance 4 SCADA/HMI driver, Tecomat OPC server available
+* SD/SDHC/MMC card slot as a high capacity storage mass up to 32 GB
+* Support of Modbus RTU/TCP, Profi bus DP, CAN, BACnet,
+* HTTP and other standard protocols
+
 _If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+
+The central element of Foxtrot system is the Foxtrot basic module - PLC (Programmable Logic Controller), i.e. CP-1000 and other variants. `todo nieco o senzoroch, actoroch, programoch a premennych` Foxtrot PLC provides standard ethernet conectivity, but implements own specific EPSNET over standard TCP/IP protocol to communicate with basic module.     
+
+To simplify communication between external systems and Foxtrot PLC company provides communication server software called [PLCComS](https://www.tecomat.com/download/software-and-firmware/plccoms/). PLCComS provide TCP/IP connection with client device/software and a PLC. Communication of server with client is created by simple text oriented protocol - question/answer. Server communicates with PLC optimalized by EPSNET protocol. PLCComS can runs on PC with Linux (32bit/64bit) or Windows operating system or on ARM based devices like Raspberry-Pi with Linux (eabi, eabihf).
+
+This binding uses PLCComS communication server to gets and sets published PLC's program public variables.
+
+`obrazok`
 
 ## Supported Things
 
 _Please describe the different supported things / devices within this section._
 _Which different types are supported, which models were tested etc.?_
 _Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+
+`zakladne variable string, number a bool a dalsie logicke struktury reprezentujuce ... poskladane z premennych`
 
 ## Discovery
 

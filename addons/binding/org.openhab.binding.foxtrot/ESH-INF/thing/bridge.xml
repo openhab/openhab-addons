@@ -4,9 +4,9 @@
 		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Foxtrot PLC Bridge -->
-	<bridge-type id="plc">
-		<label>Foxtrot PLC</label>
-		<description>This bridge represents the gateway to Foxtrot PLC.</description>
+	<bridge-type id="plccoms">
+		<label>Foxtrot PLCComS server</label>
+		<description>This bridge represents the gateway to PLCComS communication server.</description>
 
 		<properties>
 			<property name="vendor">Tecomat, a.s.</property>

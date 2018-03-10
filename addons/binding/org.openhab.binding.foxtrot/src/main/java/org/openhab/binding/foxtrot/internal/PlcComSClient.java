@@ -18,6 +18,8 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * PlcComS client.
@@ -30,6 +32,9 @@ public class PlcComSClient {
 
     private static final long DEF_SOCKET_TIMEOUT = 500;
 
+    /** {@link Pattern} for matching error messages: ERROR:<code> <message> */
+    private final Pattern ERROR_PATTERN = Pattern.compile("(ERROR|WARNING):(\\d+) (.+)\\n");
+
     private String host;
     private int port;
     private long timeout;
@@ -41,16 +46,34 @@ public class PlcComSClient {
     private SelectionKey wrKey = null;
     private final ByteBuffer buffer = ByteBuffer.allocateDirect(256);
 
+    /**
+     * Initialize host, port and wait timeout to 500 ms.
+     *
+     * @param host hostname or IP where PLCComS server runs
+     * @param port port where PLCComS server listens
+     */
     public PlcComSClient(String host, int port) {
         this(host, port, DEF_SOCKET_TIMEOUT);
     }
 
-    private PlcComSClient(String host, int port, long timeout) {
+    /**
+     * Initialize host, port and wait timeout.
+     *
+     * @param host hostname or IP where PLCComS server runs
+     * @param port port where PLCComS server listens
+     * @param timeout max wait time for reply from server
+     */
+    public PlcComSClient(String host, int port, long timeout) {
         this.host = host;
         this.port = port;
         this.timeout = timeout;
     }
 
+    /**
+     * Opens communication connection (socket) to PLCComS server.
+     *
+     * @throws IOException if opening connection fails
+     */
     public void open() throws IOException {
         channel = SocketChannel.open(new InetSocketAddress(host, port));
         channel.configureBlocking(false);
@@ -61,18 +84,24 @@ public class PlcComSClient {
         wrKey = channel.register(wrSelector, SelectionKey.OP_WRITE);
     }
 
+    /**
+     * Returns if connection to PLCComS server is opened.
+     *
+     * @return true if connection is open, otherwise false
+     */
     public boolean isOpen() {
-        return channel != null && channel.isConnected();
+        return channel != null && !channel.socket().isClosed();
     }
 
+    /**
+     * Closes connection to PLCComS server.
+     */
     public void close() {
-        if (channel != null && channel.isOpen()) {
-            try {
+        try {
+            if (channel != null && channel.isOpen()) {
                 channel.close();
-            } catch (IOException e) {
-                // do nothing
             }
-        }
+        } catch (IOException ignored) { }
     }
 
     /**
@@ -80,9 +109,9 @@ public class PlcComSClient {
      *
      * @return list of variable names (in lowercase)
      * @throws IOException if communication with PlcComS server failed
+     * @throws PlcComSEception if PLCComS server returns error or warning
      */
     public List<String> list() throws IOException {
-        assertChannel();
         String reply = sendAndReceive("list:");
 
         List<String> list = new ArrayList<>(200);
@@ -98,67 +127,133 @@ public class PlcComSClient {
         return list;
     }
 
+    /**
+     * Gets value of BOOL variable form PLCComS server as {@link Boolean}.
+     *
+     * @param var variable name
+     * @return true if variable value is 1 or false if value is 0 or null if value is something else
+     * @throws IOException if communication with PlcComS server failed
+     * @throws PlcComSEception if PLCComS server returns error or warning
+     */
     public Boolean getBool(String var) throws IOException {
-        assertChannel();
-        return !Boolean.valueOf(get(var));
-    }
+        String v = get(var);
 
-    public Long getLong(String var) throws IOException {
-        assertChannel();
-        try {
-            return Long.valueOf(get(var));
-        } catch (NumberFormatException e) {
+        if ("0".equals(v) || "1".equals(v)) {
+            return "0".equals(v) ? Boolean.FALSE : Boolean.TRUE;
+        } else {
             return null;
         }
     }
 
-    public BigDecimal getReal(String var) throws IOException {
-        assertChannel();
+    /**
+     * Gets value of number (REAL or INT) valiable from PLCComS server as {@link BigDecimal}.
+     *
+     * @param var variable name
+     * @return value as BigDecimal or null if value is not number or empty
+     * @throws IOException if communication with PlcComS server failed
+     * @throws PlcComSEception if PLCComS server returns error or warning
+     */
+    public BigDecimal getNumber(String var) throws IOException {
         try {
             String v = get(var);
+
             return v != null ? new BigDecimal(v) : null;
         } catch (NumberFormatException e) {
             return null;
         }
     }
 
+    /**
+     * Gets value of string valiable from PLCComS server as {@link String}.
+     *
+     * @param var variable name
+     * @return string value
+     * @throws IOException if communication with PlcComS server failed
+     * @throws PlcComSEception if PLCComS server returns error or warning
+     */
     public String get(String var) throws IOException {
-        assertChannel();
         return parseGetResult(sendAndReceive(String.format("get:%1s\n", var)));
     }
 
-    public String getInfo(String var) throws IOException {
-        assertChannel();
-        return parseGetResult(sendAndReceive(String.format("getinfo:%1s\n", var)));
+    /**
+     * Gets PLCComS information.
+     *
+     * @param info info parameter
+     * @return string value
+     * @throws IOException if communication with PlcComS server failed
+     * @throws PlcComSEception if PLCComS server returns error or warning
+     */
+    public String getInfo(String info) throws IOException {
+        return parseGetResult(sendAndReceive(String.format("getinfo:%1s\n", info)));
     }
 
+    /**
+     * Sets new boolean value to variable.
+     *
+     * @param var variable name
+     * @param val new value
+     * @throws IOException if communication with PlcComS server failed
+     * @throws PlcComSEception if PLCComS server returns error or warning
+     */
     public void set(String var, boolean val) throws IOException {
-        assertChannel();
         set(var, Boolean.toString(val));
     }
 
+    /**
+     * Sets new integer value to variable.
+     *
+     * @param var variable name
+     * @param val new value
+     * @throws IOException if communication with PlcComS server failed
+     * @throws PlcComSEception if PLCComS server returns error or warning
+     */
     public void set(String var, int val) throws IOException {
-        assertChannel();
         set(var, Integer.toString(val));
     }
 
+    /**
+     * Sets new double value to variable.
+     *
+     * @param var variable name
+     * @param val new value
+     * @throws IOException if communication with PlcComS server failed
+     * @throws PlcComSEception if PLCComS server returns error or warning
+     */
     public void set(String var, double val) throws IOException {
-        assertChannel();
         set(var, Double.toString(val));
     }
 
-    @SuppressWarnings("WeakerAccess")
+    /**
+     * Sets new BigDecimal value to variable.
+     *
+     * @param var variable name
+     * @param val new value
+     * @throws IOException if communication with PlcComS server failed
+     * @throws PlcComSEception if PLCComS server returns error or warning
+     */
+    public void set(String var, BigDecimal val) throws IOException {
+        if (val != null) {
+            set(var, val.toPlainString());
+        }
+    }
+
+    /**
+     * Sets new string value to variable.
+     *
+     * @param var variable name
+     * @param val new value
+     * @throws IOException if communication with PlcComS server failed
+     * @throws PlcComSEception if PLCComS server returns error or warning
+     */
     public void set(String var, String val) throws IOException {
-        assertChannel();
         sendAndReceive(String.format("set:%1s,%2s\n", var, val));
     }
 
-    private void assertChannel() {
-        assert channel != null && channel.isConnected() :
-                "Socket channel not connected, ensure call open method before calling other methods";
-    }
-
     private String sendAndReceive(String req) throws IOException {
+        if (!(channel != null && channel.isConnected())) {
+            throw new IOException("Socket channel not connected, ensure call open first");
+        }
+
         wrSelector.select(timeout);
         if (!wrSelector.selectedKeys().contains(wrKey)) {
             throw new IOException("Cannot write to socket!");
@@ -174,8 +269,8 @@ public class PlcComSClient {
                 sb.append(new String(bytes));
             }
             String reply = sb.toString();
-            if (reply.startsWith("ERROR")) {
-                throw new IOException("PLCComS " + reply);
+            if (reply.startsWith("ERR") || reply.startsWith("WARN")) {
+                throw handleError(reply);
             }
             return reply;
         }
@@ -184,7 +279,7 @@ public class PlcComSClient {
 
     private String parseGetResult(String val) throws IOException {
         if (val == null) {
-            return null;
+            throw new IOException("Get result is null");
         }
         if (val.contains("\n")) {
             val = val.substring(0, val.indexOf('\n'));
@@ -194,5 +289,13 @@ public class PlcComSClient {
             throw new IOException("Wrong get result format, result too short");
         }
         return i < val.length() ? val.substring(i, val.length()) : null;
+    }
+
+    private PlcComSEception handleError(String errorText) {
+        Matcher m = ERROR_PATTERN.matcher(errorText);
+        if (m.matches()) {
+            return new PlcComSEception(m.group(1), m.group(2), m.group(3));
+        }
+        return new PlcComSEception("ERROR", "1024", "Unknown error");
     }
 }

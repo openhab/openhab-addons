@@ -19,7 +19,7 @@ public class VariableConfiguration {
   /**
    * PLC's variable name published in public.pub file.
    */
-  public String variableName;
+  public String var;
 
   /**
    * Refresh group. Available groups: OnceADay, Low, Medium, High.

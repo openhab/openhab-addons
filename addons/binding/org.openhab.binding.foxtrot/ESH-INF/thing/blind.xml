@@ -1,32 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="foxtrot" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="blind">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="plc"/>
+			<bridge-type-ref id="plccoms"/>
 		</supported-bridge-type-refs>
 
 		<label>Blind</label>
-		<description>todo ...</description>
+		<description>Published PLC's blind structure, see binding description</description>
 
 		<channels>
 			<channel typeId="blind-channel" id="blind"/>
 		</channels>
 
 		<config-description>
+			<parameter name="state" type="text" required="true">
+				<label>State variable</label>
+				<description>Variable name that holds blind state (0 or 1)</description>
+			</parameter>
 			<parameter name="up" type="text" required="true">
-				<label>Up command variable name</label>
-				<description>todo ...</description>
+				<label>Up variable</label>
+				<description>Bool variable that trigger up action on rising edge (0 -> 1)</description>
 			</parameter>
 			<parameter name="down" type="text" required="true">
-				<label>Down command variable name</label>
-				<description>todo ...</description>
+				<label>Down variable</label>
+				<description>Bool variable that trigger down action on rising edge (0 -> 1)</description>
 			</parameter>
 			<parameter name="stop" type="text" required="true">
-				<label>Stop command variable name</label>
-				<description>todo ...</description>
+				<label>Stop variable</label>
+				<description>Bool variable that trigger stop action on rising edge (0 -> 1)</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -34,6 +38,6 @@
 	<channel-type id="blind-channel">
 		<item-type>Rollershutter</item-type>
 		<label>Blind</label>
-		<description>todo ...</description>
+		<description>Rollershutter channel</description>
 	</channel-type>
 </thing:thing-descriptions>

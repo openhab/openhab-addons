@@ -8,9 +8,7 @@
  */
 package org.openhab.binding.foxtrot.handler;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.StopMoveType;
-import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -20,69 +18,69 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.foxtrot.internal.*;
-import org.openhab.binding.foxtrot.internal.config.BlindConfiguration;
+import org.openhab.binding.foxtrot.internal.config.VariableConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 
-import static org.openhab.binding.foxtrot.FoxtrotBindingConstants.CHANNEL_BLIND;
+import static org.openhab.binding.foxtrot.FoxtrotBindingConstants.CHANNEL_BOOL;
 
 /**
- * BlindHandler.
+ * BoolHandler.
  *
  * @author Radovan Sninsky
- * @since 2018-03-04 16:57
+ * @since 2018-03-09 23:32
  */
-public class BlindHandler extends BaseThingHandler implements RefreshableHandler {
+public class BoolHandler extends BaseThingHandler implements RefreshableHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(BlindHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(BoolHandler.class);
 
-    private BlindConfiguration conf;
+    private String variableName;
     private RefreshGroup group;
 
-    public BlindHandler(Thing thing) {
+    public BoolHandler(Thing thing) {
         super(thing);
     }
 
     @SuppressWarnings("deprecation")
     @Override
     public void initialize() {
-        logger.debug("Initializing Blind handler ...");
-        conf = getConfigAs(BlindConfiguration.class);
+        VariableConfiguration config = getConfigAs(VariableConfiguration.class);
 
         try {
-            group = RefreshGroup.valueOf(conf.refreshGroup.toUpperCase());
+            variableName = config.var;
+            group = RefreshGroup.valueOf(config.refreshGroup.toUpperCase());
 
-            logger.debug("Adding Blind handler {} into refresh group {}", this, group.name());
+            logger.debug("Adding Bool handler {} into refresh group {}", this, group.name());
             group.addHandler(this);
 
             updateStatus(ThingStatus.ONLINE);
         } catch (IllegalArgumentException e) {
+            // todo error description
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unknown refresh group: "+conf.refreshGroup.toUpperCase());
+                    "Unknown refresh group: "+config.refreshGroup.toUpperCase());
         }
     }
 
     @Override
     public void dispose() {
-        logger.debug("Disposing Blind handler resources ...");
+        logger.debug("Disposing Bool handler resources ...");
         if (group != null) {
-            logger.debug("Removing Blind handler {} from refresh group {} ...", this, group.name());
+            logger.debug("Removing Bool handler {} from refresh group {} ...", this, group.name());
             group.removeHandler(this);
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.trace("Handling command: {} for channel: {}", command, channelUID);
+
         CommandExecutor ce = CommandExecutor.get();
-        if (UpDownType.UP.equals(command)) {
-            ce.execCommand(conf.up, Boolean.TRUE);
-        } else if (UpDownType.DOWN.equals(command)) {
-            ce.execCommand(conf.down, Boolean.TRUE);
-        } else if (StopMoveType.STOP.equals(command)) {
-            ce.execCommand(conf.stop, Boolean.TRUE);
+        if (OnOffType.ON.equals(command)) {
+            ce.execCommand(variableName, Boolean.TRUE);
+        } else if (OnOffType.OFF.equals(command)) {
+            ce.execCommand(variableName, Boolean.FALSE);
         }
     }
 
@@ -90,17 +88,17 @@ public class BlindHandler extends BaseThingHandler implements RefreshableHandler
     public void refreshFromPlc(PlcComSClient plcClient) {
         State newState = UnDefType.UNDEF;
         try {
-            BigDecimal newValue = plcClient.getNumber(conf.state);
+            Boolean newValue = plcClient.getBool(variableName);
 
             if (newValue != null) {
-                newState = new DecimalType(newValue);
+                newState = newValue ? OnOffType.ON : OnOffType.OFF;
             }
         } catch (PlcComSEception e) {
-            logger.warn("PLCComS returned {} while getting value for '{}': {}: {}", e.getType(), conf.state, e.getCode(), e.getMessage());
+            logger.warn("PLCComS returned {} while getting variable '{}' value: {}: {}", e.getType(), variableName, e.getCode(), e.getMessage());
         } catch (IOException e) {
-            logger.warn("Communication with PLCComS failed while value for '{}': {}", conf.state, e.getMessage());
+            logger.warn("Communication with PLCComS failed while getting variable '{}' value: {}", variableName, e.getMessage());
         } finally {
-            updateState(CHANNEL_BLIND, newState);
+            updateState(CHANNEL_BOOL, newState);
         }
     }
 }

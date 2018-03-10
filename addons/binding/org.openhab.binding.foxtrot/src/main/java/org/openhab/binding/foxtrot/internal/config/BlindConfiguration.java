@@ -17,6 +17,11 @@ package org.openhab.binding.foxtrot.internal.config;
 public class BlindConfiguration {
 
     /**
+     * State variable.
+     */
+    public String state;
+
+    /**
      * Up command variable name.
      */
     public String up;
@@ -30,4 +35,9 @@ public class BlindConfiguration {
      * Stop command variable name.
      */
     public String stop;
+
+    /**
+     * Refresh group. Available groups: Low, Medium, High, Realtime.
+     */
+    public String refreshGroup;
 }

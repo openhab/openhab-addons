@@ -17,19 +17,19 @@ package org.openhab.binding.foxtrot.internal.config;
 public class SwitchConfiguration {
 
     /**
-     * todo javadoc ... PLC's variable name published in public.pub file.
+     * State variable.
      */
-    public String stateVariableName;
+    public String state;
 
     /**
-     * todo javadoc
+     * On command variable name.
      */
-    public String onVariableName;
+    public String on;
 
     /**
-     * todo javadoc ...
+     * Off command variable name.
      */
-    public String offVariableName;
+    public String off;
 
     /**
      * Refresh group. Available groups: OnceADay, Low, Medium, High.

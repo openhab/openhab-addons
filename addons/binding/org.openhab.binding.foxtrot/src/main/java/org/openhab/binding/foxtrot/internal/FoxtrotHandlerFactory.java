@@ -36,7 +36,15 @@ import org.osgi.service.component.annotations.Component;
 public class FoxtrotHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(THING_TYPE_PLC, THING_TYPE_VARIABLE, THING_TYPE_SWITCH, THING_TYPE_BLIND, THING_TYPE_DIMMER)
+            .of(
+                    THING_TYPE_PLC,
+                    THING_TYPE_STRING,
+                    THING_TYPE_NUMBER,
+                    THING_TYPE_BOOL,
+                    THING_TYPE_SWITCH,
+                    THING_TYPE_DIMMER,
+                    THING_TYPE_BLIND
+            )
             .collect(Collectors.toSet());
 
     /**
@@ -53,8 +61,12 @@ public class FoxtrotHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_PLC.equals(thingTypeUID)) {
             return new FoxtrotBridgeHandler((Bridge) thing);
-        } else if (THING_TYPE_VARIABLE.equals(thingTypeUID)) {
-            return new VariableHandler(thing);
+        } else if (THING_TYPE_STRING.equals(thingTypeUID)) {
+            return new NumberHandler(thing);
+        } else if (THING_TYPE_NUMBER.equals(thingTypeUID)) {
+            return new NumberHandler(thing);
+        } else if (THING_TYPE_BOOL.equals(thingTypeUID)) {
+            return new NumberHandler(thing);
         } else if (THING_TYPE_SWITCH.equals(thingTypeUID)) {
             return new SwitchHandler(thing);
         } else if (THING_TYPE_BLIND.equals(thingTypeUID)) {

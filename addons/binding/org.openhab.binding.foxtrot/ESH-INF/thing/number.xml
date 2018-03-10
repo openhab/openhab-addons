@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="foxtrot" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="number">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="plccoms"/>
+		</supported-bridge-type-refs>
+
+		<label>Number variable</label>
+		<description>Published Foxtrot PLC's public number variable</description>
+
+		<channels>
+			<channel typeId="number-channel" id="number"/>
+		</channels>
+
+		<config-description>
+			<parameter name="var" type="text" required="true">
+				<label>Number variable</label>
+				<description>Variable name defined in PLC's program PUB file</description>
+			</parameter>
+			<parameter name="refreshGroup" type="text">
+				<label>Refresh group</label>
+				<description>Refresh group define how frequently values will updated, default is LOW</description>
+				<default>LOW</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="number-channel">
+		<item-type>Number</item-type>
+		<label>Number</label>
+		<description>Numeric representation of Foxtrot REAL or INT variable</description>
+	</channel-type>
+</thing:thing-descriptions>

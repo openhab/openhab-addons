@@ -20,14 +20,14 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.foxtrot.internal.CommandExecutor;
-import org.openhab.binding.foxtrot.internal.PlcComSClient;
-import org.openhab.binding.foxtrot.internal.RefreshGroup;
-import org.openhab.binding.foxtrot.internal.RefreshableHandler;
+import org.openhab.binding.foxtrot.internal.*;
 import org.openhab.binding.foxtrot.internal.config.VariableConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.openhab.binding.foxtrot.FoxtrotBindingConstants.CHANNEL_NUMBER;
 
 /**
  * FoxtrotNumberHandler.
@@ -35,25 +35,25 @@ import org.slf4j.LoggerFactory;
  * @author Radovan Sninsky
  * @since 2018-02-10 23:56
  */
-public class VariableHandler extends BaseThingHandler implements RefreshableHandler {
+public class NumberHandler extends BaseThingHandler implements RefreshableHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(VariableHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(NumberHandler.class);
 
     private String variableName;
     private RefreshGroup group;
 
-    public VariableHandler(Thing thing) {
+    public NumberHandler(Thing thing) {
         super(thing);
     }
 
     @SuppressWarnings("deprecation")
     @Override
     public void initialize() {
-        //logger.debug("Initializing Variable handler ...");
+        logger.debug("Initializing Number handler ...");
         VariableConfiguration config = getConfigAs(VariableConfiguration.class);
 
         try {
-            variableName = config.variableName;
+            variableName = config.var;
             group = RefreshGroup.valueOf(config.refreshGroup.toUpperCase());
 
             logger.debug("Adding Variable handler {} into refresh group {}", this, group.name());
@@ -62,7 +62,8 @@ public class VariableHandler extends BaseThingHandler implements RefreshableHand
             updateStatus(ThingStatus.ONLINE);
         } catch (IllegalArgumentException e) {
             // todo error description
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Unknown refresh group: "+config.refreshGroup.toUpperCase());
         }
     }
 
@@ -91,42 +92,19 @@ public class VariableHandler extends BaseThingHandler implements RefreshableHand
 
     @Override
     public void refreshFromPlc(PlcComSClient plcClient) {
-        //logger.trace("Requesting value for Plc variable: {} ...", variableName);
+        State newState = UnDefType.UNDEF;
         try {
-            String newValue = plcClient.get(variableName);
-            // fixme handle asserts
-            // todo throws PlcXXXXException instead of IOException
+            BigDecimal newValue = plcClient.getNumber(variableName);
 
-            // Updating channels
-            updateState("number", isNumber(newValue) ? new DecimalType(newValue) : UnDefType.UNDEF);
-
-            updateState("string", new StringType(newValue));
-
-            if (isBool(newValue)) {
-                updateState("bool", "1".equals(newValue) ? OnOffType.ON : OnOffType.OFF);
+            if (newValue != null) {
+                newState = new DecimalType(newValue);
             }
+        } catch (PlcComSEception e) {
+            logger.warn("PLCComS returned {} while getting variable '{}' value: {}: {}", e.getType(), variableName, e.getCode(), e.getMessage());
         } catch (IOException e) {
-            logger.warn("Getting new value of variable: {} failed w error: {}", variableName, e.getMessage());
-            updateState("number", UnDefType.UNDEF);
-            updateState("string", UnDefType.UNDEF);
-            updateState("bool", UnDefType.UNDEF);
+            logger.warn("Communication with PLCComS failed while getting variable '{}' value: {}", variableName, e.getMessage());
+        } finally {
+            updateState(CHANNEL_NUMBER, newState);
         }
-    }
-
-    private boolean isNumber(String value) {
-        if (value == null) {
-            return false;
-        }
-
-        try {
-            new BigDecimal(value);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    private boolean isBool(String value) {
-        return "1".equals(value) || "0".equals(value);
     }
 }

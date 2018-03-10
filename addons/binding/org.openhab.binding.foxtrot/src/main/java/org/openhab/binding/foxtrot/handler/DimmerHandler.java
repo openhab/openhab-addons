@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.foxtrot.handler;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -17,11 +18,9 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.foxtrot.internal.CommandExecutor;
-import org.openhab.binding.foxtrot.internal.PlcComSClient;
-import org.openhab.binding.foxtrot.internal.RefreshGroup;
-import org.openhab.binding.foxtrot.internal.RefreshableHandler;
+import org.openhab.binding.foxtrot.internal.*;
 import org.openhab.binding.foxtrot.internal.config.DimmerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +50,7 @@ public class DimmerHandler extends BaseThingHandler implements RefreshableHandle
     @SuppressWarnings("deprecation")
     @Override
     public void initialize() {
-        logger.debug("Initializing Switch handler ...");
+        logger.debug("Initializing Dimmer handler ...");
         conf = getConfigAs(DimmerConfiguration.class);
 
         try {
@@ -62,15 +61,16 @@ public class DimmerHandler extends BaseThingHandler implements RefreshableHandle
 
             updateStatus(ThingStatus.ONLINE);
         } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Unknown refresh group: "+conf.refreshGroup.toUpperCase());
         }
     }
 
     @Override
     public void dispose() {
-        logger.debug("Disposing Switch handler resources ...");
+        logger.debug("Disposing Dimmer handler resources ...");
         if (group != null) {
-            logger.debug("Removing Switch handler {} from refresh group {} ...", this, group.name());
+            logger.debug("Removing Dimmer handler {} from refresh group {} ...", this, group.name());
             group.removeHandler(this);
         }
     }
@@ -95,30 +95,19 @@ public class DimmerHandler extends BaseThingHandler implements RefreshableHandle
 
     @Override
     public void refreshFromPlc(PlcComSClient plcClient) {
+        State newState = UnDefType.UNDEF;
         try {
-            String newValue = plcClient.get(conf.state);
-            // fixme handle asserts
-            // todo throws PlcXXXXException instead of IOException
+            BigDecimal newValue = plcClient.getNumber(conf.state);
 
-            if (isNumber(newValue)) {
-                updateState(CHANNEL_DIMMER, new PercentType(new BigDecimal(newValue)));
+            if (newValue != null) {
+                newState = new DecimalType(newValue);
             }
+        } catch (PlcComSEception e) {
+            logger.warn("PLCComS returned {} while getting variable '{}' value: {}: {}", e.getType(), conf.state, e.getCode(), e.getMessage());
         } catch (IOException e) {
-            logger.warn("Getting new value of variable: {} failed w error: {}", conf.state, e.getMessage());
-            updateState(CHANNEL_DIMMER, UnDefType.UNDEF);
-        }
-    }
-
-    private boolean isNumber(String value) {
-        if (value == null) {
-            return false;
-        }
-
-        try {
-            new BigDecimal(value);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
+            logger.warn("Communication with PLCComS failed while getting variable '{}' value: {}", conf.state, e.getMessage());
+        } finally {
+            updateState(CHANNEL_DIMMER, newState);
         }
     }
 }

@@ -5,28 +5,28 @@
 
 	<thing-type id="switch">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="plc"/>
+			<bridge-type-ref id="plccoms"/>
 		</supported-bridge-type-refs>
 
 		<label>Switch</label>
-		<description>...</description>
+		<description>Published PLC's switch structure, see binding description</description>
 
 		<channels>
 			<channel typeId="switch-channel" id="switch"/>
 		</channels>
 
 		<config-description>
-			<parameter name="stateVariableName" type="text" required="true">
-				<label>State variable name</label>
-				<description>...</description>
+			<parameter name="state" type="text" required="true">
+				<label>State variable</label>
+				<description>Variable name that holds switch state (0 or 1)</description>
 			</parameter>
-			<parameter name="onVariableName" type="text" required="true">
-				<label>On command variable name</label>
-				<description>...</description>
+			<parameter name="on" type="text" required="true">
+				<label>Switch on variable</label>
+				<description>Bool variable that trigger switch on action on rising edge (0 -> 1)</description>
 			</parameter>
-			<parameter name="offVariableName" type="text" required="true">
-				<label>Off command variable name</label>
-				<description>...</description>
+			<parameter name="off" type="text" required="true">
+				<label>Switch off variable</label>
+				<description>Bool variable that trigger switch off action on rising edge (0 -> 1)</description>
 			</parameter>
 			<parameter name="refreshGroup" type="text">
 				<label>Refresh group</label>
@@ -39,6 +39,6 @@
 	<channel-type id="switch-channel">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
-		<description>...</description>
+		<description>Switch channel</description>
 	</channel-type>
 </thing:thing-descriptions>

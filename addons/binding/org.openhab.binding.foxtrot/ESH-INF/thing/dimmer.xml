@@ -5,11 +5,11 @@
 
 	<thing-type id="dimmer">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="plc"/>
+			<bridge-type-ref id="plccoms"/>
 		</supported-bridge-type-refs>
 
 		<label>Dimmer</label>
-		<description>todo ...</description>
+		<description>Published PLC's dimmer structure, see binding description</description>
 
 		<channels>
 			<channel typeId="dimmer-channel" id="dimmer"/>
@@ -17,24 +17,24 @@
 
 		<config-description>
 			<parameter name="state" type="text" required="true">
-				<label>State variable name</label>
-				<description>...</description>
+				<label>State variable</label>
+				<description>Variable name that holds switch state (0 or 1)</description>
 			</parameter>
 			<parameter name="on" type="text" required="true">
-				<label>On command variable name</label>
-				<description>...</description>
+				<label>Switch on variable</label>
+				<description>Bool variable that trigger switch on action on rising edge (0 -> 1)</description>
 			</parameter>
 			<parameter name="off" type="text" required="true">
-				<label>Off command variable name</label>
-				<description>...</description>
+				<label>Switch off variable</label>
+				<description>Bool variable that trigger switch off action on rising edge (0 -> 1)</description>
 			</parameter>
 			<parameter name="increase" type="text" required="true">
-				<label>Off command variable name</label>
-				<description>...</description>
+				<label>Increase variable</label>
+				<description>Bool variable that trigger increase action on rising edge (0 -> 1)</description>
 			</parameter>
 			<parameter name="decrease" type="text" required="true">
-				<label>Off command variable name</label>
-				<description>...</description>
+				<label>Decrease variable</label>
+				<description>Bool variable that trigger decrease action on rising edge (0 -> 1)</description>
 			</parameter>
 			<parameter name="refreshGroup" type="text">
 				<label>Refresh group</label>
@@ -47,6 +47,6 @@
 	<channel-type id="dimmer-channel">
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
-		<description>...</description>
+		<description>Dimmer channel</description>
 	</channel-type>
 </thing:thing-descriptions>
