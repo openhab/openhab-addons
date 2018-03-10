@@ -78,24 +78,20 @@ public class HomematicThingHandler extends BaseThingHandler {
             return;
         }
 
-        initFuture = scheduler.submit(new Runnable() {
-
-            @Override
-            public void run() {
-                initFuture = null;
-                try {
-                    synchronized (initLock) {
-                        doInitializeInBackground();
-                    }
-                } catch (HomematicClientException ex) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
-                } catch (IOException ex) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
-                } catch (BridgeHandlerNotAvailableException ex) {
-                    // ignore
-                } catch (Exception ex) {
-                    logger.error("{}", ex.getMessage(), ex);
+        initFuture = scheduler.submit(() -> {
+            initFuture = null;
+            try {
+                synchronized (initLock) {
+                    doInitializeInBackground();
                 }
+            } catch (HomematicClientException ex) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+            } catch (IOException ex) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            } catch (BridgeHandlerNotAvailableException ex) {
+                // ignore
+            } catch (Exception ex) {
+                logger.error("{}", ex.getMessage(), ex);
             }
         });
     }

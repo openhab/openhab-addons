@@ -97,12 +97,7 @@ public class FoldingClientHandler extends BaseBridgeHandler {
     public void initialize() {
         BigDecimal period = (BigDecimal) getThing().getConfiguration().get("polling");
         if (period != null && period.longValue() != 0) {
-            refreshJob = scheduler.scheduleWithFixedDelay(new Runnable() {
-                @Override
-                public void run() {
-                    refresh();
-                }
-            }, 5, period.longValue(), TimeUnit.SECONDS);
+            refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 5, period.longValue(), TimeUnit.SECONDS);
         } else {
             refresh();
         }

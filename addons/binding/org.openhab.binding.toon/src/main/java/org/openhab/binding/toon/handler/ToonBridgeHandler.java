@@ -71,12 +71,8 @@ public class ToonBridgeHandler extends BaseBridgeHandler {
             refreshJob.cancel(true);
         }
 
-        refreshJob = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                updateChannels();
-            }
-        }, 50, configuration.refreshInterval, TimeUnit.MILLISECONDS);
+        refreshJob = scheduler.scheduleWithFixedDelay(this::updateChannels, 50, configuration.refreshInterval,
+                TimeUnit.MILLISECONDS);
     }
 
     public void requestRefresh() {

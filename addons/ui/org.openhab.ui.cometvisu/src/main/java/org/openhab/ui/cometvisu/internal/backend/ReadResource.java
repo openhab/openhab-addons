@@ -226,12 +226,8 @@ public class ReadResource implements EventBroadcaster, RESTResource {
      */
     @Override
     public void broadcastEvent(final Object eventObject) {
-        executorService.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                broadcaster.broadcast(SseUtil.buildEvent(eventObject));
-            }
+        executorService.execute(() -> {
+            broadcaster.broadcast(SseUtil.buildEvent(eventObject));
         });
     }
 

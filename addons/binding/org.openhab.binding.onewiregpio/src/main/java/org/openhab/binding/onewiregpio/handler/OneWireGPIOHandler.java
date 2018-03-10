@@ -98,14 +98,11 @@ public class OneWireGPIOHandler extends BaseThingHandler {
     }
 
     private void startAutomaticRefresh() {
-        Runnable refresher = new Runnable() {
-            @Override
-            public void run() {
-                List<Channel> channels = getThing().getChannels();
-                for (Channel channel : channels) {
-                    if (isLinked(channel.getUID().getId())) {
-                        publishSensorValue(channel.getUID());
-                    }
+        Runnable refresher = () -> {
+            List<Channel> channels = getThing().getChannels();
+            for (Channel channel : channels) {
+                if (isLinked(channel.getUID().getId())) {
+                    publishSensorValue(channel.getUID());
                 }
             }
         };
