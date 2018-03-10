@@ -9,6 +9,7 @@
 package org.openhab.binding.opendaikin.handler;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -209,9 +210,9 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
         ControlInfo info = webTargets.getControlInfo();
 
         if (useFahrenheitForChannel(OpenDaikinBindingConstants.CHANNEL_AC_TEMP)) {
-            info.temp = fToC(temp);
+            info.temp = Optional.of(fToC(temp));
         } else {
-            info.temp = temp;
+            info.temp = Optional.of(temp);
         }
 
         webTargets.setControlInfo(info);
