@@ -485,33 +485,33 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="leftseatheater" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Left Seat Heater</label>
-		<description>Indicates the level (0,1,2 or 3) of the left seat heater</description>
+		<description>Indicates if the left seat heater is switched on</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="rightseatheater" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Right Seat Heater</label>
-		<description>Indicates the level (0,1,2 or 3) of the right seat heater</description>
+		<description>Indicates if the right seat heater is switched on</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="leftrearseatheater" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Left Rear Seat Heater</label>
-		<description>Indicates the level (0,1,2 or 3) of the left rear seat heater</description>
+		<description>Indicates if the left rear seat heater is switched on</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="rightrearseatheater" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Right Rear Seat Heater</label>
-		<description>Indicates the level (0,1,2 or 3) of the right rear seat heater</description>
+		<description>Indicates if the right rear seat heater is switched on</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="centerrearseatheater" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Center Rear Seat Heater</label>
-		<description>Indicates the level (0,1,2 or 3) of the center rear seat heater</description>
+		<description>Indicates if the center rear seat heater is switched on</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="rightrearbackseatheater" advanced="true">
