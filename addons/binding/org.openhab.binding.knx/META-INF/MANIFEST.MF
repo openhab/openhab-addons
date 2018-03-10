@@ -25,6 +25,7 @@ Import-Package: gnu.io;resolution:=optional,
  org.openhab.binding.knx,
  org.openhab.binding.knx.handler,
  org.osgi.framework,
+ org.osgi.framework.wiring,
  org.osgi.service.cm,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
