@@ -7,24 +7,25 @@
 	<bridge-type id="ip_bridge">
 		<label>IP Bridge</label>
 		<description>This bridge is for use over a network interface.</description>
-        <config-description>
-            <parameter name="address" type="text" required="true">
-                <label>IP Address</label>
-                <description>The IP address to connect to.</description>
-                <context>network-address</context>
-            </parameter>
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>IP Address</label>
+				<description>The IP address to connect to.</description>
+				<context>network-address</context>
+			</parameter>
 
-            <parameter name="port" type="integer" required="false">
-                <label>Port</label>
-                <description>The port to connect to.</description>
-                <default>10000</default>
-            </parameter>
-            
-            <parameter name="id" type="integer" required="false">
-                <label>Pentair ID</label>
-                <description>The ID to use to send commands on the Pentair bus (default: 34)</description>
-                <default>34</default>
-            </parameter>
-        </config-description>
+			<parameter name="port" type="integer" required="false">
+				<label>Port</label>
+				<description>The port to connect to.</description>
+				<default>10000</default>
+			</parameter>
+
+			<parameter name="id" type="integer" required="false">
+				<label>Pentair ID</label>
+				<description>The ID to use to send commands on the Pentair bus (default: 34)</description>
+				<default>34</default>
+			</parameter>
+		</config-description>
 	</bridge-type>
+
 </thing:thing-descriptions>

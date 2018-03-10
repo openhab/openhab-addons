@@ -15,7 +15,7 @@
 			<parameter name="ipAddress" type="text" required="true">
 				<label>IP or Host Name</label>
 				<description>The IP or host name of the SqueezeServer
-                </description>
+				</description>
 			</parameter>
 			<parameter name="webport" type="integer" required="true" min="1" max="65335">
 				<label>SqueezeServer Web Port</label>

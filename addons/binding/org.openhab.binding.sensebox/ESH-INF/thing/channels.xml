@@ -50,9 +50,9 @@
 	</channel-type>
 
 	<!--
-	  "title": "UV-Intensität",
-	  "unit": "μW/cm²",
-	  "sensorType": "VEML6070",
+		"title": "UV-Intensität",
+		"unit": "μW/cm²",
+		"sensorType": "VEML6070",
 	-->
 	<channel-type id="uvIntensity">
 		<item-type>Number</item-type>
@@ -70,9 +70,9 @@
 	</channel-type>
 
 	<!--
-	  "title": "Beleuchtungsstärke",
-	  "unit": "lx",
-	  "sensorType": "TSL45315",
+		"title": "Beleuchtungsstärke",
+		"unit": "lx",
+		"sensorType": "TSL45315",
 	-->
 	<channel-type id="luminance">
 		<item-type>Number</item-type>
@@ -90,9 +90,9 @@
 	</channel-type>
 
 	<!--
-	  "title": "Luftdruck",
-	  "unit": "hPa",
-	  "sensorType": "BMP280",
+		"title": "Luftdruck",
+		"unit": "hPa",
+		"sensorType": "BMP280",
 	-->
 	<channel-type id="pressure">
 		<item-type>Number</item-type>
@@ -110,9 +110,9 @@
 	</channel-type>
 
 	<!--
-	  "title": "rel. Luftfeuchte",
-	  "unit": "%",
-	  "sensorType": "HDC1008",
+		"title": "rel. Luftfeuchte",
+		"unit": "%",
+		"sensorType": "HDC1008",
 	-->
 	<channel-type id="humidity">
 		<item-type>Number</item-type>
@@ -131,9 +131,9 @@
 	</channel-type>
 
 	<!--
-	  "title": "Temperatur",
-	  "unit": "°C",
-	  "sensorType": "HDC1008",
+		"title": "Temperatur",
+		"unit": "°C",
+		"sensorType": "HDC1008",
 	-->
 	<channel-type id="temperature">
 		<item-type>Number</item-type>
@@ -152,9 +152,9 @@
 	</channel-type>
 
 	<!--
-	  "title": "PM2.5",
-	  "unit": "µg/m³",
-	  "sensorType": "SDS 011",
+		"title": "PM2.5",
+		"unit": "µg/m³",
+		"sensorType": "SDS 011",
 	-->
 	<channel-type id="particulateMatter2dot5">
 		<item-type>Number</item-type>
@@ -173,9 +173,9 @@
 	</channel-type>
 
 	<!--
-	  "title": "PM10",
-	  "unit": "µg/m³",
-	  "sensorType": "SDS 011",
+		"title": "PM10",
+		"unit": "µg/m³",
+		"sensorType": "SDS 011",
 	-->
 	<channel-type id="particulateMatter10">
 		<item-type>Number</item-type>

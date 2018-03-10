@@ -7,7 +7,7 @@
 	</parent>
 	<artifactId>org.openhab.binding.kostalinverter</artifactId>
 	
-    <name>Kostal Binding</name>
-    <packaging>eclipse-plugin</packaging>
+	<name>Kostal Binding</name>
+	<packaging>eclipse-plugin</packaging>
 
 </project>

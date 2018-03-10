@@ -1,93 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="rotelra1x"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="amp">
-        <label>Rotel Amplifier</label>
-        <description>Rotel RA11 / RA12 stereo amplifier.</description>
+	<thing-type id="amp">
+		<label>Rotel Amplifier</label>
+		<description>Rotel RA11 / RA12 stereo amplifier.</description>
 
-        <channels>
-            <channel id="power" typeId="power"/>
-            <channel id="volume" typeId="volume"/>
-            <channel id="mute" typeId="mute"/>
-            <channel id="source" typeId="source"/>
-            <channel id="frequency" typeId="frequency"/>
-            <channel id="brightness" typeId="brightness"/>
-        </channels>
-        
-        <config-description>
-            <parameter name="port" type="text">
-                <label>Serial port</label>
-                <description>Select serial port (COM1, /dev/ttyS0, ...)</description>
-                <required>true</required>
-            </parameter>
-            <!-- Max volume could have been queried using the protocol, but would have 
-                 complicated the code, and it could be nice to set 100 % at less than
-                 the receiver's max. -->
-            <parameter name="maximum-volume" type="integer" min="1">
-                <label>Maximum volume</label>
-                <description>Volume level representing 100 %.</description>
-                <default>100</default>
-                <required>true</required>
-            </parameter>
-        </config-description>
-        
-    </thing-type>
+		<channels>
+			<channel id="power" typeId="power"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="mute" typeId="mute"/>
+			<channel id="source" typeId="source"/>
+			<channel id="frequency" typeId="frequency"/>
+			<channel id="brightness" typeId="brightness"/>
+		</channels>
 
-    <channel-type id="power">
-        <item-type>Switch</item-type>
-        <label>Power</label>
-        <description>Turn it on or off.</description>
-        <category>Power</category>
-    </channel-type>
+		<config-description>
+			<parameter name="port" type="text">
+				<label>Serial port</label>
+				<description>Select serial port (COM1, /dev/ttyS0, ...)</description>
+				<required>true</required>
+			</parameter>
+			<!-- Max volume could have been queried using the protocol, but would have 
+				complicated the code, and it could be nice to set 100 % at less than
+				the receiver's max. -->
+			<parameter name="maximum-volume" type="integer" min="1">
+				<label>Maximum volume</label>
+				<description>Volume level representing 100 %.</description>
+				<default>100</default>
+				<required>true</required>
+			</parameter>
+		</config-description>
 
-    <channel-type id="mute">
-        <item-type>Switch</item-type>
-        <label>Mute</label>
-        <description>Mute on/off.</description>
-        <category>Mute</category>
-    </channel-type>
+	</thing-type>
 
-    <channel-type id="volume">
-        <item-type>Dimmer</item-type>
-        <label>Volume</label>
-        <description>Volume control (%)</description>
-        <category>SoundVolume</category>
-        <state pattern="%.0f %%"></state>
-    </channel-type>
-    
-    <channel-type id="source">
-        <item-type>String</item-type>
-        <label>Source</label>
-        <description>Select input</description>
-        <state>
-            <options>
-                <option value="cd">CD</option>
-                <option value="coax1">Coax 1</option>
-                <option value="coax2">Coax 2</option>
-                <option value="opt1">Opt 1</option>
-                <option value="tuner">Tuner</option>
-                <option value="phono">Phono</option>
-                <option value="usb">USB</option>
-                <option value="aux1">Aux 1</option>
-                <option value="aux2">Aux 2</option>
-            </options>
-        </state>
-    </channel-type>
-    
-    <channel-type id="frequency" advanced="true">
-        <item-type>Number</item-type>
-        <label>Frequency</label>
-        <description>Digital input sample rate.</description>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="brightness" advanced="true">
-        <item-type>Dimmer</item-type>
-        <label>Display brightness</label>
-        <description>Display backlight brightness.</description>
-    </channel-type>
-    
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Turn it on or off.</description>
+		<category>Power</category>
+	</channel-type>
+
+	<channel-type id="mute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Mute on/off.</description>
+		<category>Mute</category>
+	</channel-type>
+
+	<channel-type id="volume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Volume control (%)</description>
+		<category>SoundVolume</category>
+		<state pattern="%.0f %%"></state>
+	</channel-type>
+
+	<channel-type id="source">
+		<item-type>String</item-type>
+		<label>Source</label>
+		<description>Select input</description>
+		<state>
+			<options>
+				<option value="cd">CD</option>
+				<option value="coax1">Coax 1</option>
+				<option value="coax2">Coax 2</option>
+				<option value="opt1">Opt 1</option>
+				<option value="tuner">Tuner</option>
+				<option value="phono">Phono</option>
+				<option value="usb">USB</option>
+				<option value="aux1">Aux 1</option>
+				<option value="aux2">Aux 2</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="frequency" advanced="true">
+		<item-type>Number</item-type>
+		<label>Frequency</label>
+		<description>Digital input sample rate.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="brightness" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Display brightness</label>
+		<description>Display backlight brightness.</description>
+	</channel-type>
+
 </thing:thing-descriptions>

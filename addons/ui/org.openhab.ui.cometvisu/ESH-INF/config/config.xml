@@ -2,7 +2,7 @@
 <config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
-        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="ui:cometvisu">
 		<parameter name="webFolder" type="text">
@@ -17,9 +17,9 @@
 		<parameter name="autoDownload" type="boolean">
 			<label>Auto-Download</label>
 			<description>
-            If you enable this feature, the current release of CometVisu client (GNU General Public License v3.0) will be automatically
-            downloaded to your openHAB server and extracted into the folder you defined in the Filesystem path, if it is not found there. 
-            </description>
+			If you enable this feature, the current release of CometVisu client (GNU General Public License v3.0) will be automatically
+			downloaded to your openHAB server and extracted into the folder you defined in the Filesystem path, if it is not found there. 
+			</description>
 			<default>false</default>
 		</parameter>
 	</config-description>

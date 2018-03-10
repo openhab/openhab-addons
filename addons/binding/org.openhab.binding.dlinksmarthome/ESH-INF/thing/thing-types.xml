@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="dlinksmarthome"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Motion Sensor DCH-S150 Thing Type -->
-    <thing-type id="DCH-S150">
-        <label>Motion Sensor</label>
-        <description>D-Link DCH-S150 WiFi motion sensor</description>
+	<!-- Motion Sensor DCH-S150 Thing Type -->
+	<thing-type id="DCH-S150">
+		<label>Motion Sensor</label>
+		<description>D-Link DCH-S150 WiFi motion sensor</description>
 
-        <channels>
-            <channel id="motion" typeId="system.trigger">
-                <label>Motion Detected</label>
-                <description>Triggered when the sensor detects motion</description>
-            </channel>
-        </channels>
-        <config-description>
-            <parameter name="ipAddress" type="text" required="true">
-                <context>network-address</context>
-                <label>Hostname or IP</label>
-                <description>Hostname or IP of the device.</description>
-            </parameter>
-            <parameter name="pin" type="text" required="true">
-                <context>password</context>
-                <label>PIN Code</label>
-                <description>PIN code from the back of the device.</description>
-            </parameter>
-        </config-description>
-    </thing-type>
+		<channels>
+			<channel id="motion" typeId="system.trigger">
+				<label>Motion Detected</label>
+				<description>Triggered when the sensor detects motion</description>
+			</channel>
+		</channels>
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname or IP</label>
+				<description>Hostname or IP of the device.</description>
+			</parameter>
+			<parameter name="pin" type="text" required="true">
+				<context>password</context>
+				<label>PIN Code</label>
+				<description>PIN code from the back of the device.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 </thing:thing-descriptions>

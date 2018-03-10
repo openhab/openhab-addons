@@ -68,7 +68,7 @@
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
-	 <channel-type id="type">
+	<channel-type id="type">
 		<item-type>String</item-type>
 		<label>Type</label>
 		<description>Type of events. Go to the Welcome page for further details.</description>

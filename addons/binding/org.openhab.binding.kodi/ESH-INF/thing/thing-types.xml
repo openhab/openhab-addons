@@ -87,7 +87,7 @@
 		<item-type>String</item-type>
 		<label>Send a key</label>
 		<description>Sends a key stroke to the Kodi Player to navigate in the UI
-        </description>
+		</description>
 		<state>
 			<options>
 				<option value="Left">Left</option>

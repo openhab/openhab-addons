@@ -3,7 +3,6 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="kecontact">
 		<label>KeContact EV Charging Station</label>
 		<description>This Thing supports the KeContact EV Charging station</description>

@@ -1,77 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="harmonyhub"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <bridge-type id="hub">
-        <label>Harmony Hub</label>
-        <description>A Logitech Harmony Hub</description>
-          <channels>
-            <channel id="currentActivity" typeId="currentActivity" />
-            <channel id="activityStarting" typeId="eventTrigger">
-                <label>Activity Starting Trigger</label>
-                <description>Triggered when an activity is starting</description>
-            </channel>
-            <channel id="activityStarted" typeId="eventTrigger">
-                <label>Activity Started Trigger</label>
-                <description>Triggered when an activity is started</description>
-            </channel>           
-        </channels>
-        <properties>
-            <property name="name"></property>
-        </properties>
-        <config-description>
-	         <parameter name="host" type="text" required="false">
-                    <label>Host</label>
-                    <description>Host or IP address of hub.</description>
-                    <context>network-address</context>
-            </parameter>
-            <parameter name="heartBeatInterval" type="integer" required="false">
-                <label>Heart Beat Interval</label>
-                <default>60</default>
-                <description>Heartbeat keep alive time in seconds.
-                </description>
-            </parameter>
-        </config-description>
-    </bridge-type>
-    
-    <thing-type id="device">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="hub" />
-        </supported-bridge-type-refs>
-        <label>Harmony Device</label>
-        <description>Logitech Harmony Hub Device</description>
-        <channels>
-            <channel id="buttonPress" typeId="buttonPress" />
-        </channels>
-        <config-description>
-            <parameter name="id" type="integer" required="false">
-                <label>id</label>
-                <description>Numeric ID of the Harmony Device (id or name is required)</description>
-            </parameter>
-            <parameter name="name" type="text" required="false">
-                <label>id</label>
-                <description>Name of the Harmony Device (name or id is required)</description>
-            </parameter>
-        </config-description>
-    </thing-type>
-    
-    <channel-type id="currentActivity">
-        <item-type>String</item-type>
-        <label>Current Activity</label>
-        <description>The label/name of the current activity of a Harmony Hub</description>
-    </channel-type>
-    
-    <channel-type id="eventTrigger">
-        <kind>trigger</kind>
-        <label>Harmony Hub Event Trigger</label>
-        <description>Triggered when Harmony Hub sent an event with activity status</description>
-    </channel-type>
-    
-     <channel-type id="buttonPress">
-        <item-type>String</item-type>
-        <label>Button Press</label>
-        <description>The label/name of the button to press on a Harmony Hub device (write only)</description>
-    </channel-type>
+	<bridge-type id="hub">
+		<label>Harmony Hub</label>
+		<description>A Logitech Harmony Hub</description>
+		<channels>
+			<channel id="currentActivity" typeId="currentActivity" />
+			<channel id="activityStarting" typeId="eventTrigger">
+				<label>Activity Starting Trigger</label>
+				<description>Triggered when an activity is starting</description>
+			</channel>
+			<channel id="activityStarted" typeId="eventTrigger">
+				<label>Activity Started Trigger</label>
+				<description>Triggered when an activity is started</description>
+			</channel>
+		</channels>
+		<properties>
+			<property name="name"></property>
+		</properties>
+		<config-description>
+			<parameter name="host" type="text" required="false">
+					<label>Host</label>
+					<description>Host or IP address of hub.</description>
+					<context>network-address</context>
+			</parameter>
+			<parameter name="heartBeatInterval" type="integer" required="false">
+				<label>Heart Beat Interval</label>
+				<default>60</default>
+				<description>Heartbeat keep alive time in seconds.
+				</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="hub" />
+		</supported-bridge-type-refs>
+		<label>Harmony Device</label>
+		<description>Logitech Harmony Hub Device</description>
+		<channels>
+			<channel id="buttonPress" typeId="buttonPress" />
+		</channels>
+		<config-description>
+			<parameter name="id" type="integer" required="false">
+				<label>id</label>
+				<description>Numeric ID of the Harmony Device (id or name is required)</description>
+			</parameter>
+			<parameter name="name" type="text" required="false">
+				<label>id</label>
+				<description>Name of the Harmony Device (name or id is required)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="currentActivity">
+		<item-type>String</item-type>
+		<label>Current Activity</label>
+		<description>The label/name of the current activity of a Harmony Hub</description>
+	</channel-type>
+
+	<channel-type id="eventTrigger">
+		<kind>trigger</kind>
+		<label>Harmony Hub Event Trigger</label>
+		<description>Triggered when Harmony Hub sent an event with activity status</description>
+	</channel-type>
+
+	<channel-type id="buttonPress">
+		<item-type>String</item-type>
+		<label>Button Press</label>
+		<description>The label/name of the button to press on a Harmony Hub device (write only)</description>
+	</channel-type>
 </thing:thing-descriptions>

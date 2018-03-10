@@ -37,8 +37,8 @@
 		<description>Programmed start time of the program</description>
 		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
 	</channel-type>
-    
-    <channel-type id="duration" advanced="true">
+
+	<channel-type id="duration" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Duration</label>
 		<description>Duration of the program running on the appliance</description>
@@ -73,10 +73,10 @@
 	</channel-type>
 	
 	<channel-type id="stop" advanced="false">
-        <item-type>Switch</item-type>
-        <label>Stop</label>
-        <description>Stop the hood</description>
-    </channel-type>
+		<item-type>Switch</item-type>
+		<label>Stop</label>
+		<description>Stop the hood</description>
+	</channel-type>
 
 	<channel-type id="step" advanced="true">
 		<item-type>Number</item-type>
@@ -85,130 +85,131 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-    <channel-type id="target" advanced="true">
-        <item-type>Number</item-type>
-        <label>Target Temperature</label>
-        <description>Target temperature to be reached by the oven</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="target" advanced="true">
+		<item-type>Number</item-type>
+		<label>Target Temperature</label>
+		<description>Target temperature to be reached by the oven</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="measured" advanced="true">
-        <item-type>Number</item-type>
-        <label>Measured Temperature</label>
-        <description>Actual measured temperature in the oven</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="measured" advanced="true">
+		<item-type>Number</item-type>
+		<label>Measured Temperature</label>
+		<description>Actual measured temperature in the oven</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="temp" advanced="true">
-        <item-type>Number</item-type>
-        <label>Temperature</label>
-        <description>Program temperature in the oven</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="temp" advanced="true">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>Program temperature in the oven</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="supercool" advanced="false">
-        <item-type>String</item-type>
-        <label>Super Cool</label>
-        <description>Start Super Cooling</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="supercool" advanced="false">
+		<item-type>String</item-type>
+		<label>Super Cool</label>
+		<description>Start Super Cooling</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="current" advanced="false">
-        <item-type>Number</item-type>
-        <label>Current Temperature</label>
-        <description>Current temperature in the fridge</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="current" advanced="false">
+		<item-type>Number</item-type>
+		<label>Current Temperature</label>
+		<description>Current temperature in the fridge</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="freezerstate" advanced="false">
-        <item-type>String</item-type>
-        <label>Status</label>
-        <description>Current status of the freezer compartment</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="freezerstate" advanced="false">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Current status of the freezer compartment</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="fridgestate" advanced="false">
-        <item-type>String</item-type>
-        <label>Status</label>
-        <description>Current status of the fridge compartment</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="fridgestate" advanced="false">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Current status of the fridge compartment</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="superfreeze" advanced="false">
-        <item-type>String</item-type>
-        <label>Super Freeze</label>
-        <description>Start Super Freezing</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="superfreeze" advanced="false">
+		<item-type>String</item-type>
+		<label>Super Freeze</label>
+		<description>Start Super Freezing</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="freezercurrent" advanced="false">
-        <item-type>Number</item-type>
-        <label>Current Temperature</label>
-        <description>Current temperature in the freezer compartment</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="freezercurrent" advanced="false">
+		<item-type>Number</item-type>
+		<label>Current Temperature</label>
+		<description>Current temperature in the freezer compartment</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="freezertarget" advanced="true">
-        <item-type>Number</item-type>
-        <label>Target Temperature</label>
-        <description>Target temperature to be reached by the freezer compartment</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="freezertarget" advanced="true">
+		<item-type>Number</item-type>
+		<label>Target Temperature</label>
+		<description>Target temperature to be reached by the freezer compartment</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="fridgecurrent" advanced="false">
-        <item-type>Number</item-type>
-        <label>Current Temperature</label>
-        <description>Current temperature in the fridge compartment</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="fridgecurrent" advanced="false">
+		<item-type>Number</item-type>
+		<label>Current Temperature</label>
+		<description>Current temperature in the fridge compartment</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="fridgetarget" advanced="true">
-        <item-type>Number</item-type>
-        <label>Target Temperature</label>
-        <description>Target temperature to be reached by the fridge compartment</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="fridgetarget" advanced="true">
+		<item-type>Number</item-type>
+		<label>Target Temperature</label>
+		<description>Target temperature to be reached by the fridge compartment</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="plates" advanced="false">
-        <item-type>Number</item-type>
-        <label>Plates</label>
-        <description>Number of heating zones/plates on the hob</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="plates" advanced="false">
+		<item-type>Number</item-type>
+		<label>Plates</label>
+		<description>Number of heating zones/plates on the hob</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="power" advanced="false">
-        <item-type>Number</item-type>
-        <label>Power Step</label>
-        <description>Power level of the heating zone/plate</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="power" advanced="false">
+		<item-type>Number</item-type>
+		<label>Power Step</label>
+		<description>Power level of the heating zone/plate</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="heat" advanced="true">
-        <item-type>Number</item-type>
-        <label>Remaining Heat</label>
-        <description>Remaining heat level of the heating zone/plate</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="heat" advanced="true">
+		<item-type>Number</item-type>
+		<label>Remaining Heat</label>
+		<description>Remaining heat level of the heating zone/plate</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="time" advanced="true">
-        <item-type>String</item-type>
-        <label>Remaining Time</label>
-        <description>Remaining time of the heating zone/plate</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="time" advanced="true">
+		<item-type>String</item-type>
+		<label>Remaining Time</label>
+		<description>Remaining time of the heating zone/plate</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="ventilation" advanced="false">
-        <item-type>Number</item-type>
-        <label>Ventilation Power</label>
-        <description>Current ventilation power</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="ventilation" advanced="false">
+		<item-type>Number</item-type>
+		<label>Ventilation Power</label>
+		<description>Current ventilation power</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="spinningspeed" advanced="true">
-        <item-type>String</item-type>
-        <label>Spinning Speed</label>
-        <description>Spinning speed in the program running on the appliance</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    
+	<channel-type id="spinningspeed" advanced="true">
+		<item-type>String</item-type>
+		<label>Spinning Speed</label>
+		<description>Spinning speed in the program running on the appliance</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
 </thing:thing-descriptions>
+

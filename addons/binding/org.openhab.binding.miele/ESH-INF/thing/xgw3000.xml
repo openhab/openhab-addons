@@ -28,8 +28,8 @@
 			<parameter name="userName" type="text">
 				<label>Username</label>
 				<description>
-                    Name of a registered Miele@home user.
-                </description>
+					Name of a registered Miele@home user.
+				</description>
 				<required>false</required>
 			</parameter>
 			<parameter name="password" type="text">

@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <binding:binding id="network"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-    <name>Network Binding</name>
-    <description>The Network Binding can be used for device presence detection and to determine network device health</description>
-    <author>Marc Mettke, David Graeff</author>
-    <config-description>
-	    <parameter name="allowSystemPings" type="boolean">
-	        <default>true</default>
-	        <label>Allow system pings</label>
-	        <description>Allows or disallows to use system pings next to the java integrated ping functionality.
-	        On windows the system ping works more reliable most of the time.</description>
-	    </parameter>
-        <parameter name="allowDHCPlisten" type="boolean">
-            <default>true</default>
-            <label>Listen for dhcp requests</label>
-            <description>Usually a device requests an IP address in an IPv4 network with the help of DHCP as soon as it enters a network. If we listen to those
-            packets, we can detect a device presence even faster. You need elevated access rights (see readme) for this to work.</description>
-        </parameter>
-        <parameter name="cacheDeviceStateTimeInMS" type="integer">
-            <default>2000</default>
-            <label>Cache time in ms</label>
-            <description>The result of a device presence detection is cached for a small amount of time. Be aware that no new pings will be issued within this time frame, even if explicitly requested.</description>
-            <advanced>true</advanced>
-        </parameter>
-        <parameter name="arpPingToolPath" type="text">
-            <default>arping</default>
-            <label>ARP ping tool path</label>
-            <description>If your arp ping tool is not called arping and cannot be found in the PATH environment, you can configure the absolute path / tool name here</description>
-        </parameter>
-    </config-description>
+	<name>Network Binding</name>
+	<description>The Network Binding can be used for device presence detection and to determine network device health</description>
+	<author>Marc Mettke, David Graeff</author>
+	<config-description>
+		<parameter name="allowSystemPings" type="boolean">
+			<default>true</default>
+			<label>Allow system pings</label>
+			<description>Allows or disallows to use system pings next to the java integrated ping functionality.
+			On windows the system ping works more reliable most of the time.</description>
+		</parameter>
+		<parameter name="allowDHCPlisten" type="boolean">
+			<default>true</default>
+			<label>Listen for dhcp requests</label>
+			<description>Usually a device requests an IP address in an IPv4 network with the help of DHCP as soon as it enters a network. If we listen to those
+			packets, we can detect a device presence even faster. You need elevated access rights (see readme) for this to work.</description>
+		</parameter>
+		<parameter name="cacheDeviceStateTimeInMS" type="integer">
+			<default>2000</default>
+			<label>Cache time in ms</label>
+			<description>The result of a device presence detection is cached for a small amount of time. Be aware that no new pings will be issued within this time frame, even if explicitly requested.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="arpPingToolPath" type="text">
+			<default>arping</default>
+			<label>ARP ping tool path</label>
+			<description>If your arp ping tool is not called arping and cannot be found in the PATH environment, you can configure the absolute path / tool name here</description>
+		</parameter>
+	</config-description>
 </binding:binding>

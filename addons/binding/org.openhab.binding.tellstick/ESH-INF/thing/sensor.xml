@@ -1,116 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="tellstick"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="sensor">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="telldus-core" />
-            <bridge-type-ref id="telldus-live" />
-        </supported-bridge-type-refs>
+	<thing-type id="sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="telldus-core" />
+			<bridge-type-ref id="telldus-live" />
+		</supported-bridge-type-refs>
 
-        <label>Sensor</label>
-        <description>This Thing defines a Sensor</description>
-        <channels>
-            <channel id="humidity" typeId="humidity" />
-            <channel id="timestamp" typeId="timestamp" />
-            <channel id="temperature" typeId="temperature" />
-        </channels>
-        <config-description-ref uri="thing-type:tellstick:sensor-config"/>
-    </thing-type>
-    <thing-type id="rainsensor">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="telldus-core" />
-            <bridge-type-ref id="telldus-live" />
-        </supported-bridge-type-refs>
+		<label>Sensor</label>
+		<description>This Thing defines a Sensor</description>
+		<channels>
+			<channel id="humidity" typeId="humidity" />
+			<channel id="timestamp" typeId="timestamp" />
+			<channel id="temperature" typeId="temperature" />
+		</channels>
+		<config-description-ref uri="thing-type:tellstick:sensor-config"/>
+	</thing-type>
+	<thing-type id="rainsensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="telldus-core" />
+			<bridge-type-ref id="telldus-live" />
+		</supported-bridge-type-refs>
 
-        <label>RainSensor</label>
-        <description>This Thing defines a Rain Sensor</description>
-        <channels>
-            <channel id="timestamp" typeId="timestamp" />
-            <channel id="rainrate" typeId="rainrate" />
-            <channel id="raintotal" typeId="raintotal" />
-        </channels>
-        <config-description-ref uri="thing-type:tellstick:sensor-config"/>
-    </thing-type>
-    <thing-type id="windsensor">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="telldus-core" />
-            <bridge-type-ref id="telldus-live" />
-        </supported-bridge-type-refs>
+		<label>RainSensor</label>
+		<description>This Thing defines a Rain Sensor</description>
+		<channels>
+			<channel id="timestamp" typeId="timestamp" />
+			<channel id="rainrate" typeId="rainrate" />
+			<channel id="raintotal" typeId="raintotal" />
+		</channels>
+		<config-description-ref uri="thing-type:tellstick:sensor-config"/>
+	</thing-type>
+	<thing-type id="windsensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="telldus-core" />
+			<bridge-type-ref id="telldus-live" />
+		</supported-bridge-type-refs>
 
-        <label>RainSensor</label>
-        <description>This Thing defines a Rain Sensor</description>
-        <channels>
-            <channel id="timestamp" typeId="timestamp" />
-            <channel id="windgust" typeId="windgust" />
-            <channel id="winddirection" typeId="winddirection" />
-            <channel id="windaverage" typeId="windaverage" />
-        </channels>
-        <config-description-ref uri="thing-type:tellstick:sensor-config"/>
-    </thing-type>
-    <channel-type id="temperature">
-        <item-type>Number</item-type>
-        <label>Actual Temperature</label>
-        <description>Actual measured room temperature</description>
-        <category>Temperature</category>
-        <state pattern="%f °C" readOnly="true">
-        </state>
+		<label>RainSensor</label>
+		<description>This Thing defines a Rain Sensor</description>
+		<channels>
+			<channel id="timestamp" typeId="timestamp" />
+			<channel id="windgust" typeId="windgust" />
+			<channel id="winddirection" typeId="winddirection" />
+			<channel id="windaverage" typeId="windaverage" />
+		</channels>
+		<config-description-ref uri="thing-type:tellstick:sensor-config"/>
+	</thing-type>
+	<channel-type id="temperature">
+		<item-type>Number</item-type>
+		<label>Actual Temperature</label>
+		<description>Actual measured room temperature</description>
+		<category>Temperature</category>
+		<state pattern="%f °C" readOnly="true">
+		</state>
 
-    </channel-type>
-    <channel-type id="humidity">
-        <item-type>Number</item-type>
-        <label>Actual Humidity</label>
-        <description>Actual measured room Humidity</description>
-        <category>Humidity</category>
-        <state pattern="%d %%" readOnly="true">
-        </state>
-    </channel-type>
-    
-    <channel-type id="rainrate">
-        <item-type>Number</item-type>
-        <label>Rainrate</label>
-        <description>The current rain rate</description>
-        <state pattern="%d" readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="raintotal">
-        <item-type>Number</item-type>
-        <label>Total Rain</label>
-        <description>Total rain</description>
-        <state pattern="%d" readOnly="true">
-        </state>
-    </channel-type>
-    
-    <channel-type id="windgust">
-        <item-type>Number</item-type>
-        <label>Wind Gust</label>
-        <description>Current wind gust</description>
-        <state pattern="%d" readOnly="true">
-        </state>
-    </channel-type>
-    
-    <channel-type id="windaverage">
-        <item-type>Number</item-type>
-        <label>Wind Average</label>
-        <description>Current wind average</description>
-        <state pattern="%d" readOnly="true">
-        </state>
-    </channel-type>
-    
-    <channel-type id="winddirection">
-        <item-type>String</item-type>
-        <label>Wind Direction</label>
-        <description>Current wind directoin</description>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="timestamp">
-        <item-type>DateTime</item-type>
-        <label>Last device update</label>
-        <description>Last device update</description>
-         <state readOnly="true">
-        </state>
-    </channel-type>
+	</channel-type>
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Actual Humidity</label>
+		<description>Actual measured room Humidity</description>
+		<category>Humidity</category>
+		<state pattern="%d %%" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="rainrate">
+		<item-type>Number</item-type>
+		<label>Rainrate</label>
+		<description>The current rain rate</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="raintotal">
+		<item-type>Number</item-type>
+		<label>Total Rain</label>
+		<description>Total rain</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="windgust">
+		<item-type>Number</item-type>
+		<label>Wind Gust</label>
+		<description>Current wind gust</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="windaverage">
+		<item-type>Number</item-type>
+		<label>Wind Average</label>
+		<description>Current wind average</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="winddirection">
+		<item-type>String</item-type>
+		<label>Wind Direction</label>
+		<description>Current wind directoin</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Last device update</label>
+		<description>Last device update</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
 </thing:thing-descriptions>

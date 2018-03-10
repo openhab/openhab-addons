@@ -10,9 +10,9 @@
 		<label>Xiaomi Aqara 1 Channel Wall Switch</label>
 		<description>Mains powered Aqara Switch with 1 controllable Channel</description>
 		<channels>
-            <channel id="ch1" typeId="sw-btn">
-                <description>The pushbutton on the switch.</description>
-            </channel>
+			<channel id="ch1" typeId="sw-btn">
+				<description>The pushbutton on the switch.</description>
+			</channel>
 		</channels>
 		<config-description-ref uri="thing-type:mihome:device" />
 	</thing-type>

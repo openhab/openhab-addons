@@ -10,12 +10,12 @@
 		<label>Xiaomi "zero-fire" 2 Channel Wall Switch</label>
 		<channels>
 			<channel id="ch1" typeId="sw-btn">
-                <label>Button 1</label>
-                <description>The first pushbutton on the switch.</description>
+				<label>Button 1</label>
+				<description>The first pushbutton on the switch.</description>
 			</channel>
 			<channel id="ch2" typeId="sw-btn">
-                <label>Button 2</label>
-                <description>The second pushbutton on the switch.</description>
+				<label>Button 2</label>
+				<description>The second pushbutton on the switch.</description>
 			</channel>
 		</channels>
 		<config-description-ref uri="thing-type:mihome:device" />

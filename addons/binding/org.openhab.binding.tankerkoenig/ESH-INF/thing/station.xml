@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="tankerkoenig"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-        <thing-type id="station">
-            <supported-bridge-type-refs>
-                <bridge-type-ref id="webservice" />
-            </supported-bridge-type-refs>
-            <label>Gas-Station</label>
-            <description>Provides the prices of gas types E5-, E10- and Diesel of that station and if that station reports as opened.</description>
-            <channels>
-                <channel id="diesel" typeId="diesel"/>
-                <channel id="e10" typeId="e10"/>
-                <channel id="e5" typeId="e5"/>
-                <channel id="station_open" typeId="station_open" />
-            </channels>
-            <config-description>
-                <parameter name="locationid" type="text" required="true">
-                    <label>Gas-Station-ID</label>
-                    <description>Fuel-Station-ID. You can get the required ID for your Gas-Station via this Webpage: https://creativecommons.tankerkoenig.de/configurator/index.html</description>
-                </parameter>
-            </config-description>
-        </thing-type>
-        <channel-type id="diesel">
-            <item-type>Number</item-type>
-            <label>Diesel</label>
-            <description>price for diesel</description>
-            <state pattern="%.3f €" readOnly="true"></state>
-        </channel-type>
-        <channel-type id="e10">
-            <item-type>Number</item-type>
-            <label>E10</label>
-            <description>price for E10</description>
-             <state pattern="%.3f €" readOnly="true"></state>
-        </channel-type>
-        <channel-type id="e5">
-            <item-type>Number</item-type>
-            <label>E5</label>
-            <description>price for E5</description>
-            <state pattern="%.3f €" readOnly="true"></state>
-        </channel-type>
-            <channel-type id="station_open">
-            <item-type>Contact</item-type>
-            <label>Opening state</label>
-            <description>The reported opening-state of that Station</description>
-            <state pattern="%s" readOnly="true"></state>
-        </channel-type>
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		<thing-type id="station">
+			<supported-bridge-type-refs>
+				<bridge-type-ref id="webservice" />
+			</supported-bridge-type-refs>
+			<label>Gas-Station</label>
+			<description>Provides the prices of gas types E5-, E10- and Diesel of that station and if that station reports as opened.</description>
+			<channels>
+				<channel id="diesel" typeId="diesel"/>
+				<channel id="e10" typeId="e10"/>
+				<channel id="e5" typeId="e5"/>
+				<channel id="station_open" typeId="station_open" />
+			</channels>
+			<config-description>
+				<parameter name="locationid" type="text" required="true">
+					<label>Gas-Station-ID</label>
+					<description>Fuel-Station-ID. You can get the required ID for your Gas-Station via this Webpage: https://creativecommons.tankerkoenig.de/configurator/index.html</description>
+				</parameter>
+			</config-description>
+		</thing-type>
+		<channel-type id="diesel">
+			<item-type>Number</item-type>
+			<label>Diesel</label>
+			<description>price for diesel</description>
+			<state pattern="%.3f €" readOnly="true"></state>
+		</channel-type>
+		<channel-type id="e10">
+			<item-type>Number</item-type>
+			<label>E10</label>
+			<description>price for E10</description>
+			<state pattern="%.3f €" readOnly="true"></state>
+		</channel-type>
+		<channel-type id="e5">
+			<item-type>Number</item-type>
+			<label>E5</label>
+			<description>price for E5</description>
+			<state pattern="%.3f €" readOnly="true"></state>
+		</channel-type>
+			<channel-type id="station_open">
+			<item-type>Contact</item-type>
+			<label>Opening state</label>
+			<description>The reported opening-state of that Station</description>
+			<state pattern="%s" readOnly="true"></state>
+		</channel-type>
 </thing:thing-descriptions>

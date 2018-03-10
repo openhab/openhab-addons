@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
-        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="voice:voicerss">
 		<parameter name="apiKey" type="text" required="true">

@@ -5,8 +5,8 @@
 	<thing-type id="pingdevice">
 		<label>Pingable network device</label>
 		<description>The presence detection is performed by using ICMP and, if available, ARP pings.
-        You can change the arping tool path in the binding configuration.
-        DHCP sniffing is performed for faster network reentry discovery.</description>
+		You can change the arping tool path in the binding configuration.
+		DHCP sniffing is performed for faster network reentry discovery.</description>
 
 		<channels>
 			<channel id="online" typeId="online" />
@@ -51,7 +51,7 @@
 	<thing-type id="servicedevice">
 		<label>Network device with running service</label>
 		<description>A device which reachable state is detected by connecting to a TCP port.
-        DHCP sniffing is performed for faster network reentry discovery.</description>
+		DHCP sniffing is performed for faster network reentry discovery.</description>
 
 		<channels>
 			<channel id="online" typeId="online" />

@@ -1,54 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
-    <config-description uri="thing-type:nest:account">
-        <parameter-group name="oauth">
-            <label>Nest API OAuth</label>
-            <description>The OAuth parameters used when communicating with the Nest API</description>
-        </parameter-group>
-        <parameter-group name="binding">
-            <label>Binding Settings</label>
-            <description>Local settings</description>
-        </parameter-group>
+	<config-description uri="thing-type:nest:account">
+		<parameter-group name="oauth">
+			<label>Nest API OAuth</label>
+			<description>The OAuth parameters used when communicating with the Nest API</description>
+		</parameter-group>
+		<parameter-group name="binding">
+			<label>Binding Settings</label>
+			<description>Local settings</description>
+		</parameter-group>
 
-        <parameter name="productId" type="text" groupName="oauth">
-            <label>Product ID</label>
-            <description>The product ID from the Nest product page</description>
-            <required>true</required>
-        </parameter>
-        <parameter name="productSecret" type="text" groupName="oauth">
-            <label>Product Secret</label>
-            <description>The product secret from the Nest product page</description>
-            <required>true</required>
-        </parameter>
-        <parameter name="pincode" type="text" groupName="oauth">
-            <label>Pincode</label>
-            <description>The single use pincode for obtaining an OAuth access token.
-            Get the pincode by accepting to the terms shown at the product authorization URL.
-            This value is automatically reset when the access token has been obtained</description>
-        </parameter>
-        <parameter name="accessToken" type="text" groupName="oauth">
-            <label>Access Token</label>
-            <description>The access token used for authenticating to the Nest API.
-            It is automatically obtained from Nest when the value is empty and 
-            a valid pincode parameter is entered</description>
-            <required>false</required>
-            <advanced>true</advanced>
-        </parameter>
-    </config-description>
+		<parameter name="productId" type="text" groupName="oauth">
+			<label>Product ID</label>
+			<description>The product ID from the Nest product page</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="productSecret" type="text" groupName="oauth">
+			<label>Product Secret</label>
+			<description>The product secret from the Nest product page</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="pincode" type="text" groupName="oauth">
+			<label>Pincode</label>
+			<description>The single use pincode for obtaining an OAuth access token.
+			Get the pincode by accepting to the terms shown at the product authorization URL.
+			This value is automatically reset when the access token has been obtained</description>
+		</parameter>
+		<parameter name="accessToken" type="text" groupName="oauth">
+			<label>Access Token</label>
+			<description>The access token used for authenticating to the Nest API.
+			It is automatically obtained from Nest when the value is empty and 
+			a valid pincode parameter is entered</description>
+			<required>false</required>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
 
-    <config-description uri="thing-type:nest:device">
-        <parameter name="deviceId" type="text" required="true">
-            <label>Device ID</label>
-        </parameter>
-    </config-description>
+	<config-description uri="thing-type:nest:device">
+		<parameter name="deviceId" type="text" required="true">
+			<label>Device ID</label>
+		</parameter>
+	</config-description>
 
-    <config-description uri="thing-type:nest:structure">
-        <parameter name="structureId" type="text" required="true">
-            <label>Structure ID</label>
-        </parameter>
-    </config-description>
+	<config-description uri="thing-type:nest:structure">
+		<parameter name="structureId" type="text" required="true">
+			<label>Structure ID</label>
+		</parameter>
+	</config-description>
 
 </config-description:config-descriptions>

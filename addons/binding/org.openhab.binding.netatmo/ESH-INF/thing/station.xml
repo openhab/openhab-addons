@@ -116,7 +116,7 @@
 		<config-description-ref uri="thing-type:netatmo:module" />
 	</thing-type>
 
-	 <thing-type id="NAModule3">
+	<thing-type id="NAModule3">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="netatmoapi" />
 		</supported-bridge-type-refs>
@@ -177,7 +177,7 @@
 		<properties>
 			<property name="signalLevels">90,80,70,60</property>
 			<property name="batteryLevels">4200,4920,6000</property>
-		</properties>		  
+		</properties>
 
 		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:netatmo:module" />

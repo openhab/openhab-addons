@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <parent>
-    <groupId>org.openhab.addons</groupId>
-    <artifactId>pom</artifactId>
-    <version>2.3.0-SNAPSHOT</version>
-  </parent>
+	<parent>
+		<groupId>org.openhab.addons</groupId>
+		<artifactId>pom</artifactId>
+		<version>2.3.0-SNAPSHOT</version>
+	</parent>
 
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.openhab.addons.voice</groupId>
-  <artifactId>pom</artifactId>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openhab.addons.voice</groupId>
+	<artifactId>pom</artifactId>
 
-  <name>openHAB Voice Add-Ons</name>
+	<name>openHAB Voice Add-Ons</name>
 
-  <packaging>pom</packaging>
+	<packaging>pom</packaging>
 
-  <modules>
-<!--    <module>org.openhab.voice.kaldi</module>-->
-    <module>org.openhab.voice.marytts</module>
-    <module>org.openhab.voice.voicerss</module>
-  </modules>
+	<modules>
+<!--		<module>org.openhab.voice.kaldi</module>-->
+		<module>org.openhab.voice.marytts</module>
+		<module>org.openhab.voice.voicerss</module>
+	</modules>
 
 </project>

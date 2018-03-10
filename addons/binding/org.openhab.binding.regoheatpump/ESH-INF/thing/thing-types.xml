@@ -1,731 +1,731 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="regoheatpump"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Manage Rego 6xx based Heat Pump over IP -->
-    <thing-type id="ipRego6xx">
-        <label>Heat Pump</label>
-        <description>Manage Rego 6xx based heat pump over TCP/IP</description>
-        
-        <channel-groups>
-            <channel-group id="sensorValues" typeId="sensorValues" />
-            <channel-group id="controlData" typeId="controlData" />
-            <channel-group id="deviceValues" typeId="deviceValues" />
-            <channel-group id="settings" typeId="settings" />
-            <channel-group id="frontPanel" typeId="frontPanel" />
-            <channel-group id="status" typeId="status" />
-        </channel-groups>
+	<!-- Manage Rego 6xx based Heat Pump over IP -->
+	<thing-type id="ipRego6xx">
+		<label>Heat Pump</label>
+		<description>Manage Rego 6xx based heat pump over TCP/IP</description>
 
-        <config-description>
-            <parameter name="address" type="text" required="true">
-                <context>network-address</context>
-                <label>Address</label>
-                <description>The IP address of the Rego to control.</description>
-            </parameter>
-            <parameter name="tcpPort" type="integer" max="65535" min="1" required="false">
-                <default>9265</default>
-                <label>TCP Port</label>
-                <description>The TCP port number used to connect to the Rego controller.</description>
-            </parameter>
-            <parameter name="refreshInterval" type="integer" max="65535" min="10" required="false">
-                <default>60</default>
-                <label>Refresh interval</label>
-                <description>Refresh interval in seconds.</description>
-            </parameter>
-        </config-description>        
-    </thing-type>
-    
-    <!-- Manage Rego 6xx based Heat Pump over serial -->
-    <thing-type id="serialRego6xx">
-        <label>Heat Pump</label>
-        <description>Manage Rego 6xx based heat pump over serial port</description>
-        
-        <channel-groups>
-            <channel-group id="sensorValues" typeId="sensorValues" />            
-            <channel-group id="controlData" typeId="controlData" />
-            <channel-group id="deviceValues" typeId="deviceValues" />
-            <channel-group id="settings" typeId="settings" />
-            <channel-group id="frontPanel" typeId="frontPanel" />
-            <channel-group id="status" typeId="status" />
-        </channel-groups>
+		<channel-groups>
+			<channel-group id="sensorValues" typeId="sensorValues" />
+			<channel-group id="controlData" typeId="controlData" />
+			<channel-group id="deviceValues" typeId="deviceValues" />
+			<channel-group id="settings" typeId="settings" />
+			<channel-group id="frontPanel" typeId="frontPanel" />
+			<channel-group id="status" typeId="status" />
+		</channel-groups>
 
-        <config-description>
-            <parameter name="portName" type="text" required="true">
-                <label>Port</label>
-                <context>serial-port</context>
-                <description>The serial port used to connect to the Rego controller.</description>
-            </parameter>
-            <parameter name="refreshInterval" type="integer" max="65535" min="10" required="false">
-                <default>60</default>
-                <label>Refresh interval</label>
-                <description>Refresh interval in seconds.</description>
-            </parameter>
-        </config-description>        
-    </thing-type>
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<context>network-address</context>
+				<label>Address</label>
+				<description>The IP address of the Rego to control.</description>
+			</parameter>
+			<parameter name="tcpPort" type="integer" max="65535" min="1" required="false">
+				<default>9265</default>
+				<label>TCP Port</label>
+				<description>The TCP port number used to connect to the Rego controller.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" max="65535" min="10" required="false">
+				<default>60</default>
+				<label>Refresh interval</label>
+				<description>Refresh interval in seconds.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-    <!-- Manage Husdata interface over IP -->
-    <thing-type id="ipHusdata">
-        <label>Husdata interface</label>
-        <description>Access heat pump over Husdata interface connected via TCP/IP</description>
-        
-        <channel-groups>
-            <channel-group id="sensorValues" typeId="sensorValues" />
-            <channel-group id="controlData" typeId="controlData" />
-            <channel-group id="deviceValues" typeId="deviceValues" />
-            <channel-group id="settings" typeId="settings" />
-        </channel-groups>
+	<!-- Manage Rego 6xx based Heat Pump over serial -->
+	<thing-type id="serialRego6xx">
+		<label>Heat Pump</label>
+		<description>Manage Rego 6xx based heat pump over serial port</description>
 
-        <config-description>
-            <parameter name="address" type="text" required="true">
-                <context>network-address</context>
-                <label>Address</label>
-                <description>The IP address of the Rego to control.</description>
-            </parameter>
-            <parameter name="tcpPort" type="integer" max="65535" min="1" required="false">
-                <default>9265</default>
-                <label>TCP Port</label>
-                <description>The TCP port number used to connect to the Rego controller.</description>
-            </parameter>
-        </config-description>        
-    </thing-type>
+		<channel-groups>
+			<channel-group id="sensorValues" typeId="sensorValues" />
+			<channel-group id="controlData" typeId="controlData" />
+			<channel-group id="deviceValues" typeId="deviceValues" />
+			<channel-group id="settings" typeId="settings" />
+			<channel-group id="frontPanel" typeId="frontPanel" />
+			<channel-group id="status" typeId="status" />
+		</channel-groups>
 
-    <!-- Manage Husdata interface over serial -->
-    <thing-type id="serialHusdata">
-        <label>Husdata interface</label>
-        <description>Access heat pump over Husdata interface connected via serial port</description>
-        
-        <channel-groups>
-            <channel-group id="sensorValues" typeId="sensorValues" />
-            <channel-group id="controlData" typeId="controlData" />
-            <channel-group id="deviceValues" typeId="deviceValues" />
-            <channel-group id="settings" typeId="settings" />
-        </channel-groups>
+		<config-description>
+			<parameter name="portName" type="text" required="true">
+				<label>Port</label>
+				<context>serial-port</context>
+				<description>The serial port used to connect to the Rego controller.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" max="65535" min="10" required="false">
+				<default>60</default>
+				<label>Refresh interval</label>
+				<description>Refresh interval in seconds.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-        <config-description>
-            <parameter name="portName" type="text" required="true">
-                <label>Port</label>
-                <context>serial-port</context>
-                <description>The serial port used to connect to the Husdata interface.</description>
-            </parameter>
-        </config-description>        
-    </thing-type>
+	<!-- Manage Husdata interface over IP -->
+	<thing-type id="ipHusdata">
+		<label>Husdata interface</label>
+		<description>Access heat pump over Husdata interface connected via TCP/IP</description>
 
-    <channel-group-type id="sensorValues">
-        <label>Sensor Values</label>
-        <channels>
-            <channel id="radiatorReturn" typeId="radiatorReturnTemp"/>
-            <channel id="outdoor" typeId="outdoorTemp"/>
-            <channel id="hotWater" typeId="hotWaterTemp"/>
-            <channel id="radiatorForward" typeId="radiatorForwardTemp"/>
-            <channel id="indoor" typeId="indoorTemp"/>
-            <channel id="compressor" typeId="compressorTemp"/>
-            <channel id="heatFluidOut" typeId="heatFluidOutTemp"/>
-            <channel id="heatFluidIn" typeId="heatFluidInTemp"/>
-            <channel id="coldFluidIn" typeId="coldFluidInTemp"/>
-            <channel id="coldFluidOut" typeId="coldFluidOutTemp"/>
-            <channel id="externalHotWater" typeId="externalHotWaterTemp"/>
-            <channel id="airIntake" typeId="airIntakeTemp"/>            
-            <channel id="pool" typeId="poolTemp"/>
-        </channels>
-    </channel-group-type>
-    
-    <channel-group-type id="controlData">
-        <label>Control Data</label>
-        <channels>
-            <channel id="radiatorReturnTarget" typeId="radiatorReturnTarget"/>
-            <channel id="radiatorReturnOn" typeId="radiatorReturnOn"/>
-            <channel id="radiatorReturnOff" typeId="radiatorReturnOff"/>
-            <channel id="hotWaterTarget" typeId="hotWaterTarget"/>
-            <channel id="hotWaterOn" typeId="hotWaterOn"/>
-            <channel id="hotWaterOff" typeId="hotWaterOff"/>
-            <channel id="radiatorForwardTarget" typeId="radiatorForwardTarget"/>
-            <channel id="addHeatPowerPercent" typeId="addHeatPowerPercent"/>
-            <channel id="addHeatPowerEnergy" typeId="addHeatPowerEnergy"/>
-            <channel id="compressorSpeed" typeId="compressorSpeed"/>
-        </channels>
-    </channel-group-type>
+		<channel-groups>
+			<channel-group id="sensorValues" typeId="sensorValues" />
+			<channel-group id="controlData" typeId="controlData" />
+			<channel-group id="deviceValues" typeId="deviceValues" />
+			<channel-group id="settings" typeId="settings" />
+		</channel-groups>
 
-    <channel-group-type id="deviceValues">
-        <label>Device Values</label>
-        <channels>
-            <channel id="radiatorPump" typeId="radiatorPumpState"/>
-            <channel id="heatFluidPump" typeId="heatFluidPumpState"/>
-            <channel id="coldFluidPump" typeId="coldFluidPumpState"/>
-            <channel id="compressor" typeId="compressorState"/>
-            <channel id="additionalHeat3kW" typeId="additionalHeat3kWState"/>
-            <channel id="additionalHeat6kW" typeId="additionalHeat6kWState"/>
-            <channel id="alarm" typeId="alarmState"/>
-            <channel id="switchValve" typeId="switchValveState"/>
-            <channel id="switchValve2" typeId="switchValve2State"/>
-            <channel id="fan" typeId="fanState"/>
-            <channel id="highPressostat" typeId="highPressostatState"/>
-            <channel id="lowPressostat" typeId="lowPressostatState"/>
-            <channel id="heatingCable" typeId="heatingCableState"/>
-            <channel id="crankCaseHeater" typeId="crankCaseHeaterState"/>
-            <channel id="elMeter1" typeId="elMeter1"/>
-            <channel id="elMeter2" typeId="elMeter2"/>
-        </channels>
-    </channel-group-type>
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<context>network-address</context>
+				<label>Address</label>
+				<description>The IP address of the Rego to control.</description>
+			</parameter>
+			<parameter name="tcpPort" type="integer" max="65535" min="1" required="false">
+				<default>9265</default>
+				<label>TCP Port</label>
+				<description>The TCP port number used to connect to the Rego controller.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-    <channel-group-type id="settings">
-        <label>Settings</label>
-        <channels>
-            <channel id="heatCurve" typeId="heatCurve"/>
-            <channel id="heatCurveFineAdj" typeId="heatCurveFineAdj"/>
-            <channel id="indoorTempSetting" typeId="indoorTempSetting"/>
-            <channel id="curveInflByInTemp" typeId="curveInflByInTemp"/>
-            <channel id="adjCurveAt20" typeId="adjCurveAt20"/>
-            <channel id="adjCurveAt15" typeId="adjCurveAt15"/>
-            <channel id="adjCurveAt10" typeId="adjCurveAt10"/>
-            <channel id="adjCurveAt5" typeId="adjCurveAt5"/>
-            <channel id="adjCurveAt0" typeId="adjCurveAt0"/>
-            <channel id="adjCurveAtMinus5" typeId="adjCurveAtMinus5"/>
-            <channel id="adjCurveAtMinus10" typeId="adjCurveAtMinus10"/>
-            <channel id="adjCurveAtMinus15" typeId="adjCurveAtMinus15"/>
-            <channel id="adjCurveAtMinus20" typeId="adjCurveAtMinus20"/>
-            <channel id="adjCurveAtMinus25" typeId="adjCurveAtMinus25"/>
-            <channel id="adjCurveAtMinus30" typeId="adjCurveAtMinus30"/>
-            <channel id="adjCurveAtMinus35" typeId="adjCurveAtMinus35"/>
-            <channel id="heatCurveCouplingDiff" typeId="heatCurveCouplingDiff"/>
-            <channel id="heatCurve2" typeId="heatCurve2"/>            
-        </channels>
-    </channel-group-type>
+	<!-- Manage Husdata interface over serial -->
+	<thing-type id="serialHusdata">
+		<label>Husdata interface</label>
+		<description>Access heat pump over Husdata interface connected via serial port</description>
 
-    <channel-group-type id="status">
-        <label>Status</label>
-        <channels>
-            <channel id="lastErrorTimestamp" typeId="lastErrorTimestamp"/>
-            <channel id="lastErrorType" typeId="lastErrorType"/>
-        </channels>
-    </channel-group-type>
+		<channel-groups>
+			<channel-group id="sensorValues" typeId="sensorValues" />
+			<channel-group id="controlData" typeId="controlData" />
+			<channel-group id="deviceValues" typeId="deviceValues" />
+			<channel-group id="settings" typeId="settings" />
+		</channel-groups>
 
-    <channel-group-type id="frontPanel">
-        <label>Front Panel</label>
-        <channels>
-            <channel id="powerLamp" typeId="powerLamp"/>
-            <channel id="heatPumpLamp" typeId="heatPumpLamp"/>
-            <channel id="additionalHeatLamp" typeId="additionalHeatLamp"/>
-            <channel id="hotWaterLamp" typeId="hotWaterLamp"/>
-            <channel id="alarmLamp" typeId="alarmLamp"/>
-        </channels>
-    </channel-group-type>
+		<config-description>
+			<parameter name="portName" type="text" required="true">
+				<label>Port</label>
+				<context>serial-port</context>
+				<description>The serial port used to connect to the Husdata interface.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-    <channel-type id="radiatorReturnTemp">
-        <item-type>Number</item-type>
-        <label>Radiator return</label>
-        <description>Temperature of the water that returns to the heat pump from the radiators</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
-    
-    <channel-type id="outdoorTemp">
-        <item-type>Number</item-type>
-        <label>Outdoor</label>
-        <description>The outdoor temperature. Determines how much heating the heat pump should produce</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
-    
-    <channel-type id="hotWaterTemp" advanced="true">
-        <item-type>Number</item-type>
-        <label>Hot water</label>
-        <description>Temperature in the hot water cylinder</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-group-type id="sensorValues">
+		<label>Sensor Values</label>
+		<channels>
+			<channel id="radiatorReturn" typeId="radiatorReturnTemp"/>
+			<channel id="outdoor" typeId="outdoorTemp"/>
+			<channel id="hotWater" typeId="hotWaterTemp"/>
+			<channel id="radiatorForward" typeId="radiatorForwardTemp"/>
+			<channel id="indoor" typeId="indoorTemp"/>
+			<channel id="compressor" typeId="compressorTemp"/>
+			<channel id="heatFluidOut" typeId="heatFluidOutTemp"/>
+			<channel id="heatFluidIn" typeId="heatFluidInTemp"/>
+			<channel id="coldFluidIn" typeId="coldFluidInTemp"/>
+			<channel id="coldFluidOut" typeId="coldFluidOutTemp"/>
+			<channel id="externalHotWater" typeId="externalHotWaterTemp"/>
+			<channel id="airIntake" typeId="airIntakeTemp"/>
+			<channel id="pool" typeId="poolTemp"/>
+		</channels>
+	</channel-group-type>
 
-    <channel-type id="radiatorForwardTemp" advanced="true">
-        <item-type>Number</item-type>
-        <label>Radiator forward</label>
-        <description>Temperature on the flow water in the circuit</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-group-type id="controlData">
+		<label>Control Data</label>
+		<channels>
+			<channel id="radiatorReturnTarget" typeId="radiatorReturnTarget"/>
+			<channel id="radiatorReturnOn" typeId="radiatorReturnOn"/>
+			<channel id="radiatorReturnOff" typeId="radiatorReturnOff"/>
+			<channel id="hotWaterTarget" typeId="hotWaterTarget"/>
+			<channel id="hotWaterOn" typeId="hotWaterOn"/>
+			<channel id="hotWaterOff" typeId="hotWaterOff"/>
+			<channel id="radiatorForwardTarget" typeId="radiatorForwardTarget"/>
+			<channel id="addHeatPowerPercent" typeId="addHeatPowerPercent"/>
+			<channel id="addHeatPowerEnergy" typeId="addHeatPowerEnergy"/>
+			<channel id="compressorSpeed" typeId="compressorSpeed"/>
+		</channels>
+	</channel-group-type>
 
-    <channel-type id="indoorTemp" advanced="true">
-        <item-type>Number</item-type>
-        <label>Indoor</label>
-        <description>Present temperature in the room where the sensor is fitted</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
-    
-    <channel-type id="compressorTemp">
-        <item-type>Number</item-type>
-        <label>Compressor</label>
-        <description>Compressor’s working temperature</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
-    
-    <channel-type id="heatFluidOutTemp">
-        <item-type>Number</item-type>
-        <label>Heat fluid out</label>
-        <description>Temperature of the radiator water as it leaves the heat pump</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
-    
-    <channel-type id="heatFluidInTemp">
-        <item-type>Number</item-type>
-        <label>Heat fluid in</label>
-        <description>Temperature of the water that is led into the heat pump</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
-    
-    <channel-type id="coldFluidInTemp">
-        <item-type>Number</item-type>
-        <label>Cold fluid in</label>
-        <description>Temperature of the heat transfer fluid that is led into the heat pump from the bore hole or the ground</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
-    
-    <channel-type id="coldFluidOutTemp">
-        <item-type>Number</item-type>
-        <label>Cold fluid out</label>
-        <description>Temperature of the heat transfer fluid that is led out of the heat pump to the bore hole or the ground</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-group-type id="deviceValues">
+		<label>Device Values</label>
+		<channels>
+			<channel id="radiatorPump" typeId="radiatorPumpState"/>
+			<channel id="heatFluidPump" typeId="heatFluidPumpState"/>
+			<channel id="coldFluidPump" typeId="coldFluidPumpState"/>
+			<channel id="compressor" typeId="compressorState"/>
+			<channel id="additionalHeat3kW" typeId="additionalHeat3kWState"/>
+			<channel id="additionalHeat6kW" typeId="additionalHeat6kWState"/>
+			<channel id="alarm" typeId="alarmState"/>
+			<channel id="switchValve" typeId="switchValveState"/>
+			<channel id="switchValve2" typeId="switchValve2State"/>
+			<channel id="fan" typeId="fanState"/>
+			<channel id="highPressostat" typeId="highPressostatState"/>
+			<channel id="lowPressostat" typeId="lowPressostatState"/>
+			<channel id="heatingCable" typeId="heatingCableState"/>
+			<channel id="crankCaseHeater" typeId="crankCaseHeaterState"/>
+			<channel id="elMeter1" typeId="elMeter1"/>
+			<channel id="elMeter2" typeId="elMeter2"/>
+		</channels>
+	</channel-group-type>
 
-    <channel-type id="externalHotWaterTemp" advanced="true">
-        <item-type>Number</item-type>
-        <label>External hot water</label>
-        <description>Temperature in the external hot water cylinder</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-group-type id="settings">
+		<label>Settings</label>
+		<channels>
+			<channel id="heatCurve" typeId="heatCurve"/>
+			<channel id="heatCurveFineAdj" typeId="heatCurveFineAdj"/>
+			<channel id="indoorTempSetting" typeId="indoorTempSetting"/>
+			<channel id="curveInflByInTemp" typeId="curveInflByInTemp"/>
+			<channel id="adjCurveAt20" typeId="adjCurveAt20"/>
+			<channel id="adjCurveAt15" typeId="adjCurveAt15"/>
+			<channel id="adjCurveAt10" typeId="adjCurveAt10"/>
+			<channel id="adjCurveAt5" typeId="adjCurveAt5"/>
+			<channel id="adjCurveAt0" typeId="adjCurveAt0"/>
+			<channel id="adjCurveAtMinus5" typeId="adjCurveAtMinus5"/>
+			<channel id="adjCurveAtMinus10" typeId="adjCurveAtMinus10"/>
+			<channel id="adjCurveAtMinus15" typeId="adjCurveAtMinus15"/>
+			<channel id="adjCurveAtMinus20" typeId="adjCurveAtMinus20"/>
+			<channel id="adjCurveAtMinus25" typeId="adjCurveAtMinus25"/>
+			<channel id="adjCurveAtMinus30" typeId="adjCurveAtMinus30"/>
+			<channel id="adjCurveAtMinus35" typeId="adjCurveAtMinus35"/>
+			<channel id="heatCurveCouplingDiff" typeId="heatCurveCouplingDiff"/>
+			<channel id="heatCurve2" typeId="heatCurve2"/>
+		</channels>
+	</channel-group-type>
 
-    <channel-type id="lastErrorType">
-        <item-type>String</item-type>
-        <label>Last error type</label>
-        <description>Information about the alarm type that occured last</description>
-        <category>Error</category>
-        <state readOnly="true" pattern="%s">
-            <options>
-                <option value="0">Sensor radiator return (GT1)</option>
-                <option value="1">Outdoor sensor (GT2)</option>
-                <option value="2">Sensor hot water (GT3)</option>
-                <option value="3">Mixing valve sensor (GT4)</option>
-                <option value="4">Room sensor (GT5)</option>
-                <option value="5">Sensor compressor (GT6)</option>
-                <option value="6">Sensor heat transfer fluid out (GT8)</option>
-                <option value="7">Sensor heat transfer fluid in (GT9)</option>
-                <option value="8">Sensor cold transfer fluid in (GT10)</option>
-                <option value="9">Sensor cold transfer fluid in (GT11)</option>
-                <option value="10">Compressor circuit switch</option>
-                <option value="11">Electrical cassette</option>
-                <option value="12">HTF C=pump switch (MB2)</option>
-                <option value="13">Low pressure switch (LP)</option>
-                <option value="14">High pressure switch (HP)</option>
-                <option value="15">High return HP (GT9)</option>
-                <option value="16">HTF out max (GT8)</option>
-                <option value="17">HTF in under limit (GT10)</option>
-                <option value="18">HTF out under limit (GT11)</option>
-                <option value="19">Compressor superheat (GT6)</option>
-                <option value="20">Three phase incorrect order</option>
-                <option value="21">Power failure</option>
-                <option value="22">High delta GT8/GT9</option>
-            </options>
-        </state>
-    </channel-type>
-    
-    <channel-type id="lastErrorTimestamp">
-        <item-type>DateTime</item-type>
-        <label>Last error date</label>
-        <description>Information about when last alarm occurred</description>
-        <category>Clock</category>
-        <state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM:%1$tS"/>
-    </channel-type>
+	<channel-group-type id="status">
+		<label>Status</label>
+		<channels>
+			<channel id="lastErrorTimestamp" typeId="lastErrorTimestamp"/>
+			<channel id="lastErrorType" typeId="lastErrorType"/>
+		</channels>
+	</channel-group-type>
 
-    <channel-type id="powerLamp" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Power lamp</label>
-        <description>Lamp on when the heat pump is on</description>
-        <category>Switch</category>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="heatPumpLamp">
-        <item-type>Switch</item-type>
-        <label>Heat pump lamp</label>
-        <description>Lamp on when the heat pump (compressor) is operational</description>
-        <category>Switch</category>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-group-type id="frontPanel">
+		<label>Front Panel</label>
+		<channels>
+			<channel id="powerLamp" typeId="powerLamp"/>
+			<channel id="heatPumpLamp" typeId="heatPumpLamp"/>
+			<channel id="additionalHeatLamp" typeId="additionalHeatLamp"/>
+			<channel id="hotWaterLamp" typeId="hotWaterLamp"/>
+			<channel id="alarmLamp" typeId="alarmLamp"/>
+		</channels>
+	</channel-group-type>
 
-    <channel-type id="additionalHeatLamp">
-        <item-type>Switch</item-type>
-        <label>Additional heat lamp</label>
-        <description>Lamp on when the heat pump is using additional heat from an electric cassette</description>
-        <category>Switch</category>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="hotWaterLamp">
-        <item-type>Switch</item-type>
-        <label>Hot water lamp</label>
-        <description>Lamp on when the heat pump is heating water in the heater</description>
-        <category>Switch</category>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="alarmLamp">
-        <item-type>Switch</item-type>
-        <label>Alarm lamp</label>
-        <description>Lamp indicates that a fault has occurred in the heat pump</description>
-        <category>Siren</category>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="coldFluidPumpState" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Cold fluid pump</label>
-        <category>Switch</category>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="compressorState" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Compressor</label>
-        <category>Switch</category>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="radiatorReturnTemp">
+		<item-type>Number</item-type>
+		<label>Radiator return</label>
+		<description>Temperature of the water that returns to the heat pump from the radiators</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="radiatorPumpState" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Radiator pump</label>
-        <category>Switch</category>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="outdoorTemp">
+		<item-type>Number</item-type>
+		<label>Outdoor</label>
+		<description>The outdoor temperature. Determines how much heating the heat pump should produce</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="heatFluidPumpState" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Heat fluid pump</label>
-        <category>Switch</category>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="additionalHeat3kWState" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Additional heat 3kW</label>
-        <category>Switch</category>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="hotWaterTemp" advanced="true">
+		<item-type>Number</item-type>
+		<label>Hot water</label>
+		<description>Temperature in the hot water cylinder</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="additionalHeat6kWState" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Additional heat 6kW</label>
-        <category>Switch</category>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="radiatorForwardTemp" advanced="true">
+		<item-type>Number</item-type>
+		<label>Radiator forward</label>
+		<description>Temperature on the flow water in the circuit</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="switchValveState" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Switch valve</label>
-        <description>The valve switches between heating the heating water and hot water</description>
-        <category>Heating</category>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="indoorTemp" advanced="true">
+		<item-type>Number</item-type>
+		<label>Indoor</label>
+		<description>Present temperature in the room where the sensor is fitted</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="alarmState" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Alarm</label>
-        <category>Siren</category>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="compressorTemp">
+		<item-type>Number</item-type>
+		<label>Compressor</label>
+		<description>Compressor’s working temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="radiatorReturnTarget" advanced="true">
-        <item-type>Number</item-type>
-        <label>Radiator return target</label>
-        <description>Calculated desired radiator return temperature in degrees celsius</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="heatFluidOutTemp">
+		<item-type>Number</item-type>
+		<label>Heat fluid out</label>
+		<description>Temperature of the radiator water as it leaves the heat pump</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="radiatorReturnOn" advanced="true">
-        <item-type>Number</item-type>
-        <label>Minimal radiator return</label>
-        <description>Calculated minimal (start) radiator return temperature in degrees celsius</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="heatFluidInTemp">
+		<item-type>Number</item-type>
+		<label>Heat fluid in</label>
+		<description>Temperature of the water that is led into the heat pump</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="radiatorReturnOff" advanced="true">
-        <item-type>Number</item-type>
-        <label>Maximal radiator return</label>
-        <description>Calculated maximal (stop) radiator return temperature in degrees celsius</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="coldFluidInTemp">
+		<item-type>Number</item-type>
+		<label>Cold fluid in</label>
+		<description>Temperature of the heat transfer fluid that is led into the heat pump from the bore hole or the ground</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="hotWaterTarget" advanced="true">
-        <item-type>Number</item-type>
-        <label>Hot water target</label>
-        <description>Desired radiator return temperature in degrees celsius</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="coldFluidOutTemp">
+		<item-type>Number</item-type>
+		<label>Cold fluid out</label>
+		<description>Temperature of the heat transfer fluid that is led out of the heat pump to the bore hole or the ground</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="hotWaterOn" advanced="true">
-        <item-type>Number</item-type>
-        <label>Minimal hot water</label>
-        <description>Minimal (start) hot water temperature in degrees celsius</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="externalHotWaterTemp" advanced="true">
+		<item-type>Number</item-type>
+		<label>External hot water</label>
+		<description>Temperature in the external hot water cylinder</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="hotWaterOff" advanced="true">
-        <item-type>Number</item-type>
-        <label>Maximal hot water</label>
-        <description>Maximal (stop) hot water temperature in degrees celsius</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="lastErrorType">
+		<item-type>String</item-type>
+		<label>Last error type</label>
+		<description>Information about the alarm type that occured last</description>
+		<category>Error</category>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="0">Sensor radiator return (GT1)</option>
+				<option value="1">Outdoor sensor (GT2)</option>
+				<option value="2">Sensor hot water (GT3)</option>
+				<option value="3">Mixing valve sensor (GT4)</option>
+				<option value="4">Room sensor (GT5)</option>
+				<option value="5">Sensor compressor (GT6)</option>
+				<option value="6">Sensor heat transfer fluid out (GT8)</option>
+				<option value="7">Sensor heat transfer fluid in (GT9)</option>
+				<option value="8">Sensor cold transfer fluid in (GT10)</option>
+				<option value="9">Sensor cold transfer fluid in (GT11)</option>
+				<option value="10">Compressor circuit switch</option>
+				<option value="11">Electrical cassette</option>
+				<option value="12">HTF C=pump switch (MB2)</option>
+				<option value="13">Low pressure switch (LP)</option>
+				<option value="14">High pressure switch (HP)</option>
+				<option value="15">High return HP (GT9)</option>
+				<option value="16">HTF out max (GT8)</option>
+				<option value="17">HTF in under limit (GT10)</option>
+				<option value="18">HTF out under limit (GT11)</option>
+				<option value="19">Compressor superheat (GT6)</option>
+				<option value="20">Three phase incorrect order</option>
+				<option value="21">Power failure</option>
+				<option value="22">High delta GT8/GT9</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="radiatorForwardTarget" advanced="true">
-        <item-type>Number</item-type>
-        <label>Radiator forward target</label>
-        <description>Calculated desired radiator forward temperature in degrees celsius</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="lastErrorTimestamp">
+		<item-type>DateTime</item-type>
+		<label>Last error date</label>
+		<description>Information about when last alarm occurred</description>
+		<category>Clock</category>
+		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
 
-    <channel-type id="addHeatPowerPercent" advanced="true">
-        <item-type>Number</item-type>
-        <label>Additional heat power</label>
-        <category>Energy</category>
-        <state readOnly="true" pattern="%.1f %%"/>
-    </channel-type>
-    
-    <channel-type id="addHeatPowerEnergy" advanced="true">
-        <item-type>Number</item-type>
-        <label>Additional heat power</label>
-        <category>Energy</category>
-        <state readOnly="true" pattern="%.1f kWh"/>
-    </channel-type>
+	<channel-type id="powerLamp" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Power lamp</label>
+		<description>Lamp on when the heat pump is on</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <channel-type id="heatCurve" advanced="true">
-        <item-type>Number</item-type>
-        <label>Heat curve</label>
-        <description>Heat curve influences the heat pump’s production of heat</description>
-        <category>Line</category>
-        <state readOnly="true" pattern="%.1f"/>
-    </channel-type>
-    
-    <channel-type id="heatCurveFineAdj" advanced="true">
-        <item-type>Number</item-type>
-        <label>Heat curve fine tune</label>
-        <description>Fine-tuning means that you offset the heat curve in parallel</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
-    
-    <channel-type id="indoorTempSetting" advanced="true">
-        <item-type>Number</item-type>
-        <label>Indoor target</label>
-        <description>Desired temperature in the room where the sensor is fitted</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
-         
-    <channel-type id="curveInflByInTemp" advanced="true">
-        <item-type>Number</item-type>
-        <label>Room sensor influence</label>
-        <description>Set how much the room sensor should influence the heat curve</description>
-        <category>Line</category>
-        <state readOnly="true" pattern="%.1f"/>
-    </channel-type>
+	<channel-type id="heatPumpLamp">
+		<item-type>Switch</item-type>
+		<label>Heat pump lamp</label>
+		<description>Lamp on when the heat pump (compressor) is operational</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <channel-type id="adjCurveAt20" advanced="true">
-        <item-type>Number</item-type>
-        <label>Adjust heat curve at 20 °C</label>
-        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
-    
-    <channel-type id="adjCurveAt15" advanced="true">
-        <item-type>Number</item-type>
-        <label>Adjust heat curve at 15 °C</label>
-        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="additionalHeatLamp">
+		<item-type>Switch</item-type>
+		<label>Additional heat lamp</label>
+		<description>Lamp on when the heat pump is using additional heat from an electric cassette</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <channel-type id="adjCurveAt10" advanced="true">
-        <item-type>Number</item-type>
-        <label>Adjust heat curve at 10 °C</label>
-        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="hotWaterLamp">
+		<item-type>Switch</item-type>
+		<label>Hot water lamp</label>
+		<description>Lamp on when the heat pump is heating water in the heater</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <channel-type id="adjCurveAt5" advanced="true">
-        <item-type>Number</item-type>
-        <label>Adjust heat curve at 5 °C</label>
-        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="alarmLamp">
+		<item-type>Switch</item-type>
+		<label>Alarm lamp</label>
+		<description>Lamp indicates that a fault has occurred in the heat pump</description>
+		<category>Siren</category>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <channel-type id="adjCurveAt0" advanced="true">
-        <item-type>Number</item-type>
-        <label>Adjust heat curve at 0 °C</label>
-        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="coldFluidPumpState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Cold fluid pump</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <channel-type id="adjCurveAtMinus5" advanced="true">
-        <item-type>Number</item-type>
-        <label>Adjust heat curve at -5 °C</label>
-        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="compressorState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Compressor</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <channel-type id="adjCurveAtMinus10" advanced="true">
-        <item-type>Number</item-type>
-        <label>Adjust heat curve at -10 °C</label>
-        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="radiatorPumpState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Radiator pump</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <channel-type id="adjCurveAtMinus15" advanced="true">
-        <item-type>Number</item-type>
-        <label>Adjust heat curve at -15 °C</label>
-        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="heatFluidPumpState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Heat fluid pump</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <channel-type id="adjCurveAtMinus20" advanced="true">
-        <item-type>Number</item-type>
-        <label>Adjust heat curve at -20 °C</label>
-        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="additionalHeat3kWState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Additional heat 3kW</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <channel-type id="adjCurveAtMinus25" advanced="true">
-        <item-type>Number</item-type>
-        <label>Adjust heat curve at -25 °C</label>
-        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="additionalHeat6kWState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Additional heat 6kW</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <channel-type id="adjCurveAtMinus30" advanced="true">
-        <item-type>Number</item-type>
-        <label>Adjust heat curve at -30 °C</label>
-        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="switchValveState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Switch valve</label>
+		<description>The valve switches between heating the heating water and hot water</description>
+		<category>Heating</category>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <channel-type id="adjCurveAtMinus35" advanced="true">
-        <item-type>Number</item-type>
-        <label>Adjust heat curve at -35 °C</label>
-        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="alarmState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Alarm</label>
+		<category>Siren</category>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <channel-type id="heatCurveCouplingDiff" advanced="true">
-        <item-type>Number</item-type>
-        <label>Heat curve coupling diff</label>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
-    
-    <channel-type id="airIntakeTemp" advanced="true">
-        <item-type>Number</item-type>
-        <label>Air intake</label>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
-    
-    <channel-type id="poolTemp" advanced="true">
-        <item-type>Number</item-type>
-        <label>Pool</label>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
+	<channel-type id="radiatorReturnTarget" advanced="true">
+		<item-type>Number</item-type>
+		<label>Radiator return target</label>
+		<description>Calculated desired radiator return temperature in degrees celsius</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="compressorSpeed" advanced="true">
-        <item-type>Number</item-type>
-        <label>Compressor speed</label>
-        <category>Pump</category>
-        <state readOnly="true" pattern="%.1f %%"/>
-    </channel-type>
+	<channel-type id="radiatorReturnOn" advanced="true">
+		<item-type>Number</item-type>
+		<label>Minimal radiator return</label>
+		<description>Calculated minimal (start) radiator return temperature in degrees celsius</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="heatCurve2" advanced="true">
-        <item-type>Number</item-type>
-        <label>Heat curve 2</label>
-        <category>Line</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
-        
-    <channel-type id="switchValve2State" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Switch valve 2</label>
-        <category>Heating</category>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="fanState" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Fan</label>
-        <category>Fan</category>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="radiatorReturnOff" advanced="true">
+		<item-type>Number</item-type>
+		<label>Maximal radiator return</label>
+		<description>Calculated maximal (stop) radiator return temperature in degrees celsius</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="highPressostatState" advanced="true">
-        <item-type>Switch</item-type>
-        <label>High pressostat</label>
-        <category>Switch</category>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="hotWaterTarget" advanced="true">
+		<item-type>Number</item-type>
+		<label>Hot water target</label>
+		<description>Desired radiator return temperature in degrees celsius</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="lowPressostatState" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Low pressostat</label>
-        <category>Switch</category>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="hotWaterOn" advanced="true">
+		<item-type>Number</item-type>
+		<label>Minimal hot water</label>
+		<description>Minimal (start) hot water temperature in degrees celsius</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="heatingCableState" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Heating cable</label>
-        <category>Switch</category>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="hotWaterOff" advanced="true">
+		<item-type>Number</item-type>
+		<label>Maximal hot water</label>
+		<description>Maximal (stop) hot water temperature in degrees celsius</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="crankCaseHeaterState" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Crank case heater</label>
-        <category>Switch</category>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="radiatorForwardTarget" advanced="true">
+		<item-type>Number</item-type>
+		<label>Radiator forward target</label>
+		<description>Calculated desired radiator forward temperature in degrees celsius</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
 
-    <channel-type id="elMeter1" advanced="true">
-        <item-type>Number</item-type>
-        <label>Collected pulses meter 1</label>
-        <category>Switch</category>
-        <state readOnly="true" pattern="%d"/>
-    </channel-type>
+	<channel-type id="addHeatPowerPercent" advanced="true">
+		<item-type>Number</item-type>
+		<label>Additional heat power</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %%"/>
+	</channel-type>
 
-    <channel-type id="elMeter2" advanced="true">
-        <item-type>Number</item-type>
-        <label>Collected pulses meter 2</label>
-        <category>Switch</category>
-        <state readOnly="true" pattern="%d"/>
-    </channel-type>
+	<channel-type id="addHeatPowerEnergy" advanced="true">
+		<item-type>Number</item-type>
+		<label>Additional heat power</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f kWh"/>
+	</channel-type>
+
+	<channel-type id="heatCurve" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat curve</label>
+		<description>Heat curve influences the heat pump’s production of heat</description>
+		<category>Line</category>
+		<state readOnly="true" pattern="%.1f"/>
+	</channel-type>
+
+	<channel-type id="heatCurveFineAdj" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat curve fine tune</label>
+		<description>Fine-tuning means that you offset the heat curve in parallel</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="indoorTempSetting" advanced="true">
+		<item-type>Number</item-type>
+		<label>Indoor target</label>
+		<description>Desired temperature in the room where the sensor is fitted</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="curveInflByInTemp" advanced="true">
+		<item-type>Number</item-type>
+		<label>Room sensor influence</label>
+		<description>Set how much the room sensor should influence the heat curve</description>
+		<category>Line</category>
+		<state readOnly="true" pattern="%.1f"/>
+	</channel-type>
+
+	<channel-type id="adjCurveAt20" advanced="true">
+		<item-type>Number</item-type>
+		<label>Adjust heat curve at 20 °C</label>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="adjCurveAt15" advanced="true">
+		<item-type>Number</item-type>
+		<label>Adjust heat curve at 15 °C</label>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="adjCurveAt10" advanced="true">
+		<item-type>Number</item-type>
+		<label>Adjust heat curve at 10 °C</label>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="adjCurveAt5" advanced="true">
+		<item-type>Number</item-type>
+		<label>Adjust heat curve at 5 °C</label>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="adjCurveAt0" advanced="true">
+		<item-type>Number</item-type>
+		<label>Adjust heat curve at 0 °C</label>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="adjCurveAtMinus5" advanced="true">
+		<item-type>Number</item-type>
+		<label>Adjust heat curve at -5 °C</label>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="adjCurveAtMinus10" advanced="true">
+		<item-type>Number</item-type>
+		<label>Adjust heat curve at -10 °C</label>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="adjCurveAtMinus15" advanced="true">
+		<item-type>Number</item-type>
+		<label>Adjust heat curve at -15 °C</label>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="adjCurveAtMinus20" advanced="true">
+		<item-type>Number</item-type>
+		<label>Adjust heat curve at -20 °C</label>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="adjCurveAtMinus25" advanced="true">
+		<item-type>Number</item-type>
+		<label>Adjust heat curve at -25 °C</label>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="adjCurveAtMinus30" advanced="true">
+		<item-type>Number</item-type>
+		<label>Adjust heat curve at -30 °C</label>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="adjCurveAtMinus35" advanced="true">
+		<item-type>Number</item-type>
+		<label>Adjust heat curve at -35 °C</label>
+		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="heatCurveCouplingDiff" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat curve coupling diff</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="airIntakeTemp" advanced="true">
+		<item-type>Number</item-type>
+		<label>Air intake</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="poolTemp" advanced="true">
+		<item-type>Number</item-type>
+		<label>Pool</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="compressorSpeed" advanced="true">
+		<item-type>Number</item-type>
+		<label>Compressor speed</label>
+		<category>Pump</category>
+		<state readOnly="true" pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="heatCurve2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat curve 2</label>
+		<category>Line</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="switchValve2State" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Switch valve 2</label>
+		<category>Heating</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fanState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Fan</label>
+		<category>Fan</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="highPressostatState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>High pressostat</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lowPressostatState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Low pressostat</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatingCableState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Heating cable</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="crankCaseHeaterState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Crank case heater</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="elMeter1" advanced="true">
+		<item-type>Number</item-type>
+		<label>Collected pulses meter 1</label>
+		<category>Switch</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="elMeter2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Collected pulses meter 2</label>
+		<category>Switch</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
 
 </thing:thing-descriptions>

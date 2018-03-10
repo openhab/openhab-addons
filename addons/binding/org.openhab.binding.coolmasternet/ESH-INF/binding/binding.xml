@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <binding:binding id="coolmasternet"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-    <name>CoolMasterNet Binding</name>
-    <description>Binding for Cool Automation CoolMasterNet HVAC controllers.</description>
-    <author>Two Feathers Pty Ltd</author>
+	<name>CoolMasterNet Binding</name>
+	<description>Binding for Cool Automation CoolMasterNet HVAC controllers.</description>
+	<author>Two Feathers Pty Ltd</author>
 
 </binding:binding>
