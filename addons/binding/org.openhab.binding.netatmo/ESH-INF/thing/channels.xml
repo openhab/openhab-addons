@@ -368,32 +368,32 @@
 	</channel-type>
 	
 	<channel-type id="homeEvent">
-        <kind>trigger</kind>
-        <label>Home event</label>
-        <description>Home event</description>
-        <event>
-            <options>
-                <option value="PERSON">person</option>
-                <option value="PERSON_AWAY">person_away</option>
-                <option value="MOVEMENT">movement</option>
-                <option value="CONNECTION">connection</option>
-                <option value="DISCONNECTION">disconnection</option>
-                <option value="ON">on</option>
-                <option value="OFF">off</option>
-                <option value="BOOT">boot</option>
-                <option value="SD">sd</option>
-                <option value="ALIM">alim</option>
-                <option value="NEW_MODULE">new_module</option>
-                <option value="MODULE_CONNECT">module_connect</option>
-                <option value="MODULE_DISCONNECT">module_disconnect</option>
-                <option value="MODULE_LOW_BATTERY">module_low_battery</option>
-                <option value="MODULE_END_UPDATE">module_end_update</option>
-                <option value="TAG_BIG_MOVE">tag_big_move</option>
-                <option value="TAG_SMALL_MOVE">tag_small_move</option>
-                <option value="TAG_UNINSTALLED">tag_uninstalled</option>
-                <option value="TAG_OPEN">tag_open</option>
-            </options>
-        </event>
-    </channel-type>
+		<kind>trigger</kind>
+		<label>Home event</label>
+		<description>Home event</description>
+		<event>
+			<options>
+				<option value="PERSON">person</option>
+				<option value="PERSON_AWAY">person_away</option>
+				<option value="MOVEMENT">movement</option>
+				<option value="CONNECTION">connection</option>
+				<option value="DISCONNECTION">disconnection</option>
+				<option value="ON">on</option>
+				<option value="OFF">off</option>
+				<option value="BOOT">boot</option>
+				<option value="SD">sd</option>
+				<option value="ALIM">alim</option>
+				<option value="NEW_MODULE">new_module</option>
+				<option value="MODULE_CONNECT">module_connect</option>
+				<option value="MODULE_DISCONNECT">module_disconnect</option>
+				<option value="MODULE_LOW_BATTERY">module_low_battery</option>
+				<option value="MODULE_END_UPDATE">module_end_update</option>
+				<option value="TAG_BIG_MOVE">tag_big_move</option>
+				<option value="TAG_SMALL_MOVE">tag_small_move</option>
+				<option value="TAG_UNINSTALLED">tag_uninstalled</option>
+				<option value="TAG_OPEN">tag_open</option>
+			</options>
+		</event>
+	</channel-type>
 
 </thing:thing-descriptions>

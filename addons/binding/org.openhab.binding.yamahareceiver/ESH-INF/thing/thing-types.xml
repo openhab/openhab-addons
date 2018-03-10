@@ -71,9 +71,9 @@
 		<channels>
 			<channel id="power" typeId="power" />
 			<!--
-            We will provide an input channel dynamically. 
+			We will provide an input channel dynamically. 
 			<channel id="input" typeId="availableinput" />
-			 -->
+			-->
 			<channel id="surroundProgram" typeId="surroundProgram" />
 			<channel id="volume" typeId="volume" />
 			<channel id="volumeDB" typeId="volumeDB" />
@@ -299,8 +299,8 @@
 		<item-type>String</item-type>
 		<label>Menu</label>
 		<description>Shows the current navigation menu and allows to change to a channel by a full path.
-        For example for net radio: Bookmarks/__My_Favorites/radio_station_name. You can also just use the station name
-        without a full path if the AVR is in that navigation menu already.</description>
+		For example for net radio: Bookmarks/__My_Favorites/radio_station_name. You can also just use the station name
+		without a full path if the AVR is in that navigation menu already.</description>
 		<category>Navigation</category>
 	</channel-type>
 
