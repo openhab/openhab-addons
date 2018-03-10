@@ -18,6 +18,7 @@ import javax.ws.rs.client.WebTarget;
  */
 public class ControlInfo {
     public enum Mode {
+        UNKNOWN(-1),
         AUTO(0),
         DEHUMIDIFIER(2),
         COLD(3),
@@ -78,6 +79,7 @@ public class ControlInfo {
     }
 
     public enum FanMovement {
+        UNKNOWN(-1),
         STOPPED(0),
         VERTICAL(1),
         HORIZONTAL(2),
@@ -131,19 +133,19 @@ public class ControlInfo {
                         info.power = "1".equals(value);
                         break;
                     case "mode":
-                        info.mode = Mode.fromValue(Integer.parseInt(value));
+                        info.mode = Mode.fromValue(parseInt(value));
                         break;
                     case "stemp":
-                        info.temp = Double.parseDouble(value);
+                        info.temp = parseDouble(value);
                         break;
                     case "f_rate":
                         info.fanSpeed = FanSpeed.fromValue(value);
                         break;
                     case "f_dir":
-                        info.fanMovement = FanMovement.fromValue(Integer.parseInt(value));
+                        info.fanMovement = FanMovement.fromValue(parseInt(value));
                         break;
                     case "shum":
-                        info.targetHumidity = Integer.parseInt(value);
+                        info.targetHumidity = parseInt(value);
                 }
             }
         }
@@ -155,5 +157,21 @@ public class ControlInfo {
         return target.queryParam("pow", power ? 1 : 0).queryParam("mode", mode.getValue()).queryParam("stemp", temp)
                 .queryParam("f_rate", fanSpeed.getValue()).queryParam("f_dir", fanMovement.getValue())
                 .queryParam("shum", targetHumidity);
+    }
+    
+    private static double parseDouble(String value) {
+        try {
+            return Double.parseDouble(value);
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+    
+    private static int parseInt(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            return -1;
+        }
     }
 }
