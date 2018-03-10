@@ -157,7 +157,9 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
         if (controlInfo != null) {
             updateState(OpenDaikinBindingConstants.CHANNEL_AC_POWER, controlInfo.power ? OnOffType.ON : OnOffType.OFF);
-            updateTempState(OpenDaikinBindingConstants.CHANNEL_AC_TEMP, controlInfo.temp);
+            if (controlInfo.temp.isPresent()) {
+                updateTempState(OpenDaikinBindingConstants.CHANNEL_AC_TEMP, controlInfo.temp.get());
+            }
 
             updateState(OpenDaikinBindingConstants.CHANNEL_AC_MODE, new StringType(controlInfo.mode.name()));
             updateState(OpenDaikinBindingConstants.CHANNEL_AC_FAN_SPEED, new StringType(controlInfo.fanSpeed.name()));

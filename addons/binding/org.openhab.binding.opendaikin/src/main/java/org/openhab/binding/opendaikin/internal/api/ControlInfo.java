@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.opendaikin.internal.api;
 
+import java.util.Optional;
+
 import javax.ws.rs.client.WebTarget;
 
 /**
@@ -110,11 +112,11 @@ public class ControlInfo {
     public boolean power;
     public Mode mode;
     /** Degrees in Celsius. */
-    public double temp;
+    public Optional<Double> temp;
     public FanSpeed fanSpeed;
     public FanMovement fanMovement;
     /* Not supported by all units. Sets the target humidity for dehumidifying. */
-    public int targetHumidity;
+    public Optional<Integer> targetHumidity;
 
     private ControlInfo() {
     }
@@ -133,7 +135,7 @@ public class ControlInfo {
                         info.power = "1".equals(value);
                         break;
                     case "mode":
-                        info.mode = Mode.fromValue(parseInt(value));
+                        parseInt(value).ifPresent((modeValue) -> info.mode = Mode.fromValue(modeValue));
                         break;
                     case "stemp":
                         info.temp = parseDouble(value);
@@ -142,10 +144,11 @@ public class ControlInfo {
                         info.fanSpeed = FanSpeed.fromValue(value);
                         break;
                     case "f_dir":
-                        info.fanMovement = FanMovement.fromValue(parseInt(value));
+                        parseInt(value).ifPresent((fanValue) -> info.fanMovement = FanMovement.fromValue(fanValue));
                         break;
                     case "shum":
                         info.targetHumidity = parseInt(value);
+                        break;
                 }
             }
         }
@@ -159,19 +162,19 @@ public class ControlInfo {
                 .queryParam("shum", targetHumidity);
     }
     
-    private static double parseDouble(String value) {
+    private static Optional<Double> parseDouble(String value) {
         try {
-            return Double.parseDouble(value);
+            return Optional.of(Double.parseDouble(value));
         } catch (Exception e) {
-            return -1;
+            return Optional.empty();
         }
     }
     
-    private static int parseInt(String value) {
+    private static Optional<Integer> parseInt(String value) {
         try {
-            return Integer.parseInt(value);
+            return Optional.of(Integer.parseInt(value));
         } catch (Exception e) {
-            return -1;
+            return Optional.empty();
         }
     }
 }
