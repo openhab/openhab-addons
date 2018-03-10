@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="danfosshrv" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!--CCM-->
+	<thing-type id="ccm">
+		<label>Danfoss Air Unit</label>
+		<description>The Danfoss Air Unit Heat Exchanger, CCM and Air Dial</description>
+
+		<channels>
+            <channel id="humidity" typeId="humidity" />
+			<channel id="battery_life" typeId="batteryLife" />
+		</channels>
+
+		<config-description>
+			<parameter name="config1" type="text" required="false">
+				<label>Sample parameter</label>
+				<description>This is a sample text configuration parameter.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!--Cannel Definitions-->
+	<channel-type id="batteryLife">
+		<item-type>Number</item-type>
+		<label>Battery Life</label>
+        <description>Remaining Air Dial Battery Level</description>
+        <state readOnly="true" min="0" max="100" pattern="%.0f %%"></state>
+	</channel-type>
+    <channel-type id="humidity">
+        <item-type>Number</item-type>
+        <label>Humidity</label>
+        <category>Humidity</category>
+        <tags>
+            <tag>CurrentHumidity</tag>
+        </tags>
+        <state min="0" max="100" pattern="%.0f %%" readOnly="true">
+        </state>
+    </channel-type>
+</thing:thing-descriptions>
