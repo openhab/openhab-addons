@@ -298,7 +298,7 @@
 	<channel-type id="WindAngle">
 		<item-type>Number</item-type>
 		<label>Wind Angle</label>
-		<description>Current 5 min average wind direction</description>
+		<description>Current 5 minutes average wind direction</description>
 		<category>Wind</category>
 		<state min="0" max="360" step="1" readOnly="true" pattern="%d °" />
 	</channel-type>
@@ -306,7 +306,7 @@
 	<channel-type id="WindStrength">
 		<item-type>Number</item-type>
 		<label>Wind Strength</label>
-		<description>Current 5 min average wind speed</description>
+		<description>Current 5 minutes average wind speed</description>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%.1f km/h" />
 	</channel-type>
@@ -314,7 +314,7 @@
 	<channel-type id="GustAngle">
 		<item-type>Number</item-type>
 		<label>Gust Angle</label>
-		<description>Direction of the last 5 min highest gust wind</description>
+		<description>Direction of the last 5 minutes highest gust wind</description>
 		<category>Wind</category>
 		<state min="0" max="360" step="1" readOnly="true" pattern="%d °" />
 	</channel-type>
@@ -322,7 +322,7 @@
 	<channel-type id="GustStrength">
 		<item-type>Number</item-type>
 		<label>Gust Strength</label>
-		<description>Speed of the last 5 min highest gust wind</description>
+		<description>Speed of the last 5 minutes highest gust wind</description>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%.1f km/h" />
 	</channel-type>
@@ -330,7 +330,7 @@
 	<channel-type id="unit">
 		<item-type>Number</item-type>
 		<label>Unit system</label>
-		<description>Describes unit system of privided values (metric or imperial)</description>
+		<description>Unit system used to provide values (metric or imperial)</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Metric</option>
