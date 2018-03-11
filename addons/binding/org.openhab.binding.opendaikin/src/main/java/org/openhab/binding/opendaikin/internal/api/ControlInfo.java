@@ -162,15 +162,20 @@ public class ControlInfo {
 
         if (temp.isPresent()) {
             webTarget.queryParam("stemp", temp);
+        } else {
+            webTarget.queryParam("stemp", "20.0");
         }
-        
+
         if (targetHumidity.isPresent()) {
             webTarget.queryParam("shum", targetHumidity);
+        } else {
+            // For some reason this can be empty, but nothing else can be
+            webTarget.queryParam("shum", "");
         }
-        
+
         return webTarget;
     }
-    
+
     private static Optional<Double> parseDouble(String value) {
         try {
             return Optional.of(Double.parseDouble(value));
@@ -178,7 +183,7 @@ public class ControlInfo {
             return Optional.empty();
         }
     }
-    
+
     private static Optional<Integer> parseInt(String value) {
         try {
             return Optional.of(Integer.parseInt(value));
