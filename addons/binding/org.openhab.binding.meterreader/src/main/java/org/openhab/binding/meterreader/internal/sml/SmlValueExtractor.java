@@ -15,16 +15,7 @@ import org.openhab.binding.meterreader.internal.MeterValue;
 import org.openmuc.jsml.EObis;
 import org.openmuc.jsml.EUnit;
 import org.openmuc.jsml.structures.ASNObject;
-import org.openmuc.jsml.structures.Integer16;
-import org.openmuc.jsml.structures.Integer32;
-import org.openmuc.jsml.structures.Integer64;
-import org.openmuc.jsml.structures.Integer8;
-import org.openmuc.jsml.structures.OctetString;
-import org.openmuc.jsml.structures.SmlBoolean;
 import org.openmuc.jsml.structures.SmlListEntry;
-import org.openmuc.jsml.structures.Unsigned16;
-import org.openmuc.jsml.structures.Unsigned32;
-import org.openmuc.jsml.structures.Unsigned64;
 
 /**
  * Proxy class to encapsulate a openMUC SML_ListEntry-Object to read informations.
@@ -110,28 +101,20 @@ public final class SmlValueExtractor {
      * @return the value as String if available - otherwise null.
      */
     public String getValue() {
-        String value = null;
 
         if (smlListEntry != null) {
             org.openmuc.jsml.structures.SmlValue smlValue = smlListEntry.getValue();
             ASNObject choice = smlValue.getChoice();
-
-            if (SmlBoolean.class.isInstance(choice)) {
-                value = Boolean.toString(((SmlBoolean) choice).getVal());
-            } else if (choice instanceof OctetString) {
-                value = new String(((OctetString) choice).toBytes());
-            } else if (Integer8.class.isInstance(choice)) {
-                value = String.format("0x%02x", ((Integer8) choice).getVal());
-            } else if (Integer16.class.isInstance(choice) || Unsigned16.class.isInstance(choice)) {
-                value = scaleValue(Short.toString(((Integer16) choice).getVal()));
-            } else if (Integer32.class.isInstance(choice) || Unsigned32.class.isInstance(choice)) {
-                value = scaleValue(Integer.toString(((Integer32) choice).getVal()));
-            } else if (Integer64.class.isInstance(choice) || Unsigned64.class.isInstance(choice)) {
-                value = scaleValue(Long.toString(((Integer64) choice).getVal()));
+            String value = choice.toString();
+            try {
+                value = scaleValue(Double.parseDouble(value)) + "";
+            } catch (Exception e) {
+                // value is no numeric value
             }
+            return value;
         }
 
-        return value;
+        return null;
     }
 
     /**
@@ -160,11 +143,8 @@ public final class SmlValueExtractor {
      *
      * @return a string representation of the scaled value.
      */
-    String scaleValue(String originalValue) {
-        double scaledValue = Double.parseDouble(originalValue);
-        scaledValue *= getScaler();
-
-        return Double.toString(scaledValue);
+    Double scaleValue(Double originalValue) {
+        return originalValue * getScaler();
     }
 
     /**
