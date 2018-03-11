@@ -100,6 +100,7 @@ Bridge mihome:bridge:f0b429XXXXXX "Xiaomi Gateway" [ serialNumber="f0b429XXXXXX"
 
 ```
 // Xiaomi Gateway
+Switch Gateway_AddDevice { channel="mihome:gateway:<ID>:joinPermission" }
 Switch Gateway_LightSwitch <light> { channel="mihome:gateway:<ID>:brightness" }
 Dimmer Gateway_Brightness <dimmablelight> { channel="mihome:gateway:<ID>:brightness" }
 Color Gateway_Color <rgb> { channel="mihome:gateway:<ID>:color" }

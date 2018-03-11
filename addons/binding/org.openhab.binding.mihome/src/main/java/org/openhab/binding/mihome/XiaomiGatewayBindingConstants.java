@@ -77,6 +77,8 @@ public class XiaomiGatewayBindingConstants {
     public static final String CHANNEL_CUBE_ACTION = "action";
     public static final String CHANNEL_CUBE_ROTATION_ANGLE = "rotationAngle";
     public static final String CHANNEL_CUBE_ROTATION_TIME = "rotationTime";
+    // gateway general
+    public static final String CHANNEL_GATEWAY_JOIN_PERMISSION = "joinPermission";
     // gateway sound
     public static final String CHANNEL_GATEWAY_SOUND_SWITCH = "enableSound";
     public static final String CHANNEL_GATEWAY_SOUND = "sound";
