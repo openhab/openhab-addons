@@ -157,9 +157,18 @@ public class ControlInfo {
     }
 
     public WebTarget getParamString(WebTarget target) {
-        return target.queryParam("pow", power ? 1 : 0).queryParam("mode", mode.getValue()).queryParam("stemp", temp)
-                .queryParam("f_rate", fanSpeed.getValue()).queryParam("f_dir", fanMovement.getValue())
-                .queryParam("shum", targetHumidity);
+        WebTarget webTarget = target.queryParam("pow", power ? 1 : 0).queryParam("mode", mode.getValue())
+                .queryParam("f_rate", fanSpeed.getValue()).queryParam("f_dir", fanMovement.getValue());
+
+        if (temp.isPresent()) {
+            webTarget.queryParam("stemp", temp);
+        }
+        
+        if (targetHumidity.isPresent()) {
+            webTarget.queryParam("shum", targetHumidity);
+        }
+        
+        return webTarget;
     }
     
     private static Optional<Double> parseDouble(String value) {
