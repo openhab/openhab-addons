@@ -115,7 +115,7 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
                             smlValue = valueExtractor.getSmlValue();
                         }
 
-                        addObisCache(obis, smlValue);
+                        addObisCache(smlValue);
                     }
                 }
 

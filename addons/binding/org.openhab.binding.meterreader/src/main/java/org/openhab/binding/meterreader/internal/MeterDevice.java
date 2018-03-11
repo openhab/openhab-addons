@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.meterreader.internal;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -135,7 +134,7 @@ public abstract class MeterDevice<T> {
             ScheduledFuture<?> future = executorService.scheduleWithFixedDelay(() -> {
                 try {
                     connector.getMeterValues(initMessage);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     notifyReadingError(e);
                 }
 
@@ -168,9 +167,16 @@ public abstract class MeterDevice<T> {
 
     protected abstract void populateValueCache(T smlFile);
 
-    protected void addObisCache(String obisCode, MeterValue value) {
-        this.valueCache.put(obisCode, value);
-        this.valueChangeListeners.forEach((listener) -> listener.valueChanged(value));
+    protected void addObisCache(MeterValue value) {
+        logger.debug("Value changed: {}", value);
+        this.valueCache.put(value.getObisCode(), value);
+        this.valueChangeListeners.forEach((listener) -> {
+            try {
+                listener.valueChanged(value);
+            } catch (Exception e) {
+                logger.error("Meter listener failed", e);
+            }
+        });
     }
 
     @Override

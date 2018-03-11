@@ -40,7 +40,7 @@ public class Iec62056_21MeterReader extends MeterDevice<DataMessage> {
             String address = dataSet.getAddress();
             if (address != null && !address.isEmpty()) {
 
-                addObisCache(address, new MeterValue(address, dataSet.getValue(), dataSet.getUnit()));
+                addObisCache(new MeterValue(address, dataSet.getValue(), dataSet.getUnit()));
             }
         }
     }

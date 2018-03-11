@@ -59,7 +59,6 @@ public class MeterReaderHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing SmlReader handler.");
-        super.initialize();
 
         MeterReaderConfiguration config = getConfigAs(MeterReaderConfiguration.class);
         logger.debug("config port = {}", config.port);
@@ -89,6 +88,7 @@ public class MeterReaderHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         }
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -131,7 +131,8 @@ public class MeterReaderHandler extends BaseThingHandler {
                     Channel channel = thing.getChannel(obisChannelString);
                     OBISTypeValue obisType = getObisType(obis, channel);
                     if (channel == null) {
-                        logger.debug("Adding channel: {} with item type: {}", obisChannelString, obisType.itemType);
+                        logger.debug("Adding channel: {} with item type: {}", obisChannelString, obisType);
+
                         // channel has not been created yet
                         ChannelBuilder channelBuilder = ChannelBuilder
                                 .create(new ChannelUID(thing.getUID(), obisChannelString), obisType.itemType)
@@ -158,8 +159,26 @@ public class MeterReaderHandler extends BaseThingHandler {
                         }
 
                     }
+
+                    if (!channel.getProperties().containsKey(MeterReaderBindingConstants.CHANNEL_PROPERTY_OBIS)) {
+                        addObisPropertyToChannel(obis, channel);
+                    }
                     updateState(channel.getUID(), obisType.type);
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                }
+
+                private void addObisPropertyToChannel(String obis, Channel channel) {
+                    ChannelBuilder newChannel = ChannelBuilder.create(channel.getUID(), channel.getAcceptedItemType());
+                    newChannel.withDefaultTags(channel.getDefaultTags());
+                    newChannel.withConfiguration(channel.getConfiguration());
+                    newChannel.withDescription(channel.getDescription());
+                    newChannel.withKind(channel.getKind());
+                    newChannel.withLabel(channel.getLabel());
+                    newChannel.withType(channel.getChannelTypeUID());
+                    HashMap<String, String> properties = new HashMap<>(channel.getProperties());
+                    properties.put(MeterReaderBindingConstants.CHANNEL_PROPERTY_OBIS, obis);
+                    newChannel.withProperties(properties);
+                    updateThing(editThing().withoutChannel(channel.getUID()).withChannel(newChannel.build()).build());
                 }
 
                 @Override
@@ -199,10 +218,12 @@ public class MeterReaderHandler extends BaseThingHandler {
             Channel channel = this.thing.getChannel(channelId.getId());
 
             String obis = channel.getProperties().get(MeterReaderBindingConstants.CHANNEL_PROPERTY_OBIS);
-            OBISTypeValue obisType = getObisType(obis, channel);
-            if (obisType != null) {
+            if (obis != null) {
+                OBISTypeValue obisType = getObisType(obis, channel);
+                if (obisType != null) {
 
-                updateState(channel.getUID(), obisType.type);
+                    updateState(channel.getUID(), obisType.type);
+                }
             }
         }
     }
@@ -262,5 +283,9 @@ public class MeterReaderHandler extends BaseThingHandler {
             this.channelType = channelType;
         }
 
+        @Override
+        public String toString() {
+            return "OBISTypeValue [itemType=" + itemType + ", obisValue=" + obisValue + "]";
+        }
     }
 }
