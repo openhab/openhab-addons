@@ -10,6 +10,7 @@ package org.openhab.binding.milight;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.Sets;
@@ -20,6 +21,7 @@ import com.google.common.collect.Sets;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class MilightBindingConstants {
 
     public static final String BINDING_ID = "milight";

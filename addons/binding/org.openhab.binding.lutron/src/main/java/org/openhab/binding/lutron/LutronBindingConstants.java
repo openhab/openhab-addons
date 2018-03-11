@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.lutron;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Allan Tong - Initial contribution
  */
+@NonNullByDefault
 public class LutronBindingConstants {
 
     public static final String BINDING_ID = "lutron";
