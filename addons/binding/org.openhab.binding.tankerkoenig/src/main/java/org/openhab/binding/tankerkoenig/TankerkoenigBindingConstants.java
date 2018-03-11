@@ -11,6 +11,7 @@ package org.openhab.binding.tankerkoenig;
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.Sets;
@@ -21,6 +22,7 @@ import com.google.common.collect.Sets;
  *
  * @author Dennis Dollinger
  */
+@NonNullByDefault
 public class TankerkoenigBindingConstants {
 
     public static final String BINDING_ID = "tankerkoenig";

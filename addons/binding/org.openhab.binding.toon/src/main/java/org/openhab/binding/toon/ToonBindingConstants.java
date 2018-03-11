@@ -10,6 +10,7 @@ package org.openhab.binding.toon;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.ImmutableSet;
@@ -20,6 +21,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Jorg de Jong - Initial contribution
  */
+@NonNullByDefault
 public class ToonBindingConstants {
 
     public static final String BINDING_ID = "toon";

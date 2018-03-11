@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.mihome;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -19,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Daniel Walters - Added Aqara Door/Window sensor and Aqara temperature, humidity and pressure sensor
  * @author Kuba Wolanin - Added Water Leak sensor
  */
+@NonNullByDefault
 public class XiaomiGatewayBindingConstants {
 
     public static final String BINDING_ID = "mihome";
