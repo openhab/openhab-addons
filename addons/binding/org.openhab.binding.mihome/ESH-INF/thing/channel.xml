@@ -18,7 +18,8 @@
 	<channel-type id="brightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
-		<description>The brightness channel allows to control the brightness of a light. It is also possible to switch the light on and off.</description>
+		<description>The brightness channel allows to control the brightness of a light. It is also possible to switch the
+			light on and off.</description>
 		<category>DimmableLight</category>
 		<tags>
 			<tag>Lighting</tag>
@@ -66,6 +67,11 @@
 		<description>This channel controls the volume of the gateway for playing sounds</description>
 		<category>SoundVolume</category>
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="joinPermission">
+		<item-type>Switch</item-type>
+		<label>Enable Device Inclusion</label>
 	</channel-type>
 
 	<channel-type id="enableSound">
