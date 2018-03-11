@@ -11,6 +11,7 @@ package org.openhab.binding.jeelink;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.jeelink.internal.SensorDefinition;
 
@@ -19,6 +20,7 @@ import org.openhab.binding.jeelink.internal.SensorDefinition;
  *
  * @author Volker Bier - Initial contribution
  */
+@NonNullByDefault
 public class JeeLinkBindingConstants {
 
     private JeeLinkBindingConstants() {

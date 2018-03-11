@@ -8,10 +8,13 @@
  */
 package org.openhab.binding.boschindego.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author Jonas Fleck - Initial contribution
  */
+@NonNullByDefault
 public class IndegoStateConstants {
 
     public static final int STATE_DOCKED_1 = 258;

@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.rotelra1x;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Marius Bjørnstad - Initial contribution
  */
+@NonNullByDefault
 public class RotelRa1xBindingConstants {
 
     public static final String BINDING_ID = "rotelra1x";

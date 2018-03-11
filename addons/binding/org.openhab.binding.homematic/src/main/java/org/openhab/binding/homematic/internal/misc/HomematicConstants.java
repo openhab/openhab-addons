@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.homematic.internal.misc;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Defines common constants, which are used across the Homematic implementation.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HomematicConstants {
     public static final String DEVICE_TYPE_VIRTUAL = "HM-RCV-50";
     public static final String DEVICE_TYPE_VIRTUAL_WIRED = "HMW-RCV-50";

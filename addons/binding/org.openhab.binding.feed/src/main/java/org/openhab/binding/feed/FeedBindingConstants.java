@@ -10,6 +10,7 @@ package org.openhab.binding.feed;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -18,6 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Svilen Valkanov - Initial contribution
  */
+@NonNullByDefault
 public class FeedBindingConstants {
 
     public static final String BINDING_ID = "feed";

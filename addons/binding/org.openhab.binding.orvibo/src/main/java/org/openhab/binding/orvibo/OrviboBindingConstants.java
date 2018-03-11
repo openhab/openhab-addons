@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.orvibo;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Daniel Walters - Initial contribution
  */
+@NonNullByDefault
 public class OrviboBindingConstants {
 
     public static final String BINDING_ID = "orvibo";

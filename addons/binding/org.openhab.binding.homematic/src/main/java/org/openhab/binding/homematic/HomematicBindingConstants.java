@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.homematic;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -15,6 +16,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HomematicBindingConstants {
 
     public static final String BINDING_ID = "homematic";

@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.sleepiq;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class SleepIQBindingConstants {
     public static final String BINDING_ID = "sleepiq";
 

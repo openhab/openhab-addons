@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.minecraft;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Mattias Markehed
  */
+@NonNullByDefault
 public class MinecraftBindingConstants {
 
     public static final String BINDING_ID = "minecraft";

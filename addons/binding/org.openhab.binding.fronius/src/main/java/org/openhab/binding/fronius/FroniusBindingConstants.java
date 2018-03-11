@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.fronius;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Thomas Rokohl - Initial contribution
  */
+@NonNullByDefault
 public class FroniusBindingConstants {
 
     private static final String BINDING_ID = "fronius";

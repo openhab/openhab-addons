@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.squeezebox;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -17,6 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Dan Cunningham - Initial contribution
  * @author Mark Hilbush - Added duration channel
  */
+@NonNullByDefault
 public class SqueezeBoxBindingConstants {
 
     public static final String BINDING_ID = "squeezebox";

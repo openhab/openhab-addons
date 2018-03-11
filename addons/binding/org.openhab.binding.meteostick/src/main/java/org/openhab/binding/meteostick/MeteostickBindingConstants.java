@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.meteostick;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Chris Jackson - Initial contribution
  */
+@NonNullByDefault
 public class MeteostickBindingConstants {
 
     public static final String BINDING_ID = "meteostick";

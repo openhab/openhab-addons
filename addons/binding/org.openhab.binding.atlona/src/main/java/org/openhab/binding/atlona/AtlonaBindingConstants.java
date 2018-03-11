@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.atlona;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -15,6 +16,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Tim Roberts
  */
+@NonNullByDefault
 public class AtlonaBindingConstants {
 
     /**

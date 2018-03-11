@@ -11,6 +11,7 @@ package org.openhab.binding.max;
 import java.util.Collection;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.ImmutableSet;
@@ -22,6 +23,7 @@ import com.google.common.collect.Lists;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MaxBinding {
 
     public static final String BINDING_ID = "max";
