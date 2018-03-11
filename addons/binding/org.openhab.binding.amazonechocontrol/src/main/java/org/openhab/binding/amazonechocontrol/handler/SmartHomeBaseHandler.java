@@ -14,6 +14,7 @@ import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -51,11 +52,23 @@ public abstract class SmartHomeBaseHandler extends BaseThingHandler {
         synchronized (instances) {
             instances.put(this.getThing().getUID(), this);
         }
-        updateStatus(ThingStatus.ONLINE);
+        if (this.connection != null) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
+            Bridge bridge = this.getBridge();
+            if (bridge != null) {
+                AccountHandler account = (AccountHandler) bridge.getHandler();
+                if (account != null) {
+                    account.addSmartHomeHandler(this);
+                }
+            }
+        }
     }
 
     public void initialize(@NonNull Connection connection) {
         this.connection = connection;
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override

@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -82,7 +83,14 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
         if (this.currentConfigurationJson != null && !this.currentConfigurationJson.isEmpty()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.UNKNOWN);
+            Bridge bridge = this.getBridge();
+            if (bridge != null) {
+                AccountHandler account = (AccountHandler) bridge.getHandler();
+                if (account != null) {
+                    account.addFlashBriefingProfileHandler(this);
+                }
+            }
         }
     }
 

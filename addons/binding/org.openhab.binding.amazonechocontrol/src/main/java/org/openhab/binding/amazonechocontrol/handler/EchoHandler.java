@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -83,15 +84,30 @@ public class EchoHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.info("Amazon Echo Control Binding initialized");
+
         synchronized (instances) {
             instances.put(this.getThing().getUID(), this);
         }
-        updateStatus(ThingStatus.ONLINE);
+        if (this.connection != null) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
+            Bridge bridge = this.getBridge();
+            if (bridge != null) {
+                AccountHandler account = (AccountHandler) bridge.getHandler();
+                if (account != null) {
+                    account.addEchoHandler(this);
+                }
+            }
+
+        }
+
     }
 
     public void intialize(Connection connection, @Nullable Device deviceJson) {
         this.connection = connection;
         this.device = deviceJson;
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override

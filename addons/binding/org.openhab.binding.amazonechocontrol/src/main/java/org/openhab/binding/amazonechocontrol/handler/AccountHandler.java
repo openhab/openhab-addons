@@ -99,46 +99,44 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
         start();
     }
 
-    @Override
-    public void childHandlerInitialized(@NonNull ThingHandler childHandler, @NonNull Thing childThing) {
-        super.childHandlerInitialized(childHandler, childThing);
-
-        if (childHandler instanceof EchoHandler) {
-            EchoHandler echoHandler = (EchoHandler) childHandler;
-            synchronized (echoHandlers) {
+    public void addEchoHandler(@NonNull EchoHandler echoHandler) {
+        synchronized (echoHandlers) {
+            if (!echoHandlers.contains(echoHandler)) {
                 echoHandlers.add(echoHandler);
             }
-            Connection temp = connection;
-            if (temp != null) {
-                initializeEchoHandler(echoHandler, temp);
-            }
-
         }
-        if (childHandler instanceof FlashBriefingProfileHandler) {
-            FlashBriefingProfileHandler flashBriefingProfileHandler = (FlashBriefingProfileHandler) childHandler;
-            synchronized (flashBriefingProfileHandlers) {
+        Connection temp = connection;
+        if (temp != null) {
+            initializeEchoHandler(echoHandler, temp);
+        }
+    }
+
+    public void addFlashBriefingProfileHandler(@NonNull FlashBriefingProfileHandler flashBriefingProfileHandler) {
+        synchronized (flashBriefingProfileHandlers) {
+            if (!flashBriefingProfileHandlers.contains(flashBriefingProfileHandler)) {
                 flashBriefingProfileHandlers.add(flashBriefingProfileHandler);
             }
-            Connection temp = connection;
-            if (temp != null) {
-                if (currentFlashBriefingJson.isEmpty()) {
-                    updateFlashBriefingProfiles(temp);
-                }
-
-                flashBriefingProfileHandler.initialize(this, currentFlashBriefingJson);
-            }
         }
-        if (childHandler instanceof SmartHomeBaseHandler) {
-            SmartHomeBaseHandler smartHomeHandler = (SmartHomeBaseHandler) childHandler;
-            synchronized (smartHomeHandlers) {
+        Connection temp = connection;
+        if (temp != null) {
+            if (currentFlashBriefingJson.isEmpty()) {
+                updateFlashBriefingProfiles(temp);
+            }
+
+            flashBriefingProfileHandler.initialize(this, currentFlashBriefingJson);
+        }
+    }
+
+    public void addSmartHomeHandler(@NonNull SmartHomeBaseHandler smartHomeHandler) {
+        synchronized (smartHomeHandlers) {
+            if (!smartHomeHandlers.contains(smartHomeHandler)) {
                 smartHomeHandlers.add(smartHomeHandler);
             }
-            Connection temp = connection;
-            if (temp != null) {
-                smartHomeHandler.initialize(temp);
-            }
         }
-
+        Connection temp = connection;
+        if (temp != null) {
+            smartHomeHandler.initialize(temp);
+        }
     }
 
     private void initializeEchoHandler(@NonNull EchoHandler echoHandler, @NonNull Connection temp) {
