@@ -72,7 +72,7 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
     protected void activate(Map<String, Object> configProperties) {
         logger.debug("Config Parameters: {}", configProperties);
         localInetAddressesOverride = evaluateConfigPropertyLocalIP((String) configProperties.get("localIP"));
-        Util.init(AbstractDiscoveryService.scheduler);
+        Util.init(scheduler);
         discoveryManager = DiscoveryManager.getInstance();
         discoveryManager.setPairingLevel(DiscoveryManager.PairingLevel.ON);
         discoveryManager.addListener(this);
