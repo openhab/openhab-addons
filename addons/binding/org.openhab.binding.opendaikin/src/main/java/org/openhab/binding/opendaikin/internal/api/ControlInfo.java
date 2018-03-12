@@ -161,16 +161,16 @@ public class ControlInfo {
                 .queryParam("f_rate", fanSpeed.getValue()).queryParam("f_dir", fanMovement.getValue());
 
         if (temp.isPresent()) {
-            webTarget.queryParam("stemp", temp);
+            webTarget = webTarget.queryParam("stemp", temp);
         } else {
-            webTarget.queryParam("stemp", "20.0");
+            webTarget = webTarget.queryParam("stemp", "20.0");
         }
 
         if (targetHumidity.isPresent()) {
-            webTarget.queryParam("shum", targetHumidity);
+            webTarget = webTarget.queryParam("shum", targetHumidity);
         } else {
             // For some reason this can be empty, but nothing else can be
-            webTarget.queryParam("shum", "");
+            webTarget = webTarget.queryParam("shum", "");
         }
 
         return webTarget;
