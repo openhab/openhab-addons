@@ -38,7 +38,7 @@ import org.openhab.binding.knx.KNXTypeMapper;
 import org.openhab.binding.knx.client.InboundSpec;
 import org.openhab.binding.knx.client.OutboundSpec;
 import org.openhab.binding.knx.handler.AbstractKNXThingHandler;
-import org.openhab.binding.knx.internal.channel.KNXChannelType;
+import org.openhab.binding.knx.internal.channel.AbstractKNXChannelType;
 import org.openhab.binding.knx.internal.channel.KNXChannelTypes;
 import org.openhab.binding.knx.internal.client.AbstractKNXClient;
 import org.openhab.binding.knx.internal.config.DeviceConfig;
@@ -103,7 +103,7 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
 
     @FunctionalInterface
     private interface ChannelFunction {
-        void apply(KNXChannelType channelType, Configuration configuration) throws KNXException;
+        void apply(AbstractKNXChannelType channelType, Configuration configuration) throws KNXException;
     }
 
     private void withKNXType(ChannelUID channelUID, ChannelFunction function) {
@@ -117,7 +117,7 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
 
     private void withKNXType(Channel channel, ChannelFunction function) {
         try {
-            KNXChannelType selector = getKNXChannelType(channel);
+            AbstractKNXChannelType selector = getKNXChannelType(channel);
             function.apply(selector, channel.getConfiguration());
         } catch (KNXException e) {
             logger.warn("An error occurred on channel {}: {}", channel.getUID(), e.getMessage(), e);
@@ -151,7 +151,7 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
         }
     }
 
-    private void scheduleRead(KNXChannelType selector, Configuration configuration) throws KNXFormatException {
+    private void scheduleRead(AbstractKNXChannelType selector, Configuration configuration) throws KNXFormatException {
         List<InboundSpec> readSpecs = selector.getReadSpec(configuration);
         for (InboundSpec readSpec : readSpecs) {
             for (GroupAddress groupAddress : readSpec.getGroupAddresses()) {
@@ -218,7 +218,6 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
                     break;
             }
         }
-
     }
 
     private boolean isControl(ChannelUID channelUID) {
@@ -332,7 +331,7 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
         return typeHelper.toTypeClass(dpt) != null;
     }
 
-    private KNXChannelType getKNXChannelType(Channel channel) {
+    private AbstractKNXChannelType getKNXChannelType(Channel channel) {
         return KNXChannelTypes.getType(channel.getChannelTypeUID());
     }
 

@@ -10,6 +10,7 @@ package org.openhab.binding.knx;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.types.Type;
 
 import tuwien.auto.calimero.datapoint.Datapoint;
@@ -49,5 +50,8 @@ public interface KNXTypeMapper {
 
     @Nullable
     public Class<? extends Type> toTypeClass(@Nullable String dpt);
+
+    @Nullable
+    public Class<? extends GenericItem> toItemTypeClass(@Nullable Class<? extends @Nullable Type> typeClass);
 
 }

@@ -46,4 +46,9 @@ public class GroupAddressConfiguration {
         return read;
     }
 
+    @Override
+    public String toString() {
+        return "[ga= " + ga + ", read=" + read + "]";
+    }
+
 }

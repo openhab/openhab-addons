@@ -16,6 +16,11 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.eclipse.smarthome.core.types.Type;
 
 import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
@@ -52,4 +57,24 @@ class TypeRollershutter extends KNXChannelType {
         return Stream.of(UP_DOWN_GA, STOP_MOVE_GA, POSITION_GA).collect(toSet());
     }
 
+    @Override
+    protected @Nullable Type convertType(@Nullable Type type, Configuration channelConfiguration) {
+        if (type instanceof UpDownType) {
+            if (channelConfiguration.get(UP_DOWN_GA) != null) {
+                return type;
+            } else if (channelConfiguration.get(POSITION_GA) != null) {
+                return ((UpDownType) type).as(PercentType.class);
+            }
+        }
+
+        if (type instanceof PercentType) {
+            if (channelConfiguration.get(POSITION_GA) != null) {
+                return type;
+            } else if (channelConfiguration.get(UP_DOWN_GA) != null) {
+                return ((PercentType) type).as(UpDownType.class);
+            }
+        }
+
+        return type;
+    }
 }

@@ -43,9 +43,13 @@ public abstract class AbstractSpec {
      * @param ga the group address configuration
      * @return a group address object
      */
-    protected final GroupAddress toGroupAddress(GroupAddressConfiguration ga) {
+    protected final GroupAddress toGroupAddress(@Nullable GroupAddressConfiguration ga) {
         try {
-            return new GroupAddress(ga.getGA());
+            if (ga != null) {
+                return new GroupAddress(ga.getGA());
+            } else {
+                throw new IllegalArgumentException("GroupAddressConfiguration should contain a group address");
+            }
         } catch (KNXFormatException e) {
             throw new IllegalArgumentException(e);
         }

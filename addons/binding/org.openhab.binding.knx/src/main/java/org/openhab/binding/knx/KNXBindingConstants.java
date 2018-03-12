@@ -28,8 +28,10 @@ public class KNXBindingConstants {
 
     // Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_IP_BRIDGE = new ThingTypeUID(BINDING_ID, "ip");
+    public static final ThingTypeUID THING_TYPE_ETS_BRIDGE = new ThingTypeUID(BINDING_ID, "ets");
     public static final ThingTypeUID THING_TYPE_SERIAL_BRIDGE = new ThingTypeUID(BINDING_ID, "serial");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
+    public static final ThingTypeUID THING_TYPE_GENERIC = new ThingTypeUID(BINDING_ID, "generic");
 
     // Property IDs
     public static final String FIRMWARE_TYPE = "firmwaretype";
@@ -67,6 +69,7 @@ public class KNXBindingConstants {
     public static final String CHANNEL_STRING_CONTROL = "string-control";
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_SWITCH_CONTROL = "switch-control";
+    public static final String CHANNEL_GENERIC = "generic";
 
     public static final Set<String> CONTROL_CHANNEL_TYPES = Collections
             .unmodifiableSet(Stream.of(CHANNEL_CONTACT_CONTROL, //
@@ -88,5 +91,20 @@ public class KNXBindingConstants {
     public static final String SWITCH_GA = "switch";
     public static final String UP_DOWN_GA = "upDown";
     public static final String REPEAT_FREQUENCY = "frequency";
+
+    // List of all KNX ETS knxproj Namespace Identifierss
+    public static final String KNX_PROJECT_12 = "http://knx.org/xml/project/12";
+    public static final String KNX_PROJECT_13 = "http://knx.org/xml/project/13";
+
+    // List of KNX ETS Constants
+    public static final String UPDATE = "update";
+    public static final String WRITE = "write";
+    public static final String READ = "read";
+    public static final String TRANSMIT = "transmit";
+    public static final String DESCRIPTION = "description";
+    public static final String ADDRESS = "address";
+    public static final String DPT = "dpt";
+    public static final String GROUPADDRESS = "groupaddress";
+    public static final String INTERVAL = "interval";
 
 }

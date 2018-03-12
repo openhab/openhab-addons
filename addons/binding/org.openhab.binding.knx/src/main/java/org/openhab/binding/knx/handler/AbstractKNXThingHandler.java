@@ -176,13 +176,17 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
                 address = new IndividualAddress(config.getAddress());
 
                 long pingInterval = config.getPingInterval().longValue();
-                long initialPingDelay = Math.round(INITIAL_PING_DELAY * random.nextFloat());
+                if (pingInterval != 0) {
+                    long initialPingDelay = Math.round(INITIAL_PING_DELAY * random.nextFloat());
 
-                ScheduledFuture<?> pollingJob = this.pollingJob;
-                if ((pollingJob == null || pollingJob.isCancelled())) {
-                    logger.debug("'{}' will be polled every {}s", getThing().getUID(), pingInterval);
-                    this.pollingJob = getBackgroundScheduler().scheduleWithFixedDelay(() -> pollDeviceStatus(),
-                            initialPingDelay, pingInterval, TimeUnit.SECONDS);
+                    ScheduledFuture<?> pollingJob = this.pollingJob;
+                    if ((pollingJob == null || pollingJob.isCancelled())) {
+                        logger.debug("'{}' will be polled every {}s", getThing().getUID(), pingInterval);
+                        this.pollingJob = getBackgroundScheduler().scheduleWithFixedDelay(() -> pollDeviceStatus(),
+                                initialPingDelay, pingInterval, TimeUnit.SECONDS);
+                    }
+                } else {
+                    updateStatus(ThingStatus.ONLINE);
                 }
             } else {
                 updateStatus(ThingStatus.ONLINE);

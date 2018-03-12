@@ -16,6 +16,11 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.types.Type;
 
 import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
@@ -51,5 +56,26 @@ class TypeDimmer extends KNXChannelType {
             return DPTXlator8BitUnsigned.DPT_SCALING.getID();
         }
         throw new IllegalArgumentException("GA configuration '" + gaConfigKey + "' is not supported");
+    }
+
+    @Override
+    protected @Nullable Type convertType(@Nullable Type type, Configuration channelConfiguration) {
+        if (type instanceof OnOffType) {
+            if (channelConfiguration.get(SWITCH_GA) != null) {
+                return type;
+            } else if (channelConfiguration.get(POSITION_GA) != null) {
+                return ((OnOffType) type).as(PercentType.class);
+            }
+        }
+
+        if (type instanceof PercentType) {
+            if (channelConfiguration.get(POSITION_GA) != null) {
+                return type;
+            } else if (channelConfiguration.get(SWITCH_GA) != null) {
+                return ((PercentType) type).as(OnOffType.class);
+            }
+        }
+
+        return type;
     }
 }

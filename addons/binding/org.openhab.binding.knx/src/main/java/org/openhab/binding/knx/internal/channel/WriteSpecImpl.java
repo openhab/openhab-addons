@@ -11,6 +11,8 @@ package org.openhab.binding.knx.internal.channel;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.knx.client.OutboundSpec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.KNXFormatException;
@@ -26,12 +28,13 @@ public class WriteSpecImpl extends AbstractSpec implements OutboundSpec {
     private final Type type;
     private final @Nullable GroupAddress groupAddress;
 
+    private final Logger logger = LoggerFactory.getLogger(WriteSpecImpl.class);
+
     public WriteSpecImpl(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT, Type type)
             throws KNXFormatException {
         super(channelConfiguration, defaultDPT);
-        if (channelConfiguration != null) {
+        if (channelConfiguration != null && channelConfiguration.getMainGA() != null) {
             this.groupAddress = new GroupAddress(channelConfiguration.getMainGA().getGA());
-
         } else {
             this.groupAddress = null;
         }

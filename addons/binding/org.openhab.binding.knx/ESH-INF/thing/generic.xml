@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="knx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Generic KNX Actor -->
+	<thing-type id="generic">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ets" />
+		</supported-bridge-type-refs>
+
+		<label>Generic KNX actor</label>
+		<description>An addressable generic KNX actor</description>
+
+		<config-description>
+			<parameter name="address" type="text">
+				<label>Address</label>
+				<description>The individual address in x.y.z notation</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="fetch" type="boolean">
+				<label>Fetch</label>
+				<description>Read out the device parameters and address/communication object tables</description>
+				<required>false</required>
+				<default>false</default>
+			</parameter>
+			<parameter name="pingInterval" type="integer">
+				<label>Interval</label>
+				<description>Interval (in seconds) between attempts to poll the device status</description>
+				<default>600</default>
+			</parameter>
+			<parameter name="readInterval" type="integer">
+				<label>Interval</label>
+				<description>Interval (in seconds) between attempts to read the status group addresses on the bus</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

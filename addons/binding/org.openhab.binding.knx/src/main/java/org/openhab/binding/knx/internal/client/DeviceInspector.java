@@ -64,7 +64,6 @@ public class DeviceInspector {
         public Set<GroupAddress> getGroupAddresses() {
             return groupAddresses;
         }
-
     }
 
     public DeviceInspector(DeviceInfoClient client, IndividualAddress address) {
@@ -99,7 +98,7 @@ public class DeviceInspector {
             if ((elements == null ? 0 : toUnsigned(elements)) == 1) {
 
                 Thread.sleep(OPERATION_INTERVAL);
-                String ManufacturerID = Manufacturer.getName(toUnsigned(getClient().readDeviceProperties(address,
+                String manufacturerID = Manufacturer.getName(toUnsigned(getClient().readDeviceProperties(address,
                         DEVICE_OBJECT, PID.MANUFACTURER_ID, 1, 1, false, OPERATION_TIMEOUT)));
                 Thread.sleep(OPERATION_INTERVAL);
                 String serialNo = toHex(getClient().readDeviceProperties(address, DEVICE_OBJECT, PID.SERIAL_NUMBER, 1,
@@ -111,7 +110,7 @@ public class DeviceInspector {
                 String firmwareRevision = Integer.toString(toUnsigned(getClient().readDeviceProperties(address,
                         DEVICE_OBJECT, PID.FIRMWARE_REVISION, 1, 1, false, OPERATION_TIMEOUT)));
 
-                ret.put(MANUFACTURER_NAME, ManufacturerID);
+                ret.put(MANUFACTURER_NAME, manufacturerID);
                 if (serialNo != null) {
                     ret.put(MANUFACTURER_SERIAL_NO, serialNo);
                 }
@@ -120,7 +119,7 @@ public class DeviceInspector {
                 }
                 ret.put(MANUFACTURER_FIRMWARE_REVISION, firmwareRevision);
                 logger.debug("Identified device {} as a {}, type {}, revision {}, serial number {}", address,
-                        ManufacturerID, hardwareType, firmwareRevision, serialNo);
+                        manufacturerID, hardwareType, firmwareRevision, serialNo);
             } else {
                 logger.debug("The KNX device with address {} does not expose a Device Object", address);
             }
@@ -129,7 +128,6 @@ public class DeviceInspector {
                     e.getMessage());
         }
         return ret;
-
     }
 
     private @Nullable String toHex(byte @Nullable [] input, String separator) {
