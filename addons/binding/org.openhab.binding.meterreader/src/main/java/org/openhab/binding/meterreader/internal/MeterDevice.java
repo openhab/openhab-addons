@@ -31,6 +31,26 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class MeterDevice<T> {
 
+    public enum Direction {
+        MINUS {
+            @Override
+            public double convert(double value) {
+                if (value > 0) {
+                    return value * -1;
+                }
+                return value;
+            }
+        },
+        PLUS {
+            @Override
+            public double convert(double value) {
+                return value;
+            }
+        };
+
+        public abstract double convert(double value);
+    }
+
     /**
      * Controls wether the device info is logged to the OSGi console.
      */
@@ -44,6 +64,8 @@ public abstract class MeterDevice<T> {
      * The id of the SML device from openHAB configuration.
      */
     private String deviceId;
+
+    private Direction energyDirection = Direction.PLUS;
 
     /**
      * Used to establish the device connection
@@ -237,6 +259,14 @@ public abstract class MeterDevice<T> {
      */
     private void setPrintMeterInfo(Boolean printMeterInfo) {
         this.printMeterInfo = printMeterInfo;
+    }
+
+    protected void setEnergyDirection(Direction energyDirection) {
+        this.energyDirection = energyDirection;
+    }
+
+    public Direction getEnergyDirection() {
+        return energyDirection;
     }
 
 }

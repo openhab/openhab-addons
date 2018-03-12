@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.meterreader.internal.sml;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import org.openhab.binding.meterreader.connectors.IMeterReaderConnector;
@@ -19,6 +22,7 @@ import org.openmuc.jsml.structures.SmlFile;
 import org.openmuc.jsml.structures.SmlList;
 import org.openmuc.jsml.structures.SmlListEntry;
 import org.openmuc.jsml.structures.SmlMessage;
+import org.openmuc.jsml.structures.SmlStatus;
 import org.openmuc.jsml.structures.responses.SmlGetListRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,6 +110,10 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
                     SmlListEntry[] smlListEntries = smlValueList.getValListEntry();
 
                     for (SmlListEntry entry : smlListEntries) {
+                        SmlStatus status = entry.getStatus();
+                        if (status != null) {
+                            readStatus(status);
+                        }
                         SmlValueExtractor valueExtractor = new SmlValueExtractor(entry);
                         String obis = valueExtractor.getObisCode();
 
@@ -125,6 +133,41 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
         } else {
             logger.warn("{}: no valid SML File.", this.toString());
         }
+    }
+
+    private void readStatus(SmlStatus status) {
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            status.getChoice().encode(new DataOutputStream(byteArrayOutputStream));
+            byte[] statusBytes = byteArrayOutputStream.toByteArray();
+            if (statusBytes.length > 0) {
+
+                Direction direction = getDirection(statusBytes);
+                setEnergyDirection(direction);
+            }
+        } catch (IOException e) {
+            logger.error("Failed to read status bytes", e);
+        }
+    }
+
+    /**
+     * Get the direction according to FNN Lastenheft 7.1.2 EDL
+     *
+     * @see https://www.vde.com/resource/blob/951000/252eb3cdf1c7f6cdea10847be399da0d/fnn-lastenheft-edl-1-0-2010-01-13-data.pdf
+     * @param statusBytes
+     * @return
+     */
+    private static Direction getDirection(byte... statusBytes) {
+        // Bit 5 indicates the direction (Einspeisung/Bezug)
+        // Bezug: 1000 0010
+        // Einspeisung: 1010 0010
+        switch (statusBytes[0] >> 5 & 0x01) {
+            case 1:
+                return Direction.MINUS;
+            case 0:
+                return Direction.PLUS;
+        }
+        return Direction.PLUS;
     }
 
     @Override

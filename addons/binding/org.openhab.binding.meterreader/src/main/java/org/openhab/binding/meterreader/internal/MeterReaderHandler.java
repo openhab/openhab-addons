@@ -246,6 +246,7 @@ public class MeterReaderHandler extends BaseThingHandler {
                                 .get(MeterReaderBindingConstants.CONFIGURATION_CONVERSION);
                         if (conversionRatio != null) {
                             double newValue = ((DecimalType) type).doubleValue() / conversionRatio.doubleValue();
+                            newValue = smlDevice.getEnergyDirection().convert(newValue);
                             type = new DecimalType(newValue);
                         }
                     }
