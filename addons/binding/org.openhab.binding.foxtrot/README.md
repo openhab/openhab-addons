@@ -141,27 +141,19 @@ Thing bool IsNight [ var="IsNight" ]
 ### Switch Thing
 
 The Switch Thing represent specific structure of variables and controll code in PLC user program. Here is snippet
-in ST specific language, this is for controlling light:
+of structure for controlling light in [IEC61131-3](https://en.wikipedia.org/wiki/IEC_61131-3) standard
+[ST](https://en.wikipedia.org/wiki/Structured_text) language:
 ```
 TYPE
-  TLightState : struct
+  TSimpleLight: struct
     IsOn {PUBLIC}: bool;
-    Timeout: time := T#0s;
-    IsNightLight: bool := false;
-  end_struct;
-
-  TLightCmd : struct
     OnCmd {PUBLIC}: bool;
     OffCmd {PUBLIC}: bool;
   end_struct;
 END_TYPE
   
 VAR_GLOBAL
-  GarageLight: TLightCmd;
-END_VAR
-
-VAR_GLOBAL RETAIN
-  GarageLightState: TLightState;
+  GarageLight: TSimpleLight;
 END_VAR
 ``` 
 
@@ -177,26 +169,183 @@ The Switch thing must be connected through PLCComS bridge and has following para
 A possible entry in your thing file could be:
 
 ```
-Thing switch GarageLight [ state="GarageLightState.IsOn", on="GarageLight.OnCmd", off="GarageLight.OffCmd" ]
+Thing switch GarageLight [ state="GarageLight.IsOn", on="GarageLight.OnCmd", off="GarageLight.OffCmd" ]
 ```
+
 ### Dimmer Thing
 
-`todo`
+The Dimmer Thing represent specific structure of variables and controll code in PLC user program. Here is snippet
+of structure for controlling dimmer in [IEC61131-3](https://en.wikipedia.org/wiki/IEC_61131-3) standard
+[ST](https://en.wikipedia.org/wiki/Structured_text) language:
+```
+TYPE
+  TDimmer: struct
+    Level {PUBLIC}: real;
+    OnCmd {PUBLIC}: bool;
+    OffCmd {PUBLIC}: bool;
+    IncreaseCmd {PUBLIC}: bool;
+    DecreaseCmd {PUBLIC}: bool;
+  end_struct;
+END_TYPE
+  
+VAR_GLOBAL
+  LivingCeilDimmer: TDimmer;
+END_VAR
+``` 
+
+The Dimmer thing must be connected through PLCComS bridge and has following parameters:
+
+| parameter               | datatype | required            | description                 |
+|-------------------------|----------|---------------------|-----------------------------|
+| state                   | text     | yes                 | Variable name that holds switch state (0 or 1) |
+| on                      | text     | yes                 | Bool variable that trigger switch on action on rising edge (0 -> 1) |
+| off                     | text     | yes                 | Bool variable that trigger switch off action on rising edge (0 -> 1) |
+| increase                | text     | yes                 | Bool variable that trigger increase action on rising edge (0 -> 1) |
+| decrease                | text     | yes                 | Bool variable that trigger decrease action on rising edge (0 -> 1) |
+| refreshGroup            | text     | no (default: LOW)   | How often will be refreshed |
+
+A possible entry in your thing file could be:
+
+```
+Thing dimmer LivingCeilDimmer [ state="LivingCeilDimmer.Level", on="LivingCeilDimmer.OnCmd", off="LivingCeilDimmer.OffCmd" ]
+```
 
 ### Blind Thing
 
-`todo`
+The Blind Thing represent specific structure of variables and controll code in PLC user program. Here is snippet
+of structure for controlling blind in [IEC61131-3](https://en.wikipedia.org/wiki/IEC_61131-3) standard
+[ST](https://en.wikipedia.org/wiki/Structured_text) language:
+```
+TYPE
+  TRollerBlind: struct
+    Position {PUBLIC}: real;
+    IsGoingUp {PUBLIC}: bool;
+    IsGoingDown {PUBLIC}: bool;
+    UpCmd {PUBLIC}: bool;
+    DownCmd {PUBLIC}: bool;
+    StopCmd {PUBLIC}: bool;
+  end_struct;
+END_TYPE
+  
+VAR_GLOBAL
+  OfficeWindowBlind: TRollerBlind;
+END_VAR
+``` 
+
+The Blind thing must be connected through PLCComS bridge and has following parameters:
+
+| parameter               | datatype | required            | description                 |
+|-------------------------|----------|---------------------|-----------------------------|
+| state                   | text     | yes                 | Variable name that holds switch state (0 or 1) |
+| up                      | text     | yes                 | Bool variable that trigger switch on action on rising edge (0 -> 1) |
+| down                    | text     | yes                 | Bool variable that trigger switch off action on rising edge (0 -> 1) |
+| stop                    | text     | yes                 | Bool variable that trigger increase action on rising edge (0 -> 1) |
+| refreshGroup            | text     | no (default: LOW)   | How often will be refreshed |
+
+A possible entry in your thing file could be:
+
+```
+Thing blind OfficeWindowBlind [ state="OfficeWindowBlind.Position", on="OfficeWindowBlind.UpCmd", off="OfficeWindowBlind.DownCmd", stop="OfficeWindowBlind.StopCmd" ]
+```
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+| Channel Type ID | Item Type       | Description  |
+|-----------------|-----------------|--------------|
+| string-channel  | Text            | Textual representation of Foxtrot STRING variable |
+| number-channel  | Number          | Numeric representation of Foxtrot REAL or INT variable |
+| bool-channel    | Switch          | Switch representation of Foxtrot BOOL variable |
+| switch-channel  | Switch          | Switch channel |
+| dimmer-channel  | Dimmer          | Dimmer channel |
+| blind-channel   | Rollershutter   | Rollershutter channel |
 
 ## Full Example
 
 _Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
 
-## Any custom content here!
+foxtrot.things:
+```
+Bridge foxtrot:plc:cp1000 [ hostname="192.168.0.20",
+                            lowRefreshInterval=300,
+                            mediumRefreshInterval=60,
+                            highRefreshInterval=15,
+                            realtimeRefreshInterval=1 ] {
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+    // Measurement things
+    // Hot-water boiler electric metter
+    Thing number  BoilerConsump    [ var="BoilerConsumpData.Consump", refreshGroup="MEDIUM" ]
+    Thing number  BoilerDayUsage   [ var="BoilerConsumpData.DayUsage", refreshGroup="LOW" ]
+    // Outer circuits electric meter
+    Thing number  OcConsump        [ var="OcConsumpData.Consump", refreshGroup="MEDIUM" ]
+    Thing number  OcDayUsage       [ var="OcConsumpData.DayUsage", refreshGroup="LOW" ]
+
+    // Security
+    Thing bool Armed               [ var="IsArmed", refreshGroup="MEDIUM" ]
+
+    // Lights
+    Thing switch GarageLight       [ state="GarageLight.IsOn", on="GarageLight.OnCmd", off="GarageLight.OffCmd" ]
+    Thing switch TechLight         [ state="TechLight.IsOn", on="TechLight.OnCmd", off="TechLight.OffCmd" ]
+    Thing dimmer SouthTerraceLght  [ state="OutSouthTerace.Level", on="OutSouthTerace.OnCmd", off="OutSouthTerace.OffCmd", increase="OutSouthTerace.IncreaseCmd", decrease="OutSouthTerace.DecreaseCmd" ]
+
+    // Blinds
+    Thing blind OfficeSb1a         [ state="OfficeSb1a.Position", up="OfficeSb1a.UpCmd", down="OfficeSb1a.DownCmd", stop="OfficeSb1a.StopCmd" ]
+}
+```
+
+foxtrot.items:
+```
+// Hot-water boiler
+Number Foxtrot_Boiler_Consumption   "Boiler [%.3f kW]"                                          { channel="foxtrot:number:cp1000:BoilerConsump:number" }
+Number Foxtrot_Boiler_Day_Usage     "Boiler Today's Usage [%.2f kW]"                            { channel="foxtrot:number:cp1000:BoilerDayUsage:number" }
+// Outer circuits
+Number Foxtrot_Oc_Consumption       "Outlet circuit [%.3f kW]"                                  { channel="foxtrot:number:cp1000:OcConsump:number" }
+Number Foxtrot_Oc_Day_Usage         "Outlet circuit Today's Usage [%.2f kW]"                    { channel="foxtrot:number:cp1000:OcDayUsage:number" }
+
+Switch Alarm_State                  "Alarm"                                                     {channel="foxtrot:bool:cp1000:Armed:bool"}
+
+Switch GF_Techroom_Light            "Light"          <light>            (GF_Techroom, gLight)   {channel="foxtrot:switch:cp1000:TechLight:switch"}
+Switch GF_Garage_Light              "Light"          <light>            (GF_Garage, gLight)     {channel="foxtrot:switch:cp1000:GarageLight:switch"}
+
+Dimmer Out_South_Terrace_Light      "South [%d %%]"  <light>            (Out, gLight)           {channel="foxtrot:dimmer:cp1000:SouthTerraceLght:dimmer"}
+
+Rollershutter GF_Office_Blind1a     "Window"         <rollershutter>    (GF_Office, gShutter)   {channel="foxtrot:blind:cp1000:OfficeSb1a:blind"}
+```
+
+demo.sitemap:
+```
+sitemap default label="Main" {
+    Frame label="Overview" {
+        Text label="Security" icon="shield" {
+            Frame label="Alarm" {
+                Text item=Alarm_State label="State [MAP(alarm_states.map):%s]" icon="alarm" valuecolor=[ON="green", OFF="red"]
+            }
+        }
+        Text label="Electrity" icon="empty" {
+            Frame label="Actual State" {
+                Text item=Foxtrot_Total_Consumption label="House total" {
+                    Text item=Foxtrot_Boiler_Consumption
+                    Text item=Foxtrot_Oc_Consumption
+                }
+            }
+            Frame label="Today" {
+                Text item=Foxtrot_Total_Day_Usage label="House total" {
+                    Text item=Foxtrot_Boiler_Day_Usage
+                    Text item=Foxtrot_Oc_Day_Usage
+                }
+            }
+        }
+    }
+
+    Frame label="Rooms" icon="empty" {
+        Text label="Ground Floor" icon="groundfloor" {
+            Group item=GF_Garage
+            Group item=GF_Techroom
+            Group item=GF_Office
+        }
+        Text label="Outside" icon="house" {
+            Default item=Out_South_Terrace_Light
+        }
+    }
+
+}
+```
