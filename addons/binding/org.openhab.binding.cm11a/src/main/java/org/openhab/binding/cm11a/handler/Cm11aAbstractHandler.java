@@ -74,14 +74,18 @@ public abstract class Cm11aAbstractHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        final String NO_BRIDGE_ERROR = "No bridge found using house unit code ";
+
         Configuration config = thing.getConfiguration();
-        if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            return;
-        }
 
         houseUnitCode = (String) config.get(HOUSE_UNIT_CODE);
         Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.warn("{}", NO_BRIDGE_ERROR + houseUnitCode);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, NO_BRIDGE_ERROR + houseUnitCode);
+            return;
+        }
+
         if (ThingStatus.ONLINE.equals(bridge.getStatus())) {
             updateStatus(ThingStatus.ONLINE);
         } else {
