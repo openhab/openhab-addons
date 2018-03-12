@@ -10,6 +10,7 @@ package org.openhab.binding.silvercrestwifisocket;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.silvercrestwifisocket.internal.enums.SilvercrestWifiSocketVendor;
 
@@ -22,6 +23,7 @@ import com.google.common.collect.ImmutableSet;
  * @author Jaime Vaz - Initial contribution
  * @author Christian Heimerl - for integration of EasyHome
  */
+@NonNullByDefault
 public class SilvercrestWifiSocketBindingConstants {
 
     /**

@@ -13,6 +13,8 @@ import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     private Logger logger = LoggerFactory.getLogger(NetatmoModuleHandler.class);
+    private ScheduledFuture<?> refreshJob;
     @Nullable
     protected MODULE module;
 
@@ -43,7 +46,17 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     @Override
     public void initialize() {
         super.initialize();
-        requestParentRefresh();
+        refreshJob = scheduler.schedule(() -> {
+            requestParentRefresh();
+        }, 5, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void dispose() {
+        if (refreshJob != null && !refreshJob.isCancelled()) {
+            refreshJob.cancel(true);
+            refreshJob = null;
+        }
     }
 
     protected String getParentId() {
@@ -65,7 +78,7 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
             }
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
-            logger.error("The module has no method to access {} property ", channelId);
+            logger.debug("The module has no method to access {} property ", channelId);
             return UnDefType.NULL;
         }
 

@@ -52,6 +52,7 @@ import io.swagger.client.model.NAWebhookCameraEventPerson;
 import io.swagger.client.model.NAWelcomeHomeData;
 import retrofit.RestAdapter.LogLevel;
 import retrofit.RetrofitError;
+import retrofit.RetrofitError.Kind;
 
 /**
  * {@link NetatmoBridgeHandler} is the handler for a Netatmo API and connects it
@@ -67,6 +68,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     public NetatmoBridgeConfiguration configuration;
     private ScheduledFuture<?> refreshJob;
     private APIMap apiMap;
+    private WelcomeWebHookServlet webHookServlet;
 
     @NonNullByDefault
     private class APIMap extends HashMap<Class<?>, Object> {
@@ -88,8 +90,9 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
 
     }
 
-    public NetatmoBridgeHandler(@NonNull Bridge bridge) {
+    public NetatmoBridgeHandler(@NonNull Bridge bridge, WelcomeWebHookServlet webHookServlet) {
         super(bridge);
+        this.webHookServlet = webHookServlet;
     }
 
     @Override
@@ -102,8 +105,9 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
 
     private void connectionSucceed() {
         updateStatus(ThingStatus.ONLINE);
-        if (configuration.webHookUrl != null && configuration.readWelcome) {
-            String webHookURI = configuration.webHookUrl + WelcomeWebHookServlet.PATH;
+        String webHookURI = getWebHookURI();
+        if (webHookURI != null) {
+            webHookServlet.activate(this);
             logger.info("Setting up Netatmo Welcome WebHook to {}", webHookURI);
             getWelcomeApi().addwebhook(webHookURI, WEBHOOK_APP);
         }
@@ -119,23 +123,36 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
                 getPartnerApi().partnerdevices();
                 connectionSucceed();
             } catch (RetrofitError e) {
-                switch (e.getResponse().getStatus()) {
-                    case 404: // If no partner station has been associated - likely to happen - we'll have this error
-                              // but it means connection to API is OK
-                        connectionSucceed();
-                        break;
-                    case 403: // Forbidden Access maybe too many requests ? Let's wait next cycle
-                        logger.warn("Error 403 while connecting to Netatmo API, will retry in {} s",
-                                configuration.reconnectInterval);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR,
-                                "Netatmo Access Forbidden, will retry in " + configuration.reconnectInterval.toString()
-                                        + " seconds.");
-                        break;
-                    default:
-                        logger.error("Unable to connect Netatmo API : {}", e.getMessage(), e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "Unable to connect Netatmo API : " + e.getLocalizedMessage());
-                        return;
+                if (e.getKind() == Kind.NETWORK) {
+                    logger.warn("Network error while connecting to Netatmo API, will retry in {} s",
+                            configuration.reconnectInterval);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Netatmo Access Failed, will retry in " + configuration.reconnectInterval + " seconds.");
+                } else {
+                    switch (e.getResponse().getStatus()) {
+                        case 404: // If no partner station has been associated - likely to happen - we'll have this
+                                  // error
+                                  // but it means connection to API is OK
+                            connectionSucceed();
+                            break;
+                        case 403: // Forbidden Access maybe too many requests ? Let's wait next cycle
+                            logger.warn("Error 403 while connecting to Netatmo API, will retry in {} s",
+                                    configuration.reconnectInterval);
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "Netatmo Access Forbidden, will retry in " + configuration.reconnectInterval
+                                            + " seconds.");
+                            break;
+                        default:
+                            if (logger.isDebugEnabled()) {
+                                // we also attach the stack trace
+                                logger.error("Unable to connect Netatmo API : {}", e.getMessage(), e);
+                            } else {
+                                logger.error("Unable to connect Netatmo API : {}", e.getMessage());
+                            }
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                    "Unable to connect Netatmo API : " + e.getLocalizedMessage());
+                            return;
+                    }
                 }
             }
             // We'll do this every x seconds to guaranty token refresh
@@ -216,8 +233,9 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         logger.debug("Running dispose()");
 
-        if (configuration.webHookUrl != null) {
+        if (getWebHookURI() != null) {
             logger.info("Releasing Netatmo Welcome WebHook");
+            webHookServlet.deactivate();
             getWelcomeApi().dropwebhook(WEBHOOK_APP);
         }
 
@@ -309,6 +327,14 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
                 }
             });
         }
+    }
+
+    private String getWebHookURI() {
+        String webHookURI = null;
+        if (configuration.webHookUrl != null && configuration.readWelcome && webHookServlet != null) {
+            webHookURI = configuration.webHookUrl + webHookServlet.getPath();
+        }
+        return webHookURI;
     }
 
 }

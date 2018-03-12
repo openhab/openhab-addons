@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.cm11a;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,7 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Bob Raker - Initial contribution
  */
-
+@NonNullByDefault
 public class CM11ABindingConstants {
 
     public static final String BINDING_ID = "cm11a";

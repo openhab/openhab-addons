@@ -11,6 +11,7 @@ package org.openhab.binding.network;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -20,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Marc Mettke - Initial contribution
  * @author David Gräff - 2016, Add dhcp listen
  */
+@NonNullByDefault
 public class NetworkBindingConstants {
 
     public static final String BINDING_ID = "network";

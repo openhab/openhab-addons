@@ -10,6 +10,7 @@ package org.openhab.binding.plugwise;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.Sets;
@@ -19,6 +20,7 @@ import com.google.common.collect.Sets;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public class PlugwiseBindingConstants {
 
     public static final String BINDING_ID = "plugwise";

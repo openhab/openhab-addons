@@ -442,15 +442,15 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             }
 
         } catch (Exception ex) {
-            logger.error("Exception in statusUpdateReceived for Onkyo Receiver @{}. Cause: {}, data received: {}",
+            logger.warn("Exception in statusUpdateReceived for Onkyo Receiver @{}. Cause: {}, data received: {}",
                     connection.getConnectionName(), ex.getMessage(), data);
         }
     }
 
     @Override
-    public void connectionError(String ip) {
+    public void connectionError(String ip, String errorMsg) {
         logger.debug("Connection error occurred to Onkyo Receiver @{}", ip);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
     }
 
     private State convertDeviceValueToOpenHabState(String data, Class<?> classToConvert) {

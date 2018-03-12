@@ -42,7 +42,7 @@ import com.google.gson.stream.JsonReader;
  * and controls it. The Client handler can also act as a bridge for the
  * {@link SlotHandler}.
  *
- * @author Marius Bjørnstad
+ * @author Marius Bjørnstad - Initial contribution
  */
 public class FoldingClientHandler extends BaseBridgeHandler {
 
@@ -58,7 +58,7 @@ public class FoldingClientHandler extends BaseBridgeHandler {
 
     private volatile int idRefresh = 0;
 
-    private Map<String, SlotUpdateListener> slotUpdateListeners = new HashMap<String, SlotUpdateListener>();
+    private Map<String, SlotUpdateListener> slotUpdateListeners = new HashMap<>();
 
     public FoldingClientHandler(Bridge thing) {
         super(thing);
@@ -152,16 +152,12 @@ public class FoldingClientHandler extends BaseBridgeHandler {
     }
 
     public void delayedRefresh() {
-        final int i_refresh = ++idRefresh;
-        refreshJob = scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                if (i_refresh == idRefresh) { // Make a best effort to not run multiple deferred refresh
-                    refresh();
-                }
+        final int iRefresh = ++idRefresh;
+        refreshJob = scheduler.schedule(() -> {
+            if (iRefresh == idRefresh) { // Make a best effort to not run multiple deferred refresh
+                refresh();
             }
         }, 5, TimeUnit.SECONDS);
-
     }
 
     void closeSocket() {

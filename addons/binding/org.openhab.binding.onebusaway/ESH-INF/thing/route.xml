@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="onebusaway"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="route">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="stop" />
-        </supported-bridge-type-refs>
-        <label>Route</label>
-        <description>Provides data about a route at a specific stop.</description>
+	<thing-type id="route">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="stop" />
+		</supported-bridge-type-refs>
+		<label>Route</label>
+		<description>Provides data about a route at a specific stop.</description>
 
-        <channels>
-            <channel id="arrival" typeId="arrival" />
-            <channel id="departure" typeId="departure" />
-            <channel id="event" typeId="routeEvent" />
-            <channel id="update" typeId="update" />
-        </channels>
+		<channels>
+			<channel id="arrival" typeId="arrival" />
+			<channel id="departure" typeId="departure" />
+			<channel id="event" typeId="routeEvent" />
+			<channel id="update" typeId="update" />
+		</channels>
 
-        <config-description uri="thing-type:onebusaway:config">
-            <parameter name="routeId" type="text" required="true">
-                <label>Route ID</label>
-                <description>The OneBusAway route ID.</description>
-            </parameter>
-        </config-description>
-    </thing-type>
+		<config-description uri="thing-type:onebusaway:config">
+			<parameter name="routeId" type="text" required="true">
+				<label>Route ID</label>
+				<description>The OneBusAway route ID.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 </thing:thing-descriptions>

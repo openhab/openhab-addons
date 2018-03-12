@@ -55,6 +55,8 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
 
     private boolean terminate;
 
+    private final Pattern announcementPattern = Pattern.compile("[(](.*);DEVICE;ID;(.*);(.*)[)]");
+
     private Runnable listenerRunnable = new Runnable() {
         @Override
         public void run() {
@@ -66,8 +68,8 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
         }
     };
 
-    // Frequency (in seconds) with which we poll for new fans
-    private final long POLL_FREQ = 600L;
+    // Frequency (in seconds) with which we poll for new devices
+    private final long POLL_FREQ = 300L;
     private final long POLL_DELAY = 12L;
     private ScheduledFuture<?> pollJob;
 
@@ -155,8 +157,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
         while (!terminate) {
             try {
                 // Wait for a discovery message
-                BigAssFanDevice device = discoveryListener.waitForMessage();
-                processMessage(device);
+                processMessage(discoveryListener.waitForMessage());
             } catch (SocketTimeoutException e) {
                 // Read on socket timed out; check for termination
                 continue;
@@ -173,8 +174,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
         if (device == null) {
             return;
         }
-        Pattern pattern = Pattern.compile("[(](.*);DEVICE;ID;(.*);(.*)[)]");
-        Matcher matcher = pattern.matcher(device.getDiscoveryMessage());
+        Matcher matcher = announcementPattern.matcher(device.getDiscoveryMessage());
         if (matcher.find()) {
             logger.debug("Match: grp1={}, grp2={}, grp(3)={}", matcher.group(1), matcher.group(2), matcher.group(3));
 
@@ -215,6 +215,10 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
             logger.debug("Add fan with IP={}, MAC={}, MODEL={}", device.getIpAddress(), device.getMacAddress(),
                     device.getModel());
             thingTypeUid = THING_TYPE_FAN;
+        } else if (device.isLight()) {
+            logger.debug("Add light with IP={}, MAC={}, MODEL={}", device.getIpAddress(), device.getMacAddress(),
+                    device.getModel());
+            thingTypeUid = THING_TYPE_LIGHT;
         } else {
             logger.info("Discovered unknown device type {} at IP={}", device.getModel(), device.getIpAddress());
             return;

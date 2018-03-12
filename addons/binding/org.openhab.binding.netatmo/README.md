@@ -4,6 +4,7 @@ The Netatmo binding integrates the following Netatmo products:
 
 - *Personal Weather Station*. Reports temperature, humidity, air pressure, carbon dioxide concentration in the air, as well as the ambient noise level.
 - *Thermostat*. Reports ambient temperature, allow to check target temperature, consult and change furnace heating status.
+- *Welcome Camera*. Reports last event and persons at home, consult picture and video from event/camera.
 
 See http://www.netatmo.com/ for details on their product.
 
@@ -24,7 +25,7 @@ The variables you'll need to get to setup the binding are:
 * `<PASSWORD>` The password attached to the above username.
 
 
-## 2. Bridge and Things Configuration
+### 2. Bridge and Things Configuration
 
 Once you'll get needed informations from the Netatmo API, you'll be able to configure bridge and things.
 
@@ -57,8 +58,10 @@ http(s)://xx.yy.zz.ww:8080
 Your Netatmo App will be configured automatically by the bridge to the endpoint : 
 
 ```
-http(s)://xx.yy.zz.ww:8080/netatmo/camera
+http(s)://xx.yy.zz.ww:8080/netatmo/%id%/camera
 ```
+
+where %id% is the id of your camera thing.
 
 Please be aware of Netatmo own limits regarding webhook usage that lead to a 24h ban-time when webhook does not answer 5 times.
 
@@ -96,8 +99,6 @@ If you don't manually create things in the *.things file, the Netatmo Binding is
 
 ### Weather Station Main Indoor Device
 
-#### Configuration
-
 Weather station does not need any refreshInterval setting. Based on a standard update period of 10mn by Netatmo systems - it will auto adapt to stick closest as possible to last data availability.
 
 Example item for the **indoor module**:
@@ -106,28 +107,35 @@ Example item for the **indoor module**:
 Number Netatmo_Indoor_CO2 "CO2" <carbondioxide> { channel = "netatmo:NAMain:home:inside:Co2" }
 ```
 
-**Supported channels for the indoor module:**
+**Supported channels for the main indoor module:**
 
-* Temperature
-* TemperatureTrend
-* Humidity
-* Co2
-* Pressure
-* PressureTrend
-* AbsolutePressure
-* Noise
-* HeatIndex
-* Humidex
-* Dewpoint
-* DewpointDepression
-* WifiStatus
-* Location
-* TimeStamp
-* LastStatusStore
-* MinTemp
-* MaxTemp
-* DateMinTemp
-* DateMaxTemp
+| Channel ID          | Item Type | Description                                              |
+|---------------------|-----------|----------------------------------------------------------|
+| Co2                 | Number    | Air Quality in ppm                                       |
+| Temperature         | Number    | Current temperature                                      |
+| TempTrend           | String    | Temperature Evolution Trend (up, down, stable)           |
+| Noise               | Number    | Current Noise Level in dB                                |
+| Pressure            | Number    | Current pressure in hPa                                  |
+| PressTrend          | String    | Pressure evolution trend for last 12h (up, down, stable) |
+| AbsolutePressure    | Number    | Absolute pressure in hPa                                 |
+| Humidity            | Number    | Current humidity in %                                    |
+| Humidex             | Number    | Computed Humidex index                                   |
+| HeatIndex           | Number    | Computed Heat Index                                      |
+| Dewpoint            | Number    | Computed Dewpoint Temperature                            |
+| DewpointDepression  | Number    | Computed Dewpoint Depression                             |
+| MinTemp             | Number    | Minimum Temperature on current day                       |
+| MaxTemp             | Number    | Maximum Temperature on current day                       |
+| DateMinTemp         | DateTime  | Date when minimum temperature was reached on current day |
+| DateMaxTemp         | DateTime  | Date when maximum temperature was reached on current day |
+| TimeStamp           | DateTime  | Timestamp when data was measured                         |
+| LastStatusStore     | DateTime  | Last Status Store                                        |
+| WifiStatus          | Number    | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| Location            | Location  | Location of the device                                   |
+| Unit                | Number    | Unit system used to provide values (0 for metric or 1 for imperial |
+| WindUnit            | Number    | Unit used to report Wind speeds (0 for km/h, 1 for miles/H, 2 for m/s, 3 for Beaufort or 4 for Knot) |
+| PressureUnit        | Number    | Unit used to report Pressure values (0 for mbar, 1 for inHg or 2 for mmHg) |
+
+All these channels are read only.
 
 
 ### Weather Station Outdoor module
@@ -140,22 +148,26 @@ Number Netatmo_Outdoor_Temperature "Temperature" { channel = "netatmo:NAModule1:
 
 **Supported channels for the outdoor module:**
 
-* Temperature
-* TemperatureTrend
-* Humidity
-* RfStatus
-* BatteryVP
-* Humidex
-* HeatIndex
-* Dewpoint
-* DewpointDepression
-* TimeStamp
-* LastMessage
-* LowBattery
-* MinTemp
-* MaxTemp
-* DateMinTemp
-* DateMaxTemp
+| Channel ID          | Item Type | Description                                              |
+|---------------------|-----------|----------------------------------------------------------|
+| Temperature         | Number    | Current temperature                                      |
+| TempTrend           | String    | Temperature Evolution Trend (up, down, stable)           |
+| Humidity            | Number    | Current humidity in %                                    |
+| Humidex             | Number    | Computed Humidex index                                   |
+| HeatIndex           | Number    | Computed Heat Index                                      |
+| Dewpoint            | Number    | Computed Dewpoint Temperature                            |
+| DewpointDepression  | Number    | Computed Dewpoint Depression                             |
+| MinTemp             | Number    | Minimum Temperature on current day                       |
+| MaxTemp             | Number    | Maximum Temperature on current day                       |
+| DateMinTemp         | DateTime  | Date when minimum temperature was reached on current day |
+| DateMaxTemp         | DateTime  | Date when maximum temperature was reached on current day |
+| TimeStamp           | DateTime  | Timestamp when data was measured                         |
+| LastMessage         | DateTime  | Last Message emitted by the module                       |
+| LowBattery          | Switch    | Low Battery                                              |
+| BatteryVP           | Number    | Battery Level                                            |
+| RfStatus            | Number    | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+
+All these channels are read only.
 
 
 ### Weather Station Additional Indoor module
@@ -168,23 +180,27 @@ Number Netatmo_Indoor2_Temperature "Temperature" { channel = "netatmo:NAModule4:
 
 **Supported channels for the additional indoor module:**
 
-* Temperature
-* TemperatureTrend
-* Humidity
-* Co2
-* RfStatus
-* BatteryVP
-* Humidex
-* HeatIndex
-* Dewpoint
-* DewpointDepression
-* TimeStamp
-* LastMessage
-* LowBattery
-* MinTemp
-* MaxTemp
-* DateMinTemp
-* DateMaxTemp
+| Channel ID          | Item Type | Description                                              |
+|---------------------|-----------|----------------------------------------------------------|
+| Co2                 | Number    | Air Quality in ppm                                       |
+| Temperature         | Number    | Current temperature                                      |
+| TempTrend           | String    | Temperature Evolution Trend (up, down, stable)           |
+| Humidity            | Number    | Current humidity in %                                    |
+| Humidex             | Number    | Computed Humidex index                                   |
+| HeatIndex           | Number    | Computed Heat Index                                      |
+| Dewpoint            | Number    | Computed Dewpoint Temperature                            |
+| DewpointDepression  | Number    | Computed Dewpoint Depression                             |
+| MinTemp             | Number    | Minimum Temperature on current day                       |
+| MaxTemp             | Number    | Maximum Temperature on current day                       |
+| DateMinTemp         | DateTime  | Date when minimum temperature was reached on current day |
+| DateMaxTemp         | DateTime  | Date when maximum temperature was reached on current day |
+| TimeStamp           | DateTime  | Timestamp when data was measured                         |
+| LastMessage         | DateTime  | Last Message emitted by the module                       |
+| LowBattery          | Switch    | Low Battery                                              |
+| BatteryVP           | Number    | Battery Level                                            |
+| RfStatus            | Number    | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+
+All these channels are read only.
 
 
 ### Rain Gauge
@@ -197,14 +213,19 @@ Number Netatmo_Rain_Current "Rain [%.1f mm]" { channel = "netatmo:NAModule3:home
 
 **Supported channels for the rain guage:**
 
-* Rain
-* Rain1
-* Rain24
-* TimeStamp
-* RfStatus
-* BatteryVP
-* LastMessage
-* LowBattery
+| Channel ID          | Item Type | Description                                              |
+|---------------------|-----------|----------------------------------------------------------|
+| Rain                | Number    | Quantity of water                                        |
+| SumRain1            | Number    | Quantity of water on last hour                           |
+| SumRain24           | Number    | Quantity of water on last day                            |
+| TimeStamp           | DateTime  | Timestamp when data was measured                         |
+| LastMessage         | DateTime  | Last Message emitted by the module                       |
+| LowBattery          | Switch    | Low Battery                                              |
+| BatteryVP           | Number    | Battery Level                                            |
+| RfStatus            | Number    | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+
+All these channels are read only.
+
 
 ### Weather Station Wind module
 
@@ -216,15 +237,20 @@ Number Netatmo_Wind_Strength "Wind Strength [%.0f KPH]" { channel = "netatmo:NAM
 
 **Supported channels for the wind module:**
 
-* WindStrength
-* WindAngle
-* GustStrength
-* GustAngle
-* LastMessage
-* LowBattery
-* TimeStamp
-* RfStatus
-* BatteryVP
+| Channel ID          | Item Type | Description                                              |
+|---------------------|-----------|----------------------------------------------------------|
+| WindAngle           | Number    | Current 5 minutes average wind direction                 |
+| WindStrength        | Number    | Current 5 minutes average wind speed                     |
+| GustAngle           | Number    | Direction of the last 5 minutes highest gust wind        |
+| GustStrength        | Number    | Speed of the last 5 minutes highest gust wind            |
+| TimeStamp           | DateTime  | Timestamp when data was measured                         |
+| LastMessage         | DateTime  | Last Message emitted by the module                       |
+| LowBattery          | Switch    | Low Battery                                              |
+| BatteryVP           | Number    | Battery Level                                            |
+| RfStatus            | Number    | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+
+All these channels are read only.
+
 
 ### Healthy Home Coach Device
 
@@ -236,84 +262,115 @@ String Netatmo_LivingRoom_HomeCoach_HealthIndex "Climate" { channel = "netatmo:N
 
 **Supported channels for the healthy home coach device:**
 
-* HealthIndex
-* Temperature
-* TemperatureTrend
-* Humidity
-* Co2
-* Pressure
-* PressureTrend
-* AbsolutePressure
-* Noise
-* WifiStatus
-* Location
-* TimeStamp
-* LastStatusStore
-* MinTemp
-* MaxTemp
-* DateMinTemp
-* DateMaxTemp
+| Channel ID          | Item Type | Description                                              |
+|---------------------|-----------|----------------------------------------------------------|
+| HealthIndex         | String    | Health Index (healthy, fine, fair, poor, unhealthy)      |
+| Co2                 | Number    | Air Quality in ppm                                       |
+| Temperature         | Number    | Current temperature                                      |
+| TempTrend           | String    | Temperature Evolution Trend (up, down, stable)           |
+| Noise               | Number    | Current Noise Level in dB                                |
+| Pressure            | Number    | Current pressure in hPa                                  |
+| PressTrend          | String    | Pressure evolution trend for last 12h (up, down, stable) |
+| AbsolutePressure    | Number    | Absolute pressure in hPa                                 |
+| Humidity            | Number    | Current humidity in %                                    |
+| MinTemp             | Number    | Minimum Temperature on current day                       |
+| MaxTemp             | Number    | Maximum Temperature on current day                       |
+| DateMinTemp         | DateTime  | Date when minimum temperature was reached on current day |
+| DateMaxTemp         | DateTime  | Date when maximum temperature was reached on current day |
+| TimeStamp           | DateTime  | Timestamp when data was measured                         |
+| LastStatusStore     | DateTime  | Last Status Store                                        |
+| WifiStatus          | Number    | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| Location            | Location  | Location of the device                                   |
+| Unit                | Number    | Unit system used to provide values (0 for metric or 1 for imperial |
+| WindUnit            | Number    | Unit used to report Wind speeds (0 for km/h, 1 for miles/H, 2 for m/s, 3 for Beaufort or 4 for Knot) |
+| PressureUnit        | Number    | Unit used to report Pressure values (0 for mbar, 1 for inHg or 2 for mmHg) |
+
+All these channels are read only.
 
 
 ### Thermostat Relay Device
 
 **Supported channels for the thermostat relay device:**
 
-* LastStatusStore
-* WifiStatus
-* Location
-* ConnectedBoiler
-* LastPlugSeen
-* LastBilan
+| Channel ID          | Item Type | Description                                              |
+|---------------------|-----------|----------------------------------------------------------|
+| ConnectedBoiler     | Switch    | Plug Connected Boiler                                    |
+| LastPlugSeen        | DateTime  | Last Plug Seen                                           |
+| LastBilan           | DateTime  | Month of the last available thermostat bilan             |
+| LastStatusStore     | DateTime  | Last Status Store                                        |
+| WifiStatus          | Number    | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| Location            | Location  | Location of the device                                   |
+| Unit                | Number    | Unit system used to provide values (0 for metric or 1 for imperial |
+
+All these channels are read only.
 
 
 ### Thermostat Module
 
 **Supported channels for the thermostat module:**
 
-* Temperature
-* SetpointTemperature
-* SetpointMode
-* BoilerOn
-* BoilerOff
-* TimeStamp
+| Channel ID          | Item Type | Description                                                |
+|---------------------|-----------|------------------------------------------------------------|
+| Temperature         | Number    | Current temperature                                        |
+| Sp_Temperature      | Number    | Thermostat temperature setpoint                            |
+| BoilerOn            | Number    | Duration, since the previous data point, during which the boiler has been on (in seconds) |
+| BoilerOff           | Number    | Duration, since the previous data point, during which the boiler has been off (in seconds) |
+| SetpointMode        | String    | Chosen setpoint_mode (program, away, hg, manual, off, max) |
+| ThermRelayCmd       | Switch    | Indicates whether the furnace is heating or not            |
+| ThermOrientation    | Number    | Physical orientation of the thermostat module              |
+| TimeStamp           | DateTime  | Timestamp when data was measured                           |
+| SetpointEndTime     | DateTime  | Thermostat goes back to schedule after that timestamp      |
+| LastMessage         | DateTime  | Last Message emitted by the module                         |
+| LowBattery          | Switch    | Low Battery                                                |
+| BatteryVP           | Number    | Battery Level                                              |
+| RfStatus            | Number    | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+
+All these channels except Sp_Temperature and SetpointMode are read only.
 
 
 ### Welcome Home
 
-This part of the binding will require basic read_camera and access_camera scopes. write_camera will only be needed to changed some channels from within OH2 (detailed below).
-
 **Supported channels for the Home thing:**
 
-* welcomeHomeCity
-* welcomeHomeCountry
-* welcomeHomeTimezone
-* welcomeHomePersonCount
-* welcomeHomeUnknownCount
-* welcomeEventType
-* welcomeEventTime
-* welcomeEventCameraId
-* welcomeEventPersonId
-* welcomeEventVideoStatus
-* welcomeEventIsArrival
-* welcomeEventMessage
-* welcomeEventSubType
-* welcomeEventSnapshot : picture of the last event, if it applies.
-* welcomeEventSnapshotURL : if the last event (depending upon event type) in the home lead a a snapshot picture, it will be available here.
-* welcomeEventVideoURL :  the last event (depending upon event type) in the home lead a a snapshot picture, the corresponding videoo will be available here.
+| Channel ID              | Item Type | Description                                              |
+|-------------------------|-----------|----------------------------------------------------------|
+| welcomeHomeCity         | String    | City of the home                                         |
+| welcomeHomeCountry      | String    | Country of the home                                      |
+| welcomeHomeTimezone     | String    | Timezone of the home                                     |
+| welcomeHomePersonCount  | Number    | Total number of Persons that are at home                 |
+| welcomeHomeUnknownCount | Number    | Count how many Unknown Persons are at home               |
+| welcomeEventType        | String    | Type of event                                            |
+| welcomeEventTime        | DateTime  | Time of occurrence of event                               |
+| welcomeEventCameraId    | String    | Camera that detected the event                           |
+| welcomeEventPersonId    | String    | Id of the person the event is about (if any)             |
+| welcomeEventSnapshot    | Image     | picture of the last event, if it applies                 |
+| welcomeEventSnapshotURL | String    | if the last event (depending upon event type) in the home lead a a snapshot picture, the picture URL will be available here |
+| welcomeEventVideoURL    | String    | if the last event (depending upon event type) in the home lead a a snapshot picture, the corresponding video URL will be available here |
+| welcomeEventVideoStatus | String    | Status of the video (recording, deleted or available)    |
+| welcomeEventIsArrival   | Switch    | If person was considered "away" before being seen during this event |
+| welcomeEventMessage     | String    | Message sent by Netatmo corresponding to given event     |
+| welcomeEventSubType     | String    | Sub-type of SD and Alim events                           |
+
+All these channels are read only.
 
 
 ### Welcome Camera
 
 **Supported channels for the Camera thing:**
 
-* welcomeCameraStatus
-* welcomeCameraSdStatus
-* welcomeCameraAlimStatus
-* welcomeCameraIsLocal : indicates wether the camera is on the same network than the openHab Netatmo Binding
-* welcomeCameraLivePicture : current image snapshot
-* welcomeCameraLivePictureUrl : url of the current image
-* welcomeCameraLiveStreamUrl : url of the feed for live video
+| Channel ID                  | Item Type | Description                                              |
+|-----------------------------|-----------|----------------------------------------------------------|
+| welcomeCameraStatus         | Switch    | State of the camera                                      |
+| welcomeCameraSdStatus       | Switch    | State of the SD card                                     |
+| welcomeCameraAlimStatus     | Switch    | State of the power connector                             |
+| welcomeCameraIsLocal        | Switch    | indicates whether the camera is on the same network than the openHab Netatmo Binding |
+| welcomeCameraLivePicture    | Image     | Camera Live Snapshot                                     |
+| welcomeCameraLivePictureUrl | String    | Url of the live snapshot for this camera                 |
+| welcomeCameraLiveStreamUrl  | String    | Url of the live stream for this camera                   |
+
+All these channels are read only.
+
+Warning : the URL of the live snapshot is a fixed URL so the value of the channel welcomeCameraLivePictureUrl will never be updated once first set by the binding. So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element. 
 
 
 ### Welcome Person
@@ -327,14 +384,20 @@ Person things are automatically created in discovery process for all known perso
 
 **Supported channels for the Person thing:**
 
-* welcomePersonLastSeen
-* welcomePersonAtHome. Indicates if this person is known to be at home or not. Modifying this value from OH2 requires the "write_camera" in the Netatmo App scope. Warning : while setting person away is fine, the contrary does not seem supported officialy by Netatmo API. 
-* welcomePersonAvatarUrl
-* welcomePersonAvatar
-* welcomePersonLastEventMessage
-* welcomePersonLastEventTime
-* welcomePersonLastEvent
-* welcomePersonLastEventUrl
+| Channel ID                    | Item Type | Description                                            |
+|-------------------------------|-----------|--------------------------------------------------------|
+| welcomePersonLastSeen         | DateTime  | Time when this person was last seen                    |
+| welcomePersonAtHome           | Switch    | Indicates if this person is known to be at home or not |
+| welcomePersonAvatarUrl        | String    | URL for the avatar of this person                      |
+| welcomePersonAvatar           | Image     | Avatar of this person                                  |
+| welcomePersonLastEventMessage | String    | Last Event message from this person                    |
+| welcomePersonLastEventTime    | DateTime  | Last Event message time for this person                |
+| welcomePersonLastEventUrl     | String    | URL for the picture of the last event for this person  |
+| welcomePersonLastEvent        | Image     | Picture of the last event for this person              |
+
+All these channels except welcomePersonAtHome are read only.
+
+Warning : while setting person away using the channel welcomePersonAtHome is fine, the contrary does not seem supported officially by Netatmo API. 
 
 
 # Configuration Examples
@@ -465,7 +528,7 @@ sitemap netatmo label="Netatmo"
 
 ## Missing Certificate Authority
 
-This version of the binding has been modified to avoid the need to impoort StartCom certificate in the local JDK certificate store.
+This version of the binding has been modified to avoid the need to import StartCom certificate in the local JDK certificate store.
 
 ```
 javax.net.ssl.SSLHandshakeException:

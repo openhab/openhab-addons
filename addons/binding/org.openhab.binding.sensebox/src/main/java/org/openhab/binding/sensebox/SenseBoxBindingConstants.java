@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.sensebox;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Hakan Tandogan - Initial contribution
  */
+@NonNullByDefault
 public class SenseBoxBindingConstants {
 
     public static final String BINDING_ID = "sensebox";

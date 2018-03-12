@@ -11,6 +11,7 @@ package org.openhab.binding.pioneeravr;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.ImmutableSet;
@@ -20,6 +21,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Antoine Besnard - Initial contribution
  */
+@NonNullByDefault
 public class PioneerAvrBindingConstants {
 
     public static final String BINDING_ID = "pioneeravr";

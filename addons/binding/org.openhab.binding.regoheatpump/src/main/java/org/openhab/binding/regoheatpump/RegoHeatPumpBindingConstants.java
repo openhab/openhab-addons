@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.regoheatpump;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 public class RegoHeatPumpBindingConstants {
 
     public static final String BINDING_ID = "regoheatpump";

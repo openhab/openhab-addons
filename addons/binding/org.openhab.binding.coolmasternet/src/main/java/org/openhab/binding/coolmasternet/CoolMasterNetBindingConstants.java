@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.coolmasternet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Angus Gratton
  */
+@NonNullByDefault
 public class CoolMasterNetBindingConstants {
 
     public static final String BINDING_ID = "coolmasternet";

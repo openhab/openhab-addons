@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.synopanalyzer;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -17,9 +17,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class SynopAnalyzerBindingConstants {
 
-    @NonNull
     public static final String BINDING_ID = "synopanalyzer";
 
     // List of all Thing Type UIDs
