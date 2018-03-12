@@ -17,6 +17,8 @@ import static org.openhab.binding.danfosshrv.DanfossHRVBindingConstants.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,6 +46,9 @@ public class DanfossHRVHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DanfossHRVHandler.class);
 
     @Nullable
+    private ScheduledFuture<?> pollingJob;
+
+    @Nullable
     private DanfossHRV hrv;
 
     @Nullable
@@ -58,9 +63,12 @@ public class DanfossHRVHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             // Placeholder for later refinement
             update();
-        } else if (channelUID.getId().equals(CHANNEL_BATTERY_LIFE)) {
-            // TODO: handle command
-
+        } else if (channelUID.getId().equals(CHANNEL_FAN_SPEED)) {
+            try {
+                updateState(CHANNEL_FAN_SPEED, hrv.setFanSpeed(command));
+            } catch (IOException ioe) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ioe.getMessage());
+            }
             // Note: if communication with thing fails for some reason,
             // indicate that by setting the status with detail information
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -86,20 +94,30 @@ public class DanfossHRVHandler extends BaseThingHandler {
             return;
         }
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+        pollingJob = scheduler.scheduleWithFixedDelay(() -> update(), 0, 10, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("Disposing Danfoss HRV handler '{}'", getThing().getUID());
+
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+            pollingJob = null;
+        }
+
+        hrv.disconnect();
+        hrv = null;
     }
 
     private void update() {
         logger.debug("Updating DanfossHRV data '{}'", getThing().getUID());
 
         try {
+            updateState(CHANNEL_FAN_SPEED, hrv.getFanSpeed());
             updateState(CHANNEL_HUMIDITY, hrv.getHumidity());
             updateState(CHANNEL_BATTERY_LIFE, hrv.getBatteryLife());
+            updateState(CHANNEL_CURRENT_TIME, hrv.getCurrentTime());
 
         } catch (IOException ioe) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ioe.getMessage());

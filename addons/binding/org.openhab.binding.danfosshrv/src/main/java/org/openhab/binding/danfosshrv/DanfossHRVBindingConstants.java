@@ -27,9 +27,11 @@ public class DanfossHRVBindingConstants {
     private static final String BINDING_ID = "danfosshrv";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "ccm");
+    public static final ThingTypeUID THING_TYPE_HRV = new ThingTypeUID(BINDING_ID, "hrv");
 
     // List of all Channel ids
+    public static final String CHANNEL_FAN_SPEED = "fan_speed";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_BATTERY_LIFE = "battery_life";
+    public static final String CHANNEL_CURRENT_TIME = "current_time";
 }

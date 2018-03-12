@@ -12,19 +12,19 @@
  */
 package org.openhab.binding.danfosshrv.internal;
 
-import static org.openhab.binding.danfosshrv.DanfossHRVBindingConstants.*;
+import static org.openhab.binding.danfosshrv.DanfossHRVBindingConstants.THING_TYPE_HRV;
 
 import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.danfosshrv.handler.DanfossHRVHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.danfosshrv.handler.DanfossHRVHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class DanfossHRVHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_HRV);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -48,7 +48,7 @@ public class DanfossHRVHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SAMPLE)) {
+        if (thingTypeUID.equals(THING_TYPE_HRV)) {
             return new DanfossHRVHandler(thing);
         }
 

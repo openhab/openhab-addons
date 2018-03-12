@@ -6,12 +6,15 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,9 +124,9 @@ public class DanfossHRV {
         return sendRobustRequest(operation, register)[0];
     }
 
-    private void setSetting(byte[] register, byte value) throws IOException {
+    private void set(byte[] operation, byte[] register, byte value) throws IOException {
         byte[] valueArray = { value };
-        sendRobustRequest(REGISTER_1_WRITE, register, valueArray);
+        sendRobustRequest(operation, register, valueArray);
     }
 
     private short getShort(byte[] operation, byte[] register) throws IOException {
@@ -135,22 +138,19 @@ public class DanfossHRV {
         return ((float) getShort(operation, register)) / 100;
     }
 
-    private Date getTimestamp(byte[] operation, byte[] register) throws IOException {
+    private ZonedDateTime getTimestamp(byte[] operation, byte[] register) throws IOException {
         byte[] result = sendRobustRequest(operation, register);
-        return asDate(result);
+        return asZonedDateTime(result);
     }
 
-    private static Date asDate(byte[] data) {
-        java.util.Calendar cal = Calendar.getInstance();
-
+    private static ZonedDateTime asZonedDateTime(byte[] data) {
         int second = data[0];
         int minute = data[1];
         int hour = data[2] & 0x1f;
         int day = data[3] & 0x1f;
-        int month = data[4] - 1;
+        int month = data[4];
         int year = data[5] + 2000;
-        cal.set(year, month, day, hour, minute, second);
-        return cal.getTime();
+        return ZonedDateTime.of(year, month, day, hour, minute, second, 0, ZoneId.systemDefault());
     }
 
     private static int asUnsignedByte(byte b) {
@@ -174,8 +174,8 @@ public class DanfossHRV {
         return new StringType(new Integer(getByte(REGISTER_1_READ, MODE)).toString());
     }
 
-    public DecimalType getFanSpeed() throws IOException {
-        return new DecimalType(BigDecimal.valueOf(getByte(REGISTER_1_READ, FAN_SPEED)));
+    public PercentType getFanSpeed() throws IOException {
+        return new PercentType(BigDecimal.valueOf(getByte(REGISTER_1_READ, FAN_SPEED) * 10));
     }
 
     public OnOffType getBoost() throws IOException {
@@ -218,6 +218,18 @@ public class DanfossHRV {
 
     public DecimalType getFilterLife() throws IOException {
         return new DecimalType(BigDecimal.valueOf(asPercentByte(getByte(REGISTER_1_READ, FILTER_LIFE))));
+    }
+
+    public DateTimeType getCurrentTime() throws IOException {
+        return new DateTimeType(getTimestamp(REGISTER_1_READ, CURRENT_TIME));
+    }
+
+    public PercentType setFanSpeed(Command cmd) throws IOException {
+        if (cmd instanceof PercentType) {
+            byte value = (byte) ((((PercentType) cmd).intValue() + 5) / 10);
+            set(REGISTER_1_WRITE, FAN_SPEED, value);
+        }
+        return new PercentType(BigDecimal.valueOf(getByte(REGISTER_1_READ, FAN_SPEED) * 10));
     }
 
 }

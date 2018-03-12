@@ -3,14 +3,16 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!--CCM-->
-	<thing-type id="ccm">
+	<!--HRV-->
+	<thing-type id="hrv">
 		<label>Danfoss Air Unit</label>
 		<description>The Danfoss Air Unit Heat Exchanger, CCM and Air Dial</description>
 
 		<channels>
+            <channel id="fan_speed" typeId="fanSpeed" />
             <channel id="humidity" typeId="humidity" />
 			<channel id="battery_life" typeId="batteryLife" />
+            <channel id="current_time" typeId="currentTime" />
 		</channels>
 
 		<config-description>
@@ -23,6 +25,11 @@
 	</thing-type>
 
 	<!--Cannel Definitions-->
+    <channel-type id="fanSpeed">
+        <item-type>Dimmer</item-type>
+        <label>Fan Speed</label>
+        <state step="10"></state>
+    </channel-type>	
 	<channel-type id="batteryLife">
 		<item-type>Number</item-type>
 		<label>Battery Life</label>
@@ -37,6 +44,12 @@
             <tag>CurrentHumidity</tag>
         </tags>
         <state min="0" max="100" pattern="%.0f %%" readOnly="true">
+        </state>
+    </channel-type>
+    <channel-type id="currentTime">
+        <item-type>DateTime</item-type>
+        <label>Current Time</label>
+        <state readOnly="true">
         </state>
     </channel-type>
 </thing:thing-descriptions>
