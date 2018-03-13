@@ -92,18 +92,14 @@ public class WebserviceHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         int pollingPeriod = this.getRefreshInterval();
-        pollingJob = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                logger.debug("Try to refresh data");
-                try {
-                    updateStationData();
-                    updateStationThings();
-                } catch (RuntimeException r) {
-                    logger.debug("Caught exception in ScheduledExecutorService of BridgeHandler. RuntimeException: ",
-                            r);
-                    updateStatus(ThingStatus.OFFLINE);
-                }
+        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+            logger.debug("Try to refresh data");
+            try {
+                updateStationData();
+                updateStationThings();
+            } catch (RuntimeException r) {
+                logger.debug("Caught exception in ScheduledExecutorService of BridgeHandler. RuntimeException: ", r);
+                updateStatus(ThingStatus.OFFLINE);
             }
         }, pollingPeriod, pollingPeriod, TimeUnit.MINUTES);
         logger.debug("Refresh job scheduled to run every {} min. for '{}'", pollingPeriod, getThing().getUID());

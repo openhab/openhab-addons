@@ -87,12 +87,9 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
             meteostickMode = "m" + mode.toString();
         }
 
-        Runnable pollingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                if (connectPort(port) == true) {
-                    offlineTimerJob.cancel(true);
-                }
+        Runnable pollingRunnable = () -> {
+            if (connectPort(port) == true) {
+                offlineTimerJob.cancel(true);
             }
         };
 
@@ -319,17 +316,14 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
     }
 
     private synchronized void startTimeoutCheck() {
-        Runnable pollingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                String detail;
-                if (lastData == null) {
-                    detail = "No data received";
-                } else {
-                    detail = "No data received since " + lastData.toString();
-                }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
+        Runnable pollingRunnable = () -> {
+            String detail;
+            if (lastData == null) {
+                detail = "No data received";
+            } else {
+                detail = "No data received since " + lastData.toString();
             }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
         };
 
         if (offlineTimerJob != null) {

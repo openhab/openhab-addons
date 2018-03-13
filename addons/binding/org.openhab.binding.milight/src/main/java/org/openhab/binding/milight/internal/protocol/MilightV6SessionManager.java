@@ -382,13 +382,10 @@ public class MilightV6SessionManager implements Runnable {
                 break;
         }
 
-        checkHandshakeTimer = scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    reset_registration_process();
-                } catch (InterruptedException ignored) {
-                }
+        checkHandshakeTimer = scheduler.schedule(() -> {
+            try {
+                reset_registration_process();
+            } catch (InterruptedException ignored) {
             }
         }, REG_TIMEOUT_SEC, TimeUnit.SECONDS);
     }

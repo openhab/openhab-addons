@@ -207,12 +207,8 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
         }
     }
 
-    private Runnable reconnectRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            dispose();
-            initialize();
-        }
+    private Runnable reconnectRunnable = () -> {
+        dispose();
+        initialize();
     };
 }

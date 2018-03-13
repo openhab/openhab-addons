@@ -77,19 +77,16 @@ public class ControllerHandler extends BaseBridgeHandler {
             // keep default
         }
 
-        Runnable refreshHVACUnits = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    checkConnection();
-                    updateStatus(ThingStatus.ONLINE);
-                    for (Thing t : getThing().getThings()) {
-                        HVACHandler h = (HVACHandler) t.getHandler();
-                        h.refresh();
-                    }
-                } catch (CoolMasterClientError e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        Runnable refreshHVACUnits = () -> {
+            try {
+                checkConnection();
+                updateStatus(ThingStatus.ONLINE);
+                for (Thing t : getThing().getThings()) {
+                    HVACHandler h = (HVACHandler) t.getHandler();
+                    h.refresh();
                 }
+            } catch (CoolMasterClientError e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         };
         scheduler.scheduleWithFixedDelay(refreshHVACUnits, 0, refresh, TimeUnit.SECONDS);

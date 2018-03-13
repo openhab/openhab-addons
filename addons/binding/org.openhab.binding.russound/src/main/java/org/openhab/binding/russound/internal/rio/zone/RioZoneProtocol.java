@@ -528,10 +528,7 @@ class RioZoneProtocol extends AbstractRioProtocol
      */
     Runnable setZoneFavorites(String favJson) {
         if (StringUtils.isEmpty(favJson)) {
-            return new Runnable() {
-                @Override
-                public void run() {
-                }
+            return () -> {
             };
         }
 
@@ -568,15 +565,12 @@ class RioZoneProtocol extends AbstractRioProtocol
         }
         // regardless of what happens above - reupdate the channel
         // (to remove anything bad from it)
-        return new Runnable() {
-            @Override
-            public void run() {
-                for (Integer favId : updateFavIds) {
-                    sendCommand("GET C[" + controller + "].Z[" + zone + "].favorite[" + favId + "].valid");
-                    sendCommand("GET C[" + controller + "].Z[" + zone + "].favorite[" + favId + "].name");
-                }
-                updateZoneFavoritesChannel();
+        return () -> {
+            for (Integer favId : updateFavIds) {
+                sendCommand("GET C[" + controller + "].Z[" + zone + "].favorite[" + favId + "].valid");
+                sendCommand("GET C[" + controller + "].Z[" + zone + "].favorite[" + favId + "].name");
             }
+            updateZoneFavoritesChannel();
         };
     }
 
