@@ -75,6 +75,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
         this.activate(null);
     }
 
+    @Override
     public void deactivate() {
         super.deactivate();
     }
@@ -137,7 +138,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
     protected void startBackgroundDiscovery() {
         if (scanningJob == null || scanningJob.isCancelled()) {
             logger.debug("start background scanning job at intervall {}s", SCAN_INTERVAL);
-            scanningJob = AbstractDiscoveryService.scheduler.scheduleWithFixedDelay(() -> {
+            scanningJob = scheduler.scheduleWithFixedDelay(() -> {
                 if (bridgeHandler.getWebInterface() != null) {
                     logger.debug("start background scan on bridge {}", bridgeHandler.getThing().getUID());
                     FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(bridgeHandler.getWebInterface(),
