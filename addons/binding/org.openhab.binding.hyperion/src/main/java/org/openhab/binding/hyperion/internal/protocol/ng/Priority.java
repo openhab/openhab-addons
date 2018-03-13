@@ -41,7 +41,7 @@ public class Priority {
     @SerializedName("value")
     private Value value;
 
-    public Boolean getActive() {
+    public Boolean isActive() {
         return active;
     }
 
@@ -89,7 +89,7 @@ public class Priority {
         this.priority = priority;
     }
 
-    public Boolean getVisible() {
+    public Boolean isVisible() {
         return visible;
     }
 
