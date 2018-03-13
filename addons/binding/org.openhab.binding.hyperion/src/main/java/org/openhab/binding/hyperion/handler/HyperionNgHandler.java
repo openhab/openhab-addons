@@ -246,8 +246,9 @@ public class HyperionNgHandler extends BaseThingHandler {
     private void populateClearPriorities(List<Priority> priorities) {
         List<StateOption> options = new ArrayList<>();
         options.add(new StateOption("ALL", "ALL"));
-        priorities.stream().filter(priority -> priority.getPriority() >= 1 && priority.getPriority() <= 253
-                && priority.getActive() == true).forEach(priority -> {
+        priorities.stream().filter(
+                priority -> priority.getPriority() >= 1 && priority.getPriority() <= 253 && priority.getActive())
+                .forEach(priority -> {
                     options.add(new StateOption(priority.getPriority().toString(), priority.getPriority().toString()));
                 });
         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_CLEAR), options);
