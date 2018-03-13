@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -28,7 +26,6 @@ import org.openhab.binding.minecraft.internal.message.data.SignData;
 import org.openhab.binding.minecraft.internal.server.ServerConnection;
 import org.openhab.binding.minecraft.internal.util.Pair;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,12 +79,6 @@ public class MinecraftDiscoveryService extends AbstractDiscoveryService {
 
         subscription.add(playerSubscription);
         subscription.add(signsSubscription);
-    }
-
-    @Modified
-    @Override
-    protected void modified(@Nullable Map<@NonNull String, @Nullable Object> configProperties) {
-        super.modified(configProperties);
     }
 
     /**
