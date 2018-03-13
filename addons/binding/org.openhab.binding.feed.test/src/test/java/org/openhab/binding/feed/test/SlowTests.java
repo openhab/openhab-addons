@@ -12,7 +12,6 @@ package org.openhab.binding.feed.test;
  * This interface is used to mark tests that take too much time
  *
  * @author Svilen Valkanov
- *
  */
 public interface SlowTests {
 
