@@ -41,6 +41,7 @@ public class YamahaReceiverBindingConstants {
     public static final String CHANNEL_SURROUND = "surroundProgram";
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_VOLUME_DB = "volumeDB";
+    public static final String CHANNEL_DIALOGUE_LEVEL = "dialogueLevel";
     public static final String CHANNEL_MUTE = "mute";
 
     // List of channel IDs for navigation control: Read/Write
