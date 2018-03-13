@@ -159,8 +159,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         } catch (IndegoAuthenticationException e) {
             String message = "The login credentials are wrong or another client connected to your Indego account";
             logger.warn(message, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    message);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         } catch (IndegoException e) {
             logger.warn("An error occurred", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -233,14 +232,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
 
         int refreshRate = ((BigDecimal) getConfig().get("refresh")).intValue();
-        pollFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
-
-            @Override
-            public void run() {
-                poll();
-            }
-        }, 0, refreshRate, TimeUnit.SECONDS);
-
+        pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 0, refreshRate, TimeUnit.SECONDS);
     }
 
     @Override

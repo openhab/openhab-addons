@@ -57,39 +57,35 @@ public class MultiroomPlusHandler extends BaseThingHandler {
         super(thing);
     }
 
-    private Runnable pollingRunnable = new Runnable() {
+    private Runnable pollingRunnable = () -> {
+        try {
+            String host = (String) getConfig().get(IP_ADDRESS);
+            int numberOfPorts = ((BigDecimal) getConfig().get(PORTS)).intValue();
 
-        @Override
-        public void run() {
-            try {
-                String host = (String) getConfig().get(IP_ADDRESS);
-                int numberOfPorts = ((BigDecimal) getConfig().get(PORTS)).intValue();
+            String httpMethod = "GET";
+            String url = "http://" + host + "/status_show.shtml";
 
-                String httpMethod = "GET";
-                String url = "http://" + host + "/status_show.shtml";
+            if (isNotBlank(httpMethod) && isNotBlank(url)) {
+                String response = HttpUtil.executeUrl(httpMethod, url, null, null, null, timeout);
 
-                if (isNotBlank(httpMethod) && isNotBlank(url)) {
-                    String response = HttpUtil.executeUrl(httpMethod, url, null, null, null, timeout);
+                if (response != null) {
+                    updateStatus(ThingStatus.ONLINE);
 
-                    if (response != null) {
-                        updateStatus(ThingStatus.ONLINE);
+                    for (int i = 1; i <= numberOfPorts; i++) {
+                        Pattern p = Pattern.compile("var out" + i + "var = (.*);");
+                        Matcher m = p.matcher(response);
 
-                        for (int i = 1; i <= numberOfPorts; i++) {
-                            Pattern p = Pattern.compile("var out" + i + "var = (.*);");
-                            Matcher m = p.matcher(response);
-
-                            while (m.find()) {
-                                DecimalType decimalType = new DecimalType(m.group(1));
-                                updateState(new ChannelUID(getThing().getUID(), Port.get(i).channelID()), decimalType);
-                            }
+                        while (m.find()) {
+                            DecimalType decimalType = new DecimalType(m.group(1));
+                            updateState(new ChannelUID(getThing().getUID(), Port.get(i).channelID()), decimalType);
                         }
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE);
                     }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE);
                 }
-            } catch (Exception e) {
-                logger.warn("An exception occurred while polling the HDanwywhere matrix: '{}'", e.getMessage());
             }
+        } catch (Exception e) {
+            logger.warn("An exception occurred while polling the HDanwywhere matrix: '{}'", e.getMessage());
         }
     };
 

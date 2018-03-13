@@ -54,13 +54,6 @@ public class GlobalCacheDiscoveryService extends AbstractDiscoveryService {
 
     private boolean terminate;
 
-    private Runnable discoverRunnable = new Runnable() {
-        @Override
-        public void run() {
-            discover();
-        }
-    };
-
     public GlobalCacheDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, 0, BACKGROUND_DISCOVERY_ENABLED);
         gcDiscoveryJob = null;
@@ -96,9 +89,8 @@ public class GlobalCacheDiscoveryService extends AbstractDiscoveryService {
         if (gcDiscoveryJob == null) {
             terminate = false;
             logger.debug("Starting background discovery job in {} seconds", BACKGROUND_DISCOVERY_DELAY);
-            gcDiscoveryJob = scheduledExecutorService.schedule(discoverRunnable, BACKGROUND_DISCOVERY_DELAY,
+            gcDiscoveryJob = scheduledExecutorService.schedule(this::discover, BACKGROUND_DISCOVERY_DELAY,
                     TimeUnit.SECONDS);
-
         }
     }
 

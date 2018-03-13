@@ -35,13 +35,10 @@ public final class QueueChannelThrottler extends AbstractMultiRateChannelThrottl
     private BlockingQueue<FutureTask<?>> tasks;
     private final Rate overallRate;
 
-    private final Runnable processQueueTask = new Runnable() {
-        @Override
-        public void run() {
-            FutureTask<?> task = tasks.poll();
-            if (task != null && !task.isCancelled()) {
-                task.run();
-            }
+    private final Runnable processQueueTask = () -> {
+        FutureTask<?> task = tasks.poll();
+        if (task != null && !task.isCancelled()) {
+            task.run();
         }
     };
 

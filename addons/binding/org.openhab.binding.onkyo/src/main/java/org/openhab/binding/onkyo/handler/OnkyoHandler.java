@@ -88,35 +88,26 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         connection = new OnkyoConnection(configuration.ipAddress, configuration.port);
         connection.addEventListener(this);
 
-        scheduler.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                logger.debug("Open connection to Onkyo Receiver @{}", connection.getConnectionName());
-                connection.openConnection();
-                if (connection.isConnected()) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
+        scheduler.execute(() -> {
+            logger.debug("Open connection to Onkyo Receiver @{}", connection.getConnectionName());
+            connection.openConnection();
+            if (connection.isConnected()) {
+                updateStatus(ThingStatus.ONLINE);
             }
         });
 
         if (configuration.refreshInterval > 0) {
             // Start resource refresh updater
-            resourceUpdaterFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        logger.debug("Send resource update requests to Onkyo Receiver @{}",
-                                connection.getConnectionName());
-                        checkStatus();
-                    } catch (LinkageError e) {
-                        logger.warn("Failed to send resource update requests to Onkyo Receiver @{}. Cause: {}",
-                                connection.getConnectionName(), e.getMessage());
-                    } catch (Exception ex) {
-                        logger.warn("Exception in resource refresh Thread Onkyo Receiver @{}. Cause: {}",
-                                connection.getConnectionName(), ex.getMessage());
-                    }
+            resourceUpdaterFuture = scheduler.scheduleWithFixedDelay(() -> {
+                try {
+                    logger.debug("Send resource update requests to Onkyo Receiver @{}", connection.getConnectionName());
+                    checkStatus();
+                } catch (LinkageError e) {
+                    logger.warn("Failed to send resource update requests to Onkyo Receiver @{}. Cause: {}",
+                            connection.getConnectionName(), e.getMessage());
+                } catch (Exception ex) {
+                    logger.warn("Exception in resource refresh Thread Onkyo Receiver @{}. Cause: {}",
+                            connection.getConnectionName(), ex.getMessage());
                 }
             }, configuration.refreshInterval, configuration.refreshInterval, TimeUnit.SECONDS);
         }

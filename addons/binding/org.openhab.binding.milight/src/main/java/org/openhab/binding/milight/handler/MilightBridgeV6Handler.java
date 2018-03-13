@@ -86,19 +86,16 @@ public class MilightBridgeV6Handler extends AbstractMilightBridgeHandler impleme
 
     @Override
     protected Runnable getKeepAliveRunnable() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    session.keep_alive(refrehIntervalSec * 1000);
-                } catch (InterruptedException e) {
-                    // Someone wants to end this thread
-                    return;
-                }
-                updateProperty(MilightBindingConstants.PROPERTY_SESSIONID, session.getSession());
-                updateProperty(MilightBindingConstants.PROPERTY_SESSIONCONFIRMED,
-                        String.valueOf(session.getLastSessionValidConfirmation()));
+        return () -> {
+            try {
+                session.keep_alive(refrehIntervalSec * 1000);
+            } catch (InterruptedException e) {
+                // Someone wants to end this thread
+                return;
             }
+            updateProperty(MilightBindingConstants.PROPERTY_SESSIONID, session.getSession());
+            updateProperty(MilightBindingConstants.PROPERTY_SESSIONCONFIRMED,
+                    String.valueOf(session.getLastSessionValidConfirmation()));
         };
     }
 

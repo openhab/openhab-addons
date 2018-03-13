@@ -85,13 +85,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
 
     private ScheduledFuture<?> pollingTask;
 
-    private Runnable pollingRunnable = new Runnable() {
-        @Override
-        public void run() {
-            polling();
-        }
-    };
-
     /**
      * Constructor.
      *
@@ -284,7 +277,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
     public void startPolling() {
         logger.debug("Starting DSC Alarm Polling Task.");
         if (pollingTask == null || pollingTask.isCancelled()) {
-            pollingTask = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval, TimeUnit.MILLISECONDS);
+            pollingTask = scheduler.scheduleWithFixedDelay(this::polling, 0, refreshInterval, TimeUnit.MILLISECONDS);
         }
     }
 

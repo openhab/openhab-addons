@@ -106,20 +106,17 @@ public class AirQualityHandler extends BaseThingHandler {
      */
     private void startAutomaticRefresh() {
         if (refreshJob == null || refreshJob.isCancelled()) {
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        // Request new air quality data to the aqicn.org service
-                        aqiResponse = updateAirQualityData();
+            Runnable runnable = () -> {
+                try {
+                    // Request new air quality data to the aqicn.org service
+                    aqiResponse = updateAirQualityData();
 
-                        // Update all channels from the updated AQI data
-                        for (Channel channel : getThing().getChannels()) {
-                            updateChannel(channel.getUID().getId(), aqiResponse);
-                        }
-                    } catch (Exception e) {
-                        logger.error("Exception occurred during execution: {}", e.getMessage(), e);
+                    // Update all channels from the updated AQI data
+                    for (Channel channel : getThing().getChannels()) {
+                        updateChannel(channel.getUID().getId(), aqiResponse);
                     }
+                } catch (Exception e) {
+                    logger.error("Exception occurred during execution: {}", e.getMessage(), e);
                 }
             };
 

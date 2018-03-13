@@ -80,44 +80,40 @@ public class Mhub4K431Handler extends BaseThingHandler {
         }
     }
 
-    private Runnable pollingRunnable = new Runnable() {
+    private Runnable pollingRunnable = () -> {
+        try {
+            String host = (String) getConfig().get(IP_ADDRESS);
 
-        @Override
-        public void run() {
-            try {
-                String host = (String) getConfig().get(IP_ADDRESS);
+            String httpMethod = "POST";
+            String url = "http://" + host + "/cgi-bin/MUH44TP_getsetparams.cgi";
+            String content = "{tag:ptn}";
+            InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
 
-                String httpMethod = "POST";
-                String url = "http://" + host + "/cgi-bin/MUH44TP_getsetparams.cgi";
-                String content = "{tag:ptn}";
-                InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+            if (isNotBlank(httpMethod) && isNotBlank(url)) {
+                String response = HttpUtil.executeUrl(httpMethod, url, null, stream, null, timeout);
+                response = response.trim();
+                response = response.substring(1, response.length() - 1);
 
-                if (isNotBlank(httpMethod) && isNotBlank(url)) {
-                    String response = HttpUtil.executeUrl(httpMethod, url, null, stream, null, timeout);
-                    response = response.trim();
-                    response = response.substring(1, response.length() - 1);
+                if (response != null) {
+                    updateStatus(ThingStatus.ONLINE);
 
-                    if (response != null) {
-                        updateStatus(ThingStatus.ONLINE);
+                    java.lang.reflect.Type type = new TypeToken<Map<String, String>>() {
+                    }.getType();
+                    Map<String, String> map = gson.fromJson(response, type);
 
-                        java.lang.reflect.Type type = new TypeToken<Map<String, String>>() {
-                        }.getType();
-                        Map<String, String> map = gson.fromJson(response, type);
+                    String inputChannel = map.get("Inputchannel");
 
-                        String inputChannel = map.get("Inputchannel");
-
-                        for (int i = 0; i < numberOfPorts; i++) {
-                            DecimalType decimalType = new DecimalType(String.valueOf(inputChannel.charAt(i)));
-                            updateState(new ChannelUID(getThing().getUID(), Port.get(i + 1).channelID()), decimalType);
-                        }
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE);
+                    for (int i = 0; i < numberOfPorts; i++) {
+                        DecimalType decimalType = new DecimalType(String.valueOf(inputChannel.charAt(i)));
+                        updateState(new ChannelUID(getThing().getUID(), Port.get(i + 1).channelID()), decimalType);
                     }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE);
                 }
-            } catch (Exception e) {
-                logger.debug("An exception occurred while polling the HDanwywhere matrix: '{}'", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE);
             }
+        } catch (Exception e) {
+            logger.debug("An exception occurred while polling the HDanwywhere matrix: '{}'", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE);
         }
     };
 

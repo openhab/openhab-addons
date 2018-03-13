@@ -322,97 +322,91 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         return devices;
     }
 
-    private Runnable eventListenerRunnable = new Runnable() {
+    private Runnable eventListenerRunnable = () -> {
+        if (IP_PATTERN.matcher((String) getConfig().get(INTERFACE)).matches()) {
+            while (true) {
+                // Get the address that we are going to connect to.
+                InetAddress address1 = null;
+                InetAddress address2 = null;
+                try {
+                    address1 = InetAddress.getByName(JSON_RPC_MULTICAST_IP1);
+                    address2 = InetAddress.getByName(JSON_RPC_MULTICAST_IP2);
+                } catch (UnknownHostException e) {
+                    logger.debug("An exception occurred while setting up the multicast receiver : '{}'",
+                            e.getMessage());
+                }
 
-        @Override
-        public void run() {
-            if (IP_PATTERN.matcher((String) getConfig().get(INTERFACE)).matches()) {
+                byte[] buf = new byte[256];
+                MulticastSocket clientSocket = null;
+
                 while (true) {
-                    // Get the address that we are going to connect to.
-                    InetAddress address1 = null;
-                    InetAddress address2 = null;
                     try {
-                        address1 = InetAddress.getByName(JSON_RPC_MULTICAST_IP1);
-                        address2 = InetAddress.getByName(JSON_RPC_MULTICAST_IP2);
-                    } catch (UnknownHostException e) {
-                        logger.debug("An exception occurred while setting up the multicast receiver : '{}'",
-                                e.getMessage());
-                    }
+                        clientSocket = new MulticastSocket(JSON_RPC_PORT);
+                        clientSocket.setSoTimeout(100);
 
-                    byte[] buf = new byte[256];
-                    MulticastSocket clientSocket = null;
+                        clientSocket.setInterface(InetAddress.getByName((String) getConfig().get(INTERFACE)));
+                        clientSocket.joinGroup(address1);
+                        clientSocket.joinGroup(address2);
 
-                    while (true) {
-                        try {
-                            clientSocket = new MulticastSocket(JSON_RPC_PORT);
-                            clientSocket.setSoTimeout(100);
+                        while (true) {
+                            try {
+                                buf = new byte[256];
+                                DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                                clientSocket.receive(packet);
 
-                            clientSocket.setInterface(InetAddress.getByName((String) getConfig().get(INTERFACE)));
-                            clientSocket.joinGroup(address1);
-                            clientSocket.joinGroup(address2);
+                                String event = new String(packet.getData());
+                                logger.debug("Received a multicast event '{}' from '{}:{}'",
+                                        new Object[] { event, packet.getAddress(), packet.getPort() });
 
-                            while (true) {
-                                try {
-                                    buf = new byte[256];
-                                    DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                                    clientSocket.receive(packet);
+                                DeviceProperty dp = new DeviceProperty();
+                                String uid = null;
 
-                                    String event = new String(packet.getData());
-                                    logger.debug("Received a multicast event '{}' from '{}:{}'",
-                                            new Object[] { event, packet.getAddress(), packet.getPort() });
-
-                                    DeviceProperty dp = new DeviceProperty();
-                                    String uid = null;
-
-                                    String[] parts = StringUtils.split(event, "&");
-                                    for (String p : parts) {
-                                        String[] subparts = StringUtils.split(p, "=");
-                                        switch (subparts[0]) {
-                                            case "property": {
-                                                dp.Name = subparts[1];
-                                                break;
-                                            }
-                                            case "value": {
-                                                dp.Value = subparts[1];
-                                                break;
-                                            }
-                                            case "id": {
-                                                uid = subparts[1];
-                                                break;
-                                            }
+                                String[] parts = StringUtils.split(event, "&");
+                                for (String p : parts) {
+                                    String[] subparts = StringUtils.split(p, "=");
+                                    switch (subparts[0]) {
+                                        case "property": {
+                                            dp.Name = subparts[1];
+                                            break;
+                                        }
+                                        case "value": {
+                                            dp.Value = subparts[1];
+                                            break;
+                                        }
+                                        case "id": {
+                                            uid = subparts[1];
+                                            break;
                                         }
                                     }
-
-                                    for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                        listener.onAppliancePropertyChanged(uid, dp);
-                                    }
-                                } catch (SocketTimeoutException e) {
-                                    Thread.sleep(500);
                                 }
-                            }
-                        } catch (Exception ex) {
-                            logger.debug("An exception occurred while receiving multicast packets : '{}'",
-                                    ex.getMessage());
-                        }
 
-                        // restart the cycle with a clean slate
-                        try {
-                            if (clientSocket != null) {
-                                clientSocket.leaveGroup(address1);
-                                clientSocket.leaveGroup(address2);
+                                for (ApplianceStatusListener listener : applianceStatusListeners) {
+                                    listener.onAppliancePropertyChanged(uid, dp);
+                                }
+                            } catch (SocketTimeoutException e) {
+                                Thread.sleep(500);
                             }
-                        } catch (IOException e) {
-                            logger.debug("An exception occurred while leaving multicast group : '{}'", e.getMessage());
                         }
+                    } catch (Exception ex) {
+                        logger.debug("An exception occurred while receiving multicast packets : '{}'", ex.getMessage());
+                    }
+
+                    // restart the cycle with a clean slate
+                    try {
                         if (clientSocket != null) {
-                            clientSocket.close();
+                            clientSocket.leaveGroup(address1);
+                            clientSocket.leaveGroup(address2);
                         }
+                    } catch (IOException e) {
+                        logger.debug("An exception occurred while leaving multicast group : '{}'", e.getMessage());
+                    }
+                    if (clientSocket != null) {
+                        clientSocket.close();
                     }
                 }
-            } else {
-                logger.debug("Invalid IP address for the multicast interface : '{}'", getConfig().get(INTERFACE));
             }
-
+        } else {
+            logger.debug("Invalid IP address for the multicast interface : '{}'", getConfig().get(INTERFACE));
         }
     };
 

@@ -89,18 +89,8 @@ public class EmulatedV6Bridge {
             FAKE_MAC[3], FAKE_MAC[4], FAKE_MAC[5], 1 };
 
     EmulatedV6Bridge() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                runDiscovery();
-            }
-        }).start();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                runBrigde();
-            }
-        }).start();
+        new Thread(this::runDiscovery).start();
+        new Thread(this::runBrigde).start();
     }
 
     private void replaceWithMac(byte data[], int offset) {

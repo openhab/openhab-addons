@@ -64,13 +64,10 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         channel = ((BigDecimal) getConfig().get(PARAMETER_CHANNEL)).intValue();
         logger.debug("Initializing MeteoStick handler - Channel {}.", channel);
 
-        Runnable pollingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                BigDecimal rainfall = new BigDecimal((rainHourlyWindow.getTotal() * 0.254));
-                rainfall.setScale(1, RoundingMode.DOWN);
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_LASTHOUR), new DecimalType(rainfall));
-            }
+        Runnable pollingRunnable = () -> {
+            BigDecimal rainfall = new BigDecimal((rainHourlyWindow.getTotal() * 0.254));
+            rainfall.setScale(1, RoundingMode.DOWN);
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_LASTHOUR), new DecimalType(rainfall));
         };
 
         // Scheduling a job on each hour to update the last hour rainfall
@@ -247,17 +244,14 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
     }
 
     private synchronized void startTimeoutCheck() {
-        Runnable pollingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                String detail;
-                if (lastData == null) {
-                    detail = "No data received";
-                } else {
-                    detail = "No data received since " + lastData.toString();
-                }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
+        Runnable pollingRunnable = () -> {
+            String detail;
+            if (lastData == null) {
+                detail = "No data received";
+            } else {
+                detail = "No data received since " + lastData.toString();
             }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
         };
 
         if (offlineTimerJob != null) {

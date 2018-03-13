@@ -57,11 +57,8 @@ public class MilightBridgeV3Handler extends AbstractMilightBridgeHandler impleme
 
     @Override
     protected Runnable getKeepAliveRunnable() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                discover.sendDiscover(scheduler);
-            }
+        return () -> {
+            discover.sendDiscover(scheduler);
         };
     }
 

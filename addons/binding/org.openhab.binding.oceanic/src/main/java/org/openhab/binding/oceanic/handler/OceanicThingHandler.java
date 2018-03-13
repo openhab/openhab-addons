@@ -51,50 +51,42 @@ public abstract class OceanicThingHandler extends BaseThingHandler {
         super(thing);
     }
 
-    private Runnable pollingRunnable = new Runnable() {
+    private Runnable resetRunnable = () -> {
+        dispose();
+        initialize();
+    };
 
-        @Override
-        public void run() {
-            try {
-                if (getThing().getStatus() == ThingStatus.ONLINE) {
-                    for (Channel aChannel : getThing().getChannels()) {
-                        for (OceanicChannelSelector selector : OceanicChannelSelector.values()) {
-                            ChannelUID theChannelUID = new ChannelUID(getThing().getUID(), selector.toString());
-                            if (aChannel.getUID().equals(theChannelUID)
-                                    && selector.getTypeValue() == OceanicChannelSelector.ValueSelectorType.GET) {
-                                String response = requestResponse(selector.name());
-                                if (response != null && response != "") {
-                                    if (selector.isProperty()) {
-                                        logger.debug("Updating the property '{}' with value '{}'", selector.toString(),
-                                                selector.convertValue(response));
-                                        Map<String, String> properties = editProperties();
-                                        properties.put(selector.toString(), selector.convertValue(response));
-                                        updateProperties(properties);
-                                    } else {
-                                        State value = createStateForType(selector, response);
-                                        updateState(theChannelUID, value);
-                                    }
+    private Runnable pollingRunnable = () -> {
+        try {
+            if (getThing().getStatus() == ThingStatus.ONLINE) {
+                for (Channel aChannel : getThing().getChannels()) {
+                    for (OceanicChannelSelector selector : OceanicChannelSelector.values()) {
+                        ChannelUID theChannelUID = new ChannelUID(getThing().getUID(), selector.toString());
+                        if (aChannel.getUID().equals(theChannelUID)
+                                && selector.getTypeValue() == OceanicChannelSelector.ValueSelectorType.GET) {
+                            String response = requestResponse(selector.name());
+                            if (response != null && response != "") {
+                                if (selector.isProperty()) {
+                                    logger.debug("Updating the property '{}' with value '{}'", selector.toString(),
+                                            selector.convertValue(response));
+                                    Map<String, String> properties = editProperties();
+                                    properties.put(selector.toString(), selector.convertValue(response));
+                                    updateProperties(properties);
                                 } else {
-                                    logger.warn("Received an empty answer for '{}'", selector.name());
+                                    State value = createStateForType(selector, response);
+                                    updateState(theChannelUID, value);
                                 }
+                            } else {
+                                logger.warn("Received an empty answer for '{}'", selector.name());
                             }
                         }
                     }
                 }
-            } catch (Exception e) {
-                logger.error("An exception occurred while polling the Oceanic Water Softener: '{}'", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                scheduler.schedule(resetRunnable, 0, TimeUnit.SECONDS);
             }
-        }
-    };
-
-    private Runnable resetRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            dispose();
-            initialize();
+        } catch (Exception e) {
+            logger.error("An exception occurred while polling the Oceanic Water Softener: '{}'", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            scheduler.schedule(resetRunnable, 0, TimeUnit.SECONDS);
         }
     };
 

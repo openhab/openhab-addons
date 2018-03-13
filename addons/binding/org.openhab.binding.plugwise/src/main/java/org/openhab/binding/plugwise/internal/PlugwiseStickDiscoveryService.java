@@ -255,12 +255,9 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
     protected void startBackgroundDiscovery() {
         logger.debug("Starting Plugwise Stick background discovery");
 
-        Runnable discoveryRunnable = new Runnable() {
-            @Override
-            public void run() {
-                logger.debug("Discover Sticks (background discovery)");
-                discoverSticks();
-            }
+        Runnable discoveryRunnable = () -> {
+            logger.debug("Discover Sticks (background discovery)");
+            discoverSticks();
         };
 
         if (discoveryJob == null || discoveryJob.isCancelled()) {

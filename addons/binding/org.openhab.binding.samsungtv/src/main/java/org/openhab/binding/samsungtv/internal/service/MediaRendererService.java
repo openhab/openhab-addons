@@ -117,29 +117,21 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
         return true;
     }
 
-    private Runnable pollingRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            if (isRegistered()) {
-
-                try {
-                    updateResourceState("RenderingControl", "GetVolume",
-                            SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
-                    updateResourceState("RenderingControl", "GetMute",
-                            SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
-                    updateResourceState("RenderingControl", "GetBrightness",
-                            SamsungTvUtils.buildHashMap("InstanceID", "0"));
-                    updateResourceState("RenderingControl", "GetContrast",
-                            SamsungTvUtils.buildHashMap("InstanceID", "0"));
-                    updateResourceState("RenderingControl", "GetSharpness",
-                            SamsungTvUtils.buildHashMap("InstanceID", "0"));
-                    updateResourceState("RenderingControl", "GetColorTemperature",
-                            SamsungTvUtils.buildHashMap("InstanceID", "0"));
-
-                } catch (Exception e) {
-                    reportError("Error occurred during poll", e);
-                }
+    private Runnable pollingRunnable = () -> {
+        if (isRegistered()) {
+            try {
+                updateResourceState("RenderingControl", "GetVolume",
+                        SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
+                updateResourceState("RenderingControl", "GetMute",
+                        SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
+                updateResourceState("RenderingControl", "GetBrightness",
+                        SamsungTvUtils.buildHashMap("InstanceID", "0"));
+                updateResourceState("RenderingControl", "GetContrast", SamsungTvUtils.buildHashMap("InstanceID", "0"));
+                updateResourceState("RenderingControl", "GetSharpness", SamsungTvUtils.buildHashMap("InstanceID", "0"));
+                updateResourceState("RenderingControl", "GetColorTemperature",
+                        SamsungTvUtils.buildHashMap("InstanceID", "0"));
+            } catch (Exception e) {
+                reportError("Error occurred during poll", e);
             }
         }
     };

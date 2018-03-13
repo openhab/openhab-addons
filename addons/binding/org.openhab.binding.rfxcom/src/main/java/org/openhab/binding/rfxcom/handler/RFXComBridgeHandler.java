@@ -144,14 +144,10 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         configuration = getConfigAs(RFXComBridgeConfiguration.class);
 
         if (connectorTask == null || connectorTask.isCancelled()) {
-            connectorTask = scheduler.scheduleWithFixedDelay(new Runnable() {
-
-                @Override
-                public void run() {
-                    logger.debug("Checking RFXCOM transceiver connection, thing status = {}", thing.getStatus());
-                    if (thing.getStatus() != ThingStatus.ONLINE) {
-                        connect();
-                    }
+            connectorTask = scheduler.scheduleWithFixedDelay(() -> {
+                logger.debug("Checking RFXCOM transceiver connection, thing status = {}", thing.getStatus());
+                if (thing.getStatus() != ThingStatus.ONLINE) {
+                    connect();
                 }
             }, 0, 60, TimeUnit.SECONDS);
         }
@@ -235,8 +231,10 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                     if (msg.subType == SubType.RESPONSE) {
                         if (msg.command == Commands.GET_STATUS) {
                             logger.info("RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
-                                msg.transceiverType, msg.hardwareVersion1, msg.hardwareVersion2, msg.firmwareVersion);
-                            thing.setProperty(Thing.PROPERTY_HARDWARE_VERSION, msg.hardwareVersion1 + "." + msg.hardwareVersion2);
+                                    msg.transceiverType, msg.hardwareVersion1, msg.hardwareVersion2,
+                                    msg.firmwareVersion);
+                            thing.setProperty(Thing.PROPERTY_HARDWARE_VERSION,
+                                    msg.hardwareVersion1 + "." + msg.hardwareVersion2);
                             thing.setProperty(Thing.PROPERTY_FIRMWARE_VERSION, Integer.toString(msg.firmwareVersion));
 
                             if (configuration.ignoreConfig) {

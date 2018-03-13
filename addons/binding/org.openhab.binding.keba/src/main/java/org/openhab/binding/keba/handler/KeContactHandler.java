@@ -142,44 +142,40 @@ public class KeContactHandler extends BaseThingHandler {
         return super.getConfig();
     }
 
-    private Runnable pollingRunnable = new Runnable() {
+    private Runnable pollingRunnable = () -> {
+        try {
+            long stamp = System.currentTimeMillis();
+            if (!InetAddress.getByName(((String) getConfig().get(IP_ADDRESS))).isReachable(PING_TIME_OUT)) {
+                logger.debug("Ping timed out after '{}' milliseconds", System.currentTimeMillis() - stamp);
+                transceiver.unRegisterHandler(getHandler());
+            } else {
+                if (getThing().getStatus() == ThingStatus.ONLINE) {
+                    ByteBuffer response = cache.get(CACHE_REPORT_1);
+                    if (response != null) {
+                        onData(response);
+                    }
 
-        @Override
-        public void run() {
-            try {
-                long stamp = System.currentTimeMillis();
-                if (!InetAddress.getByName(((String) getConfig().get(IP_ADDRESS))).isReachable(PING_TIME_OUT)) {
-                    logger.debug("Ping timed out after '{}' milliseconds", System.currentTimeMillis() - stamp);
-                    transceiver.unRegisterHandler(getHandler());
-                } else {
-                    if (getThing().getStatus() == ThingStatus.ONLINE) {
-                        ByteBuffer response = cache.get(CACHE_REPORT_1);
-                        if (response != null) {
-                            onData(response);
-                        }
+                    Thread.sleep(REPORT_INTERVAL);
 
-                        Thread.sleep(REPORT_INTERVAL);
+                    response = cache.get(CACHE_REPORT_2);
+                    if (response != null) {
+                        onData(response);
+                    }
 
-                        response = cache.get(CACHE_REPORT_2);
-                        if (response != null) {
-                            onData(response);
-                        }
+                    Thread.sleep(REPORT_INTERVAL);
 
-                        Thread.sleep(REPORT_INTERVAL);
-
-                        response = cache.get(CACHE_REPORT_3);
-                        if (response != null) {
-                            onData(response);
-                        }
+                    response = cache.get(CACHE_REPORT_3);
+                    if (response != null) {
+                        onData(response);
                     }
                 }
-            } catch (InterruptedException | NumberFormatException | IOException e) {
-                logger.debug("An exception occurred while polling the KEBA KeContact '{}': {}", getThing().getUID(),
-                        e.getMessage(), e);
-                Thread.currentThread().interrupt();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "An exception occurred while while polling the charging station");
             }
+        } catch (InterruptedException | NumberFormatException | IOException e) {
+            logger.debug("An exception occurred while polling the KEBA KeContact '{}': {}", getThing().getUID(),
+                    e.getMessage(), e);
+            Thread.currentThread().interrupt();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "An exception occurred while while polling the charging station");
         }
     };
 

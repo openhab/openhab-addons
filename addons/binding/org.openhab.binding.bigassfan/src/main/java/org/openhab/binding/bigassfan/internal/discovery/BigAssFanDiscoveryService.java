@@ -57,14 +57,11 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
 
     private final Pattern announcementPattern = Pattern.compile("[(](.*);DEVICE;ID;(.*);(.*)[)]");
 
-    private Runnable listenerRunnable = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                listen();
-            } catch (RuntimeException e) {
-                logger.warn("Discovery listener got unexpected exception: {}", e.getMessage(), e);
-            }
+    private Runnable listenerRunnable = () -> {
+        try {
+            listen();
+        } catch (RuntimeException e) {
+            logger.warn("Discovery listener got unexpected exception: {}", e.getMessage(), e);
         }
     };
 
@@ -244,14 +241,11 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
     private void schedulePollJob() {
         logger.debug("Scheduling discovery poll job to run every {} seconds starting in {} sec", POLL_FREQ, POLL_DELAY);
         cancelPollJob();
-        pollJob = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    discoveryListener.pollForDevices();
-                } catch (RuntimeException e) {
-                    logger.warn("Poll job got unexpected exception: {}", e.getMessage(), e);
-                }
+        pollJob = scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                discoveryListener.pollForDevices();
+            } catch (RuntimeException e) {
+                logger.warn("Poll job got unexpected exception: {}", e.getMessage(), e);
             }
         }, POLL_DELAY, POLL_FREQ, TimeUnit.SECONDS);
     }
