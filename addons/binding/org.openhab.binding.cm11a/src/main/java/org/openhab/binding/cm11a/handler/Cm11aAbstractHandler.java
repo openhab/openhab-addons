@@ -60,6 +60,7 @@ public abstract class Cm11aAbstractHandler extends BaseThingHandler {
      */
     static final int X10_DIM_INCREMENTS = 22;
     static final String HOUSE_UNIT_CODE = "houseUnitCode";
+    static final String NO_BRIDGE_ERROR = "No bridge found using house unit code ";
 
     private final Logger logger = LoggerFactory.getLogger(Cm11aAbstractHandler.class);
 
@@ -74,8 +75,6 @@ public abstract class Cm11aAbstractHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        final String NO_BRIDGE_ERROR = "No bridge found using house unit code ";
-
         Configuration config = thing.getConfiguration();
 
         houseUnitCode = (String) config.get(HOUSE_UNIT_CODE);
