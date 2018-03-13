@@ -33,7 +33,8 @@ public class OceanicBindingConstants {
     public static final String BINDING_ID = "oceanic";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SOFTENER = new ThingTypeUID(BINDING_ID, "softener");
+    public static final ThingTypeUID THING_TYPE_SERIAL = new ThingTypeUID(BINDING_ID, "serial");
+    public static final ThingTypeUID THING_TYPE_NETWORK = new ThingTypeUID(BINDING_ID, "network");
 
     // List of all Channel ids
     public enum OceanicChannelSelector {
@@ -214,7 +215,6 @@ public class OceanicBindingConstants {
         getLAR("lastgeneration", DateTimeType.class, ValueSelectorType.GET, false) {
             @Override
             public String convertValue(String value) {
-
                 final SimpleDateFormat inDateFormatter = new SimpleDateFormat("dd.MM.yy HH:mm:ss");
                 final SimpleDateFormat outDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
@@ -269,15 +269,12 @@ public class OceanicBindingConstants {
         /**
          * Procedure to convert selector string to value selector class.
          *
-         * @param valueSelectorText
-         *            selector string e.g. RawData, Command, Temperature
+         * @param valueSelectorText selector string e.g. RawData, Command, Temperature
          * @return corresponding selector value.
-         * @throws InvalidClassException
-         *             Not valid class for value selector.
+         * @throws InvalidClassException Not valid class for value selector.
          */
         public static OceanicChannelSelector getValueSelector(String valueSelectorText,
                 ValueSelectorType valueSelectorType) throws IllegalArgumentException {
-
             for (OceanicChannelSelector c : OceanicChannelSelector.values()) {
                 if (c.text.equals(valueSelectorText) && c.typeValue == valueSelectorType) {
                     return c;
@@ -288,7 +285,6 @@ public class OceanicBindingConstants {
         }
 
         public static ValueSelectorType getValueSelectorType(String valueSelectorText) throws IllegalArgumentException {
-
             for (OceanicChannelSelector c : OceanicChannelSelector.values()) {
                 if (c.text.equals(valueSelectorText)) {
                     return c.typeValue;
