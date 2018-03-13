@@ -11,7 +11,7 @@ package org.openhab.binding.minecraft.internal.config;
 /**
  * Configuration settings for a {@link org.openhab.binding.minecraft.handler.MinecraftSignHandler}.
  *
- * @author Mattias Markehed
+ * @author Mattias Markehed - Initial contribution
  */
 public class SignConfig {
     private String signName = "";

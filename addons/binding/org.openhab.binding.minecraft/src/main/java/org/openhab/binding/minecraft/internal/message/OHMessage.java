@@ -14,7 +14,7 @@ import com.google.gson.JsonElement;
  * Message used for communicating with Minecraft server.
  * Used both for sending and receiving messages.
  *
- * @author Mattias Markehed
+ * @author Mattias Markehed - Initial contribution
  */
 public class OHMessage {
 

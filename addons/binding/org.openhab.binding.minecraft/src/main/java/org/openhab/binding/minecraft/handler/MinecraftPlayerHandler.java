@@ -124,7 +124,6 @@ public class MinecraftPlayerHandler extends BaseThingHandler {
     }
 
     private synchronized MinecraftServerHandler getBridgeHandler() {
-
         Bridge bridge = getBridge();
         if (bridge == null) {
             logger.debug("Required bridge not defined for device {}.");
@@ -132,11 +131,9 @@ public class MinecraftPlayerHandler extends BaseThingHandler {
         } else {
             return getBridgeHandler(bridge);
         }
-
     }
 
     private synchronized MinecraftServerHandler getBridgeHandler(Bridge bridge) {
-
         MinecraftServerHandler bridgeHandler = null;
 
         ThingHandler handler = bridge.getHandler();
