@@ -15,7 +15,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * The {@link MinecraftBinding} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Mattias Markehed
+ * @author Mattias Markehed - Initial contribution
  */
 @NonNullByDefault
 public class MinecraftBindingConstants {
