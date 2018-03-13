@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -172,8 +173,9 @@ public class HyperionNgHandler extends BaseThingHandler {
             Hyperion hyperion = info.getHyperion();
             updateHyperion(hyperion);
 
+            // populate the effect states
             List<Effect> effects = info.getEffects();
-            updateEffects(effects);
+            populateEffects(effects);
 
             // update adjustments
             List<Adjustment> adjustments = info.getAdjustment();
@@ -189,7 +191,7 @@ public class HyperionNgHandler extends BaseThingHandler {
         }
     }
 
-    private void updateEffects(List<Effect> effects) {
+    private void populateEffects(List<Effect> effects) {
         List<StateOption> options = new ArrayList<>();
         for (Effect effect : effects) {
             options.add(new StateOption(effect.getName(), effect.getName()));
@@ -198,32 +200,39 @@ public class HyperionNgHandler extends BaseThingHandler {
     }
 
     private void updatePriorities(List<Priority> priorities) {
+
+        populateClearPriorities(priorities);
+
         String regex = origin + ".*";
 
         // update color
-        Priority colorPriority = priorities.stream() // convert list to stream
+        // find the color priority that has the same origin specified in the Thing configuration
+        Optional<Priority> colorPriority = priorities.stream() // convert list to stream
                 .filter(priority -> COLOR_PRIORITY.equals(priority.getComponentId())
                         && priority.getOrigin().matches(regex))
-                .findFirst().orElse(null);
+                .findFirst();
 
-        if (colorPriority == null) {
-            updateState(CHANNEL_COLOR, UnDefType.NULL);
-        } else {
-            Value value = colorPriority.getValue();
+        // if there is no color priority for the openHAB origin then set channel to NULL
+        if (colorPriority.isPresent()) {
+            Value value = colorPriority.get().getValue();
             List<Integer> rgbVals = value.getRGB();
             int r = rgbVals.get(0);
             int g = rgbVals.get(1);
             int b = rgbVals.get(2);
             HSBType hsbType = HSBType.fromRGB(r, g, b);
             updateState(CHANNEL_COLOR, hsbType);
+        } else {
+            updateState(CHANNEL_COLOR, UnDefType.NULL);
         }
 
         // update effect
+        // find the color priority that has the same origin specified in the Thing configuration
         Priority effectPriority = priorities.stream() // convert list to stream
                 .filter(priority -> EFFECT_PRIORITY.equals(priority.getComponentId())
                         && priority.getOrigin().matches(regex))
                 .findFirst().orElse(null);
 
+        // if there is no effect priority for the openHAB origin then set channel to NULL
         if (effectPriority == null) {
             updateState(CHANNEL_EFFECT, UnDefType.NULL);
         } else {
@@ -231,6 +240,17 @@ public class HyperionNgHandler extends BaseThingHandler {
             StringType effect = new StringType(effectString);
             updateState(CHANNEL_EFFECT, effect);
         }
+
+    }
+
+    private void populateClearPriorities(List<Priority> priorities) {
+        List<StateOption> options = new ArrayList<>();
+        options.add(new StateOption("ALL", "ALL"));
+        priorities.stream().filter(priority -> priority.getPriority() >= 1 && priority.getPriority() <= 253
+                && priority.getActive() == true).forEach(priority -> {
+                    options.add(new StateOption(priority.getPriority().toString(), priority.getPriority().toString()));
+                });
+        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_CLEAR), options);
     }
 
     private void updateHyperion(Hyperion hyperion) {
@@ -463,7 +483,7 @@ public class HyperionNgHandler extends BaseThingHandler {
         String jsonResponse = connection.send(commandJson);
         NgResponse response = gson.fromJson(jsonResponse, NgResponse.class);
         if (!response.isSuccess()) {
-            throw new CommandUnsuccessfulException(gson.toJson(command));
+            throw new CommandUnsuccessfulException(gson.toJson(command) + " - Reason: " + response.getError());
         }
         return response;
     }
