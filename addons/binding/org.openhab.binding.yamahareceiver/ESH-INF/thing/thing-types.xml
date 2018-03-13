@@ -77,6 +77,7 @@
 			<channel id="surroundProgram" typeId="surroundProgram" />
 			<channel id="volume" typeId="volume" />
 			<channel id="volumeDB" typeId="volumeDB" />
+			<channel id="dialogueLevel" typeId="dialogueLevel" />
 			<channel id="mute" typeId="mute" />
 		</channels>
 	</channel-group-type>
@@ -146,6 +147,14 @@
 		<label>Mute</label>
 		<description>Enable/Disable Mute on the AVR</description>
 		<category>SoundVolume</category>
+	</channel-type>
+
+	<channel-type id="dialogueLevel">
+		<item-type>Number</item-type>
+		<label>Dialogue level</label>
+		<description>Set the dialogue level</description>
+		<category>SoundVolume</category>
+		<state min="0" max="2" step="1" pattern="%d" />
 	</channel-type>
 
 	<channel-group-type id="playback_channels">

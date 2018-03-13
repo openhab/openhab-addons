@@ -26,4 +26,5 @@ public class ZoneControlState {
     public String surroundProgram = VALUE_EMPTY;
     public float volume = 0.0f; // volume in percent
     public boolean mute = false;
+    public int dialogueLevel = 0;
 }

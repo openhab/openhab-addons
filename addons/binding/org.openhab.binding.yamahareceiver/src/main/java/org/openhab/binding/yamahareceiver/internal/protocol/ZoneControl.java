@@ -58,4 +58,6 @@ public interface ZoneControl extends IStateUpdatable {
     void setInput(String name) throws IOException, ReceivedMessageParseException;
 
     void setSurroundProgram(String name) throws IOException, ReceivedMessageParseException;
+
+    void setDialogueLevel(int level) throws IOException, ReceivedMessageParseException;
 }

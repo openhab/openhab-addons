@@ -37,6 +37,7 @@ Zone control channels are:
 *   `mute#zone_channels`: openHAB Type `Switch`, Mute or Unmute the receiver.
 *   `volume#zone_channels`: openHAB Type `Dimmer`, Set's the receivers volume as percentage.
 *   `volumeDB#zone_channels`: openHAB Type `Dimmer`, Set's the receivers volume in dB.
+*   `dialogueLevel#zone_channels`: openHAB Type `Number`, Set's the receivers dialogue level.
 *   `input#zone_channels`: openHAB Type `String`, Set's the input selection, depends on your receiver's real inputs. Examples: HDMI1, HDMI2, AV4, TUNER, NET RADIO, etc.
 *   `surroundProgram#zone_channels`: openHAB Type `String`, Set's the surround mode. Examples: 2ch Stereo, 7ch Stereo, Hall in Munic, Straight, Surround Decoder.
 
@@ -79,6 +80,7 @@ Items:
 Switch      Yamaha_Power                "Power [%s]"                <switch>
 Dimmer      Yamaha_Volume               "Volume [%.1f %%]"          <soundvolume>
 Switch      Yamaha_Mute                 "Mute [%s]"                 <soundvolume_mute>
+Number      Yamaha_Dialogue_Level       "Dialogue Level [%d]"       <soundvolume>
 String      Yamaha_Input                "Input [%s]"                <video>
 String      Yamaha_Surround             "Surround [%s]"             <video>
 ```
@@ -94,6 +96,7 @@ Items:
 Switch      Yamaha_Power                "Power [%s]"                <switch>             { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:zone_channels#power" }
 Dimmer      Yamaha_Volume               "Volume [%.1f %%]"          <soundvolume>        { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:zone_channels#volume" }
 Switch      Yamaha_Mute                 "Mute [%s]"                 <soundvolume_mute>   { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:zone_channels#mute" }
+Switch      Yamaha_Dialogue_Level       "Dialogue Level [%d]"      <soundvolume>         { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:zone_channels#dialogueLevel" }
 String      Yamaha_Input                "Input [%s]"                <video>              { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:zone_channels#input" }
 String      Yamaha_Surround             "Surround [%s]"             <video>              { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:zone_channels#surroundProgram" }
 ```
@@ -104,6 +107,7 @@ Sitemap:
 Switch     item=Yamaha_Power
 Switch     item=Yamaha_Mute
 Slider     item=Yamaha_Volume
+Setpoint   item=Yamaha_Dialogue_Level minValue=0 maxValue=2 step=1
 Selection  item=Yamaha_Input       mappings=[HDMI1="Kodi",HDMI2="PC",AUDIO1="TV",TUNER="Tuner",Spotify="Spotify",Bluetooth="Bluetooth","NET RADIO"="NetRadio"]
 Selection  item=Yamaha_Surround    mappings=["2ch Stereo"="2ch Stereo","5ch Stereo"="5ch Stereo","Chamber"="Chamber","Sci-Fi"="Sci-Fi","Adventure"="Adventure"]
 ```
