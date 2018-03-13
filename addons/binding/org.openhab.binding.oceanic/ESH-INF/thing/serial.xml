@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="oceanic" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="serial">
+		<label>Oceanic Water Softener</label>
+		<description>Oceanic Water Softener connected through a serial port</description>
+
+		<channels>
+			<channel id="alarm" typeId="alarm" />
+			<channel id="alert" typeId="alert" />
+			<channel id="totalflow" typeId="flow" />
+			<channel id="reserve" typeId="reserve" />
+			<channel id="cycle" typeId="cycle" />
+			<channel id="endofcycle" typeId="time" />
+			<channel id="endofregeneration" typeId="time" />
+			<channel id="hardnessunit" typeId="unit" />
+			<channel id="inlethardness" typeId="hardness" />
+			<channel id="outlethardness" typeId="hardness" />
+			<channel id="cylinderstate" typeId="cylinderstate" />
+			<channel id="salt" typeId="salt" />
+			<channel id="regeneratenow" typeId="regeneratenow" />
+			<channel id="regeneratelater" typeId="regeneratelater" />
+			<channel id="multiregenerate" typeId="multiregenerate" />
+			<channel id="consumptionmonday" typeId="consumption" />
+			<channel id="consumptiontuesday" typeId="consumption" />
+			<channel id="consumptionwednesday" typeId="consumption" />
+			<channel id="consumptionthursday" typeId="consumption" />
+			<channel id="consumptionfriday" typeId="consumption" />
+			<channel id="consumptionsaturday" typeId="consumption" />
+			<channel id="consumptionsunday" typeId="consumption" />
+			<channel id="consumptiontoday" typeId="consumption" />
+			<channel id="consumptionyesterday" typeId="consumption" />
+			<channel id="consumptioncurrentweek" typeId="consumption" />
+			<channel id="consumptionlastweek" typeId="consumption" />
+			<channel id="consumptioncurrentmonth" typeId="consumption" />
+			<channel id="consumptionlastmonth" typeId="consumption" />
+			<channel id="consumptioncomplete" typeId="consumption" />
+			<channel id="consumptionuntreated" typeId="consumption" />
+			<channel id="consumptionpeaklevel" typeId="consumption" />
+			<channel id="pressure" typeId="pressure" />
+			<channel id="maxpressure" typeId="pressure" />
+			<channel id="minpressure" typeId="pressure" />
+			<channel id="maxflow" typeId="flow" />
+			<channel id="lastgeneration" typeId="time" />
+			<channel id="normalregenerations" typeId="number" />
+			<channel id="serviceregenerations" typeId="number" />
+			<channel id="incompleteregenerations" typeId="number" />
+			<channel id="allregenerations" typeId="number" />
+		</channels>
+
+		<config-description>
+			<parameter name="port" type="text" required="true">
+				<label>Serial Port</label>
+				<context>serial-port</context>
+				<description>Serial Port the Oceanic Water Softener is connected to</description>
+			</parameter>
+			<parameter name="interval" type="decimal" required="true">
+				<label>Polling Interval</label>
+				<description>Interval in seconds to poll the Oceanic Water Softener for status updates</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>
