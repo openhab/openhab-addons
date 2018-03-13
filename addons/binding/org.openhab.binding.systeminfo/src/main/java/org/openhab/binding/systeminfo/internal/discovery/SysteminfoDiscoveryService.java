@@ -34,13 +34,14 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.systeminfo")
 public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
+    public static final String DEFAULT_THING_ID = "unknown";
+    public static final String DEFAULT_THING_LABEL = "Local computer";
+
     private final Logger logger = LoggerFactory.getLogger(SysteminfoDiscoveryService.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COMPUTER);
 
     private static final int DISCOVERY_TIME_SECONDS = 30;
-    private static final String DEFAULT_THING_ID = "unknown";
-    private static final String DEFAULT_THING_LABEL = "Local computer";
     private static final String THING_UID_VALID_CHARS = "A-Za-z0-9_-";
     private static final String HOST_NAME_SEPERATOR = "_";
 
