@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.danfosshrv;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -26,8 +29,11 @@ public class DanfossHRVBindingConstants {
 
     private static final String BINDING_ID = "danfosshrv";
 
-    // List of all Thing Type UIDs
+    // The only thing type UIDs
     public static final ThingTypeUID THING_TYPE_HRV = new ThingTypeUID(BINDING_ID, "hrv");
+
+    // The thing type as a set
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_HRV);
 
     // List of all Channel ids
     public static final String CHANNEL_MODE = "mode";
