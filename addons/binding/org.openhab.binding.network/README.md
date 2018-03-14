@@ -170,7 +170,7 @@ Thing network:pingdevice:devicename [ hostname="192.168.0.42" ]
 demo.items:
 
 ```xtend
-Switch MyDevice { channel="network:pingdevice:devicename:online" }
+Contact MyDevice { channel="network:pingdevice:devicename:online" }
 Number MyDeviceResponseTime { channel="network:pingdevice:devicename:latency" }
 ```
 
