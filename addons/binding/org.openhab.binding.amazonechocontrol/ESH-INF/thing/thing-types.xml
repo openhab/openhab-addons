@@ -57,7 +57,7 @@
 					Amazon account password
 				</label>
 				<description>
-					Enter the password of the amazon account which is used for the amazon echo devices. Hint: 2 factor authentication is not supported!
+					Enter the password of the amazon account which is used for the amazon echo devices. IMPORTANT: If the account thing does not go online and reports and login error, open the url YOUR_OPENHAP/amazonechocontrol/ID_OF_THIS_THING in your browser (e.g. http://openhab:8080/amazonechocontrol/account) and try to login.
 				</description>
 			</parameter>
 			<parameter name="pollingIntervalInSeconds" type="integer" min="10" max="65535" required="true" unit="s">

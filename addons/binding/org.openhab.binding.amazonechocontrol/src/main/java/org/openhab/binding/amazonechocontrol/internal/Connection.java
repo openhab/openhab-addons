@@ -9,12 +9,15 @@
 
 package org.openhab.binding.amazonechocontrol.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -234,7 +237,7 @@ public class Connection {
     }
 
     private HttpsURLConnection makeRequest(String verb, String url, String referer, String postData, Boolean json)
-            throws Exception {
+            throws IOException, URISyntaxException {
         String currentUrl = url;
         for (int i = 0; i < 30; i++) // loop for handling redirect, using automatic redirect is not possible, because
                                      // all response headers must be catched
@@ -254,7 +257,6 @@ public class Connection {
                 if (referer != null) {
                     connection.setRequestProperty("Referer", referer);
                 }
-
                 // add cookies
                 URI uri = connection.getURL().toURI();
 
@@ -320,12 +322,15 @@ public class Connection {
                                 if (code == 302) {
                                     logger.debug("Redirected to {}", location);
                                 }
+                                location = uri.resolve(location).toString();
+
                                 // check for https
                                 if (location.toLowerCase().startsWith("http://")) {
                                     // always use https
                                     location = "https://" + location.substring(7);
                                     logger.debug("Redirect corrected to {}", location);
                                 }
+
                             }
                         }
                     }
@@ -338,7 +343,7 @@ public class Connection {
                     currentUrl = location;
                     continue;
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 logger.warn("Request to url '{}' fails with unkown error", url, e);
                 throw e;
             }
@@ -353,30 +358,37 @@ public class Connection {
         return m_loginTime != null;
     }
 
-    public void makeLogin() throws Exception {
+    public String getLoginPage() throws IOException, URISyntaxException {
+        // clear session data
+        m_cookieManager.getCookieStore().removeAll();
+        m_sessionId = null;
+        m_loginTime = null;
+
+        logger.debug("Start Login to {}", m_alexaServer);
+        // get login form
+        String loginFormHtml = makeRequestAndReturnString(m_alexaServer);
+
+        logger.debug("Received login form {}", loginFormHtml);
+
+        // get session id from cookies
+        for (HttpCookie cookie : m_cookieManager.getCookieStore().getCookies()) {
+            if (cookie.getName().equalsIgnoreCase("session-id")) {
+                m_sessionId = cookie.getValue();
+                break;
+            }
+        }
+        if (m_sessionId == null) {
+            throw new ConnectionException("No session id received");
+        }
+        m_cookieManager.getCookieStore().add(new URL("https://www." + m_amazonSite).toURI(),
+                HttpCookie.parse("session-id=" + m_sessionId).get(0));
+        return loginFormHtml;
+    }
+
+    public void makeLogin() throws IOException, URISyntaxException {
         try {
-            // clear session data
-            m_cookieManager.getCookieStore().removeAll();
-            m_sessionId = null;
-            m_loginTime = null;
 
-            logger.debug("Start Login to {}", m_alexaServer);
-            // get login form
-            String loginFormHtml = makeRequestAndReturnString(m_alexaServer);
-
-            logger.debug("Received login form {}", loginFormHtml);
-
-            // get session id from cookies
-            for (HttpCookie cookie : m_cookieManager.getCookieStore().getCookies()) {
-                if (cookie.getName().equalsIgnoreCase("session-id")) {
-                    m_sessionId = cookie.getValue();
-                    break;
-                }
-            }
-            if (m_sessionId == null) {
-                throw new ConnectionException("No session id received");
-            }
-
+            String loginFormHtml = getLoginPage();
             // read hidden form inputs, the will be used later in the url and for posting
             Pattern inputPattern = Pattern
                     .compile("<input\\s+type=\"hidden\"\\s+name=\"(?<name>[^\"]+)\"\\s+value=\"(?<value>[^\"]*)\"");
@@ -406,30 +418,10 @@ public class Connection {
 
             String postData = postDataBuilder.toString();
 
-            // post login data
-
-            String referer = "https://www." + m_amazonSite + "/ap/signin?" + queryParameters;
-            m_cookieManager.getCookieStore().add(new URL("https://www." + m_amazonSite).toURI(),
-                    HttpCookie.parse("session-id=" + m_sessionId).get(0));
-            String response = makeRequestAndReturnString("POST", "https://www." + m_amazonSite + "/ap/signin", referer,
-                    postData, false);
-            if (response.contains("<title>Amazon Alexa</title>")) {
-                logger.debug("Response seems to be alexa app");
-            } else {
-                logger.info("Response maybe not valid");
-            }
-
-            logger.debug("Received content after login {}", response);
-
-            // get CSRF
-            // makeRequest(m_alexaServer + "/api/language", m_alexaServer + "/spa/index.html", null, false);
-
-            // verify login
-            if (!verifyLogin()) {
+            if (postLoginData(queryParameters, postData) != null) {
                 throw new ConnectionException("Login fails.");
             }
-            m_loginTime = new Date();
-            logger.debug("Login succeeded");
+
         } catch (Exception e) {
             // clear session data
             m_cookieManager.getCookieStore().removeAll();
@@ -441,25 +433,58 @@ public class Connection {
 
     }
 
-    private String makeRequestAndReturnString(String url) throws Exception {
+    public String postLoginData(String optionalQueryParameters, String postData)
+            throws IOException, URISyntaxException {
+        // post login data
+        String queryParameters = optionalQueryParameters;
+        if (queryParameters == null) {
+            queryParameters = "session-id=" + URLEncoder.encode(m_sessionId, "UTF-8");
+        }
+
+        String referer = "https://www." + m_amazonSite + "/ap/signin?" + queryParameters;
+        URLConnection request = makeRequest("POST", "https://www." + m_amazonSite + "/ap/signin", referer, postData,
+                false);
+
+        String response = convertStream(request.getInputStream());
+        logger.debug("Received content after login {}", response);
+
+        String host = request.getURL().getHost();
+        if (!host.equalsIgnoreCase(new URI(m_alexaServer).getHost())) {
+            return response;
+        }
+        if (response.contains("<title>Amazon Alexa</title>")) {
+            logger.debug("Response seems to be alexa app");
+        } else {
+            logger.info("Response maybe not valid");
+        }
+
+        // verify login
+        if (!verifyLogin()) {
+            return response;
+        }
+        m_loginTime = new Date();
+        logger.debug("Login succeeded");
+        return null;
+    }
+
+    private String makeRequestAndReturnString(String url) throws IOException, URISyntaxException {
         return makeRequestAndReturnString("GET", url, null, null, false);
     }
 
     private String makeRequestAndReturnString(String verb, String url, String referer, String postData, Boolean json)
-            throws Exception {
+            throws IOException, URISyntaxException {
         HttpsURLConnection connection = makeRequest(verb, url, referer, postData, json);
-        return getResponse(connection);
+        return convertStream(connection.getInputStream());
     }
 
-    public boolean verifyLogin() throws Exception {
+    public boolean verifyLogin() throws IOException, URISyntaxException {
         String response = makeRequestAndReturnString(m_alexaServer + "/api/bootstrap?version=0");
         Boolean result = response.contains("\"authenticated\":true");
 
         return result;
     }
 
-    private String getResponse(HttpsURLConnection request) throws Exception {
-        InputStream input = request.getInputStream();
+    public String convertStream(InputStream input) throws IOException {
         Scanner inputScanner = new Scanner(input);
         Scanner scannerWithoutDelimiter = inputScanner.useDelimiter("\\A");
         String result = scannerWithoutDelimiter.hasNext() ? scannerWithoutDelimiter.next() : "";

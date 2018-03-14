@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.amazonechocontrol.internal.AccountConfiguration;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
+import org.openhab.binding.amazonechocontrol.internal.LoginServlet;
 import org.openhab.binding.amazonechocontrol.internal.StateStorage;
 import org.openhab.binding.amazonechocontrol.internal.discovery.AmazonEchoDiscovery;
 import org.openhab.binding.amazonechocontrol.internal.discovery.IAmazonEchoDiscovery;
@@ -38,6 +39,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevice;
+import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,10 +67,12 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
     private boolean discoverFlashProfiles;
     private boolean smartHodeDeviceListEnabled;
     private String currentFlashBriefingJson = "";
+    private HttpService httpService;
+    private LoginServlet loginServlet;
 
-    public AccountHandler(@NonNull Bridge bridge) {
+    public AccountHandler(@NonNull Bridge bridge, @NonNull HttpService httpService) {
         super(bridge);
-
+        this.httpService = httpService;
         stateStorage = new StateStorage(bridge);
         AmazonEchoDiscovery.setHandlerExist();
 
@@ -199,6 +203,11 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
 
     @Override
     public void dispose() {
+        LoginServlet loginServlet = this.loginServlet;
+        if (loginServlet != null) {
+            loginServlet.dispose();
+        }
+        this.loginServlet = null;
         AmazonEchoDiscovery.removeDiscoveryHandler(this);
         cleanup();
         super.dispose();
@@ -265,6 +274,10 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                 connection = new Connection(config.email, config.password, config.amazonSite);
             }
         }
+        if (this.loginServlet == null) {
+            this.loginServlet = new LoginServlet(httpService, this.getThing().getUID().getId(), this, config);
+        }
+
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
         if (refreshLogin != null) {
             refreshLogin.cancel(false);
@@ -355,14 +368,29 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
                 }
                 if (loginIsValid) {
-                    // update the device list
-                    updateDeviceList(false);
-                    updateStatus(ThingStatus.ONLINE);
-                    AmazonEchoDiscovery.addDiscoveryHandler(this);
+                    handleValidLogin();
                 }
 
             }
         }
+    }
+
+    private void handleValidLogin() {
+        // update the device list
+        updateDeviceList(false);
+        updateStatus(ThingStatus.ONLINE);
+        AmazonEchoDiscovery.addDiscoveryHandler(this);
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+        String serializedStorage = connection.serializeLoginData();
+        if (serializedStorage == null) {
+            serializedStorage = "";
+        }
+        this.stateStorage.storeState("sessionStorage", serializedStorage);
+        updateSmartHomeDeviceList = true;
+        handleValidLogin();
     }
 
     private void refreshData() {

@@ -72,7 +72,7 @@ The binding does not have any configuration. The configuration of your amazon ac
 
 ## Thing Configuration
 
-The Amazon Account device need the following configurations:
+The Amazon Account thing need the following configurations:
 
 | Configuration name       | Description                                                               |
 |--------------------------|---------------------------------------------------------------------------|
@@ -82,6 +82,8 @@ The Amazon Account device need the following configurations:
 | pollingIntervalInSeconds | Polling interval for the device state in seconds. Default 60, minimum 10  |
 
 2 factor authentication is not supported!
+
+** HINT ** IMPORTANT: If the Account thing does not go online and reports and login error, open the url YOUR_OPENHAP/amazonechocontrol/ID_OF_ACCOUNT_THING (Replace YOUR_OPENHAB and ID_OF_ACCOUNT_THING with your configuration) in your browser (e.g. http://openhab:8080/amazonechocontrol/account) and try to login.
 
 ### Amazon devices
 

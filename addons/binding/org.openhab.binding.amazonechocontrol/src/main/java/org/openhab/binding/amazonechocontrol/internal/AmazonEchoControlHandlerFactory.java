@@ -24,6 +24,8 @@ import org.openhab.binding.amazonechocontrol.handler.FlashBriefingProfileHandler
 import org.openhab.binding.amazonechocontrol.handler.SmartHomeDimmerHandler;
 import org.openhab.binding.amazonechocontrol.handler.SmartHomeSwitchHandler;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.http.HttpService;
 
 /**
  * The {@link AmazonEchoControlHandlerFactory} is responsible for creating things and thing
@@ -35,6 +37,9 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
 
+    @Nullable
+    HttpService httpService;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -44,8 +49,12 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
+        HttpService httpService = this.httpService;
+        if (httpService == null) {
+            return null;
+        }
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
-            AccountHandler bridgeHandler = new AccountHandler((Bridge) thing);
+            AccountHandler bridgeHandler = new AccountHandler((Bridge) thing, httpService);
             return bridgeHandler;
         }
         if (thingTypeUID.equals(THING_TYPE_FLASH_BRIEFING_PROFILE)) {
@@ -57,9 +66,18 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_SMART_HOME_SWITCH)) {
             return new SmartHomeSwitchHandler(thing);
         }
-        if (SUPPORTED_THING_TYPES_UIDS.contains(THING_TYPE_ECHO)) {
+        if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new EchoHandler(thing);
         }
         return null;
+    }
+
+    @Reference
+    protected void setHttpService(HttpService httpService) {
+        this.httpService = httpService;
+    }
+
+    protected void unsetHttpService(HttpService httpService) {
+        this.httpService = null;
     }
 }
