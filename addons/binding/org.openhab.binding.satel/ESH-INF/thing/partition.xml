@@ -11,81 +11,30 @@
 		</supported-bridge-type-refs>
 
 		<label>Partition</label>
-		<description>Logical set of zones, outputs and doors.</description>
+		<description><![CDATA[The partition is a separated area within the premises protected by the security alarm system.<br>
+The subdivision into partitions enables arming/disarming the system only in part of the protected area, as well as limiting 
+access to some portion of the premises to selected users.]]>
+		</description>
 
 		<channels>
-			<channel typeId="state" id="armed">
-				<label>Armed</label>
-				<description></description>
-			</channel>
-			<channel typeId="state" id="really_armed">
-				<label>Really armed</label>
-				<description></description>
-			</channel>
-			<channel typeId="state_adv" id="armed_mode_1">
-				<label>Armed in mode 1</label>
-				<description></description>
-			</channel>
-			<channel typeId="state_adv" id="armed_mode_2">
-				<label>Armed in mode 2</label>
-				<description></description>
-			</channel>
-			<channel typeId="state_adv" id="armed_mode_3">
-				<label>Armed in mode 3</label>
-				<description></description>
-			</channel>
-			<channel typeId="state_adv_ro" id="first_code_entered">
-				<label>First code entered</label>
-				<description></description>
-			</channel>
-			<channel typeId="state_adv_ro" id="entry_time">
-				<label>Entry time</label>
-				<description></description>
-			</channel>
-			<channel typeId="state_adv_ro" id="exit_time_gt_10">
-				<label>Exit time greater than 10 seconds</label>
-				<description></description>
-			</channel>
-			<channel typeId="state_adv_ro" id="exit_time_lt_10">
-				<label>Exit time less than 10 seconds</label>
-				<description></description>
-			</channel>
-			<channel typeId="state_adv_ro" id="temporary_blocked">
-				<label>Temporary blocked</label>
-				<description></description>
-			</channel>
-			<channel typeId="state_adv_ro" id="blocked_for_guard">
-				<label>Blocked for guard</label>
-				<description></description>
-			</channel>
-			<channel typeId="state" id="alarm">
-				<label>Alarm</label>
-				<description></description>
-			</channel>
-			<channel typeId="state" id="alarm_memory">
-				<label>Alarm memory</label>
-				<description></description>
-			</channel>
-			<channel typeId="state" id="fire_alarm">
-				<label>Fire alarm</label>
-				<description></description>
-			</channel>
-			<channel typeId="state" id="fire_alarm_memory">
-				<label>Fire alarm memory</label>
-				<description></description>
-			</channel>
-			<channel typeId="state_adv" id="verified_alarms">
-				<label>Verified alarms</label>
-				<description></description>
-			</channel>
-			<channel typeId="state_adv" id="warning_alarms">
-				<label>Warning alarms</label>
-				<description>Violated zones</description>
-			</channel>
-			<channel typeId="state_adv_ro" id="violated_zones">
-				<label>Violated zones</label>
-				<description></description>
-			</channel>
+			<channel typeId="armed" id="armed" />
+			<channel typeId="really_armed" id="really_armed" />
+			<channel typeId="armed_mode_1" id="armed_mode_1" />
+			<channel typeId="armed_mode_2" id="armed_mode_2" />
+			<channel typeId="armed_mode_3" id="armed_mode_3" />
+			<channel typeId="first_code_entered" id="first_code_entered" />
+			<channel typeId="entry_time" id="entry_time" />
+			<channel typeId="exit_time_gt_10" id="exit_time_gt_10" />
+			<channel typeId="exit_time_lt_10" id="exit_time_lt_10" />
+			<channel typeId="temporary_blocked" id="temporary_blocked" />
+			<channel typeId="blocked_for_guard" id="blocked_for_guard" />
+			<channel typeId="alarm" id="alarm" />
+			<channel typeId="alarm_memory" id="alarm_memory" />
+			<channel typeId="fire_alarm" id="fire_alarm" />
+			<channel typeId="fire_alarm_memory" id="fire_alarm_memory" />
+			<channel typeId="verified_alarms" id="verified_alarms" />
+			<channel typeId="warning_alarms" id="warning_alarms" />
+			<channel typeId="violated_zones" id="violated_zones" />
 		</channels>
 
 		<config-description>
@@ -100,5 +49,120 @@
 		</config-description>
 
 	</thing-type>
+
+	<channel-type id="armed">
+		<item-type>Switch</item-type>
+		<label>Armed</label>
+		<description>Active when the partion is armed in any mode or arming is in progress</description>
+	</channel-type>
+
+	<channel-type id="really_armed">
+		<item-type>Switch</item-type>
+		<label>Really armed</label>
+		<description>Active when the partion is armed in any mode</description>
+	</channel-type>
+
+	<channel-type id="armed_mode_1" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Armed in mode 1</label>
+		<description>Active when the partion is armed in mode 1</description>
+	</channel-type>
+
+	<channel-type id="armed_mode_2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Armed in mode 2</label>
+		<description>Active when the partion is armed in mode 2</description>
+	</channel-type>
+
+	<channel-type id="armed_mode_3" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Armed in mode 3</label>
+		<description>Active when the partion is armed in mode 3</description>
+	</channel-type>
+
+	<channel-type id="first_code_entered" advanced="true">
+		<item-type>Switch</item-type>
+		<label>First code entered</label>
+		<description>Active when first code of required two codes has been entered</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="entry_time" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Entry time</label>
+		<description>Active in entry time</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="exit_time_gt_10" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Exit time &gt; 10s</label>
+		<description>Active when arming is in progress and time to exit is greater than ten seconds</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="exit_time_lt_10" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Exit time &lt; 10s</label>
+		<description>Active when arming is in progress and time to exit is less than ten seconds</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="temporary_blocked" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Temporary blocked</label>
+		<description>Active when the partition is blocked after arming</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="blocked_for_guard" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Blocked for guard</label>
+		<description>Active when the partition is blocked for guard round</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="alarm">
+		<item-type>Switch</item-type>
+		<label>Alarm</label>
+		<description>Active when there is ongoing alarm in the patition</description>
+	</channel-type>
+
+	<channel-type id="alarm_memory">
+		<item-type>Switch</item-type>
+		<label>Alarm memory</label>
+		<description>Active when there had been an alarm in the patition</description>
+	</channel-type>
+
+	<channel-type id="fire_alarm">
+		<item-type>Switch</item-type>
+		<label>Fire alarm</label>
+		<description>Active when there is ongoing fire alarm in the patition</description>
+	</channel-type>
+
+	<channel-type id="fire_alarm_memory">
+		<item-type>Switch</item-type>
+		<label>Fire alarm memory</label>
+		<description>Active when there had been a fire alarm in the patition</description>
+	</channel-type>
+
+	<channel-type id="verified_alarms" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Verified alarms</label>
+		<description>Active when two zones triggered an alarm during verification time</description>
+	</channel-type>
+
+	<channel-type id="warning_alarms" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Warning alarms</label>
+		<description>Active when there are warning alarms in the partition</description>
+	</channel-type>
+
+	<channel-type id="violated_zones" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Violated zones</label>
+		<description>Active when there are violated zones in the partition</description>
+		<state readOnly="true" />
+	</channel-type>
 
 </thing:thing-descriptions>

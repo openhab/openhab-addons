@@ -199,11 +199,11 @@ public class ReadEventCommand extends SatelCommandBase {
     protected boolean isResponseValid(SatelMessage response) {
         // validate response
         if (response.getCommand() != COMMAND_CODE) {
-            logger.error("Invalid response code: {}", response.getCommand());
+            logger.debug("Invalid response code: {}", response.getCommand());
             return false;
         }
         if (response.getPayload().length != 14) {
-            logger.error("Invalid payload length: {}", response.getPayload().length);
+            logger.debug("Invalid payload length: {}", response.getPayload().length);
             return false;
         }
         return true;

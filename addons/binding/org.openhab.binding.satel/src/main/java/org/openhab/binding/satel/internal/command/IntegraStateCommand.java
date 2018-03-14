@@ -69,11 +69,11 @@ public class IntegraStateCommand extends SatelCommandBase {
     protected boolean isResponseValid(SatelMessage response) {
         // validate response
         if (response.getCommand() != this.stateType.getRefreshCommand()) {
-            logger.error("Invalid response code: {}", response.getCommand());
+            logger.debug("Invalid response code: {}", response.getCommand());
             return false;
         }
         if (response.getPayload().length != this.stateType.getPayloadLength(isExtended())) {
-            logger.error("Invalid payload length for this state type {}: {}", this.stateType,
+            logger.debug("Invalid payload length for this state type {}: {}", this.stateType,
                     response.getPayload().length);
             return false;
         }

@@ -46,7 +46,7 @@ public class SatelBindingConstants {
     public static final Set<ThingTypeUID> VIRTUAL_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SYSTEM);
 
     // List of all Channel ids
-    public static final String CHANNEL_STATE = "state";
+    public static final String CHANNEL_SHUTTER_STATE = "shutter_state";
     public static final String CHANNEL_DATE_TIME = "date_time";
     public static final String CHANNEL_SERVICE_MODE = "service_mode";
     public static final String CHANNEL_TROUBLES = "troubles";
@@ -55,8 +55,5 @@ public class SatelBindingConstants {
     public static final String CHANNEL_INTRX_PRESENT = "intrx_present";
     public static final String CHANNEL_GRADE23_SET = "grade23_set";
     public static final String CHANNEL_USER_CODE = "user_code";
-
-    // Thing properties
-    public static final String PROPERTY_REQUIRES_REFRESH = "requiresRefresh";
 
 }

@@ -88,7 +88,7 @@ public class SatelPartitionHandler extends SatelThingHandler {
             }
 
             if (action != null) {
-                return new ControlObjectCommand(action, partitions, bridgeHandler.getUserCode());
+                return new ControlObjectCommand(action, partitions, bridgeHandler.getUserCode(), scheduler);
             }
         }
 

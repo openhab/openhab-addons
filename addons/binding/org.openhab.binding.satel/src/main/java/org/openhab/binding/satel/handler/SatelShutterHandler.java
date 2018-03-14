@@ -55,7 +55,7 @@ public class SatelShutterHandler extends SatelThingHandler {
             if (thingConfig.isCommandOnly() || !stateEvent.hasDataForState(OutputState.STATE)) {
                 return;
             }
-            Channel channel = getThing().getChannel(CHANNEL_STATE);
+            Channel channel = getThing().getChannel(CHANNEL_SHUTTER_STATE);
             if (channel != null) {
                 int upBitNbr = thingConfig.getUpId() - 1;
                 int downBitNbr = thingConfig.getDownId() - 1;
@@ -74,22 +74,22 @@ public class SatelShutterHandler extends SatelThingHandler {
 
     @Override
     protected StateType getStateType(String channelId) {
-        return CHANNEL_STATE.equals(channelId) ? OutputState.STATE : null;
+        return CHANNEL_SHUTTER_STATE.equals(channelId) ? OutputState.STATE : null;
     }
 
     @Override
     protected SatelCommand convertCommand(ChannelUID channel, Command command) {
-        if (CHANNEL_STATE.equals(channel.getId())) {
+        if (CHANNEL_SHUTTER_STATE.equals(channel.getId())) {
             int cmdBytes = bridgeHandler.getIntegraType().hasExtPayload() ? 32 : 16;
             if (command == UpDownType.UP) {
                 byte[] outputs = getObjectBitset(cmdBytes, thingConfig.getUpId());
-                return new ControlObjectCommand(OutputControl.ON, outputs, bridgeHandler.getUserCode());
+                return new ControlObjectCommand(OutputControl.ON, outputs, bridgeHandler.getUserCode(), scheduler);
             } else if (command == UpDownType.DOWN) {
                 byte[] outputs = getObjectBitset(cmdBytes, thingConfig.getDownId());
-                return new ControlObjectCommand(OutputControl.ON, outputs, bridgeHandler.getUserCode());
+                return new ControlObjectCommand(OutputControl.ON, outputs, bridgeHandler.getUserCode(), scheduler);
             } else if (command == StopMoveType.STOP) {
                 byte[] outputs = getObjectBitset(cmdBytes, thingConfig.getUpId(), thingConfig.getDownId());
-                return new ControlObjectCommand(OutputControl.OFF, outputs, bridgeHandler.getUserCode());
+                return new ControlObjectCommand(OutputControl.OFF, outputs, bridgeHandler.getUserCode(), scheduler);
             }
         }
 

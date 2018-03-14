@@ -124,10 +124,9 @@ public class SatelSystemHandler extends SatelThingHandler {
         Collection<SatelCommand> result = new LinkedList<>();
         boolean anyStatusChannelLinked = getThing().getChannels().stream()
                 .filter(channel -> STATUS_CHANNELS.contains(channel.getUID().getId()))
-                .anyMatch(channel -> !linkRegistry.getLinks(channel.getUID()).isEmpty());
-        boolean dateTimeLinked = !linkRegistry.getLinks(getThing().getChannel(CHANNEL_DATE_TIME).getUID()).isEmpty();
+                .anyMatch(channel -> isLinked(channel.getUID().getId()));
         boolean needRefresh = anyStatusChannelLinked
-                && (requiresRefresh() || dateTimeLinked || event.isNew(IntegraStatusCommand.COMMAND_CODE));
+                && (requiresRefresh() || isLinked(CHANNEL_DATE_TIME) || event.isNew(IntegraStatusCommand.COMMAND_CODE));
         if (needRefresh) {
             result.add(new IntegraStatusCommand());
         }

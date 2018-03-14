@@ -8,10 +8,9 @@
  */
 package org.openhab.binding.satel.handler;
 
-import static org.openhab.binding.satel.SatelBindingConstants.PROPERTY_REQUIRES_REFRESH;
-
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -50,10 +49,12 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
     protected SatelThingConfig thingConfig;
     protected SatelBridgeHandler bridgeHandler;
     protected ObjectType thingType;
+    private AtomicBoolean requiresRefresh;
 
     public SatelThingHandler(Thing thing, ObjectType thingType) {
         super(thing);
         this.thingType = thingType;
+        this.requiresRefresh = new AtomicBoolean(true);
     }
 
     @Override
@@ -94,17 +95,15 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
         logger.trace("Handling incoming event: {}", event);
         if (event instanceof ConnectionStatusEvent) {
             ConnectionStatusEvent statusEvent = (ConnectionStatusEvent) event;
-            // we have just connected, force refresh state
+            // we have just connected, change thing's status and force refreshing
             if (statusEvent.isConnected()) {
-                getThing().setProperty(PROPERTY_REQUIRES_REFRESH, Boolean.toString(true));
+                updateStatus(ThingStatus.ONLINE);
+                requiresRefresh.set(true);
             }
         } else if (event instanceof NewStatesEvent) {
             // refresh all states that have changed
             for (SatelCommand command : getRefreshCommands((NewStatesEvent) event)) {
                 bridgeHandler.sendCommand(command, true);
-            }
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
             }
         } else if (event instanceof IntegraStateEvent) {
             // update thing's state unless it should accept commands only
@@ -132,19 +131,18 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
         String channelId = stateType.toString().toLowerCase();
         Channel channel = getThing().getChannel(channelId);
         if (channel == null) {
-            logger.warn("Missing channel for {}", stateType);
+            logger.debug("Missing channel for {}", stateType);
         }
         return channel;
     }
 
     protected Collection<SatelCommand> getRefreshCommands(NewStatesEvent event) {
         Collection<SatelCommand> result = new LinkedList<>();
-        boolean requiresRefresh = requiresRefresh();
+        boolean forceRefresh = requiresRefresh();
         for (Channel channel : getThing().getChannels()) {
-            boolean isChannelLinked = !linkRegistry.getLinks(channel.getUID()).isEmpty();
-            if (isChannelLinked) {
+            if (isLinked(channel.getUID().getId())) {
                 StateType stateType = getStateType(channel.getUID().getId());
-                if (requiresRefresh || event.isNew(stateType.getRefreshCommand())) {
+                if (forceRefresh || event.isNew(stateType.getRefreshCommand())) {
                     result.add(new IntegraStateCommand(stateType, bridgeHandler.getIntegraType().hasExtPayload()));
                 }
             }
@@ -172,8 +170,7 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
     }
 
     protected boolean requiresRefresh() {
-        return getThing().getStatus() == ThingStatus.INITIALIZING
-                || Boolean.valueOf(getThing().setProperty(PROPERTY_REQUIRES_REFRESH, null));
+        return requiresRefresh.getAndSet(false);
     }
 
 }

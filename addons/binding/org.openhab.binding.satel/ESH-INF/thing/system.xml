@@ -11,41 +11,17 @@
 		</supported-bridge-type-refs>
 
 		<label>Alarm system</label>
-		<description>A logical thing describing general status of the alarm system.</description>
+		<description>A virtual thing describing general status of the alarm system.</description>
 
 		<channels>
-			<channel typeId="date_time" id="date_time">
-				<label>Date and time</label>
-				<description>Current date and time in the alarm system</description>
-			</channel>
-			<channel typeId="state" id="troubles">
-				<label>Troubles</label>
-				<description>Active when the system has troubles (trouble led is blinking on a panel)</description>
-			</channel>
-			<channel typeId="state" id="troubles_memory">
-				<label>Troubles memory</label>
-				<description></description>
-			</channel>
-			<channel typeId="state_ro" id="service_mode">
-				<label>Service mode</label>
-				<description>Active when the system is in service mode</description>
-			</channel>
-			<channel typeId="state_adv_ro" id="acu100_present">
-				<label>ACU-100 present</label>
-				<description>Active when there is an ACU-100 module installed in the system</description>
-			</channel>
-			<channel typeId="state_adv_ro" id="intrx_present">
-				<label>INT-RX present</label>
-				<description>Active when there is an INT-RX module installed in the system</description>
-			</channel>
-			<channel typeId="state_adv_ro" id="grade23_set">
-				<label>Grade2/Grade3 set</label>
-				<description>Active when Grade2/Grade3 option is set in the system</description>
-			</channel>
-			<channel typeId="string" id="user_code">
-				<label>User code</label>
-				<description>Accepts string commands that override configured user code. Send empty string to revert user code to the one in the configuration.</description>
-			</channel>
+			<channel typeId="date_time" id="date_time" />
+			<channel typeId="troubles" id="troubles" />
+			<channel typeId="troubles_memory" id="troubles_memory" />
+			<channel typeId="service_mode" id="service_mode" />
+			<channel typeId="acu100_present" id="acu100_present" />
+			<channel typeId="intrx_present" id="intrx_present" />
+			<channel typeId="grade23_set" id="grade23_set" />
+			<channel typeId="user_code" id="user_code" />
 		</channels>
 
 	</thing-type>
@@ -53,13 +29,53 @@
 	<channel-type id="date_time">
 		<item-type>DateTime</item-type>
 		<label>Date and time</label>
-		<category>Alarm</category>
+		<description>Current date and time in the alarm system</description>
 	</channel-type>
 
-	<channel-type id="string">
+	<channel-type id="troubles">
+		<item-type>Switch</item-type>
+		<label>Troubles</label>
+		<description>Active when the system has troubles (trouble led is blinking on a panel)</description>
+	</channel-type>
+
+	<channel-type id="troubles_memory" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Troubles memory</label>
+		<description>Memorized state of system troubles</description>
+	</channel-type>
+
+	<channel-type id="service_mode">
+		<item-type>Switch</item-type>
+		<label>Service mode</label>
+		<description>Active when the system is in service mode</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="acu100_present" advanced="true">
+		<item-type>Switch</item-type>
+		<label>ACU-100 present</label>
+		<description>Active when there is an ACU-100 module installed in the system</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="intrx_present" advanced="true">
+		<item-type>Switch</item-type>
+		<label>INT-RX present</label>
+		<description>Active when there is an INT-RX module installed in the system</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="grade23_set" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Grade2/Grade3 set</label>
+		<description>Active when Grade2/Grade3 option is set in the system</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="user_code">
 		<item-type>String</item-type>
-		<label>String</label>
-		<category>Alarm</category>
+		<label>User code</label>
+		<description>Accepts string commands that override configured user code. Send empty string to revert user code to the one in the binding configuration.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

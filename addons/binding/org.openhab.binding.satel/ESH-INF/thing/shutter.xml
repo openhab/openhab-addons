@@ -14,7 +14,7 @@
 		<description>A roller shutter connected to two subsequent outputs.</description>
 
 		<channels>
-			<channel typeId="shutter_state" id="state" />
+			<channel typeId="shutter_state" id="shutter_state" />
 		</channels>
 
 		<config-description>
@@ -36,9 +36,8 @@
 
 	<channel-type id="shutter_state">
 		<item-type>Rollershutter</item-type>
-		<label>State</label>
-		<description></description>
-		<category>Alarm</category>
+		<label>Shutter state</label>
+		<description>Represents state of the roller shutter</description>
 	</channel-type>
 
 </thing:thing-descriptions>

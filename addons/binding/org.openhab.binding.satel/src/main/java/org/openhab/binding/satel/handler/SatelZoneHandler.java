@@ -65,7 +65,7 @@ public class SatelZoneHandler extends SatelThingHandler {
             }
 
             if (action != null) {
-                return new ControlObjectCommand(action, zones, bridgeHandler.getUserCode());
+                return new ControlObjectCommand(action, zones, bridgeHandler.getUserCode(), scheduler);
             }
         }
 

@@ -52,7 +52,7 @@ public class SatelOutputHandler extends SatelThingHandler {
             byte[] outputs = getObjectBitset(size, thingConfig.getId());
             boolean newState = switchOn ^ thingConfig.isStateInverted();
             return new ControlObjectCommand(newState ? OutputControl.ON : OutputControl.OFF, outputs,
-                    bridgeHandler.getUserCode());
+                    bridgeHandler.getUserCode(), scheduler);
         }
 
         return null;

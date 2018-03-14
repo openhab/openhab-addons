@@ -125,11 +125,11 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
     protected boolean hasCommandSucceeded(SatelMessage response) {
         // validate response message
         if (response.getCommand() != COMMAND_RESULT_CODE) {
-            logger.error("Invalid response code: {}. {}", response.getCommand(), getRequest());
+            logger.debug("Invalid response code: {}. {}", response.getCommand(), getRequest());
             return false;
         }
         if (response.getPayload().length != 1) {
-            logger.error("Invalid payload length: {}. {}", response.getPayload().length, getRequest());
+            logger.debug("Invalid payload length: {}. {}", response.getPayload().length, getRequest());
             return false;
         }
 
@@ -183,7 +183,7 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
         }
 
         if (logResponseError) {
-            logger.error("{}. {}", errorMsg, getRequest());
+            logger.info("{}. {}", errorMsg, getRequest());
         }
         return false;
     }

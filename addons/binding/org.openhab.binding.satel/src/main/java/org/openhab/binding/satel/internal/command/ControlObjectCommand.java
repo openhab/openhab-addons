@@ -9,8 +9,8 @@
 package org.openhab.binding.satel.internal.command;
 
 import java.util.BitSet;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.openhab.binding.satel.internal.event.EventDispatcher;
@@ -30,9 +30,8 @@ public class ControlObjectCommand extends ControlCommand {
 
     private static final long REFRESH_DELAY = 1000;
 
-    private static final Timer REFRESH_TIMER = new Timer("ControlObjectCommand timer", true);
-
     private ControlType controlType;
+    private ScheduledExecutorService scheduler;
 
     /**
      * Creates new command class instance for specified type of control.
@@ -43,10 +42,14 @@ public class ControlObjectCommand extends ControlCommand {
      *            bits that represents objects to control
      * @param userCode
      *            code of the user on behalf the control is made
+     * @param scheduler
+     *            scheduler object for scheduling refreshes
      */
-    public ControlObjectCommand(ControlType controlType, byte[] objects, String userCode) {
+    public ControlObjectCommand(ControlType controlType, byte[] objects, String userCode,
+            ScheduledExecutorService scheduler) {
         super(controlType.getControlCommand(), ArrayUtils.addAll(userCodeToBytes(userCode), objects));
         this.controlType = controlType;
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -56,12 +59,8 @@ public class ControlObjectCommand extends ControlCommand {
             final BitSet newStates = this.controlType.getControlledStates();
             if (newStates != null && !newStates.isEmpty()) {
                 // add delay to give a chance to process sent command
-                REFRESH_TIMER.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        eventDispatcher.dispatchEvent(new NewStatesEvent(newStates));
-                    }
-                }, REFRESH_DELAY);
+                scheduler.schedule(() -> eventDispatcher.dispatchEvent(new NewStatesEvent(newStates)), REFRESH_DELAY,
+                        TimeUnit.MILLISECONDS);
             }
             return true;
         }
