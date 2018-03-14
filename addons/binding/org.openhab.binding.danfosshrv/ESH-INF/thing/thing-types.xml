@@ -9,6 +9,7 @@
 		<description>The Danfoss Air Unit Heat Exchanger, CCM and Air Dial</description>
 
 		<channels>
+            <channel id="mode" typeId="mode" />
             <channel id="fan_speed" typeId="fanSpeed" />
             <channel id="humidity" typeId="humidity" />
 			<channel id="battery_life" typeId="batteryLife" />
@@ -16,15 +17,28 @@
 		</channels>
 
 		<config-description>
-			<parameter name="config1" type="text" required="false">
-				<label>Sample parameter</label>
-				<description>This is a sample text configuration parameter.</description>
-			</parameter>
+            <parameter name="host" type="text" required="true">
+                <label>Host</label>
+                <context>network-address</context>
+                <description>Host name or IP address of the Danfoss Air CCM</description>
+            </parameter>
 		</config-description>
 
 	</thing-type>
 
 	<!--Cannel Definitions-->
+    <channel-type id="mode">
+        <item-type>String</item-type>
+        <label>Mode</label>
+        <description>Off, Demand, Manual, Program</description>
+        <state>
+            <options>
+                <option value="DEMAND">Demand</option>
+                <option value="PROGRAM">Program</option>
+                <option value="MANUAL">Manual</option>
+                <option value="OFF">Off</option>
+            </options></state>
+    </channel-type>	
     <channel-type id="fanSpeed">
         <item-type>Dimmer</item-type>
         <label>Fan Speed</label>

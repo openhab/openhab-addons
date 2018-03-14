@@ -27,9 +27,14 @@ public class DanfossHRV {
     private Socket socket;
     private OutputStream oStream;
     private InputStream iStream;
-    public static final byte MODE_AUTOMATIC = 1;
-    public static final byte MODE_MANUAL = 2;
-    public static final byte MODE_PROGRAM = 3;
+
+    public static enum Mode {
+        DEMAND,
+        PROGRAM,
+        MANUAL,
+        OFF
+    };
+
     private static final byte[] DISCOVER_SEND = { 0x0c, 0x00, 0x30, 0x00, 0x11, 0x00, 0x12, 0x00, 0x13 };
     private static final byte[] DISCOVER_RECEIVE = { 0x0d, 0x00, 0x07, 0x00, 0x02, 0x02, 0x00 };
     private static final byte[] EMPTY = {};
@@ -171,7 +176,7 @@ public class DanfossHRV {
     }
 
     public StringType getMode() throws IOException {
-        return new StringType(new Integer(getByte(REGISTER_1_READ, MODE)).toString());
+        return new StringType(Mode.values()[getByte(REGISTER_1_READ, MODE)].name());
     }
 
     public PercentType getFanSpeed() throws IOException {
@@ -232,4 +237,12 @@ public class DanfossHRV {
         return new PercentType(BigDecimal.valueOf(getByte(REGISTER_1_READ, FAN_SPEED) * 10));
     }
 
+    public StringType setMode(Command cmd) throws IOException {
+        if (cmd instanceof StringType) {
+            byte value = (byte) (Mode.valueOf(cmd.toString()).ordinal());
+            set(REGISTER_1_WRITE, MODE, value);
+        }
+
+        return new StringType(Mode.values()[getByte(REGISTER_1_READ, MODE)].name());
+    }
 }

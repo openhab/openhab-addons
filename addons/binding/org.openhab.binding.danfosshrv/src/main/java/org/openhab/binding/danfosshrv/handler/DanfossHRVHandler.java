@@ -20,8 +20,6 @@ import java.net.UnknownHostException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -40,18 +38,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ralf Duckstein - Initial contribution
  */
-@NonNullByDefault
 public class DanfossHRVHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DanfossHRVHandler.class);
-
-    @Nullable
     private ScheduledFuture<?> pollingJob;
-
-    @Nullable
     private DanfossHRV hrv;
-
-    @Nullable
     private DanfossHRVConfiguration config;
 
     public DanfossHRVHandler(Thing thing) {
@@ -63,16 +54,19 @@ public class DanfossHRVHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             // Placeholder for later refinement
             update();
-        } else if (channelUID.getId().equals(CHANNEL_FAN_SPEED)) {
+        } else if (channelUID.getId().equals(CHANNEL_MODE)) {
             try {
-                updateState(CHANNEL_FAN_SPEED, hrv.setFanSpeed(command));
+                updateState(channelUID, hrv.setMode(command));
             } catch (IOException ioe) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ioe.getMessage());
             }
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+
+        } else if (channelUID.getId().equals(CHANNEL_FAN_SPEED)) {
+            try {
+                updateState(channelUID, hrv.setFanSpeed(command));
+            } catch (IOException ioe) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ioe.getMessage());
+            }
         }
     }
 
@@ -83,7 +77,7 @@ public class DanfossHRVHandler extends BaseThingHandler {
         // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
         // Long running initialization should be done asynchronously in background.
         try {
-            hrv = new DanfossHRV(InetAddress.getByName("airunit.fritz.box"), 30046);
+            hrv = new DanfossHRV(InetAddress.getByName(config.host), 30046);
             updateStatus(ThingStatus.ONLINE);
 
         } catch (UnknownHostException uhe) {
@@ -114,6 +108,7 @@ public class DanfossHRVHandler extends BaseThingHandler {
         logger.debug("Updating DanfossHRV data '{}'", getThing().getUID());
 
         try {
+            updateState(CHANNEL_MODE, hrv.getMode());
             updateState(CHANNEL_FAN_SPEED, hrv.getFanSpeed());
             updateState(CHANNEL_HUMIDITY, hrv.getHumidity());
             updateState(CHANNEL_BATTERY_LIFE, hrv.getBatteryLife());
