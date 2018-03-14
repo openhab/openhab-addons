@@ -305,12 +305,16 @@ public class HeatHubHandler extends BaseBridgeHandler {
                 if (room.getRoomStatId() != null && room.getRoomStatId().equals(id)) {
                     return room;
                 }
-                for (Integer itrv : room.getSmartValveIds()) {
+
+                List<Integer> trvs = room.getSmartValveIds();
+                if (trvs != null) {
+                    for (Integer itrv : trvs) {
                     if (itrv.equals(id)) {
                         return room;
                     }
                 }
             }
+        }
         }
 
         return null;
