@@ -1,0 +1,39 @@
+Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,
+ lib/javacpp.jar,
+ lib/javacv-platform.jar,
+ lib/javacv.jar,
+ lib/opencv-linux-armhf.jar,
+ lib/opencv-platform.jar,
+ lib/opencv.jar
+Bundle-ManifestVersion: 2
+Bundle-Name: FaceRecognition Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.facerecognition;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.2.0.qualifier
+Export-Package: 
+ org.openhab.binding.facerecognition,
+ org.openhab.binding.facerecognition.handler
+Import-Package: 
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.jetty.client,
+ org.eclipse.jetty.client.api,
+ org.eclipse.jetty.client.util,
+ org.eclipse.jetty.http,
+ org.eclipse.jetty.util,
+ org.eclipse.jetty.util.component,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.i18n,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.openhab.binding.facerecognition,
+ org.openhab.binding.facerecognition.handler,
+ org.osgi.service.component.annotations;resolution:=optional,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="facerecognition"
+						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="facerecognition">
+		<label>Face recognition</label>
+		<description>User authentication using face recognition</description>
+		<channel-groups>
+			<channel-group typeId="live-group" id="live"></channel-group>
+			<channel-group typeId="accessGranted-group" id="accessGranted"></channel-group>
+			<channel-group typeId="accessDenied-group" id="accessDenied"></channel-group>
+		</channel-groups>
+		<config-description>
+			<parameter name="camera" type="text">
+				<required>true</required>
+				<context>network_address</context>
+				<description>URL for receiving camera snapshots</description>
+				<default>http://IP/image.jpg</default>
+			</parameter>
+			<parameter name="interval" type="integer" min="1000" step="1000">
+				<required>true</required>
+				<default>2000</default>
+				<description>Interval in milliseconds between the captures</description>
+			</parameter>
+			<parameter name="username" type="text">
+				<description>User name for accessing camera</description>
+				<default></default>
+		    </parameter>
+			<parameter name="password" type="text">
+				<description>Password for accessing camera</description>
+				<default></default></parameter>
+			<parameter name="threshold" type="integer" min="0">
+				<required>true</required>
+				<default>80</default>
+				<description>Maximum score to accept a user as authenticated</description>
+			</parameter>
+			</config-description>
+	</thing-type>
+
+	<channel-type id="image-channel">
+		<item-type>Image</item-type>
+		<label>Images</label>
+		<description>Receives images from the camera</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- Access granted -->
+	<channel-type id="accessGrantedImage-channel">
+		<item-type>Image</item-type>
+		<label>Access granted image</label>
+		<description>Receives image of person that has been granted access</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="accessGrantedUsername-channel">
+		<item-type>String</item-type>
+		<label>Access granted user name</label>
+		<description>Receives user name of person that has been granted access</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="accessGrantedScore-channel">
+		<item-type>Number</item-type>
+		<label>Access granted score</label>
+		<description>Receives score of face recognition of the person that has been granted access</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="accessGrantedTime-channel">
+		<item-type>DateTime</item-type>
+		<label>Access granted time</label>
+		<description>Receives time of the access granted</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- Access denied -->
+	<channel-type id="accessDeniedImage-channel">
+		<item-type>Image</item-type>
+		<label>Access denied image</label>
+		<description>Receives image of person that has been denied access</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="accessDeniedUsername-channel">
+		<item-type>String</item-type>
+		<label>Access denied user name</label>
+		<description>Receives user name of person that has been denied access</description>
+	</channel-type>
+	<channel-type id="accessDeniedScore-channel">
+		<item-type>Number</item-type>
+		<label>Access denied score</label>
+		<description>Receives score of face recognition of the person that has been denied access</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="accessDeniedTime-channel">
+		<item-type>DateTime</item-type>
+		<label>Access denied time</label>
+		<description>Receives time of the access denied</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- Groups -->
+	<channel-group-type id="live-group">
+		<label>Live</label>
+		<channels>
+			<channel typeId="image-channel" id="image"></channel>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="accessGranted-group">
+		<label>Access granted</label>
+		<channels>
+			<channel typeId="accessGrantedImage-channel" id="image"></channel>
+			<channel typeId="accessGrantedUsername-channel" id="username"></channel>
+			<channel typeId="accessGrantedScore-channel" id="score"></channel>
+			<channel typeId="accessGrantedTime-channel" id="time"></channel>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="accessDenied-group">
+		<label>Access denied</label>
+		<channels>
+			<channel typeId="accessDeniedImage-channel" id="image"></channel>
+			<channel typeId="accessDeniedUsername-channel" id="username"></channel>
+			<channel typeId="accessDeniedScore-channel" id="score"></channel>
+			<channel typeId="accessDeniedTime-channel" id="time"></channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>
