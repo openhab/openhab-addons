@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="facerecognition"
-						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+						xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+						xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="facerecognition">
 		<label>Face recognition</label>
@@ -27,7 +27,7 @@
 			<parameter name="username" type="text">
 				<description>User name for accessing camera</description>
 				<default></default>
-		    </parameter>
+			</parameter>
 			<parameter name="password" type="text">
 				<description>Password for accessing camera</description>
 				<default></default></parameter>
