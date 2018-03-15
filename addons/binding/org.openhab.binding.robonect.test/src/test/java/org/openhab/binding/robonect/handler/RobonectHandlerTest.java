@@ -47,12 +47,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
+ * The goal of this class is to test RobonectHandler in isolation.
+ * 
  * @author Marco Meyer - Initial contribution
  */
 public class RobonectHandlerTest {
-
-    @Mock
-    private RobonectHandler testObj;
+    
+    private RobonectHandler subject;
 
     @Mock
     private Thing robonectThingMock;
@@ -66,9 +67,9 @@ public class RobonectHandlerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        testObj = new RobonectHandler(robonectThingMock);
-        testObj.setCallback(callbackMock);
-        testObj.setRobonectClient(robonectClientMock);
+        subject = new RobonectHandler(robonectThingMock);
+        subject.setCallback(callbackMock);
+        subject.setRobonectClient(robonectClientMock);
     }
 
     @Test
@@ -89,8 +90,8 @@ public class RobonectHandlerTest {
         when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
         when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
 
-        testObj.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_TIMER_NEXT_TIMER),
-                RefreshType.REFRESH);
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_TIMER_NEXT_TIMER),
+                              RefreshType.REFRESH);
 
         // then
         verify(callbackMock, times(1)).stateUpdated(
@@ -134,8 +135,8 @@ public class RobonectHandlerTest {
         when(robonectClientMock.errorList()).thenReturn(errorList);
         when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
 
-        testObj.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
-                RefreshType.REFRESH);
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
+                              RefreshType.REFRESH);
 
         // then
         verify(callbackMock, times(1))
@@ -185,8 +186,8 @@ public class RobonectHandlerTest {
         when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
         when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
 
-        testObj.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
-                RefreshType.REFRESH);
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
+                              RefreshType.REFRESH);
 
         // then
         verify(callbackMock, times(1))
@@ -216,8 +217,8 @@ public class RobonectHandlerTest {
         when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
         when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
 
-        testObj.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
-                RefreshType.REFRESH);
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
+                              RefreshType.REFRESH);
 
         // then
         verify(callbackMock, times(1))
@@ -253,8 +254,8 @@ public class RobonectHandlerTest {
         when(robonectClientMock.errorList()).thenReturn(errorList);
         when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
 
-        testObj.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
-                RefreshType.REFRESH);
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
+                              RefreshType.REFRESH);
         
         // then
         verify(callbackMock, times(1))
