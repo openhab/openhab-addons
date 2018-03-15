@@ -123,7 +123,7 @@ public class FaceRecognitionHandler extends BaseThingHandler {
                 faceRecognizer.update(images, labels);
                 faceRecognizer.setLabelInfo(label, command.toString());
                 faceRecognizer.save(MODELS_FILE);
-                logger.debug("Trained face of user \"" + command.toString() + "\"");
+                logger.debug("Trained face of user \"{}\"", command.toString());
             }
         }
     }
@@ -162,7 +162,7 @@ public class FaceRecognitionHandler extends BaseThingHandler {
             job = service.scheduleAtFixedRate(() -> snapshot(camera), 0, interval.longValue(), TimeUnit.MILLISECONDS);
 
         } catch (Exception e) {
-            logger.error(e.getClass().getName() + ": " + e.getMessage());
+            logger.error("{}: {}", e.getClass().getName(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
@@ -180,7 +180,7 @@ public class FaceRecognitionHandler extends BaseThingHandler {
             httpClient.stop();
 
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         }
 
         faceCascade.close();
@@ -303,7 +303,7 @@ public class FaceRecognitionHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
 
         } catch (Exception e) {
-            logger.error(e.getClass().getName() + ": " + e.getMessage());
+            logger.error("{}: {}", e.getClass().getName(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
