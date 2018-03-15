@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.knx.internal.dpt;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -760,10 +761,10 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             }
 
             if (typeClass.equals(PercentType.class)) {
-                return PercentType.valueOf(value.split(" ")[0]);
+                return new PercentType(BigDecimal.valueOf(Math.round(translator.getNumericValue())));
             }
             if (typeClass.equals(DecimalType.class)) {
-                return DecimalType.valueOf(value.split(" ")[0]);
+                return new DecimalType(translator.getNumericValue());
             }
             if (typeClass.equals(StringType.class)) {
                 return StringType.valueOf(value);
