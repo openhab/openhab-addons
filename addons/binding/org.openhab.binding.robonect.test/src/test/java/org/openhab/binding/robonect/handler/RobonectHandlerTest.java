@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,17 +27,17 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.robonect.RobonectBindingConstants;
-import org.openhab.binding.robonect.RobonectClient;
+import org.openhab.binding.robonect.internal.RobonectClient;
 import org.openhab.binding.robonect.handler.RobonectHandler;
-import org.openhab.binding.robonect.model.ErrorEntry;
-import org.openhab.binding.robonect.model.ErrorList;
-import org.openhab.binding.robonect.model.MowerInfo;
-import org.openhab.binding.robonect.model.MowerMode;
-import org.openhab.binding.robonect.model.MowerStatus;
-import org.openhab.binding.robonect.model.NextTimer;
-import org.openhab.binding.robonect.model.Status;
-import org.openhab.binding.robonect.model.Timer;
-import org.openhab.binding.robonect.model.Wlan;
+import org.openhab.binding.robonect.internal.model.ErrorEntry;
+import org.openhab.binding.robonect.internal.model.ErrorList;
+import org.openhab.binding.robonect.internal.model.MowerInfo;
+import org.openhab.binding.robonect.internal.model.MowerMode;
+import org.openhab.binding.robonect.internal.model.MowerStatus;
+import org.openhab.binding.robonect.internal.model.NextTimer;
+import org.openhab.binding.robonect.internal.model.Status;
+import org.openhab.binding.robonect.internal.model.Timer;
+import org.openhab.binding.robonect.internal.model.Wlan;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

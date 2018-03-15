@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -29,17 +29,17 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.robonect.RobonectClient;
-import org.openhab.binding.robonect.RobonectCommunicationException;
-import org.openhab.binding.robonect.RobonectEndpoint;
-import org.openhab.binding.robonect.config.RobonectConfig;
-import org.openhab.binding.robonect.model.ErrorEntry;
-import org.openhab.binding.robonect.model.ErrorList;
-import org.openhab.binding.robonect.model.MowerInfo;
-import org.openhab.binding.robonect.model.Name;
-import org.openhab.binding.robonect.model.RobonectAnswer;
-import org.openhab.binding.robonect.model.VersionInfo;
-import org.openhab.binding.robonect.model.cmd.ModeCommand;
+import org.openhab.binding.robonect.internal.RobonectClient;
+import org.openhab.binding.robonect.internal.RobonectCommunicationException;
+import org.openhab.binding.robonect.internal.RobonectEndpoint;
+import org.openhab.binding.robonect.internal.config.RobonectConfig;
+import org.openhab.binding.robonect.internal.model.ErrorEntry;
+import org.openhab.binding.robonect.internal.model.ErrorList;
+import org.openhab.binding.robonect.internal.model.MowerInfo;
+import org.openhab.binding.robonect.internal.model.Name;
+import org.openhab.binding.robonect.internal.model.RobonectAnswer;
+import org.openhab.binding.robonect.internal.model.VersionInfo;
+import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
