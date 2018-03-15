@@ -110,7 +110,7 @@ public class LoginServlet extends HttpServlet {
             errorHtml = replaceLoginUrl(errorHtml);
 
         } catch (URISyntaxException e) {
-            logger.error("Post login data failed {}", e);
+            logger.error("Post login data failed with uri syntax error{}", e);
             errorHtml = "<html>Internal error</html>";
         }
         resp.addHeader("Content-Location", servletUrl);
@@ -119,14 +119,13 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         String uri = req.getRequestURI().substring(servletUrl.length());
+        logger.debug("doGet {}", uri);
         if (!uri.startsWith("/")) {
             String newUri = req.getServletPath() + "/" + uri;
             resp.sendRedirect(newUri);
             return;
         }
-        logger.debug(uri);
         try {
             String html = this.connection.getLoginPage();
             html = replaceLoginUrl(html);
@@ -134,7 +133,7 @@ public class LoginServlet extends HttpServlet {
             resp.addHeader("content-type", "text/html;charset=UTF-8");
             resp.getWriter().write(html);
         } catch (URISyntaxException e) {
-
+            logger.error("get failed with uri syntax error {}", e);
         }
     }
 
