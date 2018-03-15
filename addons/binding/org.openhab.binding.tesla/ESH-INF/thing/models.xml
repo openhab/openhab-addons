@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="tesla"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="tesla" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="models">
 		<label>Tesla Model S</label>
 		<description>Thing for the Tesla Model S</description>
@@ -15,8 +13,8 @@
 			<channel id="batteryheater" typeId="batteryheater" />
 			<channel id="batterylevel" typeId="batterylevel" />
 			<channel id="batteryrange" typeId="batteryrange" />
-    		    <channel id="calendarenabled" typeId="calendarenabled" />
-		    <channel id="centerdisplay" typeId="centerdisplay" />
+			<channel id="calendarenabled" typeId="calendarenabled" />
+			<channel id="centerdisplay" typeId="centerdisplay" />
 			<channel id="charge" typeId="charge" />
 			<channel id="chargeenablerequest" typeId="chargeenablerequest" />
 			<channel id="chargeenergyadded" typeId="chargeenergyadded" />
@@ -38,11 +36,11 @@
 			<channel id="chargermaxcurrent" typeId="chargermaxcurrent" />
 			<channel id="chargerpower" typeId="chargerpower" />
 			<channel id="chargervoltage" typeId="chargervoltage" />
-      		<channel id="driverfrontdoor" typeId="driverfrontdoor" />
+			<channel id="driverfrontdoor" typeId="driverfrontdoor" />
 			<channel id="doorlock" typeId="doorlock" />
 			<channel id="driverreardoor" typeId="driverreardoor" />
 			<channel id="drivertemp" typeId="drivertemp" />
-     		<channel id="estimatedbatteryrange" typeId="estimatedbatteryrange" />
+			<channel id="estimatedbatteryrange" typeId="estimatedbatteryrange" />
 			<channel id="headingestimation" typeId="headingestimation" />
 			<channel id="estimatedrange" typeId="estimatedrange" />
 			<channel id="fan" typeId="fan" />
@@ -56,29 +54,29 @@
 			<channel id="insidetemp" typeId="insidetemp" />
 			<channel id="location" typeId="location" />
 			<channel id="mobileenabled" typeId="mobileenabled" />
-      		<channel id="notenoughpower" typeId="notenoughpower" />
+			<channel id="notenoughpower" typeId="notenoughpower" />
 			<channel id="notificationsenabled" typeId="notificationsenabled" />
 			<channel id="notificationssupported" typeId="notificationssupported" />
 			<channel id="odometer" typeId="odometer" />
-     		<channel id="outsidetemp" typeId="outsidetemp" />
+			<channel id="outsidetemp" typeId="outsidetemp" />
 			<channel id="passengertemp" typeId="passengertemp" />
-     		<channel id="parsedcalendar" typeId="parsedcalendar" />
+			<channel id="parsedcalendar" typeId="parsedcalendar" />
 			<channel id="passengerfrontdoor" typeId="passengerfrontdoor" />
 			<channel id="power" typeId="power" />
 			<channel id="passengerreardoor" typeId="passengerreardoor" />
 			<channel id="range" typeId="range" />
 			<channel id="reardefroster" typeId="reardefroster" />
 			<channel id="remotestartenabled" typeId="remotestartenabled" />
-    			<channel id="reartrunk" typeId="reartrunk" />
-     		<channel id="remotestart" typeId="remotestart" />
+			<channel id="reartrunk" typeId="reartrunk" />
+			<channel id="remotestart" typeId="remotestart" />
 			<channel id="remotestartsupported" typeId="remotestartsupported" />
-			<channel id="leftseatheater" typeId="leftseatheater" />	
+			<channel id="leftseatheater" typeId="leftseatheater" />
 			<channel id="rightseatheater" typeId="rightseatheater" />
 			<channel id="leftrearseatheater" typeId="leftrearseatheater" />
 			<channel id="rightrearseatheater" typeId="rightrearseatheater" />
 			<channel id="centerrearseatheater" typeId="centerrearseatheater" />
 			<channel id="rightrearbackseatheater" typeId="rightrearbackseatheater" />
-			<channel id="leftrearbackseatheater" typeId="leftrearbackseatheater" />			
+			<channel id="leftrearbackseatheater" typeId="leftrearbackseatheater" />
 			<channel id="scheduledchargingpending" typeId="scheduledchargingpending" />
 			<channel id="scheduledchargingstart" typeId="scheduledchargingstart" />
 			<channel id="shiftstate" typeId="shiftstate" />
@@ -97,6 +95,8 @@
 			<channel id="valetmode" typeId="valetmode" />
 			<channel id="valetpin" typeId="valetpin" />
 			<channel id="wakeup" typeId="wakeup" />
+			<channel id="allowwakeup" typeId="allowwakeup" />
+			<channel id="enableevents" typeId="enableevents" />
 		</channels>
 
 		<config-description>
@@ -381,7 +381,7 @@
 		<label>Location</label>
 		<description>The actual position of the vehicle</description>
 		<state readOnly="true"></state>
-	</channel-type>	
+	</channel-type>
 	<channel-type id="mobileenabled" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Mobile Enabled</label>
@@ -515,15 +515,15 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="rightrearbackseatheater" advanced="true">
-		<item-type>Switch</item-type>
+		<item-type>Number</item-type>
 		<label>Right Rear Backseat Heater</label>
-		<description>Indicates if the right rear backseat heater is switched on</description>
+		<description>Indicates the level (0,1,2 or 3) of the right rear backseat heater</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="leftrearbackseatheater" advanced="true">
-		<item-type>Switch</item-type>
+		<item-type>Number</item-type>
 		<label>Left Rear Backseat Heater</label>
-		<description>Indicates if the left rear backseat heater is switched on</description>
+		<description>Indicates the level (0,1,2 or 3) of the left rear backseat heater</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="scheduledchargingpending" advanced="true">
@@ -554,7 +554,7 @@
 		<item-type>Dimmer</item-type>
 		<label>State of Charge</label>
 		<description>State of Charge, in %</description>
-		<state pattern="%.1f %%"  readOnly="true"></state>
+		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="speed">
 		<item-type>Number</item-type>
@@ -622,7 +622,7 @@
 		<description>Indicates if valet mode is switched on</description>
 		<state readOnly="true"></state>
 	</channel-type>
-		<channel-type id="valetpin" advanced="true">
+	<channel-type id="valetpin" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Valet PIN Required</label>
 		<description>Indicates if a PIN code is required to disable valet mode</description>
@@ -632,5 +632,15 @@
 		<item-type>Switch</item-type>
 		<label>Wake Up</label>
 		<description>Wake up the vehicle from a (deep) sleep</description>
+	</channel-type>
+	<channel-type id="allowwakeup" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Allow Wake Up</label>
+		<description>Allow the vehicle to be waken up</description>
+	</channel-type>
+	<channel-type id="enableevents" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Enable Events</label>
+		<description>Enable the event stream from the vehicle</description>
 	</channel-type>
 </thing:thing-descriptions>

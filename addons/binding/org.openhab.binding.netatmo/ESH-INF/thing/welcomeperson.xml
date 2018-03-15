@@ -30,14 +30,14 @@
 	<channel-type id="last_seen">
 		<item-type>DateTime</item-type>
 		<label>Last seen</label>
-		<description>Time when the person was last seen</description>
+		<description>Time when this person was last seen</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="person_athome">
 		<item-type>Switch</item-type>
 		<label>At home</label>
-		<description>True if the person is at home (last seen in the defined timerange)</description>
+		<description>Indicates if this person is known to be at home or not</description>
 	</channel-type>
 
 	<channel-type id="person_eventmsg">
@@ -57,14 +57,14 @@
 	<channel-type id="person_avatar_url" advanced="true">
 		<item-type>String</item-type>
 		<label>Avatar URL </label>
-		<description>URL for the Avatar of the person</description>
+		<description>URL for the avatar of this person</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="person_avatar" >
 		<item-type>Image</item-type>
 		<label>Avatar</label>
-		<description>Avatar of the person</description>
+		<description>Avatar of this person</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

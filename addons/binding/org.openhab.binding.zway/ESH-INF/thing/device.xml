@@ -3,24 +3,24 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="zwayDevice">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="zwayServer" />
-        </supported-bridge-type-refs>
+	<thing-type id="zwayDevice">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="zwayServer" />
+		</supported-bridge-type-refs>
 
-        <label>Z-Wave Device</label>
-        <description>
-            <![CDATA[
-            A Z-Wave device represents a device of real world. Each device function will be mapped to
-            a separate channel. The bridge is necessary as an intermediary between openHAB thing 
-            and Z-Way device.
-            ]]>
-        </description>
-        <config-description>
-            <parameter name="nodeId" type="integer" required="true">
-                <label>Node Id</label>
-                <description>Node Id of the Z-Wave device</description>
-            </parameter>
-        </config-description>
-    </thing-type>
+		<label>Z-Wave Device</label>
+		<description>
+			<![CDATA[
+			A Z-Wave device represents a device of real world. Each device function will be mapped to
+			a separate channel. The bridge is necessary as an intermediary between openHAB thing 
+			and Z-Way device.
+			]]>
+		</description>
+		<config-description>
+			<parameter name="nodeId" type="integer" required="true">
+				<label>Node Id</label>
+				<description>Node Id of the Z-Wave device</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 </thing:thing-descriptions>

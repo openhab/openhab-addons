@@ -1,6 +1,7 @@
 # GlobalCache Binding
 
-The [GlobalCache](http://www.globalcache.com) binding is used to enable communication between openHAB and GlobalCache [GC-100](http://www.globalcache.com/products/gc-100/) and [iTach](http://www.globalcache.com/products/itach/) family of devices.
+The [GlobalCache](http://www.globalcache.com) binding is used to enable communication
+between openHAB and GlobalCache [GC-100](http://www.globalcache.com/products/gc-100/) and [iTach](http://www.globalcache.com/products/itach/) family of devices.
 Global Cache devices enable the control and automation of infrared, serial, and contact closure devices through an IP network (wired or wireless).
 
 ## Overview
@@ -16,15 +17,15 @@ Each thing has channels that correspond to the physical connectors on the device
 
 Currently supported devices include:
 
-*   iTach WF2IR and IP2IR
-*   iTach WF2CC and IP2CC
-*   iTach WF2SL and IP2SL
-*   iTach Flex Ethernet
-*   iTach Flex Ethernet PoE
-*   iTach Flex WiFi
-*   GC-100-6
-*   GC-100-12
-*   ZMOTE Wi-Fi Universal Remote
+- iTach WF2IR and IP2IR
+- iTach WF2CC and IP2CC
+- iTach WF2SL and IP2SL
+- iTach Flex Ethernet
+- iTach Flex Ethernet PoE
+- iTach Flex WiFi
+- GC-100-6
+- GC-100-12
+- ZMOTE Wi-Fi Universal Remote
 
 ## Device Discovery
 
@@ -34,8 +35,8 @@ The GlobalCache binding will automatically detect those devices, then add them t
 Background discovery is **enabled** by default.
 To disable background discovery, add the following line to the *conf/services/runtime.cfg* file:
 
-```
-org.openhab.binding.globalcache.discovery.GlobalCacheDiscoveryService:backgroundDiscovery.enabled=false
+```text
+discovery.globalcache:background=false
 ```
 
 Note that automatic device discovery **will not work** with GC-100's running firmware earlier than v3.0 as those versions do not emit announcement beacons on the multicast address.
@@ -59,12 +60,12 @@ The default is Infrared.
 The device's IP address is set at time of discovery.
 However, in the event that the device's IP address is changed, the device IP address must be changed in the thing's configuration.
 
-#### Manual Thing Creation
+### Manual Thing Creation
 
 Devices can be manually created in the *PaperUI* or *HABmin*, or by placing a *.things* file in the *conf/things* directory.
 See example below.
 
-#### Binding Dependencies
+### Binding Dependencies
 
 The GlobalCache binding uses the **transform** binding to map commands to IR and serial codes.  See example below.
 
@@ -72,10 +73,10 @@ The GlobalCache binding uses the **transform** binding to map commands to IR and
 
 There are four *channel types* used across the GC-100 and iTach family of devices.
 
--   Contact Closure (CC)
--   Infrared (IR)
--   Serial (SL)
--   Serial Direct (SL)
+- Contact Closure (CC)
+- Infrared (IR)
+- Serial (SL)
+- Serial Direct (SL)
 
 *Channels* follow a naming convention that relates to the physical configuration of the Global Cache device -- specifically the **module** and **connector** numbers.
 For example, the channel name **m2c3** refers to connector 3 on module 2.
@@ -88,33 +89,33 @@ For example, the IR channel on connector 3 on module 1 is named ir-m1c2.
 The *Infrared channel* sends IR codes out the IR connector on the device.
 For example, the following item links to the module 1 / connector 2 channel on an iTach IR device.
 
-```
+```java
 String SamsungTV    "TV"     (gTheater)   { channel="globalcache:itachIR:000C1E0384A5:ir-m1#c2" }
 ```
 
 The item definition for an iTach Flex Ethernet device would look like this.
 
-```
+```java
 String SamsungTV    "TV"     (gTheater)   { channel="globalcache:itachFlexEth:000C1E077BE1:ir-m1#c2" }
 ```
 
-#### How to Specify IR Codes
+### How to Specify IR Codes
 
 IR codes are contained in a MAP file contained within the conf/transform directory.
 See example below.
 
-#### Supported IR Code Formats
+### Supported IR Code Formats
 
 Two different formatting methods are supported: Global Cache and hex code.
 Here's an example of the Global Cache format:
 
-```
+```text
 38000,1,1,340,170,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,63,21,21,21,21,21,21,21,21,21,63,21,63,21,63,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,63,21,63,21,63,21,63,21,63,21,63,21,63,21,63,21,21,21,21,21,1691,340,85,21,3753
 ```
 
 Here's an example of the hex code format:
 
-```
+```text
 0000 006E 0000 0024 0154 00AA 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 003F 0015 0015 0015 0015 0015 0015 0015 0015 0015 003F 0015 003F 0015 003F 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 003F 0015 003F 0015 003F 0015 003F 0015 003F 0015 003F 0015 003F 0015 003F 0015 0015 0015 0015 0015 069B 0154 0055 0015 0EA9
 ```
 
@@ -133,13 +134,13 @@ Other settings, such as *Sensor In*, *Sensor Notify*, and *LED Lighting*, may be
 A *Contact Closure channel* activates the contact closure (relay) on the iTach or GC-100 device.  
 For example, the following item links to the module 1, connector 1 channel on an iTach CC device.
 
-```
+```java
 Contact MyRelay    "My Relay [%s]"  (gRelays)   { channel="globalcache:itachCC:000C1E039BCF:cc-m1#c1" }
 ```
 
 The item definition for an iTach Flex WiFi device would look like this.
 
-```
+```java
 String MyRelay     "My Relay [%s]"  (gRelays)   { channel="globalcache:itachFlex:000C01AF4990:cc-m1#c1" }
 ```
 
@@ -148,7 +149,7 @@ String MyRelay     "My Relay [%s]"  (gRelays)   { channel="globalcache:itachFlex
 An *SL channel* sends serial command strings out the serial connector on the device.  
 For example, the following item links to the module 1 connector 1 channel on a GC-100-6 device.
 
-```
+```java
 String RS232ME      "My RS232-controlled Device"   { channel="globalcache:gc100_6:000C459A120A:sl-m1#c1" }
 ```
 
@@ -162,7 +163,7 @@ The Serial Direct channel type enables serial commands to be sent directly to th
 This is useful in rules where the serial command might be constructed "on the fly" in the body of the rule.
 For example, the following item links to the module 1 connector 1 channel on an iTach Flex device.
 
-```
+```java
 String RUSSCAA66    "Russound CAA66"   { channel="globalcache:itachFlex:000C45D530B9:sl-m1#c1-direct" }
 ```
 
@@ -177,12 +178,13 @@ Use URL encoding for non-printable characters.
 For example, the following item links to the receive channel on module 1 connector 1 on a GC-100.
 A rule that looks for updates on this item will be able to process messages sent from the device connected to the GlobalCache's serial port.
 
-```
+```java
 String RUSSCAA66_Receive    "Russound CAA66 Receive"   { channel="globalcache:gc100_06:000C1EFFF039:sl-m1#c1-receive" }
 ```
+
 Here are some examples of common **End-ofMessage** delimiters.
 
-```
+```text
 %0D%0A      Carriage return / Line feed
 %0D         Carriage return
 %F7         Russound RNET message terminator
@@ -192,7 +194,7 @@ Here are some examples of common **End-ofMessage** delimiters.
 
 ### MAP File
 
-```
+```text
 # Harmon Kardon AVR-245 Home Theater Receiver
 HKAVR245_POWER_ON   = 38000,1,1,340,170,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,63,21,21,21,21,21,21,21,21,21,63,21,63,21,63,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,63,21,63,21,63,21,63,21,63,21,63,21,63,21,63,21,21,21,21,21,1691,340,85,21,3753
 HKAVR245_POWER_OFF  = 38000,1,1,340,170,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,63,21,21,21,21,21,21,21,21,21,63,21,63,21,63,21,21,21,63,21,63,21,63,21,63,21,63,21,21,21,21,21,63,21,21,21,21,21,21,21,21,21,21,21,63,21,63,21,21,21,1691,340,85,21,3753
@@ -226,7 +228,7 @@ RS232ME_VOLUME_DOWN = VOLUME%20DOWN%0D%0A
 
 ### Items File
 
-```
+```java
 Switch ContactClosure1  "Relay on Connector 1"              { channel="globalcache:itachCC:000C1E017BCF:cc-m1#c1" }
 Switch ContactClosure2  "Relay on Connector 2"              { channel="globalcache:itachCC:000C1E017BCF:cc-m1#c2" }
 Switch ContactClosure3  "Relay on Connector 3"              { channel="globalcache:itachCC:000C1E017BCF:cc-m1#c3" }
@@ -249,7 +251,7 @@ String ZSAMSUNGHLS      "Samsung HL-S DLP TV"               { channel="globalcac
 
 This is an example of how to use contact closure, infrared, and serial devices in a sitemap.
 
-```
+```perl
 Frame label="Contact Closure" {
     Switch item=ContactClosure1 label="Open/Close Garage Door"
     Switch item=ContactClosure2 label="Light on Garage Door Opener"
@@ -283,7 +285,7 @@ Frame label="Garage Door" {
 
 This is an example of how to use a Contact Closure channel within a rule to implement a momentary contact switch, which could be used to trigger a garage door opener.
 
-```
+```javascript
 var boolean isRunning = false
 
 rule "Example Garage Door Opener"
@@ -302,7 +304,7 @@ end
 
 This is an example of how to send IR and/or serial commands from within a rule.
 
-```
+```javascript
 rule "AV Power On/Off"
 when
     Item AVPowerOn received command
@@ -320,7 +322,7 @@ end
 
 This is an example of how to send a serial command directly from within a rule.
 
-```
+```javascript
 rule "Russound Set Zone 1 Volume to 20"
 when
     Item RussoundSetVolume received command
@@ -334,7 +336,7 @@ end
 Place a file named *globalcache.things* in the *conf/things* directory.
 The file should contain lines formatted like this.
 
-```
+```java
 globalcache:itachCC:000CFF17B106 [ ipAddress="192.168.12.62" ]
 globalcache:itachIR:000C0B1E54A0 [ ipAddress="192.168.12.63", mapFilename="ir-codes.map" ]
 globalcache:itachSL:000CF886B107 [ ipAddress="192.168.12.64", mapFilename="serial-codes.map"  ]

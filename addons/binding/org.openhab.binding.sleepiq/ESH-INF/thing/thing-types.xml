@@ -1,134 +1,134 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="sleepiq"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- SleepIQ Cloud Service -->
-    <bridge-type id="cloud">
-        <label>SleepIQ Cloud</label>
-        <description>The SleepIQ cloud service provides connections to all beds in an account.</description>
+	<!-- SleepIQ Cloud Service -->
+	<bridge-type id="cloud">
+		<label>SleepIQ Cloud</label>
+		<description>The SleepIQ cloud service provides connections to all beds in an account.</description>
 
-        <properties>
-            <property name="vendor">Select Comfort</property>
-        </properties>
-        
-        <config-description>
-            <parameter name="username" type="text">
-                <label>Username</label>
-                <description>Username of a registered SleepIQ account owner</description>
-                <required>true</required>
-            </parameter>
-            <parameter name="password" type="text">
-                <context>password</context>
-                <label>Password</label>
-                <description>Password of a registered SleepIQ account owner</description>
-                <required>false</required>
-            </parameter>
-            <parameter name="pollingInterval" type="integer" min="30" step="30">
-                <label>Polling Interval</label>
-                <description>Seconds between fetching values from the cloud service</description>
-                <required>true</required>
-                <default>60</default>
-            </parameter>
-        </config-description>
-    </bridge-type>
-    
-    <!-- Bed thing with a single chamber -->
-    <!-- Single chamber bed support is disabled until test devices are available
-    <thing-type id="singleBed">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="cloud" />
-        </supported-bridge-type-refs>
+		<properties>
+			<property name="vendor">Select Comfort</property>
+		</properties>
 
-        <label>Single Chamber Bed</label>
-        <description>A Sleep Number bed with SleepIQ and a single air chamber</description>
+		<config-description>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>Username of a registered SleepIQ account owner</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password of a registered SleepIQ account owner</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" min="30" step="30">
+				<label>Polling Interval</label>
+				<description>Seconds between fetching values from the cloud service</description>
+				<required>true</required>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
 
-        <channel-groups>
-            <channel-group id="bed" typeId="chamberGroupType"/>
-        </channel-groups>
+	<!-- Bed thing with a single chamber -->
+	<!-- Single chamber bed support is disabled until test devices are available
+	<thing-type id="singleBed">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="cloud" />
+		</supported-bridge-type-refs>
 
-        <config-description>
-            <parameter name="bedId" type="text">
-                <label>Bed ID</label>
-                <description>The bed identifier identifies a specific bed</description>
-                <required>true</required>
-            </parameter>
-        </config-description>
-    </thing-type>
-    -->
-    
-    <!-- Bed thing with two separate chambers -->
-    <thing-type id="dualBed">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="cloud" />
-        </supported-bridge-type-refs>
+		<label>Single Chamber Bed</label>
+		<description>A Sleep Number bed with SleepIQ and a single air chamber</description>
 
-        <label>Dual Chamber Bed</label>
-        <description>A Sleep Number bed with SleepIQ and two individual air chambers</description>
+		<channel-groups>
+			<channel-group id="bed" typeId="chamberGroupType"/>
+		</channel-groups>
 
-        <channel-groups>
-            <channel-group id="left" typeId="chamberGroupType"/>
-            <channel-group id="right" typeId="chamberGroupType"/>
-        </channel-groups>
+		<config-description>
+			<parameter name="bedId" type="text">
+				<label>Bed ID</label>
+				<description>The bed identifier identifies a specific bed</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+	-->
 
-        <config-description>
-            <parameter name="bedId" type="text">
-                <label>Bed ID</label>
-                <description>The bed identifier identifies a specific bed</description>
-                <required>true</required>
-            </parameter>
-        </config-description>
-    </thing-type>
-    
-    <!-- The attributes of a chamber -->
-    <channel-group-type id="chamberGroupType">
-        <label>Chamber</label>
-        <channels>
-            <channel id="inBed" typeId="inBedType"/>
-            <channel id="sleepNumber" typeId="sleepNumberType"/>
-            <channel id="pressure" typeId="pressureType"/>
-            <channel id="lastLink" typeId="lastLinkType"/>
-            <channel id="alertId" typeId="alertIdType"/>
-            <channel id="alertDetailedMessage" typeId="alertDetailedMessageType"/>
-        </channels>
-    </channel-group-type>
-    
-    <channel-type id="inBedType">
-        <item-type>Switch</item-type>
-        <label>In Bed</label>
-        <description>The presence of a person or object on the chamber</description>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="sleepNumberType">
-        <item-type>Number</item-type>
-        <label>Sleep Number</label>
-        <description>The Sleep Number setting of the chamber</description>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="pressureType">
-        <item-type>Number</item-type>
-        <label>Pressure</label>
-        <description>The current pressure inside the chamber</description>
-        <state pattern="%d kPa" readOnly="true" />
-    </channel-type>
-    <channel-type id="lastLinkType">
-        <item-type>String</item-type>
-        <label>Last Link</label>
-        <description>The amount of time that has passed since a connection was made from the chamber to the cloud service (D d HH:MM:SS)</description>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="alertIdType">
-        <item-type>Number</item-type>
-        <label>Alert ID</label>
-        <description>Identifier for an alert condition with the chamber</description>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="alertDetailedMessageType">
-        <item-type>String</item-type>
-        <label>Alert Detailed Message</label>
-        <description>A detailed message describing an alert condition with the chamber</description>
-        <state readOnly="true" />
-    </channel-type>
+	<!-- Bed thing with two separate chambers -->
+	<thing-type id="dualBed">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="cloud" />
+		</supported-bridge-type-refs>
+
+		<label>Dual Chamber Bed</label>
+		<description>A Sleep Number bed with SleepIQ and two individual air chambers</description>
+
+		<channel-groups>
+			<channel-group id="left" typeId="chamberGroupType"/>
+			<channel-group id="right" typeId="chamberGroupType"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="bedId" type="text">
+				<label>Bed ID</label>
+				<description>The bed identifier identifies a specific bed</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- The attributes of a chamber -->
+	<channel-group-type id="chamberGroupType">
+		<label>Chamber</label>
+		<channels>
+			<channel id="inBed" typeId="inBedType"/>
+			<channel id="sleepNumber" typeId="sleepNumberType"/>
+			<channel id="pressure" typeId="pressureType"/>
+			<channel id="lastLink" typeId="lastLinkType"/>
+			<channel id="alertId" typeId="alertIdType"/>
+			<channel id="alertDetailedMessage" typeId="alertDetailedMessageType"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="inBedType">
+		<item-type>Switch</item-type>
+		<label>In Bed</label>
+		<description>The presence of a person or object on the chamber</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="sleepNumberType">
+		<item-type>Number</item-type>
+		<label>Sleep Number</label>
+		<description>The Sleep Number setting of the chamber</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="pressureType">
+		<item-type>Number</item-type>
+		<label>Pressure</label>
+		<description>The current pressure inside the chamber</description>
+		<state pattern="%d kPa" readOnly="true" />
+	</channel-type>
+	<channel-type id="lastLinkType">
+		<item-type>String</item-type>
+		<label>Last Link</label>
+		<description>The amount of time that has passed since a connection was made from the chamber to the cloud service (D d HH:MM:SS)</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="alertIdType">
+		<item-type>Number</item-type>
+		<label>Alert ID</label>
+		<description>Identifier for an alert condition with the chamber</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="alertDetailedMessageType">
+		<item-type>String</item-type>
+		<label>Alert Detailed Message</label>
+		<description>A detailed message describing an alert condition with the chamber</description>
+		<state readOnly="true" />
+	</channel-type>
 
 </thing:thing-descriptions>

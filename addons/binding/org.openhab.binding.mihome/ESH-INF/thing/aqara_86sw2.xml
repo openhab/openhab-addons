@@ -11,17 +11,17 @@
 		<description>Battery powered Aqara Switch with 2 channels</description>
 		<channels>
 			<channel id="ch1" typeId="system.button">
-                <label>First Button</label>
-                <description>The first pushbutton on the switch</description>
+				<label>First Button</label>
+				<description>The first pushbutton on the switch</description>
 			</channel>
 			<channel id="ch2" typeId="system.button">
-                <label>Second Button</label>
-                <description>The second pushbutton on the switch</description>
-            </channel>
+				<label>Second Button</label>
+				<description>The second pushbutton on the switch</description>
+			</channel>
 			<channel id="dual_ch" typeId="system.button">
-                <label>Both Buttons Pressed</label>
-                <description>Fires when both buttons are pressed simultaneously</description>
-            </channel>
+				<label>Both Buttons Pressed</label>
+				<description>Fires when both buttons are pressed simultaneously</description>
+			</channel>
 			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="lowBattery" typeId="system.low-battery" />
 		</channels>

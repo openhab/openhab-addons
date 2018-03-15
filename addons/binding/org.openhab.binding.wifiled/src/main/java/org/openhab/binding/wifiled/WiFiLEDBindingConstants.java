@@ -8,10 +8,11 @@
  */
 package org.openhab.binding.wifiled;
 
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
 import java.util.Collections;
 import java.util.Set;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
  * The {@link WiFiLEDBindingConstants} class defines common constants, which are
@@ -19,6 +20,7 @@ import java.util.Set;
  *
  * @author Osman Basha - Initial contribution
  */
+@NonNullByDefault
 public class WiFiLEDBindingConstants {
 
     public static final String BINDING_ID = "wifiled";

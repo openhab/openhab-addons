@@ -91,29 +91,23 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
     }
 
     private void deviceOnlineWatchdog() {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    PulseaudioBridgeHandler bridgeHandler = getPulseaudioBridgeHandler();
-                    if (bridgeHandler != null) {
-                        if (bridgeHandler.getDevice(name) == null) {
-                            updateStatus(ThingStatus.OFFLINE);
-                            bridgeHandler = null;
-                        } else {
-                            updateStatus(ThingStatus.ONLINE);
-                        }
-
-                    } else {
-                        logger.debug("Bridge for pulseaudio device {} not found.", name);
+        Runnable runnable = () -> {
+            try {
+                PulseaudioBridgeHandler bridgeHandler = getPulseaudioBridgeHandler();
+                if (bridgeHandler != null) {
+                    if (bridgeHandler.getDevice(name) == null) {
                         updateStatus(ThingStatus.OFFLINE);
+                        bridgeHandler = null;
+                    } else {
+                        updateStatus(ThingStatus.ONLINE);
                     }
-
-                } catch (Exception e) {
-                    logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
-                    bridgeHandler = null;
+                } else {
+                    logger.debug("Bridge for pulseaudio device {} not found.", name);
+                    updateStatus(ThingStatus.OFFLINE);
                 }
-
+            } catch (Exception e) {
+                logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
+                bridgeHandler = null;
             }
         };
 
@@ -121,7 +115,6 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
     }
 
     private synchronized PulseaudioBridgeHandler getPulseaudioBridgeHandler() {
-
         if (this.bridgeHandler == null) {
             Bridge bridge = getBridge();
             if (bridge == null) {
@@ -222,7 +215,6 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
                         logger.error("no sink {} found", command.toString());
                     }
                 }
-
             }
             logger.trace("updating {} to {}", channelUID, updateState);
             if (!updateState.equals(UnDefType.UNDEF)) {

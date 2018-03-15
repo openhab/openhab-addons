@@ -4,11 +4,11 @@ This binding integrates devices compatible with [Qualcomm AllPlay](https://www.q
 The binding uses native libraries for the AllJoyn framework.
 Libraries for the following platforms are already included in the binding:
 
-*   Linux ARM
-*   Linux x86 (32 bit, AllJoyn v16.04a)
-*   Linux x86-64 (64 bit, AllJoyn v16.04a)
-*   Windows x86 (32 bit, AllJoyn v16.04a)
-*   Windows x86-64 (64 bit, AllJoyn v16.04a)
+- Linux ARM
+- Linux x86 (32 bit, AllJoyn v16.04a)
+- Linux x86-64 (64 bit, AllJoyn v16.04a)
+- Windows x86 (32 bit, AllJoyn v16.04a)
+- Windows x86-64 (64 bit, AllJoyn v16.04a)
 
 The Windows libraries have a dependency on the [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-US/download/details.aspx?id=48145).
 If you are using Windows, please make sure to install these components before using the AllPlay binding.
@@ -34,8 +34,6 @@ The binding has the following configuration options, which can be set for "bindi
 | fastForwardSkipTimeInSec | Fast forward skip time (s) | Seconds to jump forward if the fastforward command is executed       | yes      |
 | callbackUrl              | Callback URL               | URL to use for playing audio streams, e.g. <http://192.168.0.2:8080> | no       |
 
-
-
 ## Thing Configuration
 
 AllPlay Players are identified by their device ID (e.g. 9fbe37ca-d015-47a2-b76e-8fce7bc25687). Available configuration parameters are:
@@ -46,8 +44,6 @@ AllPlay Players are identified by their device ID (e.g. 9fbe37ca-d015-47a2-b76e-
 | Device Name           | deviceName          | The device name of the speaker                                                      | false    |         |
 | Volume step size      | volumeStepSize      | Step size to use if the volume is changed using the increase/decrease command       | true     | 1       |
 | Zone Member Separator | zoneMemberSeparator | Separator which is used when sending multiple zone members to channel 'zonemembers' | true     | ,       |
-|
-
 
 ## Channels
 
@@ -80,7 +76,6 @@ The devices support the following channels:
 |                 |           | (This channel is currently only for setting the zone members.                                  |
 |                 |           | It does not update automatically if the zone members are changed from another source)          |
 
-
 ## Audio Support
 
 All AllPlay speakers are registered as an audio sink in the framework.
@@ -90,13 +85,13 @@ Audio streams are sent to the `stream` channel.
 
 demo.things:
 
-```
+```java
 Thing allplay:speaker:mySpeaker [ deviceId="9fbe37ca-d015-47a2-b76e-8fce7bc25687"]
 ```
 
 demo.items:
 
-```
+```java
 String All2Stream                           {channel="allplay:speaker:9fbe37ca-d015-47a2-b76e-8fce7bc25687:stream"}
 Player All2Control                          {channel="allplay:speaker:9fbe37ca-d015-47a2-b76e-8fce7bc25687:control"}
 Dimmer All2Volume    "Volume"               {channel="allplay:speaker:9fbe37ca-d015-47a2-b76e-8fce7bc25687:volume"}
@@ -108,22 +103,21 @@ String All2CoverUrl  "Cover Art URL [%s]"   {channel="allplay:speaker:9fbe37ca-d
 
 demo.sitemap:
 
-```
-sitemap demo label="Main Menu"
-{
-		Frame label="All2" {
-			Default item=All2Control
-			Slider item=All2Volume
-			Text item=All2Title
-			Text item=All2Artist
-			Text item=All2State
-		}
+```perl
+sitemap demo label="Main Menu" {
+    Frame label="All2" {
+        Default item=All2Control
+        Slider item=All2Volume
+        Text item=All2Title
+        Text item=All2Artist
+        Text item=All2State
+    }
 }
 ```
 
 demo.rules:
 
-```
+```java
 rule "Play Online Radio stream"
 when
     Item All2OnlineRadio changed to ON

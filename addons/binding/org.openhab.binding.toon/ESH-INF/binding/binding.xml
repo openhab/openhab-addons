@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<binding:binding id="toon"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+<binding:binding id="toon" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-    <name>Toon Binding</name>
-    <description>
-        The Toon bindings shows among others current room temperature, setpoint, energy and gas usage information.
-        It can control the setpoint and current program. Connected smart plugs can also be controlled. 
-    </description>
-    <author>Jorg de Jong</author>
+	<name>Toon Binding</name>
+	<description>
+		The Toon bindings shows among others current room temperature, setpoint, energy and gas usage information.
+		It can control the setpoint and current program. Connected smart plugs can also be controlled. 
+	</description>
+	<author>Jorg de Jong</author>
 
 </binding:binding>

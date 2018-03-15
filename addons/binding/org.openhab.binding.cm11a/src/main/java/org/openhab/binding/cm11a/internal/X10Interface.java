@@ -668,6 +668,7 @@ public class X10Interface extends Thread implements SerialPortEventListener {
      * @param data
      */
     private void processCommandData(int mask, int[] data) {
+        int localMask = mask;
         X10ReceivedData.X10COMMAND command = X10ReceivedData.X10COMMAND.UNDEF; // Just set it to something
         List<String> addresses = new ArrayList<>();
         int dims = 0;
@@ -675,7 +676,7 @@ public class X10Interface extends Thread implements SerialPortEventListener {
 
         for (int i = 0; i < data.length; i++) {
             int d = data[i];
-            int dataType = mask & 0x01;
+            int dataType = localMask & 0x01;
             if (dataType == 0) {
                 // The data byte is an address
                 int houseIndex = (d >> 4) & 0x0f;
@@ -744,7 +745,7 @@ public class X10Interface extends Thread implements SerialPortEventListener {
                 dims = 0;
             }
 
-            mask = mask >> 1;
+            localMask = localMask >> 1;
         }
 
         // Done processing buffer from cm11a. Notify interested parties about the data

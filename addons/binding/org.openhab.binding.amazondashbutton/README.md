@@ -58,8 +58,8 @@ sudo setcap 'cap_net_raw,cap_net_admin=+eip cap_net_bind_service=+ep' $(realpath
 
 On a Windows system there are two options to go with.
 
-1.  The preferred solution is [WinPcap](https://www.winpcap.org) if your network interface is supported.
-2.  An alternative option is [npcap](https://github.com/nmap/npcap) with the settings "WinPcap 4.1.3 compatibility" and "Raw 802.11 Packet Capture"
+1. The preferred solution is [WinPcap](https://www.winpcap.org) if your network interface is supported.
+2. An alternative option is [npcap](https://github.com/nmap/npcap) with the settings "WinPcap 4.1.3 compatibility" and "Raw 802.11 Packet Capture"
 
 ### Installing libpcap on Other Operating Systems
 
@@ -99,7 +99,9 @@ There is one supported Thing, the "Amazon Dash Button".
 
 ## Discovery
 
-Background discovery is not supported as it is not possible to distinguish between a Dash Button and other Amazon devices like the Kindle, a Fire TV or an Echo speaker.
+Background discovery is not supported as it is not possible to distinguish
+between a Dash Button and other Amazon devices like the Kindle,
+a Fire TV or an Echo speaker.
 
 You can start the discovery process for Dash Button devices manually.
 While openHAB is in the scanning process, press the button on the Dash to be recognized and added to your Inbox.
@@ -112,17 +114,19 @@ You can ignore these devices in your Inbox.
 
 ### Amazon Dash Button
 
-*   `macAddress` - The MAC address of the Amazon Dash Button.
-*   `pcapNetworkInterfaceName` - The network interface which receives the packets of the Amazon Dash Button.
-*   `packetInterval` - Often a single button press is recognized multiple times.
-You can specify how long any further detected button pressed should be ignored after one click was processed.
-The parameter is optional and 5000ms by default.
+-   `macAddress` - The MAC address of the Amazon Dash Button.
+
+-   `pcapNetworkInterfaceName` - The network interface which receives the packets of the Amazon Dash Button.
+
+-   `packetInterval` - Often a single button press is recognized multiple times.
+    You can specify how long any further detected button pressed should be ignored after one click was processed.
+    The parameter is optional and 5000ms by default.
 
 For manual defintion of a `dashbutton` Thing the MAC address can either be taken from the discovery output or can e.g. be captured through your router/DHCP frontend or with [Wireshark](https://wireshark.org).
 
 ## Channels
 
-*   **Press:** Trigger channel for recognizing presses on the Amazon Dash Button.
+- **Press:** Trigger channel for recognizing presses on the Amazon Dash Button.
 A trigger channel can directly be used in a rule, check the "Full Example" section for one example.
 
 ## Full Example

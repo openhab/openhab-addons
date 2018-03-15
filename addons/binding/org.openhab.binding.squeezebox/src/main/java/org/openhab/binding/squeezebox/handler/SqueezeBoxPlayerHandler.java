@@ -10,8 +10,10 @@ package org.openhab.binding.squeezebox.handler;
 
 import static org.openhab.binding.squeezebox.SqueezeBoxBindingConstants.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -39,10 +41,13 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.squeezebox.SqueezeBoxBindingConstants;
+import org.openhab.binding.squeezebox.internal.SqueezeBoxStateDescriptionOptionsProvider;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxPlayerConfig;
+import org.openhab.binding.squeezebox.internal.model.Favorite;
+import org.openhab.binding.squeezebox.internal.utils.SqueezeBoxTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +60,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Implement AudioSink and notifications
  * @author Mark Hilbush - Added duration channel
  * @author Patrik Gfeller - Timeout for TTS messages increased from 30 to 90s.
+ * @author Mark Hilbush - Get favorites from server and play favorite
  */
 public class SqueezeBoxPlayerHandler extends BaseThingHandler implements SqueezeBoxPlayerEventListener {
 
@@ -108,6 +114,8 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     private String callbackUrl;
 
+    private SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider;
+
     private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
             TimeUnit.MINUTES.toMillis(15)); // 15min
 
@@ -115,10 +123,13 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * Creates SqueezeBox Player Handler
      *
      * @param thing
+     * @param stateDescriptionProvider
      */
-    public SqueezeBoxPlayerHandler(@NonNull Thing thing, String callbackUrl) {
+    public SqueezeBoxPlayerHandler(@NonNull Thing thing, String callbackUrl,
+            SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider) {
         super(thing);
         this.callbackUrl = callbackUrl;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -126,6 +137,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         mac = getConfig().as(SqueezeBoxPlayerConfig.class).mac;
         timeCounter();
         updateBridgeStatus();
+        logger.debug("player thing {} initialized.", getThing().getUID());
     }
 
     @Override
@@ -276,6 +288,9 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             case CHANNEL_NOTIFICATION_SOUND_VOLUME:
                 setNotificationSoundVolume(((PercentType) command));
                 break;
+            case CHANNEL_FAVORITES_PLAY:
+                squeezeBoxServerHandler.playFavorite(mac, command.toString());
+                break;
             default:
                 break;
         }
@@ -304,10 +319,23 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     }
 
     @Override
-    public void volumeChangeEvent(String mac, int volume) {
-        volume = Math.min(100, volume);
-        volume = Math.max(0, volume);
-        updateChannel(mac, CHANNEL_VOLUME, new PercentType(volume));
+    public void absoluteVolumeChangeEvent(String mac, int volume) {
+        int newVolume = volume;
+        newVolume = Math.min(100, newVolume);
+        newVolume = Math.max(0, newVolume);
+        updateChannel(mac, CHANNEL_VOLUME, new PercentType(newVolume));
+    }
+
+    @Override
+    public void relativeVolumeChangeEvent(String mac, int volumeChange) {
+        int newVolume = currentVolume() + volumeChange;
+        newVolume = Math.min(100, newVolume);
+        newVolume = Math.max(0, newVolume);
+        updateChannel(mac, CHANNEL_VOLUME, new PercentType(newVolume));
+
+        if (isMe(mac)) {
+            logger.trace("Volume changed [{}] for player {}. New volume: {}", volumeChange, mac, newVolume);
+        }
     }
 
     @Override
@@ -372,7 +400,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void coverArtChangeEvent(String mac, String coverArtUrl) {
-        updateChannel(mac, CHANNEL_COVERART_DATA, createImage(downloadImage(coverArtUrl)));
+        updateChannel(mac, CHANNEL_COVERART_DATA, createImage(downloadImage(mac, coverArtUrl)));
     }
 
     /**
@@ -382,20 +410,25 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * @return A RawType object containing the image, null if the content type could not be found or the content type is
      *         not an image.
      */
-    private RawType downloadImage(String url) {
-        if (StringUtils.isNotEmpty(url)) {
-            if (!IMAGE_CACHE.containsKey(url)) {
-                IMAGE_CACHE.put(url, () -> {
+    private RawType downloadImage(String mac, String url) {
+        // Only get the image if this is my PlayerHandler instance
+        if (isMe(mac)) {
+            if (StringUtils.isNotEmpty(url)) {
+                RawType image = IMAGE_CACHE.putIfAbsentAndGet(url, () -> {
                     logger.debug("Trying to download the content of URL {}", url);
-                    return HttpUtil.downloadImage(url);
+                    try {
+                        return HttpUtil.downloadImage(url);
+                    } catch (IllegalArgumentException e) {
+                        logger.debug("IllegalArgumentException when downloading image from {}", url, e);
+                        return null;
+                    }
                 });
-            }
-            RawType image = IMAGE_CACHE.get(url);
-            if (image == null) {
-                logger.debug("Failed to download the content of URL {}", url);
-                return null;
-            } else {
-                return image;
+                if (image == null) {
+                    logger.debug("Failed to download the content of URL {}", url);
+                    return null;
+                } else {
+                    return image;
+                }
             }
         }
         return null;
@@ -434,6 +467,16 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
     }
 
+    @Override
+    public void updateFavoritesListEvent(List<Favorite> favorites) {
+        logger.debug("Player {} updating favorites list", mac);
+        List<StateOption> options = new ArrayList<>();
+        for (Favorite favorite : favorites) {
+            options.add(new StateOption(favorite.shortId, favorite.name));
+        }
+        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_FAVORITES_PLAY), options);
+    }
+
     /**
      * Update a channel if the mac matches our own
      *
@@ -447,11 +490,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             if (prevState == null || !prevState.equals(state)) {
                 logger.trace("Updating channel {} for thing {} with mac {} to state {}", channelID, getThing().getUID(),
                         mac, state);
-                try {
-                    updateState(channelID, state);
-                } catch (Exception e) {
-                    logger.error("Could not update channel", e);
-                }
+                updateState(channelID, state);
             }
         }
     }
@@ -469,7 +508,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      *
      * @return
      */
-    private int currentVolume() {
+    int currentVolume() {
         if (stateMap.containsKey(CHANNEL_VOLUME)) {
             return ((DecimalType) stateMap.get(CHANNEL_VOLUME)).intValue();
         } else {
@@ -477,7 +516,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
     }
 
-    private int currentPlayingTime() {
+    int currentPlayingTime() {
         if (stateMap.containsKey(CHANNEL_CURRENT_PLAYING_TIME)) {
             return ((DecimalType) stateMap.get(CHANNEL_CURRENT_PLAYING_TIME)).intValue();
         } else {
@@ -485,7 +524,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
     }
 
-    private int currentNumberPlaylistTracks() {
+    int currentNumberPlaylistTracks() {
         if (stateMap.containsKey(CHANNEL_NUMBER_PLAYLIST_TRACKS)) {
             return ((DecimalType) stateMap.get(CHANNEL_NUMBER_PLAYLIST_TRACKS)).intValue();
         } else {
@@ -493,7 +532,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
     }
 
-    private int currentPlaylistIndex() {
+    int currentPlaylistIndex() {
         if (stateMap.containsKey(CHANNEL_PLAYLIST_INDEX)) {
             return ((DecimalType) stateMap.get(CHANNEL_PLAYLIST_INDEX)).intValue();
         } else {
@@ -501,7 +540,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
     }
 
-    private boolean currentPower() {
+    boolean currentPower() {
         if (stateMap.containsKey(CHANNEL_POWER)) {
             return (stateMap.get(CHANNEL_POWER).equals(OnOffType.ON) ? true : false);
         } else {
@@ -509,7 +548,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
     }
 
-    private boolean currentStop() {
+    boolean currentStop() {
         if (stateMap.containsKey(CHANNEL_STOP)) {
             return (stateMap.get(CHANNEL_STOP).equals(OnOffType.ON) ? true : false);
         } else {
@@ -517,7 +556,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
     }
 
-    private boolean currentControl() {
+    boolean currentControl() {
         if (stateMap.containsKey(CHANNEL_CONTROL)) {
             return (stateMap.get(CHANNEL_CONTROL).equals(PlayPauseType.PLAY) ? true : false);
         } else {
@@ -525,7 +564,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
     }
 
-    private boolean currentMute() {
+    boolean currentMute() {
         if (stateMap.containsKey(CHANNEL_MUTE)) {
             return (stateMap.get(CHANNEL_MUTE).equals(OnOffType.ON) ? true : false);
         } else {
@@ -533,7 +572,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
     }
 
-    private int currentShuffle() {
+    int currentShuffle() {
         if (stateMap.containsKey(CHANNEL_CURRENT_PLAYLIST_SHUFFLE)) {
             return ((DecimalType) stateMap.get(CHANNEL_CURRENT_PLAYLIST_SHUFFLE)).intValue();
         } else {
@@ -541,7 +580,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
     }
 
-    private int currentRepeat() {
+    int currentRepeat() {
         if (stateMap.containsKey(CHANNEL_CURRENT_PLAYLIST_REPEAT)) {
             return ((DecimalType) stateMap.get(CHANNEL_CURRENT_PLAYLIST_REPEAT)).intValue();
         } else {
@@ -596,8 +635,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             logger.debug("Initializing notification volume to current player volume");
             notificationSoundVolume = currentVolume();
             if (notificationSoundVolume != 0) {
-                updateState(SqueezeBoxBindingConstants.CHANNEL_NOTIFICATION_SOUND_VOLUME,
-                        new PercentType(notificationSoundVolume));
+                updateState(CHANNEL_NOTIFICATION_SOUND_VOLUME, new PercentType(notificationSoundVolume));
             }
         }
         return PercentType.valueOf(String.valueOf(notificationSoundVolume));
@@ -611,231 +649,17 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     }
 
     /*
-     * Play the notification by 1) saving the state of the player, 2) stopping the current
-     * playlist item, 3) adding the notification as a new playlist item, 4) playing the
-     * new playlist item, and 5) restoring the player to its previous state.
+     * Play the notification.
      */
     public void playNotificationSoundURI(StringType uri) {
         logger.debug("Play notification sound on player {} at URI {}", mac, uri);
 
-        SqueezeBoxPlayerState playerState = new SqueezeBoxPlayerState();
-        playNotification(playerState, uri);
-    }
-
-    private void playNotification(SqueezeBoxPlayerState playerState, StringType uri) {
-        if (squeezeBoxServerHandler == null) {
-            logger.warn("Server handler is null in playNotification");
-            return;
+        try (SqueezeBoxNotificationPlayer notificationPlayer = new SqueezeBoxNotificationPlayer(this,
+                squeezeBoxServerHandler, uri)) {
+            notificationPlayer.play();
+        } catch (InterruptedException | SqueezeBoxTimeoutException e) {
+            logger.warn("Problem during notification playback.", e);
         }
-
-        logger.debug("Setting up player for notification");
-        if (!playerState.isPoweredOn()) {
-            logger.debug("Powering on the player");
-            squeezeBoxServerHandler.powerOn(mac);
-        }
-        if (playerState.isShuffling()) {
-            logger.debug("Turning off shuffle");
-            squeezeBoxServerHandler.setShuffleMode(mac, 0);
-        }
-        if (playerState.isRepeating()) {
-            logger.debug("Turning off repeat");
-            squeezeBoxServerHandler.setRepeatMode(mac, 0);
-        }
-        if (playerState.isPlaying()) {
-            squeezeBoxServerHandler.stop(mac);
-        }
-
-        int notificationVolume = getNotificationSoundVolume().intValue();
-        squeezeBoxServerHandler.setVolume(mac, notificationVolume);
-        waitForVolume(notificationVolume);
-
-        // Add the notification uri to the playlist, get the playlist item index, then play
-        logger.debug("Playing notification");
-        squeezeBoxServerHandler.addPlaylistItem(mac, uri.toString());
-        if (!waitForPlaylistUpdate()) {
-            // Give up since we timed out waiting for playlist to update
-            squeezeBoxServerHandler.setVolume(mac, playerState.getVolume());
-            waitForVolume(playerState.getVolume());
-            return;
-        }
-        int newNumberPlaylistTracks = currentNumberPlaylistTracks();
-        squeezeBoxServerHandler.playPlaylistItem(mac, newNumberPlaylistTracks - 1);
-        waitForNotification();
-
-        logger.debug("Restoring player state");
-        // Mute the player to prevent any noise during the transition to previous state
-        squeezeBoxServerHandler.setVolume(mac, 0);
-        waitForVolume(0);
-        // Remove the notification uri from the playlist
-        squeezeBoxServerHandler.deletePlaylistItem(mac, newNumberPlaylistTracks - 1);
-        waitForPlaylistUpdate();
-
-        // Resume playing save playlist item if player wasn't stopped
-        if (!playerState.isStopped()) {
-            logger.debug("Resuming last item playing");
-            squeezeBoxServerHandler.playPlaylistItem(mac, playerState.getPlaylistIndex());
-            waitForPlaylistUpdate();
-            // Note that setting the time doesn't work for remote streams
-            squeezeBoxServerHandler.setPlayingTime(mac, playerState.getPlayingTime());
-        }
-
-        if (playerState.isStopped()) {
-            logger.debug("Stopping the player");
-            squeezeBoxServerHandler.stop(mac);
-        } else if (playerState.isPlaying()) {
-            logger.debug("Playing the playlist item");
-            // Nothing to do; should already be playing due to call to playPlaylistItem above
-        } else {
-            logger.debug("Pausing the player");
-            // Sometimes the first couple pauses don't work (really!)
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-            }
-            int count;
-            final int maxPauseAttempts = 4;
-            for (count = 0; count < maxPauseAttempts; count++) {
-                squeezeBoxServerHandler.pause(mac);
-                if (waitForPause()) {
-                    break;
-                }
-            }
-            if (count == maxPauseAttempts) {
-                // Unable to pause, try to stop
-                squeezeBoxServerHandler.stop(mac);
-            }
-        }
-        // Now we can restore the volume and the remaining state items
-        squeezeBoxServerHandler.setVolume(mac, playerState.getVolume());
-        waitForVolume(playerState.getVolume());
-
-        if (playerState.isShuffling()) {
-            logger.debug("Restoring shuffle mode");
-            squeezeBoxServerHandler.setShuffleMode(mac, playerState.getShuffle());
-        }
-        if (playerState.isRepeating()) {
-            logger.debug("Restoring repeat mode");
-            squeezeBoxServerHandler.setRepeatMode(mac, playerState.getRepeat());
-        }
-        if (playerState.isMuted()) {
-            logger.debug("Re-muting the player");
-            squeezeBoxServerHandler.mute(mac);
-        }
-        if (!playerState.isPoweredOn()) {
-            logger.debug("Powering off the player");
-            squeezeBoxServerHandler.powerOff(mac);
-        }
-    }
-
-    /*
-     * Monitor the number of playlist entries. When it changes, then we know the playlist
-     * has been updated with the notification URL. There's probably an edge case here where
-     * someone is updating the playlist at the same time, but that should be rare.
-     */
-    private boolean waitForPlaylistUpdate() {
-        final int timeoutMaxCount = 50;
-
-        SqueezeBoxNotificationListener listener = new SqueezeBoxNotificationListener(mac);
-        squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(listener);
-
-        logger.trace("Waiting up to {} ms for playlist to be updated...", timeoutMaxCount * 100);
-        listener.resetPlaylistUpdated();
-        int timeoutCount = 0;
-        while (!listener.isPlaylistUpdated() && timeoutCount < timeoutMaxCount) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                break;
-            }
-            timeoutCount++;
-        }
-        squeezeBoxServerHandler.unregisterSqueezeBoxPlayerListener(listener);
-        listener = null;
-        return checkForTimeout(timeoutCount, timeoutMaxCount, "playlist to update");
-    }
-
-    /*
-     * Monitor the status of the notification so that we know when it has finished playing
-     */
-    private boolean waitForNotification() {
-        final int timeoutMaxCount = 900;
-
-        SqueezeBoxNotificationListener listener = new SqueezeBoxNotificationListener(mac);
-        squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(listener);
-
-        logger.trace("Waiting up to {} ms for stop...", timeoutMaxCount * 100);
-        listener.resetStopped();
-        int timeoutCount = 0;
-        while (!listener.isStopped() && timeoutCount < timeoutMaxCount) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                break;
-            }
-            timeoutCount++;
-        }
-        squeezeBoxServerHandler.unregisterSqueezeBoxPlayerListener(listener);
-        listener = null;
-        return checkForTimeout(timeoutCount, timeoutMaxCount, "stop");
-    }
-
-    /*
-     * Wait for the volume status to equal the targetVolume
-     */
-    private boolean waitForVolume(int targetVolume) {
-        final int timeoutMaxCount = 40;
-
-        SqueezeBoxNotificationListener listener = new SqueezeBoxNotificationListener(mac);
-        squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(listener);
-
-        logger.trace("Waiting up to {} ms for volume to update...", timeoutMaxCount * 100);
-        listener.resetVolumeUpdated();
-        int timeoutCount = 0;
-        while (!listener.isVolumeUpdated(targetVolume) && timeoutCount < timeoutMaxCount) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                break;
-            }
-            timeoutCount++;
-        }
-        squeezeBoxServerHandler.unregisterSqueezeBoxPlayerListener(listener);
-        listener = null;
-        return checkForTimeout(timeoutCount, timeoutMaxCount, "volume to update");
-    }
-
-    /*
-     * Wait for the mode to reflect that the player is paused
-     */
-    private boolean waitForPause() {
-        final int timeoutMaxCount = 25;
-
-        SqueezeBoxNotificationListener listener = new SqueezeBoxNotificationListener(mac);
-        squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(listener);
-
-        logger.trace("Waiting up to {} ms for player to pause...", timeoutMaxCount * 100);
-        listener.resetPaused();
-        int timeoutCount = 0;
-        while (!listener.isPaused() && timeoutCount < timeoutMaxCount) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                break;
-            }
-            timeoutCount++;
-        }
-        squeezeBoxServerHandler.unregisterSqueezeBoxPlayerListener(listener);
-        listener = null;
-        return checkForTimeout(timeoutCount, timeoutMaxCount, "player to pause");
-    }
-
-    private boolean checkForTimeout(int timeoutCount, int timeoutLimit, String message) {
-        if (timeoutCount >= timeoutLimit) {
-            logger.warn("TIMEOUT after {} waiting for {}!", timeoutCount * 100, message);
-            return false;
-        }
-        logger.debug("Done waiting {} ms for {}", timeoutCount * 100, message);
-        return true;
     }
 
     /*
@@ -843,128 +667,5 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      */
     public String getHostAndPort() {
         return callbackUrl;
-    }
-
-    /**
-     * The {@link SqueezeBoxPlayerState} is responsible for saving the state of a player.
-     *
-     * @author Mark Hilbush - Added support for AudioSink and notifications
-     */
-    public class SqueezeBoxPlayerState {
-        int savedVolume;
-        boolean savedMute;
-        boolean savedPower;
-        boolean savedStop;
-        boolean savedControl;
-        int savedShuffle;
-        int savedRepeat;
-        int savedPlaylistIndex;
-        int savedNumberPlaylistTracks;
-        int savedPlayingTime;
-
-        public SqueezeBoxPlayerState() {
-            save();
-        }
-
-        private boolean isMuted() {
-            return savedMute;
-        }
-
-        private boolean isPoweredOn() {
-            return savedPower;
-        }
-
-        private boolean isStopped() {
-            return savedStop;
-        }
-
-        private boolean isPlaying() {
-            return savedControl;
-        }
-
-        private boolean isShuffling() {
-            return savedShuffle == 0 ? false : true;
-        }
-
-        private int getShuffle() {
-            return savedShuffle;
-        }
-
-        private boolean isRepeating() {
-            return savedRepeat == 0 ? false : true;
-        }
-
-        private int getRepeat() {
-            return savedRepeat;
-        }
-
-        private int getVolume() {
-            return savedVolume;
-        }
-
-        private int getPlaylistIndex() {
-            return savedPlaylistIndex;
-        }
-
-        private int getNumberPlaylistTracks() {
-            return savedNumberPlaylistTracks;
-        }
-
-        private int getPlayingTime() {
-            return savedPlayingTime;
-        }
-
-        private void save() {
-            savedVolume = currentVolume();
-            savedMute = currentMute();
-            savedPower = currentPower();
-            savedStop = currentStop();
-            savedControl = currentControl();
-            savedShuffle = currentShuffle();
-            savedRepeat = currentRepeat();
-            savedPlaylistIndex = currentPlaylistIndex();
-            savedNumberPlaylistTracks = currentNumberPlaylistTracks();
-            savedPlayingTime = currentPlayingTime();
-
-            logger.debug("Cur State: vol={}, mut={}, pwr={}, stp={}, ctl={}, shf={}, rpt={}, tix={}, tnm={}, tim={}",
-                    savedVolume, muteAsString(), powerAsString(), stopAsString(), controlAsString(), shuffleAsString(),
-                    repeatAsString(), getPlaylistIndex(), getNumberPlaylistTracks(), getPlayingTime());
-        }
-
-        private String muteAsString() {
-            return isMuted() ? "MUTED" : "NOT MUTED";
-        }
-
-        private String powerAsString() {
-            return isPoweredOn() ? "ON" : "OFF";
-        }
-
-        private String stopAsString() {
-            return isStopped() ? "STOPPED" : "NOT STOPPED";
-        }
-
-        private String controlAsString() {
-            return isPlaying() ? "PLAYING" : "PAUSED";
-        }
-
-        private String shuffleAsString() {
-            String shuffle = "OFF";
-            if (getShuffle() == 1) {
-                shuffle = "SONG";
-            } else if (getShuffle() == 2) {
-                shuffle = "ALBUM";
-            }
-            return shuffle;
-        }
-
-        private String repeatAsString() {
-            String repeat = "OFF";
-            if (getRepeat() == 1) {
-                repeat = "SONG";
-            } else if (getRepeat() == 2) {
-                repeat = "PLAYLIST";
-            }
-            return repeat;
-        }
     }
 }

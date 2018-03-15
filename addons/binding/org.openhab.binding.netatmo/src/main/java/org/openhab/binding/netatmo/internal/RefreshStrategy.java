@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class RefreshStrategy {
-    private static int DEFAULT_DELAY = 30;
+    private static final int DEFAULT_DELAY = 30;
     private int dataValidityPeriod;
     private long dataTimeStamp;
 

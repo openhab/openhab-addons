@@ -260,13 +260,7 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
         }
 
         // Try initial connection in a scheduled task
-        this.scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                connect();
-            }
-
-        }, 1, TimeUnit.SECONDS);
+        this.scheduler.schedule(this::connect, 1, TimeUnit.SECONDS);
     }
 
     /**
@@ -314,19 +308,16 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
             if (response == null) {
                 final RioSystemConfig rioConfig = getRioConfig();
                 if (rioConfig != null) {
-                    ping = this.scheduler.scheduleWithFixedDelay(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                final ThingStatus status = getThing().getStatus();
-                                if (status == ThingStatus.ONLINE) {
-                                    if (session.isConnected()) {
-                                        getProtocolHandler().ping();
-                                    }
+                    ping = this.scheduler.scheduleWithFixedDelay(() -> {
+                        try {
+                            final ThingStatus status = getThing().getStatus();
+                            if (status == ThingStatus.ONLINE) {
+                                if (session.isConnected()) {
+                                    getProtocolHandler().ping();
                                 }
-                            } catch (Exception e) {
-                                logger.error("Exception while pinging: {}", e.getMessage(), e);
                             }
+                        } catch (Exception e) {
+                            logger.error("Exception while pinging: {}", e.getMessage(), e);
                         }
                     }, rioConfig.getPing(), rioConfig.getPing(), TimeUnit.SECONDS);
 
@@ -367,21 +358,16 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
             if (retryConnection == null) {
                 final RioSystemConfig rioConfig = getRioConfig();
                 if (rioConfig != null) {
-
                     logger.info("Will try to reconnect in {} seconds", rioConfig.getRetryPolling());
-                    retryConnection = this.scheduler.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            retryConnection = null;
-                            try {
-                                if (getThing().getStatus() != ThingStatus.ONLINE) {
-                                    connect();
-                                }
-                            } catch (Exception e) {
-                                logger.error("Exception connecting: {}", e.getMessage(), e);
+                    retryConnection = this.scheduler.schedule(() -> {
+                        retryConnection = null;
+                        try {
+                            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                                connect();
                             }
+                        } catch (Exception e) {
+                            logger.error("Exception connecting: {}", e.getMessage(), e);
                         }
-
                     }, rioConfig.getRetryPolling(), TimeUnit.SECONDS);
                 }
             } else {
@@ -468,12 +454,9 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
         final RioSystemDeviceDiscoveryService service = discoveryService.get();
         if (service != null) {
             if (sysConfig != null && sysConfig.isScanDevice()) {
-                this.scheduler.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        logger.info("Starting device discovery");
-                        service.scanDevice();
-                    }
+                this.scheduler.execute(() -> {
+                    logger.info("Starting device discovery");
+                    service.scanDevice();
                 });
             }
         }

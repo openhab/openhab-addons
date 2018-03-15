@@ -31,7 +31,7 @@ public final class TPLinkSmartHomeBindingConstants {
     // List of all plug channel ids
     public static final String CHANNEL_LED = "led";
 
-    // List of all Light channel ids
+    // List of all bulb channel ids
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_COLOR_TEMPERATURE = "colorTemperature";

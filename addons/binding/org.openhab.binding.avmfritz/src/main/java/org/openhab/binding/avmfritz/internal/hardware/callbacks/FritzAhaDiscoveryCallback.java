@@ -8,7 +8,10 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 
+import java.io.StringReader;
+
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
@@ -52,7 +55,8 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
         logger.trace("Received discovery callback response: {}", response);
         if (isValidRequest()) {
             try {
-                DevicelistModel model = JAXBUtils.buildResult(response);
+                Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
+                DevicelistModel model = (DevicelistModel) u.unmarshal(new StringReader(response));
                 if (model != null) {
                     for (DeviceModel device : model.getDevicelist()) {
                         service.onDeviceAddedInternal(device);

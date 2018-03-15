@@ -42,12 +42,9 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
     private S20Client client;
     private ScheduledFuture<?> subscribeHandler;
     private long refreshInterval = 15;
-    private Runnable subscribeTask = new Runnable() {
-        @Override
-        public void run() {
-            if (socket != null) {
-                socket.subscribe();
-            }
+    private Runnable subscribeTask = () -> {
+        if (socket != null) {
+            socket.subscribe();
         }
     };
 

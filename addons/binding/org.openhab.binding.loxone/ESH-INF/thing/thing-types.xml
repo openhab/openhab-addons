@@ -1,170 +1,191 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="loxone"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="miniserver">
-    
-        <label>Loxone Miniserver</label>
-        <description>IP gateway for Loxone Smarthome system</description>
-          
-        <config-description>
-        
-            <parameter-group name="miniserver">
-                <label>Miniserver settings</label>
-                <description>Connection to Miniserver</description>
-                <advanced>false</advanced>
-            </parameter-group>
+	<thing-type id="miniserver">
 
-            <parameter-group name="timeouts">
-                <label>Timeout settings</label>
-                <description>Various timeout parameters</description>
-                <advanced>true</advanced>
-            </parameter-group>
-                
-            <parameter-group name="sizes">
-                <label>Size settings</label>
-                <description>Various sizing parameters</description>
-                <advanced>true</advanced>
-            </parameter-group>
+		<label>Loxone Miniserver</label>
+		<description>IP gateway for Loxone Smarthome system</description>
 
-            <parameter name="host" type="text" required="true" groupName="miniserver">
-                <label>Host</label>
-                <context>network-address</context>
-                <description>Host address or IP of the Loxone Miniserver</description>
-            </parameter>
-            <parameter name="port" type="integer" min="0" groupName="miniserver">
-                <label>Port</label>
-                <description>Web interface port of the Loxone Miniserver</description>
-                <default>80</default>
-            </parameter>
-            <parameter name="user" type="text" required="true" groupName="miniserver">
-                <label>User</label>
-                <description>User name on the Loxone Miniserver</description>
-            </parameter>
-            <parameter name="password" type="text" required="true" groupName="miniserver">
-                <label>Password</label>
-                <context>password</context>
-                <description>User password on the Loxone Miniserver</description>
-            </parameter>
-            
-            <parameter name="firstConDelay" type="integer" min="0" max="120" groupName="timeouts">
-                <label>First connection delay</label>
-                <description>Time between binding initialization and first connection attempt (seconds, 0-120)</description>
-                <default>1</default>                
-            </parameter>
-            <parameter name="keepAlivePeriod" type="integer" min="1" max="600" groupName="timeouts">
-                <label>Period between connection keep-alive messages</label>
-                <description>Time between sending two consecutive keep-alive messages (seconds, 1-600)</description>
-                <default>240</default>                
-            </parameter>
-            <parameter name="connectErrDelay" type="integer" min="0" max="600" groupName="timeouts">
-                <label>Connect error delay</label>
-                <description>Time between failed websocket connect attempts (seconds, 0-600)</description>
-                <default>10</default>                
-            </parameter>
-            <parameter name="responseTimeout" type="integer" min="0" max="60" groupName="timeouts">
-                <label>Miniserver response timeout</label>
-                <description>Time to wait for a response from Miniserver to a request sent from the binding (seconds, 0-60)</description>
-                <default>4</default>                
-            </parameter>
-            <parameter name="userErrorDelay" type="integer" min="0" max="3600" groupName="timeouts">
-                <label>Authentication error delay</label>
-                <description>Time in seconds between user login error as a result of wrong name/password or no authority and next connection attempt (seconds, 0-3600)</description>
-                <default>60</default>                
-            </parameter>
-            <parameter name="comErrorDelay" type="integer" min="0" max="3600" groupName="timeouts">
-                <label>Communication error delay</label>
-                <description>Time between connection close (as a result of some communication error) and next connection attempt (seconds, 0-3600)</description>
-                <default>30</default>                
-            </parameter>
-            <parameter name="maxBinMsgSize" type="integer" min="0" max="102400" groupName="sizes">
-                <label>Maximum binary message size (kB)</label>
-                <description>Websocket client's maximum binary message size in kB</description>
-                <default>3072</default>                
-            </parameter>
-            <parameter name="maxTextMsgSize" type="integer" min="0" max="102400" groupName="sizes">
-                <label>Maximum text message size (kB)</label>
-                <description>Websocket client's maximum text message size in kB</description>
-                <default>512</default>                
-            </parameter>
-        </config-description>
-        
-    </thing-type>
+		<config-description>
 
-    <channel-type id="switchTypeId">
-        <item-type>Switch</item-type>
-        <label>Loxone Switch</label>
-        <description>Loxone's virtual input of switch type and push button controls.</description>
-    </channel-type>
-    
-    <channel-type id="roSwitchTypeId">
-        <item-type>Switch</item-type>
-        <label>Loxone Digital Read-only Information</label>
-        <description>Loxone's digital information controls (InfoOnlyDigital, read-only).</description>
-        <state readOnly="true"/>
-    </channel-type>
+			<parameter-group name="miniserver">
+				<label>Miniserver settings</label>
+				<description>Connection to Miniserver</description>
+			</parameter-group>
 
-    <channel-type id="rollerShutterTypeId">
-        <item-type>Rollershutter</item-type>
-        <label>Loxone Jalousie</label>
-        <description>Loxone's Jalousies (rollershutters, blinds).</description>
-    </channel-type>
+			<parameter-group name="security">
+				<label>Security settings</label>
+				<description>Authentication and encryption parameters</description>
+			</parameter-group>
 
-    <channel-type id="roTextTypeId">
-        <item-type>String</item-type>
-        <label>Loxone State Read-only Information</label>
-        <description>Loxone's state information controls (TextState, read-only).</description>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="roNumberTypeId">
-        <item-type>Number</item-type>
-        <label>Loxone State Read-only Information</label>
-        <description>Loxone's time counter (TimedSwitch, read-only).</description>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="roAnalogTypeId">
-        <item-type>Number</item-type>
-        <label>Loxone Virtual Analog State Read-only Information</label>
-        <description>Loxone's state information controls (InfoOnlyAnalog, read-only).</description>
-        <state readOnly="true" pattern="%.1f"/>
-    </channel-type>
-    
-    <channel-type id="lightCtrlTypeId">
-        <item-type>Number</item-type>
-        <label>Loxone Light Controller / Hotel Light Controller</label>
-        <description>Loxone's light controllers (LightController).</description>
-        <state pattern="%d" min="0" max="9" step="1">
-            <options>
-                <option value="0">All off</option>
-                <option value="1">Scene 1</option>
-                <option value="2">Scene 2</option>
-                <option value="3">Scene 3</option>
-                <option value="4">Scene 4</option>
-                <option value="5">Scene 5</option>
-                <option value="6">Scene 6</option>
-                <option value="7">Scene 7</option>
-                <option value="8">Scene 8</option>
-                <option value="9">All on</option>
-            </options>
-        </state>
-    </channel-type>
+			<parameter-group name="timeouts">
+				<label>Timeout settings</label>
+				<description>Various timeout parameters</description>
+				<advanced>true</advanced>
+			</parameter-group>
 
-    <channel-type id="radioButtonTypeId">
-        <item-type>Number</item-type>
-        <label>Loxone Radio Button (8x and 16x)</label>
-        <description>Loxone's radio button controls (Radio).</description>
-        <state pattern="%d" min="0" max="16" step="1"/>
-    </channel-type>
-   
-    <channel-type id="dimmerTypeId">
-        <item-type>Dimmer</item-type>
-        <label>Loxone Dimmer</label>
-        <description>Loxone's dimmer control</description>
-    </channel-type>
-    
+			<parameter-group name="sizes">
+				<label>Size settings</label>
+				<description>Various sizing parameters</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="host" type="text" required="true" groupName="miniserver">
+				<label>Host</label>
+				<context>network-address</context>
+				<description>Host address or IP of the Loxone Miniserver</description>
+			</parameter>
+			<parameter name="port" type="integer" min="0" groupName="miniserver">
+				<label>Port</label>
+				<description>Web interface port of the Loxone Miniserver</description>
+				<default>80</default>
+			</parameter>
+
+			<parameter name="authMethod" type="integer" min="0" max="2" groupName="security">
+				<label>Authorization method</label>
+				<description>Method used to authorize user in the Miniserver</description>
+				<default>0</default>
+				<options>
+					<option value="0">Automatic</option>
+					<option value="1">Hash-based</option>
+					<option value="2">Token-based</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="user" type="text" required="true" groupName="security">
+				<label>User</label>
+				<description>User name on the Loxone Miniserver</description>
+			</parameter>
+			<parameter name="password" type="text" required="false" groupName="security">
+				<label>Password</label>
+				<context>password</context>
+				<description>User password on the Loxone Miniserver. In token-based authentication this password will be cleared after token is acquired.</description>
+			</parameter>
+			<parameter name="authToken" type="text" required="false" groupName="security">
+				<label>Token</label>
+				<description>Token acquired by the binding from the Miniserver. Applicable only in token-based authentication mode.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="firstConDelay" type="integer" min="0" max="120" groupName="timeouts">
+				<label>First connection delay</label>
+				<description>Time between binding initialization and first connection attempt (seconds, 0-120)</description>
+				<default>1</default>
+			</parameter>
+			<parameter name="keepAlivePeriod" type="integer" min="1" max="600" groupName="timeouts">
+				<label>Period between connection keep-alive messages</label>
+				<description>Time between sending two consecutive keep-alive messages (seconds, 1-600)</description>
+				<default>240</default>
+			</parameter>
+			<parameter name="connectErrDelay" type="integer" min="0" max="600" groupName="timeouts">
+				<label>Connect error delay</label>
+				<description>Time between failed websocket connect attempts (seconds, 0-600)</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="responseTimeout" type="integer" min="0" max="60" groupName="timeouts">
+				<label>Miniserver response timeout</label>
+				<description>Time to wait for a response from Miniserver to a request sent from the binding (seconds, 0-60)</description>
+				<default>4</default>
+			</parameter>
+			<parameter name="userErrorDelay" type="integer" min="0" max="3600" groupName="timeouts">
+				<label>Authentication error delay</label>
+				<description>Time in seconds between user login error as a result of wrong name/password or no authority and next connection attempt (seconds, 0-3600)</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="comErrorDelay" type="integer" min="0" max="3600" groupName="timeouts">
+				<label>Communication error delay</label>
+				<description>Time between connection close (as a result of some communication error) and next connection attempt (seconds, 0-3600)</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="maxBinMsgSize" type="integer" min="0" max="102400" groupName="sizes">
+				<label>Maximum binary message size (kB)</label>
+				<description>Websocket client's maximum binary message size in kB</description>
+				<default>3072</default>
+			</parameter>
+			<parameter name="maxTextMsgSize" type="integer" min="0" max="102400" groupName="sizes">
+				<label>Maximum text message size (kB)</label>
+				<description>Websocket client's maximum text message size in kB</description>
+				<default>512</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="switchTypeId">
+		<item-type>Switch</item-type>
+		<label>Loxone Switch</label>
+		<description>Loxone's virtual input of switch type and push button controls.</description>
+	</channel-type>
+
+	<channel-type id="roSwitchTypeId">
+		<item-type>Switch</item-type>
+		<label>Loxone Digital Read-only Information</label>
+		<description>Loxone's digital information controls (InfoOnlyDigital, read-only).</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rollerShutterTypeId">
+		<item-type>Rollershutter</item-type>
+		<label>Loxone Jalousie</label>
+		<description>Loxone's Jalousies (rollershutters, blinds).</description>
+	</channel-type>
+
+	<channel-type id="roTextTypeId">
+		<item-type>String</item-type>
+		<label>Loxone State Read-only Information</label>
+		<description>Loxone's state information controls (TextState, read-only).</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="roNumberTypeId">
+		<item-type>Number</item-type>
+		<label>Loxone State Read-only Information</label>
+		<description>Loxone's time counter (TimedSwitch, read-only).</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="roAnalogTypeId">
+		<item-type>Number</item-type>
+		<label>Loxone Virtual Analog State Read-only Information</label>
+		<description>Loxone's state information controls (InfoOnlyAnalog, read-only).</description>
+		<state readOnly="true" pattern="%.1f"/>
+	</channel-type>
+
+	<channel-type id="lightCtrlTypeId">
+		<item-type>Number</item-type>
+		<label>Loxone Light Controller / Hotel Light Controller</label>
+		<description>Loxone's light controllers (LightController).</description>
+		<state pattern="%d" min="0" max="9" step="1">
+			<options>
+				<option value="0">All off</option>
+				<option value="1">Scene 1</option>
+				<option value="2">Scene 2</option>
+				<option value="3">Scene 3</option>
+				<option value="4">Scene 4</option>
+				<option value="5">Scene 5</option>
+				<option value="6">Scene 6</option>
+				<option value="7">Scene 7</option>
+				<option value="8">Scene 8</option>
+				<option value="9">All on</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="radioButtonTypeId">
+		<item-type>Number</item-type>
+		<label>Loxone Radio Button (8x and 16x)</label>
+		<description>Loxone's radio button controls (Radio).</description>
+		<state pattern="%d" min="0" max="16" step="1"/>
+	</channel-type>
+
+	<channel-type id="dimmerTypeId">
+		<item-type>Dimmer</item-type>
+		<label>Loxone Dimmer</label>
+		<description>Loxone's dimmer control</description>
+	</channel-type>
+
 </thing:thing-descriptions>
 

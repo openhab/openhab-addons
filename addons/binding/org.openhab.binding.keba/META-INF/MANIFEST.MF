@@ -15,6 +15,7 @@ Import-Package:
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.cache,
  org.eclipse.smarthome.core.common,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,

@@ -8,7 +8,10 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 
+import java.io.StringReader;
+
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -54,7 +57,8 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
         logger.trace("Received State response {}", response);
         if (isValidRequest()) {
             try {
-                DevicelistModel model = JAXBUtils.buildResult(response);
+                Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
+                DevicelistModel model = (DevicelistModel) u.unmarshal(new StringReader(response));
                 if (model != null) {
                     for (DeviceModel device : model.getDevicelist()) {
                         handler.addDeviceList(device);

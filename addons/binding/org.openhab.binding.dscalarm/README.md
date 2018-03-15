@@ -3,22 +3,22 @@
 The DSC PowerSeries Alarm System is a popular do-it-yourself home security system, which can be monitored and controlled remotely through a standard web-browser or mobile device.
 
 This is the binding for the DSC PowerSeries Alarm System, utilizing either the EyezOn Envisalink 4/3/2DS interface or the DSC IT-100 RS-232 interface.
-It provides connectivity to the DSC Alarm panel via a TCP socket connection to the EyesOn Envisalink 4/3/2DS interface or a RS-232 serial connection to the DSC IT-100 interface.  Additionally, their is provision to connect to the DSC IT-100 interface through a TCP serial server.
+It provides connectivity to the DSC Alarm panel via a TCP socket connection to the EyesOn Envisalink 4/3/2DS interface or a RS-232 serial connection to the DSC IT-100 interface.  
+Additionally, their is provision to connect to the DSC IT-100 interface through a TCP serial server.
 
 ## Supported Things
 
 This binding supports the following Thing types
 
-<table>
-<tr><td><b>Thing</b></td><td><b>Thing Type</b></td><td><b>Description</b></td></tr>
-<tr><td>envisalink</td><td>Bridge</td><td>The EyezOn Envisalink 3/2DS interface.</td></tr>
-<tr><td>it100</td><td>Bridge</td><td>The DSC IT-100 RS-232 interface.</td></tr>
-<tr><td>tcpserver</td><td>Bridge</td><td>The DSC IT-100 TCP Server network interface.</td></tr>
-<tr><td>panel</td><td>Thing</td><td>The basic representation of the DSC Alarm System.</td></tr>
-<tr><td>partition</td><td>Thing</td><td>Represents a controllable area within a DSC Alarm system.</td></tr>
-<tr><td>zone</td><td>Thing</td><td>Represents a physical device such as a door, window, or motion sensor.</td></tr>
-<tr><td>keypad</td><td>Thing</td><td>Represents the central administrative unit.</td></tr>
-</table>
+| Thing      | Thing Type | Description                                                            |
+|------------|------------|------------------------------------------------------------------------|
+| envisalink | Bridge     | The EyezOn Envisalink 3/2DS interface.                                 |
+| it100      | Bridge     | The DSC IT-100 RS-232 interface.                                       |
+| tcpserver  | Bridge     | The DSC IT-100 TCP Server network interface.                           |
+| panel      | Thing      | The basic representation of the DSC Alarm System.                      |
+| partition  | Thing      | Represents a controllable area within a DSC Alarm system.              |
+| zone       | Thing      | Represents a physical device such as a door, window, or motion sensor. |
+| keypad     | Thing      | Represents the central administrative unit.                            |
 
 ## Binding Configuration
 
@@ -27,17 +27,23 @@ Most settings are through thing configuration parameters.
 
 ## Discovery
 
-The DSC Alarm binding incorporates several discovery modes in order to find DSC Alarm systems.  First, there is the Envisalink bridge discovery mode which performs a network query for any Envisalink adapters and adds them to the discovery inbox.
+The DSC Alarm binding incorporates several discovery modes in order to find DSC Alarm systems.  
+First, there is the Envisalink bridge discovery mode which performs a network query for any Envisalink adapters and adds them to the discovery inbox.
 Second, there is The IT-100 bridge discovery mode which will search serial ports for any IT-100 adapters and add them to the discovery inbox.
-The bridge discovery modes are started manually through PaperUI.  Third, after a bridge is discovered and available to openHAB, the binding will attempt to discover DSC Alarm things and add them to the discovery inbox.  The TCP Server bridge does not implement bridge discovery but will utilize thing discovery once it is online.
+The bridge discovery modes are started manually through PaperUI.  
+Third, after a bridge is discovered and available to openHAB, the binding will attempt to discover DSC Alarm things and add them to the discovery inbox.
+The TCP Server bridge does not implement bridge discovery but will utilize thing discovery once it is online.
 
-Note: The Envisalink Bridge discovery does a TCP scan across your local network to find the interface.  This may create issues on the network so it is suggested that caution be used when trying this discovery.  The recommended method would be to manually add and configure the bridge through the 'dscalarm.thing' file or the PaperUI.  And then allow the binding to discover the DSC Alarm things.
-
-
+Note:
+The Envisalink Bridge discovery does a TCP scan across your local network to find the interface.
+This may create issues on the network so it is suggested that caution be used when trying this discovery.
+The recommended method would be to manually add and configure the bridge through the 'dscalarm.thing' file or the PaperUI.
+And then allow the binding to discover the DSC Alarm things.
 
 ## Thing Configuration
 
-DSC Alarm things can be configured either through the online configuration utility via discovery, or manually through the 'dscalarm.things' configuration file.  The following table shows the available configuration parameters for each thing.
+DSC Alarm things can be configured either through the online configuration utility via discovery, or manually through the 'dscalarm.things' configuration file.
+The following table shows the available configuration parameters for each thing.
 
 <table>
 	<tr><td><b>Thing</b></td><td><b>Configuration Parameters</b></td></tr>
@@ -50,27 +56,28 @@ DSC Alarm things can be configured either through the online configuration utili
 	<tr><td>keypad</td><td>No parameters</td></tr>
 </table>
 
-The binding can be configured manually if discovery is not used.  A thing configuration file in the format 'bindingName.things' would need to be created, and placed in the 'conf/things' folder.  Here is an example of a thing configuration file called 'dscalarm.things':
+The binding can be configured manually if discovery is not used.  
+A thing configuration file in the format 'bindingName.things' would need to be created, and placed in the 'conf/things' folder.  
+Here is an example of a thing configuration file called 'dscalarm.things':
 
-```
-Bridge dscalarm:envisalink:MyBridgeName [ ipAddress="192.168.0.100" ]
-{
-	Thing panel panel
-	Thing partition partition1 [ partitionNumber=1 ]
-	Thing zone zone1 [ partitionNumber=1, zoneNumber=1 ]
-	Thing zone zone9 [ partitionNumber=1, zoneNumber=9 ]
-	Thing zone zone10 [ partitionNumber=1, zoneNumber=10 ]
-	Thing zone zone11 [ partitionNumber=1, zoneNumber=11 ]
-	Thing zone zone12 [ partitionNumber=1, zoneNumber=12 ]
-	Thing zone zone13 [ partitionNumber=1, zoneNumber=13 ]
-	Thing zone zone14 [ partitionNumber=1, zoneNumber=14 ]
-	Thing zone zone15 [ partitionNumber=1, zoneNumber=15 ]
-	Thing zone zone21 [ partitionNumber=1, zoneNumber=21 ]
-	Thing zone zone22 [ partitionNumber=1, zoneNumber=22 ]
-	Thing zone zone23 [ partitionNumber=1, zoneNumber=23 ]
-	Thing zone zone24 [ partitionNumber=1, zoneNumber=24 ]
-	Thing zone zone25 [ partitionNumber=1, zoneNumber=25 ]
-	Thing keypad keypad
+```perl
+Bridge dscalarm:envisalink:MyBridgeName [ ipAddress="192.168.0.100" ] {
+    Thing panel panel
+    Thing partition partition1 [ partitionNumber=1 ]
+    Thing zone zone1 [ partitionNumber=1, zoneNumber=1 ]
+    Thing zone zone9 [ partitionNumber=1, zoneNumber=9 ]
+    Thing zone zone10 [ partitionNumber=1, zoneNumber=10 ]
+    Thing zone zone11 [ partitionNumber=1, zoneNumber=11 ]
+    Thing zone zone12 [ partitionNumber=1, zoneNumber=12 ]
+    Thing zone zone13 [ partitionNumber=1, zoneNumber=13 ]
+    Thing zone zone14 [ partitionNumber=1, zoneNumber=14 ]
+    Thing zone zone15 [ partitionNumber=1, zoneNumber=15 ]
+    Thing zone zone21 [ partitionNumber=1, zoneNumber=21 ]
+    Thing zone zone22 [ partitionNumber=1, zoneNumber=22 ]
+    Thing zone zone23 [ partitionNumber=1, zoneNumber=23 ]
+    Thing zone zone24 [ partitionNumber=1, zoneNumber=24 ]
+    Thing zone zone25 [ partitionNumber=1, zoneNumber=25 ]
+    Thing keypad keypad
 }
 ```
 
@@ -176,7 +183,7 @@ DSC Alarm things support a variety of channels as seen below in the following ta
 
 The following is an example of an item file (dscalarm.items):
 
-```
+```java
 Group DSCAlarm
 Group DSCAlarmPanel (DSCAlarm)
 Group DSCAlarmPartitions (DSCAlarm)
@@ -386,7 +393,7 @@ Number KEYPAD_AC_LED "AC LED Status" <acLED> (DSCAlarmKeypads) {channel="dscalar
 
 Here is an example sitemap:
 
-```
+```perl
     Frame label="Alarm System" {
         Text label="DSC Alarm System" {
             Frame label="Panel" {
@@ -594,7 +601,7 @@ Here is an example sitemap:
 
 Sample Rules for Sending a DSC Alarm Command
 
-```
+```javascript
 rule "SendKeystrokeStringCommand"
 when   
     Item SwitchItemName received command ON

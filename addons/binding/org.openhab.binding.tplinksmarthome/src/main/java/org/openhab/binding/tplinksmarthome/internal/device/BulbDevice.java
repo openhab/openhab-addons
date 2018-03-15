@@ -133,10 +133,14 @@ public class BulbDevice extends SmartHomeDevice {
             case CHANNEL_SWITCH:
                 state = lightState.getOnOff();
                 break;
+            case CHANNEL_ENERGY_POWER:
+                state = new DecimalType(deviceState.getRealtime().getPower());
+                break;
             default:
                 state = UnDefType.UNDEF;
                 break;
         }
         return state;
     }
+
 }

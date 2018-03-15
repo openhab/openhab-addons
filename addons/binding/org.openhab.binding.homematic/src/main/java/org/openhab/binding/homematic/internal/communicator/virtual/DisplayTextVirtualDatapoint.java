@@ -278,7 +278,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
      * Returns the number of lines of the display.
      */
     private int getLineCount(HmDevice device) {
-        return (DEVICE_TYPE_STATUS_DISPLAY.equals(device.getType()) ? 5 : 3);
+        return (DEVICE_TYPE_STATUS_DISPLAY.equals(device.getType()) ? 6 : 3);
     }
 
     /**
@@ -319,7 +319,6 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
 
             List<String> message = new ArrayList<String>();
             message.add(START);
-            message.add(LF);
 
             for (int i = 1; i <= getLineCount(channel.getDevice()); i++) {
                 String line = ObjectUtils.toString(

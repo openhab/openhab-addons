@@ -112,11 +112,8 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
                 final String[] addresses = utils.getInfo().getAllAddresses();
 
                 for (final String address : addresses) {
-                    executorService.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            scanAddress(address);
-                        }
+                    executorService.execute(() -> {
+                        scanAddress(address);
                     });
                 }
             }
