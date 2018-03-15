@@ -85,7 +85,6 @@ public class HotWaterHandler extends DraytonWiserThingHandler {
     }
 
     private boolean updateControllerData() {
-        HeatHubHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
             return false;
         }
@@ -129,6 +128,8 @@ public class HotWaterHandler extends DraytonWiserThingHandler {
     }
 
     private void setManualMode(Boolean manualMode) {
-        getBridgeHandler().setHotWaterManualMode(manualMode);
+        if (bridgeHandler != null) {
+            bridgeHandler.setHotWaterManualMode(manualMode);
+        }
     }
 }

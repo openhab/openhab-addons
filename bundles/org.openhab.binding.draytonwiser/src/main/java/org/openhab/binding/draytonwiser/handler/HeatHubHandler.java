@@ -31,6 +31,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
+import org.openhab.binding.draytonwiser.internal.DraytonWiserItemUpdateListener;
 import org.openhab.binding.draytonwiser.internal.config.Device;
 import org.openhab.binding.draytonwiser.internal.config.Domain;
 import org.openhab.binding.draytonwiser.internal.config.HeatingChannel;
@@ -59,6 +60,8 @@ public class HeatHubHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(HeatHubHandler.class);
     private HttpClient httpClient;
     private Gson gson;
+
+    private List<DraytonWiserItemUpdateListener> itemListeners = new ArrayList<>();
 
     @Nullable
     private Domain domain;
@@ -132,9 +135,16 @@ public class HeatHubHandler extends BaseBridgeHandler {
     private void refresh() {
         try {
             domain = getDomain();
+            notifyListeners();
         } catch (Exception e) {
             logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    private synchronized void notifyListeners() {
+        for (DraytonWiserItemUpdateListener itemListener : itemListeners) {
+            itemListener.onItemUpdate();
         }
     }
 
@@ -309,15 +319,25 @@ public class HeatHubHandler extends BaseBridgeHandler {
                 List<Integer> trvs = room.getSmartValveIds();
                 if (trvs != null) {
                     for (Integer itrv : trvs) {
-                    if (itrv.equals(id)) {
-                        return room;
+                        if (itrv.equals(id)) {
+                            return room;
+                        }
                     }
                 }
             }
         }
-        }
 
         return null;
+    }
+
+    public synchronized boolean registerItemListener(DraytonWiserItemUpdateListener listener) {
+        boolean result = false;
+        result = !(itemListeners.contains(listener)) ? itemListeners.add(listener) : false;
+        return result;
+    }
+
+    public synchronized boolean unregisterItemListener(DraytonWiserItemUpdateListener listener) {
+        return itemListeners.remove(listener);
     }
 
     public void setRoomSetPoint(String roomName, Integer setPoint) {

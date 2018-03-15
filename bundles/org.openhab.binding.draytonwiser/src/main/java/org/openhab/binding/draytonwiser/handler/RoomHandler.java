@@ -97,7 +97,10 @@ public class RoomHandler extends DraytonWiserThingHandler {
     }
 
     private boolean updateRoomData() {
-        room = getBridgeHandler().getRoom(getThing().getConfiguration().get("roomName").toString());
+        if (bridgeHandler == null) {
+            return false;
+        }
+        room = bridgeHandler.getRoom(getThing().getConfiguration().get("roomName").toString());
         return room != null;
     }
 
@@ -110,7 +113,9 @@ public class RoomHandler extends DraytonWiserThingHandler {
     }
 
     private void setSetPoint(Integer setPoint) {
-        getBridgeHandler().setRoomSetPoint(getThing().getConfiguration().get("roomName").toString(), setPoint);
+        if (bridgeHandler != null) {
+            bridgeHandler.setRoomSetPoint(getThing().getConfiguration().get("roomName").toString(), setPoint);
+        }
     }
 
     private State getHumidity() {
@@ -155,7 +160,10 @@ public class RoomHandler extends DraytonWiserThingHandler {
 
     @Nullable
     private RoomStat getRoomStat(int id) {
-        return getBridgeHandler().getRoomStat(id);
+        if (bridgeHandler != null) {
+            return bridgeHandler.getRoomStat(id);
+        }
+        return null;
     }
 
     private State getManualModeState() {
@@ -169,6 +177,8 @@ public class RoomHandler extends DraytonWiserThingHandler {
     }
 
     private void setManualMode(Boolean manualMode) {
-        getBridgeHandler().setRoomManualMode(getThing().getConfiguration().get("roomName").toString(), manualMode);
+        if (bridgeHandler != null) {
+            bridgeHandler.setRoomManualMode(getThing().getConfiguration().get("roomName").toString(), manualMode);
+        }
     }
 }

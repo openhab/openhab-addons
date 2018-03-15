@@ -121,7 +121,6 @@ public class ControllerHandler extends DraytonWiserThingHandler {
     }
 
     private boolean updateControllerData() {
-        HeatHubHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
             return false;
         }
@@ -230,12 +229,16 @@ public class ControllerHandler extends DraytonWiserThingHandler {
     }
 
     private void setAwayMode(Boolean awayMode) {
-        getBridgeHandler().setAwayMode(awayMode);
-        updateControllerData();
+        if (bridgeHandler != null) {
+            bridgeHandler.setAwayMode(awayMode);
+            updateControllerData();
+        }
     }
 
     private void setEcoMode(Boolean ecoMode) {
-        getBridgeHandler().setEcoMode(ecoMode);
-        updateControllerData();
+        if (bridgeHandler != null) {
+            bridgeHandler.setEcoMode(ecoMode);
+            updateControllerData();
+        }
     }
 }

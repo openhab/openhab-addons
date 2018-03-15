@@ -8,16 +8,12 @@
  */
 package org.openhab.binding.draytonwiser.handler;
 
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
+import org.openhab.binding.draytonwiser.internal.DraytonWiserItemUpdateListener;
 
 /**
  * The {@link DraytonWiserThingHandler} is responsible for handling commands, which are
@@ -25,10 +21,9 @@ import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
  *
  * @author Andrew Schofield - Initial contribution
  */
-public abstract class DraytonWiserThingHandler extends BaseThingHandler {
+public abstract class DraytonWiserThingHandler extends BaseThingHandler implements DraytonWiserItemUpdateListener {
 
-    @Nullable
-    protected ScheduledFuture<?> refreshJob;
+    protected HeatHubHandler bridgeHandler;
 
     protected DraytonWiserThingHandler(Thing thing) {
         super(thing);
@@ -37,31 +32,26 @@ public abstract class DraytonWiserThingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
-
-        startAutomaticRefresh();
+        bridgeHandler = getBridgeHandler();
+        bridgeHandler.registerItemListener(this);
         refresh();
     }
 
     @Override
     public void dispose() {
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
+        if (bridgeHandler != null) {
+            bridgeHandler.unregisterItemListener(this);
         }
     }
 
-    private synchronized void startAutomaticRefresh() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-                refresh();
-            }, 0, ((java.math.BigDecimal) bridge.getConfiguration().get(DraytonWiserBindingConstants.REFRESH_INTERVAL))
-                    .intValue(), TimeUnit.SECONDS);
-        }
+    @Override
+    public void onItemUpdate() {
+        refresh();
     }
 
     protected abstract void refresh();
 
-    protected HeatHubHandler getBridgeHandler() {
+    private synchronized HeatHubHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge != null) {
             return ((HeatHubHandler) bridge.getHandler());

@@ -97,7 +97,10 @@ public class RoomStatHandler extends DraytonWiserThingHandler {
     }
 
     private boolean updateRoomStatData() {
-        roomStat = getBridgeHandler().getRoomStat(getThing().getConfiguration().get("serialNumber").toString());
+        if (bridgeHandler == null) {
+            return false;
+        }
+        roomStat = bridgeHandler.getRoomStat(getThing().getConfiguration().get("serialNumber").toString());
         return roomStat != null;
     }
 
@@ -129,8 +132,8 @@ public class RoomStatHandler extends DraytonWiserThingHandler {
     }
 
     private State getSignalRSSI() {
-        if (roomStat != null) {
-            Device device = getBridgeHandler().getExtendedDeviceProperties(roomStat.getId());
+        if (roomStat != null && bridgeHandler != null) {
+            Device device = bridgeHandler.getExtendedDeviceProperties(roomStat.getId());
             if (device != null) {
                 return new DecimalType((float) device.getRssi());
             }
@@ -140,8 +143,8 @@ public class RoomStatHandler extends DraytonWiserThingHandler {
     }
 
     private State getSignalLQI() {
-        if (roomStat != null) {
-            Device device = getBridgeHandler().getExtendedDeviceProperties(roomStat.getId());
+        if (roomStat != null && bridgeHandler != null) {
+            Device device = bridgeHandler.getExtendedDeviceProperties(roomStat.getId());
             if (device != null) {
                 return new DecimalType((float) device.getLqi());
             }
@@ -151,8 +154,8 @@ public class RoomStatHandler extends DraytonWiserThingHandler {
     }
 
     private State getSignalStrength() {
-        if (roomStat != null) {
-            Device device = getBridgeHandler().getExtendedDeviceProperties(roomStat.getId());
+        if (roomStat != null && bridgeHandler != null) {
+            Device device = bridgeHandler.getExtendedDeviceProperties(roomStat.getId());
             if (device != null) {
                 return new StringType(device.getDisplayedSignalStrength());
             }
@@ -162,8 +165,8 @@ public class RoomStatHandler extends DraytonWiserThingHandler {
     }
 
     private State getBatteryVoltage() {
-        if (roomStat != null) {
-            Device device = getBridgeHandler().getExtendedDeviceProperties(roomStat.getId());
+        if (roomStat != null && bridgeHandler != null) {
+            Device device = bridgeHandler.getExtendedDeviceProperties(roomStat.getId());
             if (device != null) {
                 return new DecimalType((float) device.getBatteryVoltage() / 10);
             }
@@ -173,8 +176,8 @@ public class RoomStatHandler extends DraytonWiserThingHandler {
     }
 
     private State getBatteryLevel() {
-        if (roomStat != null) {
-            Device device = getBridgeHandler().getExtendedDeviceProperties(roomStat.getId());
+        if (roomStat != null && bridgeHandler != null) {
+            Device device = bridgeHandler.getExtendedDeviceProperties(roomStat.getId());
             if (device != null) {
                 return new StringType(device.getBatteryLevel());
             }

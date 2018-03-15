@@ -97,7 +97,10 @@ public class TRVHandler extends DraytonWiserThingHandler {
     }
 
     private boolean updateSmartValveData() {
-        smartValve = getBridgeHandler().getSmartValve(getThing().getConfiguration().get("serialNumber").toString());
+        if (bridgeHandler == null) {
+            return false;
+        }
+        smartValve = bridgeHandler.getSmartValve(getThing().getConfiguration().get("serialNumber").toString());
         return smartValve != null;
     }
 
@@ -129,8 +132,8 @@ public class TRVHandler extends DraytonWiserThingHandler {
     }
 
     private State getSignalRSSI() {
-        if (smartValve != null) {
-            Device device = getBridgeHandler().getExtendedDeviceProperties(smartValve.getId());
+        if (smartValve != null && bridgeHandler != null) {
+            Device device = bridgeHandler.getExtendedDeviceProperties(smartValve.getId());
             if (device != null) {
                 return new DecimalType((float) device.getRssi());
             }
@@ -140,8 +143,8 @@ public class TRVHandler extends DraytonWiserThingHandler {
     }
 
     private State getSignalLQI() {
-        if (smartValve != null) {
-            Device device = getBridgeHandler().getExtendedDeviceProperties(smartValve.getId());
+        if (smartValve != null && bridgeHandler != null) {
+            Device device = bridgeHandler.getExtendedDeviceProperties(smartValve.getId());
             if (device != null) {
                 return new DecimalType((float) device.getLqi());
             }
@@ -151,8 +154,8 @@ public class TRVHandler extends DraytonWiserThingHandler {
     }
 
     private State getSignalStrength() {
-        if (smartValve != null) {
-            Device device = getBridgeHandler().getExtendedDeviceProperties(smartValve.getId());
+        if (smartValve != null && bridgeHandler != null) {
+            Device device = bridgeHandler.getExtendedDeviceProperties(smartValve.getId());
             if (device != null) {
                 return new StringType(device.getDisplayedSignalStrength());
             }
@@ -162,8 +165,8 @@ public class TRVHandler extends DraytonWiserThingHandler {
     }
 
     private State getBatteryVoltage() {
-        if (smartValve != null) {
-            Device device = getBridgeHandler().getExtendedDeviceProperties(smartValve.getId());
+        if (smartValve != null && bridgeHandler != null) {
+            Device device = bridgeHandler.getExtendedDeviceProperties(smartValve.getId());
             if (device != null) {
                 return new DecimalType((float) device.getBatteryVoltage() / 10);
             }
@@ -173,8 +176,8 @@ public class TRVHandler extends DraytonWiserThingHandler {
     }
 
     private State getBatteryLevel() {
-        if (smartValve != null) {
-            Device device = getBridgeHandler().getExtendedDeviceProperties(smartValve.getId());
+        if (smartValve != null && bridgeHandler != null) {
+            Device device = bridgeHandler.getExtendedDeviceProperties(smartValve.getId());
             if (device != null) {
                 return new StringType(device.getBatteryLevel());
             }
