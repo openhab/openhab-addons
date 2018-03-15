@@ -164,7 +164,6 @@ public class FaceRecognitionHandler extends BaseThingHandler {
         } catch (Exception e) {
             logger.error(e.getClass().getName() + ": " + e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -182,7 +181,6 @@ public class FaceRecognitionHandler extends BaseThingHandler {
 
         } catch (Exception e) {
             logger.error(e.getMessage());
-            e.printStackTrace();
         }
 
         faceCascade.close();
@@ -307,7 +305,6 @@ public class FaceRecognitionHandler extends BaseThingHandler {
         } catch (Exception e) {
             logger.error(e.getClass().getName() + ": " + e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            e.printStackTrace();
         }
     }
 }
