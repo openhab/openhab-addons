@@ -65,11 +65,11 @@ public abstract class AbstractThingHandler<E extends AbstractRioProtocol> extend
 
     /**
      * Overridden to simply get the protocol handler's {@link RioHandlerCallback}
-     * 
+     *
      * @return the {@link RioHandlerCallback} or null if not found
      */
     @Override
-    public RioHandlerCallback getCallback() {
+    public RioHandlerCallback getRioHandlerCallback() {
         final E protocolHandler = getProtocolHandler();
         return protocolHandler == null ? null : protocolHandler.getCallback();
     }
