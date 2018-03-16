@@ -300,16 +300,16 @@ public class NikoHomeControlHandler extends BaseThingHandler {
         // position to avoid updating state to full open or full close
         this.filterEvent = true;
 
-        int duration = rollershutterMoveTime(nhcAction, currentValue, newValue);
+        long duration = rollershutterMoveTime(nhcAction, currentValue, newValue);
         setRollershutterMovingTrue(nhcAction, duration);
 
-        logger.trace("scheduleRollershutterStop: schedule rollershutter {} stop in {}s",
+        logger.trace("scheduleRollershutterStop: schedule rollershutter {} stop in {}ms",
                 this.getConfig().get(CONFIG_ACTION_ID), duration);
         this.rollershutterStopTask = scheduler.schedule(() -> {
             logger.trace("scheduleRollershutterStop: run rollershutter {} stop",
                     this.getConfig().get(CONFIG_ACTION_ID));
             nhcAction.execute(NHCSTOP);
-        }, duration, TimeUnit.SECONDS);
+        }, duration, TimeUnit.MILLISECONDS);
     }
 
     private void cancelRollershutterStop() {
@@ -324,14 +324,14 @@ public class NikoHomeControlHandler extends BaseThingHandler {
         this.filterEvent = false;
     }
 
-    private void setRollershutterMovingTrue(NhcAction nhcAction, int duration) {
+    private void setRollershutterMovingTrue(NhcAction nhcAction, long duration) {
         logger.trace("setRollershutterMovingTrue: rollershutter {} moving", this.getConfig().get(CONFIG_ACTION_ID));
         this.rollershutterMoving = true;
         this.rollershutterMovingFlagTask = scheduler.schedule(() -> {
             logger.trace("setRollershutterMovingTrue: rollershutter {} stopped moving",
                     this.getConfig().get(CONFIG_ACTION_ID));
             this.rollershutterMoving = false;
-        }, duration, TimeUnit.SECONDS);
+        }, duration, TimeUnit.MILLISECONDS);
     }
 
     private void setRollershutterMovingFalse() {
@@ -344,9 +344,9 @@ public class NikoHomeControlHandler extends BaseThingHandler {
         }
     }
 
-    private int rollershutterMoveTime(NhcAction nhcAction, int currentValue, int newValue) {
+    private long rollershutterMoveTime(NhcAction nhcAction, int currentValue, int newValue) {
         int totalTime = (newValue > currentValue) ? nhcAction.getCloseTime() : nhcAction.getOpenTime();
-        int duration = (int) Math.round(Math.abs(newValue - currentValue) * totalTime / 100.0);
+        long duration = Math.abs(newValue - currentValue) * totalTime * 10;
         logger.trace("rollershutterMoveTime: rollershutter {} move time {}", this.getConfig().get(CONFIG_ACTION_ID),
                 duration);
         return duration;
@@ -450,23 +450,25 @@ public class NikoHomeControlHandler extends BaseThingHandler {
             case 4:
             case 5:
                 cancelRollershutterStop();
-                if (this.waitForEvent) {
-                    logger.debug("Niko Home Control: received requested rollershutter {} position event {}", actionId,
-                            actionState);
-                    executeRollershutterTask();
-                }
 
                 boolean invert = (boolean) config.get(CONFIG_INVERT);
                 int state = invert ? invertRollershutter(actionState) : actionState;
                 int prevState = invert ? invertRollershutter(this.prevActionState) : this.prevActionState;
                 if (((state == 0) || (state == 100)) && (state != prevState)) {
-                    int duration = rollershutterMoveTime(nhcAction, prevState, state);
+                    long duration = rollershutterMoveTime(nhcAction, prevState, state);
                     setRollershutterMovingTrue(nhcAction, duration);
                 } else {
                     setRollershutterMovingFalse();
                 }
-                updateState(CHANNEL_ROLLERSHUTTER, new PercentType(state));
-                updateStatus(ThingStatus.ONLINE);
+
+                if (this.waitForEvent) {
+                    logger.debug("Niko Home Control: received requested rollershutter {} position event {}", actionId,
+                            actionState);
+                    executeRollershutterTask();
+                } else {
+                    updateState(CHANNEL_ROLLERSHUTTER, new PercentType(state));
+                    updateStatus(ThingStatus.ONLINE);
+                }
                 break;
             default:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
