@@ -481,7 +481,7 @@ public class RioZoneHandler extends AbstractThingHandler<RioZoneProtocol>
      * @return a possibly null {@link RioHandlerCallback}
      */
     @Override
-    public RioHandlerCallback getCallback() {
+    public RioHandlerCallback getRioHandlerCallback() {
         final RioZoneProtocol protocolHandler = getProtocolHandler();
         return protocolHandler == null ? null : protocolHandler.getCallback();
     }
