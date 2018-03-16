@@ -80,7 +80,10 @@ public class CcuDiscoveryService extends AbstractDiscoveryService {
     private synchronized void startDiscovery() {
         try {
             logger.debug("Starting Homematic CCU discovery scan");
-            broadcastAddress = InetAddress.getByName(networkAddressService.getConfiguredBroadcastAddress());
+            String configuredBroadcastAddress = networkAddressService.getConfiguredBroadcastAddress();
+            if (configuredBroadcastAddress != null) {
+                broadcastAddress = InetAddress.getByName(configuredBroadcastAddress);
+            }
             if (broadcastAddress == null) {
                 logger.warn("Homematic CCU discovery: discovery not possible, no broadcast address found");
                 return;
