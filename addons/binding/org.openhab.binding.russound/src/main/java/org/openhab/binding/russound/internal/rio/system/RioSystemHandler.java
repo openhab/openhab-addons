@@ -491,7 +491,7 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
             throw new IllegalArgumentException("childHandler cannot be null");
         }
         if (childHandler instanceof RioSourceHandler) {
-            final RioHandlerCallback callback = ((RioSourceHandler) childHandler).getCallback();
+            final RioHandlerCallback callback = ((RioSourceHandler) childHandler).getRioHandlerCallback();
             if (callback != null) {
                 if (added) {
                     callback.addListener(RioConstants.CHANNEL_SOURCENAME, handlerCallbackListener);
