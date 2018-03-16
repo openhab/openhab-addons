@@ -1,13 +1,12 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-
-package org.openhab.io.azureiothub;
+package org.openhab.io.internal.azureiothub;
 
 import java.util.Collections;
 import java.util.Map;
@@ -20,6 +19,11 @@ import org.eclipse.smarthome.core.events.EventSubscriber;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.items.events.ItemStateEvent;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +33,9 @@ import org.slf4j.LoggerFactory;
  * @author Niko Tanghe - Initial contribution
  *
  */
-
+@Component(immediate = true, configurationPid = "org.openhab.azureiothub", configurationPolicy = ConfigurationPolicy.OPTIONAL, property = {
+        "service.pid=org.openhab.azureiothub", "service.config.description.uri=io:azureiothub",
+        "service.config.label=Azure IoT Hub", "service.config.category=io" })
 public class CloudService implements EventSubscriber {
 
     private static final String CFG_MODE = "mode";
@@ -53,6 +59,7 @@ public class CloudService implements EventSubscriber {
         return null;
     }
 
+    @Reference
     public void setItemRegistry(ItemRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
@@ -61,6 +68,7 @@ public class CloudService implements EventSubscriber {
         this.itemRegistry = null;
     }
 
+    @Reference
     public void setEventPublisher(EventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
     }
@@ -77,12 +85,13 @@ public class CloudService implements EventSubscriber {
         }
     }
 
+    @Activate
     protected void activate(BundleContext context, Map<String, ?> config) {
         String connectionstring = "";
         if (config.get(CFG_CONNECTIONSTRING) != null) {
             connectionstring = (String) config.get(CFG_CONNECTIONSTRING);
         } else {
-            logger.error("Azure iot client not started, could not get connectionstring config setting");
+            logger.error("Azure IoT client not started, could not get connectionstring config setting");
         }
 
         boolean commandEnabled = false;
@@ -94,18 +103,19 @@ public class CloudService implements EventSubscriber {
 
         if (connectionstring != null && !connectionstring.isEmpty()) {
             try {
-                cloudClient = new CloudClient(connectionstring, commandEnabled);
-                logger.debug("azure IOT hub connector activated");
+                cloudClient = new CloudClient(connectionstring, commandEnabled, eventPublisher);
+                logger.debug("Azure IoT Hub connector activated");
             } catch (Exception e) {
-                logger.error("failed to setup azure IOT hub client");
+                logger.error("Failed to setup Azure IoT Hub client");
             }
         } else {
-            logger.error("Azure iot client not started, connectionstring config setting is empty");
+            logger.error("Azure IoT client not started, connectionstring config setting is empty");
         }
     }
 
+    @Deactivate
     protected void deactivate() {
-        logger.debug("azure IOT hub connector deactivated");
+        logger.debug("Azure IoT Hub connector deactivated");
         if (cloudClient != null) {
             cloudClient.shutdown();
         }

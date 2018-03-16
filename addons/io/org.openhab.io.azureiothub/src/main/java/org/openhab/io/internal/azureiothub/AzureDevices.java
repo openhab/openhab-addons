@@ -1,19 +1,18 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
+package org.openhab.io.internal.azureiothub;
 
-package org.openhab.io.azureiothub;
-
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.joda.time.DateTime;
-import org.joda.time.Minutes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,14 +21,15 @@ import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import com.microsoft.azure.sdk.iot.service.exceptions.IotHubException;
 
 /**
- * Represents an a list of devices on the azure iot hub
+ * Represents an a list of devices on the Azure IoT Hub
  *
- * @author Niko Tanghe
+ * @author Niko Tanghe - Initial contribution
+ * @author Kai Kreuzer - removed joda-time dependency and cleaned up code
  */
 
 public class AzureDevices {
 
-    private Logger logger = LoggerFactory.getLogger(AzureDevices.class);
+    private final Logger logger = LoggerFactory.getLogger(AzureDevices.class);
 
     private Map<String, AzureDevice> map = new HashMap<String, AzureDevice>();
     private String connectionstring;
@@ -44,8 +44,7 @@ public class AzureDevices {
         AzureDevice device = map.get(deviceId);
 
         // not created yet or cache expired
-        if (device == null
-                || Minutes.minutesBetween(device.RetrievedAt, DateTime.now()).isGreaterThan(Minutes.minutes(30))) {
+        if (device == null || device.getRetrievedAt().plus(Duration.ofMinutes(30)).isBefore(LocalDateTime.now())) {
 
             // close connection
             if (device != null) {
@@ -68,6 +67,7 @@ public class AzureDevices {
         try {
             device = registryManager.addDevice(device);
         } catch (IotHubException iote) {
+            // this happens if the device already exists, so let's retrieve it
             device = registryManager.getDevice(deviceId);
         } catch (Exception ex) {
             logger.error("failed to add device", ex);

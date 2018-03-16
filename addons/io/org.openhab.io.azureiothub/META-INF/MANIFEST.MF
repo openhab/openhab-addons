@@ -1,17 +1,17 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: azure iot hub Connector Bundle
+Bundle-Name: Azure IoT Hub Connector
 Bundle-SymbolicName: org.openhab.io.azureiothub;singleton:=true
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Service-Component: OSGI-INF/*.xml
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: 
  com.google.gson,
  javax.net,
  javax.net.ssl,
+ org.apache.commons.codec.binary,
  org.apache.commons.io,
  org.apache.commons.lang,
- org.apache.commons.codec.binary,
  org.apache.log4j,
  org.eclipse.emf.common.notify,
  org.eclipse.emf.common.util,
@@ -24,6 +24,10 @@ Import-Package:
  org.eclipse.jetty.io,
  org.eclipse.jetty.util,
  org.eclipse.jetty.util.component,
+ org.eclipse.paho.client.mqttv3,
+ org.eclipse.paho.client.mqttv3.logging,
+ org.eclipse.paho.client.mqttv3.persist,
+ org.eclipse.paho.client.mqttv3.util,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.common,
  org.eclipse.smarthome.core.events,
@@ -36,19 +40,16 @@ Import-Package:
  org.eclipse.smarthome.core.persistence,
  org.eclipse.smarthome.core.service,
  org.eclipse.smarthome.core.types,
- org.eclipse.smarthome.model.script.engine.action,
- org.eclipse.smarthome.ui.items,
- org.joda.time,
  org.openhab.core,
  org.osgi.framework,
  org.osgi.service.cm,
  org.osgi.service.event,
  org.slf4j
-Export-Package: org.openhab.io.azureiothub
 Bundle-ClassPath: .,
+ lib/azure-eventhubs-0.14.0.jar,
  lib/iot-device-client-1.2.27.jar,
  lib/iot-service-client-1.4.20.jar,
- lib/azure-eventhubs-0.14.0.jar,
- lib/javax.json.javax.json-api-1.0.jar,
- lib/org.eclipse.paho.client.mqttv3-1.0.2.jar 
+ lib/javax.json-api-1.0.jar
 Bundle-Vendor: openHAB.org
+Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: org.openhab.io.azureiothub
