@@ -9,7 +9,7 @@
 package org.openhab.binding.kostal.inverter;
 
 /**
- * @author Christian Schneider
+ * @author Christian Schneider - Initial contribution
  */
 public class SourceConfig {
     public String url;
