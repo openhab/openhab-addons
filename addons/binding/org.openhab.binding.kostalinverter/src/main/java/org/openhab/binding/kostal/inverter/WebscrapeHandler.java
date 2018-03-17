@@ -52,19 +52,15 @@ public class WebscrapeHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(SourceConfig.class);
-        scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    refresh();
-                    updateStatus(ThingStatus.ONLINE);
-                } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            e.getClass().getName() + ":" + e.getMessage());
-                    logger.debug("Error refreshing source {} ", getThing().getUID(), e);
-                }
+        scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                refresh();
+                updateStatus(ThingStatus.ONLINE);
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        e.getClass().getName() + ":" + e.getMessage());
+                logger.debug("Error refreshing source {} ", getThing().getUID(), e);
             }
-
         }, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
 

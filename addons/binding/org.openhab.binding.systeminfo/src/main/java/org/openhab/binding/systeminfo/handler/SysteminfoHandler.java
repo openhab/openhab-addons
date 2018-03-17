@@ -80,7 +80,7 @@ public class SysteminfoHandler extends BaseThingHandler {
      * Wait time for the creation of Item-Channel links in seconds. This delay is needed, because the Item-Channel
      * links have to be created before the thing state is updated, otherwise item state will not be updated.
      */
-    private static final int WAIT_TIME_CHANNEL_ITEM_LINK_INIT = 1;
+    public static final int WAIT_TIME_CHANNEL_ITEM_LINK_INIT = 1;
 
     private SysteminfoInterface systeminfo;
 
@@ -217,27 +217,18 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     private void scheduleUpdates() {
         logger.debug("Schedule high priority tasks at fixed rate {} s.", refreshIntervalHighPriority);
-        highPriorityTasks = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                publishData(highPriorityChannels);
-            }
+        highPriorityTasks = scheduler.scheduleWithFixedDelay(() -> {
+            publishData(highPriorityChannels);
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalHighPriority.intValue(), TimeUnit.SECONDS);
 
         logger.debug("Schedule medium priority tasks at fixed rate {} s.", refreshIntervalMediumPriority);
-        mediumPriorityTasks = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                publishData(mediumPriorityChannels);
-            }
+        mediumPriorityTasks = scheduler.scheduleWithFixedDelay(() -> {
+            publishData(mediumPriorityChannels);
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalMediumPriority.intValue(), TimeUnit.SECONDS);
 
         logger.debug("Schedule one time update for low priority tasks.");
-        scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                publishData(lowPriorityChannels);
-            }
+        scheduler.schedule(() -> {
+            publishData(lowPriorityChannels);
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, TimeUnit.SECONDS);
 
     }
@@ -263,6 +254,18 @@ public class SysteminfoHandler extends BaseThingHandler {
             logger.warn("Channel with ID {} can not be updated! No information available for the selected device.",
                     channelID);
         }
+    }
+
+    public Set<ChannelUID> getHighPriorityChannels() {
+        return highPriorityChannels;
+    }
+
+    public Set<ChannelUID> getMediumPriorityChannels() {
+        return mediumPriorityChannels;
+    }
+
+    public Set<ChannelUID> getLowPriorityChannels() {
+        return lowPriorityChannels;
     }
 
     /**

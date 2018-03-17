@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * Generic pair object.
  *
- * @author Mattias Markehed
+ * @author Mattias Markehed - Initial contribution
  */
 public class Pair<T, R> {
 
@@ -32,7 +32,6 @@ public class Pair<T, R> {
 
     @Override
     public boolean equals(Object obj) {
-
         if (!(obj instanceof Pair)) {
             return false;
         }

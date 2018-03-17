@@ -62,13 +62,6 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
 
     private ScheduledFuture<?> pollingJob;
 
-    private Runnable pollingRunnable = new Runnable() {
-        @Override
-        public void run() {
-            refreshBedStatus();
-        }
-    };
-
     private SleepIQ cloud;
 
     public SleepIQCloudHandler(final Bridge bridge) {
@@ -138,7 +131,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
     private synchronized void updateListenerManagement() {
         if (!bedStatusListeners.isEmpty() && (pollingJob == null || pollingJob.isCancelled())) {
             int pollingInterval = getPollingInterval();
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, pollingInterval, pollingInterval,
+            pollingJob = scheduler.scheduleWithFixedDelay(this::refreshBedStatus, pollingInterval, pollingInterval,
                     TimeUnit.SECONDS);
         } else if (bedStatusListeners.isEmpty() && pollingJob != null && !pollingJob.isCancelled()) {
             pollingJob.cancel(true);

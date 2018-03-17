@@ -84,11 +84,8 @@ DimmerA2  "Porch lights"   <slider> (someGroup)  { channel="cm11a:dimmer:MyCm11a
 
 ## Known issues
 
-1.  When openHAB starts up it doesn't restore the last state of each module.
-And, the cm11a does not provide a discovery service. Therefore it assumes everything off.
-
-2.  The dimmer slider can get out of sync with the actual light because of the way X10 works.
-On some switches if you turn them on they will go to full bright and some switches will return to the previous dim level.
+1.  When openHAB starts up it doesn't restore the last state of each module. And, the cm11a does not provide a discovery service. Therefore it assumes everything off.
+2.  The dimmer slider can get out of sync with the actual light because of the way X10 works. On some switches if you turn them on they will go to full bright and some switches will return to the previous dim level.
 
 ## References
 

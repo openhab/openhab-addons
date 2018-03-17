@@ -548,14 +548,11 @@ public class BigAssFanHandler extends BaseThingHandler {
 
         private ConnectionManager conn;
 
-        private Runnable fanListenerRunnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    listener();
-                } catch (RuntimeException e) {
-                    logger.warn("FanListener for {} had unhandled exception: {}", thing.getUID(), e.getMessage(), e);
-                }
+        private Runnable fanListenerRunnable = () -> {
+            try {
+                listener();
+            } catch (RuntimeException e) {
+                logger.warn("FanListener for {} had unhandled exception: {}", thing.getUID(), e.getMessage(), e);
             }
         };
 
@@ -994,12 +991,9 @@ public class BigAssFanHandler extends BaseThingHandler {
         private final long CONNECTION_MONITOR_FREQ = 120L;
         private final long CONNECTION_MONITOR_DELAY = 30L;
 
-        Runnable connectionMonitorRunnable = new Runnable() {
-            @Override
-            public void run() {
-                logger.trace("Performing connection check for {} at IP {}", thing.getUID(), ipAddress);
-                checkConnection();
-            }
+        Runnable connectionMonitorRunnable = () -> {
+            logger.trace("Performing connection check for {} at IP {}", thing.getUID(), ipAddress);
+            checkConnection();
         };
 
         public ConnectionManager(String ipv4Address) {

@@ -11,7 +11,7 @@ package org.openhab.binding.minecraft.internal.message.data;
 /**
  * Object representing Minecraft player.
  *
- * @author Mattias Markehed
+ * @author Mattias Markehed - Initial contribution
  */
 public class PlayerData {
 

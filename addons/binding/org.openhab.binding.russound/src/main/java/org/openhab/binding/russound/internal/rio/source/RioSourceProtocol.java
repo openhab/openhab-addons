@@ -363,13 +363,9 @@ class RioSourceProtocol extends AbstractRioProtocol {
      * @return a non-null {@link Runnable} to execute after this call
      */
     Runnable setBanks(String bankJson) {
-
         // If null or empty - simply return a do nothing runnable
         if (StringUtils.isEmpty(bankJson)) {
-            return new Runnable() {
-                @Override
-                public void run() {
-                }
+            return () -> {
             };
         }
 
@@ -401,12 +397,7 @@ class RioSourceProtocol extends AbstractRioProtocol {
 
         // regardless of what happens above - reupdate the channel
         // (to remove anything bad from it)
-        return new Runnable() {
-            @Override
-            public void run() {
-                updateBanksChannel();
-            }
-        };
+        return this::updateBanksChannel;
     }
 
     /**
