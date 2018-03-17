@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.danfosshrv.internal.DanfossHRV;
 import org.openhab.binding.danfosshrv.internal.DanfossHRVConfiguration;
 import org.slf4j.Logger;
@@ -52,18 +53,24 @@ public class DanfossHRVHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            // Placeholder for later refinement
             update();
-        } else if (channelUID.getId().equals(CHANNEL_MODE)) {
-            try {
-                updateState(channelUID, hrv.setMode(command));
-            } catch (IOException ioe) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ioe.getMessage());
-            }
 
-        } else if (channelUID.getId().equals(CHANNEL_FAN_SPEED)) {
+        } else {
             try {
-                updateState(channelUID, hrv.setFanSpeed(command));
+                if (hrv == null) {
+                    return;
+                }
+                hrv.connect();
+                if (channelUID.getIdWithoutGroup().equals(CHANNEL_MODE)) {
+                    updateState(channelUID, hrv.setMode(command));
+                } else if (channelUID.getIdWithoutGroup().equals(CHANNEL_FAN_SPEED)) {
+                    updateState(channelUID, hrv.setFanSpeed(command));
+                } else if (channelUID.getIdWithoutGroup().equals(CHANNEL_BOOST)) {
+                    updateState(channelUID, hrv.setBoost(command));
+                } else if (channelUID.getIdWithoutGroup().equals(CHANNEL_BYPASS)) {
+                    updateState(channelUID, hrv.setBypass(command));
+                }
+                hrv.disconnect();
             } catch (IOException ioe) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ioe.getMessage());
             }
@@ -78,6 +85,13 @@ public class DanfossHRVHandler extends BaseThingHandler {
         // Long running initialization should be done asynchronously in background.
         try {
             hrv = new DanfossHRV(InetAddress.getByName(config.host), 30046);
+
+            pollingJob = scheduler.scheduleAtFixedRate(() -> update(), 5, config.polling, TimeUnit.SECONDS);
+
+            hrv.connect();
+            thing.setProperty(PROPERTY_UNIT_NAME, hrv.getUnitName());
+            thing.setProperty(PROPERTY_SERIAL, hrv.getUnitSerialNumber());
+            hrv.disconnect();
             updateStatus(ThingStatus.ONLINE);
 
         } catch (UnknownHostException uhe) {
@@ -87,8 +101,6 @@ public class DanfossHRVHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ioe.getMessage());
             return;
         }
-
-        pollingJob = scheduler.scheduleWithFixedDelay(() -> update(), 0, 10, TimeUnit.SECONDS);
     }
 
     @Override
@@ -100,26 +112,49 @@ public class DanfossHRVHandler extends BaseThingHandler {
             pollingJob = null;
         }
 
-        hrv.disconnect();
-        hrv = null;
+        if (hrv != null) {
+            hrv.disconnect();
+            hrv = null;
+        }
     }
 
     private void update() {
+        if (hrv == null) {
+            return;
+        }
+
         logger.debug("Updating DanfossHRV data '{}'", getThing().getUID());
 
         try {
-            updateState(CHANNEL_MODE, hrv.getMode());
-            updateState(CHANNEL_FAN_SPEED, hrv.getFanSpeed());
-            updateState(CHANNEL_HUMIDITY, hrv.getHumidity());
-            updateState(CHANNEL_BATTERY_LIFE, hrv.getBatteryLife());
-            updateState(CHANNEL_CURRENT_TIME, hrv.getCurrentTime());
+            hrv.connect();
+            updateState(GROUP_MAIN, CHANNEL_CURRENT_TIME, hrv.getCurrentTime());
+            updateState(GROUP_MAIN, CHANNEL_MODE, hrv.getMode());
+            updateState(GROUP_MAIN, CHANNEL_FAN_SPEED, hrv.getFanSpeed());
+            updateState(GROUP_MAIN, CHANNEL_BOOST, hrv.getBoost());
+
+            updateState(GROUP_TEMPS, CHANNEL_ROOM_TEMP, hrv.getRoomTemperature());
+            updateState(GROUP_TEMPS, CHANNEL_OUTDOOR_TEMP, hrv.getOutdoorTemperature());
+
+            updateState(GROUP_HUMIDITY, CHANNEL_HUMIDITY, hrv.getHumidity());
+
+            updateState(GROUP_RECUPERATOR, CHANNEL_BYPASS, hrv.getBypass());
+            updateState(GROUP_RECUPERATOR, CHANNEL_SUPPLY_TEMP, hrv.getSupplyTemperature());
+            updateState(GROUP_RECUPERATOR, CHANNEL_EXTRACT_TEMP, hrv.getExtractTemperature());
+            updateState(GROUP_RECUPERATOR, CHANNEL_EXHAUST_TEMP, hrv.getExhaustTemperature());
+
+            updateState(GROUP_SERVICE, CHANNEL_BATTERY_LIFE, hrv.getBatteryLife());
+            updateState(GROUP_SERVICE, CHANNEL_FILTER_LIFE, hrv.getFilterLife());
+            hrv.disconnect();
+            if (getThing().getStatus().equals(ThingStatus.OFFLINE)) {
+                updateStatus(ThingStatus.ONLINE);
+            }
 
         } catch (IOException ioe) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ioe.getMessage());
         }
+    }
 
-        if (getThing().getStatus().equals(ThingStatus.OFFLINE)) {
-            updateStatus(ThingStatus.ONLINE);
-        }
+    private void updateState(String groupId, String channelId, State state) {
+        updateState(new ChannelUID(thing.getUID(), groupId, channelId), state);
     }
 }

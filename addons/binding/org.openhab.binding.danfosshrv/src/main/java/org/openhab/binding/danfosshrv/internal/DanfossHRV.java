@@ -53,7 +53,6 @@ public class DanfossHRV {
     private static final byte[] NIGHT_COOLING = { 0x15, 0x71 };
     private static final byte[] AUTOMATIC_BYPASS = { 0x17, 0x06 };
     private static final byte[] AUTOMATIC_RUSH_AIRING = { 0x17, 0x02 };
-    private static final byte[] MODEL = { 0x00, 0x25 };
     private static final byte[] HUMIDITY = { 0x14, 0x70 };
     private static final byte[] ROOM_TEMPERATURE = { 0x03, 0x00 };
     private static final byte[] OUTDOOR_TEMPERATURE = { 0x03, 0x34 };
@@ -63,24 +62,30 @@ public class DanfossHRV {
     private static final byte[] BATTERY_LIFE = { 0x03, 0x0f };
     private static final byte[] FILTER_LIFE = { 0x14, 0x6a };
     private static final byte[] CURRENT_TIME = { 0x15, (byte) 0xe0 };
-    private static final byte[] AWAY_TO = { 0x15, (byte) 0x20 };
-    private static final byte[] AWAY_FROM = { 0x15, (byte) 0x21 };
+    private static final byte[] AWAY_TO = { 0x15, 0x20 };
+    private static final byte[] AWAY_FROM = { 0x15, 0x21 };
+    private static final byte[] UNIT_SERIAL = { 0x00, 0x25 }; // endpoint 4
+    private static final byte[] UNIT_NAME = { 0x15, (byte) 0xe5 }; // endpoint 1
+    private static final byte[] CCM_SERIAL = { 0x14, 0x6a }; // endpoint 0
 
-    public DanfossHRV(InetAddress inetAddr, int port) throws IOException {
+    public DanfossHRV(InetAddress inetAddr, int port) {
         this.inetAddr = inetAddr;
         this.port = port;
-        connect();
     }
 
-    private void connect() throws IOException {
+    public void connect() throws IOException {
         socket = new Socket(inetAddr, port);
+        // socket.setSoTimeout(5000);
         oStream = socket.getOutputStream();
         iStream = socket.getInputStream();
     }
 
     public void disconnect() {
         try {
-            socket.close();
+            if (socket != null) {
+                socket.close();
+                socket = null;
+            }
 
         } catch (IOException ioe) {
             // TODO: handle exception
@@ -129,6 +134,12 @@ public class DanfossHRV {
         return sendRobustRequest(operation, register)[0];
     }
 
+    private String getString(byte[] operation, byte[] register) throws IOException {
+        // length of the string is stored in the first byte
+        byte[] result = sendRobustRequest(operation, register);
+        return new String(result, 1, result[0], "US-ASCII");
+    }
+
     private void set(byte[] operation, byte[] register, byte value) throws IOException {
         byte[] valueArray = { value };
         sendRobustRequest(operation, register, valueArray);
@@ -175,6 +186,14 @@ public class DanfossHRV {
         sendRobustRequest(REGISTER_1_WRITE, register, valueArray);
     }
 
+    public String getUnitName() throws IOException {
+        return getString(REGISTER_1_READ, UNIT_NAME);
+    }
+
+    public String getUnitSerialNumber() throws IOException {
+        return String.valueOf(getShort(REGISTER_4_READ, UNIT_SERIAL));
+    }
+
     public StringType getMode() throws IOException {
         return new StringType(Mode.values()[getByte(REGISTER_1_READ, MODE)].name());
     }
@@ -192,13 +211,11 @@ public class DanfossHRV {
     }
 
     public DecimalType getHumidity() throws IOException {
-        return new DecimalType(50);
-        // return new DecimalType(BigDecimal.valueOf(asPercentByte(getByte(REGISTER_1_READ, HUMIDITY))));
+        return new DecimalType(BigDecimal.valueOf(asPercentByte(getByte(REGISTER_1_READ, HUMIDITY))));
     }
 
     public DecimalType getRoomTemperature() throws IOException {
-        return new DecimalType(20);
-        // return new DecimalType(BigDecimal.valueOf(getTemperature(REGISTER_1_READ, ROOM_TEMPERATURE)));
+        return new DecimalType(BigDecimal.valueOf(getTemperature(REGISTER_1_READ, ROOM_TEMPERATURE)));
     }
 
     public DecimalType getOutdoorTemperature() throws IOException {
@@ -244,5 +261,19 @@ public class DanfossHRV {
         }
 
         return new StringType(Mode.values()[getByte(REGISTER_1_READ, MODE)].name());
+    }
+
+    public OnOffType setBoost(Command cmd) throws IOException {
+        if (cmd instanceof OnOffType) {
+            set(REGISTER_1_WRITE, BOOST, OnOffType.ON.equals(cmd) ? (byte) 1 : (byte) 0);
+        }
+        return getBoolean(REGISTER_1_READ, BOOST) ? OnOffType.ON : OnOffType.OFF;
+    }
+
+    public OnOffType setBypass(Command cmd) throws IOException {
+        if (cmd instanceof OnOffType) {
+            set(REGISTER_1_WRITE, BYPASS, OnOffType.ON.equals(cmd) ? (byte) 1 : (byte) 0);
+        }
+        return getBoolean(REGISTER_1_READ, BYPASS) ? OnOffType.ON : OnOffType.OFF;
     }
 }

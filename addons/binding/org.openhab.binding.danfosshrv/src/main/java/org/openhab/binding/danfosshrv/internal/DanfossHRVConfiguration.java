@@ -23,4 +23,6 @@ public class DanfossHRVConfiguration {
      * Sample configuration parameter. Replace with you own.
      */
     public String host;
+
+    public int polling;
 }
