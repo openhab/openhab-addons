@@ -467,12 +467,11 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleUpdate(ChannelUID channelUID, State newState) {
-        // Deprecated, therefore deactivated        
+        // Deprecated, therefore deactivated
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, final Command command) {
-        long startTime = System.currentTimeMillis();
         logger.debug("Handle command for channel: {} with command: {}", channelUID.getId(), command.toString());
 
         // Check Z-Way bridge handler
@@ -633,7 +632,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 refreshChannel(channel);
             }
         }
-        logger.debug("Handling of command took {} milliseconds", System.currentTimeMillis() - startTime);
     }
 
     protected synchronized void addDeviceAsChannel(Device device) {
