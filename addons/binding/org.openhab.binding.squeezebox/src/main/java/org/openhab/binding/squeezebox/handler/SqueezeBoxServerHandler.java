@@ -111,13 +111,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("initializing server handler for thing {}", getThing().getUID());
 
-        scheduler.schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                connect();
-            }
-        }, 0, TimeUnit.SECONDS);
+        scheduler.schedule(this::connect, 0, TimeUnit.SECONDS);
     }
 
     @Override
@@ -1041,12 +1035,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private void scheduleReconnect() {
         logger.debug("scheduling squeeze server reconnect in {} seconds", RECONNECT_TIME);
         cancelReconnect();
-        reconnectFuture = scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                connect();
-            }
-        }, RECONNECT_TIME, TimeUnit.SECONDS);
+        reconnectFuture = scheduler.schedule(this::connect, RECONNECT_TIME, TimeUnit.SECONDS);
     }
 
     /**

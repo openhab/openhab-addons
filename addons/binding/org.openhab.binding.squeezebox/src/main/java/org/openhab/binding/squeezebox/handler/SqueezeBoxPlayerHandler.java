@@ -591,12 +591,9 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * Ticks away when in a play state to keep current track time
      */
     private void timeCounter() {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                if (playing) {
-                    updateChannel(mac, CHANNEL_CURRENT_PLAYING_TIME, new DecimalType(currentTime++));
-                }
+        Runnable runnable = () -> {
+            if (playing) {
+                updateChannel(mac, CHANNEL_CURRENT_PLAYING_TIME, new DecimalType(currentTime++));
             }
         };
 
