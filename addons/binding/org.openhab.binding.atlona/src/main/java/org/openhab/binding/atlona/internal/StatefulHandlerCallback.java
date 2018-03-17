@@ -22,20 +22,19 @@ import org.eclipse.smarthome.core.types.State;
  * Defines an implementation of {@link AtlonaHandlerCallback} that will remember the last state
  * for an channelId and suppress the callback if the state hasn't changed
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 public class StatefulHandlerCallback implements AtlonaHandlerCallback {
 
     /** The wrapped callback */
-    private final AtlonaHandlerCallback _wrappedCallback;
+    private final AtlonaHandlerCallback wrappedCallback;
 
     /** The state by channel id */
-    private final Map<String, State> _state = new ConcurrentHashMap<String, State>();
+    private final Map<String, State> state = new ConcurrentHashMap<>();
 
-    private final Lock _statusLock = new ReentrantLock();
-    private ThingStatus _lastThingStatus = null;
-    private ThingStatusDetail _lastThingStatusDetail = null;
+    private final Lock statusLock = new ReentrantLock();
+    private ThingStatus lastThingStatus;
+    private ThingStatusDetail lastThingStatusDetail;
 
     /**
      * Create the callback from the other {@link AtlonaHandlerCallback}
@@ -48,11 +47,11 @@ public class StatefulHandlerCallback implements AtlonaHandlerCallback {
             throw new IllegalArgumentException("wrappedCallback cannot be null");
         }
 
-        _wrappedCallback = wrappedCallback;
+        this.wrappedCallback = wrappedCallback;
     }
 
     /**
-     * Overrides the status changed to simply call the {@link #_wrappedCallback}
+     * Overrides the status changed to simply call the {@link #wrappedCallback}
      *
      * @param status the new status
      * @param detail the new detail
@@ -60,26 +59,26 @@ public class StatefulHandlerCallback implements AtlonaHandlerCallback {
      */
     @Override
     public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
-        _statusLock.lock();
+        statusLock.lock();
         try {
             // Simply return we match the last status change (prevents loops if changing to the same status)
-            if (status == _lastThingStatus && detail == _lastThingStatusDetail) {
+            if (status == lastThingStatus && detail == lastThingStatusDetail) {
                 return;
             }
 
-            _lastThingStatus = status;
-            _lastThingStatusDetail = detail;
+            lastThingStatus = status;
+            lastThingStatusDetail = detail;
         } finally {
-            _statusLock.unlock();
+            statusLock.unlock();
         }
         // If we got this far - call the underlying one
-        _wrappedCallback.statusChanged(status, detail, msg);
+        wrappedCallback.statusChanged(status, detail, msg);
 
     }
 
     /**
      * Overrides the state changed to determine if the state is new or changed and then
-     * to call the {@link #_wrappedCallback} if it has
+     * to call the {@link #wrappedCallback} if it has
      *
      * @param channelId the channel id that changed
      * @param state the new state
@@ -90,7 +89,7 @@ public class StatefulHandlerCallback implements AtlonaHandlerCallback {
             return;
         }
 
-        final State oldState = _state.get(channelId);
+        final State oldState = this.state.get(channelId);
 
         // If both null OR the same value (enums), nothing changed
         if (oldState == state) {
@@ -103,8 +102,8 @@ public class StatefulHandlerCallback implements AtlonaHandlerCallback {
         }
 
         // Something changed - save the new state and call the underlying wrapped
-        _state.put(channelId, state);
-        _wrappedCallback.stateChanged(channelId, state);
+        this.state.put(channelId, state);
+        wrappedCallback.stateChanged(channelId, state);
 
     }
 
@@ -118,18 +117,18 @@ public class StatefulHandlerCallback implements AtlonaHandlerCallback {
         if (StringUtils.isEmpty(channelId)) {
             return;
         }
-        _state.remove(channelId);
+        state.remove(channelId);
     }
 
     /**
-     * Overrides the set property to simply call the {@link #_wrappedCallback}
+     * Overrides the set property to simply call the {@link #wrappedCallback}
      *
      * @param propertyName a non-null, non-empty property name
      * @param propertyValue a non-null, possibly empty property value
      */
     @Override
     public void setProperty(String propertyName, String propertyValue) {
-        _wrappedCallback.setProperty(propertyName, propertyValue);
+        wrappedCallback.setProperty(propertyName, propertyValue);
 
     }
 
@@ -141,6 +140,6 @@ public class StatefulHandlerCallback implements AtlonaHandlerCallback {
      */
     public State getState(String propertyName) {
         // TODO Auto-generated method stub
-        return _state.get(propertyName);
+        return state.get(propertyName);
     }
 }
