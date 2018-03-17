@@ -87,31 +87,27 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
      */
     private void startAutomaticRefresh(FroniusBridgeConfiguration config) {
         if (refreshJob == null || refreshJob.isCancelled()) {
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    boolean online = false;
-                    try {
-                        InetAddress inet;
-                        inet = InetAddress.getByName(config.hostname);
-                        if (inet.isReachable(5000)) {
-                            online = true;
-                        }
-                    } catch (IOException e) {
-                        logger.debug("Connection Error: {}", e.getMessage());
-                        return;
+            Runnable runnable = () -> {
+                boolean online = false;
+                try {
+                    InetAddress inet;
+                    inet = InetAddress.getByName(config.hostname);
+                    if (inet.isReachable(5000)) {
+                        online = true;
                     }
+                } catch (IOException e) {
+                    logger.debug("Connection Error: {}", e.getMessage());
+                    return;
+                }
 
-                    if (!online) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                "hostname or ip is not reachable");
-                    } else {
-                        updateStatus(ThingStatus.ONLINE);
-                        for (FroniusBaseThingHandler service : services) {
-                            service.refresh(config);
-                        }
+                if (!online) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                            "hostname or ip is not reachable");
+                } else {
+                    updateStatus(ThingStatus.ONLINE);
+                    for (FroniusBaseThingHandler service : services) {
+                        service.refresh(config);
                     }
-
                 }
             };
 

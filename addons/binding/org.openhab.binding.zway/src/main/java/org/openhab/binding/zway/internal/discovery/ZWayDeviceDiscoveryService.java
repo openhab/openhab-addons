@@ -211,8 +211,8 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
     protected void startBackgroundDiscovery() {
         if (mZWayDeviceScanningJob == null || mZWayDeviceScanningJob.isCancelled()) {
             logger.debug("Starting background scanning job");
-            mZWayDeviceScanningJob = AbstractDiscoveryService.scheduler.scheduleWithFixedDelay(
-                    mZWayDeviceScanningRunnable, INITIAL_DELAY, SCAN_INTERVAL, TimeUnit.SECONDS);
+            mZWayDeviceScanningJob = scheduler.scheduleWithFixedDelay(mZWayDeviceScanningRunnable, INITIAL_DELAY,
+                    SCAN_INTERVAL, TimeUnit.SECONDS);
         } else {
             logger.debug("Scanning job is allready active");
         }

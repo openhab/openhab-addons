@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.opensprinkler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Chris Graham - Initial contribution
  */
+@NonNullByDefault
 public class OpenSprinklerBindingConstants {
     public static final String BINDING_ID = "opensprinkler";
 

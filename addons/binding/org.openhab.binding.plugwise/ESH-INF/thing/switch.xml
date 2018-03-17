@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="plugwise" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="switch">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="stick" />
-        </supported-bridge-type-refs>
-        <label>Plugwise Switch</label>
-        <description>A wireless wall switch</description>
-        <channels>
-            <channel id="lastseen" typeId="lastseen" />
-            <channel id="leftbuttonstate" typeId="leftbuttonstate" />
-            <channel id="rightbuttonstate" typeId="rightbuttonstate" />
-        </channels>
-        <representation-property>macAddress</representation-property>
-        <config-description-ref uri="thing-type:plugwise:switch" />
-    </thing-type>
+	<thing-type id="switch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="stick" />
+		</supported-bridge-type-refs>
+		<label>Plugwise Switch</label>
+		<description>A wireless wall switch</description>
+		<channels>
+			<channel id="lastseen" typeId="lastseen" />
+			<channel id="leftbuttonstate" typeId="leftbuttonstate" />
+			<channel id="rightbuttonstate" typeId="rightbuttonstate" />
+		</channels>
+		<representation-property>macAddress</representation-property>
+		<config-description-ref uri="thing-type:plugwise:switch" />
+	</thing-type>
 
 </thing:thing-descriptions>

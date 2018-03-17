@@ -54,33 +54,50 @@ Bridge squeezebox:squeezeboxserver:myServer [ ipAddress="192.168.1.10", webport=
 }
 ```
 
-## Channels
+## Server Channels
+
+The Squeezebox server supports the following channel:
+
+| Channel Type ID         | Item Type | Description                                                                            |
+|-------------------------|-----------|----------------------------------------------------------------------------------------|
+| favoritesList           | String    | Comma-separated list of favorite IDs & names, updated whenever list changes on server  |
+
+## Player Channels
 
 All devices support some of the following channels:
 
-| Channel Type ID         | Item Type | Description                                                                            |                      |   |
-|-------------------------|-----------|----------------------------------------------------------------------------------------|----------------------|---|
-| power                   | Switch    | Power on/off your device                                                               |                      |   |
-| mute                    | Switch    | Mute/unmute your device                                                                |                      |   |
-| volume                  | Dimmer    | Volume of your device                                                                  |                      |   |
-| stop                    | Switch    | Stop the current title                                                                 |                      |   |
-| control                 | Player    | Control the Zone Player, e.g.  play/pause/next/previous/ffward/rewind                  |                      |   |
-| stream                  | String    | Play the given HTTP or file stream (file:// or http://)                                |                      |   |
-| sync                    | String    | Add another player to your device for synchronized playback (other player mac address) |                      |   |
-| playListIndex           | Number    | Playlist Index                                                                         |                      |   |
-| currentPlayingTime      |           | Number                                                                                 | Current Playing Time |   |
-| currentPlaylistShuffle  | Number    | Current playlist shuffle mode (0 No Shuffle, 1 Shuffle Songs, 2 Shuffle Albums)        |                      |   |
-| currentPlaylistRepeat   | Number    | Current playlist repeat Mode (0 No Repeat, 1 Repeat Song, 2 Repeat Playlist)           |                      |   |
-| title                   | String    | Title of the current song                                                              |                      |   |
-| remotetitle             | String    | Remote Title (Radio) of the current song                                               |                      |   |
-| album                   | String    | Album name of the current song                                                         |                      |   |
-| artist                  | String    | Artist name of the current song                                                        |                      |   |
-| year                    | String    | Release year of the current song                                                       |                      |   |
-| genre                   | String    | Genre name of the current song                                                         |                      |   |
-| coverartdata            | Image     | Image data of cover art of the current song                                            |                      |   |
-| ircode                  | String    | Received IR code                                                                       |                      |   |
-| numberPlaylistTracks    | Number    | Number of playlist tracks                                                              |                      |   |
-| notificationSoundVolume | Dimmer    | Volume for playing notifications                                                       |                      |   |
+| Channel Type ID         | Item Type | Description                                                                            |
+|-------------------------|-----------|----------------------------------------------------------------------------------------|
+| power                   | Switch    | Power on/off your device                                                               |
+| mute                    | Switch    | Mute/unmute your device                                                                |
+| volume                  | Dimmer    | Volume of your device                                                                  |
+| stop                    | Switch    | Stop the current title                                                                 |
+| control                 | Player    | Control the Zone Player, e.g.  play/pause/next/previous/ffward/rewind                  |
+| stream                  | String    | Play the given HTTP or file stream (file:// or http://)                                |
+| sync                    | String    | Add another player to your device for synchronized playback (other player mac address) |
+| playListIndex           | Number    | Playlist Index                                                                         |
+| currentPlayingTime      | Number    | Current Playing Time                                                                   |
+| currentPlaylistShuffle  | Number    | Current playlist shuffle mode (0 No Shuffle, 1 Shuffle Songs, 2 Shuffle Albums)        |
+| currentPlaylistRepeat   | Number    | Current playlist repeat Mode (0 No Repeat, 1 Repeat Song, 2 Repeat Playlist)           |
+| title                   | String    | Title of the current song                                                              |
+| remotetitle             | String    | Remote Title (Radio) of the current song                                               |
+| album                   | String    | Album name of the current song                                                         |
+| artist                  | String    | Artist name of the current song                                                        |
+| year                    | String    | Release year of the current song                                                       |
+| genre                   | String    | Genre name of the current song                                                         |
+| coverartdata            | Image     | Image data of cover art of the current song                                            |
+| ircode                  | String    | Received IR code                                                                       |
+| numberPlaylistTracks    | Number    | Number of playlist tracks                                                              |
+| notificationSoundVolume | Dimmer    | Volume for playing notifications                                                       |
+| playFavorite            | String    | ID of Favorite to play (channel's state options contains available favorites)          |
+
+## Playing Favorites
+
+Using the **playFavorite** channel, you can play a favorite from the *Favorites* list on the Logitech Media Server (LMS).
+The favorites from the LMS will be populated into the state options of the **playFavorite** channel.
+The Selection widget in HABpanel can be used to present the favorites as a choice list.
+Selecting from that choice list will play the favorite on the SqueezeBox player.
+Currently, only favorites from the root level of the LMS favorites list are exposed on the **playFavorite** channel.
 
 ## Notifications
 
@@ -137,3 +154,5 @@ end
 -   There are some versions of squeezelite that will not correctly play very short duration mp3 files.  Versions of squeezelite after v1.7 and before v1.8.6 will not play very short duration mp3 files reliably.  For example, if you're using piCorePlayer (which uses squeezelite), please check your version of squeezelite if you're having trouble playing notifications. This bug has been fixed in squeezelite version 1.8.6-985, which is included in piCorePlayer version 3.20.
 
 -   When streaming from a remote service (such as Pandora or Spotify), after the notification plays, the Squeezebox Server starts playing a new track, instead of picking up from where it left off on the currently playing track.
+
+-   There have been reports that notifications do not play reliably, or do not play at all, when using Logitech Media Server (LMS) version 7.7.5. Therefore, it is recommended that the LMS be on a more current version than 7.7.5.

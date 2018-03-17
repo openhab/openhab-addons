@@ -11,6 +11,7 @@ package org.openhab.binding.kodi;
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -22,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Andreas Reinhardt & Christoph Weitkamp - Added channels for thumbnail and fanart
  *
  */
+@NonNullByDefault
 public class KodiBindingConstants {
 
     public static final String BINDING_ID = "kodi";
@@ -70,4 +72,6 @@ public class KodiBindingConstants {
     public static final String MANUFACTURER = "XBMC Foundation";
     public static final String UPNP_DEVICE_TYPE = "MediaRenderer";
 
+    public static final String PVR_TV = "tv";
+    public static final String PVR_RADIO = "radio";
 }

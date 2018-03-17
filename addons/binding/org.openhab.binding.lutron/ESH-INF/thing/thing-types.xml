@@ -1,651 +1,652 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="lutron"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <bridge-type id="ipbridge">
-        <label>Lutron IP Access Point</label>
-        <description>Ethernet access point to Lutron lighting control system</description>
+	<bridge-type id="ipbridge">
+		<label>Lutron IP Access Point</label>
+		<description>Ethernet access point to Lutron lighting control system</description>
 
-        <config-description>
-            <parameter name="ipAddress" type="text" required="true">
-                <context>network-address</context>
-                <label>IP or Host Name</label>
-                <description>The IP or host name of the Lutron integration access point</description>
-            </parameter>
-            <parameter name="user" type="text">
-                <label>User Name</label>
-                <description>The user name to log in to the integration access point</description>
-            </parameter>
-            <parameter name="password" type="text">
-                <context>password</context>
-                <label>Password</label>
-                <description>The user password to log in to the integration access point</description>
-            </parameter>
-        </config-description>
-    </bridge-type>
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP or Host Name</label>
+				<description>The IP or host name of the Lutron integration access point</description>
+			</parameter>
+			<parameter name="user" type="text">
+				<label>User Name</label>
+				<description>The user name to log in to the integration access point</description>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password</label>
+				<description>The user password to log in to the integration access point</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
 
-    <thing-type id="dimmer">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="ipbridge"/>
-        </supported-bridge-type-refs>
+	<thing-type id="dimmer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
 
-        <label>Maestro Dimmer</label>
-        <description>Controls dimmable loads</description>
+		<label>Maestro Dimmer</label>
+		<description>Controls dimmable loads</description>
 
-        <channels>
-            <channel id="lightlevel" typeId="lightDimmer"/>
-        </channels>
+		<channels>
+			<channel id="lightlevel" typeId="lightDimmer"/>
+		</channels>
 
-        <config-description>
-            <parameter name="integrationId" type="integer" required="true">
-                <label>Integration ID</label>
-                <description>Address of dimmer in the Lutron lighting system</description>
-            </parameter>
-            <parameter name="fadeInTime" type="decimal">
-                <label>Fade In Time</label>
-                <description>Fade time in seconds when turning on the light</description>
-            </parameter>
-            <parameter name="fadeOutTime" type="decimal">
-                <label>Fade Out Time</label>
-                <description>Fade time in seconds when turning off the light</description>
-            </parameter>
-        </config-description>
-    </thing-type>
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of dimmer in the Lutron lighting system</description>
+			</parameter>
+			<parameter name="fadeInTime" type="decimal">
+				<label>Fade In Time</label>
+				<description>Fade time in seconds when turning on the light</description>
+			</parameter>
+			<parameter name="fadeOutTime" type="decimal">
+				<label>Fade Out Time</label>
+				<description>Fade time in seconds when turning off the light</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-    <thing-type id="switch">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="ipbridge"/>
-        </supported-bridge-type-refs>
+	<thing-type id="switch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
 
-        <label>Maestro Switch</label>
-        <description>On/off switch</description>
+		<label>Maestro Switch</label>
+		<description>On/off switch</description>
 
-        <channels>
-            <channel id="switchstatus" typeId="switchState"/>
-        </channels>
+		<channels>
+			<channel id="switchstatus" typeId="switchState"/>
+		</channels>
 
-        <config-description>
-            <parameter name="integrationId" type="integer" required="true">
-                <label>Integration ID</label>
-                <description>Address of switch in the Lutron lighting system</description>
-            </parameter>
-        </config-description>
-    </thing-type>
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of switch in the Lutron lighting system</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-    <thing-type id="occupancysensor">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="ipbridge"/>
-        </supported-bridge-type-refs>
+	<thing-type id="occupancysensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
 
-        <label>Radio Powr Savr Sensor</label>
-        <description>Motion sensor to detect occupancy status</description>
+		<label>Radio Powr Savr Sensor</label>
+		<description>Motion sensor to detect occupancy status</description>
 
-        <channels>
-            <channel id="occupancystatus" typeId="occupiedState"/>
-        </channels>
+		<channels>
+			<channel id="occupancystatus" typeId="occupiedState"/>
+		</channels>
 
-        <config-description>
-            <parameter name="integrationId" type="integer" required="true">
-                <label>Integration ID</label>
-                <description>Address of sensor in the Lutron lighting system</description>
-            </parameter>
-        </config-description>
-    </thing-type>
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of sensor in the Lutron lighting system</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-    <thing-type id="keypad">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="ipbridge"/>
-        </supported-bridge-type-refs>
+	<thing-type id="keypad">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
 
-        <label>seeTouch Keypad</label>
-        <description>Button keypad</description>
+		<label>seeTouch Keypad</label>
+		<description>Button keypad</description>
 
-        <channels>
-            <channel id="button1" typeId="button">
-                <label>Button 1</label>
-            </channel>
-            <channel id="button2" typeId="button">
-                <label>Button 2</label>
-            </channel>
-            <channel id="button3" typeId="button">
-                <label>Button 3</label>
-            </channel>
-            <channel id="button4" typeId="button">
-                <label>Button 4</label>
-            </channel>
-            <channel id="button5" typeId="button">
-                <label>Button 5</label>
-            </channel>
-            <channel id="button6" typeId="button">
-                <label>Button 6</label>
-            </channel>
-            <channel id="button7" typeId="button">
-                <label>Button 7</label>
-            </channel>
-            <channel id="buttontopraise" typeId="button">
-                <label>Button Top Raise</label>
-            </channel>
-            <channel id="buttontoplower" typeId="button">
-                <label>Button Top Lower</label>
-            </channel>
-            <channel id="buttonbottomraise" typeId="button">
-                <label>Button Bottom Raise</label>
-            </channel>
-            <channel id="buttonbottomlower" typeId="button">
-                <label>Button Bottom Lower</label>
-            </channel>
-            <channel id="led1" typeId="ledIndicator">
-                <label>LED 1</label>
-            </channel>
-            <channel id="led2" typeId="ledIndicator">
-                <label>LED 2</label>
-            </channel>
-            <channel id="led3" typeId="ledIndicator">
-                <label>LED 3</label>
-            </channel>
-            <channel id="led4" typeId="ledIndicator">
-                <label>LED 4</label>
-            </channel>
-            <channel id="led5" typeId="ledIndicator">
-                <label>LED 5</label>
-            </channel>
-            <channel id="led6" typeId="ledIndicator">
-                <label>LED 6</label>
-            </channel>
-            <channel id="led7" typeId="ledIndicator">
-                <label>LED 7</label>
-            </channel>
-        </channels>
+		<channels>
+			<channel id="button1" typeId="button">
+				<label>Button 1</label>
+			</channel>
+			<channel id="button2" typeId="button">
+				<label>Button 2</label>
+			</channel>
+			<channel id="button3" typeId="button">
+				<label>Button 3</label>
+			</channel>
+			<channel id="button4" typeId="button">
+				<label>Button 4</label>
+			</channel>
+			<channel id="button5" typeId="button">
+				<label>Button 5</label>
+			</channel>
+			<channel id="button6" typeId="button">
+				<label>Button 6</label>
+			</channel>
+			<channel id="button7" typeId="button">
+				<label>Button 7</label>
+			</channel>
+			<channel id="buttontopraise" typeId="button">
+				<label>Button Top Raise</label>
+			</channel>
+			<channel id="buttontoplower" typeId="button">
+				<label>Button Top Lower</label>
+			</channel>
+			<channel id="buttonbottomraise" typeId="button">
+				<label>Button Bottom Raise</label>
+			</channel>
+			<channel id="buttonbottomlower" typeId="button">
+				<label>Button Bottom Lower</label>
+			</channel>
+			<channel id="led1" typeId="ledIndicator">
+				<label>LED 1</label>
+			</channel>
+			<channel id="led2" typeId="ledIndicator">
+				<label>LED 2</label>
+			</channel>
+			<channel id="led3" typeId="ledIndicator">
+				<label>LED 3</label>
+			</channel>
+			<channel id="led4" typeId="ledIndicator">
+				<label>LED 4</label>
+			</channel>
+			<channel id="led5" typeId="ledIndicator">
+				<label>LED 5</label>
+			</channel>
+			<channel id="led6" typeId="ledIndicator">
+				<label>LED 6</label>
+			</channel>
+			<channel id="led7" typeId="ledIndicator">
+				<label>LED 7</label>
+			</channel>
+		</channels>
 
-        <config-description>
-            <parameter name="integrationId" type="integer" required="true">
-                <label>Integration ID</label>
-                <description>Address of keypad in the Lutron lighting system</description>
-            </parameter>
-        </config-description>
-    </thing-type>
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of keypad in the Lutron lighting system</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-    <bridge-type id="prgbridge">
-        <label>Lutron GRX-PRG or GRX-CI-PRG Bridge</label>
-        <description>Ethernet access point to Lutron Grafik Eye 3x/4x Systems</description>
+	<bridge-type id="prgbridge">
+		<label>Lutron GRX-PRG or GRX-CI-PRG Bridge</label>
+		<description>Ethernet access point to Lutron Grafik Eye 3x/4x Systems</description>
 
-        <channels>
-            <channel id="buttonpress" typeId="buttonpress"/>
-            <channel id="zonelowerstop" typeId="button">
-                <label>All zone lower stop</label>
-                <description>Stopping all ramping down on all Control Units</description>
-            </channel>
-            <channel id="zoneraisestop" typeId="button">
-                <label>All zone raise stop</label>
-                <description>Stopping all ramping up on all Control Units</description>
-            </channel>
-            <channel id="timeclock" typeId="timeclock"/>
-            <channel id="schedule" typeId="schedule"/>
-            <channel id="sunrise" typeId="sunrisesunset">
-                <label>Sunrise</label>
-                <description>Today's sunrise</description>
-            </channel>
-            <channel id="sunset" typeId="sunrisesunset">
-                <label>Sunset</label>
-                <description>Today's sunset</description>
-            </channel>
-            <channel id="ssstart" typeId="superschedulebutton">
-                <label>Super Schedule Start</label>
-                <description>Start the super schedule</description>
-            </channel>
-            <channel id="sspause" typeId="superschedulebutton">
-                <label>Super Schedule Pause</label>
-                <description>Pause the super schedule</description>
-            </channel>
-            <channel id="ssresume" typeId="superschedulebutton">
-                <label>Super Schedule Resume</label>
-                <description>Resume the super schedule</description>
-            </channel>
-            <channel id="ssstatus" typeId="superschedulestatus"/>
-            <channel id="ssnextstep" typeId="superscheduleinfo">
-                <label>Super Schedule Next Step</label>
-                <description>The next step number in the Super Schedule</description>
-            </channel>
-            <channel id="ssnextminute" typeId="superscheduleinfo">
-                <label>Super Schedule Next Minute</label>
-                <description>Minutes until the next step in the super schedule</description>
-            </channel>
-            <channel id="ssnextsecond" typeId="superscheduleinfo">
-                <label>Super Schedule Next Seconds</label>
-                <description>Seconds until the next step in the super schedule</description>
-            </channel>
-        </channels>
+		<channels>
+			<channel id="buttonpress" typeId="buttonpress"/>
+			<channel id="zonelowerstop" typeId="button">
+				<label>All zone lower stop</label>
+				<description>Stopping all ramping down on all Control Units</description>
+			</channel>
+			<channel id="zoneraisestop" typeId="button">
+				<label>All zone raise stop</label>
+				<description>Stopping all ramping up on all Control Units</description>
+			</channel>
+			<channel id="timeclock" typeId="timeclock"/>
+			<channel id="schedule" typeId="schedule"/>
+			<channel id="sunrise" typeId="sunrisesunset">
+				<label>Sunrise</label>
+				<description>Today's sunrise</description>
+			</channel>
+			<channel id="sunset" typeId="sunrisesunset">
+				<label>Sunset</label>
+				<description>Today's sunset</description>
+			</channel>
+			<channel id="ssstart" typeId="superschedulebutton">
+				<label>Super Schedule Start</label>
+				<description>Start the super schedule</description>
+			</channel>
+			<channel id="sspause" typeId="superschedulebutton">
+				<label>Super Schedule Pause</label>
+				<description>Pause the super schedule</description>
+			</channel>
+			<channel id="ssresume" typeId="superschedulebutton">
+				<label>Super Schedule Resume</label>
+				<description>Resume the super schedule</description>
+			</channel>
+			<channel id="ssstatus" typeId="superschedulestatus"/>
+			<channel id="ssnextstep" typeId="superscheduleinfo">
+				<label>Super Schedule Next Step</label>
+				<description>The next step number in the Super Schedule</description>
+			</channel>
+			<channel id="ssnextminute" typeId="superscheduleinfo">
+				<label>Super Schedule Next Minute</label>
+				<description>Minutes until the next step in the super schedule</description>
+			</channel>
+			<channel id="ssnextsecond" typeId="superscheduleinfo">
+				<label>Super Schedule Next Seconds</label>
+				<description>Seconds until the next step in the super schedule</description>
+			</channel>
+		</channels>
 
-        <config-description>
-            <parameter name="ipAddress" type="text" required="true">
-                <context>network-address</context>
-                <label>IP or Host Name</label>
-                <description>The IP or host name of the PRG access point</description>
-            </parameter>
-            <parameter name="userName" type="text">
-                <label>User Name</label>
-                <description>The user name to log in to the PRG access point (typically "nwk" for connection 1 or "nwk2" for connection 2)</description>
-                <default>nwk</default>
-            </parameter>
-            <parameter name="retryPolling" type="integer">
-                <label>Polling Interval to try to reconnect</label>
-                <description>Interval (in seconds) to try to (re)connect to the matrix</description>
-                <default>30</default>
-            </parameter>            
-        </config-description>
-    </bridge-type>
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP or Host Name</label>
+				<description>The IP or host name of the PRG access point</description>
+			</parameter>
+			<parameter name="userName" type="text">
+				<label>User Name</label>
+				<description>The user name to log in to the PRG access point (typically "nwk" for connection 1 or "nwk2" for connection 2)</description>
+				<default>nwk</default>
+			</parameter>
+			<parameter name="retryPolling" type="integer">
+				<label>Polling Interval to try to reconnect</label>
+				<description>Interval (in seconds) to try to (re)connect to the matrix</description>
+				<default>30</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
 
-    <thing-type id="grafikeye">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="prgbridge"/>
-        </supported-bridge-type-refs>
+	<thing-type id="grafikeye">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="prgbridge"/>
+		</supported-bridge-type-refs>
 
-        <label>Grafik Eye</label>
-        <description>Controls a Grafik Eye</description>
+		<label>Grafik Eye</label>
+		<description>Controls a Grafik Eye</description>
 
-        <channels>
-            <channel id="scene" typeId="scene"/>
-            <channel id="scenelock" typeId="scenelock"/>
-            <channel id="sceneseq" typeId="sceneseq"/>
-            <channel id="zonelock" typeId="zonelock"/>
-            <channel id="zonelower1" typeId="zonerampdown">
-                <label>Ramps Zone 1 Down</label>
-                <description>Starts the ramping of Zone 1 down (in zonefade seconds)</description>
-            </channel>
-            <channel id="zonelower2" typeId="zonerampdown">
-                <label>Ramps Zone 2 Down</label>
-                <description>Starts the ramping of Zone 2 down (in zonefade seconds)</description>
-            </channel>
-            <channel id="zonelower3" typeId="zonerampdown">
-                <label>Ramps Zone 3 Down</label>
-                <description>Starts the ramping of Zone 3 down (in zonefade seconds)</description>
-            </channel>
-            <channel id="zonelower4" typeId="zonerampdown">
-                <label>Ramps Zone 4 Down</label>
-                <description>Starts the ramping of Zone 4 down (in zonefade seconds)</description>
-            </channel>
-            <channel id="zonelower5" typeId="zonerampdown">
-                <label>Ramps Zone 5 Down</label>
-                <description>Starts the ramping of Zone 5 down (in zonefade seconds)</description>
-            </channel>
-            <channel id="zonelower6" typeId="zonerampdown">
-                <label>Ramps Zone 6 Down</label>
-                <description>Starts the ramping of Zone 6 down (in zonefade seconds)</description>
-            </channel>
-            <channel id="zonelower7" typeId="zonerampdown">
-                <label>Ramps Zone 7 Down</label>
-                <description>Starts the ramping of Zone 7 down (in zonefade seconds)</description>
-            </channel>
-            <channel id="zonelower8" typeId="zonerampdown">
-                <label>Ramps Zone 8 Down</label>
-                <description>Starts the ramping of Zone 8 down (in zonefade seconds)</description>
-            </channel>
-            <channel id="zoneraise1" typeId="zonerampup">
-                <label>Ramps Zone 1 Up</label>
-                <description>Starts the ramping of Zone 1 up (in zonefade seconds)</description>
-            </channel>
-            <channel id="zoneraise2" typeId="zonerampup">
-                <label>Ramps Zone 2 Up</label>
-                <description>Starts the ramping of Zone 2 up (in zonefade seconds)</description>
-            </channel>
-            <channel id="zoneraise3" typeId="zonerampup">
-                <label>Ramps Zone 3 Up</label>
-                <description>Starts the ramping of Zone 3 up (in zonefade seconds)</description>
-            </channel>
-            <channel id="zoneraise4" typeId="zonerampup">
-                <label>Ramps Zone 4 Up</label>
-                <description>Starts the ramping of Zone 4 up (in zonefade seconds)</description>
-            </channel>
-            <channel id="zoneraise5" typeId="zonerampup">
-                <label>Ramps Zone 5 Up</label>
-                <description>Starts the ramping of Zone 5 up (in zonefade seconds)</description>
-            </channel>
-            <channel id="zoneraise6" typeId="zonerampup">
-                <label>Ramps Zone 6 Up</label>
-                <description>Starts the ramping of Zone 6 up (in zonefade seconds)</description>
-            </channel>
-            <channel id="zoneraise7" typeId="zonerampup">
-                <label>Ramps Zone 7 Up</label>
-                <description>Starts the ramping of Zone 7 up (in zonefade seconds)</description>
-            </channel>
-            <channel id="zoneraise8" typeId="zonerampup">
-                <label>Ramps Zone 8 Up</label>
-                <description>Starts the ramping of Zone 8 up (in zonefade seconds)</description>
-            </channel>
-            <channel id="zonefade" typeId="zonefade"/>
-            <channel id="zoneintensity1" typeId="zoneintensity">
-                <label>Zone 1 Intensity</label>
-                <description>The intensity level of zone 1</description>
-            </channel>
-            <channel id="zoneintensity2" typeId="zoneintensity">
-                <label>Zone 2 Intensity</label>
-                <description>The intensity level of zone 2</description>
-            </channel>
-            <channel id="zoneintensity3" typeId="zoneintensity">
-                <label>Zone 3 Intensity</label>
-                <description>The intensity level of zone 3</description>
-            </channel>
-            <channel id="zoneintensity4" typeId="zoneintensity">
-                <label>Zone 4 Intensity</label>
-                <description>The intensity level of zone 4</description>
-            </channel>
-            <channel id="zoneintensity5" typeId="zoneintensity">
-                <label>Zone 5 Intensity</label>
-                <description>The intensity level of zone 5</description>
-            </channel>
-            <channel id="zoneintensity6" typeId="zoneintensity">
-                <label>Zone 6 Intensity</label>
-                <description>The intensity level of zone 6</description>
-            </channel>
-            <channel id="zoneintensity7" typeId="zoneintensity">
-                <label>Zone 7 Intensity</label>
-                <description>The intensity level of zone 7</description>
-            </channel>
-            <channel id="zoneintensity8" typeId="zoneintensity">
-                <label>Zone 8 Intensity</label>
-                <description>The intensity level of zone 8</description>
-            </channel>
-            <channel id="zoneshade1" typeId="zoneshade">
-                <label>Zone 1 Shade</label>
-                <description>The shade status of zone 1</description>
-            </channel>
-            <channel id="zoneshade2" typeId="zoneshade">
-                <label>Zone 2 Shade</label>
-                <description>The shade status of zone 2</description>
-            </channel>
-            <channel id="zoneshade3" typeId="zoneshade">
-                <label>Zone 3 Shade</label>
-                <description>The shade status of zone 3</description>
-            </channel>
-            <channel id="zoneshade4" typeId="zoneshade">
-                <label>Zone 4 Shade</label>
-                <description>The shade status of zone 4</description>
-            </channel>
-            <channel id="zoneshade5" typeId="zoneshade">
-                <label>Zone 5 Shade</label>
-                <description>The shade status of zone 5</description>
-            </channel>
-            <channel id="zoneshade6" typeId="zoneshade">
-                <label>Zone 6 Shade</label>
-                <description>The shade status of zone 6</description>
-            </channel>
-            <channel id="zoneshade7" typeId="zoneshade">
-                <label>Zone 7 Shade</label>
-                <description>The shade status of zone 7</description>
-            </channel>
-            <channel id="zoneshade8" typeId="zoneshade">
-                <label>Zone 8 Shade</label>
-                <description>The shade status of zone 8</description>
-            </channel>
-        </channels>
+		<channels>
+			<channel id="scene" typeId="scene"/>
+			<channel id="scenelock" typeId="scenelock"/>
+			<channel id="sceneseq" typeId="sceneseq"/>
+			<channel id="zonelock" typeId="zonelock"/>
+			<channel id="zonelower1" typeId="zonerampdown">
+				<label>Ramps Zone 1 Down</label>
+				<description>Starts the ramping of Zone 1 down (in zonefade seconds)</description>
+			</channel>
+			<channel id="zonelower2" typeId="zonerampdown">
+				<label>Ramps Zone 2 Down</label>
+				<description>Starts the ramping of Zone 2 down (in zonefade seconds)</description>
+			</channel>
+			<channel id="zonelower3" typeId="zonerampdown">
+				<label>Ramps Zone 3 Down</label>
+				<description>Starts the ramping of Zone 3 down (in zonefade seconds)</description>
+			</channel>
+			<channel id="zonelower4" typeId="zonerampdown">
+				<label>Ramps Zone 4 Down</label>
+				<description>Starts the ramping of Zone 4 down (in zonefade seconds)</description>
+			</channel>
+			<channel id="zonelower5" typeId="zonerampdown">
+				<label>Ramps Zone 5 Down</label>
+				<description>Starts the ramping of Zone 5 down (in zonefade seconds)</description>
+			</channel>
+			<channel id="zonelower6" typeId="zonerampdown">
+				<label>Ramps Zone 6 Down</label>
+				<description>Starts the ramping of Zone 6 down (in zonefade seconds)</description>
+			</channel>
+			<channel id="zonelower7" typeId="zonerampdown">
+				<label>Ramps Zone 7 Down</label>
+				<description>Starts the ramping of Zone 7 down (in zonefade seconds)</description>
+			</channel>
+			<channel id="zonelower8" typeId="zonerampdown">
+				<label>Ramps Zone 8 Down</label>
+				<description>Starts the ramping of Zone 8 down (in zonefade seconds)</description>
+			</channel>
+			<channel id="zoneraise1" typeId="zonerampup">
+				<label>Ramps Zone 1 Up</label>
+				<description>Starts the ramping of Zone 1 up (in zonefade seconds)</description>
+			</channel>
+			<channel id="zoneraise2" typeId="zonerampup">
+				<label>Ramps Zone 2 Up</label>
+				<description>Starts the ramping of Zone 2 up (in zonefade seconds)</description>
+			</channel>
+			<channel id="zoneraise3" typeId="zonerampup">
+				<label>Ramps Zone 3 Up</label>
+				<description>Starts the ramping of Zone 3 up (in zonefade seconds)</description>
+			</channel>
+			<channel id="zoneraise4" typeId="zonerampup">
+				<label>Ramps Zone 4 Up</label>
+				<description>Starts the ramping of Zone 4 up (in zonefade seconds)</description>
+			</channel>
+			<channel id="zoneraise5" typeId="zonerampup">
+				<label>Ramps Zone 5 Up</label>
+				<description>Starts the ramping of Zone 5 up (in zonefade seconds)</description>
+			</channel>
+			<channel id="zoneraise6" typeId="zonerampup">
+				<label>Ramps Zone 6 Up</label>
+				<description>Starts the ramping of Zone 6 up (in zonefade seconds)</description>
+			</channel>
+			<channel id="zoneraise7" typeId="zonerampup">
+				<label>Ramps Zone 7 Up</label>
+				<description>Starts the ramping of Zone 7 up (in zonefade seconds)</description>
+			</channel>
+			<channel id="zoneraise8" typeId="zonerampup">
+				<label>Ramps Zone 8 Up</label>
+				<description>Starts the ramping of Zone 8 up (in zonefade seconds)</description>
+			</channel>
+			<channel id="zonefade" typeId="zonefade"/>
+			<channel id="zoneintensity1" typeId="zoneintensity">
+				<label>Zone 1 Intensity</label>
+				<description>The intensity level of zone 1</description>
+			</channel>
+			<channel id="zoneintensity2" typeId="zoneintensity">
+				<label>Zone 2 Intensity</label>
+				<description>The intensity level of zone 2</description>
+			</channel>
+			<channel id="zoneintensity3" typeId="zoneintensity">
+				<label>Zone 3 Intensity</label>
+				<description>The intensity level of zone 3</description>
+			</channel>
+			<channel id="zoneintensity4" typeId="zoneintensity">
+				<label>Zone 4 Intensity</label>
+				<description>The intensity level of zone 4</description>
+			</channel>
+			<channel id="zoneintensity5" typeId="zoneintensity">
+				<label>Zone 5 Intensity</label>
+				<description>The intensity level of zone 5</description>
+			</channel>
+			<channel id="zoneintensity6" typeId="zoneintensity">
+				<label>Zone 6 Intensity</label>
+				<description>The intensity level of zone 6</description>
+			</channel>
+			<channel id="zoneintensity7" typeId="zoneintensity">
+				<label>Zone 7 Intensity</label>
+				<description>The intensity level of zone 7</description>
+			</channel>
+			<channel id="zoneintensity8" typeId="zoneintensity">
+				<label>Zone 8 Intensity</label>
+				<description>The intensity level of zone 8</description>
+			</channel>
+			<channel id="zoneshade1" typeId="zoneshade">
+				<label>Zone 1 Shade</label>
+				<description>The shade status of zone 1</description>
+			</channel>
+			<channel id="zoneshade2" typeId="zoneshade">
+				<label>Zone 2 Shade</label>
+				<description>The shade status of zone 2</description>
+			</channel>
+			<channel id="zoneshade3" typeId="zoneshade">
+				<label>Zone 3 Shade</label>
+				<description>The shade status of zone 3</description>
+			</channel>
+			<channel id="zoneshade4" typeId="zoneshade">
+				<label>Zone 4 Shade</label>
+				<description>The shade status of zone 4</description>
+			</channel>
+			<channel id="zoneshade5" typeId="zoneshade">
+				<label>Zone 5 Shade</label>
+				<description>The shade status of zone 5</description>
+			</channel>
+			<channel id="zoneshade6" typeId="zoneshade">
+				<label>Zone 6 Shade</label>
+				<description>The shade status of zone 6</description>
+			</channel>
+			<channel id="zoneshade7" typeId="zoneshade">
+				<label>Zone 7 Shade</label>
+				<description>The shade status of zone 7</description>
+			</channel>
+			<channel id="zoneshade8" typeId="zoneshade">
+				<label>Zone 8 Shade</label>
+				<description>The shade status of zone 8</description>
+			</channel>
+		</channels>
 
-        <config-description>
-            <parameter name="controlUnit" type="integer">
-                <label>Integration ID</label>
-                <description>Address of dimmer in the Lutron lighting system</description>
-                <default>1</default>
-            </parameter>
-            <parameter name="fade" type="integer">
-                <label>Default Zone Intensity Fade Time</label>
-                <description>Default fade time (in seconds) to new intensity</description>
-                <default>5</default>
-            </parameter>
-            <parameter name="shadeZones" type="text">
-                <label>Shade Zone(s)</label>
-                <description>Comma delimited list of zones that are QED shades</description>
-                <default></default>
-            </parameter>
-            <parameter name="polling" type="integer">
-                <label>Polling Interval</label>
-                <description>Interval (in seconds) to poll the actual state of the Matrix</description>
-                <default>60</default>
-            </parameter>            
-            <parameter name="shadeZones" type="text">
-                <label>Shade Zones</label>
-                <description>Comma separated list of zones that are shades</description>
-                <default></default>
-            </parameter>            
-        </config-description>
-    </thing-type>
-    
-    <bridge-type id="ra-rs232">
-        <label>Lutron RadioRA RS232</label>
-        <description>RS-232 access to Lutron RadioRA</description>
-        
-        <config-description>
-            <parameter name="portName" type="text" required="true">
-                <context>serial-port</context>
-                <label>Serial Port</label>
-                <description>The serial port to use to communicate with a Lutron RadioRA system</description>
-            </parameter>
-            <parameter name="baud" type="text" required="false">
-                <label>Baud Rate</label>
-                <description>Baud Rate (defaults to 9600)</description>
-            </parameter>
-        </config-description>
-    </bridge-type>
-    
-    <thing-type id="ra-dimmer">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="ra-rs232"/>
-        </supported-bridge-type-refs>
-        <label>RadioRA Dimmer</label>
-        <description>RadioRA Dimmer</description>
+		<config-description>
+			<parameter name="controlUnit" type="integer">
+				<label>Integration ID</label>
+				<description>Address of dimmer in the Lutron lighting system</description>
+				<default>1</default>
+			</parameter>
+			<parameter name="fade" type="integer">
+				<label>Default Zone Intensity Fade Time</label>
+				<description>Default fade time (in seconds) to new intensity</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="shadeZones" type="text">
+				<label>Shade Zone(s)</label>
+				<description>Comma delimited list of zones that are QED shades</description>
+				<default></default>
+			</parameter>
+			<parameter name="polling" type="integer">
+				<label>Polling Interval</label>
+				<description>Interval (in seconds) to poll the actual state of the Matrix</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="shadeZones" type="text">
+				<label>Shade Zones</label>
+				<description>Comma separated list of zones that are shades</description>
+				<default></default>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-        <channels>
-            <channel id="lightlevel" typeId="lightDimmer"/>
-        </channels>
-        
-        <config-description>
-            <parameter name="zoneNumber" type="integer" required="true">
-                <label>Zone Number</label>
-                <description>Assigned Zone Number within the Lutron RadioRA system.</description>
-            </parameter>
-            <parameter name="fadeOutSec" type="integer" required="false">
-                <label>Fade Out (sec)</label>
-                <description>Time in seconds dimmer should take when lowering the level</description>
-            </parameter>
-            <parameter name="fadeInSec" type="integer" required="false">
-                <label>Fade In (sec)</label>
-                <description>Time in seconds dimmer should take when increasing the level</description>
-            </parameter>
-        </config-description>
-    </thing-type>
+	<bridge-type id="ra-rs232">
+		<label>Lutron RadioRA RS232</label>
+		<description>RS-232 access to Lutron RadioRA</description>
 
-    <thing-type id="ra-switch">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="ra-rs232"/>
-        </supported-bridge-type-refs>
-        <label>RadioRA Switch</label>
-        <description>RadioRA Switch</description>
+		<config-description>
+			<parameter name="portName" type="text" required="true">
+				<context>serial-port</context>
+				<label>Serial Port</label>
+				<description>The serial port to use to communicate with a Lutron RadioRA system</description>
+			</parameter>
+			<parameter name="baud" type="text" required="false">
+				<label>Baud Rate</label>
+				<description>Baud Rate (defaults to 9600)</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
 
-        <channels>
-            <channel id="switchstatus" typeId="switchState"/>
-        </channels>
-        
-        <config-description>
-            <parameter name="zoneNumber" type="integer" required="true">
-                <label>Zone Number</label>
-                <description>Assigned Zone Number within the Lutron RadioRA system.</description>
-            </parameter>
-        </config-description>
-    </thing-type>
-    
-    <thing-type id="ra-phantomButton">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="ra-rs232"/>
-        </supported-bridge-type-refs>
-        <label>RadioRA Phantom Button</label>
-        <description>RadioRA Phantom Button</description>
+	<thing-type id="ra-dimmer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ra-rs232"/>
+		</supported-bridge-type-refs>
+		<label>RadioRA Dimmer</label>
+		<description>RadioRA Dimmer</description>
 
-        <channels>
-            <channel id="switchstatus" typeId="switchState"/>
-        </channels>
-        
-        <config-description>
-            <parameter name="buttonNumber" type="integer" required="true">
-                <label>Phantom Button Number</label>
-                <description>Phantom Button Number within the Lutron RadioRA system.</description>
-            </parameter>
-        </config-description>
-    </thing-type>
+		<channels>
+			<channel id="lightlevel" typeId="lightDimmer"/>
+		</channels>
 
-    <channel-type id="lightDimmer">
-        <item-type>Dimmer</item-type>
-        <label>Light Level</label>
-        <description>Increase/decrease the light level</description>
-        <category>DimmableLight</category>
-        <state min="0" max="100" pattern="%d %%"/>
-    </channel-type>
+		<config-description>
+			<parameter name="zoneNumber" type="integer" required="true">
+				<label>Zone Number</label>
+				<description>Assigned Zone Number within the Lutron RadioRA system.</description>
+			</parameter>
+			<parameter name="fadeOutSec" type="integer" required="false">
+				<label>Fade Out (sec)</label>
+				<description>Time in seconds dimmer should take when lowering the level</description>
+			</parameter>
+			<parameter name="fadeInSec" type="integer" required="false">
+				<label>Fade In (sec)</label>
+				<description>Time in seconds dimmer should take when increasing the level</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-    <channel-type id="switchState">
-        <item-type>Switch</item-type>
-        <label>Switch State</label>
-        <description>On/off status of the switch</description>
-        <category>Switch</category>
-    </channel-type>
+	<thing-type id="ra-switch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ra-rs232"/>
+		</supported-bridge-type-refs>
+		<label>RadioRA Switch</label>
+		<description>RadioRA Switch</description>
 
-    <channel-type id="occupiedState">
-        <item-type>Switch</item-type>
-        <label>Occupied State</label>
-        <description>Occupancy status</description>
-        <category>Motion</category>
-        <state readOnly="true"/>
-    </channel-type>
+		<channels>
+			<channel id="switchstatus" typeId="switchState"/>
+		</channels>
 
-    <channel-type id="button">
-        <item-type>Switch</item-type>
-        <label>Keypad button</label>
-        <description>Button to trigger a scene or rule</description>
-        <category>Switch</category>
-    </channel-type>
+		<config-description>
+			<parameter name="zoneNumber" type="integer" required="true">
+				<label>Zone Number</label>
+				<description>Assigned Zone Number within the Lutron RadioRA system.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-    <channel-type id="ledIndicator">
-        <item-type>Switch</item-type>
-        <label>Keypad button LED indicator</label>
-        <description>LED indicator for the associated button</description>
-        <category>Light</category>
-    </channel-type>
+	<thing-type id="ra-phantomButton">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ra-rs232"/>
+		</supported-bridge-type-refs>
+		<label>RadioRA Phantom Button</label>
+		<description>RadioRA Phantom Button</description>
 
-    <channel-type id="buttonpress">
-        <item-type>Text</item-type>
-        <label>Last Button Press</label>
-        <description>Last button pressed</description>
-        <state readOnly="true"/>
-    </channel-type>
+		<channels>
+			<channel id="switchstatus" typeId="switchState"/>
+		</channels>
 
-    <channel-type id="timeclock">
-        <item-type>DateTime</item-type>
-        <label>Time Clock</label>
-        <description>Current time on the PRG</description>
-        <category>Schedule</category>
-    </channel-type>
+		<config-description>
+			<parameter name="buttonNumber" type="integer" required="true">
+				<label>Phantom Button Number</label>
+				<description>Phantom Button Number within the Lutron RadioRA system.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-    <channel-type id="schedule">
-        <item-type>Number</item-type>
-        <label>Schedule Number</label>
-        <description>The schedule set on the PRG (0=suspend, 1=weekday, 2=weekend)</description>
-        <category>Schedule</category>
-        <state min="0" max="2"/>
-    </channel-type>
-    
-    <channel-type id="sunrisesunset">
-        <item-type>DateTime</item-type>
-        <label>Sunrise</label>
-        <description>Today's sunrise</description>
-        <category>Schedule</category>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="superschedulebutton">
-        <item-type>Switch</item-type>
-        <label>Superschedule</label>
-        <description>superschedule</description>
-        <category>Super Schedule</category>
-    </channel-type>
-    
-    <channel-type id="superschedulestatus">
-        <item-type>String</item-type>
-        <label>Super Schedule Status</label>
-        <description>Status of the Super Schedule</description>
-        <category>Super Schedule</category>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="superscheduleinfo">
-        <item-type>Number</item-type>
-        <label>Super Schedule Number</label>
-        <description>Somenumber</description>
-        <state readOnly="true"/>
-        <!--<category>Super Schedule</category>-->
-    </channel-type>
-        
-    <channel-type id="scene">
-        <item-type>Number</item-type>
-        <label>Scene Selection</label>
-        <description>Scene selection</description>
-        <category>Super Schedule</category>
-        <state min="0" max="16"/>
-    </channel-type>
-        
-    <channel-type id="scenelock">
-        <item-type>Switch</item-type>
-        <label>Scene Lock</label>
-        <description>Locks/Unlocks the scene</description>
-        <category>Scene</category>
-    </channel-type>
-        
-    <channel-type id="sceneseq">
-        <item-type>Switch</item-type>
-        <label>Sequence Scenes</label>
-        <description>Adds/Removes sequencing of scenes</description>
-        <category>Scene</category>
-    </channel-type>
-        
-    <channel-type id="zonelock">
-        <item-type>Switch</item-type>
-        <label>Zone lockout</label>
-        <description>Locks/Unlocks the zone</description>
-        <category>Zone</category>
-    </channel-type>
-        
-    <channel-type id="zonerampdown">
-        <item-type>Switch</item-type>
-        <label>Ramps down the zone</label>
-        <description>Starts ramping down the zone</description>
-        <category>Zone</category>
-    </channel-type>
-        
-    <channel-type id="zonerampup">
-        <item-type>Switch</item-type>
-        <label>Ramps up the zone</label>
-        <description>Starts ramping up the zone</description>
-        <category>Zone</category>
-    </channel-type>
-        
-    <channel-type id="zonefade">
-        <item-type>Number</item-type>
-        <label>Zone Fade (in seconds)</label>
-        <description>Specifies the fade (in seconds [truncated to nearest minute if more than 60 seconds]) when applying intensity changes</description>
-        <category>Zone</category>
-        <state min="1" max="3600"/>
-    </channel-type>
-        
-    <channel-type id="zoneintensity">
-        <item-type>Dimmer</item-type>
-        <label>Zone Intensity</label>
-        <description>Specifies the intensity of the zone</description>
-        <category>Zone</category>
-        <state min="0" max="100"/>
-    </channel-type>
-        
-    <channel-type id="zoneshade">
-        <item-type>Rollershutter</item-type>
-        <label>Zone Shade</label>
-        <description>Specifies the QED shade for the zone</description>
-        <category>Zone</category>
-        <state min="0" max="5"/>
-    </channel-type>
+	<channel-type id="lightDimmer">
+		<item-type>Dimmer</item-type>
+		<label>Light Level</label>
+		<description>Increase/decrease the light level</description>
+		<category>DimmableLight</category>
+		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="switchState">
+		<item-type>Switch</item-type>
+		<label>Switch State</label>
+		<description>On/off status of the switch</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="occupiedState">
+		<item-type>Switch</item-type>
+		<label>Occupied State</label>
+		<description>Occupancy status</description>
+		<category>Motion</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="button">
+		<item-type>Switch</item-type>
+		<label>Keypad button</label>
+		<description>Button to trigger a scene or rule</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="ledIndicator">
+		<item-type>Switch</item-type>
+		<label>Keypad button LED indicator</label>
+		<description>LED indicator for the associated button</description>
+		<category>Light</category>
+	</channel-type>
+
+	<channel-type id="buttonpress">
+		<item-type>Text</item-type>
+		<label>Last Button Press</label>
+		<description>Last button pressed</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timeclock">
+		<item-type>DateTime</item-type>
+		<label>Time Clock</label>
+		<description>Current time on the PRG</description>
+		<category>Schedule</category>
+	</channel-type>
+
+	<channel-type id="schedule">
+		<item-type>Number</item-type>
+		<label>Schedule Number</label>
+		<description>The schedule set on the PRG (0=suspend, 1=weekday, 2=weekend)</description>
+		<category>Schedule</category>
+		<state min="0" max="2"/>
+	</channel-type>
+
+	<channel-type id="sunrisesunset">
+		<item-type>DateTime</item-type>
+		<label>Sunrise</label>
+		<description>Today's sunrise</description>
+		<category>Schedule</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="superschedulebutton">
+		<item-type>Switch</item-type>
+		<label>Superschedule</label>
+		<description>superschedule</description>
+		<category>Super Schedule</category>
+	</channel-type>
+
+	<channel-type id="superschedulestatus">
+		<item-type>String</item-type>
+		<label>Super Schedule Status</label>
+		<description>Status of the Super Schedule</description>
+		<category>Super Schedule</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="superscheduleinfo">
+		<item-type>Number</item-type>
+		<label>Super Schedule Number</label>
+		<description>Somenumber</description>
+		<state readOnly="true"/>
+		<!--<category>Super Schedule</category>-->
+	</channel-type>
+
+	<channel-type id="scene">
+		<item-type>Number</item-type>
+		<label>Scene Selection</label>
+		<description>Scene selection</description>
+		<category>Super Schedule</category>
+		<state min="0" max="16"/>
+	</channel-type>
+
+	<channel-type id="scenelock">
+		<item-type>Switch</item-type>
+		<label>Scene Lock</label>
+		<description>Locks/Unlocks the scene</description>
+		<category>Scene</category>
+	</channel-type>
+
+	<channel-type id="sceneseq">
+		<item-type>Switch</item-type>
+		<label>Sequence Scenes</label>
+		<description>Adds/Removes sequencing of scenes</description>
+		<category>Scene</category>
+	</channel-type>
+
+	<channel-type id="zonelock">
+		<item-type>Switch</item-type>
+		<label>Zone lockout</label>
+		<description>Locks/Unlocks the zone</description>
+		<category>Zone</category>
+	</channel-type>
+
+	<channel-type id="zonerampdown">
+		<item-type>Switch</item-type>
+		<label>Ramps down the zone</label>
+		<description>Starts ramping down the zone</description>
+		<category>Zone</category>
+	</channel-type>
+
+	<channel-type id="zonerampup">
+		<item-type>Switch</item-type>
+		<label>Ramps up the zone</label>
+		<description>Starts ramping up the zone</description>
+		<category>Zone</category>
+	</channel-type>
+
+	<channel-type id="zonefade">
+		<item-type>Number</item-type>
+		<label>Zone Fade (in seconds)</label>
+		<description>Specifies the fade (in seconds [truncated to nearest minute if more than 60 seconds]) when applying intensity changes</description>
+		<category>Zone</category>
+		<state min="1" max="3600"/>
+	</channel-type>
+
+	<channel-type id="zoneintensity">
+		<item-type>Dimmer</item-type>
+		<label>Zone Intensity</label>
+		<description>Specifies the intensity of the zone</description>
+		<category>Zone</category>
+		<state min="0" max="100"/>
+	</channel-type>
+
+	<channel-type id="zoneshade">
+		<item-type>Rollershutter</item-type>
+		<label>Zone Shade</label>
+		<description>Specifies the QED shade for the zone</description>
+		<category>Zone</category>
+		<state min="0" max="5"/>
+	</channel-type>
+
 </thing:thing-descriptions>

@@ -14,8 +14,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 /**
  * {@link SysteminfoInterface} defines the methods needed to provide this binding with the required system information.
  *
- * @author Svilen Valkanov
- *
+ * @author Svilen Valkanov - Initial contribution
  */
 public interface SysteminfoInterface {
 

@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.opensprinkler.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
 
@@ -17,6 +19,7 @@ import com.pi4j.io.gpio.RaspiPin;
  *
  * @author Chris Graham - Initial contribution
  */
+@NonNullByDefault
 public class OpenSprinklerApiConstants {
     public static final String HTTP_REQUEST_URL_PREFIX = "http://";
     public static final String HTTPS_REQUEST_URL_PREFIX = "https://";

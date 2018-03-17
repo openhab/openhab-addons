@@ -46,18 +46,12 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
         scheduler.execute(it100BridgeDiscoveryRunnable);
     }
 
-    private Runnable envisalinkBridgeDiscoveryRunnable = new Runnable() {
-        @Override
-        public void run() {
-            envisalinkBridgeDiscovery.discoverBridge();
-        }
+    private Runnable envisalinkBridgeDiscoveryRunnable = () -> {
+        envisalinkBridgeDiscovery.discoverBridge();
     };
 
-    private Runnable it100BridgeDiscoveryRunnable = new Runnable() {
-        @Override
-        public void run() {
-            it100BridgeDiscovery.discoverBridge();
-        }
+    private Runnable it100BridgeDiscoveryRunnable = () -> {
+        it100BridgeDiscovery.discoverBridge();
     };
 
     /**

@@ -71,12 +71,13 @@
 		<channels>
 			<channel id="power" typeId="power" />
 			<!--
-            We will provide an input channel dynamically. 
+			We will provide an input channel dynamically. 
 			<channel id="input" typeId="availableinput" />
-			 -->
+			-->
 			<channel id="surroundProgram" typeId="surroundProgram" />
 			<channel id="volume" typeId="volume" />
 			<channel id="volumeDB" typeId="volumeDB" />
+			<channel id="dialogueLevel" typeId="dialogueLevel" />
 			<channel id="mute" typeId="mute" />
 		</channels>
 	</channel-group-type>
@@ -146,6 +147,14 @@
 		<label>Mute</label>
 		<description>Enable/Disable Mute on the AVR</description>
 		<category>SoundVolume</category>
+	</channel-type>
+
+	<channel-type id="dialogueLevel">
+		<item-type>Number</item-type>
+		<label>Dialogue level</label>
+		<description>Set the dialogue level</description>
+		<category>SoundVolume</category>
+		<state min="0" max="2" step="1" pattern="%d" />
 	</channel-type>
 
 	<channel-group-type id="playback_channels">
@@ -299,8 +308,8 @@
 		<item-type>String</item-type>
 		<label>Menu</label>
 		<description>Shows the current navigation menu and allows to change to a channel by a full path.
-        For example for net radio: Bookmarks/__My_Favorites/radio_station_name. You can also just use the station name
-        without a full path if the AVR is in that navigation menu already.</description>
+		For example for net radio: Bookmarks/__My_Favorites/radio_station_name. You can also just use the station name
+		without a full path if the AVR is in that navigation menu already.</description>
 		<category>Navigation</category>
 	</channel-type>
 

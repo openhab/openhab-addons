@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lametrictime"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="clockApp" listed="true">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="device" />
+		</supported-bridge-type-refs>
+
+		<label>LaMetric Time Clock</label>
+		<description>Provides control for the clock app on the LaMetric Time</description>
+
+		<channels>
+			<channel id="setAlarm" typeId="setAlarmType"/>
+			<channel id="command" typeId="clockCommandType"/>
+		</channels>
+
+		<config-description>
+			<parameter name="widgetId" type="text" required="false">
+				<label>Widget ID</label>
+				<description>Unique identifier for the application instance (defaults to first instance)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="setAlarmType">
+		<item-type>DateTime</item-type>
+		<label>Set Alarm</label>
+		<description>Set the alarm to a specific time (date is ignored)</description>
+	</channel-type>
+	<channel-type id="clockCommandType">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Send a command to the clock app</description>
+		<state>
+			<options>
+				<option value="disableAlarm">Disable Alarm</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>

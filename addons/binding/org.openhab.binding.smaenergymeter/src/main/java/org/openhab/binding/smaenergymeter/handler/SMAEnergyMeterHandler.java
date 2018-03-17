@@ -71,12 +71,7 @@ public class SMAEnergyMeterHandler extends BaseThingHandler {
         }
 
         int pollingPeriod = (config.getPollingPeriod() == null) ? 30 : config.getPollingPeriod();
-        pollingJob = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                updateData();
-            }
-        }, 0, pollingPeriod, TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, pollingPeriod, TimeUnit.SECONDS);
         logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
 
         updateStatus(ThingStatus.ONLINE);

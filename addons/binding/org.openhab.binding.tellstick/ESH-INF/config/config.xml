@@ -1,42 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
-        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
-    <config-description uri="thing-type:tellstick:config">
+	<config-description uri="thing-type:tellstick:config">
+		<parameter name="interval" type="integer" min="1" max="86400">
+			<label>interval</label>
+			<description>Refresh interval for positional data calculation in seconds.</description>
+			<default>300</default>
+		</parameter>
+		<parameter name="model" type="text">
+			<label>Model</label>
+			<description>The model used by a specific device.</description>
+			<required>false</required>
+		</parameter>
+	</config-description>
 
-        <parameter name="interval" type="integer" min="1" max="86400">
-            <label>interval</label>
-            <description>Refresh interval for positional data calculation in seconds.</description>
-            <default>300</default>
-        </parameter>
-        <parameter name="model" type="text">
-            <label>Model</label>
-            <description>The model used by a specific device.</description>
-            <required>false</required>
-        </parameter>
-    </config-description>
-    <config-description uri="thing-type:tellstick:sensor-config">
-            <parameter name="protocol" type="text">
-                <label>Protocol</label>
-                <description>The protocol used by a specific device.</description>
-                <required>false</required>
-            </parameter>
-            <parameter name="model" type="text">
-                <label>Model</label>
-                <description>The model used by a specific device.</description>
-                <required>false</required>
-            </parameter>
-            <parameter name="name" type="text">
-                <label>Name</label>
-                <description>The name of the device (manually entered)</description>
-                <required>false</required>
-            </parameter>
-            <parameter name="deviceId" type="text">
-                <label>DeviceID</label>
-                <description>This function returns the unique id of a device with a specific index.</description>
-                <required>true</required>
-            </parameter>
-    </config-description>
+	<config-description uri="thing-type:tellstick:sensor-config">
+		<parameter name="protocol" type="text">
+			<label>Protocol</label>
+			<description>The protocol used by a specific device.</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="model" type="text">
+			<label>Model</label>
+			<description>The model used by a specific device.</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="name" type="text">
+			<label>Name</label>
+			<description>The name of the device (manually entered)</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="deviceId" type="text">
+			<label>DeviceID</label>
+			<description>This function returns the unique id of a device with a specific index.</description>
+			<required>true</required>
+		</parameter>
+	</config-description>
+
 </config-description:config-descriptions>

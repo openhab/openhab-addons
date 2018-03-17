@@ -21,5 +21,5 @@ public interface RioCallbackHandler {
      *
      * @return the {@link RioHandlerCallback} or null if none found
      */
-    RioHandlerCallback getCallback();
+    RioHandlerCallback getRioHandlerCallback();
 }

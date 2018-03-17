@@ -47,6 +47,10 @@ public class Cm11aApplianceHandler extends Cm11aAbstractHandler {
 
         x10Function = 0;
         Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Unable to handle command. Bridge is null.");
+            return;
+        }
         this.channelUID = channelUID;
 
         Cm11aBridgeHandler cm11aHandler = (Cm11aBridgeHandler) bridge.getHandler();

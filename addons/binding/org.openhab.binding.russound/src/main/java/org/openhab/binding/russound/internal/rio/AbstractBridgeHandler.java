@@ -77,7 +77,7 @@ public abstract class AbstractBridgeHandler<E extends AbstractRioProtocol> exten
      * @return the {@link RioHandlerCallback} or null if not found
      */
     @Override
-    public RioHandlerCallback getCallback() {
+    public RioHandlerCallback getRioHandlerCallback() {
         final E protocolHandler = getProtocolHandler();
         return protocolHandler == null ? null : protocolHandler.getCallback();
     }

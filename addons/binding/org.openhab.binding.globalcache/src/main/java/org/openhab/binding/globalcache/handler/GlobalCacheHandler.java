@@ -610,12 +610,9 @@ public class GlobalCacheHandler extends BaseThingHandler {
         private final int CONNECTION_MONITOR_FREQUENCY = 60;
         private final int CONNECTION_MONITOR_START_DELAY = 15;
 
-        private Runnable connectionMonitorRunnable = new Runnable() {
-            @Override
-            public void run() {
-                logger.trace("Performing connection check for thing {} at IP {}", thingID(), commandConnection.getIP());
-                checkConnection();
-            }
+        private Runnable connectionMonitorRunnable = () -> {
+            logger.trace("Performing connection check for thing {} at IP {}", thingID(), commandConnection.getIP());
+            checkConnection();
         };
 
         public ConnectionManager() {
@@ -962,13 +959,6 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
         private byte[] endOfMessage;
 
-        private Runnable serialPortReaderRunnable = new Runnable() {
-            @Override
-            public void run() {
-                serialPortReader();
-            }
-        };
-
         SerialPortReader(CommandType serialPort, BufferedInputStream serialIn, byte[] endOfMessage) {
             if (serialIn == null) {
                 throw new IllegalArgumentException("Serial input stream is not set");
@@ -981,7 +971,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
         }
 
         public void start() {
-            serialPortReaderJob = scheduledExecutorService.schedule(serialPortReaderRunnable, 0, TimeUnit.SECONDS);
+            serialPortReaderJob = scheduledExecutorService.schedule(this::serialPortReader, 0, TimeUnit.SECONDS);
         }
 
         public void stop() {

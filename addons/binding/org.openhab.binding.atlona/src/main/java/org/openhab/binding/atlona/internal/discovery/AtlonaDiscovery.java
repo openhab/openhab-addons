@@ -114,34 +114,31 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
             _scanning = true;
             for (final NetworkInterface netint : networkInterfaces) {
 
-                _executorService.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            MulticastSocket multiSocket = new MulticastSocket(SDDP_PORT);
-                            multiSocket.setSoTimeout(TIMEOUT);
-                            multiSocket.setNetworkInterface(netint);
-                            multiSocket.joinGroup(addr);
+                _executorService.execute(() -> {
+                    try {
+                        MulticastSocket multiSocket = new MulticastSocket(SDDP_PORT);
+                        multiSocket.setSoTimeout(TIMEOUT);
+                        multiSocket.setNetworkInterface(netint);
+                        multiSocket.joinGroup(addr);
 
-                            while (_scanning) {
-                                DatagramPacket receivePacket = new DatagramPacket(new byte[BUFFER_SIZE], BUFFER_SIZE);
-                                try {
-                                    multiSocket.receive(receivePacket);
+                        while (_scanning) {
+                            DatagramPacket receivePacket = new DatagramPacket(new byte[BUFFER_SIZE], BUFFER_SIZE);
+                            try {
+                                multiSocket.receive(receivePacket);
 
-                                    String message = new String(receivePacket.getData()).trim();
-                                    if (message != null && message.length() > 0) {
-                                        messageReceive(message);
-                                    }
-                                } catch (SocketTimeoutException e) {
-                                    // ignore
+                                String message = new String(receivePacket.getData()).trim();
+                                if (message != null && message.length() > 0) {
+                                    messageReceive(message);
                                 }
+                            } catch (SocketTimeoutException e) {
+                                // ignore
                             }
+                        }
 
-                            multiSocket.close();
-                        } catch (Exception e) {
-                            if (!e.getMessage().contains("No IP addresses bound to interface")) {
-                                logger.debug("Error getting ip addresses: {}", e.getMessage(), e);
-                            }
+                        multiSocket.close();
+                    } catch (Exception e) {
+                        if (!e.getMessage().contains("No IP addresses bound to interface")) {
+                            logger.debug("Error getting ip addresses: {}", e.getMessage(), e);
                         }
                     }
                 });

@@ -11,7 +11,7 @@ package org.openhab.binding.lgwebos;
 import java.util.Collections;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -19,9 +19,10 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Sebastian Prehn - initial contribution
  */
+@NonNullByDefault
 public class LGWebOSBindingConstants {
 
-    public static final @NonNull String BINDING_ID = "lgwebos";
+    public static final String BINDING_ID = "lgwebos";
 
     public static final ThingTypeUID THING_TYPE_WEBOSTV = new ThingTypeUID(BINDING_ID, "WebOSTV");
 

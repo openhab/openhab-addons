@@ -10,6 +10,7 @@ package org.openhab.binding.tellstick;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.Sets;
@@ -20,6 +21,7 @@ import com.google.common.collect.Sets;
  *
  * @author jarlebh - Initial contribution
  */
+@NonNullByDefault
 public class TellstickBindingConstants {
 
     public static final String BINDING_ID = "tellstick";

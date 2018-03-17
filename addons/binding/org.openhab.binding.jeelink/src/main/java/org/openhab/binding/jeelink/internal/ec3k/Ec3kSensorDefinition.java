@@ -22,7 +22,7 @@ import org.openhab.binding.jeelink.internal.SensorDefinition;
 public class Ec3kSensorDefinition extends SensorDefinition<Ec3kReading> {
 
     public Ec3kSensorDefinition() {
-        super(JeeLinkBindingConstants.EC3000_SENSOR_THING_TYPE, "ec3kSerial", "EnergyCount 3000 Power Monitor");
+        super(JeeLinkBindingConstants.EC3000_SENSOR_THING_TYPE, "EnergyCount 3000 Power Monitor", "22");
     }
 
     @Override

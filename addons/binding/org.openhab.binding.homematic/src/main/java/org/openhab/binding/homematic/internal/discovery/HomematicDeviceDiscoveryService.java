@@ -94,22 +94,18 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService {
      */
     public void loadDevices() {
         if (scanFuture == null && bridgeHandler.getGateway() != null) {
-            scanFuture = scheduler.submit(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        final HomematicGateway gateway = bridgeHandler.getGateway();
-                        gateway.loadAllDeviceMetadata();
-                        bridgeHandler.getTypeGenerator().validateFirmwares();
-                        logger.debug("Finished Homematic device discovery scan on gateway '{}'", gateway.getId());
-                    } catch (Throwable ex) {
-                        logger.error("{}", ex.getMessage(), ex);
-                    } finally {
-                        scanFuture = null;
-                        bridgeHandler.setOfflineStatus();
-                        removeOlderResults(getTimestampOfLastScan());
-                    }
+            scanFuture = scheduler.submit(() -> {
+                try {
+                    final HomematicGateway gateway = bridgeHandler.getGateway();
+                    gateway.loadAllDeviceMetadata();
+                    bridgeHandler.getTypeGenerator().validateFirmwares();
+                    logger.debug("Finished Homematic device discovery scan on gateway '{}'", gateway.getId());
+                } catch (Throwable ex) {
+                    logger.error("{}", ex.getMessage(), ex);
+                } finally {
+                    scanFuture = null;
+                    bridgeHandler.setOfflineStatus();
+                    removeOlderResults(getTimestampOfLastScan());
                 }
             });
         } else {

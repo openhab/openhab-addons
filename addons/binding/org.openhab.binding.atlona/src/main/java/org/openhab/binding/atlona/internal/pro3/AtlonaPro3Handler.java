@@ -474,13 +474,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                 }));
 
         // Try initial connection in a scheduled task
-        this.scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                connect();
-            }
-
-        }, 1, TimeUnit.SECONDS);
+        this.scheduler.schedule(this::connect, 1, TimeUnit.SECONDS);
     }
 
     /**
@@ -501,35 +495,27 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                 final AtlonaPro3Config config = getAtlonaConfig();
                 if (config != null) {
 
-                    _polling = this.scheduler.scheduleWithFixedDelay(new Runnable() {
-                        @Override
-                        public void run() {
-                            final ThingStatus status = getThing().getStatus();
-                            if (status == ThingStatus.ONLINE) {
-                                if (_session.isConnected()) {
-                                    _atlonaHandler.refreshAll();
-                                } else {
-                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                            "Atlona PRO3 has disconnected. Will try to reconnect later.");
+                    _polling = this.scheduler.scheduleWithFixedDelay(() -> {
+                        final ThingStatus status = getThing().getStatus();
+                        if (status == ThingStatus.ONLINE) {
+                            if (_session.isConnected()) {
+                                _atlonaHandler.refreshAll();
+                            } else {
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                        "Atlona PRO3 has disconnected. Will try to reconnect later.");
 
-                                }
-                            } else if (status == ThingStatus.OFFLINE) {
-                                disconnect(true);
                             }
-
+                        } else if (status == ThingStatus.OFFLINE) {
+                            disconnect(true);
                         }
                     }, config.getPolling(), config.getPolling(), TimeUnit.SECONDS);
 
-                    _ping = this.scheduler.scheduleWithFixedDelay(new Runnable() {
-                        @Override
-                        public void run() {
-                            final ThingStatus status = getThing().getStatus();
-                            if (status == ThingStatus.ONLINE) {
-                                if (_session.isConnected()) {
-                                    _atlonaHandler.ping();
-                                }
+                    _ping = this.scheduler.scheduleWithFixedDelay(() -> {
+                        final ThingStatus status = getThing().getStatus();
+                        if (status == ThingStatus.ONLINE) {
+                            if (_session.isConnected()) {
+                                _atlonaHandler.ping();
                             }
-
                         }
                     }, config.getPing(), config.getPing(), TimeUnit.SECONDS);
 
@@ -586,15 +572,10 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
         if (_retryConnection == null) {
             final AtlonaPro3Config config = getAtlonaConfig();
             if (config != null) {
-
                 logger.info("Will try to reconnect in {} seconds", config.getRetryPolling());
-                _retryConnection = this.scheduler.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        _retryConnection = null;
-                        connect();
-                    }
-
+                _retryConnection = this.scheduler.schedule(() -> {
+                    _retryConnection = null;
+                    connect();
                 }, config.getRetryPolling(), TimeUnit.SECONDS);
             }
         } else {

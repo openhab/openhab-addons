@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.onebusaway;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Shawn Wilsher - Initial contribution
  */
+@NonNullByDefault
 public class OneBusAwayBindingConstants {
 
     public static final String BINDING_ID = "onebusaway";
