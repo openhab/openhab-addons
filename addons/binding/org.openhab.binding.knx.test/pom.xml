@@ -17,10 +17,9 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
+				<groupId>${tycho-groupid}</groupId>
 				<artifactId>target-platform-configuration</artifactId>
 				<configuration>
-					<environments combine.self="override"></environments>
 					<dependency-resolution>
 						<extraRequirements>
 							<dependency>
@@ -53,7 +52,7 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
+				<groupId>${tycho-groupid}</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<configuration>
 					<dependencies>
