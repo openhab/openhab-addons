@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-import static org.openhab.binding.foxtrot.FoxtrotBindingConstants.CHANNEL_BOOL;
+import static org.openhab.binding.foxtrot.FoxtrotBindingConstants.CHANNEL_SWITCH;
 
 /**
  * SwitchHandler.
@@ -50,9 +50,9 @@ public class SwitchHandler extends BaseThingHandler implements RefreshableHandle
         conf = getConfigAs(SwitchConfiguration.class);
 
         try {
-            group = RefreshGroup.valueOf(conf.refreshGroup.toUpperCase());
+            group = ((FoxtrotBridgeHandler)getBridge().getHandler()).findByName(conf.refreshGroup);
 
-            logger.debug("Adding Switch handler {} into refresh group {}", this, group.name());
+            logger.debug("Adding Switch handler {} into refresh group {}", this, group.getName());
             group.addHandler(this);
 
             updateStatus(ThingStatus.ONLINE);
@@ -66,7 +66,7 @@ public class SwitchHandler extends BaseThingHandler implements RefreshableHandle
     public void dispose() {
         logger.debug("Disposing Switch handler resources ...");
         if (group != null) {
-            logger.debug("Removing Switch handler {} from refresh group {} ...", this, group.name());
+            logger.debug("Removing Switch handler {} from refresh group {} ...", this, group.getName());
             group.removeHandler(this);
         }
     }
@@ -92,16 +92,23 @@ public class SwitchHandler extends BaseThingHandler implements RefreshableHandle
             if (newValue != null) {
                 newState = newValue ? OnOffType.ON : OnOffType.OFF;
             }
+            logger.trace("Refreshing {} value: {} -> {}", this, newValue, newState);
         } catch (PlcComSEception e) {
             logger.warn("PLCComS returned {} while getting variable '{}' value: {}: {}", e.getType(), conf.state, e.getCode(), e.getMessage());
         } catch (IOException e) {
             logger.warn("Communication with PLCComS failed while getting variable '{}' value: {}", conf.state, e.getMessage());
         } finally {
-            updateState(CHANNEL_BOOL, newState);
+            updateState(CHANNEL_SWITCH, newState);
         }
     }
 
-    private boolean isBool(String value) {
-        return "1".equals(value) || "0".equals(value);
+    @Override
+    @SuppressWarnings("StringBufferReplaceableByString")
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("SwitchHandler{");
+        sb.append("'").append(conf != null ? conf.state : null).append('\'');
+        sb.append(", ").append(group);
+        sb.append('}');
+        return sb.toString();
     }
 }

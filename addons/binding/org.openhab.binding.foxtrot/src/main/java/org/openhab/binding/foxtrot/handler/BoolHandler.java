@@ -50,14 +50,13 @@ public class BoolHandler extends BaseThingHandler implements RefreshableHandler 
 
         try {
             variableName = config.var;
-            group = RefreshGroup.valueOf(config.refreshGroup.toUpperCase());
+            group = ((FoxtrotBridgeHandler)getBridge().getHandler()).findByName(config.refreshGroup);
 
-            logger.debug("Adding Bool handler {} into refresh group {}", this, group.name());
+            logger.debug("Adding Bool handler {} into refresh group {}", this, group.getName());
             group.addHandler(this);
 
             updateStatus(ThingStatus.ONLINE);
         } catch (IllegalArgumentException e) {
-            // todo error description
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Unknown refresh group: "+config.refreshGroup.toUpperCase());
         }
@@ -67,7 +66,7 @@ public class BoolHandler extends BaseThingHandler implements RefreshableHandler 
     public void dispose() {
         logger.debug("Disposing Bool handler resources ...");
         if (group != null) {
-            logger.debug("Removing Bool handler {} from refresh group {} ...", this, group.name());
+            logger.debug("Removing Bool handler {} from refresh group {} ...", this, group.getName());
             group.removeHandler(this);
         }
     }
@@ -100,5 +99,15 @@ public class BoolHandler extends BaseThingHandler implements RefreshableHandler 
         } finally {
             updateState(CHANNEL_BOOL, newState);
         }
+    }
+
+    @Override
+    @SuppressWarnings("StringBufferReplaceableByString")
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("BoolHandler{");
+        sb.append("'").append(variableName).append('\'');
+        sb.append(", ").append(group);
+        sb.append('}');
+        return sb.toString();
     }
 }

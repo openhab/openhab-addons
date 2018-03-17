@@ -43,7 +43,7 @@ public class CommandExecutor {
                     CommandEntry ce = writeQueue.poll(1, TimeUnit.SECONDS);
 
                     if (ce != null && ce.value != null) {
-                        logger.trace("Setting Plc variable {} to {}", ce.commandVariable, ce.toString());
+                        logger.trace("Setting variable {} to {}", ce.commandVariable, ce.value);
                         if (ce.value instanceof Boolean) {
                             plcClient.set(ce.commandVariable, (Boolean)ce.value);
                         } else if (ce.value instanceof Integer) {

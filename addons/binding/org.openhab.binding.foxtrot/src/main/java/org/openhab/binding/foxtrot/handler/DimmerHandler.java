@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.foxtrot.handler;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -54,9 +53,9 @@ public class DimmerHandler extends BaseThingHandler implements RefreshableHandle
         conf = getConfigAs(DimmerConfiguration.class);
 
         try {
-            group = RefreshGroup.valueOf(conf.refreshGroup.toUpperCase());
+            group = ((FoxtrotBridgeHandler)getBridge().getHandler()).findByName(conf.refreshGroup);
 
-            logger.debug("Adding Dimmer handler {} into refresh group {}", this, group.name());
+            logger.debug("Adding Dimmer handler {} into refresh group {}", this, group.getName());
             group.addHandler(this);
 
             updateStatus(ThingStatus.ONLINE);
@@ -70,7 +69,7 @@ public class DimmerHandler extends BaseThingHandler implements RefreshableHandle
     public void dispose() {
         logger.debug("Disposing Dimmer handler resources ...");
         if (group != null) {
-            logger.debug("Removing Dimmer handler {} from refresh group {} ...", this, group.name());
+            logger.debug("Removing Dimmer handler {} from refresh group {} ...", this, group.getName());
             group.removeHandler(this);
         }
     }
@@ -100,14 +99,26 @@ public class DimmerHandler extends BaseThingHandler implements RefreshableHandle
             BigDecimal newValue = plcClient.getNumber(conf.state);
 
             if (newValue != null) {
-                newState = new DecimalType(newValue);
+                newState = new PercentType(newValue);
             }
         } catch (PlcComSEception e) {
             logger.warn("PLCComS returned {} while getting variable '{}' value: {}: {}", e.getType(), conf.state, e.getCode(), e.getMessage());
         } catch (IOException e) {
             logger.warn("Communication with PLCComS failed while getting variable '{}' value: {}", conf.state, e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.error("Wrong received new value, error: {}", e.getMessage());
         } finally {
             updateState(CHANNEL_DIMMER, newState);
         }
+    }
+
+    @Override
+    @SuppressWarnings("StringBufferReplaceableByString")
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DimmerHandler{");
+        sb.append("'").append(conf != null ? conf.state : null).append("'");
+        sb.append(", ").append(group);
+        sb.append('}');
+        return sb.toString();
     }
 }

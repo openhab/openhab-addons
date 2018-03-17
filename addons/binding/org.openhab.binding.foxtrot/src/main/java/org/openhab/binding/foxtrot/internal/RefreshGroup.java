@@ -24,25 +24,44 @@ import java.util.concurrent.TimeUnit;
  * @author Radovan Sninsky
  * @since 2018-02-12 22:42
  */
-public enum RefreshGroup {
-    LOW, MEDIUM, HIGH, REALTIME;
+public class RefreshGroup {
+
+    public static final String RG_LOW = "LOW";
+    public static final String RG_MEDIUM = "MEDIUM";
+    public static final String RG_HIGH = "HIGH";
+    public static final String RG_REALTIME = "REALTIME";
 
     private final Logger logger = LoggerFactory.getLogger(RefreshGroup.class);
 
+    private final String name;
+    private PlcComSClient plcClient;
     private final List<RefreshableHandler> handlers = new ArrayList<>(100);
     private ScheduledFuture<?> job;
-    private PlcComSClient plcClient;
 
-    public void init(ScheduledExecutorService scheduler, long interval, PlcComSClient client) throws IOException {
-        logger.debug("Initializing {} refresh group w interval: {} ...", this.name(), interval);
+    public RefreshGroup(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void start(ScheduledExecutorService scheduler, long interval, PlcComSClient client) throws IOException {
+        logger.debug("Opening {} refresh group w interval: {} ...", this.name, interval);
         this.plcClient = client;
         this.plcClient.open();
         this.job = scheduler.scheduleWithFixedDelay(
-            () -> new ArrayList<>(handlers).forEach(h -> h.refreshFromPlc(plcClient)), 10, interval, TimeUnit.SECONDS);
+                () -> new ArrayList<>(handlers).forEach(h -> {
+                    try {
+                        h.refreshFromPlc(plcClient);
+                    } catch (Exception e) {
+                        logger.error("Refreshing handler {} failed w error: {}", h, e.getMessage());
+                    }
+                }), 10, interval, TimeUnit.SECONDS);
     }
 
     public void dispose() {
-        logger.debug("Canceling {} refresh job", this.name());
+        logger.debug("Canceling {} refresh job", name);
         if (job != null && !job.isCancelled()) {
             job.cancel(true);
         }

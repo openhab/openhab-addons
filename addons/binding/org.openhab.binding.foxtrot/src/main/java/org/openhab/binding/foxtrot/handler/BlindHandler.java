@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.foxtrot.handler;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -53,9 +53,9 @@ public class BlindHandler extends BaseThingHandler implements RefreshableHandler
         conf = getConfigAs(BlindConfiguration.class);
 
         try {
-            group = RefreshGroup.valueOf(conf.refreshGroup.toUpperCase());
+            group = ((FoxtrotBridgeHandler)getBridge().getHandler()).findByName(conf.refreshGroup);
 
-            logger.debug("Adding Blind handler {} into refresh group {}", this, group.name());
+            logger.debug("Adding Blind handler {} into refresh group {}", this, group.getName());
             group.addHandler(this);
 
             updateStatus(ThingStatus.ONLINE);
@@ -69,7 +69,7 @@ public class BlindHandler extends BaseThingHandler implements RefreshableHandler
     public void dispose() {
         logger.debug("Disposing Blind handler resources ...");
         if (group != null) {
-            logger.debug("Removing Blind handler {} from refresh group {} ...", this, group.name());
+            logger.debug("Removing Blind handler {} from refresh group {} ...", this, group.getName());
             group.removeHandler(this);
         }
     }
@@ -93,14 +93,26 @@ public class BlindHandler extends BaseThingHandler implements RefreshableHandler
             BigDecimal newValue = plcClient.getNumber(conf.state);
 
             if (newValue != null) {
-                newState = new DecimalType(newValue);
+                newState = new PercentType(newValue);
             }
         } catch (PlcComSEception e) {
-            logger.warn("PLCComS returned {} while getting value for '{}': {}: {}", e.getType(), conf.state, e.getCode(), e.getMessage());
+            logger.error("PLCComS returned {} while getting value for '{}': {}: {}", e.getType(), conf.state, e.getCode(), e.getMessage());
         } catch (IOException e) {
-            logger.warn("Communication with PLCComS failed while value for '{}': {}", conf.state, e.getMessage());
+            logger.error("Communication with PLCComS failed while value for '{}': {}", conf.state, e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.error("Wrong received new value, error: {}", e.getMessage());
         } finally {
             updateState(CHANNEL_BLIND, newState);
         }
+    }
+
+    @Override
+    @SuppressWarnings("StringBufferReplaceableByString")
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("BlindHandler{");
+        sb.append("'").append(conf != null ? conf.state : null);
+        sb.append("', ").append(group);
+        sb.append('}');
+        return sb.toString();
     }
 }

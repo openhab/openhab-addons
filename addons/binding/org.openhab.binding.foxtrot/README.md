@@ -4,6 +4,7 @@ The Foxtrot binding allows interaction with [Tecomat Foxtrot](https://www.tecoma
 Tecomat Foxtrot is a compact modular control and regulation system with powerful processor, mature communications, original two-wires and wireless connection with intelligent electroinstallation elements and peripherals. 
 
 **Important features**
+
 * High performance
 * Modularity
 * Installation design („circuit breakers“)
@@ -143,6 +144,7 @@ Thing bool IsNight [ var="IsNight" ]
 The Switch Thing represent specific structure of variables and controll code in PLC user program. Here is snippet
 of structure for controlling light in [IEC61131-3](https://en.wikipedia.org/wiki/IEC_61131-3) standard
 [ST](https://en.wikipedia.org/wiki/Structured_text) language:
+
 ```
 TYPE
   TSimpleLight: struct
@@ -177,6 +179,7 @@ Thing switch GarageLight [ state="GarageLight.IsOn", on="GarageLight.OnCmd", off
 The Dimmer Thing represent specific structure of variables and controll code in PLC user program. Here is snippet
 of structure for controlling dimmer in [IEC61131-3](https://en.wikipedia.org/wiki/IEC_61131-3) standard
 [ST](https://en.wikipedia.org/wiki/Structured_text) language:
+
 ```
 TYPE
   TDimmer: struct
@@ -215,6 +218,7 @@ Thing dimmer LivingCeilDimmer [ state="LivingCeilDimmer.Level", on="LivingCeilDi
 The Blind Thing represent specific structure of variables and controll code in PLC user program. Here is snippet
 of structure for controlling blind in [IEC61131-3](https://en.wikipedia.org/wiki/IEC_61131-3) standard
 [ST](https://en.wikipedia.org/wiki/Structured_text) language:
+
 ```
 TYPE
   TRollerBlind: struct
@@ -264,6 +268,7 @@ Thing blind OfficeWindowBlind [ state="OfficeWindowBlind.Position", on="OfficeWi
 _Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
 
 foxtrot.things:
+
 ```
 Bridge foxtrot:plc:cp1000 [ hostname="192.168.0.20",
                             lowRefreshInterval=300,
@@ -293,6 +298,7 @@ Bridge foxtrot:plc:cp1000 [ hostname="192.168.0.20",
 ```
 
 foxtrot.items:
+
 ```
 // Hot-water boiler
 Number Foxtrot_Boiler_Consumption   "Boiler [%.3f kW]"                                          { channel="foxtrot:number:cp1000:BoilerConsump:number" }
@@ -312,6 +318,7 @@ Rollershutter GF_Office_Blind1a     "Window"         <rollershutter>    (GF_Offi
 ```
 
 demo.sitemap:
+
 ```
 sitemap default label="Main" {
     Frame label="Overview" {

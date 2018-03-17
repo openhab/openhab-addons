@@ -36,6 +36,11 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FoxtrotBridgeHandler.class);
 
+    private final RefreshGroup lowRefreshGroup = new RefreshGroup(RefreshGroup.RG_LOW);
+    private final RefreshGroup mediumRefreshGroup = new RefreshGroup(RefreshGroup.RG_MEDIUM);
+    private final RefreshGroup highRefreshGroup = new RefreshGroup(RefreshGroup.RG_HIGH);
+    private final RefreshGroup realtimeRefreshGroup = new RefreshGroup(RefreshGroup.RG_REALTIME);
+
     public FoxtrotBridgeHandler(@NonNull Bridge bridge) {
         super(bridge);
     }
@@ -52,10 +57,10 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
         try {
             updateProperties(new PlcComSClient(conf.hostname, conf.port));
 
-            RefreshGroup.LOW.init(scheduler, conf.lowRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
-            RefreshGroup.MEDIUM.init(scheduler, conf.mediumRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
-            RefreshGroup.HIGH.init(scheduler, conf.highRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
-            RefreshGroup.REALTIME.init(scheduler, conf.realtimeRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
+            lowRefreshGroup.start(scheduler, conf.lowRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
+            mediumRefreshGroup.start(scheduler, conf.mediumRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
+            highRefreshGroup.start(scheduler, conf.highRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
+            realtimeRefreshGroup.start(scheduler, conf.realtimeRefreshInterval, new PlcComSClient(conf.hostname, conf.port));
 
             CommandExecutor.init(new PlcComSClient(conf.hostname, conf.port));
 
@@ -68,14 +73,25 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing Foxtrot PLC bridge handler connections to PLCComS server ...");
-        RefreshGroup.LOW.dispose();
-        RefreshGroup.MEDIUM.dispose();
-        RefreshGroup.HIGH.dispose();
-        RefreshGroup.REALTIME.dispose();
+        lowRefreshGroup.dispose();
+        mediumRefreshGroup.dispose();
+        highRefreshGroup.dispose();
+        realtimeRefreshGroup.dispose();
 
         if (CommandExecutor.get() != null) {
             CommandExecutor.get().dispose();
         }
+    }
+
+    RefreshGroup findByName(String name) {
+        if (RefreshGroup.RG_MEDIUM.equalsIgnoreCase(name)) {
+            return mediumRefreshGroup;
+        } else if (RefreshGroup.RG_HIGH.equalsIgnoreCase(name)) {
+            return highRefreshGroup;
+        } else if (RefreshGroup.RG_REALTIME.equalsIgnoreCase(name)) {
+            return realtimeRefreshGroup;
+        }
+        return lowRefreshGroup;
     }
 
     private void updateProperties(PlcComSClient client) throws IOException {

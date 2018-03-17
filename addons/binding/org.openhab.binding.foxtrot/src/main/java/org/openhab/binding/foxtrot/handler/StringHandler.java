@@ -50,14 +50,13 @@ public class StringHandler extends BaseThingHandler implements RefreshableHandle
 
         try {
             variableName = config.var;
-            group = RefreshGroup.valueOf(config.refreshGroup.toUpperCase());
+            group = ((FoxtrotBridgeHandler)getBridge().getHandler()).findByName(config.refreshGroup);
 
-            logger.debug("Adding String handler {} into refresh group {}", this, group.name());
+            logger.debug("Adding String handler {} into refresh group {}", this, group.getName());
             group.addHandler(this);
 
             updateStatus(ThingStatus.ONLINE);
         } catch (IllegalArgumentException e) {
-            // todo error description
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Unknown refresh group: "+config.refreshGroup.toUpperCase());
         }
@@ -67,7 +66,7 @@ public class StringHandler extends BaseThingHandler implements RefreshableHandle
     public void dispose() {
         logger.debug("Disposing String handler resources ...");
         if (group != null) {
-            logger.debug("Removing String handler {} from refresh group {} ...", this, group.name());
+            logger.debug("Removing String handler {} from refresh group {} ...", this, group.getName());
             group.removeHandler(this);
         }
     }
@@ -94,6 +93,16 @@ public class StringHandler extends BaseThingHandler implements RefreshableHandle
         } finally {
             updateState(CHANNEL_STRING, newState);
         }
+    }
+
+    @Override
+    @SuppressWarnings("StringBufferReplaceableByString")
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("StringHandler{");
+        sb.append("'").append(variableName).append('\'');
+        sb.append(", ").append(group);
+        sb.append('}');
+        return sb.toString();
     }
 }
 
