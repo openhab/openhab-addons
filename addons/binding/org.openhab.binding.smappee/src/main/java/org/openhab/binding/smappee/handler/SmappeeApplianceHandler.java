@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.smappee.internal.SmappeeApplianceEvent;
@@ -68,7 +69,7 @@ public class SmappeeApplianceHandler extends AbstractSmappeeHandler {
 
         thingId = thing.getConfiguration().get(PARAMETER_APPLIANCE_ID).toString();
 
-        super.initialize(); // set it online
+        updateStatus(ThingStatus.ONLINE);
 
         // start automatic refresh
         startAutomaticRefresh();

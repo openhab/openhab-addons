@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.smappee.internal.SmappeeSensorConsumptionRecord;
@@ -72,7 +73,7 @@ public class SmappeeSensorHandler extends AbstractSmappeeHandler {
         thingId = thing.getConfiguration().get(PARAMETER_SENSOR_ID).toString();
         channelid = thing.getConfiguration().get(PARAMETER_SENSOR_CHANNEL_ID).toString();
 
-        super.initialize(); // set it online
+        updateStatus(ThingStatus.ONLINE);
 
         // start automatic refresh
         startAutomaticRefresh();

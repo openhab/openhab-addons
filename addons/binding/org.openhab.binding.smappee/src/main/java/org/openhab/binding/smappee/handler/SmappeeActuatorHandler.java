@@ -13,6 +13,7 @@ import static org.openhab.binding.smappee.SmappeeBindingConstants.PARAMETER_ACTU
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.smappee.internal.SmappeeService;
 import org.slf4j.Logger;
@@ -56,7 +57,7 @@ public class SmappeeActuatorHandler extends AbstractSmappeeHandler {
 
         thingId = thing.getConfiguration().get(PARAMETER_ACTUATOR_ID).toString();
 
-        super.initialize(); // set it online
+        updateStatus(ThingStatus.ONLINE);
     }
 
 }

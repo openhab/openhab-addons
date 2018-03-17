@@ -78,18 +78,20 @@ public class SmappeeService {
 
     public void startAutomaticRefresh(ScheduledExecutorService scheduledExecutorService,
             final ReadingsUpdate readingsUpdate) {
-        Runnable runnable = () -> {
+        scheduledJob = scheduledExecutorService.scheduleWithFixedDelay(() -> {
             SmappeeDeviceReading readings = getDeviceReadings();
-            if (readings.consumptions.length > 0) {
+
+            // sometimes smappee returns reading without aggregated consumptions
+            if (readings != null && readings.consumptions.length > 0) {
                 readingsUpdate.newState(readings);
             }
-        };
-
-        scheduledJob = scheduledExecutorService.scheduleWithFixedDelay(runnable, 0, config.poll_time, TimeUnit.MINUTES);
+        }, 0, config.poll_time, TimeUnit.MINUTES);
     }
 
     public void stopAutomaticRefresh() {
-        scheduledJob.cancel(true);
+        if (scheduledJob != null) {
+            scheduledJob.cancel(true);
+        }
     }
 
     /**
@@ -196,7 +198,7 @@ public class SmappeeService {
 
                 logger.debug("smappee '{}' - appliance '{}' read", this.serviceLocationId, applianceId);
 
-                if (readings != null && readings.length == 1) {
+                if (readings.length == 1) {
                     return readings[0];
                 }
                 return null;
@@ -240,7 +242,7 @@ public class SmappeeService {
 
                 logger.debug("smappee '{}' - sensor '{}' read", this.serviceLocationId, sensorId);
 
-                if (readings != null && readings.records != null && readings.records.length > 0) {
+                if (readings.records != null && readings.records.length > 0) {
                     return readings.records[0];
                 }
                 return null;
@@ -276,6 +278,7 @@ public class SmappeeService {
                 } else {
                     setData("/dev/v1/servicelocation/" + this.serviceLocationId + "/actuator/" + actuatorID + "/off");
                 }
+                return;
             } catch (Exception se) {
                 logger.warn("failed to set smappee plug '{}' - sensorId '{}' : {}, Retry ({}/{})",
                         this.serviceLocationId, actuatorID, se.getMessage(), currentTry + 1, this.retry);
@@ -293,10 +296,6 @@ public class SmappeeService {
 
         SmappeeServiceLocationResponse smappeeServiceLocationResponse = gson.fromJson(response,
                 SmappeeServiceLocationResponse.class);
-
-        if (smappeeServiceLocationResponse == null) {
-            return false;
-        }
 
         for (SmappeeServiceLocation smappeeServiceLocation : smappeeServiceLocationResponse.serviceLocations) {
             if (smappeeServiceLocation.name.equals(config.service_location_name)) {

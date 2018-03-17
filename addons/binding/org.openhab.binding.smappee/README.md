@@ -16,9 +16,9 @@ This binding provides 1 bridge thing type : 'smappee'. There should be only 1 sm
 This thing act like a bridge and represents your smappee monitor device and should be configured first. Once configured, this will autodetect all other smappee things.
 Detected things :
 
-- smappee-appliance : A detected appliance, the appliances that are not categorized yet (type "Find Me"), are skipped. 
-- smappee-actuator : A paired smappee switch.
-- smappee-sensor : A paired water or gas sensor.
+- smappee-appliance: A detected appliance, the appliances that are not categorized yet (type "Find Me"), are skipped. 
+- smappee-actuator: A paired smappee switch.
+- smappee-sensor: A paired water or gas sensor.
 
 ## Discovery
 
@@ -32,9 +32,7 @@ As described on their [support page] (https://support.smappee.com/hc/en-us/artic
 - Monitor serial number: this can be found at the back of your smappee
 - Account username: the username you use to log in in Smappee, same as thing setting 'Username'
 
-### Configuration in PaperUi
-
-Following settings must be configured in order to make your smappee binding work :
+Following settings must be configured in order to make your smappee binding work:
 
 #### Smappee Bridge
 
@@ -66,22 +64,9 @@ Following settings must be configured in order to make your smappee binding work
 |----------------------|--------------------------------------------------------------------------------------------------------------|
 |Id                    | The unique identifier of the sensor, is a combined identifier : format : [SensorId-ChannelId], eg 1-1    |
 
-### Configuration with config files
-
-A manual setup through a `things/smappee.things` file could look like this:
-
-```
-Bridge smappee:smappee:mySmappee "Smappee" @ "Living Room" [client_id="xxx", client_secret="xxx", username="xxx", password="xxx", service_location_name="xxx", poll_time=5]
-{
-    Thing smappee:smappee-appliance:myAppliance [ id="xxx", type="Blinds" ]
-    Thing smappee:smappee-actuator:myPlug [ id="xxx" ]
-    Thing smappee:smappee-sensor:mySensor [ id="xxx" ]
-}
-```
-
 ## Channels
 
-The following channels are supported :
+The following channels are supported:
 
 #### Smappee Bridge
 
@@ -111,9 +96,18 @@ The following channels are supported :
 |----------------------------|--------------|---------------------------------------------------|
 | smappee-sensor-value       | String       | The measured value of this sensor                 | 
  
-## Item configuration
+## Full Example
 
-### Configuration with config files
+A manual setup through a `things/smappee.things` file could look like this:
+
+```
+Bridge smappee:smappee:mySmappee "Smappee" @ "Living Room" [client_id="xxx", client_secret="xxx", username="xxx", password="xxx", service_location_name="xxx", poll_time=5]
+{
+    Thing smappee:smappee-appliance:myAppliance [ id="xxx", type="Blinds" ]
+    Thing smappee:smappee-actuator:myPlug [ id="xxx" ]
+    Thing smappee:smappee-sensor:mySensor [ id="xxx" ]
+}
+```
 
 A manual configuration through a `demo.items` file could look like this:
 
@@ -123,4 +117,16 @@ Number mySmappee_Solar           "Solar [%s]"            { channel="smappee:smap
 Number mySmappee_AlwaysOn        "Always On [%s]"        { channel="smappee:smappee:mySmappee:smappee-alwayson-channel" }
 
 Number mySmappee_AppliancePower  "Appliance Power [%s]"  { channel="smappee:smappee:myAppliance:smappee-appliance-power" }
+```
+
+The sitemap could look like this:
+
+```
+sitemap home label="My home" {
+    Frame label="Energy" {
+        Text item=mySmappee_Consumption label="Consumption [%s]" icon="energy"
+        Text item=mySmappee_Solar label="Solar [%s]" icon="sun"
+        Text item=mySmappee_AlwaysOn label="Always On [%s]" icon="energy"
+    }
+}
 ```
