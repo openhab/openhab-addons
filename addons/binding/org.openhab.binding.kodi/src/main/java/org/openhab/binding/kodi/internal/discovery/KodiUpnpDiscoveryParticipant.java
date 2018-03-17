@@ -10,15 +10,15 @@ package org.openhab.binding.kodi.internal.discovery;
 
 import static org.openhab.binding.kodi.KodiBindingConstants.*;
 
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant;
+import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
@@ -39,19 +39,9 @@ public class KodiUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private Logger logger = LoggerFactory.getLogger(KodiUpnpDiscoveryParticipant.class);
 
-    private boolean isAutoDiscoveryEnabled;
-    private Set<ThingTypeUID> supportedThingTypes;
+    private boolean isAutoDiscoveryEnabled = true;
+    private Set<ThingTypeUID> supportedThingTypes = SUPPORTED_THING_TYPES_UIDS;
 
-    public KodiUpnpDiscoveryParticipant() {
-        this.isAutoDiscoveryEnabled = true;
-        this.supportedThingTypes = SUPPORTED_THING_TYPES_UIDS;
-    }
-
-    /**
-     * Called at the service activation.
-     *
-     * @param componentContext
-     */
     @Activate
     protected void activate(ComponentContext componentContext) {
         if (componentContext.getProperties() != null) {
@@ -60,7 +50,7 @@ public class KodiUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
             }
         }
-        supportedThingTypes = isAutoDiscoveryEnabled ? SUPPORTED_THING_TYPES_UIDS : new HashSet<ThingTypeUID>();
+        supportedThingTypes = isAutoDiscoveryEnabled ? SUPPORTED_THING_TYPES_UIDS : Collections.emptySet();
     }
 
     @Override
@@ -70,23 +60,23 @@ public class KodiUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public DiscoveryResult createResult(RemoteDevice device) {
-        DiscoveryResult result = null;
         ThingUID thingUid = getThingUID(device);
         if (thingUid != null) {
             String label = StringUtils.isEmpty(device.getDetails().getFriendlyName()) ? device.getDisplayString()
                     : device.getDetails().getFriendlyName();
-            Map<String, Object> properties = new HashMap<>(2, 1);
+            Map<String, Object> properties = new HashMap<>();
             properties.put(HOST_PARAMETER, device.getIdentity().getDescriptorURL().getHost());
 
-            result = DiscoveryResultBuilder.create(thingUid).withLabel(label).withProperties(properties).build();
-        }
+            DiscoveryResult result = DiscoveryResultBuilder.create(thingUid).withLabel(label).withProperties(properties)
+                    .withRepresentationProperty(HOST_PARAMETER).build();
 
-        return result;
+            return result;
+        }
+        return null;
     }
 
     @Override
     public ThingUID getThingUID(RemoteDevice device) {
-        ThingUID result = null;
         if (isAutoDiscoveryEnabled) {
             String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
             if (StringUtils.containsIgnoreCase(manufacturer, MANUFACTURER)) {
@@ -95,15 +85,11 @@ public class KodiUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 if (StringUtils.containsIgnoreCase(device.getType().getType(), UPNP_DEVICE_TYPE)) {
                     logger.debug("Device type matched: search: {}, device value: {}.", UPNP_DEVICE_TYPE,
                             device.getType().getType());
-
-                    ThingTypeUID thingTypeUID = THING_TYPE_KODI;
-
-                    result = new ThingUID(thingTypeUID, device.getIdentity().getUdn().getIdentifierString());
+                    return new ThingUID(THING_TYPE_KODI, device.getIdentity().getUdn().getIdentifierString());
                 }
             }
         }
-
-        return result;
+        return null;
     }
 
 }

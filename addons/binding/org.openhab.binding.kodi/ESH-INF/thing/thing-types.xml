@@ -35,6 +35,8 @@
 			<property name="version">unknown</property>
 		</properties>
 
+		<representation-property>ipAddress</representation-property>
+
 		<config-description-ref uri="thing-type:kodi:kodi" />
 	</thing-type>
 
