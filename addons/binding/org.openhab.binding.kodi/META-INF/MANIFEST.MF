@@ -21,6 +21,7 @@ Import-Package:
  org.eclipse.jetty.websocket.common,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.upnp,
  org.eclipse.smarthome.core.audio,
  org.eclipse.smarthome.core.cache,
  org.eclipse.smarthome.core.library.types,
