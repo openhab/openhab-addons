@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.urtsi.handler;
 
-import static org.openhab.binding.urtsi.UrtsiBindingConstants.POSITION;
-
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -23,8 +21,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.urtsi.UrtsiBindingConstants;
 import org.openhab.binding.urtsi.internal.config.RtsDeviceConfig;
 import org.openhab.binding.urtsi.internal.mapping.UrtsiChannelMapping;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link RtsDeviceHandler} is responsible for handling commands, which are
@@ -34,20 +30,12 @@ import org.slf4j.LoggerFactory;
  */
 public class RtsDeviceHandler extends BaseThingHandler {
 
-    @SuppressWarnings("unused")
-    private Logger logger = LoggerFactory.getLogger(RtsDeviceHandler.class);
-
     public RtsDeviceHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        switch (channelUID.getId()) {
-            case POSITION:
-
-                break;
-        }
         if (channelUID.getId().equals(UrtsiBindingConstants.POSITION)) {
             RtsCommand rtsCommand = null;
             if (command instanceof UpDownType) {
@@ -57,6 +45,8 @@ public class RtsDeviceHandler extends BaseThingHandler {
                         break;
                     case DOWN:
                         rtsCommand = RtsCommand.DOWN;
+                        break;
+                    default:
                         break;
                 }
             } else if (command instanceof StopMoveType) {
@@ -84,7 +74,6 @@ public class RtsDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
         RtsDeviceConfig rtsDeviceConfig = getConfigAs(RtsDeviceConfig.class);
         String mappedChannel = UrtsiChannelMapping.getMappedChannel(rtsDeviceConfig.channel);
         if (mappedChannel == null) {
