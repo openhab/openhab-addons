@@ -46,7 +46,7 @@ public final class NibeUplinkBindingConstants {
 
     // URLs
     public static final String LOGIN_URL = "https://www.nibeuplink.com/LogIn";
-    public static final String DATA_API_URL = "https://www.nibeuplink.com/PrivateAPI/Values";
+    public static final String DATA_API_URL = "https://www.nibeuplink.com/PrivateAPI/QueueValues";
     public static final String MANAGE_API_BASE_URL = "https://www.nibeuplink.com/System/";
 
     // login field names

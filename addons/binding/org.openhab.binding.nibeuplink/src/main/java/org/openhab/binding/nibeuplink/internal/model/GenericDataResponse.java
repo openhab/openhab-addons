@@ -28,6 +28,10 @@ public class GenericDataResponse implements DataResponse {
         private String variableId;
         @SerializedName("CurrentValue")
         private String currentValue;
+        @SerializedName("CurrentIntValue")
+        private String currentIntValue;
+        @SerializedName("IsLoading")
+        private boolean isLoading;
     }
 
     @SerializedName("IsOffline")
@@ -54,7 +58,9 @@ public class GenericDataResponse implements DataResponse {
     public Map<String, String> getValues() {
         Map<String, String> valueMap = new HashMap<>();
         for (Value value : values) {
-            valueMap.put(value.variableId, value.currentValue);
+            if (!value.isLoading) {
+                valueMap.put(value.variableId, value.currentIntValue);
+            }
         }
         return valueMap;
     }

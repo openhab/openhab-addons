@@ -17,55 +17,55 @@ package org.openhab.binding.nibeuplink.internal.model;
 public enum F750Channels implements Channel {
 
     // General
-    CH_40004("40004", "BT1 Outdoor Temperature", ChannelGroup.GENERAL, Double.class),
-    CH_40067("40067", "BT1 Average", ChannelGroup.GENERAL, Double.class),
-    CH_43005("43005", "Degree Minutes (16 bit)", ChannelGroup.GENERAL, Double.class),
-    CH_43009("43009", "Calc. Supply S1", ChannelGroup.GENERAL, Double.class),
-    CH_40071("40071", "BT25 Ext. Supply", ChannelGroup.GENERAL, Double.class),
-    CH_40033("40033", "BT50 Room Temp S1", ChannelGroup.GENERAL, Double.class),
-    CH_43161("43161", "External adjustment activated via input S1", ChannelGroup.GENERAL, String.class),
-    CH_40008("40008", "BT2 Supply temp S1", ChannelGroup.GENERAL, Double.class),
-    CH_40012("40012", "EB100-EP14-BT3 Return temp", ChannelGroup.GENERAL, Double.class),
-    CH_40072("40072", "BF1 EP14 Flow", ChannelGroup.GENERAL, Double.class),
-    CH_10033("10033", "Int. el.add. blocked", ChannelGroup.GENERAL, String.class),
+    CH_40004("40004", "BT1 Outdoor Temperature", ChannelGroup.GENERAL, ValueType.NUMBER),
+    CH_40067("40067", "BT1 Average", ChannelGroup.GENERAL, ValueType.NUMBER),
+    CH_43005("43005", "Degree Minutes (16 bit)", ChannelGroup.GENERAL, ValueType.NUMBER),
+    CH_43009("43009", "Calc. Supply S1", ChannelGroup.GENERAL, ValueType.NUMBER),
+    CH_40071("40071", "BT25 Ext. Supply", ChannelGroup.GENERAL, ValueType.NUMBER),
+    CH_40033("40033", "BT50 Room Temp S1", ChannelGroup.GENERAL, ValueType.NUMBER),
+    CH_43161("43161", "External adjustment activated via input S1", ChannelGroup.GENERAL, ValueType.STRING),
+    CH_40008("40008", "BT2 Supply temp S1", ChannelGroup.GENERAL, ValueType.NUMBER),
+    CH_40012("40012", "EB100-EP14-BT3 Return temp", ChannelGroup.GENERAL, ValueType.NUMBER),
+    CH_40072("40072", "BF1 EP14 Flow", ChannelGroup.GENERAL, ValueType.NUMBER),
+    CH_10033("10033", "Int. el.add. blocked", ChannelGroup.GENERAL, ValueType.STRING),
 
-    CH_43081("43081", "Tot. op.time add.", ChannelGroup.GENERAL, Double.class),
-    CH_43084("43084", "Int. el.add. Power", ChannelGroup.GENERAL, Double.class),
-    CH_47212("47212", "Max int add. power", ChannelGroup.GENERAL, Double.class),
-    CH_48914("48914", "Max int add. power, SG Ready", ChannelGroup.GENERAL, Double.class),
+    CH_43081("43081", "Tot. op.time add.", ChannelGroup.GENERAL, ValueType.NUMBER),
+    CH_43084("43084", "Int. el.add. Power", ChannelGroup.GENERAL, ValueType.NUMBER),
+    CH_47212("47212", "Max int add. power", ChannelGroup.GENERAL, ValueType.NUMBER),
+    CH_48914("48914", "Max int add. power, SG Ready", ChannelGroup.GENERAL, ValueType.NUMBER),
 
-    CH_44308("44308", "Heat Meter - Heat Cpr EP14", ChannelGroup.GENERAL, Double.class),
-    CH_44304("44304", "Heat Meter - Pool Cpr EP14", ChannelGroup.GENERAL, Double.class),
-    CH_44300("44300", "Heat Meter - Heat Cpr and Add EP14", ChannelGroup.GENERAL, Double.class),
+    CH_44308("44308", "Heat Meter - Heat Cpr EP14", ChannelGroup.GENERAL, ValueType.NUMBER),
+    CH_44304("44304", "Heat Meter - Pool Cpr EP14", ChannelGroup.GENERAL, ValueType.NUMBER),
+    CH_44300("44300", "Heat Meter - Heat Cpr and Add EP14", ChannelGroup.GENERAL, ValueType.NUMBER),
 
     // Hotwater
-    CH_40013("40013", "BT7 HW Top", ChannelGroup.HOTWATER, Double.class),
-    CH_40014("40014", "BT6 HW Load", ChannelGroup.HOTWATER, Double.class),
-    CH_44306("44306", "Heat Meter - HW Cpr EP14", ChannelGroup.HOTWATER, Double.class),
-    CH_44298("44298", "Heat Meter - HW Cpr and Add EP14", ChannelGroup.HOTWATER, Double.class),
-    CH_48132("48132", "Temporary Lux", ChannelGroup.HOTWATER, String.class),
-    CH_47041("47041", "Hot water mode", ChannelGroup.HOTWATER, String.class),
+    CH_40013("40013", "BT7 HW Top", ChannelGroup.HOTWATER, ValueType.NUMBER),
+    CH_40014("40014", "BT6 HW Load", ChannelGroup.HOTWATER, ValueType.NUMBER),
+    CH_44306("44306", "Heat Meter - HW Cpr EP14", ChannelGroup.HOTWATER, ValueType.NUMBER),
+    CH_44298("44298", "Heat Meter - HW Cpr and Add EP14", ChannelGroup.HOTWATER, ValueType.NUMBER),
+    CH_48132("48132", "Temporary Lux", ChannelGroup.HOTWATER, ValueType.STRING),
+    CH_47041("47041", "Hot water mode", ChannelGroup.HOTWATER, ValueType.STRING),
 
     // Compressor
-    CH_43181("43181", "Chargepump speed", ChannelGroup.COMPRESSOR, Double.class),
-    CH_43424("43424", "EB100-EP14 Tot. HW op.time compr", ChannelGroup.COMPRESSOR, Double.class),
-    CH_43420("43420", "EB100-EP14 Tot. op.time compr", ChannelGroup.COMPRESSOR, Double.class),
-    CH_43416("43416", "EB100-EP14 Compressor starts", ChannelGroup.COMPRESSOR, Double.class),
-    CH_40022("40022", "EB100-EP14-BT17 Suction", ChannelGroup.COMPRESSOR, Double.class),
-    CH_40019("40019", "EB100-EP14-BT15 Liquid Line", ChannelGroup.COMPRESSOR, Double.class),
-    CH_40018("40018", "EB100-EP14-BT14 Hot Gas Temp", ChannelGroup.COMPRESSOR, Double.class),
-    CH_40017("40017", "EB100-EP14-BT12 Condensor Out", ChannelGroup.COMPRESSOR, Double.class),
-    CH_40020("40020", "EB100-EP14-BT16 Evaporator", ChannelGroup.COMPRESSOR, Double.class),
-    CH_43136("43136", "Compressor Frequency, Actual", ChannelGroup.COMPRESSOR, Double.class),
-    CH_43122("43122", "Compr. current min.freq.", ChannelGroup.COMPRESSOR, Double.class),
-    CH_43123("43123", "Compr. current max.freq.", ChannelGroup.COMPRESSOR, Double.class),
-    CH_10012("10012", "Compressor blocked", ChannelGroup.COMPRESSOR, String.class),
+    CH_43181("43181", "Chargepump speed", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
+    CH_43424("43424", "EB100-EP14 Tot. HW op.time compr", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
+    CH_43420("43420", "EB100-EP14 Tot. op.time compr", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
+    CH_43416("43416", "EB100-EP14 Compressor starts", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
+    CH_40022("40022", "EB100-EP14-BT17 Suction", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
+    CH_40019("40019", "EB100-EP14-BT15 Liquid Line", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
+    CH_40018("40018", "EB100-EP14-BT14 Hot Gas Temp", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
+    CH_40017("40017", "EB100-EP14-BT12 Condensor Out", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
+    CH_40020("40020", "EB100-EP14-BT16 Evaporator", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
+    CH_43136("43136", "Compressor Frequency, Actual", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
+    CH_43122("43122", "Compr. current min.freq.", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
+    CH_43123("43123", "Compr. current max.freq.", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
+    CH_10012("10012", "Compressor blocked", ChannelGroup.COMPRESSOR, ValueType.STRING),
 
     // Airsupply
-    CH_40025("40025", "BT20 Exhaust air temp. 1", ChannelGroup.AIRSUPPLY, Double.class),
-    CH_40026("40026", "BT21 Vented air temp. 1", ChannelGroup.AIRSUPPLY, Double.class),
-    CH_43124("43124", "Air flow ref.", ChannelGroup.AIRSUPPLY, Double.class),
-    CH_41026("41026", "EB100-Adjusted BS1 Air flow", ChannelGroup.AIRSUPPLY, Double.class),
+    CH_40025("40025", "BT20 Exhaust air temp. 1", ChannelGroup.AIRSUPPLY, ValueType.NUMBER),
+    CH_40026("40026", "BT21 Vented air temp. 1", ChannelGroup.AIRSUPPLY, ValueType.NUMBER),
+    CH_43124("43124", "Air flow ref.", ChannelGroup.AIRSUPPLY, ValueType.NUMBER),
+    CH_41026("41026", "EB100-Adjusted BS1 Air flow", ChannelGroup.AIRSUPPLY, ValueType.NUMBER),
 
     /* END */
     ;
@@ -73,8 +73,9 @@ public enum F750Channels implements Channel {
     private final String id;
     private final String name;
     private final ChannelGroup channelGroup;
-    private final Class<?> javaType;
+    private final ValueType valueType;
     private final String writeApiUrl;
+    private final String validationExpression;
 
     /**
      * constructor for channels with wrote access enabled
@@ -85,13 +86,16 @@ public enum F750Channels implements Channel {
      * @param channelGroup
      * @param javaType
      * @param writeApiUrl
+     * @param validationExpression
      */
-    F750Channels(String id, String name, ChannelGroup channelGroup, Class<?> javaType, String writeApiUrl) {
+    F750Channels(String id, String name, ChannelGroup channelGroup, ValueType valueType, String writeApiUrl,
+            String validationExpression) {
         this.id = id;
         this.name = name;
         this.channelGroup = channelGroup;
-        this.javaType = javaType;
+        this.valueType = valueType;
         this.writeApiUrl = writeApiUrl;
+        this.validationExpression = validationExpression;
     }
 
     /**
@@ -103,8 +107,8 @@ public enum F750Channels implements Channel {
      * @param channelGroup
      * @param javaType
      */
-    F750Channels(String id, String name, ChannelGroup channelGroup, Class<?> javaType) {
-        this(id, name, channelGroup, javaType, null);
+    F750Channels(String id, String name, ChannelGroup channelGroup, ValueType valueType) {
+        this(id, name, channelGroup, valueType, null, null);
     }
 
     public static F750Channels fromId(String id) {
@@ -132,8 +136,8 @@ public enum F750Channels implements Channel {
     }
 
     @Override
-    public final Class<?> getJavaType() {
-        return javaType;
+    public final ValueType getValueType() {
+        return valueType;
     }
 
     @Override
@@ -149,6 +153,11 @@ public enum F750Channels implements Channel {
     @Override
     public boolean isReadOnly() {
         return writeApiUrl == null || writeApiUrl.isEmpty();
+    }
+
+    @Override
+    public String getValidationExpression() {
+        return validationExpression;
     }
 
 }

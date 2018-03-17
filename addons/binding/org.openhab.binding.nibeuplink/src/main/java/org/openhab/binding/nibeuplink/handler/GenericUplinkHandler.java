@@ -32,6 +32,7 @@ import org.openhab.binding.nibeuplink.internal.command.UpdateSetting;
 import org.openhab.binding.nibeuplink.internal.connector.UplinkWebInterface;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
 import org.openhab.binding.nibeuplink.internal.model.CustomChannels;
+import org.openhab.binding.nibeuplink.internal.model.ValueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -183,16 +184,16 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
                 String value = values.get(key);
                 logger.debug("Channel is to be updated: {}: {}", channel.getFQName(), value);
                 if (value != null && !value.equals(NO_VALUE)) {
-                    if (channel.getJavaType().equals(Double.class)) {
+                    if (channel.getValueType().equals(ValueType.STRING)) {
+                        updateState(channel.getFQName(), new StringType(value));
+                    } else {
                         try {
-                            updateState(channel.getFQName(), convertToDecimal(value));
+                            updateState(channel.getFQName(), convertToDecimal(value, channel.getValueType()));
                         } catch (NumberFormatException ex) {
                             logger.warn("Could not update channel {} - invalid number: '{}'", channel.getFQName(),
                                     value);
                             updateState(channel.getFQName(), UnDefType.UNDEF);
                         }
-                    } else {
-                        updateState(channel.getFQName(), new StringType(value));
                     }
                 } else {
                     logger.debug("Value is null or not provided by heatpump (channel: {})", channel.getFQName());
@@ -233,8 +234,19 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
      * @param number as String
      * @return converted value to DecimalType
      */
-    private @NonNull DecimalType convertToDecimal(String number) {
-        return new DecimalType(number.replaceAll(",", ".").replaceAll("[^0-9.-]", ""));
+    private @NonNull DecimalType convertToDecimal(String number, ValueType type) {
+        double value = new DecimalType(number).doubleValue();
+        switch (type) {
+            case NUMBER_10:
+                value /= 10;
+                break;
+            case NUMBER_100:
+                value /= 100;
+                break;
+            default:
+                break;
+        }
+        return new DecimalType(value);
     }
 
     protected abstract Channel getThingSpecificChannel(String id);

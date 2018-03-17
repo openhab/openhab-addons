@@ -33,6 +33,8 @@
 			<channel id="44300" typeId="vvm320-type-44300" />
 
 			<channel id="47011" typeId="vvm320-type-47011" />
+
+			<channel id="48043" typeId="vvm320-type-48043" />
 		</channels>
 	</channel-group-type>
 

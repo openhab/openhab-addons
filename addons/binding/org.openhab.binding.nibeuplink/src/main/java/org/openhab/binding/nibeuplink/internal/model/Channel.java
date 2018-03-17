@@ -36,7 +36,7 @@ public interface Channel {
         return null;
     }
 
-    Class<?> getJavaType();
+    ValueType getValueType();
 
     @NonNull
     String getFQName();

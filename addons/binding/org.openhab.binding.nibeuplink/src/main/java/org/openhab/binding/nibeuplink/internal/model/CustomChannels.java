@@ -17,14 +17,14 @@ package org.openhab.binding.nibeuplink.internal.model;
 public enum CustomChannels implements Channel {
 
     // Custom Channels
-    CH_CH01("00000", "CH01", ChannelGroup.CUSTOM, String.class),
-    CH_CH02("00000", "CH02", ChannelGroup.CUSTOM, String.class),
-    CH_CH03("00000", "CH03", ChannelGroup.CUSTOM, String.class),
-    CH_CH04("00000", "CH04", ChannelGroup.CUSTOM, String.class),
-    CH_CH05("00000", "CH05", ChannelGroup.CUSTOM, String.class),
-    CH_CH06("00000", "CH06", ChannelGroup.CUSTOM, String.class),
-    CH_CH07("00000", "CH07", ChannelGroup.CUSTOM, String.class),
-    CH_CH08("00000", "CH08", ChannelGroup.CUSTOM, String.class),
+    CH_CH01("00000", "CH01", ChannelGroup.CUSTOM, ValueType.STRING),
+    CH_CH02("00000", "CH02", ChannelGroup.CUSTOM, ValueType.STRING),
+    CH_CH03("00000", "CH03", ChannelGroup.CUSTOM, ValueType.STRING),
+    CH_CH04("00000", "CH04", ChannelGroup.CUSTOM, ValueType.STRING),
+    CH_CH05("00000", "CH05", ChannelGroup.CUSTOM, ValueType.STRING),
+    CH_CH06("00000", "CH06", ChannelGroup.CUSTOM, ValueType.STRING),
+    CH_CH07("00000", "CH07", ChannelGroup.CUSTOM, ValueType.STRING),
+    CH_CH08("00000", "CH08", ChannelGroup.CUSTOM, ValueType.STRING),
 
     /* END */
     ;
@@ -32,8 +32,9 @@ public enum CustomChannels implements Channel {
     private String id;
     private final String name;
     private final ChannelGroup channelGroup;
-    private final Class<?> javaType;
+    private final ValueType valueType;
     private final String writeApiUrl;
+    private final String validationExpression;
 
     /**
      * constructor for channels with wrote access enabled
@@ -44,13 +45,16 @@ public enum CustomChannels implements Channel {
      * @param channelGroup
      * @param javaType
      * @param writeApiUrl
+     * @param validationExpression
      */
-    CustomChannels(String id, String name, ChannelGroup channelGroup, Class<?> javaType, String writeApiUrl) {
+    CustomChannels(String id, String name, ChannelGroup channelGroup, ValueType valueType, String writeApiUrl,
+            String validationExpression) {
         this.id = id;
         this.name = name;
         this.channelGroup = channelGroup;
-        this.javaType = javaType;
+        this.valueType = valueType;
         this.writeApiUrl = writeApiUrl;
+        this.validationExpression = validationExpression;
     }
 
     /**
@@ -62,8 +66,8 @@ public enum CustomChannels implements Channel {
      * @param channelGroup
      * @param javaType
      */
-    CustomChannels(String id, String name, ChannelGroup channelGroup, Class<?> javaType) {
-        this(id, name, channelGroup, javaType, null);
+    private CustomChannels(String id, String name, ChannelGroup channelGroup, ValueType valueType) {
+        this(id, name, channelGroup, valueType, null, null);
     }
 
     public static CustomChannels fromId(String id) {
@@ -95,8 +99,8 @@ public enum CustomChannels implements Channel {
     }
 
     @Override
-    public final Class<?> getJavaType() {
-        return javaType;
+    public final ValueType getValueType() {
+        return valueType;
     }
 
     @Override
@@ -112,6 +116,11 @@ public enum CustomChannels implements Channel {
     @Override
     public boolean isReadOnly() {
         return writeApiUrl == null || writeApiUrl.isEmpty();
+    }
+
+    @Override
+    public String getValidationExpression() {
+        return validationExpression;
     }
 
 }
