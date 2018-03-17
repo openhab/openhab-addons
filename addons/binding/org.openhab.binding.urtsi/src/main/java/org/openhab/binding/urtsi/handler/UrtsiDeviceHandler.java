@@ -49,19 +49,19 @@ import gnu.io.SerialPortEventListener;
  */
 public class UrtsiDeviceHandler extends BaseBridgeHandler {
 
-    private Logger logger = LoggerFactory.getLogger(UrtsiDeviceHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(UrtsiDeviceHandler.class);
 
     private static final String GNU_IO_RXTX_SERIAL_PORTS = "gnu.io.rxtx.SerialPorts";
 
-    private static final int baud = 9600;
-    private static final int databits = SerialPort.DATABITS_8;
-    private static final int stopbit = SerialPort.STOPBITS_1;
-    private static final int parity = SerialPort.PARITY_NONE;
+    private static final int BAUD = 9600;
+    private static final int DATABITS = SerialPort.DATABITS_8;
+    private static final int STOPBIT = SerialPort.STOPBITS_1;
+    private static final int PARITY = SerialPort.PARITY_NONE;
 
     private int commandInterval;
     private String address;
 
-    private long lastCommandTime = 0;
+    private long lastCommandTime;
 
     private CommPortIdentifier portId;
     private SerialPort serialPort;
@@ -101,8 +101,7 @@ public class UrtsiDeviceHandler extends BaseBridgeHandler {
      * The writing of the msg is executed synchronized, so it's guaranteed that the device doesn't get
      * multiple messages concurrently.
      *
-     * @param msg
-     *            the string to send
+     * @param msg the string to send
      * @return true, if the message has been transmitted successfully, otherwise false.
      */
     protected synchronized boolean writeString(final String msg) {
@@ -117,7 +116,7 @@ public class UrtsiDeviceHandler extends BaseBridgeHandler {
             }
         }
         try {
-            final List<Boolean> listenerResult = new ArrayList<Boolean>();
+            final List<Boolean> listenerResult = new ArrayList<>();
             serialPort.addEventListener(new SerialPortEventListener() {
                 @Override
                 public void serialEvent(SerialPortEvent event) {
@@ -181,7 +180,7 @@ public class UrtsiDeviceHandler extends BaseBridgeHandler {
         if (serialPortsProperty != null) {
             serialPorts = Sets.newHashSet(Splitter.on(":").split(serialPortsProperty));
         } else {
-            serialPorts = new HashSet<String>();
+            serialPorts = new HashSet<>();
         }
         if (serialPorts.add(port)) {
             logger.debug("Added {} to the {} system property.", port, GNU_IO_RXTX_SERIAL_PORTS);
@@ -201,7 +200,7 @@ public class UrtsiDeviceHandler extends BaseBridgeHandler {
             // initialize serial port
             serialPort = portId.open("openHAB", 2000);
             // set port parameters
-            serialPort.setSerialPortParams(baud, databits, stopbit, parity);
+            serialPort.setSerialPortParams(BAUD, DATABITS, STOPBIT, PARITY);
             inputStream = serialPort.getInputStream();
             outputStream = serialPort.getOutputStream();
             updateStatus(ThingStatus.ONLINE);
