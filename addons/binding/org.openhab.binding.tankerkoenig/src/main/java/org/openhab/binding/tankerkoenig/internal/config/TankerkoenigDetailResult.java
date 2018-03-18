@@ -15,9 +15,8 @@ import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
  * details request
  * Actually used for OpeningTimes only.
  *
- * @author Dennis Dollinger
- * @author Jürgen Baginski
- *
+ * @author Dennis Dollinger - Initial contribution
+ * @author Jürgen Baginski - Initial contribution
  */
 public class TankerkoenigDetailResult {
 
