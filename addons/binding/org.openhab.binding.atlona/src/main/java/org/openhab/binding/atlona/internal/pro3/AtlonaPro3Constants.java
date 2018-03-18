@@ -12,7 +12,7 @@ package org.openhab.binding.atlona.internal.pro3;
  * The {@link AtlonaPro3Binding} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 class AtlonaPro3Constants {
 

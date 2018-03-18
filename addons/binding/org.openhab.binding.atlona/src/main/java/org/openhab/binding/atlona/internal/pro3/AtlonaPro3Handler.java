@@ -34,39 +34,38 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link org.openhab.binding.atlona.internal.pro3.AtlonaPro3Handler} is responsible for handling commands, which
- * are
- * sent to one of the channels.
+ * are sent to one of the channels.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
 
-    private Logger logger = LoggerFactory.getLogger(AtlonaPro3Handler.class);
+    private final Logger logger = LoggerFactory.getLogger(AtlonaPro3Handler.class);
 
     /**
      * The {@link AtlonaPro3PortocolHandler} protocol handler
      */
-    private AtlonaPro3PortocolHandler _atlonaHandler;
+    private AtlonaPro3PortocolHandler atlonaHandler;
 
     /**
      * The {@link SocketSession} telnet session to the switch. Will be null if not connected.
      */
-    private SocketSession _session;
+    private SocketSession session;
 
     /**
-     * The polling job to poll the actual state from the {@link #_session}
+     * The polling job to poll the actual state from the {@link #session}
      */
-    private ScheduledFuture<?> _polling;
+    private ScheduledFuture<?> polling;
 
     /**
      * The retry connection event
      */
-    private ScheduledFuture<?> _retryConnection;
+    private ScheduledFuture<?> retryConnection;
 
     /**
      * The ping event
      */
-    private ScheduledFuture<?> _ping;
+    private ScheduledFuture<?> ping;
 
     // List of all the groups patterns we recognize
     private static final Pattern GROUP_PRIMARY_PATTERN = Pattern.compile("^" + AtlonaPro3Constants.GROUP_PRIMARY + "$");
@@ -118,7 +117,6 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof RefreshType) {
             handleRefresh(channelUID);
             return;
@@ -133,7 +131,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                 case AtlonaPro3Constants.CHANNEL_POWER:
                     if (command instanceof OnOffType) {
                         final boolean makeOn = ((OnOffType) command) == OnOffType.ON;
-                        _atlonaHandler.setPower(makeOn);
+                        atlonaHandler.setPower(makeOn);
                     } else {
                         logger.debug("Received a POWER channel command with a non OnOffType: {}", command);
                     }
@@ -143,7 +141,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                 case AtlonaPro3Constants.CHANNEL_PANELLOCK:
                     if (command instanceof OnOffType) {
                         final boolean makeOn = ((OnOffType) command) == OnOffType.ON;
-                        _atlonaHandler.setPanelLock(makeOn);
+                        atlonaHandler.setPanelLock(makeOn);
                     } else {
                         logger.debug("Received a PANELLOCK channel command with a non OnOffType: {}", command);
                     }
@@ -152,7 +150,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                 case AtlonaPro3Constants.CHANNEL_IRENABLE:
                     if (command instanceof OnOffType) {
                         final boolean makeOn = ((OnOffType) command) == OnOffType.ON;
-                        _atlonaHandler.setIrOn(makeOn);
+                        atlonaHandler.setIrOn(makeOn);
                     } else {
                         logger.debug("Received a IRLOCK channel command with a non OnOffType: {}", command);
                     }
@@ -164,13 +162,13 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                         Matcher cmd;
                         try {
                             if ((cmd = CMD_MATRIXRESET.matcher(matrixCmd)).matches()) {
-                                _atlonaHandler.resetMatrix();
+                                atlonaHandler.resetMatrix();
                             } else if ((cmd = CMD_MATRIXRESETPORTS.matcher(matrixCmd)).matches()) {
-                                _atlonaHandler.resetAllPorts();
+                                atlonaHandler.resetAllPorts();
                             } else if ((cmd = CMD_MATRIXPORTALL.matcher(matrixCmd)).matches()) {
                                 if (cmd.groupCount() == 1) {
                                     final int portNbr = Integer.parseInt(cmd.group(1));
-                                    _atlonaHandler.setPortAll(portNbr);
+                                    atlonaHandler.setPortAll(portNbr);
                                 } else {
                                     logger.debug("Unknown matirx set port command: '{}'", matrixCmd);
                                 }
@@ -191,21 +189,21 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                             if ((cmd = CMD_PRESETSAVE.matcher(presetCmd)).matches()) {
                                 if (cmd.groupCount() == 1) {
                                     final int presetNbr = Integer.parseInt(cmd.group(1));
-                                    _atlonaHandler.saveIoSettings(presetNbr);
+                                    atlonaHandler.saveIoSettings(presetNbr);
                                 } else {
                                     logger.debug("Unknown preset save command: '{}'", presetCmd);
                                 }
                             } else if ((cmd = CMD_PRESETRECALL.matcher(presetCmd)).matches()) {
                                 if (cmd.groupCount() == 1) {
                                     final int presetNbr = Integer.parseInt(cmd.group(1));
-                                    _atlonaHandler.recallIoSettings(presetNbr);
+                                    atlonaHandler.recallIoSettings(presetNbr);
                                 } else {
                                     logger.debug("Unknown preset recall command: '{}'", presetCmd);
                                 }
                             } else if ((cmd = CMD_PRESETCLEAR.matcher(presetCmd)).matches()) {
                                 if (cmd.groupCount() == 1) {
                                     final int presetNbr = Integer.parseInt(cmd.group(1));
-                                    _atlonaHandler.clearIoSettings(presetNbr);
+                                    atlonaHandler.clearIoSettings(presetNbr);
                                 } else {
                                     logger.debug("Unknown preset clear command: '{}'", presetCmd);
                                 }
@@ -223,7 +221,6 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                     logger.debug("Unknown/Unsupported Primary Channel: {}", channelUID.getAsString());
                     break;
             }
-
         } else if ((m = GROUP_PORT_PATTERN.matcher(group)).matches()) {
             if (m.groupCount() == 1) {
                 try {
@@ -233,7 +230,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                         case AtlonaPro3Constants.CHANNEL_PORTOUTPUT:
                             if (command instanceof DecimalType) {
                                 final int inpNbr = ((DecimalType) command).intValue();
-                                _atlonaHandler.setPortSwitch(inpNbr, portNbr);
+                                atlonaHandler.setPortSwitch(inpNbr, portNbr);
                             } else {
                                 logger.debug("Received a PORTOUTPUT channel command with a non DecimalType: {}",
                                         command);
@@ -244,7 +241,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                         case AtlonaPro3Constants.CHANNEL_PORTPOWER:
                             if (command instanceof OnOffType) {
                                 final boolean makeOn = ((OnOffType) command) == OnOffType.ON;
-                                _atlonaHandler.setPortPower(portNbr, makeOn);
+                                atlonaHandler.setPortPower(portNbr, makeOn);
                             } else {
                                 logger.debug("Received a PORTPOWER channel command with a non OnOffType: {}", command);
                             }
@@ -267,9 +264,9 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                             if (command instanceof DecimalType) {
                                 final int outPortNbr = ((DecimalType) command).intValue();
                                 if (outPortNbr <= 0) {
-                                    _atlonaHandler.removePortMirror(hdmiPortNbr);
+                                    atlonaHandler.removePortMirror(hdmiPortNbr);
                                 } else {
-                                    _atlonaHandler.setPortMirror(hdmiPortNbr, outPortNbr);
+                                    atlonaHandler.setPortMirror(hdmiPortNbr, outPortNbr);
                                 }
                             } else {
                                 logger.debug("Received a PORTMIRROR channel command with a non DecimalType: {}",
@@ -280,16 +277,16 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                         case AtlonaPro3Constants.CHANNEL_PORTMIRRORENABLED:
                             if (command instanceof OnOffType) {
                                 if (command == OnOffType.ON) {
-                                    final StatefulHandlerCallback callback = (StatefulHandlerCallback) _atlonaHandler
+                                    final StatefulHandlerCallback callback = (StatefulHandlerCallback) atlonaHandler
                                             .getCallback();
                                     final State state = callback.getState(AtlonaPro3Constants.CHANNEL_PORTMIRROR);
                                     int outPortNbr = 1;
                                     if (state != null && state instanceof DecimalType) {
                                         outPortNbr = ((DecimalType) state).intValue();
                                     }
-                                    _atlonaHandler.setPortMirror(hdmiPortNbr, outPortNbr);
+                                    atlonaHandler.setPortMirror(hdmiPortNbr, outPortNbr);
                                 } else {
-                                    _atlonaHandler.removePortMirror(hdmiPortNbr);
+                                    atlonaHandler.removePortMirror(hdmiPortNbr);
                                 }
                             } else {
                                 logger.debug("Received a PORTMIRROR channel command with a non DecimalType: {}",
@@ -313,7 +310,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                     switch (id) {
                         case AtlonaPro3Constants.CHANNEL_VOLUME_MUTE:
                             if (command instanceof OnOffType) {
-                                _atlonaHandler.setVolumeMute(portNbr, ((OnOffType) command) == OnOffType.ON);
+                                atlonaHandler.setVolumeMute(portNbr, ((OnOffType) command) == OnOffType.ON);
                             } else {
                                 logger.debug("Received a VOLUME MUTE channel command with a non OnOffType: {}",
                                         command);
@@ -323,7 +320,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                         case AtlonaPro3Constants.CHANNEL_VOLUME:
                             if (command instanceof DecimalType) {
                                 final double level = ((DecimalType) command).doubleValue();
-                                _atlonaHandler.setVolume(portNbr, level);
+                                atlonaHandler.setVolume(portNbr, level);
                             } else {
                                 logger.debug("Received a VOLUME channel command with a non DecimalType: {}", command);
                             }
@@ -355,14 +352,14 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
 
         final String group = channelUID.getGroupId().toLowerCase();
         final String id = channelUID.getIdWithoutGroup().toLowerCase();
-        final StatefulHandlerCallback callback = (StatefulHandlerCallback) _atlonaHandler.getCallback();
+        final StatefulHandlerCallback callback = (StatefulHandlerCallback) atlonaHandler.getCallback();
 
         Matcher m;
         if ((m = GROUP_PRIMARY_PATTERN.matcher(group)).matches()) {
             switch (id) {
                 case AtlonaPro3Constants.CHANNEL_POWER:
                     callback.removeState(AtlonaPro3Utilities.createChannelID(group, id));
-                    _atlonaHandler.refreshPower();
+                    atlonaHandler.refreshPower();
                     break;
 
                 default:
@@ -377,11 +374,11 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
 
                     switch (id) {
                         case AtlonaPro3Constants.CHANNEL_PORTOUTPUT:
-                            _atlonaHandler.refreshPortStatus(portNbr);
+                            atlonaHandler.refreshPortStatus(portNbr);
                             break;
 
                         case AtlonaPro3Constants.CHANNEL_PORTPOWER:
-                            _atlonaHandler.refreshPortPower(portNbr);
+                            atlonaHandler.refreshPortPower(portNbr);
                             break;
                         default:
                             break;
@@ -396,7 +393,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                 try {
                     final int hdmiPortNbr = Integer.parseInt(m.group(1));
                     callback.removeState(AtlonaPro3Utilities.createChannelID(group, hdmiPortNbr, id));
-                    _atlonaHandler.refreshPortMirror(hdmiPortNbr);
+                    atlonaHandler.refreshPortMirror(hdmiPortNbr);
                 } catch (NumberFormatException e) {
                     logger.debug("Bad Mirror Channel (can't parse the port nbr): {}", channelUID.getAsString());
                 }
@@ -410,10 +407,10 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
 
                     switch (id) {
                         case AtlonaPro3Constants.CHANNEL_VOLUME_MUTE:
-                            _atlonaHandler.refreshVolumeMute(portNbr);
+                            atlonaHandler.refreshVolumeMute(portNbr);
                             break;
                         case AtlonaPro3Constants.CHANNEL_VOLUME:
-                            _atlonaHandler.refreshVolumeStatus(portNbr);
+                            atlonaHandler.refreshVolumeStatus(portNbr);
                             break;
 
                         default:
@@ -424,8 +421,6 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                 }
 
             }
-        } else {
-            // nothing else matters...
         }
     }
 
@@ -450,8 +445,8 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
             return;
         }
 
-        _session = new SocketChannelSession(config.getIpAddress(), 23);
-        _atlonaHandler = new AtlonaPro3PortocolHandler(_session, config, getCapabilities(),
+        session = new SocketChannelSession(config.getIpAddress(), 23);
+        atlonaHandler = new AtlonaPro3PortocolHandler(session, config, getCapabilities(),
                 new StatefulHandlerCallback(new AtlonaHandlerCallback() {
                     @Override
                     public void stateChanged(String channelId, State state) {
@@ -487,34 +482,32 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
         String response = "Server is offline - will try to reconnect later";
         try {
             // clear listeners to avoid any 'old' listener from handling initial messages
-            _session.clearListeners();
-            _session.connect();
+            session.clearListeners();
+            session.connect();
 
-            response = _atlonaHandler.login();
+            response = atlonaHandler.login();
             if (response == null) {
                 final AtlonaPro3Config config = getAtlonaConfig();
                 if (config != null) {
-
-                    _polling = this.scheduler.scheduleWithFixedDelay(() -> {
+                    polling = this.scheduler.scheduleWithFixedDelay(() -> {
                         final ThingStatus status = getThing().getStatus();
                         if (status == ThingStatus.ONLINE) {
-                            if (_session.isConnected()) {
-                                _atlonaHandler.refreshAll();
+                            if (session.isConnected()) {
+                                atlonaHandler.refreshAll();
                             } else {
                                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                         "Atlona PRO3 has disconnected. Will try to reconnect later.");
-
                             }
                         } else if (status == ThingStatus.OFFLINE) {
                             disconnect(true);
                         }
                     }, config.getPolling(), config.getPolling(), TimeUnit.SECONDS);
 
-                    _ping = this.scheduler.scheduleWithFixedDelay(() -> {
+                    ping = this.scheduler.scheduleWithFixedDelay(() -> {
                         final ThingStatus status = getThing().getStatus();
                         if (status == ThingStatus.ONLINE) {
-                            if (_session.isConnected()) {
-                                _atlonaHandler.ping();
+                            if (session.isConnected()) {
+                                atlonaHandler.ping();
                             }
                         }
                     }, config.getPing(), config.getPing(), TimeUnit.SECONDS);
@@ -533,27 +526,27 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
     }
 
     /**
-     * Attempts to disconnect from the session and will optionally retry the connection attempt. The {@link #_polling}
-     * will be cancelled, the {@link #_ping} will be cancelled and both set to null then the {@link #_session} will be
+     * Attempts to disconnect from the session and will optionally retry the connection attempt. The {@link #polling}
+     * will be cancelled, the {@link #ping} will be cancelled and both set to null then the {@link #session} will be
      * disconnected.
      *
      * @param retryConnection true to retry connection attempts after the disconnect
      */
     private void disconnect(boolean retryConnection) {
         // Cancel polling
-        if (_polling != null) {
-            _polling.cancel(true);
-            _polling = null;
+        if (polling != null) {
+            polling.cancel(true);
+            polling = null;
         }
 
         // Cancel ping
-        if (_ping != null) {
-            _ping.cancel(true);
-            _ping = null;
+        if (ping != null) {
+            ping.cancel(true);
+            ping = null;
         }
 
         try {
-            _session.disconnect();
+            session.disconnect();
         } catch (IOException e) {
             // ignore - we don't care
         }
@@ -569,12 +562,12 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
      * {@link #connect()} method. If a retry attempt is pending, the request is ignored.
      */
     private void retryConnect() {
-        if (_retryConnection == null) {
+        if (retryConnection == null) {
             final AtlonaPro3Config config = getAtlonaConfig();
             if (config != null) {
                 logger.info("Will try to reconnect in {} seconds", config.getRetryPolling());
-                _retryConnection = this.scheduler.schedule(() -> {
-                    _retryConnection = null;
+                retryConnection = this.scheduler.schedule(() -> {
+                    retryConnection = null;
                     connect();
                 }, config.getRetryPolling(), TimeUnit.SECONDS);
             }
