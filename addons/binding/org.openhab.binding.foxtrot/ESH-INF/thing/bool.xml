@@ -8,8 +8,8 @@
 			<bridge-type-ref id="plccoms"/>
 		</supported-bridge-type-refs>
 
-		<label>Variable</label>
-		<description>Published Foxtrot PLC's variable</description>
+		<label>Bool variable</label>
+		<description>Published Foxtrot PLC's public bool variable</description>
 
 		<channels>
 			<channel typeId="bool-channel" id="bool"/>

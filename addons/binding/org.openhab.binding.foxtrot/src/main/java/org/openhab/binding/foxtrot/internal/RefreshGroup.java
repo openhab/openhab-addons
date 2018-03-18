@@ -77,4 +77,12 @@ public class RefreshGroup {
     public void removeHandler(final RefreshableHandler handler) {
         handlers.stream().filter(h -> h.equals(handler)).findFirst().ifPresent(handlers::remove);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("RefreshGroup{");
+        sb.append(name);
+        sb.append('}');
+        return sb.toString();
+    }
 }

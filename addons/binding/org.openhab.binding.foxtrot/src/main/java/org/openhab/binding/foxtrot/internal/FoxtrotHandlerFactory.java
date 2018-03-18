@@ -62,11 +62,11 @@ public class FoxtrotHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_PLC.equals(thingTypeUID)) {
             return new FoxtrotBridgeHandler((Bridge) thing);
         } else if (THING_TYPE_STRING.equals(thingTypeUID)) {
-            return new NumberHandler(thing);
+            return new StringHandler(thing);
         } else if (THING_TYPE_NUMBER.equals(thingTypeUID)) {
             return new NumberHandler(thing);
         } else if (THING_TYPE_BOOL.equals(thingTypeUID)) {
-            return new NumberHandler(thing);
+            return new BoolHandler(thing);
         } else if (THING_TYPE_SWITCH.equals(thingTypeUID)) {
             return new SwitchHandler(thing);
         } else if (THING_TYPE_BLIND.equals(thingTypeUID)) {
