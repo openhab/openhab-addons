@@ -16,7 +16,7 @@ import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 /**
  * A list of Shades, as returned by the HD Power View Hub
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public class Shades {
 

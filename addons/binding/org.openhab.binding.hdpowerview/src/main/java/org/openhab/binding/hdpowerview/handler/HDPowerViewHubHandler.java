@@ -58,7 +58,7 @@ import com.google.gson.JsonParseException;
  */
 public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
-    private Logger logger = LoggerFactory.getLogger(HDPowerViewHubHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubHandler.class);
 
     private long refreshInterval;
 
@@ -200,7 +200,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 allChannels.removeAll(channels.values());
                 updateThing(editThing().withChannels(allChannels).build());
             }
-
         } else {
             logger.warn("No response to scene poll");
         }
