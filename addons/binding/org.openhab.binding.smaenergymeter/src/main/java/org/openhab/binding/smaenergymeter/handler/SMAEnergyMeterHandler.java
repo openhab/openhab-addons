@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SMAEnergyMeterHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(SMAEnergyMeterHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SMAEnergyMeterHandler.class);
     private EnergyMeter energyMeter;
     private ScheduledFuture<?> pollingJob;
 
