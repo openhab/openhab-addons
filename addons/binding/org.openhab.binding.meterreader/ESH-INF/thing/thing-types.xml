@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="meterreader" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="meter">
 		<label>Meter device</label>
 		<description>The meter device to read the SML or IEC 62056-21 messages from</description>
@@ -56,7 +56,14 @@
 				<description>An quotient to use for conversion of the number</description>
 				<default>1.0</default>
 			</parameter>
+			
+            <parameter name="negate" type="text">
+                <advanced>true</advanced>
+                 <label>Negate property</label>
+                 <description>e.g. 1-0#1-8-0:5:1:status //negate if status(1-0#1-8-0) and 2^5 = 1</description>
+            </parameter>
 		</config-description>
+        
 	</channel-type>
 
 	<channel-type id="StringChannel">

@@ -127,9 +127,10 @@ public class MeterReaderHandler extends BaseThingHandler {
 
                     String obis = value.getObisCode();
 
-                    String obisChannelString = getObisChannelId(obis);
+                    String obisChannelString = MeterReaderBindingConstants.getObisChannelId(obis);
                     Channel channel = thing.getChannel(obisChannelString);
                     OBISTypeValue obisType = getObisType(obis, channel);
+
                     if (channel == null) {
                         logger.debug("Adding channel: {} with item type: {}", obisChannelString, obisType);
 
@@ -163,18 +164,16 @@ public class MeterReaderHandler extends BaseThingHandler {
                     if (!channel.getProperties().containsKey(MeterReaderBindingConstants.CHANNEL_PROPERTY_OBIS)) {
                         addObisPropertyToChannel(obis, channel);
                     }
+
                     updateState(channel.getUID(), obisType.type);
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 }
 
                 private void addObisPropertyToChannel(String obis, Channel channel) {
-                    ChannelBuilder newChannel = ChannelBuilder.create(channel.getUID(), channel.getAcceptedItemType());
-                    newChannel.withDefaultTags(channel.getDefaultTags());
-                    newChannel.withConfiguration(channel.getConfiguration());
-                    newChannel.withDescription(channel.getDescription());
-                    newChannel.withKind(channel.getKind());
-                    newChannel.withLabel(channel.getLabel());
-                    newChannel.withType(channel.getChannelTypeUID());
+                    ChannelBuilder newChannel = ChannelBuilder.create(channel.getUID(), channel.getAcceptedItemType())
+                            .withDefaultTags(channel.getDefaultTags()).withConfiguration(channel.getConfiguration())
+                            .withDescription(channel.getDescription()).withKind(channel.getKind())
+                            .withLabel(channel.getLabel()).withType(channel.getChannelTypeUID());
                     HashMap<String, String> properties = new HashMap<>(channel.getProperties());
                     properties.put(MeterReaderBindingConstants.CHANNEL_PROPERTY_OBIS, obis);
                     newChannel.withProperties(properties);
@@ -185,7 +184,7 @@ public class MeterReaderHandler extends BaseThingHandler {
                 public void valueRemoved(MeterValue value) {
 
                     // channels that are not available are removed
-                    String obisChannelId = getObisChannelId(value.getObisCode());
+                    String obisChannelId = MeterReaderBindingConstants.getObisChannelId(value.getObisCode());
                     logger.debug("Removing channel: {}", obisChannelId);
                     ThingBuilder thingBuilder = editThing();
                     thingBuilder.withoutChannel(new ChannelUID(thing.getUID(), obisChannelId));
@@ -216,9 +215,9 @@ public class MeterReaderHandler extends BaseThingHandler {
     private void updateOBISChannel(ChannelUID channelId) {
         if (isLinked(channelId.getId())) {
             Channel channel = this.thing.getChannel(channelId.getId());
+            if (channel != null) {
 
-            String obis = channel.getProperties().get(MeterReaderBindingConstants.CHANNEL_PROPERTY_OBIS);
-            if (obis != null) {
+                String obis = channel.getProperties().get(MeterReaderBindingConstants.CHANNEL_PROPERTY_OBIS);
                 OBISTypeValue obisType = getObisType(obis, channel);
                 if (obisType != null) {
 
@@ -242,11 +241,11 @@ public class MeterReaderHandler extends BaseThingHandler {
                     channelType = new ChannelTypeUID(MeterReaderBindingConstants.BINDING_ID,
                             MeterReaderBindingConstants.CHANNEL_TYPE_NUMBER);
                     if (channel != null) {
+                        type = applyNegation(channel, type);
                         Number conversionRatio = (Number) channel.getConfiguration()
                                 .get(MeterReaderBindingConstants.CONFIGURATION_CONVERSION);
                         if (conversionRatio != null) {
                             double newValue = ((DecimalType) type).doubleValue() / conversionRatio.doubleValue();
-                            newValue = smlDevice.getEnergyDirection().convert(newValue);
                             type = new DecimalType(newValue);
                         }
                     }
@@ -266,8 +265,31 @@ public class MeterReaderHandler extends BaseThingHandler {
         return null;
     }
 
-    protected String getObisChannelId(String obis) {
-        return obis.replaceAll("\\.", "-").replaceAll(":|\\*", "#");
+    private State applyNegation(Channel channel, State currentState) {
+        try {
+
+            String negateProperty = (String) channel.getConfiguration()
+                    .get(MeterReaderBindingConstants.CONFIGURATION_CHANNEL_NEGATE);
+            if (negateProperty != null && !negateProperty.trim().isEmpty()) {
+                boolean shouldNegateState = NegateHandler.shouldNegateState(negateProperty, channelId -> {
+                    Channel negateChannel = getThing().getChannel(channelId);
+                    if (negateChannel != null) {
+
+                        return smlDevice.getSmlValue(
+                                negateChannel.getProperties().get(MeterReaderBindingConstants.CHANNEL_PROPERTY_OBIS));
+                    }
+                    return null;
+                });
+
+                if (shouldNegateState) {
+
+                    return new DecimalType(((DecimalType) currentState).doubleValue() * -1);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Failed to apply negation for channel: {}", channel.getUID(), e);
+        }
+        return currentState;
     }
 
     class OBISTypeValue {

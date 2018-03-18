@@ -8,15 +8,14 @@
  */
 package org.openhab.binding.meterreader.internal.sml;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.meterreader.connectors.IMeterReaderConnector;
 import org.openhab.binding.meterreader.internal.MeterDevice;
 import org.openhab.binding.meterreader.internal.MeterValue;
 import org.openhab.binding.meterreader.internal.helper.ProtocolMode;
+import org.openmuc.jsml.structures.ASNObject;
 import org.openmuc.jsml.structures.EMessageBody;
 import org.openmuc.jsml.structures.SmlFile;
 import org.openmuc.jsml.structures.SmlList;
@@ -110,10 +109,6 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
                     SmlListEntry[] smlListEntries = smlValueList.getValListEntry();
 
                     for (SmlListEntry entry : smlListEntries) {
-                        SmlStatus status = entry.getStatus();
-                        if (status != null) {
-                            readStatus(status);
-                        }
                         SmlValueExtractor valueExtractor = new SmlValueExtractor(entry);
                         String obis = valueExtractor.getObisCode();
 
@@ -121,6 +116,12 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
 
                         if (smlValue == null) {
                             smlValue = valueExtractor.getSmlValue();
+                        }
+
+                        SmlStatus status = entry.getStatus();
+                        if (status != null) {
+                            String statusValue = readStatus(status, obis);
+                            smlValue.setStatus(statusValue);
                         }
 
                         addObisCache(smlValue);
@@ -135,39 +136,13 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
         }
     }
 
-    private void readStatus(SmlStatus status) {
-        try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            status.getChoice().encode(new DataOutputStream(byteArrayOutputStream));
-            byte[] statusBytes = byteArrayOutputStream.toByteArray();
-            if (statusBytes.length > 0) {
-
-                Direction direction = getDirection(statusBytes);
-                setEnergyDirection(direction);
-            }
-        } catch (IOException e) {
-            logger.error("Failed to read status bytes", e);
+    private String readStatus(@NonNull SmlStatus status, String obis) {
+        ASNObject choice = status.getChoice();
+        if (choice != null) {
+            String statusValue = choice.toString();
+            return statusValue;
         }
-    }
-
-    /**
-     * Get the direction according to FNN Lastenheft 7.1.2 EDL
-     *
-     * @see https://www.vde.com/resource/blob/951000/252eb3cdf1c7f6cdea10847be399da0d/fnn-lastenheft-edl-1-0-2010-01-13-data.pdf
-     * @param statusBytes
-     * @return
-     */
-    private static Direction getDirection(byte... statusBytes) {
-        // Bit 5 indicates the direction (Einspeisung/Bezug)
-        // Bezug: 1000 0010
-        // Einspeisung: 1010 0010
-        switch (statusBytes[0] >> 5 & 0x01) {
-            case 1:
-                return Direction.MINUS;
-            case 0:
-                return Direction.PLUS;
-        }
-        return Direction.PLUS;
+        return null;
     }
 
     @Override

@@ -19,11 +19,17 @@ public class MeterValue {
     private String obis;
     private String value;
     private String unit;
+    private String status;
+
+    public MeterValue(String obis, String value, String unit, String status) {
+        this.obis = obis;
+        this.unit = unit;
+        this.value = value;
+        this.status = status;
+    }
 
     public MeterValue(String obis, String value, String unit) {
-        this.obis = obis;
-        this.value = value;
-        this.unit = unit;
+        this(obis, value, unit, null);
     }
 
     /**
@@ -49,6 +55,7 @@ public class MeterValue {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((obis == null) ? 0 : obis.hashCode());
+        result = prime * result + ((status == null) ? 0 : status.hashCode());
         result = prime * result + ((unit == null) ? 0 : unit.hashCode());
         result = prime * result + ((value == null) ? 0 : value.hashCode());
         return result;
@@ -71,6 +78,13 @@ public class MeterValue {
                 return false;
             }
         } else if (!obis.equals(other.obis)) {
+            return false;
+        }
+        if (status == null) {
+            if (other.status != null) {
+                return false;
+            }
+        } else if (!status.equals(other.status)) {
             return false;
         }
         if (unit == null) {
@@ -97,6 +111,14 @@ public class MeterValue {
 
     public String getObisCode() {
         return this.obis;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
 }
