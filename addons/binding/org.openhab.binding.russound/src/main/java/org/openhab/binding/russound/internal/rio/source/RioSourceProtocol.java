@@ -41,8 +41,7 @@ import com.google.gson.JsonSyntaxException;
  * process the responses from the Russound system. Please see documentation for what channels are supported by which
  * source types.
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 class RioSourceProtocol extends AbstractRioProtocol {
     private final Logger logger = LoggerFactory.getLogger(RioSourceProtocol.class);
@@ -76,15 +75,15 @@ class RioSourceProtocol extends AbstractRioProtocol {
     private static final String SRC_RADIOTEXT4 = "radiotext4";
 
     // Multimedia channels
-    private static final String SRC_MMScreen = "mmscreen";
-    private static final String SRC_MMTitle = "mmtitle.text";
-    private static final String SRC_MMAttr = "attr";
-    private static final String SRC_MMBtnOk = "mmbtnok.text";
-    private static final String SRC_MMBtnBack = "mmbtnback.text";
-    private static final String SRC_MMInfoBlock = "mminfoblock.text";
+    private static final String SRC_MMSCREEN = "mmscreen";
+    private static final String SRC_MMTITLE = "mmtitle.text";
+    private static final String SRC_MMATTR = "attr";
+    private static final String SRC_MMBTNOK = "mmbtnok.text";
+    private static final String SRC_MMBTNBACK = "mmbtnback.text";
+    private static final String SRC_MMINFOBLOCK = "mminfoblock.text";
 
-    private static final String SRC_MMHelp = "mmhelp.text";
-    private static final String SRC_MMTextField = "mmtextfield.text";
+    private static final String SRC_MMHELP = "mmhelp.text";
+    private static final String SRC_MMTEXTFIELD = "mmtextfield.text";
 
     // This is an undocumented volume
     private static final String SRC_VOLUME = "volume";
@@ -436,7 +435,6 @@ class RioSourceProtocol extends AbstractRioProtocol {
         if (ai == null) {
             logger.error("Channel {} does not have an ID configuration - programmer error!", channelId);
         } else {
-
             if (channelId.equals(RioConstants.CHANNEL_SOURCEMMINFOTEXT)) {
                 value = handleMMInfoText(value);
                 if (value == null) {
@@ -589,35 +587,35 @@ class RioSourceProtocol extends AbstractRioProtocol {
                         stateChanged(RioConstants.CHANNEL_SOURCEVOLUME, new StringType(value));
                         break;
 
-                    case SRC_MMScreen:
+                    case SRC_MMSCREEN:
                         handleMMChange(RioConstants.CHANNEL_SOURCEMMSCREEN, value);
                         break;
 
-                    case SRC_MMTitle:
+                    case SRC_MMTITLE:
                         handleMMChange(RioConstants.CHANNEL_SOURCEMMTITLE, value);
                         break;
 
-                    case SRC_MMAttr:
+                    case SRC_MMATTR:
                         handleMMChange(RioConstants.CHANNEL_SOURCEMMATTR, value);
                         break;
 
-                    case SRC_MMBtnOk:
+                    case SRC_MMBTNOK:
                         handleMMChange(RioConstants.CHANNEL_SOURCEMMBUTTONOKTEXT, value);
                         break;
 
-                    case SRC_MMBtnBack:
+                    case SRC_MMBTNBACK:
                         handleMMChange(RioConstants.CHANNEL_SOURCEMMBUTTONBACKTEXT, value);
                         break;
 
-                    case SRC_MMHelp:
+                    case SRC_MMHELP:
                         handleMMChange(RioConstants.CHANNEL_SOURCEMMHELPTEXT, value);
                         break;
 
-                    case SRC_MMTextField:
+                    case SRC_MMTEXTFIELD:
                         handleMMChange(RioConstants.CHANNEL_SOURCEMMTEXTFIELD, value);
                         break;
 
-                    case SRC_MMInfoBlock:
+                    case SRC_MMINFOBLOCK:
                         handleMMChange(RioConstants.CHANNEL_SOURCEMMINFOTEXT, value);
                         break;
                     default:

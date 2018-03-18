@@ -18,8 +18,7 @@ import org.eclipse.smarthome.core.types.State;
  * bridge/thing ({@link AbstractBridgeHandler} and {@link AbstractThingHandler}). This is necessary since the status and
  * state of a bridge/thing is private and the protocol handler cannot access it directly.
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 public interface RioHandlerCallback {
     /**

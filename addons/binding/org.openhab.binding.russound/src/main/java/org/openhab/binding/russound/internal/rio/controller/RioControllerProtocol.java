@@ -24,8 +24,7 @@ import org.slf4j.LoggerFactory;
  * This is the protocol handler for the Russound controller. This handler will issue the protocol commands and will
  * process the responses from the Russound system.
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 class RioControllerProtocol extends AbstractRioProtocol {
     // logger
