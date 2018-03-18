@@ -57,7 +57,6 @@ public class RMEBindingConstants {
         }
 
         public static DataField get(int valueSelectorNumber) throws IllegalArgumentException {
-
             for (DataField c : DataField.values()) {
                 if (c.number == valueSelectorNumber) {
                     return c;
@@ -68,7 +67,6 @@ public class RMEBindingConstants {
         }
 
         public static DataField get(String valueSelectorText) throws IllegalArgumentException {
-
             for (DataField c : DataField.values()) {
                 if (c.id.equals(valueSelectorText)) {
                     return c;
