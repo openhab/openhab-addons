@@ -43,7 +43,7 @@ public class SatelShutterHandler extends SatelThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SatelShutterHandler.class);
 
     public SatelShutterHandler(Thing thing) {
-        super(thing, null);
+        super(thing);
     }
 
     @Override

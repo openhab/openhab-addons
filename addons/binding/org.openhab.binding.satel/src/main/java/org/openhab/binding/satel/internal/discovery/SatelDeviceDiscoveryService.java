@@ -64,10 +64,11 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         scanStopped = false;
         if (bridgeHandler.isInitialized()) {
-            // add system thing by default
-            ThingType systemThing = thingTypeProvider.apply(THING_TYPE_SYSTEM);
-            addThing(THING_TYPE_SYSTEM, null, systemThing == null ? "System" : systemThing.getLabel(),
-                    Collections.emptyMap());
+            // add virtual things by default
+            for (ThingTypeUID thingTypeUID : VIRTUAL_THING_TYPES_UIDS) {
+                ThingType thingType = thingTypeProvider.apply(thingTypeUID);
+                addThing(THING_TYPE_SYSTEM, null, thingType.getLabel(), Collections.emptyMap());
+            }
         }
         if (!scanStopped) {
             scanForDevices(DeviceType.PARTITION_WITH_OBJECT, bridgeHandler.getIntegraType().getPartitions());

@@ -20,7 +20,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.satel.internal.command.ControlObjectCommand;
 import org.openhab.binding.satel.internal.command.SatelCommand;
-import org.openhab.binding.satel.internal.types.ObjectType;
 import org.openhab.binding.satel.internal.types.OutputControl;
 import org.openhab.binding.satel.internal.types.OutputState;
 import org.openhab.binding.satel.internal.types.StateType;
@@ -36,7 +35,7 @@ public class SatelOutputHandler extends SatelThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_OUTPUT);
 
     public SatelOutputHandler(Thing thing) {
-        super(thing, ObjectType.OUTPUT);
+        super(thing);
     }
 
     @Override

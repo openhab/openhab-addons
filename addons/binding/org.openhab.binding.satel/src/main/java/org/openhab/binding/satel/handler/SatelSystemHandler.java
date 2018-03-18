@@ -53,7 +53,7 @@ public class SatelSystemHandler extends SatelThingHandler {
     private Logger logger = LoggerFactory.getLogger(SatelSystemHandler.class);
 
     public SatelSystemHandler(Thing thing) {
-        super(thing, null);
+        super(thing);
     }
 
     @Override

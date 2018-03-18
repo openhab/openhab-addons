@@ -32,7 +32,6 @@ import org.openhab.binding.satel.internal.event.IntegraStateEvent;
 import org.openhab.binding.satel.internal.event.NewStatesEvent;
 import org.openhab.binding.satel.internal.event.SatelEvent;
 import org.openhab.binding.satel.internal.event.SatelEventListener;
-import org.openhab.binding.satel.internal.types.ObjectType;
 import org.openhab.binding.satel.internal.types.StateType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,12 +48,10 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
 
     protected SatelThingConfig thingConfig;
     protected SatelBridgeHandler bridgeHandler;
-    protected ObjectType thingType;
     private AtomicBoolean requiresRefresh;
 
-    public SatelThingHandler(Thing thing, ObjectType thingType) {
+    public SatelThingHandler(Thing thing) {
         super(thing);
-        this.thingType = thingType;
         this.requiresRefresh = new AtomicBoolean(true);
     }
 

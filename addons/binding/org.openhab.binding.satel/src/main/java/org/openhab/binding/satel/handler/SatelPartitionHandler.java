@@ -20,7 +20,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.satel.internal.command.ControlObjectCommand;
 import org.openhab.binding.satel.internal.command.SatelCommand;
-import org.openhab.binding.satel.internal.types.ObjectType;
 import org.openhab.binding.satel.internal.types.PartitionControl;
 import org.openhab.binding.satel.internal.types.PartitionState;
 import org.openhab.binding.satel.internal.types.StateType;
@@ -36,7 +35,7 @@ public class SatelPartitionHandler extends SatelThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_PARTITION);
 
     public SatelPartitionHandler(Thing thing) {
-        super(thing, ObjectType.PARTITION);
+        super(thing);
     }
 
     @Override
