@@ -32,42 +32,41 @@ import org.slf4j.LoggerFactory;
  * the TCP/IP session (either in response to our own commands or in response to external events [other TCP/IP sessions,
  * web GUI, front panel keystrokes, etc]).
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 class AtlonaPro3PortocolHandler {
-    private Logger logger = LoggerFactory.getLogger(AtlonaPro3PortocolHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AtlonaPro3PortocolHandler.class);
 
     /**
      * The {@link SocketSession} used by this protocol handler
      */
-    private final SocketSession _session;
+    private final SocketSession session;
 
     /**
      * The {@link AtlonaPro3Config} configuration used by this handler
      */
-    private final AtlonaPro3Config _config;
+    private final AtlonaPro3Config config;
 
     /**
      * The {@link AtlonaPro3Capabilities} of the PRO3 model
      */
-    private final AtlonaPro3Capabilities _capabilities;
+    private final AtlonaPro3Capabilities capabilities;
 
     /**
      * The {@link AtlonaPro3Handler} to call back to update status and state
      */
-    private final AtlonaHandlerCallback _callback;
+    private final AtlonaHandlerCallback callback;
 
     /**
      * The model type identified by the switch. We save it for faster refreshes since it will not change
      */
-    private String _modelType;
+    private String modelType;
 
     /**
      * The version (firmware) identified by the switch. We save it for faster refreshes since it will not change between
      * sessions
      */
-    private String _version;
+    private String version;
 
     /**
      * A special (invalid) command used internally by this handler to identify whether the switch wants a login or not
@@ -110,25 +109,25 @@ class AtlonaPro3PortocolHandler {
     private static final String RSP_LOGIN = "Login";
     private static final String RSP_PASSWORD = "Password";
 
-    private final Pattern _powerStatusPattern = Pattern.compile("PW(\\w+)");
-    private final Pattern _versionPattern = Pattern.compile("Firmware (.*)");
-    private final Pattern _typePattern = Pattern.compile("AT-UHD-PRO3-(\\d+)M");
+    private final Pattern powerStatusPattern = Pattern.compile("PW(\\w+)");
+    private final Pattern versionPattern = Pattern.compile("Firmware (.*)");
+    private final Pattern typePattern = Pattern.compile("AT-UHD-PRO3-(\\d+)M");
     private static final String RSP_ALL = "All#";
     private static final String RSP_LOCK = "Lock";
     private static final String RSP_UNLOCK = "Unlock";
-    private final Pattern _portStatusPattern = Pattern.compile("x(\\d+)AVx(\\d+),?+");
-    private final Pattern _portPowerPattern = Pattern.compile("x(\\d+)\\$ (\\w+)");
-    private final Pattern _portAllPattern = Pattern.compile("x(\\d+)All");
-    private final Pattern _portMirrorPattern = Pattern.compile("MirrorHdmi(\\d+) (\\p{Alpha}+)(\\d*)");
-    private final Pattern _portUnmirrorPattern = Pattern.compile("UnMirror(\\d+)");
-    private final Pattern _volumePattern = Pattern.compile("VOUT(\\d+) (-?\\d+)");
-    private final Pattern _volumeMutePattern = Pattern.compile("VOUTMute(\\d+) (\\w+)");
+    private final Pattern portStatusPattern = Pattern.compile("x(\\d+)AVx(\\d+),?+");
+    private final Pattern portPowerPattern = Pattern.compile("x(\\d+)\\$ (\\w+)");
+    private final Pattern portAllPattern = Pattern.compile("x(\\d+)All");
+    private final Pattern portMirrorPattern = Pattern.compile("MirrorHdmi(\\d+) (\\p{Alpha}+)(\\d*)");
+    private final Pattern portUnmirrorPattern = Pattern.compile("UnMirror(\\d+)");
+    private final Pattern volumePattern = Pattern.compile("VOUT(\\d+) (-?\\d+)");
+    private final Pattern volumeMutePattern = Pattern.compile("VOUTMute(\\d+) (\\w+)");
     private static final String RSP_IROFF = "IROFF";
     private static final String RSP_IRON = "IRON";
-    private final Pattern _saveIoPattern = Pattern.compile("Save(\\d+)");
-    private final Pattern _recallIoPattern = Pattern.compile("Recall(\\d+)");
-    private final Pattern _clearIoPattern = Pattern.compile("Clear(\\d+)");
-    private final Pattern _broadCastPattern = Pattern.compile("Broadcast (\\w+)");
+    private final Pattern saveIoPattern = Pattern.compile("Save(\\d+)");
+    private final Pattern recallIoPattern = Pattern.compile("Recall(\\d+)");
+    private final Pattern clearIoPattern = Pattern.compile("Clear(\\d+)");
+    private final Pattern broadCastPattern = Pattern.compile("Broadcast (\\w+)");
     private static final String RSP_MATRIX_RESET = "Mreset";
 
     // ------------------------------------------------------------------------------------------------
@@ -146,7 +145,6 @@ class AtlonaPro3PortocolHandler {
      */
     AtlonaPro3PortocolHandler(SocketSession session, AtlonaPro3Config config, AtlonaPro3Capabilities capabilities,
             AtlonaHandlerCallback callback) {
-
         if (session == null) {
             throw new IllegalArgumentException("session cannot be null");
         }
@@ -163,10 +161,10 @@ class AtlonaPro3PortocolHandler {
             throw new IllegalArgumentException("callback cannot be null");
         }
 
-        _session = session;
-        _config = config;
-        _capabilities = capabilities;
-        _callback = callback;
+        this.session = session;
+        this.config = config;
+        this.capabilities = capabilities;
+        this.callback = callback;
     }
 
     /**
@@ -177,14 +175,13 @@ class AtlonaPro3PortocolHandler {
      * @throws IOException an IO exception occurred during login
      */
     String login() throws Exception {
-
         logger.debug("Logging into atlona switch");
         // Void to make sure we retrieve them
-        _modelType = null;
-        _version = null;
+        modelType = null;
+        version = null;
 
         NoDispatchingCallback callback = new NoDispatchingCallback();
-        _session.addListener(callback);
+        session.addListener(callback);
 
         // Burn the initial (empty) return
         String response;
@@ -202,7 +199,7 @@ class AtlonaPro3PortocolHandler {
         // or 2) has sent a "Login: " prompt
         // By sending a string that doesn't exist as a command or user
         // we can tell which by the response to the invalid command
-        _session.sendCommand(NOTVALID_USER_OR_CMD);
+        session.sendCommand(NOTVALID_USER_OR_CMD);
 
         // Command failed - Altona not configured with IPLogin - return success
         response = callback.getResponse();
@@ -221,12 +218,12 @@ class AtlonaPro3PortocolHandler {
         // Get the new "Login: " prompt response
         response = callback.getResponse();
         if (response.equals(RSP_LOGIN)) {
-            if (_config.getUserName() == null || _config.getUserName().trim().length() == 0) {
+            if (config.getUserName() == null || config.getUserName().trim().length() == 0) {
                 return "Atlona PRO3 has enabled Telnet/IP Login but no username was provided in the configuration.";
             }
 
             // Send the username and wait for a ": " response
-            _session.sendCommand(_config.getUserName());
+            session.sendCommand(config.getUserName());
         } else {
             return "Altona protocol violation - wasn't initially a command failure or login prompt: " + response;
         }
@@ -241,18 +238,18 @@ class AtlonaPro3PortocolHandler {
         if (!response.equals(RSP_PASSWORD)) {
             // If we got another login response, username wasn't valid
             if (response.equals(RSP_LOGIN)) {
-                return "Username " + _config.getUserName() + " is not a valid user on the atlona";
+                return "Username " + config.getUserName() + " is not a valid user on the atlona";
             }
             return "Altona protocol violation - invalid response to a login: " + response;
         }
 
         // Make sure we have a password
-        if (_config.getPassword() == null || _config.getPassword().trim().length() == 0) {
+        if (config.getPassword() == null || config.getPassword().trim().length() == 0) {
             return "Atlona PRO3 has enabled Telnet/IP Login but no password was provided in the configuration.";
         }
 
         // Send the password
-        _session.sendCommand(_config.getPassword());
+        session.sendCommand(config.getPassword());
         response = callback.getResponse();
 
         // At this point, we don't know if we received a
@@ -266,7 +263,7 @@ class AtlonaPro3PortocolHandler {
         }
 
         // Now send an invalid command
-        _session.sendCommand(NOTVALID_USER_OR_CMD);
+        session.sendCommand(NOTVALID_USER_OR_CMD);
 
         // If we get an invalid command response - we are logged in
         response = callback.getResponse();
@@ -284,9 +281,9 @@ class AtlonaPro3PortocolHandler {
      */
     private void postLogin() {
         logger.debug("Atlona switch now connected");
-        _session.clearListeners();
-        _session.addListener(new NormalResponseCallback());
-        _callback.statusChanged(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+        session.clearListeners();
+        session.addListener(new NormalResponseCallback());
+        callback.statusChanged(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
 
         // Set broadcast to on to receive notifications when
         // routing changes (via the webpage, or presets or IR, etc)
@@ -302,7 +299,7 @@ class AtlonaPro3PortocolHandler {
      * @return a non-null {@link AtlonaHandlerCallback}
      */
     AtlonaHandlerCallback getCallback() {
-        return _callback;
+        return callback;
     }
 
     /**
@@ -317,33 +314,33 @@ class AtlonaPro3PortocolHandler {
      */
     void refreshAll() {
         logger.debug("Refreshing matrix state");
-        if (_version == null) {
+        if (version == null) {
             refreshVersion();
         } else {
-            _callback.setProperty(AtlonaPro3Constants.PROPERTY_VERSION, _version);
+            callback.setProperty(AtlonaPro3Constants.PROPERTY_VERSION, version);
         }
 
-        if (_modelType == null) {
+        if (modelType == null) {
             refreshType();
         } else {
-            _callback.setProperty(AtlonaPro3Constants.PROPERTY_TYPE, _modelType);
+            callback.setProperty(AtlonaPro3Constants.PROPERTY_TYPE, modelType);
         }
 
         refreshPower();
         refreshAllPortStatuses();
 
-        final int nbrPowerPorts = _capabilities.getNbrPowerPorts();
+        final int nbrPowerPorts = capabilities.getNbrPowerPorts();
         for (int x = 1; x <= nbrPowerPorts; x++) {
             refreshPortPower(x);
         }
 
-        final int nbrAudioPorts = _capabilities.getNbrAudioPorts();
+        final int nbrAudioPorts = capabilities.getNbrAudioPorts();
         for (int x = 1; x <= nbrAudioPorts; x++) {
             refreshVolumeStatus(x);
             refreshVolumeMute(x);
         }
 
-        for (int x : _capabilities.getHdmiPorts()) {
+        for (int x : capabilities.getHdmiPorts()) {
             refreshPortStatus(x);
         }
     }
@@ -461,7 +458,7 @@ class AtlonaPro3PortocolHandler {
             throw new IllegalArgumentException("outPortNbr must be greater than 0");
         }
 
-        if (_capabilities.getHdmiPorts().contains(hdmiPortNbr)) {
+        if (capabilities.getHdmiPorts().contains(hdmiPortNbr)) {
             sendCommand(String.format(CMD_PORT_MIRROR_FORMAT, hdmiPortNbr, outPortNbr));
         } else {
             logger.info("Trying to set port mirroring on a non-hdmi port: {}", hdmiPortNbr);
@@ -479,7 +476,7 @@ class AtlonaPro3PortocolHandler {
             throw new IllegalArgumentException("hdmiPortNbr must be greater than 0");
         }
 
-        if (_capabilities.getHdmiPorts().contains(hdmiPortNbr)) {
+        if (capabilities.getHdmiPorts().contains(hdmiPortNbr)) {
             sendCommand(String.format(CMD_PORT_UNMIRROR_FORMAT, hdmiPortNbr));
         } else {
             logger.info("Trying to remove port mirroring on a non-hdmi port: {}", hdmiPortNbr);
@@ -635,9 +632,9 @@ class AtlonaPro3PortocolHandler {
             throw new IllegalArgumentException("command cannot be empty");
         }
         try {
-            _session.sendCommand(command);
+            session.sendCommand(command);
         } catch (IOException e) {
-            _callback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            callback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception occurred sending to Atlona: " + e);
         }
     }
@@ -655,11 +652,11 @@ class AtlonaPro3PortocolHandler {
         if (m.groupCount() == 1) {
             switch (m.group(1)) {
                 case "ON":
-                    _callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PRIMARY,
+                    callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PRIMARY,
                             AtlonaPro3Constants.CHANNEL_POWER), OnOffType.ON);
                     break;
                 case "OFF":
-                    _callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PRIMARY,
+                    callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PRIMARY,
                             AtlonaPro3Constants.CHANNEL_POWER), OnOffType.OFF);
                     break;
                 default:
@@ -681,8 +678,8 @@ class AtlonaPro3PortocolHandler {
             throw new IllegalArgumentException("m (matcher) cannot be null");
         }
         if (m.groupCount() == 1) {
-            _version = m.group(1);
-            _callback.setProperty(AtlonaPro3Constants.PROPERTY_VERSION, _version);
+            version = m.group(1);
+            callback.setProperty(AtlonaPro3Constants.PROPERTY_VERSION, version);
         } else {
             logger.warn("Invalid version response: '{}'", resp);
         }
@@ -699,8 +696,8 @@ class AtlonaPro3PortocolHandler {
             throw new IllegalArgumentException("m (matcher) cannot be null");
         }
         if (m.groupCount() == 1) {
-            _modelType = resp;
-            _callback.setProperty(AtlonaPro3Constants.PROPERTY_TYPE, _modelType);
+            modelType = resp;
+            callback.setProperty(AtlonaPro3Constants.PROPERTY_TYPE, modelType);
         } else {
             logger.warn("Invalid Type response: '{}'", resp);
         }
@@ -712,7 +709,7 @@ class AtlonaPro3PortocolHandler {
      * @param resp the possibly null, possibly empty actual response
      */
     private void handlePanelLockResponse(String resp) {
-        _callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PRIMARY,
+        callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PRIMARY,
                 AtlonaPro3Constants.CHANNEL_PANELLOCK), RSP_LOCK.equals(resp) ? OnOffType.ON : OnOffType.OFF);
     }
 
@@ -731,11 +728,11 @@ class AtlonaPro3PortocolHandler {
                 int portNbr = Integer.parseInt(m.group(1));
                 switch (m.group(2)) {
                     case "on":
-                        _callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PORT,
+                        callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PORT,
                                 portNbr, AtlonaPro3Constants.CHANNEL_PORTPOWER), OnOffType.ON);
                         break;
                     case "off":
-                        _callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PORT,
+                        callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PORT,
                                 portNbr, AtlonaPro3Constants.CHANNEL_PORTPOWER), OnOffType.OFF);
                         break;
                     default:
@@ -776,7 +773,7 @@ class AtlonaPro3PortocolHandler {
                 int inPort = Integer.parseInt(m.group(1));
                 int outPort = Integer.parseInt(m.group(2));
 
-                _callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PORT, outPort,
+                callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PORT, outPort,
                         AtlonaPro3Constants.CHANNEL_PORTOUTPUT), new DecimalType(inPort));
             } catch (NumberFormatException e) {
                 logger.warn("Invalid port output response (can't parse number): '{}'", resp);
@@ -802,13 +799,13 @@ class AtlonaPro3PortocolHandler {
                 String oper = StringUtils.trimToEmpty(m.group(2)).toLowerCase();
 
                 if (oper.equals("off")) {
-                    _callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_MIRROR,
+                    callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_MIRROR,
                             hdmiPortNbr, AtlonaPro3Constants.CHANNEL_PORTMIRRORENABLED), OnOffType.OFF);
                 } else {
                     int outPortNbr = Integer.parseInt(m.group(3));
-                    _callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_MIRROR,
+                    callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_MIRROR,
                             hdmiPortNbr, AtlonaPro3Constants.CHANNEL_PORTMIRROR), new DecimalType(outPortNbr));
-                    _callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_MIRROR,
+                    callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_MIRROR,
                             hdmiPortNbr, AtlonaPro3Constants.CHANNEL_PORTMIRRORENABLED), OnOffType.ON);
                 }
             } catch (NumberFormatException e) {
@@ -832,8 +829,8 @@ class AtlonaPro3PortocolHandler {
         if (m.groupCount() == 1) {
             try {
                 int hdmiPortNbr = Integer.parseInt(m.group(1));
-                _callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_MIRROR,
-                        hdmiPortNbr, AtlonaPro3Constants.CHANNEL_PORTMIRROR), new DecimalType(0));
+                callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_MIRROR, hdmiPortNbr,
+                        AtlonaPro3Constants.CHANNEL_PORTMIRROR), new DecimalType(0));
             } catch (NumberFormatException e) {
                 logger.warn("Invalid unmirror response (can't parse number): '{}'", resp);
             }
@@ -856,7 +853,7 @@ class AtlonaPro3PortocolHandler {
             try {
                 int portNbr = Integer.parseInt(m.group(1));
                 double level = Double.parseDouble(m.group(2));
-                _callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_VOLUME, portNbr,
+                callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_VOLUME, portNbr,
                         AtlonaPro3Constants.CHANNEL_VOLUME), new DecimalType(level));
             } catch (NumberFormatException e) {
                 logger.warn("Invalid volume response (can't parse number): '{}'", resp);
@@ -881,11 +878,11 @@ class AtlonaPro3PortocolHandler {
                 int portNbr = Integer.parseInt(m.group(1));
                 switch (m.group(2)) {
                     case "on":
-                        _callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_VOLUME,
+                        callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_VOLUME,
                                 portNbr, AtlonaPro3Constants.CHANNEL_VOLUME_MUTE), OnOffType.ON);
                         break;
                     case "off":
-                        _callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_VOLUME,
+                        callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_VOLUME,
                                 portNbr, AtlonaPro3Constants.CHANNEL_VOLUME_MUTE), OnOffType.OFF);
                         break;
                     default:
@@ -905,7 +902,7 @@ class AtlonaPro3PortocolHandler {
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleIrLockResponse(String resp) {
-        _callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PRIMARY,
+        callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PRIMARY,
                 AtlonaPro3Constants.CHANNEL_IRENABLE), RSP_IRON.equals(resp) ? OnOffType.ON : OnOffType.OFF);
     }
 
@@ -957,7 +954,7 @@ class AtlonaPro3PortocolHandler {
      */
     private void handleMatrixResetResponse(String resp) {
         if (RSP_MATRIX_RESET.equals(resp)) {
-            _callback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            callback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "System is rebooting due to matrix reset");
         }
     }
@@ -993,85 +990,85 @@ class AtlonaPro3PortocolHandler {
 
             Matcher m;
 
-            m = _portStatusPattern.matcher(response);
+            m = portStatusPattern.matcher(response);
             if (m.find()) {
                 handlePortOutputResponse(m, response);
                 return;
             }
 
-            m = _powerStatusPattern.matcher(response);
+            m = powerStatusPattern.matcher(response);
             if (m.matches()) {
                 handlePowerResponse(m, response);
                 return;
             }
 
-            m = _versionPattern.matcher(response);
+            m = versionPattern.matcher(response);
             if (m.matches()) {
                 handleVersionResponse(m, response);
                 return;
             }
 
-            m = _typePattern.matcher(response);
+            m = typePattern.matcher(response);
             if (m.matches()) {
                 handleTypeResponse(m, response);
                 return;
             }
 
-            m = _portPowerPattern.matcher(response);
+            m = portPowerPattern.matcher(response);
             if (m.matches()) {
                 handlePortPowerResponse(m, response);
                 return;
             }
 
-            m = _volumePattern.matcher(response);
+            m = volumePattern.matcher(response);
             if (m.matches()) {
                 handleVolumeResponse(m, response);
                 return;
             }
 
-            m = _volumeMutePattern.matcher(response);
+            m = volumeMutePattern.matcher(response);
             if (m.matches()) {
                 handleVolumeMuteResponse(m, response);
                 return;
             }
 
-            m = _portAllPattern.matcher(response);
+            m = portAllPattern.matcher(response);
             if (m.matches()) {
                 handlePortAllResponse(response);
                 return;
             }
 
-            m = _portMirrorPattern.matcher(response);
+            m = portMirrorPattern.matcher(response);
             if (m.matches()) {
                 handleMirrorResponse(m, response);
                 return;
             }
 
-            m = _portUnmirrorPattern.matcher(response);
+            m = portUnmirrorPattern.matcher(response);
             if (m.matches()) {
                 handleUnMirrorResponse(m, response);
                 return;
             }
 
-            m = _saveIoPattern.matcher(response);
+            m = saveIoPattern.matcher(response);
             if (m.matches()) {
                 handleSaveIoResponse(m, response);
                 return;
             }
 
-            m = _recallIoPattern.matcher(response);
+            m = recallIoPattern.matcher(response);
             if (m.matches()) {
                 handleRecallIoResponse(m, response);
                 return;
             }
 
-            m = _clearIoPattern.matcher(response);
+            m = clearIoPattern.matcher(response);
             if (m.matches()) {
                 handleClearIoResponse(m, response);
                 return;
             }
 
-            m = _broadCastPattern.matcher(response);
+            m = broadCastPattern.matcher(response);
             if (m.matches()) {
                 handleBroadcastResponse(m, response);
                 return;
@@ -1107,7 +1104,7 @@ class AtlonaPro3PortocolHandler {
 
         @Override
         public void responseException(Exception e) {
-            _callback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            callback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception occurred reading from Atlona: " + e);
         }
 
@@ -1125,17 +1122,17 @@ class AtlonaPro3PortocolHandler {
         /**
          * Cache of responses that have occurred
          */
-        private BlockingQueue<Object> _responses = new ArrayBlockingQueue<Object>(5);
+        private BlockingQueue<Object> responses = new ArrayBlockingQueue<>(5);
 
         /**
-         * Will return the next response from {@link #_responses}. If the response is an exception, that exception will
+         * Will return the next response from {@link #responses}. If the response is an exception, that exception will
          * be thrown instead.
          *
          * @return a non-null, possibly empty response
          * @throws Exception an exception if one occurred during reading
          */
         String getResponse() throws Exception {
-            final Object lastResponse = _responses.poll(5, TimeUnit.SECONDS);
+            final Object lastResponse = responses.poll(5, TimeUnit.SECONDS);
             if (lastResponse instanceof String) {
                 return (String) lastResponse;
             } else if (lastResponse instanceof Exception) {
@@ -1150,7 +1147,7 @@ class AtlonaPro3PortocolHandler {
         @Override
         public void responseReceived(String response) {
             try {
-                _responses.put(response);
+                responses.put(response);
             } catch (InterruptedException e) {
             }
         }
@@ -1158,7 +1155,7 @@ class AtlonaPro3PortocolHandler {
         @Override
         public void responseException(Exception e) {
             try {
-                _responses.put(e);
+                responses.put(e);
             } catch (InterruptedException e1) {
             }
 
