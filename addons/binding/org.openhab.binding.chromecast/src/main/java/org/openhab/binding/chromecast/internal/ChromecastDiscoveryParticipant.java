@@ -16,9 +16,9 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
 import org.openhab.binding.chromecast.ChromecastBindingConstants;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
