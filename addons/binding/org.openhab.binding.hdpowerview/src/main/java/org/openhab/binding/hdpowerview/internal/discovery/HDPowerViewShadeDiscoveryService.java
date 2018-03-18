@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Discovers an HD Power View Shade from an existing hub
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
 

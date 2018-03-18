@@ -13,7 +13,7 @@ import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 /**
  * A request to set the position of a shade
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public class ShadeMove {
 

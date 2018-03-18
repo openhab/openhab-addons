@@ -18,11 +18,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Abstract class for Things that are managed through an HD Power View Hub
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 abstract class AbstractHubbedThingHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(AbstractHubbedThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractHubbedThingHandler.class);
 
     public AbstractHubbedThingHandler(Thing thing) {
         super(thing);

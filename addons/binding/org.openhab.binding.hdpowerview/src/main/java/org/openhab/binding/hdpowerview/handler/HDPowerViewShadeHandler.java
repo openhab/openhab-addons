@@ -31,14 +31,14 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles commands for an HD Power View shade
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     private static final int MAX_POSITION = 65535;
     private static final int MAX_VANE = 32767;
 
-    private Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
 
     public HDPowerViewShadeHandler(Thing thing) {
         super(thing);

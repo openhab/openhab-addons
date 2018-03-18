@@ -30,7 +30,7 @@ import com.google.gson.JsonParseException;
 /**
  * JAX-RS targets for communicating with the HD Power View Hub
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public class HDPowerViewWebTargets {
 
@@ -39,7 +39,7 @@ public class HDPowerViewWebTargets {
     private WebTarget shadeMove;
     private WebTarget sceneActivate;
     private WebTarget scenes;
-    private Logger logger = LoggerFactory.getLogger(HDPowerViewWebTargets.class);
+    private final Logger logger = LoggerFactory.getLogger(HDPowerViewWebTargets.class);
     private final Gson gson;
 
     public HDPowerViewWebTargets(Client client, String ipAddress) {

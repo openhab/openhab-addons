@@ -11,11 +11,11 @@ package org.openhab.binding.hdpowerview.internal.config;
 /**
  * Basic configuration for an HD Power View Shade
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public class HDPowerViewShadeConfiguration {
 
-    public static String ID = "id";
+    public static final String ID = "id";
 
     public String id;
 
