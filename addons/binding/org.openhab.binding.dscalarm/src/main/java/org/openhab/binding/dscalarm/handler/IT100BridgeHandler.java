@@ -39,7 +39,7 @@ import gnu.io.UnsupportedCommOperationException;
 
 public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements SerialPortEventListener {
 
-    private Logger logger = LoggerFactory.getLogger(IT100BridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(IT100BridgeHandler.class);
 
     /**
      * Constructor.
@@ -94,7 +94,6 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
 
     @Override
     public void openConnection() {
-
         try {
             logger.debug("openConnection(): Connecting to IT-100 ");
 
