@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.satel.internal.command.IntegraStateCommand;
 import org.openhab.binding.satel.internal.command.SatelCommand;
@@ -61,7 +62,9 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("New command for {}: {}", channelUID, command.toFullString());
 
-        if (bridgeHandler != null && StringUtils.isNotEmpty(bridgeHandler.getUserCode())) {
+        if (command == RefreshType.REFRESH) {
+            this.requiresRefresh.set(true);
+        } else if (bridgeHandler != null && StringUtils.isNotEmpty(bridgeHandler.getUserCode())) {
             SatelCommand satelCommand = convertCommand(channelUID, command);
             if (satelCommand != null) {
                 bridgeHandler.sendCommand(satelCommand, true);
