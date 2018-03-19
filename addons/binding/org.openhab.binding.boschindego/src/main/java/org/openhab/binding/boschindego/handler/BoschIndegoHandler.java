@@ -47,8 +47,8 @@ import de.zazaz.iot.bosch.indego.IndegoException;
  */
 public class BoschIndegoHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(BoschIndegoHandler.class);
-    private Queue<DeviceCommand> commandQueue = new LinkedList<>();
+    private final Logger logger = LoggerFactory.getLogger(BoschIndegoHandler.class);
+    private final Queue<DeviceCommand> commandQueue = new LinkedList<>();
 
     private ScheduledFuture<?> pollFuture;
 
@@ -86,7 +86,6 @@ public class BoschIndegoHandler extends BaseThingHandler {
             default:
                 logger.error("Invalid command");
                 return;
-
         }
         synchronized (commandQueue) {
             // Add command to queue to avoid blocking
