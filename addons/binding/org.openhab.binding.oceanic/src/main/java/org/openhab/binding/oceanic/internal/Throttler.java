@@ -26,8 +26,8 @@ public class Throttler {
 
     public static final long INTERVAL = 1000;
 
-    private static ConcurrentHashMap<String, ReentrantLock> locks = new ConcurrentHashMap<String, ReentrantLock>();
-    private static ConcurrentHashMap<String, Long> timestamps = new ConcurrentHashMap<String, Long>();
+    private static ConcurrentHashMap<String, ReentrantLock> locks = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, Long> timestamps = new ConcurrentHashMap<>();
 
     public static void lock(String key) {
         if (!locks.containsKey(key)) {

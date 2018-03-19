@@ -218,17 +218,12 @@ public class OceanicBindingConstants {
                 final SimpleDateFormat inDateFormatter = new SimpleDateFormat("dd.MM.yy HH:mm:ss");
                 final SimpleDateFormat outDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
-                Date date = null;
-                String convertedValue = null;
-
                 try {
-                    date = inDateFormatter.parse(value);
-                    convertedValue = outDateFormatter.format(date);
+                    Date date = inDateFormatter.parse(value);
+                    return outDateFormatter.format(date);
                 } catch (ParseException fpe) {
                     throw new IllegalArgumentException(value + " is not in a valid format.", fpe);
                 }
-
-                return convertedValue;
             }
         },
         getNOR("normalregenerations", DecimalType.class, ValueSelectorType.GET, false),
