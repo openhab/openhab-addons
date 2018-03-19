@@ -9,15 +9,15 @@
 package org.openhab.binding.coolmasternet.internal.config;
 
 /**
- * The {@link CoolMasterNetConfiguration} is responsible for holding
- * configuration information needed to access/poll the coolmasternet unit
+ * The {@link HVACConfiguration} is responsible for holding configuration information needed to access/poll the
+ * HVAC unit.
  *
- * @author Angus Gratton
+ * @author Angus Gratton - Initial contribution
+ * @author Wouter Born - Split Controller and HVAC configurations
  */
+public class HVACConfiguration {
 
-public class CoolMasterNetConfiguration {
-    public static final String HOST = "host";
-    public static final String PORT = "port";
     public static final String UID = "uid";
-    public static final String REFRESH = "refresh";
+    public String uid;
+
 }
