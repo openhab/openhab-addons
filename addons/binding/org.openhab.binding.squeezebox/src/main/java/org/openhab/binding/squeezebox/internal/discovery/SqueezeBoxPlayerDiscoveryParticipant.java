@@ -110,12 +110,10 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
      * Tells the bridge to request a list of players
      */
     private void setupRequestPlayerJob() {
-        Runnable runnable = () -> {
+        logger.debug("Request player job scheduled to run every {} seconds", TTL);
+        requestPlayerJob = scheduler.scheduleWithFixedDelay(() -> {
             squeezeBoxServerHandler.requestPlayers();
-        };
-
-        logger.debug("request player job scheduled to run every {} seconds", TTL);
-        requestPlayerJob = scheduler.scheduleWithFixedDelay(runnable, 10, TTL, TimeUnit.SECONDS);
+        }, 10, TTL, TimeUnit.SECONDS);
     }
 
     // we can ignore the other events

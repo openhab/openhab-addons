@@ -111,7 +111,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("initializing server handler for thing {}", getThing().getUID());
 
-        scheduler.schedule(this::connect, 0, TimeUnit.SECONDS);
+        scheduler.submit(this::connect, TimeUnit.SECONDS);
     }
 
     @Override
