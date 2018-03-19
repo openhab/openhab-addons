@@ -98,7 +98,7 @@ public class TeslaHandler extends BaseThingHandler {
     private static final int MAXIMUM_ERRORS_IN_INTERVAL = 2;
     private static final int ERROR_INTERVAL_SECONDS = 15;
 
-    private Logger logger = LoggerFactory.getLogger(TeslaHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(TeslaHandler.class);
 
     // Vehicle state variables
     protected Vehicle vehicle;
@@ -145,7 +145,6 @@ public class TeslaHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
         logger.trace("Initializing the Tesla handler for {}", this.getStorageKey());
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -162,7 +161,7 @@ public class TeslaHandler extends BaseThingHandler {
             eventThread = new Thread(eventRunnable, "ESH-Tesla-Event Stream-" + getThing().getUID());
             eventThread.start();
 
-            Map<Object, Rate> channels = new HashMap<Object, Rate>();
+            Map<Object, Rate> channels = new HashMap<>();
             channels.put(TESLA_DATA_THROTTLE, new Rate(1, 1, TimeUnit.SECONDS));
             channels.put(TESLA_COMMAND_THROTTLE, new Rate(20, 1, TimeUnit.MINUTES));
 
@@ -187,7 +186,6 @@ public class TeslaHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-
         logger.trace("Disposing the Tesla handler for {}", getThing().getUID());
 
         lock.lock();
@@ -214,12 +212,10 @@ public class TeslaHandler extends BaseThingHandler {
         } finally {
             lock.unlock();
         }
-
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         String channelID = channelUID.getId();
         TeslaChannelSelector selector = TeslaChannelSelector.getValueSelectorFromChannelID(channelID);
 
@@ -438,7 +434,6 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     protected String invokeAndParse(String command, String payLoad, WebTarget target) {
-
         logger.debug("Invoking: {}", command);
 
         if (vehicle.id != null) {
@@ -506,7 +501,6 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     public void parseAndUpdate(String request, String payLoad, String result) {
-
         JsonParser parser = new JsonParser();
         JsonObject jsonObject = null;
 
@@ -733,7 +727,6 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     protected Vehicle queryVehicle() {
-
         // get a list of vehicles
         Response response = vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", "Bearer " + logonToken.access_token).get();
@@ -762,7 +755,6 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     private ThingStatusDetail authenticate() {
-
         Storage<Object> storage = storageService.getStorage(TeslaBindingConstants.BINDING_ID);
 
         String storedToken = (String) storage.get(getStorageKey());
@@ -815,7 +807,6 @@ public class TeslaHandler extends BaseThingHandler {
             logger.debug("Authenticating : Response : {}:{}", response.getStatus(), response.getStatusInfo());
 
             if (response.getStatus() == 200 && response.hasEntity()) {
-
                 String responsePayLoad = response.readEntity(String.class);
                 TokenResponse tokenResponse = gson.fromJson(responsePayLoad.trim(), TokenResponse.class);
 
@@ -826,7 +817,6 @@ public class TeslaHandler extends BaseThingHandler {
                 }
 
                 return ThingStatusDetail.NONE;
-
             } else if (response.getStatus() == 401) {
                 if (!StringUtils.isEmpty(username)) {
                     String password = (String) getConfig().get(PASSWORD);
@@ -842,7 +832,6 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     private ThingStatusDetail authenticate(String username, String password) {
-
         TokenRequest token = null;
         try {
             token = new TokenRequestPassword(username, password);
@@ -859,7 +848,6 @@ public class TeslaHandler extends BaseThingHandler {
                 logger.debug("Authenticating : Response : {}:{}", response.getStatus(), response.getStatusInfo());
 
                 if (response.getStatus() == 200 && response.hasEntity()) {
-
                     String responsePayLoad = response.readEntity(String.class);
                     TokenResponse tokenResponse = gson.fromJson(responsePayLoad.trim(), TokenResponse.class);
 
@@ -869,7 +857,6 @@ public class TeslaHandler extends BaseThingHandler {
                         this.logonToken = tokenResponse;
                         return ThingStatusDetail.NONE;
                     }
-
                 } else if (response.getStatus() == 401) {
                     return ThingStatusDetail.CONFIGURATION_ERROR;
                 } else if (response.getStatus() == 503 || response.getStatus() == 502) {
@@ -930,7 +917,6 @@ public class TeslaHandler extends BaseThingHandler {
             lock.lock();
 
             if (getThing().getStatus() != ThingStatus.ONLINE) {
-
                 logger.debug("Setting up an authenticated connection to the Tesla back-end");
 
                 ThingStatusDetail authenticationResult = authenticate();
@@ -971,7 +957,6 @@ public class TeslaHandler extends BaseThingHandler {
     };
 
     protected Runnable eventRunnable = new Runnable() {
-
         Response eventResponse;
         BufferedReader eventBufferedReader;
         InputStreamReader eventInputStreamReader;
@@ -1148,7 +1133,6 @@ public class TeslaHandler extends BaseThingHandler {
         @Override
         public void run() {
             try {
-
                 String result = "";
 
                 if (isAwake() && getThing().getStatus() == ThingStatus.ONLINE) {
@@ -1165,7 +1149,6 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     protected class Authenticator implements ClientRequestFilter {
-
         private final String user;
         private final String password;
 

@@ -25,7 +25,7 @@ public final class Rate {
     private final int numberCalls;
     private final int timeLength;
     private final TimeUnit timeUnit;
-    private final LinkedList<Long> callHistory = new LinkedList<Long>();
+    private final LinkedList<Long> callHistory = new LinkedList<>();
 
     public Rate(int numberCalls, int timeLength, TimeUnit timeUnit) {
         this.numberCalls = numberCalls;

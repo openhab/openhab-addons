@@ -25,8 +25,7 @@ import java.util.concurrent.TimeUnit;
 public final class ScheduledChannelThrottler extends AbstractChannelThrottler {
 
     public ScheduledChannelThrottler(Rate totalRate) {
-        this(totalRate, Executors.newSingleThreadScheduledExecutor(), new HashMap<Object, Rate>(),
-                TimeProvider.SYSTEM_PROVIDER);
+        this(totalRate, Executors.newSingleThreadScheduledExecutor(), new HashMap<>(), TimeProvider.SYSTEM_PROVIDER);
     }
 
     public ScheduledChannelThrottler(Rate totalRate, Map<Object, Rate> channels) {

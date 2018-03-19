@@ -34,7 +34,6 @@ public abstract class TokenRequest {
     private String client_secret;
 
     TokenRequest() throws GeneralSecurityException {
-
         byte[] ci = { 115, -51, 67, -104, -107, 16, -116, -114, -11, -120, 41, 84, -106, -15, -67, 78, -10, -24, -47,
                 124, 35, 73, 10, 43, -9, 123, 127, 126, -114, 58, 23, 3, 115, -70, -115, 46, 17, 87, -115, 31, -67, -90,
                 -107, -100, 59, 18, -19, 91, 95, -52, 82, 91, -37, -83, -74, 39, 12, 59, 14, -81, 3, 95, -111, 72 };
@@ -57,7 +56,6 @@ public abstract class TokenRequest {
             ptLength = cipher.update(cs, 0, cs.length, plainText, 0);
             cipher.doFinal(plainText, ptLength);
             this.client_secret = new String(plainText);
-
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | ShortBufferException
                 | IllegalBlockSizeException | BadPaddingException e) {
             throw e;
