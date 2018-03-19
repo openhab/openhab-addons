@@ -15,7 +15,7 @@ package org.openhab.binding.zoneminder.handler;
 /**
  * Enumerator for each Bridge and Thing
  *
- * @author Martin S. Eskildsen
+ * @author Martin S. Eskildsen - Initial contribution
  */
 public enum ZoneMinderThingType {
     ZoneMinderServerBridge,
