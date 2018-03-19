@@ -73,7 +73,7 @@ public class KebaBindingConstants {
         C('2', '3'),
         X('A', 'B', 'C', 'D');
 
-        private final List<Character> things = new ArrayList<Character>();
+        private final List<Character> things = new ArrayList<>();
 
         KebaSeries(char... e) {
             Character[] cArray = ArrayUtils.toObject(e);
