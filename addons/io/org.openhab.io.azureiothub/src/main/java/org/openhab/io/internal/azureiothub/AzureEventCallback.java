@@ -17,11 +17,12 @@ import com.microsoft.azure.sdk.iot.device.IotHubStatusCode;
 /**
  * This triggered in case of cloud to device communication
  *
- * @author Niko Tanghe
+ * @author Niko Tanghe - Initial contribution
+ * @author Kai Kreuzer - code cleanup
  */
 
 public class AzureEventCallback implements IotHubEventCallback {
-    private Logger logger = LoggerFactory.getLogger(CloudClient.class);
+    private Logger logger = LoggerFactory.getLogger(AzureEventCallback.class);
 
     @Override
     public void execute(IotHubStatusCode status, Object context) {
