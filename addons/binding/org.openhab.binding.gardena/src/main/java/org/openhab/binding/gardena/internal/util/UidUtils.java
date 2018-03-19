@@ -39,7 +39,7 @@ public class UidUtils {
      * Returns all ThingUIDs for a given device.
      */
     public static List<ThingUID> getThingUIDs(Device device, Bridge account) {
-        List<ThingUID> thingUIDs = new ArrayList<ThingUID>();
+        List<ThingUID> thingUIDs = new ArrayList<>();
         for (Thing thing : account.getThings()) {
             String deviceId = thing.getConfiguration().as(GardenaDeviceConfig.class).deviceId;
             if (deviceId == null) {
