@@ -9,7 +9,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openhab.io</groupId>
-	<artifactId>org.openhab.io.internal.azureiothub</artifactId>
+	<artifactId>org.openhab.io.azureiothub</artifactId>
 
 	<name>azure IOT Hub Connector</name>
 
