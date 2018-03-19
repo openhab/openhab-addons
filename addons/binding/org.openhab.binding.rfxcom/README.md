@@ -470,7 +470,7 @@ A Humidity device.
         * HUM2 - LaCrosse WS2300
 
 
-#### Configuration options:
+### lighting1 - RFXCOM Lighting1 Actuator
 
 A Lighting1 device.
 
