@@ -19,7 +19,7 @@ import com.google.common.collect.Lists;
  * The {@link Mcp23017BindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Anatol Ogorek
+ * @author Anatol Ogorek - Initial contribution
  */
 @NonNullByDefault
 public class Mcp23017BindingConstants {
