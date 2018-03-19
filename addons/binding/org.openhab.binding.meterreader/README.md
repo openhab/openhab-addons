@@ -55,6 +55,17 @@ e.g.
 
 **conversionRatio:** This configuration is available for every Number OBIS channels. This is a quotient to easily convert  to a different unit. For example if the total electrical consumption is given in Wh from the device you usually want to convert it to kWh. To do this use `1000` as conversionRatio.
 
+**negate:** Energy meters often provides absolute values and provide information about the *energy direction* in a separate bit. With this config you can specify the channel where this bit is located, the bit position and the bits value which shall be set.
+
+`<negate> ::= <CHANNEL_ID>:<BIT_POSITION>:<BIT_VALUE>[:status]`
+
+e.g.:
+
+```
+"1-0#1-8-0:5:1:status" // negate if status(1-0#1-8-0) and 2^5 = 1
+"1-0#96-5-5:5:1" // negate if 1-0#96-5-5 and 2^5 = 1
+```
+
 ## Full Example
 
 Things:
@@ -67,6 +78,9 @@ meterreader:meter:BinderPower     [port="/dev/ttyUSB0", refresh=20] {
     Channels:
         Type NumberChannel : 1-0#1-8-0 [
             conversionRatio=1000
+        ]
+        Type NumberChannel : 1-0#16-7-0 [
+            negate=1-0#1-8-0:5:1:status
         ]
     }
 ```
