@@ -27,8 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -91,7 +90,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     // client socket and listener thread
     private Socket clientSocket;
     private SqueezeServerListener listener;
-    private ScheduledFuture<?> reconnectFuture;
+    private Future<?> reconnectFuture;
 
     private String host;
 
@@ -110,8 +109,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("initializing server handler for thing {}", getThing().getUID());
-
-        scheduler.submit(this::connect, TimeUnit.SECONDS);
+        scheduler.submit(this::connect);
     }
 
     @Override
@@ -984,10 +982,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         // update our children
         Bridge bridge = getThing();
 
-        if (bridge == null) {
-            return;
-        }
-
         List<Thing> things = bridge.getThings();
         for (Thing thing : things) {
             ThingHandler handler = thing.getHandler();
@@ -1035,7 +1029,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private void scheduleReconnect() {
         logger.debug("scheduling squeeze server reconnect in {} seconds", RECONNECT_TIME);
         cancelReconnect();
-        reconnectFuture = scheduler.schedule(this::connect, RECONNECT_TIME, TimeUnit.SECONDS);
+        reconnectFuture = scheduler.submit(this::connect);
     }
 
     /**
