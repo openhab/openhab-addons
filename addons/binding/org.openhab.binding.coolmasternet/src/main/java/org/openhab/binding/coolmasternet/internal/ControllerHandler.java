@@ -8,13 +8,11 @@
  */
 package org.openhab.binding.coolmasternet.internal;
 
-import static org.openhab.binding.coolmasternet.internal.config.CoolMasterNetConfiguration.*;
-
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -24,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -33,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.coolmasternet.handler.HVACHandler;
+import org.openhab.binding.coolmasternet.internal.config.ControllerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * A single CoolMasterNet can be connected to one or more HVAC units, each with a unique UID.
  * These are individual Things inside the bridge.
  *
- * @author Angus Gratton
+ * @author Angus Gratton - Initial contribution
  */
 public class ControllerHandler extends BaseBridgeHandler {
     private static final int SOCKET_TIMEOUT = 2000;
@@ -61,21 +59,9 @@ public class ControllerHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initialising CoolMasterNet Controller handler...");
 
-        Configuration config = this.getConfig();
-        host = (String) config.get(HOST);
-        port = 10102;
-        try {
-            port = ((BigDecimal) config.get(PORT)).intValue();
-        } catch (NullPointerException e) {
-            // keep default
-        }
-
-        int refresh = 5;
-        try {
-            refresh = ((BigDecimal) config.get(REFRESH)).intValue();
-        } catch (NullPointerException e) {
-            // keep default
-        }
+        ControllerConfiguration config = getConfigAs(ControllerConfiguration.class);
+        host = config.host;
+        port = config.port;
 
         Runnable refreshHVACUnits = () -> {
             try {
@@ -89,7 +75,7 @@ public class ControllerHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         };
-        scheduler.scheduleWithFixedDelay(refreshHVACUnits, 0, refresh, TimeUnit.SECONDS);
+        scheduler.scheduleWithFixedDelay(refreshHVACUnits, 0, config.refresh, TimeUnit.SECONDS);
     }
 
     @Override
@@ -145,7 +131,6 @@ public class ControllerHandler extends BaseBridgeHandler {
                         throw new CoolMasterClientError(String.format("Got gibberish response to command %s", command));
                     }
                 }
-
             } catch (SocketTimeoutException e) {
                 if (response.length() == 0) {
                     throw new CoolMasterClientError(String.format("No response to command %s", command));
@@ -175,7 +160,7 @@ public class ControllerHandler extends BaseBridgeHandler {
                     }
                 }
 
-                java.io.InputStream in = socket.getInputStream();
+                InputStream in = socket.getInputStream();
                 /* Flush anything pending in the input stream */
                 while (in.available() > 0) {
                     in.read();
@@ -187,8 +172,9 @@ public class ControllerHandler extends BaseBridgeHandler {
                  * this will time out with IOException if it doesn't see that prompt
                  * with no other data following it, within 1 second (socket timeout)
                  */
-                final byte PROMPT = ">".getBytes(StandardCharsets.US_ASCII)[0];
-                while (in.read() != PROMPT || in.available() > 3) {
+                final byte prompt = ">".getBytes(StandardCharsets.US_ASCII)[0];
+                while (in.read() != prompt || in.available() > 3) {
+                    continue; // empty by design
                 }
             } catch (IOException e) {
                 disconnect();
@@ -235,6 +221,5 @@ public class ControllerHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
     }
 }
