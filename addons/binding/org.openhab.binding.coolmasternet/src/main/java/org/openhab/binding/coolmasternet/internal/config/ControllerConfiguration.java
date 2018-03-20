@@ -18,12 +18,11 @@ package org.openhab.binding.coolmasternet.internal.config;
 public class ControllerConfiguration {
 
     public static final String HOST = "host";
-    public String host;
-
     public static final String PORT = "port";
-    public int port = 10102;
-
     public static final String REFRESH = "refresh";
+
+    public String host;
+    public int port = 10102;
     public int refresh = 5; // seconds
 
 }
