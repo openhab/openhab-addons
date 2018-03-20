@@ -16,7 +16,6 @@ Export-Package:
  org.openhab.binding.chromecast,
  org.openhab.binding.chromecast.handler
 Import-Package: 
- com.fasterxml.jackson.annotation,
  javax.jmdns,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
@@ -32,8 +31,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
- org.jupnp.model.meta,
- org.jupnp.model.types,
  org.openhab.binding.chromecast,
  org.openhab.binding.chromecast.handler,
  org.osgi.framework,
