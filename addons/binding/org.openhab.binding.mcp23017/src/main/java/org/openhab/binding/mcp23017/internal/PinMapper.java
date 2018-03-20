@@ -17,7 +17,7 @@ import java.util.Map;
 import com.pi4j.io.gpio.Pin;
 
 /**
- * @author Anatol Ogorek
+ * @author Anatol Ogorek - Initial contribution
  */
 public class PinMapper {
 

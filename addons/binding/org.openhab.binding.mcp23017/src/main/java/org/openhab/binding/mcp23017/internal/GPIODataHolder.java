@@ -16,7 +16,7 @@ import com.pi4j.wiringpi.GpioUtil;
  * The {@link GPIODataHolder} holds a reference to GpioController.
  * There should be only one instance per whole system
  *
- * @author Anatol Ogorek
+ * @author Anatol Ogorek - Initial contribution
  */
 public class GPIODataHolder {
     static {

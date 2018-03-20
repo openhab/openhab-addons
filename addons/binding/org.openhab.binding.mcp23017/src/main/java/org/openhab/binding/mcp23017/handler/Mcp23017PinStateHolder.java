@@ -33,11 +33,11 @@ import com.pi4j.io.gpio.PinState;
 /**
  * The {@link Mcp23017PinStateHolder} is a class where MCP23017 PIN state is held
  *
- * @author Anatol Ogorek
+ * @author Anatol Ogorek - Initial contribution
  */
 public class Mcp23017PinStateHolder {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private Map<ChannelUID, GpioPinDigitalInput> inputPins = new HashMap<>();
     private Map<ChannelUID, GpioPinDigitalOutput> outputPins = new HashMap<>();
     private MCP23017GpioProvider mcpProvider;
