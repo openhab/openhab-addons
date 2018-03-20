@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler {
-    private Logger logger = LoggerFactory.getLogger(PentairBaseBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PentairBaseBridgeHandler.class);
 
     /** input stream - subclass needs to assign in connect function */
     protected BufferedInputStream reader;
@@ -58,7 +58,7 @@ public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler {
     /** ID to use when sending commands on Pentair bus - subclass needs to assign based on configuration parameter */
     protected int id;
     /** array to keep track of IDs seen on the Pentair bus that do not correlate to a configured Thing object */
-    protected ArrayList<Integer> unregistered = new ArrayList<Integer>();
+    protected ArrayList<Integer> unregistered = new ArrayList<>();
 
     /**
      * Gets pentair bus id
