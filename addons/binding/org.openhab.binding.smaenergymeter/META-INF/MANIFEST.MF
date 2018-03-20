@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: SMAEnergyMeter Binding
@@ -20,5 +21,6 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.smaenergymeter,
  org.openhab.binding.smaenergymeter.handler,
+ org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
