@@ -45,7 +45,7 @@ public class Cm11aBridgeHandler extends BaseBridgeHandler implements ReceivedDat
 
     private Bridge bridge;
 
-    private Logger logger = LoggerFactory.getLogger(Cm11aBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(Cm11aBridgeHandler.class);
 
     public Cm11aBridgeHandler(Bridge bridge) {
         super(bridge);

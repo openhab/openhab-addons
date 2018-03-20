@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Cm11aLampHandler extends Cm11aAbstractHandler {
 
-    private Logger logger = LoggerFactory.getLogger(Cm11aLampHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(Cm11aLampHandler.class);
 
     private State desiredState = UnDefType.UNDEF;
 
