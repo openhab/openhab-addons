@@ -19,6 +19,8 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.microsoft.azure.eventhubs.EventData;
 import com.microsoft.azure.eventhubs.EventHubClient;
 import com.microsoft.azure.eventhubs.PartitionReceiver;
@@ -38,6 +40,9 @@ import com.microsoft.azure.servicebus.ServiceBusException;
 
 public class CloudClient {
 
+    private static final String DATAPOINT_VALUE = "value";
+    private static final String DATAPOINT_DEVICE_ID = "deviceId";
+
     private final Logger logger = LoggerFactory.getLogger(CloudClient.class);
 
     private String connectionstring;
@@ -47,6 +52,7 @@ public class CloudClient {
     private AzureDevices azureDeviceStore;
     private EventHubClient azureClient;
     private Object lockobj = new Object();
+    private Gson gson = new Gson();
 
     /**
      * Constructor of CloudClient
@@ -54,10 +60,11 @@ public class CloudClient {
      * @param connectionstring the connectionstring to the Azure IoT Hub
      * @param eventPublisher
      * @throws IOException
+     * @throws ServiceBusException
      *
      */
     public CloudClient(String connectionstring, boolean commandEnabled, EventPublisher eventPublisher)
-            throws Exception {
+            throws IOException, ServiceBusException {
         this.connectionstring = connectionstring;
         this.commandEnabled = commandEnabled;
         this.eventPublisher = eventPublisher;
@@ -70,7 +77,6 @@ public class CloudClient {
     }
 
     public void sendItemUpdate(String deviceId, String state) {
-
         AzureDevice device;
         try {
             device = azureDeviceStore.getDevice(deviceId);
@@ -85,18 +91,17 @@ public class CloudClient {
     private void setItemState(AzureDevice azureDevice, String state) {
         AzureEventCallback callback = new AzureEventCallback();
 
-        AzureDatapoint datapoint = new AzureDatapoint();
-
         Device device = azureDevice.getDevice();
         if (device == null) {
             logger.error("Invalid device connection for device, can not send item state update");
             return;
         }
 
-        datapoint.deviceId = device.getDeviceId();
-        datapoint.value = state;
+        JsonObject datapoint = new JsonObject();
+        datapoint.addProperty(DATAPOINT_DEVICE_ID, device.getDeviceId());
+        datapoint.addProperty(DATAPOINT_VALUE, state);
 
-        Message msg = new Message(datapoint.serialize());
+        Message msg = new Message(gson.toJson(datapoint));
 
         azureDevice.sendMessage(msg, callback, lockobj);
 
@@ -114,56 +119,48 @@ public class CloudClient {
             try {
                 azureClient.closeSync();
             } catch (ServiceBusException e) {
-                logger.error("failed to close IoT client", e);
+                logger.warn("failed to close IoT client", e);
             }
         }
     }
 
-    private EventHubClient receiveMessages(final String partitionId) {
+    private EventHubClient receiveMessages(final String partitionId) throws ServiceBusException, IOException {
         EventHubClient client = null;
-        try {
-            client = EventHubClient.createFromConnectionStringSync(this.connectionstring);
-        } catch (Exception e) {
-            logger.error("Failed to create IoT EventHub client", e);
-            return null;
-        }
-        try {
-            client.createReceiver(EventHubClient.DEFAULT_CONSUMER_GROUP_NAME, partitionId, Instant.now())
-                    .thenAccept(new Consumer<PartitionReceiver>() {
-                        @Override
-                        public void accept(PartitionReceiver receiver) {
-                            logger.debug("Created IOT Hub receiver on partition {}", partitionId);
-                            try {
-                                while (true) {
-                                    Iterable<EventData> receivedEvents = receiver.receive(100).get();
-                                    int batchSize = 0;
-                                    if (receivedEvents != null) {
-                                        for (EventData receivedEvent : receivedEvents) {
-                                            logger.debug("Offset: {}, SeqNo: {}, EnqueueTime: {}",
-                                                    receivedEvent.getSystemProperties().getOffset(),
-                                                    receivedEvent.getSystemProperties().getSequenceNumber(),
-                                                    receivedEvent.getSystemProperties().getEnqueuedTime());
-                                            String itemName = receivedEvent.getSystemProperties()
-                                                    .get("iothub-connection-device-id").toString();
-                                            logger.debug("| device ID: {}", itemName);
-                                            String payload = new String(receivedEvent.getBytes(),
-                                                    Charset.defaultCharset());
-                                            logger.debug("| Message Payload: {}", payload);
-                                            eventPublisher.post(ItemEventFactory.createCommandEvent(itemName,
-                                                    new StringType(payload)));
-                                            batchSize++;
-                                        }
-                                    }
-                                    logger.debug("Partition: {}, ReceivedBatch Size: {}", partitionId, batchSize);
-                                }
-                            } catch (Exception e) {
-                                logger.debug("Failed to receive messages ", e);
+        client = EventHubClient.createFromConnectionStringSync(this.connectionstring);
+        client.createReceiver(EventHubClient.DEFAULT_CONSUMER_GROUP_NAME, partitionId, Instant.now())
+                .thenAccept(new Consumer<PartitionReceiver>() {
+                    @Override
+                    public void accept(PartitionReceiver receiver) {
+                        logger.debug("Created IOT Hub receiver on partition {}", partitionId);
+                        try {
+                            while (true) {
+                                Iterable<EventData> receivedEvents = receiver.receive(100).get();
+                                processReceivedEvents(partitionId, receivedEvents);
                             }
+                        } catch (Exception e) {
+                            logger.debug("Failed to receive messages ", e);
                         }
-                    });
-        } catch (Exception e) {
-            logger.debug("Failed to create receiver ", e);
-        }
+                    }
+
+                });
         return client;
+    }
+
+    private void processReceivedEvents(final String partitionId, Iterable<EventData> receivedEvents) {
+        int batchSize = 0;
+        if (receivedEvents != null) {
+            for (EventData receivedEvent : receivedEvents) {
+                logger.debug("Offset: {}, SeqNo: {}, EnqueueTime: {}", receivedEvent.getSystemProperties().getOffset(),
+                        receivedEvent.getSystemProperties().getSequenceNumber(),
+                        receivedEvent.getSystemProperties().getEnqueuedTime());
+                String itemName = receivedEvent.getSystemProperties().get("iothub-connection-device-id").toString();
+                logger.debug("| device ID: {}", itemName);
+                String payload = new String(receivedEvent.getBytes(), Charset.defaultCharset());
+                logger.debug("| Message Payload: {}", payload);
+                eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, new StringType(payload)));
+                batchSize++;
+            }
+        }
+        logger.debug("Partition: {}, ReceivedBatch Size: {}", partitionId, batchSize);
     }
 }

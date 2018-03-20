@@ -8,6 +8,9 @@
  */
 package org.openhab.io.internal.azureiothub;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -16,6 +19,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
 import com.microsoft.azure.sdk.iot.service.Device;
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import com.microsoft.azure.sdk.iot.service.exceptions.IotHubException;
@@ -31,16 +35,17 @@ public class AzureDevices {
 
     private final Logger logger = LoggerFactory.getLogger(AzureDevices.class);
 
-    private Map<String, AzureDevice> map = new HashMap<String, AzureDevice>();
+    private Map<String, AzureDevice> map = new HashMap<>();
     private String connectionstring;
     private RegistryManager registryManager;
 
-    public AzureDevices(String connectionstring) throws Exception {
+    public AzureDevices(String connectionstring) throws IOException {
         this.connectionstring = connectionstring;
         this.registryManager = RegistryManager.createFromConnectionString(this.connectionstring);
     }
 
-    public AzureDevice getDevice(String deviceId) throws Exception {
+    public AzureDevice getDevice(String deviceId) throws URISyntaxException, IOException, IotHubException,
+            JsonSyntaxException, IllegalArgumentException, NoSuchAlgorithmException {
         AzureDevice device = map.get(deviceId);
 
         // not created yet or cache expired
@@ -61,7 +66,8 @@ public class AzureDevices {
         return device;
     }
 
-    private Device getAzureDevice(String deviceId) throws Exception {
+    private Device getAzureDevice(String deviceId) throws IllegalArgumentException, NoSuchAlgorithmException,
+            IotHubException, JsonSyntaxException, IOException {
         Device device = Device.createFromId(deviceId, null, null);
 
         try {
@@ -69,8 +75,6 @@ public class AzureDevices {
         } catch (IotHubException iote) {
             // this happens if the device already exists, so let's retrieve it
             device = registryManager.getDevice(deviceId);
-        } catch (Exception ex) {
-            logger.error("failed to add device", ex);
         }
 
         return device;

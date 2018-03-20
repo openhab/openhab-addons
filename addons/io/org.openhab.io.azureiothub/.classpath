@@ -5,6 +5,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="lib" path="lib/azure-eventhubs-0.14.0.jar"/>
 	<classpathentry kind="lib" path="lib/iot-device-client-1.2.27.jar"/>
-	<classpathentry kind="lib" path="lib/iot-service-client-1.4.20.jar" sourcepath="/Users/kai/.m2/repository/com/microsoft/azure/sdk/iot/iot-service-client/1.4.20/iot-service-client-1.4.20-sources.jar"/>
+	<classpathentry kind="lib" path="lib/iot-service-client-1.4.20.jar"/>
+	<classpathentry kind="lib" path="lib/javax.json-api-1.0.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

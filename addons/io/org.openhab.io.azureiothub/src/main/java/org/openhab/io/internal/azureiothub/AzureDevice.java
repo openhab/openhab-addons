@@ -27,32 +27,25 @@ import com.microsoft.azure.sdk.iot.service.RegistryManager;
  * @author Niko Tanghe - Initial contribution
  * @author Kai Kreuzer - Cleaned up code
  */
-
 public class AzureDevice {
 
-    private static IotHubClientProtocol PROTOCOL = IotHubClientProtocol.MQTT;
+    private static final IotHubClientProtocol PROTOCOL = IotHubClientProtocol.MQTT;
 
     private final Logger logger = LoggerFactory.getLogger(AzureDevice.class);
 
-    private DeviceClient client;
+    private final DeviceClient client;
     private LocalDateTime retrievedAt;
 
     private Device device;
 
-    public AzureDevice(Device azureDevice, RegistryManager registryManager) {
+    public AzureDevice(Device azureDevice, RegistryManager registryManager) throws URISyntaxException, IOException {
         device = azureDevice;
         retrievedAt = LocalDateTime.now();
 
-        try {
-            String connectionstring = registryManager.getDeviceConnectionString(azureDevice);
-            client = new DeviceClient(connectionstring, PROTOCOL);
-            client.open();
-            logger.info("device {} - state {}", azureDevice.getDeviceId(), azureDevice.getConnectionState().toString());
-        } catch (URISyntaxException e) {
-            logger.error("Invalid connectionstring", e);
-        } catch (Exception e) {
-            logger.error("Failed to connect to Azure IoT Hub device", e);
-        }
+        String connectionstring = registryManager.getDeviceConnectionString(azureDevice);
+        client = new DeviceClient(connectionstring, PROTOCOL);
+        client.open();
+        logger.debug("device {} - state {}", azureDevice.getDeviceId(), azureDevice.getConnectionState());
     }
 
     public LocalDateTime getRetrievedAt() {
@@ -64,15 +57,13 @@ public class AzureDevice {
     }
 
     public void sendMessage(Message msg, AzureEventCallback callback, Object lockobj) {
-
         try {
             // keep connection open,
             // according to inline comments, calling open on an already open connection does nothing.
             client.open();
         } catch (IOException e) {
-            logger.error("Failed to connect to Azure IoT Hub device", e);
+            logger.warn("Failed to connect to Azure IoT Hub device", e);
         }
-
         client.sendEventAsync(msg, callback, lockobj);
     }
 
@@ -81,7 +72,7 @@ public class AzureDevice {
             try {
                 client.closeNow();
             } catch (IOException e) {
-                logger.error("Failed to close connection to Azure device", e);
+                logger.warn("Failed to close connection to Azure device", e);
             }
         }
     }

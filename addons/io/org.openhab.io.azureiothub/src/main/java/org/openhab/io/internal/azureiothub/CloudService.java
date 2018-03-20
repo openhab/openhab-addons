@@ -43,11 +43,11 @@ public class CloudService implements EventSubscriber {
 
     private Logger logger = LoggerFactory.getLogger(CloudService.class);
 
-    public static String clientVersion = null;
+    public static String clientVersion;
     private CloudClient cloudClient;
 
-    protected ItemRegistry itemRegistry = null;
-    protected EventPublisher eventPublisher = null;
+    protected ItemRegistry itemRegistry;
+    protected EventPublisher eventPublisher;
 
     @Override
     public Set<String> getSubscribedEventTypes() {
@@ -95,7 +95,7 @@ public class CloudService implements EventSubscriber {
         }
 
         boolean commandEnabled = false;
-        if (config != null && config.get(CFG_MODE) != null) {
+        if (config.get(CFG_MODE) != null) {
             commandEnabled = "remote".equals(config.get(CFG_MODE));
         } else {
             logger.debug("remoteAccessEnabled is not set, keeping value '{}'", commandEnabled);

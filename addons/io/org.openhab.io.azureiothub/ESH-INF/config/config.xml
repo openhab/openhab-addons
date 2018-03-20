@@ -15,7 +15,7 @@
 		</parameter>
 		<parameter name="connectionstring" type="text" required="false">
 			<label>Connection String</label>
-			<description>The ""connectionstring for authenticating against the Azure IoT Hub.</description>
+			<description>The "connectionstring" for authenticating against the Azure IoT Hub.</description>
 			<required>true</required>
 			<advanced>false</advanced>
 		</parameter>

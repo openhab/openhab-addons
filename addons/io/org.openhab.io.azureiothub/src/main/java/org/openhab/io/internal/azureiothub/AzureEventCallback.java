@@ -22,11 +22,11 @@ import com.microsoft.azure.sdk.iot.device.IotHubStatusCode;
  */
 
 public class AzureEventCallback implements IotHubEventCallback {
-    private Logger logger = LoggerFactory.getLogger(AzureEventCallback.class);
+    private final Logger logger = LoggerFactory.getLogger(AzureEventCallback.class);
 
     @Override
     public void execute(IotHubStatusCode status, Object context) {
-        logger.info("IoT Hub responded to message with status {}", status.name());
+        logger.debug("IoT Hub responded to message with status {}", status.name());
 
         if (context != null) {
             synchronized (context) {
