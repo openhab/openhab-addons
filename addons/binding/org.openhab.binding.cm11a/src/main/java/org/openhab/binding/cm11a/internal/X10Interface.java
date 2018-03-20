@@ -50,7 +50,7 @@ import gnu.io.UnsupportedCommOperationException;
  */
 public class X10Interface extends Thread implements SerialPortEventListener {
 
-    private Logger logger = LoggerFactory.getLogger(X10Interface.class);
+    private final Logger logger = LoggerFactory.getLogger(X10Interface.class);
 
     // X10 Function codes
     public static final int FUNC_ALL_UNITS_OFF = 0x0;
@@ -139,7 +139,7 @@ public class X10Interface extends Thread implements SerialPortEventListener {
     static final Map<Integer, Integer> DEVICE_CODES;
 
     static {
-        HashMap<Character, Integer> houseCodes = new HashMap<Character, Integer>(16);
+        HashMap<Character, Integer> houseCodes = new HashMap<>(16);
         houseCodes.put('A', 0x60);
         houseCodes.put('B', 0xE0);
         houseCodes.put('C', 0x20);
@@ -159,7 +159,7 @@ public class X10Interface extends Thread implements SerialPortEventListener {
 
         HOUSE_CODES = Collections.unmodifiableMap(houseCodes);
 
-        HashMap<Integer, Integer> deviceCodes = new HashMap<Integer, Integer>(16);
+        HashMap<Integer, Integer> deviceCodes = new HashMap<>(16);
         deviceCodes.put(1, 0x06);
         deviceCodes.put(2, 0x0E);
         deviceCodes.put(3, 0x02);
@@ -220,7 +220,7 @@ public class X10Interface extends Thread implements SerialPortEventListener {
     /**
      * Queue of as-yet un-actioned requests.
      */
-    protected BlockingQueue<Cm11aAbstractHandler> deviceUpdateQueue = new ArrayBlockingQueue<Cm11aAbstractHandler>(256);
+    protected BlockingQueue<Cm11aAbstractHandler> deviceUpdateQueue = new ArrayBlockingQueue<>(256);
 
     // Need to keep last addresses found for data that comes in over the serial interface because if the incoming
     // command is a dim or bright the address isn't included. In addition some controllers will send the address
