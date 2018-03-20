@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.types.State;;
+import org.eclipse.smarthome.core.types.State;
 
 /**
  * The {@link RegoRegisterMapper} is responsible for mapping rego 6xx registers into channels.
@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.types.State;;
  * @author Boris Krivonog - Initial contribution
  */
 public class RegoRegisterMapper {
-    public static final RegoRegisterMapper rego600;
+    public static final RegoRegisterMapper REGO600;
 
     public static interface Channel {
         public short address();
@@ -125,6 +125,6 @@ public class RegoRegisterMapper {
             mappings.put(CHANNEL_GROUP_SETTINGS + "heatCurveCouplingDiff", new TemperatureChannel((short) 0x0002));
         }
 
-        rego600 = new RegoRegisterMapper(mappings);
+        REGO600 = new RegoRegisterMapper(mappings);
     }
 }
