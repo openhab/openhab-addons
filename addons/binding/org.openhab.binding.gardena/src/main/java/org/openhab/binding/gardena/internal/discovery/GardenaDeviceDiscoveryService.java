@@ -100,7 +100,7 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
 
                     logger.debug("Finished Gardena device discovery scan on gateway '{}'",
                             accountHandler.getGardenaSmart().getId());
-                } catch (Throwable ex) {
+                } catch (GardenaException ex) {
                     logger.error("{}", ex.getMessage(), ex);
                 } finally {
                     scanFuture = null;

@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DateUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(DateUtils.class);
-    private static final String[] dateFormats = new String[] { "yyyy-MM-dd'T'HH:mm:ss'Z'",
+    private static final String[] DATE_FORMATS = new String[] { "yyyy-MM-dd'T'HH:mm:ss'Z'",
             "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "yyyy-MM-dd'T'HH:mm'Z'" };
 
     /**
@@ -37,7 +37,7 @@ public class DateUtils {
     public static Date parseToDate(String text) {
         if (StringUtils.isNotBlank(text)) {
             Date parsedDate = null;
-            for (String dateFormat : dateFormats) {
+            for (String dateFormat : DATE_FORMATS) {
                 try {
                     parsedDate = new SimpleDateFormat(dateFormat).parse(text);
                     ZonedDateTime gmt = ZonedDateTime.ofInstant(parsedDate.toInstant(), ZoneOffset.UTC);
