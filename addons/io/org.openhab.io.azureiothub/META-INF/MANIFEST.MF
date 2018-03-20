@@ -41,7 +41,6 @@ Import-Package:
  org.eclipse.smarthome.core.persistence,
  org.eclipse.smarthome.core.service,
  org.eclipse.smarthome.core.types,
- org.openhab.core,
  org.osgi.framework,
  org.osgi.service.cm,
  org.osgi.service.event,
