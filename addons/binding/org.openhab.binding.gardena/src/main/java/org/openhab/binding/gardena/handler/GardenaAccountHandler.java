@@ -121,7 +121,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     private void registerDeviceDiscoveryService() {
         discoveryService = new GardenaDeviceDiscoveryService(this);
         discoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                new Hashtable<String, Object>());
+                new Hashtable<>());
         discoveryService.activate();
     }
 
