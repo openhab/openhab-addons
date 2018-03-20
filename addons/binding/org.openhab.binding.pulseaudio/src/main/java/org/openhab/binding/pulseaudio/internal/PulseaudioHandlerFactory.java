@@ -43,7 +43,7 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .union(PulseaudioBridgeHandler.SUPPORTED_THING_TYPES_UIDS, PulseaudioHandler.SUPPORTED_THING_TYPES_UIDS);
 
-    private Map<ThingHandler, ServiceRegistration<?>> discoveryServiceReg = new HashMap<ThingHandler, ServiceRegistration<?>>();
+    private Map<ThingHandler, ServiceRegistration<?>> discoveryServiceReg = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -66,8 +66,8 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
     private void registerDeviceDiscoveryService(PulseaudioBridgeHandler paBridgeHandler) {
         PulseaudioDeviceDiscoveryService discoveryService = new PulseaudioDeviceDiscoveryService(paBridgeHandler);
         discoveryService.activate();
-        this.discoveryServiceReg.put(paBridgeHandler, bundleContext.registerService(DiscoveryService.class.getName(),
-                discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceReg.put(paBridgeHandler,
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     private ThingUID getPulseaudioDeviceUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,

@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class PulseaudioBridgeHandler extends BaseBridgeHandler {
-    private Logger logger = LoggerFactory.getLogger(PulseaudioBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PulseaudioBridgeHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(PulseaudioBindingConstants.BRIDGE_THING_TYPE);
@@ -55,7 +55,7 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler {
     private PulseaudioClient client;
 
     private List<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
-    private HashSet<String> lastActiveDevices = new HashSet<String>();
+    private HashSet<String> lastActiveDevices = new HashSet<>();
 
     private ScheduledFuture<?> pollingJob;
     private Runnable pollingRunnable = () -> {

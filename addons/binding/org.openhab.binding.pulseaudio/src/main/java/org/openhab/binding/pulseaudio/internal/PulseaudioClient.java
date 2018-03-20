@@ -119,8 +119,8 @@ public class PulseaudioClient {
         this.host = host;
         this.port = port;
 
-        items = new ArrayList<AbstractAudioDeviceConfig>();
-        modules = new ArrayList<Module>();
+        items = new ArrayList<>();
+        modules = new ArrayList<>();
 
         connect();
         update();
@@ -417,7 +417,7 @@ public class PulseaudioClient {
         if (combinedSink == null || !combinedSink.isCombinedSink()) {
             return;
         }
-        List<String> slaves = new ArrayList<String>();
+        List<String> slaves = new ArrayList<>();
         for (Sink sink : sinks) {
             slaves.add(sink.getPaName());
         }
@@ -510,7 +510,7 @@ public class PulseaudioClient {
         if (getSink(combinedSinkName) != null) {
             return;
         }
-        List<String> slaves = new ArrayList<String>();
+        List<String> slaves = new ArrayList<>();
         for (Sink sink : sinks) {
             slaves.add(sink.getPaName());
         }
