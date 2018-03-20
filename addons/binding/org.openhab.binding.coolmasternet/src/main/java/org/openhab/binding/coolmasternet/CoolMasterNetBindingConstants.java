@@ -15,7 +15,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * The {@link coolmasternetBinding} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Angus Gratton
+ * @author Angus Gratton - Initial contribution
  */
 @NonNullByDefault
 public class CoolMasterNetBindingConstants {
