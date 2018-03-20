@@ -52,21 +52,21 @@ import gnu.io.UnsupportedCommOperationException;
 public class MeteostickBridgeHandler extends BaseBridgeHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
-    private Logger logger = LoggerFactory.getLogger(MeteostickBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(MeteostickBridgeHandler.class);
 
-    private static int RECEIVE_TIMEOUT = 3000;
+    private static final int RECEIVE_TIMEOUT = 3000;
 
     private SerialPort serialPort;
     private ReceiveThread receiveThread;
 
-    private ScheduledFuture<?> offlineTimerJob = null;
+    private ScheduledFuture<?> offlineTimerJob;
 
     private String meteostickMode = "m1";
     private final String meteostickFormat = "o1";
 
     private Date lastData;
 
-    private ConcurrentMap<Integer, MeteostickEventListener> eventListeners = new ConcurrentHashMap<Integer, MeteostickEventListener>();
+    private ConcurrentMap<Integer, MeteostickEventListener> eventListeners = new ConcurrentHashMap<>();
 
     public MeteostickBridgeHandler(Bridge thing) {
         super(thing);
@@ -88,7 +88,7 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
         }
 
         Runnable pollingRunnable = () -> {
-            if (connectPort(port) == true) {
+            if (connectPort(port)) {
                 offlineTimerJob.cancel(true);
             }
         };

@@ -43,13 +43,13 @@ import org.slf4j.LoggerFactory;
 public class MeteostickSensorHandler extends BaseThingHandler implements MeteostickEventListener {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DAVIS);
 
-    private Logger logger = LoggerFactory.getLogger(MeteostickSensorHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(MeteostickSensorHandler.class);
 
     private int channel = 0;
     private MeteostickBridgeHandler bridgeHandler;
     private SlidingTimeWindow rainHourlyWindow = new SlidingTimeWindow(60000);
-    private ScheduledFuture<?> rainHourlyJob = null;
-    private ScheduledFuture<?> offlineTimerJob = null;
+    private ScheduledFuture<?> rainHourlyJob;
+    private ScheduledFuture<?> offlineTimerJob;
 
     private Date lastData;
 
@@ -199,7 +199,7 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
 
     class SlidingTimeWindow {
         int period = 0;
-        private final Map<Long, Integer> storage = new TreeMap<Long, Integer>();
+        private final Map<Long, Integer> storage = new TreeMap<>();
 
         /**
          *
