@@ -24,11 +24,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Handler for the IPBridge. Implements the connect and disconnect abstract methods of {@link PentairBaseBridgeHandler}
  *
- * @author Jeff James - initial contributino
+ * @author Jeff James - Initial contribution
  *
  */
 public class PentairIPBridgeHandler extends PentairBaseBridgeHandler {
-    private Logger logger = LoggerFactory.getLogger(PentairIPBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PentairIPBridgeHandler.class);
 
     /** Socket object for connection */
     protected Socket socket;

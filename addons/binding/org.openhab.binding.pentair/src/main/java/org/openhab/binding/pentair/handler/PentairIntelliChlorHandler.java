@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Jeff James - Initial contribution
  */
 public class PentairIntelliChlorHandler extends PentairBaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(PentairIntelliChlorHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PentairIntelliChlorHandler.class);
 
     protected PentairPacketIntellichlor pic3cur = new PentairPacketIntellichlor();
     protected PentairPacketIntellichlor pic4cur = new PentairPacketIntellichlor();

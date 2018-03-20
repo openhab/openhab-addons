@@ -33,7 +33,7 @@ import gnu.io.UnsupportedCommOperationException;
  *
  */
 public class PentairSerialBridgeHandler extends PentairBaseBridgeHandler {
-    private Logger logger = LoggerFactory.getLogger(PentairSerialBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PentairSerialBridgeHandler.class);
 
     /** SerialPort object representing the port where the RS485 adapter is connected */
     SerialPort port;

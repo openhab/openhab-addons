@@ -15,7 +15,7 @@ import org.openhab.binding.pentair.internal.PentairPacket;
 /**
  * Abstract class for all Pentair Things.
  *
- * @author Jeff James
+ * @author Jeff James - Initial contribution
  *
  */
 public abstract class PentairBaseThingHandler extends BaseThingHandler {

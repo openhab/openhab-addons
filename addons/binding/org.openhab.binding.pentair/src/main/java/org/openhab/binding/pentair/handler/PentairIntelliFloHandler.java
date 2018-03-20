@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PentairIntelliFloHandler extends PentairBaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(PentairIntelliFloHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PentairIntelliFloHandler.class);
     protected PentairPacketPumpStatus ppscur = new PentairPacketPumpStatus();
 
     public PentairIntelliFloHandler(Thing thing) {
