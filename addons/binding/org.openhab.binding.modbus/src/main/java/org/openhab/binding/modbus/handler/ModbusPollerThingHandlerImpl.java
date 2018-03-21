@@ -261,8 +261,8 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    String.format("Bridge '%s' is offline", Optional.ofNullable(getBridge()).map(b -> b.getLabel())));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, String.format("Bridge '%s' is offline",
+                    Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>")));
             logger.debug("No bridge handler available -- aborting init for {}", this);
             return;
         }
