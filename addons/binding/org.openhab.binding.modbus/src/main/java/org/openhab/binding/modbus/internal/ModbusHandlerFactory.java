@@ -18,11 +18,17 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.modbus.handler.ModbusDataThingHandler;
 import org.openhab.binding.modbus.handler.ModbusPollerThingHandlerImpl;
 import org.openhab.binding.modbus.handler.ModbusSerialThingHandler;
 import org.openhab.binding.modbus.handler.ModbusTcpThingHandler;
 import org.openhab.io.transport.modbus.ModbusManager;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Sami Salonen - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.modbus", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class ModbusHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusHandlerFactory.class);
@@ -73,6 +80,7 @@ public class ModbusHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
+    @Reference(service = ModbusManager.class, cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "unsetManager")
     public void setManager(ModbusManager manager) {
         logger.info("Setting manager: {}", manager);
         this.manager = manager;

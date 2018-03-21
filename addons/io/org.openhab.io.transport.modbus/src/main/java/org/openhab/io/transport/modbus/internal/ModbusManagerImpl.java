@@ -48,6 +48,9 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpointVisitor;
 import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 import org.openhab.io.transport.modbus.endpoint.ModbusUDPSlaveEndpoint;
 import org.openhab.io.transport.modbus.internal.pooling.ModbusSlaveConnectionFactoryImpl;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +72,7 @@ import net.wimpi.modbus.net.ModbusSlaveConnection;
  *
  * @author Sami Salonen
  */
+@Component(service = ModbusManager.class, immediate = true, configurationPid = "transport.modbus")
 public class ModbusManagerImpl implements ModbusManager {
 
     private static class PollTaskUnregistered extends Exception {
@@ -803,6 +807,7 @@ public class ModbusManagerImpl implements ModbusManager {
         return this.scheduledPollTasks.keySet();
     }
 
+    @Activate
     protected void activate(Map<String, Object> configProperties) {
         synchronized (this) {
             logger.info("Modbus manager activated");
@@ -826,6 +831,7 @@ public class ModbusManagerImpl implements ModbusManager {
                 MONITOR_QUEUE_INTERVAL_MILLIS, TimeUnit.MILLISECONDS);
     }
 
+    @Deactivate
     protected void deactivate() {
         synchronized (this) {
             if (connectionPool != null) {
