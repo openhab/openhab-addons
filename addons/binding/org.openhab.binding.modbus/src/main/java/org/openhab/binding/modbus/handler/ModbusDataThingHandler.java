@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -277,7 +277,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 pollTask = bridgeHandler.getPollTask();
                 if (pollTask == null) {
                     logger.debug("Poller {} '{}' has no poll task -- configuration is changing?", bridge.getUID(),
-                            bridge.getLabel(), getThing().getUID(), getThing().getLabel());
+                            bridge.getLabel());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                             String.format("Poller %s '%s' has no poll task", bridge.getUID(), bridge.getLabel()));
                     return;
@@ -346,8 +346,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
     private boolean validateMustReadOrWrite() {
         if (!isReadEnabled && !isWriteEnabled) {
-            logger.error("Thing {} should try to read or write data!", getThing().getUID(), config.getReadStart(),
-                    config.getReadValueType());
+            logger.error("Thing {} should try to read or write data!", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
                     .format("Not reading or writing anything!", config.getReadStart(), config.getReadValueType()));
             return false;

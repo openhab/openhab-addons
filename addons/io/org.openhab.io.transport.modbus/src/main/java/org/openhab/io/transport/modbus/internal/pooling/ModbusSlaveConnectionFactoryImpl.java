@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -89,9 +89,6 @@ public class ModbusSlaveConnectionFactoryImpl
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ModbusSlaveConnection create(ModbusSlaveEndpoint endpoint) throws Exception {
         return endpoint.accept(new ModbusSlaveEndpointVisitor<ModbusSlaveConnection>() {
@@ -131,17 +128,11 @@ public class ModbusSlaveConnectionFactoryImpl
         });
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PooledObject<ModbusSlaveConnection> wrap(ModbusSlaveConnection connection) {
         return new PooledConnection(connection);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void destroyObject(ModbusSlaveEndpoint endpoint, final PooledObject<ModbusSlaveConnection> obj) {
         logger.trace("destroyObject for connection {} and endpoint {} -> closing the connection", obj.getObject(),
@@ -149,9 +140,6 @@ public class ModbusSlaveConnectionFactoryImpl
         obj.getObject().resetConnection();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void activateObject(ModbusSlaveEndpoint endpoint, PooledObject<ModbusSlaveConnection> obj) throws Exception {
         if (obj.getObject() == null) {
@@ -181,9 +169,6 @@ public class ModbusSlaveConnectionFactoryImpl
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void passivateObject(ModbusSlaveEndpoint endpoint, PooledObject<ModbusSlaveConnection> obj) {
         ModbusSlaveConnection connection = obj.getObject();
@@ -215,9 +200,6 @@ public class ModbusSlaveConnectionFactoryImpl
         logger.trace("...Passivated connection {} for endpoint {}", obj.getObject(), endpoint);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean validateObject(ModbusSlaveEndpoint key, PooledObject<ModbusSlaveConnection> p) {
         boolean valid = p.getObject() != null && p.getObject().isConnected();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -46,41 +46,26 @@ public class ModbusReadRequestBlueprintImpl implements ModbusReadRequestBlueprin
         this.maxTries = maxTries;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getUnitID() {
         return slaveId;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getReference() {
         return start;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ModbusReadFunctionCode getFunctionCode() {
         return functionCode;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getDataLength() {
         return length;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getMaxTries() {
         return maxTries;

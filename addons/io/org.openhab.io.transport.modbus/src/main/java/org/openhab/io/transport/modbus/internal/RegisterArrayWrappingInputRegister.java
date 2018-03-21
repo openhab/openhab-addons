@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,25 +34,16 @@ public class RegisterArrayWrappingInputRegister implements ModbusRegisterArray {
             this.wrappedRegister = wrapped[index];
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public byte[] getBytes() {
             return wrappedRegister.toBytes();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public int getValue() {
             return wrappedRegister.getValue();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public int toUnsignedShort() {
             return wrappedRegister.toUnsignedShort();
@@ -67,17 +58,11 @@ public class RegisterArrayWrappingInputRegister implements ModbusRegisterArray {
         this.wrapped = wrapped;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ModbusRegister getRegister(int index) {
         return cache.computeIfAbsent(index, i -> new RegisterReference(i));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int size() {
         return wrapped.length;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -46,9 +46,6 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
         this.managerRef = managerRef;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
@@ -58,9 +55,6 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
      */
     protected abstract void configure();
 
-    /**
-     * {@inheritDoc}
-     */
     @SuppressWarnings("null")
     @Override
     public void initialize() {
@@ -83,18 +77,12 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         managerRef.get().removeListener(this);
         updateStatus(ThingStatus.OFFLINE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ModbusSlaveEndpoint asSlaveEndpoint() {
         return endpoint;
@@ -112,17 +100,11 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
      */
     protected abstract String formatConflictingParameterError(EndpointPoolConfiguration otherPoolConfig);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Supplier<ModbusManager> getManagerRef() {
         return managerRef;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onEndpointPoolConfigurationSet(ModbusSlaveEndpoint otherEndpoint,
             EndpointPoolConfiguration otherPoolConfiguration) {

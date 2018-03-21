@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -175,9 +175,6 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         // No channels, no commands
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ModbusEndpointThingHandler getEndpointThingHandler() {
         Bridge bridge = getBridge();
@@ -303,17 +300,11 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         this.initialize();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Supplier<ModbusManager> getManagerRef() {
         return managerRef;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PollTask getPollTask() {
         return pollTask;

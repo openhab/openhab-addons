@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -433,7 +433,8 @@ public class ModbusManagerImpl implements ModbusManager {
 
     private <R> void invokeCallbackWithError(ModbusRequestBlueprint request, ModbusCallback callback, Exception error) {
         try {
-            logger.trace("Calling write response callback {} for request {}. Error was {}", callback, request, error);
+            logger.trace("Calling write response callback {} for request {}. Error was {} {}", callback, request,
+                    error.getClass().getName(), error.getMessage());
             if (request instanceof ModbusReadRequestBlueprint) {
                 ((ModbusReadCallback) callback).onError((ModbusReadRequestBlueprint) request, error);
             } else if (request instanceof ModbusWriteRequestBlueprint) {
@@ -446,7 +447,8 @@ public class ModbusManagerImpl implements ModbusManager {
             logger.error("Unhandled exception in callback: {} {} with request {}", e.getClass().getName(),
                     e.getMessage(), request, e);
         } finally {
-            logger.trace("Called write response callback {} for request {}. Error was {}", callback, request, error);
+            logger.trace("Called write response callback {} for request {}. Error was {} {}", callback, request,
+                    error.getClass().getName(), error.getMessage());
         }
     }
 
@@ -675,9 +677,6 @@ public class ModbusManagerImpl implements ModbusManager {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ScheduledFuture<?> submitOneTimePoll(PollTask task) {
         long scheduleTime = System.currentTimeMillis();
@@ -695,9 +694,6 @@ public class ModbusManagerImpl implements ModbusManager {
         return future;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void registerRegularPoll(@NonNull PollTask task, long pollPeriodMillis, long initialDelayMillis) {
         synchronized (this) {
@@ -728,9 +724,6 @@ public class ModbusManagerImpl implements ModbusManager {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean unregisterRegularPoll(PollTask task) {
         synchronized (this) {
@@ -769,9 +762,6 @@ public class ModbusManagerImpl implements ModbusManager {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ScheduledFuture<?> submitOneTimeWrite(WriteTask task) {
         long scheduleTime = System.currentTimeMillis();
@@ -785,9 +775,6 @@ public class ModbusManagerImpl implements ModbusManager {
         return future;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setEndpointPoolConfiguration(ModbusSlaveEndpoint endpoint, EndpointPoolConfiguration configuration) {
         connectionFactory.setEndpointPoolConfiguration(endpoint, configuration);
@@ -796,33 +783,21 @@ public class ModbusManagerImpl implements ModbusManager {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public @NonNull EndpointPoolConfiguration getEndpointPoolConfiguration(ModbusSlaveEndpoint endpoint) {
         return connectionFactory.getEndpointPoolConfiguration(endpoint);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addListener(ModbusManagerListener listener) {
         listeners.add(listener);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeListener(ModbusManagerListener listener) {
         listeners.remove(listener);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Set<@NonNull PollTask> getRegisteredRegularPolls() {
         return this.scheduledPollTasks.keySet();

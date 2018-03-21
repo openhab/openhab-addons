@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -29,9 +29,6 @@ public class ModbusTcpThingHandler
         super(bridge, managerRef);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void configure() {
         config = getConfigAs(ModbusTcpConfiguration.class);
@@ -46,9 +43,6 @@ public class ModbusTcpThingHandler
         poolConfiguration.setReconnectAfterMillis(config.getReconnectAfterMillis());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String formatConflictingParameterError(EndpointPoolConfiguration otherPoolConfig) {
         return String.format(
@@ -57,9 +51,6 @@ public class ModbusTcpThingHandler
                 this.endpoint.getAddress(), this.endpoint.getPort());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getSlaveId() {
         if (config == null) {

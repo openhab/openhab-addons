@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -63,42 +63,27 @@ public class ModbusWriteRegisterRequestBlueprintImpl implements ModbusWriteRegis
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getReference() {
         return reference;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getUnitID() {
         return slaveId;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ModbusWriteFunctionCode getFunctionCode() {
         return writeMultiple ? ModbusWriteFunctionCode.WRITE_MULTIPLE_REGISTERS
                 : ModbusWriteFunctionCode.WRITE_SINGLE_REGISTER;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ModbusRegisterArray getRegisters() {
         return registers;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getMaxTries() {
         return maxTries;
