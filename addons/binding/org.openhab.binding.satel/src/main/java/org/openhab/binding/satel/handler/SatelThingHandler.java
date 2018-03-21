@@ -79,6 +79,7 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
     @Override
     public void initialize() {
         thingConfig = getConfig().as(SatelThingConfig.class);
+        requiresRefresh.set(true);
 
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -86,6 +87,9 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
             if (handler != null && handler instanceof SatelBridgeHandler) {
                 bridgeHandler = (SatelBridgeHandler) handler;
                 bridgeHandler.addEventListener(this);
+            }
+            if (bridge.getStatus() == ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
             }
         }
     }
