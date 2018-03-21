@@ -20,7 +20,7 @@ import com.google.common.collect.Sets;
  * The {@link TankerkoenigBinding} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Dennis Dollinger
+ * @author Dennis Dollinger - Initial contribution
  */
 @NonNullByDefault
 public class TankerkoenigBindingConstants {

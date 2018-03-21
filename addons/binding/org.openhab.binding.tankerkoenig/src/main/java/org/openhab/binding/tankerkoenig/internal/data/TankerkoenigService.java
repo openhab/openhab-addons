@@ -26,17 +26,17 @@ import com.google.gson.GsonBuilder;
 /***
  * Serivce class requesting data from tankerkoenig api and providing result objects
  *
- * @author Dennis Dollinger
- * @author Juergen Baginski
+ * @author Dennis Dollinger - Initial contribution
+ * @author Juergen Baginski - Initial contribution
  */
 public class TankerkoenigService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final GsonBuilder gson_Builder = new GsonBuilder().registerTypeAdapter(TankerkoenigListResult.class,
+    private final GsonBuilder gsonBuilder = new GsonBuilder().registerTypeAdapter(TankerkoenigListResult.class,
             new CustomTankerkoenigListResultDeserializer());
-    private final Gson gson = gson_Builder.create();
-    private final GsonBuilder gson_Builder_Detail = new GsonBuilder()
-            .registerTypeAdapter(TankerkoenigDetailResult.class, new CustomTankerkoenigDetailResultDeserializer());;
-    private final Gson gson_Detail = gson_Builder_Detail.create();
+    private final Gson gson = gsonBuilder.create();
+    private final GsonBuilder gsonBuilderDetail = new GsonBuilder().registerTypeAdapter(TankerkoenigDetailResult.class,
+            new CustomTankerkoenigDetailResultDeserializer());;
+    private final Gson gsonDetail = gsonBuilderDetail.create();
     private static final int REQUEST_TIMEOUT = 5000;
 
     public TankerkoenigListResult getStationListData(String apikey, String locationIDs, String userAgent) {
@@ -88,7 +88,7 @@ public class TankerkoenigService {
         try {
             jsonData = getResponseString(apiKey, locationID, userAgent, true);
             logger.debug("getTankerkoenigDetailResult jsonData : {}", jsonData);
-            return gson_Detail.fromJson(jsonData, TankerkoenigDetailResult.class);
+            return gsonDetail.fromJson(jsonData, TankerkoenigDetailResult.class);
         } catch (IOException e) {
             logger.debug("getTankerkoenigDetailResult IOException: ", e);
             // the return of an empty result will force the status-update OFFLINE!

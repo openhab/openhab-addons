@@ -41,9 +41,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link WebserviceHandler} is responsible for handling the things (stations)
  *
- *
- * @author Dennis Dollinger
- * @author Jürgen Baginski
+ * @author Dennis Dollinger - Initial contribution
+ * @author Jürgen Baginski - Initial contribution
  */
 public class WebserviceHandler extends BaseBridgeHandler {
 
@@ -63,7 +62,7 @@ public class WebserviceHandler extends BaseBridgeHandler {
 
     public WebserviceHandler(Bridge bridge) {
         super(bridge);
-        stationMap = new HashMap<String, LittleStation>();
+        stationMap = new HashMap<>();
     }
 
     @Override

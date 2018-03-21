@@ -13,10 +13,8 @@ package org.openhab.binding.tankerkoenig.internal.config;
  * request. (LittleStation because it has nearly no other information than gas prices. Stripped down version of
  * Station.java)
  *
- * @author Dennis Dollinger
- *
+ * @author Dennis Dollinger - Initial contribution
  */
-
 public class LittleStation {
 
     private String e5;
