@@ -14,8 +14,7 @@ import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
  * The {@link TankerkoenigListResult} class is the representing java model for the json result of the tankerkoenig.de
  * api
  *
- * @author Dennis Dollinger
- *
+ * @author Dennis Dollinger - Initial contribution
  */
 public class TankerkoenigListResult {
 

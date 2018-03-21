@@ -14,10 +14,8 @@ import java.util.List;
  * The {@link Prices} class is the representing java model for the station specific json result of the tankerkoenig.de
  * api
  *
- * @author Dennis Dollinger
- *
+ * @author Dennis Dollinger - Initial contribution
  */
-
 public class Prices {
 
     private List<LittleStation> stations;

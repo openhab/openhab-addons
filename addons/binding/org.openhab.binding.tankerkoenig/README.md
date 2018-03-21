@@ -155,6 +155,7 @@ Import the certificate to the CA-store which you have found
 >> cd /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security
 >> keytool -import -keystore cacerts -alias LetsEncrypt -file ca.crt
 ```
+
 The required password is "changeit".
 
 Restart your server

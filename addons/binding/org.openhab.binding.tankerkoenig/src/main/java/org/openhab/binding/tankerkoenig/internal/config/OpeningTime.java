@@ -12,10 +12,8 @@ package org.openhab.binding.tankerkoenig.internal.config;
  * The {@link OpeningTime} class is representing single Opening Time entry from the api request (i.e one setting like
  * "Montag" "09:00" "18:00")
  *
- * @author Jürgen Baginski
- *
+ * @author Jürgen Baginski - Initial contribution
  */
-
 public class OpeningTime {
 
     private String text;
