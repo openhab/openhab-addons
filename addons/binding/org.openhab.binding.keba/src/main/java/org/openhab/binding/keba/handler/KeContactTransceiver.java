@@ -55,15 +55,11 @@ class KeContactTransceiver {
     private Selector selector;
     private Thread transceiverThread;
     private boolean isStarted = false;
-    private Set<KeContactHandler> handlers = Collections.synchronizedSet(new HashSet<KeContactHandler>());
-    private Map<KeContactHandler, DatagramChannel> datagramChannels = Collections
-            .synchronizedMap(new HashMap<KeContactHandler, DatagramChannel>());
-    private Map<KeContactHandler, ByteBuffer> buffers = Collections
-            .synchronizedMap(new HashMap<KeContactHandler, ByteBuffer>());
-    private Map<KeContactHandler, ReentrantLock> locks = Collections
-            .synchronizedMap(new HashMap<KeContactHandler, ReentrantLock>());
-    private Map<KeContactHandler, Boolean> flags = Collections
-            .synchronizedMap(new HashMap<KeContactHandler, Boolean>());
+    private Set<KeContactHandler> handlers = Collections.synchronizedSet(new HashSet<>());
+    private Map<KeContactHandler, DatagramChannel> datagramChannels = Collections.synchronizedMap(new HashMap<>());
+    private Map<KeContactHandler, ByteBuffer> buffers = Collections.synchronizedMap(new HashMap<>());
+    private Map<KeContactHandler, ReentrantLock> locks = Collections.synchronizedMap(new HashMap<>());
+    private Map<KeContactHandler, Boolean> flags = Collections.synchronizedMap(new HashMap<>());
 
     private final Logger logger = LoggerFactory.getLogger(KeContactTransceiver.class);
 
