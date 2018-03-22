@@ -13,11 +13,13 @@ import static org.openhab.binding.robonect.RobonectBindingConstants.*;
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.robonect.handler.RobonectHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link RobonectHandlerFactory} is responsible for creating things and thing
@@ -25,6 +27,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
  *
  * @author Marco Meyer - Initial contribution
  */
+@Component(immediate = true, service = ThingHandlerFactory.class)
 public class RobonectHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AUTOMOWER);
