@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import com.google.gson.JsonSyntaxException;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -92,7 +93,7 @@ public class RobonectHandler extends BaseThingHandler {
         super(thing);
     }
 
-    
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
@@ -387,40 +388,7 @@ public class RobonectHandler extends BaseThingHandler {
             httpClient.start();
             robonectClient = new RobonectClient(httpClient, endpoint);
             refreshVersionInfo();
-            Runnable runnable = new Runnable() {
-
-                private long offlineSince = -1;
-                private long offlineTriggerDealay = robonectConfig.getOfflineTimeout() * 60 * 1000;
-                private boolean offlineTimeoutTriggered = false;
-
-                @Override
-                public void run() {
-                    try {
-                        refreshMowerInfo();
-                        updateStatus(ThingStatus.ONLINE);
-                        offlineSince = -1;
-                        offlineTimeoutTriggered = false;
-                    } catch (RobonectCommunicationException rce) {
-                        if (offlineSince < 0) {
-                            offlineSince = System.currentTimeMillis();
-                        }
-                        if (!offlineTimeoutTriggered && System.currentTimeMillis() - offlineSince > offlineTriggerDealay) {
-                            // trigger offline
-                            updateState(CHANNEL_MOWER_STATUS_OFFLINE_TRIGGER, new StringType("OFFLINE_TIMEOUT"));
-                            offlineTimeoutTriggered = true;
-                        }
-                        logger.debug("Failed to communicate with the mower. Taking it offline.", rce);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
-                    } catch (com.google.gson.JsonSyntaxException jse) {
-                        // the module sporadically sends invalid json responses. As this is usually recovered with the
-                        // next poll interval, we just log it to debug here.
-                        logger.debug("Failed to parse response.", jse);
-                    } catch (Exception e) {
-                        logger.error("Unexpected exception. Setting thing offline", e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
-                    }
-                }
-            };
+            Runnable runnable = new MowerChannelPoller(robonectConfig);
             int pollInterval = robonectConfig.getPollInterval();
             pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollInterval, TimeUnit.SECONDS);
         } catch (Exception e) {
@@ -441,7 +409,7 @@ public class RobonectHandler extends BaseThingHandler {
                 httpClient.stop();
             }
         } catch (Exception e) {
-            logger.error("Could not stop http client", e);
+            logger.debug("Could not stop http client", e);
         }
     }
 
@@ -451,5 +419,48 @@ public class RobonectHandler extends BaseThingHandler {
      */
     protected void setRobonectClient(RobonectClient robonectClient) {
         this.robonectClient = robonectClient;
+    }
+
+    private class MowerChannelPoller implements Runnable {
+
+        private final RobonectConfig robonectConfig;
+        private long offlineSince;
+        private long offlineTriggerDealay;
+        private boolean offlineTimeoutTriggered;
+
+        public MowerChannelPoller(RobonectConfig robonectConfig) {
+            this.robonectConfig = robonectConfig;
+            offlineSince = -1;
+            offlineTriggerDealay = robonectConfig.getOfflineTimeout() * 60 * 1000;
+            offlineTimeoutTriggered = false;
+        }
+
+        @Override
+        public void run() {
+            try {
+                refreshMowerInfo();
+                updateStatus(ThingStatus.ONLINE);
+                offlineSince = -1;
+                offlineTimeoutTriggered = false;
+            } catch (RobonectCommunicationException rce) {
+                if (offlineSince < 0) {
+                    offlineSince = System.currentTimeMillis();
+                }
+                if (!offlineTimeoutTriggered && System.currentTimeMillis() - offlineSince > offlineTriggerDealay) {
+                    // trigger offline
+                    updateState(CHANNEL_MOWER_STATUS_OFFLINE_TRIGGER, new StringType("OFFLINE_TIMEOUT"));
+                    offlineTimeoutTriggered = true;
+                }
+                logger.debug("Failed to communicate with the mower. Taking it offline.", rce);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
+            } catch (JsonSyntaxException jse) {
+                // the module sporadically sends invalid json responses. As this is usually recovered with the
+                // next poll interval, we just log it to debug here.
+                logger.debug("Failed to parse response.", jse);
+            } catch (Exception e) {
+                logger.debug("Unexpected exception. Setting thing offline", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            }
+        }
     }
 }
