@@ -66,7 +66,7 @@ public class HVACHandler extends BaseThingHandler {
                 } else if (channel.endsWith(MODE) && command instanceof StringType) {
                     /* the mode value in the command is the actual CoolMasterNet protocol command */
                     controller.sendCommand(String.format("%s %s", command, uid));
-                } else if (channel.endsWith(FAN) && command instanceof StringType) {
+                } else if (channel.endsWith(FAN_SPEED) && command instanceof StringType) {
                     controller.sendCommand(String.format("fspeed %s %s", uid, command));
                 } else if (channel.endsWith(LOUVRE) && command instanceof StringType) {
                     controller.sendCommand(String.format("swing %s %s", uid, command));
@@ -106,7 +106,7 @@ public class HVACHandler extends BaseThingHandler {
         }
         String fan = FAN_NUM_TO_STR.get(query("f"));
         if (fan != null) {
-            updateState(new ChannelUID(thingUID, FAN), new StringType(fan));
+            updateState(new ChannelUID(thingUID, FAN_SPEED), new StringType(fan));
         }
     }
 
