@@ -48,7 +48,11 @@ public class XmlRpcClient extends RpcClient<String> {
     @Override
     public void dispose() {
         if (httpClient != null) {
-            httpClient.destroy();
+            try {
+                httpClient.stop();
+            } catch (Exception e) {
+                // ignore
+            }
         }
     }
 
