@@ -73,7 +73,7 @@ import static org.openhab.binding.robonect.RobonectBindingConstants.PROPERTY_COM
 /**
  * The {@link RobonectHandler} is responsible for handling commands, which are
  * sent to one of the channels.
- * 
+ *
  * The channels are periodically updated by polling the mower via HTTP in a separate thread.
  *
  * @author Marco Meyer - Initial contribution
@@ -85,16 +85,14 @@ public class RobonectHandler extends BaseThingHandler {
     private ScheduledFuture<?> pollingJob;
 
     private HttpClient httpClient;
-    
+
     private RobonectClient robonectClient;
-    
+
     public RobonectHandler(Thing thing) {
         super(thing);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
@@ -102,7 +100,6 @@ public class RobonectHandler extends BaseThingHandler {
                 refreshChannels(channelUID);
             } else {
                 sendCommand(channelUID, command);
-
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (RobonectCommunicationException rce) {
@@ -201,9 +198,9 @@ public class RobonectHandler extends BaseThingHandler {
     private void setMowerMode(Command command) throws InterruptedException {
         String modeStr = command.toFullString();
         ModeCommand.Mode newMode = ModeCommand.Mode.valueOf(modeStr.toUpperCase());
-        if(robonectClient.setMode(newMode).isSuccessful()){
+        if (robonectClient.setMode(newMode).isSuccessful()) {
             updateState(CHANNEL_STATUS_MODE, new StringType(newMode.name()));
-        }else {
+        } else {
             refreshMowerInfo();
         }
     }
@@ -248,10 +245,10 @@ public class RobonectHandler extends BaseThingHandler {
         } else if (command == OnOffType.OFF && !currentlyStopped) {
             answer = robonectClient.stop();
         }
-        if(answer != null){
+        if (answer != null) {
             if (answer.isSuccessful()) {
                 updateState(CHANNEL_MOWER_STATUS_STARTED, command);
-            } else{
+            } else {
                 logErrorFromResponse(answer);
                 refreshMowerInfo();
             }
@@ -285,7 +282,7 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_STATUS_HOURS, new DecimalType(info.getStatus().getHours()));
             updateState(CHANNEL_STATUS_MODE, new StringType(info.getStatus().getMode().name()));
             updateState(CHANNEL_MOWER_STATUS_STARTED, info.getStatus().isStopped() ? OnOffType.OFF : OnOffType.ON);
-            if(info.getHealth() != null){
+            if (info.getHealth() != null) {
                 updateState(CHANNEL_HEALTH_TEMP, new DecimalType(info.getHealth().getTemperature()));
                 updateState(CHANNEL_HEALTH_HUM, new DecimalType(info.getHealth().getHumidity()));
             }
@@ -340,9 +337,8 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private void refreshVersionInfo() throws InterruptedException {
-
         VersionInfo info = robonectClient.getVersionInfo();
-        if (info.isSuccessful()) {             
+        if (info.isSuccessful()) {
             Map<String, String> properties = editProperties();
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, info.getRobonect().getSerial());
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, info.getRobonect().getVersion());
@@ -353,19 +349,18 @@ public class RobonectHandler extends BaseThingHandler {
             logger.debug("Could not retrieve mower version info. Robonect error response message: {}",
                     info.getErrorMessage());
         }
-
     }
-    
-    private void refreshLastErrorInfo() throws InterruptedException{
+
+    private void refreshLastErrorInfo() throws InterruptedException {
         ErrorList errorList = robonectClient.errorList();
-        if(errorList.isSuccessful()){
-            if(errorList.getErrors() != null && errorList.getErrors().size() > 0) {
+        if (errorList.isSuccessful()) {
+            if (errorList.getErrors() != null && errorList.getErrors().size() > 0) {
                 ErrorEntry lastErrorEntry = errorList.getErrors().get(0);
                 updateLastErrorChannels(lastErrorEntry);
             }
-        }else {
+        } else {
             logger.debug("Could not retrieve mower error list. Robonect error response message: {}",
-                                errorList.getErrorMessage());
+                    errorList.getErrorMessage());
         }
     }
 
@@ -382,9 +377,6 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         try {
@@ -396,11 +388,11 @@ public class RobonectHandler extends BaseThingHandler {
             robonectClient = new RobonectClient(httpClient, endpoint);
             refreshVersionInfo();
             Runnable runnable = new Runnable() {
-                
+
                 private long offlineSince = -1;
                 private long offlineTriggerDealay = robonectConfig.getOfflineTimeout() * 60 * 1000;
                 private boolean offlineTimeoutTriggered = false;
-                
+
                 @Override
                 public void run() {
                     try {
@@ -409,17 +401,17 @@ public class RobonectHandler extends BaseThingHandler {
                         offlineSince = -1;
                         offlineTimeoutTriggered = false;
                     } catch (RobonectCommunicationException rce) {
-                        if(offlineSince < 0){
+                        if (offlineSince < 0) {
                             offlineSince = System.currentTimeMillis();
                         }
-                        if(!offlineTimeoutTriggered && System.currentTimeMillis() - offlineSince > offlineTriggerDealay){
+                        if (!offlineTimeoutTriggered && System.currentTimeMillis() - offlineSince > offlineTriggerDealay) {
                             // trigger offline
-                            updateState(CHANNEL_MOWER_STATUS_OFFLINE_TRIGGER, new StringType("OFFLINE_TIMEOUT") );
+                            updateState(CHANNEL_MOWER_STATUS_OFFLINE_TRIGGER, new StringType("OFFLINE_TIMEOUT"));
                             offlineTimeoutTriggered = true;
                         }
                         logger.debug("Failed to communicate with the mower. Taking it offline.", rce);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
-                    } catch(com.google.gson.JsonSyntaxException jse){
+                    } catch (com.google.gson.JsonSyntaxException jse) {
                         // the module sporadically sends invalid json responses. As this is usually recovered with the
                         // next poll interval, we just log it to debug here.
                         logger.debug("Failed to parse response.", jse);
@@ -430,7 +422,7 @@ public class RobonectHandler extends BaseThingHandler {
                 }
             };
             int pollInterval = robonectConfig.getPollInterval();
-            pollingJob = scheduler.scheduleAtFixedRate(runnable, 0, pollInterval, TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollInterval, TimeUnit.SECONDS);
         } catch (Exception e) {
             logger.error("Exception when trying to initialize", e);
             updateStatus(ThingStatus.OFFLINE);
@@ -438,16 +430,14 @@ public class RobonectHandler extends BaseThingHandler {
 
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public void dispose() {
-        if(pollingJob != null){
+        if (pollingJob != null) {
             pollingJob.cancel(true);
         }
         try {
-            if(httpClient != null){
+            if (httpClient != null) {
                 httpClient.stop();
             }
         } catch (Exception e) {

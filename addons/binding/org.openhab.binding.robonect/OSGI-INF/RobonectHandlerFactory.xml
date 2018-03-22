@@ -9,8 +9,9 @@
 	http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true"
-			   name="org.openhab.binding.robonect.internal.RobonectHandlerFactory">
+<scr:component
+		xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true"
+		name="org.openhab.binding.robonect.internal.RobonectHandlerFactory">
 
 	<implementation class="org.openhab.binding.robonect.internal.RobonectHandlerFactory"/>
 

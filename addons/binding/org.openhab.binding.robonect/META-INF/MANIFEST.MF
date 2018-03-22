@@ -23,7 +23,9 @@ Import-Package:
  org.eclipse.jetty.util.component,
  com.google.gson,
  com.google.gson.annotations,
- org.apache.commons.lang
+ org.apache.commons.lang,
+ org.openhab.binding.robonect,
+ org.openhab.binding.robonect.handler
 Service-Component: OSGI-INF/*.xml
 Export-Package: 
  org.openhab.binding.robonect,
