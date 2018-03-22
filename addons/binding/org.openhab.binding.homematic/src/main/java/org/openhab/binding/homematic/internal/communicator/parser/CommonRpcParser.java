@@ -14,6 +14,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
 import org.openhab.binding.homematic.internal.model.HmValueType;
@@ -110,7 +111,8 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
      * Returns the address of a device, replacing group address identifier.
      */
     protected String getAddress(Object object) {
-        return StringUtils.replaceOnce(toString(object), "*", "T-");
+        String address = StringUtils.trimToNull(StringUtils.replaceOnce(toString(object), "*", "T-"));
+        return MiscUtils.validateCharacters(address, "Address", "_");
     }
 
     /**
