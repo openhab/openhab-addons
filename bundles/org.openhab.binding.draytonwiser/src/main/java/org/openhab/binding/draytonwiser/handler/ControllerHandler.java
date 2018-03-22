@@ -107,9 +107,6 @@ public class ControllerHandler extends DraytonWiserThingHandler {
                         getHeatChannel2DemandState());
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_AWAY_MODE_STATE),
                         getAwayModeState());
-                updateState(
-                        new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_AWAY_MODE_SETPOINT),
-                        getAwayModeSetPoint());
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_ECO_MODE_STATE),
                         getEcoModeState());
             }
@@ -208,14 +205,6 @@ public class ControllerHandler extends DraytonWiserThingHandler {
         }
 
         return OnOffType.OFF;
-    }
-
-    private State getAwayModeSetPoint() {
-        if (system != null && system.getOverrideSetpoint() != null) {
-            return new DecimalType((float) system.getOverrideSetpoint() / 10);
-        }
-
-        return UnDefType.UNDEF;
     }
 
     private State getEcoModeState() {

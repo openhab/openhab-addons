@@ -373,7 +373,11 @@ public class HeatHubHandler extends BaseBridgeHandler {
     }
 
     public void setAwayMode(Boolean awayMode) {
-        String payload = "{\"Type\":" + (awayMode ? "2" : "0") + ", \"setPoint\":" + (awayMode ? "50" : "0") + "}";
+        Integer setPoint = ((java.math.BigDecimal) thing.getConfiguration()
+                .get(DraytonWiserBindingConstants.AWAY_MODE_SETPOINT)).intValue() * 10;
+
+        String payload = "{\"Type\":" + (awayMode ? "2" : "0") + ", \"setPoint\":"
+                + (awayMode ? setPoint.toString() : "0") + "}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.SYSTEM_ENDPOINT + "RequestOverride", "PATCH", payload);
         payload = "{\"Type\":" + (awayMode ? "2" : "0") + ", \"setPoint\":" + (awayMode ? "-200" : "0") + "}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.HOTWATER_ENDPOINT + "2/RequestOverride", "PATCH", payload);

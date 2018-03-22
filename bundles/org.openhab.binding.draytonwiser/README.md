@@ -31,6 +31,8 @@ Once discovered, the HeatHub `AUTHTOKEN` needs to be configured. There are a few
 
 The `REFRESH` interval defines in seconds, how often the binding will poll the controller for updates.
 
+The `AWAY MODE SET POINT` defines the temperature in degrees celcius that will be sent to the heathub when away mode is activated.
+
 ### Manual configuration with .things files
 
 ```
@@ -115,7 +117,6 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 | Channel            | Description                              | Implemented |
 |--------------------|------------------------------------------|-------------|
 | `awayModeState`    | Has away mode been enabled               | Yes         |
-| `awayModeSetPoint` | Set point of all TRVs/Stats in away mode | ReadOnly    |
 | `ecoModeState`     | Has eco mode been enabled                | Yes         |
 
 #### Hot Water

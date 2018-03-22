@@ -29,6 +29,12 @@
                 <required>true</required>
                 <default>10</default>
             </parameter>
+            <parameter name="AWAYSETPOINT" type="integer">
+	            <label>Away Mode Setpoint</label>
+	            <description>Set point temperature for away mode in degrees celsius</description>
+	            <required>true</required>
+	            <default>16</default>
+            </parameter>
         </config-description>
     </bridge-type>
     
@@ -48,7 +54,6 @@
             <channel id="heatChannel2Demand" typeId="heatChannel2Demand-channel" />
             <channel id="heatChannel2DemandState" typeId="heatChannel2DemandState-channel" />
             <channel id="awayModeState" typeId="awayModeState-channel" />
-            <channel id="awayModeSetPoint" typeId="awayModeSetPoint-channel" />
             <channel id="ecoModeState" typeId="ecoModeState-channel" />
             <channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
             <channel id="currentSignalStrength" typeId="signalStrength-channel" />
