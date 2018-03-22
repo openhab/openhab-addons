@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="satel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="system">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ethm-1" />
+			<bridge-type-ref id="int-rs" />
+		</supported-bridge-type-refs>
+
+		<label>Alarm system</label>
+		<description>A virtual thing describing general status of the alarm system.</description>
+
+		<channels>
+			<channel typeId="date_time" id="date_time" />
+			<channel typeId="troubles" id="troubles" />
+			<channel typeId="troubles_memory" id="troubles_memory" />
+			<channel typeId="service_mode" id="service_mode" />
+			<channel typeId="acu100_present" id="acu100_present" />
+			<channel typeId="intrx_present" id="intrx_present" />
+			<channel typeId="grade23_set" id="grade23_set" />
+			<channel typeId="user_code" id="user_code" />
+		</channels>
+
+	</thing-type>
+
+	<channel-type id="date_time">
+		<item-type>DateTime</item-type>
+		<label>Date and time</label>
+		<description>Current date and time in the alarm system</description>
+	</channel-type>
+
+	<channel-type id="troubles">
+		<item-type>Switch</item-type>
+		<label>Troubles</label>
+		<description>Active when the system has troubles (trouble led is blinking on a panel)</description>
+	</channel-type>
+
+	<channel-type id="troubles_memory" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Troubles memory</label>
+		<description>Memorized state of system troubles</description>
+	</channel-type>
+
+	<channel-type id="service_mode">
+		<item-type>Switch</item-type>
+		<label>Service mode</label>
+		<description>Active when the system is in service mode</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="acu100_present" advanced="true">
+		<item-type>Switch</item-type>
+		<label>ACU-100 present</label>
+		<description>Active when there is an ACU-100 module installed in the system</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="intrx_present" advanced="true">
+		<item-type>Switch</item-type>
+		<label>INT-RX present</label>
+		<description>Active when there is an INT-RX module installed in the system</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="grade23_set" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Grade2/Grade3 set</label>
+		<description>Active when Grade2/Grade3 option is set in the system</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="user_code">
+		<item-type>String</item-type>
+		<label>User code</label>
+		<description>Accepts string commands that override configured user code. Send empty string to revert user code to the one in the binding configuration.</description>
+	</channel-type>
+
+</thing:thing-descriptions>
