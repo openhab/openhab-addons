@@ -50,7 +50,7 @@ public class RFXComMessageFactory {
                     // put(PacketType.REMOTE_CONTROL, RFXComRemoteControlMessage.class);
                     put(PacketType.THERMOSTAT1, RFXComThermostat1Message.class);
                     // put(PacketType.THERMOSTAT2, RFXComThermostat2Message.class);
-                    // put(PacketType.THERMOSTAT3, RFXComThermostat3Message.class);
+                    put(PacketType.THERMOSTAT3, RFXComThermostat3Message.class);
                     // put(PacketType.RADIATOR1, RFXComRadiator1Message.class);
                     put(PacketType.BBQ, RFXComBBQTemperatureMessage.class);
                     put(PacketType.TEMPERATURE_RAIN, RFXComTemperatureRainMessage.class);
