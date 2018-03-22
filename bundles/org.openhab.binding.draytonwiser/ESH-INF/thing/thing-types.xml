@@ -73,6 +73,7 @@
             <channel id="hotWaterOverride" typeId="hotWaterOverride-channel" />
             <channel id="hotWaterDemandState" typeId="hotWaterDemandState-channel" />
             <channel id="manualModeState" typeId="manualModeState-channel"/>
+            <channel id="hotWaterSetPoint" typeId="hotWaterSetPoint-channel"/>
         </channels>
     </thing-type>
     
@@ -321,6 +322,12 @@
         <label>Device connected</label>
         <description>Is the device still connected to the ZigBee network</description>
         <state readOnly="true" ></state>
+    </channel-type>
+    
+    <channel-type id="hotWaterSetPoint-channel">
+        <item-type>Switch</item-type>
+        <label>Set Point</label>
+        <description>Hot water heating set point switch</description>
     </channel-type>
 
 </thing:thing-descriptions>

@@ -372,6 +372,12 @@ public class HeatHubHandler extends BaseBridgeHandler {
         refresh();
     }
 
+    public void setHotWaterSetPoint(Integer setPoint) {
+        String payload = "{\"RequestOverride\":{\"Type\":\"Manual\", \"SetPoint\":" + setPoint + "}}";
+        sendMessageToHeatHub(DraytonWiserBindingConstants.HOTWATER_ENDPOINT + "2", "PATCH", payload);
+        refresh();
+    }
+
     public void setAwayMode(Boolean awayMode) {
         Integer setPoint = ((java.math.BigDecimal) thing.getConfiguration()
                 .get(DraytonWiserBindingConstants.AWAY_MODE_SETPOINT)).intValue() * 10;

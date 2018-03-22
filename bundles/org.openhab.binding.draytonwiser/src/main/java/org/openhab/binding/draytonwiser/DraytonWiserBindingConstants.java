@@ -80,6 +80,7 @@ public class DraytonWiserBindingConstants {
     public static final String CHANNEL_ECO_MODE_STATE = "ecoModeState";
     public static final String CHANNEL_MANUAL_MODE_STATE = "manualModeState";
     public static final String CHANNEL_ZIGBEE_CONNECTED = "zigbeeConnected";
+    public static final String CHANNEL_HOT_WATER_SETPOINT = "hotWaterSetPoint";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_CONTROLLER,
             THING_TYPE_ROOM, THING_TYPE_ROOMSTAT, THING_TYPE_BRIDGE, THING_TYPE_ITRV, THING_TYPE_HOTWATER);

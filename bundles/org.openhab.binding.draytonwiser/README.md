@@ -124,7 +124,7 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 | Channel            | Description                                | Implemented |
 |--------------------|--------------------------------------------|-------------|
 | `manualModeState`  | Has manual mode been enabled               | Yes         |
-| SetPoint (on off)  | The current hot water setpoint (on or off) | No          |
+| `hotWaterSetPoint`  | The current hot water setpoint (on or off) | Yes         |
 | Hot Water Boosting | Boost the hot water for a set interval     | No          |
 | Schedules          | The time and hot water state schedule      | No          |
 

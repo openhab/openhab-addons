@@ -60,6 +60,11 @@ public class HotWaterHandler extends DraytonWiserThingHandler {
             boolean manualMode = command.toString().toUpperCase().equals("ON");
             setManualMode(manualMode);
         }
+
+        if (channelUID.getId().equals(DraytonWiserBindingConstants.CHANNEL_HOT_WATER_SETPOINT)) {
+            boolean setPoint = command.toString().toUpperCase().equals("ON");
+            setSetPoint(setPoint);
+        }
     }
 
     @Override
@@ -76,6 +81,9 @@ public class HotWaterHandler extends DraytonWiserThingHandler {
                         getHotWaterDemandState());
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_MANUAL_MODE_STATE),
                         getManualModeState());
+                updateState(
+                        new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_HOT_WATER_SETPOINT),
+                        getSetPointState());
             }
 
         } catch (Exception e) {
@@ -127,9 +135,25 @@ public class HotWaterHandler extends DraytonWiserThingHandler {
         return OnOffType.OFF;
     }
 
+    private State getSetPointState() {
+        if (hotWaterChannels != null && hotWaterChannels.size() >= 1) {
+            if (hotWaterChannels.get(0).getWaterHeatingState().toUpperCase().equals("ON")) {
+                return OnOffType.ON;
+            }
+        }
+
+        return OnOffType.OFF;
+    }
+
     private void setManualMode(Boolean manualMode) {
         if (bridgeHandler != null) {
             bridgeHandler.setHotWaterManualMode(manualMode);
+        }
+    }
+
+    private void setSetPoint(Boolean setPointMode) {
+        if (bridgeHandler != null) {
+            bridgeHandler.setHotWaterSetPoint(setPointMode ? 1100 : -200);
         }
     }
 }
