@@ -35,6 +35,7 @@ following configuration settings are supported for the `mower` thing.
 
 
 An example things configuration might look like
+
 ```
 Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInterval="5", user="gardener", password = "cutter"]
 ```
@@ -75,11 +76,13 @@ Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInte
 ## Full Example
 
 Things file `.things`
+
 ```
 Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInterval=5, user="gardener", password = "cutter"]
 ```
 
 Items file `.items`
+
 ```
 String mowerName "Mower name" {robonect:mower:automower:mowerInfo#name"}
 Number mowerBattery "Mower battery [%d %%]" <energy> {channel="robonect:mower:automower:mowerStatus#battery"}
@@ -104,6 +107,7 @@ String mowerRobonectVersionComment "Robonect Version comment" {channel="robonect
 ```
 
 Map transformation for mower status (`robonect_status.map`)
+
 ```
 0=DETECTING_STATUS
 1=PARKING

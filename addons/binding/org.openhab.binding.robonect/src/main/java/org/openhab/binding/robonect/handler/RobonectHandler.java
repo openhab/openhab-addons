@@ -12,6 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -65,11 +66,9 @@ import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STAT
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS_MODE;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_TIMER_NEXT_TIMER;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_TIMER_STATUS;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_VERSION_COMMENT;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_VERSION_COMPILED;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_VERSION_SERIAL;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_VERSION_VERSION;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_WLAN_SIGNAL;
+import static org.openhab.binding.robonect.RobonectBindingConstants.PROPERTY_COMMENT;
+import static org.openhab.binding.robonect.RobonectBindingConstants.PROPERTY_COMPILED;
 
 /**
  * The {@link RobonectHandler} is responsible for handling commands, which are
@@ -83,13 +82,15 @@ public class RobonectHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RobonectHandler.class);
 
+    private ScheduledFuture<?> pollingJob;
+
+    private HttpClient httpClient;
+    
+    private RobonectClient robonectClient;
+    
     public RobonectHandler(Thing thing) {
         super(thing);
     }
-
-    private ScheduledFuture<?> pollingJob;
-    private HttpClient httpClient;
-    private RobonectClient robonectClient;
 
     /**
      * {@inheritDoc}
@@ -98,91 +99,9 @@ public class RobonectHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             if (command instanceof RefreshType) {
-                switch (channelUID.getId()) {
-                    case CHANNEL_MOWER_NAME:
-                    case CHANNEL_STATUS_BATTERY:
-                    case CHANNEL_STATUS:
-                    case CHANNEL_STATUS_DURATION:
-                    case CHANNEL_STATUS_HOURS:
-                    case CHANNEL_STATUS_MODE:
-                    case CHANNEL_MOWER_STATUS_STARTED:
-                    case CHANNEL_TIMER_NEXT_TIMER:
-                    case CHANNEL_TIMER_STATUS:
-                    case CHANNEL_WLAN_SIGNAL:
-                        refreshMowerInfo();
-                        break;
-                    case CHANNEL_LAST_ERROR_CODE:
-                    case CHANNEL_LAST_ERROR_DATE:
-                    case CHANNEL_LAST_ERROR_MESSAGE:
-                        refreshLastErrorInfo();
-                        break;
-                    case CHANNEL_VERSION_COMMENT:
-                    case CHANNEL_VERSION_COMPILED:
-                    case CHANNEL_VERSION_SERIAL:
-                    case CHANNEL_VERSION_VERSION:
-                        refreshVersionInfo();
-                        break;
-
-                }
+                refreshChannels(channelUID);
             } else {
-                switch (channelUID.getId()) {
-                    case CHANNEL_MOWER_NAME:
-                        if (command instanceof StringType) {
-                            updateName((StringType) command);
-                        } else {
-                            logger.debug("Got name update of type {} but StringType is expected.",
-                                    command.getClass().getName());
-                        }
-                        break;
-                    case CHANNEL_STATUS_MODE:
-                        if (command instanceof StringType) {
-                            setMowerMode(command);
-                        } else {
-                            logger.debug("Got job remote start update of type {} but StringType is expected.",
-                                    command.getClass().getName());
-                        }
-                        break;
-                    case CHANNEL_MOWER_STATUS_STARTED:
-                        if (command instanceof OnOffType) {
-                            handleStartStop((OnOffType) command);
-                        } else {
-                            logger.debug("Got stopped update of type {} but StringType is expected.",
-                                    command.getClass().getName());
-                        }
-                        break;
-                    case CHANNEL_JOB_REMOTE_START:
-                        if (command instanceof StringType) {
-                            setRemoteStartJobSetting(command);
-                        } else {
-                            logger.debug("Got job remote start update of type {} but StringType is expected.",
-                                    command.getClass().getName());
-                        }
-                        break;
-                    case CHANNEL_JOB_AFTER_MODE:
-                        if (command instanceof StringType) {
-                            setAfterModeJobSetting(command);
-                        } else {
-                            logger.debug("Got job after mode update of type {} but StringType is expected.",
-                                    command.getClass().getName());
-                        }
-                        break;
-                    case CHANNEL_JOB_START:
-                        if (command instanceof StringType) {
-                            setStartJobSetting(command);
-                        } else {
-                            logger.debug("Got job start update of type {} but StringType is expected.",
-                                    command.getClass().getName());
-                        }
-                        break;
-                    case CHANNEL_JOB_END:
-                        if (command instanceof StringType) {
-                            setEndJobSetting(command);
-                        } else {
-                            logger.debug("Got job end update of type {} but StringType is expected.",
-                                    command.getClass().getName());
-                        }
-                        break;
-                }
+                sendCommand(channelUID, command);
 
             }
             updateStatus(ThingStatus.ONLINE);
@@ -192,6 +111,90 @@ public class RobonectHandler extends BaseThingHandler {
         } catch (Exception e) {
             logger.error("Unexpected exception. Setting thing offline", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+        }
+    }
+
+    private void sendCommand(ChannelUID channelUID, Command command) throws InterruptedException {
+        switch (channelUID.getId()) {
+            case CHANNEL_MOWER_NAME:
+                if (command instanceof StringType) {
+                    updateName((StringType) command);
+                } else {
+                    logger.debug("Got name update of type {} but StringType is expected.",
+                            command.getClass().getName());
+                }
+                break;
+            case CHANNEL_STATUS_MODE:
+                if (command instanceof StringType) {
+                    setMowerMode(command);
+                } else {
+                    logger.debug("Got job remote start update of type {} but StringType is expected.",
+                            command.getClass().getName());
+                }
+                break;
+            case CHANNEL_MOWER_STATUS_STARTED:
+                if (command instanceof OnOffType) {
+                    handleStartStop((OnOffType) command);
+                } else {
+                    logger.debug("Got stopped update of type {} but StringType is expected.",
+                            command.getClass().getName());
+                }
+                break;
+            case CHANNEL_JOB_REMOTE_START:
+                if (command instanceof StringType) {
+                    setRemoteStartJobSetting(command);
+                } else {
+                    logger.debug("Got job remote start update of type {} but StringType is expected.",
+                            command.getClass().getName());
+                }
+                break;
+            case CHANNEL_JOB_AFTER_MODE:
+                if (command instanceof StringType) {
+                    setAfterModeJobSetting(command);
+                } else {
+                    logger.debug("Got job after mode update of type {} but StringType is expected.",
+                            command.getClass().getName());
+                }
+                break;
+            case CHANNEL_JOB_START:
+                if (command instanceof StringType) {
+                    setStartJobSetting(command);
+                } else {
+                    logger.debug("Got job start update of type {} but StringType is expected.",
+                            command.getClass().getName());
+                }
+                break;
+            case CHANNEL_JOB_END:
+                if (command instanceof StringType) {
+                    setEndJobSetting(command);
+                } else {
+                    logger.debug("Got job end update of type {} but StringType is expected.",
+                            command.getClass().getName());
+                }
+                break;
+        }
+    }
+
+    private void refreshChannels(ChannelUID channelUID) throws InterruptedException {
+        switch (channelUID.getId()) {
+            case CHANNEL_MOWER_NAME:
+            case CHANNEL_STATUS_BATTERY:
+            case CHANNEL_STATUS:
+            case CHANNEL_STATUS_DURATION:
+            case CHANNEL_STATUS_HOURS:
+            case CHANNEL_STATUS_MODE:
+            case CHANNEL_MOWER_STATUS_STARTED:
+            case CHANNEL_TIMER_NEXT_TIMER:
+            case CHANNEL_TIMER_STATUS:
+            case CHANNEL_WLAN_SIGNAL:
+                refreshMowerInfo();
+                break;
+            case CHANNEL_LAST_ERROR_CODE:
+            case CHANNEL_LAST_ERROR_DATE:
+            case CHANNEL_LAST_ERROR_MESSAGE:
+                refreshLastErrorInfo();
+                break;
+            default:
         }
     }
 
@@ -339,11 +342,13 @@ public class RobonectHandler extends BaseThingHandler {
     private void refreshVersionInfo() throws InterruptedException {
 
         VersionInfo info = robonectClient.getVersionInfo();
-        if (info.isSuccessful()) {
-            updateState(CHANNEL_VERSION_VERSION, new StringType(info.getRobonect().getVersion()));
-            updateState(CHANNEL_VERSION_COMPILED, new StringType(info.getRobonect().getCompiled()));
-            updateState(CHANNEL_VERSION_COMMENT, new StringType(info.getRobonect().getComment()));
-            updateState(CHANNEL_VERSION_SERIAL, new StringType(info.getRobonect().getSerial()));
+        if (info.isSuccessful()) {             
+            Map<String, String> properties = editProperties();
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, info.getRobonect().getSerial());
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, info.getRobonect().getVersion());
+            properties.put(PROPERTY_COMPILED, info.getRobonect().getCompiled());
+            properties.put(PROPERTY_COMMENT, info.getRobonect().getComment());
+            updateProperties(properties);
         } else {
             logger.debug("Could not retrieve mower version info. Robonect error response message: {}",
                     info.getErrorMessage());

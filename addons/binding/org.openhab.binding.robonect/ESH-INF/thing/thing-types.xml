@@ -1,297 +1,289 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="robonect"
-                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                          xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-                          xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-    
-    <thing-type id="mower">
-        <label>Mower</label>
-        <description>Mower robot connected via robonect module</description>
-        <channel-groups>
-            <channel-group id="mowerInfo" typeId="mowerInfoType"/>
-            <channel-group id="mowerStatus" typeId="mowerStatusType"/>
-            <channel-group id="timer" typeId="timerType"/>
-            <channel-group id="wlan" typeId="wlanType"/>
-            <channel-group id="job" typeId="jobGroupType"/>
-            <channel-group id="error" typeId="errorGroupType"/>
-            <channel-group id="lastError" typeId="errorGroupType"/>
-            <channel-group id="version" typeId="robonectVersionType"/>
-            <channel-group id="health" typeId="healthType"/>
-        </channel-groups>
-        <config-description>
-            <parameter name="host" type="text" required="true">
-                <context>network-address</context>
-                <label>Host</label>
-                <description>Host name or network address of the Robonect module</description>
-            </parameter>
-            <parameter name="user" type="text" required="false">
-                <label>User</label>
-                <description>The user id if authentication has been enabled on the mower</description>
-            </parameter>
-            <parameter name="password" type="text" required="false">
-                <context>password</context>
-                <label>Password</label>
-                <description>The password if authentication has been enabled on the mower</description>
-            </parameter>
-            <parameter name="pollInterval" type="integer" required="false" unit="s">
-                <label>Polling interval</label>
-                <default>30</default>
-                <description>The interval for the binding to poll the mowers status information.
-                    seconds.
-                </description>
-            </parameter>
-            <parameter name="offlineTimeout" type="integer" required="false" unit="m">
-                <label>Offline timeout</label>
-                <default>30</default>
-                <description>The maximum time the mower may be offline before the offline trigger is triggered.
-                </description>
-            </parameter>
-        </config-description>
-    </thing-type>
+<thing:thing-descriptions
+		bindingId="robonect" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <channel-group-type id="mowerInfoType">
-        <label>Mower Info</label>
-        <channels>
-            <channel id="name" typeId="nameType"/>
-        </channels>
-    </channel-group-type>
+	<thing-type id="mower">
+		<label>Mower</label>
+		<description>Mower robot connected via robonect module</description>
+		<channel-groups>
+			<channel-group id="mowerInfo" typeId="mowerInfoType"/>
+			<channel-group id="mowerStatus" typeId="mowerStatusType"/>
+			<channel-group id="timer" typeId="timerType"/>
+			<channel-group id="wlan" typeId="wlanType"/>
+			<channel-group id="job" typeId="jobGroupType"/>
+			<channel-group id="error" typeId="errorGroupType"/>
+			<channel-group id="lastError" typeId="errorGroupType"/>
+			<channel-group id="health" typeId="healthType"/>
+		</channel-groups>
+		<properties>
+			<property name="vendor">robonect.de</property>
+		</properties>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
+				<label>Host</label>
+				<description>Host name or network address of the Robonect module</description>
+			</parameter>
+			<parameter name="user" type="text" required="false">
+				<label>User</label>
+				<description>The user id if authentication has been enabled on the mower</description>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>The password if authentication has been enabled on the mower</description>
+			</parameter>
+			<parameter name="pollInterval" type="integer" required="false" unit="s">
+				<label>Polling interval</label>
+				<default>30</default>
+				<description>The interval for the binding to poll the mowers status information.
+					seconds.
+				</description>
+			</parameter>
+			<parameter name="offlineTimeout" type="integer" required="false" unit="m">
+				<label>Offline timeout</label>
+				<default>30</default>
+				<description>The maximum time the mower may be offline before the offline trigger is triggered.
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-    <channel-group-type id="mowerStatusType">
-        <label>Mower Status</label>
-        <channels>
-            <channel id="battery" typeId="system.battery-level"/>
-            <channel id="duration" typeId="durationType"/>
-            <channel id="hours" typeId="hoursType"/>
-            <channel id="mode" typeId="modeType"/>
-            <channel id="status" typeId="mowerStatusType"/>
-            <channel id="started" typeId="startedType"/>
-            <channel id="offlineTrigger" typeId="offlineTriggerType"/>
-        </channels>
-    </channel-group-type>
+	<channel-group-type id="mowerInfoType">
+		<label>Mower Info</label>
+		<channels>
+			<channel id="name" typeId="nameType"/>
+		</channels>
+	</channel-group-type>
 
-    <channel-group-type id="timerType">
-        <label>Timer Info</label>
-        <channels>
-            <channel id="status" typeId="timerStatusType"/>
-            <channel id="nextTimer" typeId="nextTimerType"/>
-        </channels>
-    </channel-group-type>
+	<channel-group-type id="mowerStatusType">
+		<label>Mower Status</label>
+		<channels>
+			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="duration" typeId="durationType"/>
+			<channel id="hours" typeId="hoursType"/>
+			<channel id="mode" typeId="modeType"/>
+			<channel id="status" typeId="mowerStatusType"/>
+			<channel id="started" typeId="startedType"/>
+			<channel id="offlineTrigger" typeId="offlineTriggerType"/>
+		</channels>
+	</channel-group-type>
 
-    <channel-group-type id="errorGroupType">
-        <label>Error Info</label>
-        <channels>
-            <channel id="code" typeId="errorCodeType"/>
-            <channel id="message" typeId="errorMessageType"/>
-            <channel id="date" typeId="errorDateType"/>
-        </channels>
-    </channel-group-type>
-    
-    <channel-group-type id="jobGroupType">
-        <label>Job properties</label>
-        <channels>
-            <channel id="remoteStart" typeId="remoteStartType"/>
-            <channel id="afterMode" typeId="modeType"/>
-            <channel id="start" typeId="timeStringType"/>
-            <channel id="end" typeId="timeStringType"/>
-        </channels>
-    </channel-group-type>
+	<channel-group-type id="timerType">
+		<label>Timer Info</label>
+		<channels>
+			<channel id="status" typeId="timerStatusType"/>
+			<channel id="nextTimer" typeId="nextTimerType"/>
+		</channels>
+	</channel-group-type>
 
-    <channel-group-type id="wlanType">
-        <label>WLAN Info</label>
-        <channels>
-            <channel id="signal" typeId="system.signal-strength"/>
-        </channels>
-    </channel-group-type>
+	<channel-group-type id="errorGroupType">
+		<label>Error Info</label>
+		<channels>
+			<channel id="code" typeId="errorCodeType"/>
+			<channel id="message" typeId="errorMessageType"/>
+			<channel id="date" typeId="errorDateType"/>
+		</channels>
+	</channel-group-type>
 
-    <channel-group-type id="healthType">
-        <label>Health Info</label>
-        <channels>
-            <channel id="temperature" typeId="temperatureType"/>
-            <channel id="humidity" typeId="humidityType"/>
-        </channels>
-    </channel-group-type>
+	<channel-group-type id="jobGroupType">
+		<label>Job properties</label>
+		<channels>
+			<channel id="remoteStart" typeId="remoteStartType"/>
+			<channel id="afterMode" typeId="modeType"/>
+			<channel id="start" typeId="timeStringType"/>
+			<channel id="end" typeId="timeStringType"/>
+		</channels>
+	</channel-group-type>
 
-    <channel-group-type id="robonectVersionType">
-        <label>Robonect Version Info</label>
-        <channels>
-            <channel id="serial" typeId="serialType"/>
-            <channel id="version" typeId="versionType"/>
-            <channel id="compiled" typeId="compiledType"/>
-            <channel id="comment" typeId="commentType"/>
-        </channels>
-    </channel-group-type>
+	<channel-group-type id="wlanType">
+		<label>WLAN Info</label>
+		<channels>
+			<channel id="signal" typeId="system.signal-strength"/>
+		</channels>
+	</channel-group-type>
 
-    <channel-type id="serialType">
-        <item-type>String</item-type>
-        <label>Robonect serial number</label>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-group-type id="healthType">
+		<label>Health Info</label>
+		<channels>
+			<channel id="temperature" typeId="temperatureType"/>
+			<channel id="humidity" typeId="humidityType"/>
+		</channels>
+	</channel-group-type>
 
-    <channel-type id="versionType">
-        <item-type>String</item-type>
-        <label>Robonect version</label>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="serialType">
+		<item-type>String</item-type>
+		<label>Robonect serial number</label>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <channel-type id="compiledType">
-        <item-type>String</item-type>
-        <label>Robonect version</label>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="versionType">
+		<item-type>String</item-type>
+		<label>Robonect version</label>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <channel-type id="commentType">
-        <item-type>String</item-type>
-        <label>Robonect firmware comment</label>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="compiledType">
+		<item-type>String</item-type>
+		<label>Robonect version</label>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <channel-type id="nameType">
-        <item-type>String</item-type>
-        <label>Mower name</label>
-        <description>The name of the mower</description>
-        <state readOnly="false"/>
-    </channel-type>
+	<channel-type id="commentType">
+		<item-type>String</item-type>
+		<label>Robonect firmware comment</label>
+		<state readOnly="true"/>
+	</channel-type>
 
-    <channel-type id="durationType">
-        <item-type>Number</item-type>
-        <label>Status duration</label>
-        <description>The time the mower is in the current status.</description>
-        <state readOnly="true" pattern="%d seconds"/>
-    </channel-type>
+	<channel-type id="nameType">
+		<item-type>String</item-type>
+		<label>Mower name</label>
+		<description>The name of the mower</description>
+		<state readOnly="false"/>
+	</channel-type>
 
-    <channel-type id="hoursType">
-        <item-type>Number</item-type>
-        <label>Total mowing hours</label>
-        <description>The number of total mowing hours</description>
-        <state readOnly="true" pattern="%d hours"/>
-    </channel-type>
+	<channel-type id="durationType">
+		<item-type>Number</item-type>
+		<label>Status duration</label>
+		<description>The time the mower is in the current status.</description>
+		<state readOnly="true" pattern="%d seconds"/>
+	</channel-type>
 
-    <channel-type id="temperatureType">
-        <item-type>Number</item-type>
-        <label>Temperature</label>
-        <description>The tempurature in the mower</description>
-        <state readOnly="true" pattern="%d °C"/>
-    </channel-type>
+	<channel-type id="hoursType">
+		<item-type>Number</item-type>
+		<label>Total mowing hours</label>
+		<description>The number of total mowing hours</description>
+		<state readOnly="true" pattern="%d hours"/>
+	</channel-type>
 
-    <channel-type id="humidityType">
-        <item-type>Number</item-type>
-        <label>Humidity</label>
-        <description>The humidity in the mower</description>
-        <state readOnly="true" pattern="%d '%'"/>
-    </channel-type>
+	<channel-type id="temperatureType">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>The tempurature in the mower</description>
+		<state readOnly="true" pattern="%d °C"/>
+	</channel-type>
 
-    <channel-type id="modeType">
-        <item-type>String</item-type>
-        <label>Mower mode</label>
-        <description>The mower mode</description>
-        <state readOnly="false">
-            <options>
-                <option value="AUTO">AUTO</option>
-                <option value="HOME">HOME</option>
-                <option value="MANUAL">MANUAL</option>
-                <option value="EOD">EOD</option>
-                <option value="JOB">JOB</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="humidityType">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>The humidity in the mower</description>
+		<state readOnly="true" pattern="%d '%'"/>
+	</channel-type>
 
-    <channel-type id="remoteStartType">
-        <item-type>String</item-type>
-        <label>Remote Start</label>
-        <description>The mower mode</description>
-        <state readOnly="false">
-            <options>
-                <option value="STANDARD">STANDARD</option>
-                <option value="REMOTE_1">REMOTE_1</option>
-                <option value="REMOTE_2">REMOTE_2</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="modeType">
+		<item-type>String</item-type>
+		<label>Mower mode</label>
+		<description>The mower mode</description>
+		<state readOnly="false">
+			<options>
+				<option value="AUTO">AUTO</option>
+				<option value="HOME">HOME</option>
+				<option value="MANUAL">MANUAL</option>
+				<option value="EOD">EOD</option>
+				<option value="JOB">JOB</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="timeStringType">
-        <item-type>String</item-type>
-        <label>Time in the form hh:mm</label>
-        <description>A time in the current day</description>
-        <state readOnly="false"/>
-    </channel-type>
+	<channel-type id="remoteStartType">
+		<item-type>String</item-type>
+		<label>Remote Start</label>
+		<description>The mower mode</description>
+		<state readOnly="false">
+			<options>
+				<option value="STANDARD">STANDARD</option>
+				<option value="REMOTE_1">REMOTE_1</option>
+				<option value="REMOTE_2">REMOTE_2</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="timerStatusType">
-        <item-type>String</item-type>
-        <label>Timer Status</label>
-        <description>The status of the timer</description>
-        <state readOnly="true">
-            <options>
-                <option value="INACTIVE">INACTIVE</option>
-                <option value="ACTIVE">ACTIVE</option>
-                <option value="STANDBY">STANDBY</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="timeStringType">
+		<item-type>String</item-type>
+		<label>Time in the form hh:mm</label>
+		<description>A time in the current day</description>
+		<state readOnly="false"/>
+	</channel-type>
 
-    <channel-type id="mowerStatusType">
-        <item-type>Number</item-type>
-        <label>Mower Status</label>
-        <description>The status of the mower</description>
-        <state readOnly="true">
-            <options>
-                <option value="0">DETECTING_STATUS</option>
-                <option value="1">PARKING</option>
-                <option value="2">MOWING</option>
-                <option value="3">SEARCH_CHARGING_STATION</option>
-                <option value="4">CHARGING</option>
-                <option value="5">SEARCHING</option>
-                <option value="6">UNKNOWN_6</option>
-                <option value="7">ERROR_STATUS</option>
-                <option value="16">OFF</option>
-                <option value="17">SLEEPING</option>
-                <option value="99">UNKNOWN</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="timerStatusType">
+		<item-type>String</item-type>
+		<label>Timer Status</label>
+		<description>The status of the timer</description>
+		<state readOnly="true">
+			<options>
+				<option value="INACTIVE">INACTIVE</option>
+				<option value="ACTIVE">ACTIVE</option>
+				<option value="STANDBY">STANDBY</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="startedType">
-        <item-type>Switch</item-type>
-        <label>Mower started</label>
-        <description>The mower was started</description>
-        <state readOnly="false"/>
-    </channel-type>
+	<channel-type id="mowerStatusType">
+		<item-type>Number</item-type>
+		<label>Mower Status</label>
+		<description>The status of the mower</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">DETECTING_STATUS</option>
+				<option value="1">PARKING</option>
+				<option value="2">MOWING</option>
+				<option value="3">SEARCH_CHARGING_STATION</option>
+				<option value="4">CHARGING</option>
+				<option value="5">SEARCHING</option>
+				<option value="6">UNKNOWN_6</option>
+				<option value="7">ERROR_STATUS</option>
+				<option value="16">OFF</option>
+				<option value="17">SLEEPING</option>
+				<option value="99">UNKNOWN</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="offlineTriggerType">
-        <kind>trigger</kind>
-        <label>Offline Trigger</label>
-        <event>
-            <options>
-                <option value="OFFLINE_TIMEOUT">Offline timeout</option>
-            </options>
-        </event>
-    </channel-type>
+	<channel-type id="startedType">
+		<item-type>Switch</item-type>
+		<label>Mower started</label>
+		<description>The mower was started</description>
+		<state readOnly="false"/>
+	</channel-type>
 
-    <channel-type id="nextTimerType">
-        <item-type>DateTime</item-type>
-        <label>Next timer date</label>
-        <description>The next date the timer starts</description>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="offlineTriggerType">
+		<kind>trigger</kind>
+		<label>Offline Trigger</label>
+		<event>
+			<options>
+				<option value="OFFLINE_TIMEOUT">Offline timeout</option>
+			</options>
+		</event>
+	</channel-type>
 
-    <channel-type id="errorCodeType">
-        <item-type>Number</item-type>
-        <label>Error code</label>
-        <description>Error code defined by the mower manufacturer</description>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="errorMessageType">
-        <item-type>String</item-type>
-        <label>Error message</label>
-        <description>The error message</description>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="errorDateType">
-        <item-type>DateTime</item-type>
-        <label>Error date</label>
-        <description>The date and time the error occurred</description>
-        <state readOnly="true"/>
-    </channel-type>
-    
+	<channel-type id="nextTimerType">
+		<item-type>DateTime</item-type>
+		<label>Next timer date</label>
+		<description>The next date the timer starts</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="errorCodeType">
+		<item-type>Number</item-type>
+		<label>Error code</label>
+		<description>Error code defined by the mower manufacturer</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="errorMessageType">
+		<item-type>String</item-type>
+		<label>Error message</label>
+		<description>The error message</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="errorDateType">
+		<item-type>DateTime</item-type>
+		<label>Error date</label>
+		<description>The date and time the error occurred</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

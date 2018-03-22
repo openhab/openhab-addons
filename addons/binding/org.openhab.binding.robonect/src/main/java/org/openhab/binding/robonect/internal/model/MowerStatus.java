@@ -72,7 +72,7 @@ public enum MowerStatus {
      */
     UNKNOWN(99);
 
-    private static final Logger logger = LoggerFactory.getLogger(MowerStatus.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MowerStatus.class);
 
     private int statusCode;
 
@@ -91,7 +91,7 @@ public enum MowerStatus {
                 return status;
             }
         }
-        logger.debug("Got an unknown state with code {}", code);
+        LOGGER.debug("Got an unknown state with code {}", code);
         return UNKNOWN;
     }
 

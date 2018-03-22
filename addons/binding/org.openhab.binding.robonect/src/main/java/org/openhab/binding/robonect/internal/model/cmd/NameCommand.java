@@ -38,8 +38,6 @@ public class NameCommand implements Command {
     }
 
     /**
-     * {@inheritDoc}
-     * 
      * @param baseURL - will be passed by the {@link RobonectClient} in the form 
      *                http://xxx.xxx.xxx/json?
      * @return

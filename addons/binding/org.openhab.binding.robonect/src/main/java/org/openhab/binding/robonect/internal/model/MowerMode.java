@@ -8,11 +8,9 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
-import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
-
 /**
  * The mower mode from the status information. Please note 
- * that EOD and JOB from {@link ModeCommand.Mode}
+ * that EOD and JOB from {@link org.openhab.binding.robonect.internal.model.cmd.ModeCommand.Mode}
  * are just artificial and are therfore not reported in the status information.
  * 
  * @author Marco Meyer - Initial contribution

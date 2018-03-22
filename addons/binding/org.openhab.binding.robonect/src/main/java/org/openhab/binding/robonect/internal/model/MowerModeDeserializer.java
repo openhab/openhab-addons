@@ -22,9 +22,6 @@ import com.google.gson.JsonParseException;
  */
 public class MowerModeDeserializer implements JsonDeserializer<MowerMode> {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public MowerMode deserialize(JsonElement jsonElement, Type type,
             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
