@@ -14,8 +14,7 @@ import java.io.IOException;
  * This is a socket session interface that defines the contract for a socket session. A socket session will initiate
  * communications with the underlying device and provide message back via the {@link SocketSessionListener}
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 public interface SocketSession {
 

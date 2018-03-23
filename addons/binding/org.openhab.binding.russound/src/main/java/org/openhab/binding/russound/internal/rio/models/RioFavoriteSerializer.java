@@ -22,8 +22,7 @@ import com.google.gson.JsonSerializer;
  * A {@link JsonSerializer} and {@link JsonDeserializer} for the {@link RioFavorite}. Simply writes/reads the ID and
  * name to elements called "id", "valid" and "name"
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 public class RioFavoriteSerializer implements JsonSerializer<RioFavorite>, JsonDeserializer<RioFavorite> {
 

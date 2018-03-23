@@ -39,7 +39,7 @@ import com.google.gson.Gson;
  * zones ({@link RioZoneHandler}). This
  * implementation must be attached to a {@link RioSystemHandler} bridge.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class RioControllerHandler extends AbstractBridgeHandler<RioControllerProtocol> implements RioNamedHandler {
     /**
@@ -115,9 +115,8 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
     private void handleRefresh(String id) {
         if (id.equals(RioConstants.CHANNEL_CTLZONES)) {
             refreshNamedHandler(gson, RioZoneHandler.class, RioConstants.CHANNEL_CTLZONES);
-        } else {
-            // Can't refresh any others...
         }
+        // Can't refresh any others...
     }
 
     /**

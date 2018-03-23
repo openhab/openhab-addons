@@ -15,8 +15,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * Simple model of a RIO Bank and it's attributes. Please note this class is used to serialize/deserialize to JSON.
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 public class RioBank {
     /**

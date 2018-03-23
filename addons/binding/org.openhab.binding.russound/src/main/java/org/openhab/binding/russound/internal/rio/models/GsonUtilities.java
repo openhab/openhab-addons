@@ -17,8 +17,7 @@ import com.google.gson.reflect.TypeToken;
 /**
  * Utility class for common GSON related items
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 public class GsonUtilities {
     /**
