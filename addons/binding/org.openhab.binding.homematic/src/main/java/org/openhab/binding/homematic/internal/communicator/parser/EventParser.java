@@ -35,7 +35,7 @@ public class EventParser extends CommonRpcParser<Object[], HmDatapointInfo> {
             channel = HmChannel.CHANNEL_NUMBER_VARIABLE;
         } else {
             String[] configParts = StringUtils.trimToEmpty(addressWithChannel).split(":");
-            address = getAddress(configParts[0]);
+            address = getSanitizedAddress(configParts[0]);
             if (configParts.length > 1) {
                 channel = NumberUtils.createInteger(configParts[1]);
             }
