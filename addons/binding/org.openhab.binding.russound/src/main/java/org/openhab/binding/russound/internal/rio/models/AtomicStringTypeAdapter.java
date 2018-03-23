@@ -22,8 +22,7 @@ import com.google.gson.stream.JsonWriter;
 /**
  * A GSON {@link TypeAdapter} that will properly write/read {@link AtomicReference} strings
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 public class AtomicStringTypeAdapter extends TypeAdapter<AtomicReference<String>> {
 
@@ -33,18 +32,17 @@ public class AtomicStringTypeAdapter extends TypeAdapter<AtomicReference<String>
      */
     @Override
     public AtomicReference<String> read(JsonReader in) throws IOException {
-
         AtomicReference<String> value = null;
 
         JsonParser jsonParser = new JsonParser();
         JsonElement je = jsonParser.parse(in);
 
         if (je instanceof JsonPrimitive) {
-            value = new AtomicReference<String>();
+            value = new AtomicReference<>();
             value.set(((JsonPrimitive) je).getAsString());
         } else if (je instanceof JsonObject) {
             JsonObject jsonObject = (JsonObject) je;
-            value = new AtomicReference<String>();
+            value = new AtomicReference<>();
             value.set(jsonObject.get("value").getAsString());
         }
 

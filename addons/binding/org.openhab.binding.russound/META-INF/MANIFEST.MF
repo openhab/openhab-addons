@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: Russound Binding

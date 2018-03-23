@@ -22,10 +22,8 @@ import com.google.gson.JsonSerializer;
  * A {@link JsonSerializer} and {@link JsonDeserializer} for the {@link RioPreset}. Simply writes/reads the ID and
  * name to elements called "id", "valid", "name", "bank" and "bankPreset" values.
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
-
 public class RioPresetSerializer implements JsonSerializer<RioPreset>, JsonDeserializer<RioPreset> {
 
     /**

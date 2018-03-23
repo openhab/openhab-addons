@@ -31,13 +31,10 @@ import com.google.gson.JsonSyntaxException;
  * This {@link AbstractRioProtocol} implementation provides the implementation for managing Russound bank presets.
  * Since refreshing all 36 presets requires 72 calls to russound (for name/valid), we limit how often we can
  * refresh to {@link #UPDATE_TIME_SPAN}. Presets are tracked by source ID and will only be valid if that source type is
- * a
- * tuner.
+ * a tuner.
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
-
 public class RioPresetsProtocol extends AbstractRioProtocol {
 
     // logger
@@ -96,7 +93,7 @@ public class RioPresetsProtocol extends AbstractRioProtocol {
     /**
      * The list of listeners that will be called when system favorites have changed
      */
-    private final CopyOnWriteArrayList<Listener> listeners = new CopyOnWriteArrayList<Listener>();
+    private final CopyOnWriteArrayList<Listener> listeners = new CopyOnWriteArrayList<>();
 
     /**
      * Constructs the preset protocol from the given session and callback. Note: the passed callback is not
@@ -230,7 +227,7 @@ public class RioPresetsProtocol extends AbstractRioProtocol {
             return "[]";
         }
 
-        final List<RioPreset> validPresets = new ArrayList<RioPreset>();
+        final List<RioPreset> validPresets = new ArrayList<>();
         for (final RioPreset preset : presets[source - 1]) {
             if (preset.isValid()) {
                 validPresets.add(preset);
@@ -258,7 +255,6 @@ public class RioPresetsProtocol extends AbstractRioProtocol {
      * @throws IllegalArgumentException if presetJson contains more than one preset
      */
     public void setZonePresets(int controller, int zone, int source, String presetJson) {
-
         if (controller < 1 || controller > 6) {
             throw new IllegalArgumentException("Controller must be between 1 and 6");
         }
@@ -275,7 +271,7 @@ public class RioPresetsProtocol extends AbstractRioProtocol {
             return;
         }
 
-        final List<RioPreset> updatePresetIds = new ArrayList<RioPreset>();
+        final List<RioPreset> updatePresetIds = new ArrayList<>();
         try {
             final RioPreset[] newPresets = gson.fromJson(presetJson, RioPreset[].class);
 
@@ -343,10 +339,8 @@ public class RioPresetsProtocol extends AbstractRioProtocol {
             try {
                 final int source = Integer.parseInt(m.group(1));
                 if (source >= 1 && source <= 8) {
-
                     final int bank = Integer.parseInt(m.group(2));
                     if (bank >= 1 && bank <= 6) {
-
                         final int preset = Integer.parseInt(m.group(3));
                         if (preset >= 1 && preset <= 6) {
                             final String key = m.group(4).toLowerCase();

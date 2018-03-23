@@ -12,8 +12,7 @@ package org.openhab.binding.russound.internal.rio;
  * This interface defines the methods that an implementing class needs to implement to provide the
  * {@link RioHandlerCallback} used by the underlying protocol
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 public interface RioCallbackHandler {
     /**

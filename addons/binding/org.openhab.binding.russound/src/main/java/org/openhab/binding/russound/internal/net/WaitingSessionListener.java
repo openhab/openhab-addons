@@ -17,14 +17,14 @@ import java.util.concurrent.TimeUnit;
  * Implementation of {@link SocketSessionListener} that allows a caller to wait for a response via
  * {@link #getResponse()}
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class WaitingSessionListener implements SocketSessionListener {
 
     /**
      * Cache of responses that have occurred
      */
-    private BlockingQueue<Object> responses = new ArrayBlockingQueue<Object>(5);
+    private BlockingQueue<Object> responses = new ArrayBlockingQueue<>(5);
 
     /**
      * Will return the next response from {@link #responses}. If the response is an exception, that exception will

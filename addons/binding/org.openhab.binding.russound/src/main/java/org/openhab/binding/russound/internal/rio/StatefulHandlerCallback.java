@@ -22,8 +22,7 @@ import org.eclipse.smarthome.core.types.State;
  * Defines an implementation of {@link RioHandlerCallback} that will remember the last state
  * for an channelId and suppress the callback if the state hasn't changed
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 public class StatefulHandlerCallback implements RioHandlerCallback {
 
@@ -31,7 +30,7 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
     private final RioHandlerCallback wrappedCallback;
 
     /** The state by channel id */
-    private final Map<String, State> state = new ConcurrentHashMap<String, State>();
+    private final Map<String, State> state = new ConcurrentHashMap<>();
 
     private final Lock statusLock = new ReentrantLock();
     private ThingStatus lastThingStatus = null;

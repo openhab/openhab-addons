@@ -14,7 +14,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link RussoundBinding} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 @NonNullByDefault
 public class RussoundBindingConstants {

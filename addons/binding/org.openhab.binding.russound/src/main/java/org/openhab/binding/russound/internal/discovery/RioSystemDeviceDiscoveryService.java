@@ -34,8 +34,7 @@ import org.slf4j.LoggerFactory;
  * This implementation of {@link DiscoveryService} will scan a RIO device for all controllers, source and zones attached
  * to it.
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 public class RioSystemDeviceDiscoveryService extends AbstractDiscoveryService {
     /** The logger */
@@ -120,7 +119,7 @@ public class RioSystemDeviceDiscoveryService extends AbstractDiscoveryService {
     public void scanDevice() {
         try {
             final String ipAddress = sysHandler.getRioConfig().getIpAddress();
-            session = new SocketChannelSession(ipAddress, RioConstants.RioPort);
+            session = new SocketChannelSession(ipAddress, RioConstants.RIO_PORT);
             listener = new WaitingSessionListener();
             session.addListener(listener);
 
@@ -152,7 +151,7 @@ public class RioSystemDeviceDiscoveryService extends AbstractDiscoveryService {
                         sysHandler.getThing().getUID(), String.valueOf(c));
 
                 final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                        .withProperty(RioControllerConfig.Controller, c).withBridge(sysHandler.getThing().getUID())
+                        .withProperty(RioControllerConfig.CONTROLLER, c).withBridge(sysHandler.getThing().getUID())
                         .withLabel("Controller #" + c).build();
                 thingDiscovered(discoveryResult);
 
@@ -177,7 +176,7 @@ public class RioSystemDeviceDiscoveryService extends AbstractDiscoveryService {
                         String.valueOf(s));
 
                 final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                        .withProperty(RioSourceConfig.Source, s).withBridge(sysHandler.getThing().getUID())
+                        .withProperty(RioSourceConfig.SOURCE, s).withBridge(sysHandler.getThing().getUID())
                         .withLabel((StringUtils.isEmpty(name) || name.equalsIgnoreCase("null") ? "Source" : name) + " ("
                                 + s + ")")
                         .build();
@@ -210,7 +209,7 @@ public class RioSystemDeviceDiscoveryService extends AbstractDiscoveryService {
                 final ThingUID thingUID = new ThingUID(RioConstants.THING_TYPE_ZONE, controllerUID, String.valueOf(z));
 
                 final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                        .withProperty(RioZoneConfig.Zone, z).withBridge(controllerUID)
+                        .withProperty(RioZoneConfig.ZONE, z).withBridge(controllerUID)
                         .withLabel((name.equalsIgnoreCase("null") ? "Zone" : name) + " (" + z + ")").build();
                 thingDiscovered(discoveryResult);
             }

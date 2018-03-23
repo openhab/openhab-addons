@@ -14,7 +14,7 @@ import java.io.IOException;
  * Interface defining a listener to a {@link SocketSession} that will receive responses and/or exceptions from the
  * socket
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public interface SocketSessionListener {
     /**

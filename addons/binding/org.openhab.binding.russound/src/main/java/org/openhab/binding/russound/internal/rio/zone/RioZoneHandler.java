@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * The bridge handler for a Russound Zone. A zone is the main receiving area for music. This implementation must be
  * attached to a {@link RioControllerHandler} bridge.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class RioZoneHandler extends AbstractThingHandler<RioZoneProtocol>
         implements RioNamedHandler, RioCallbackHandler {
@@ -118,7 +118,6 @@ public class RioZoneHandler extends AbstractThingHandler<RioZoneProtocol>
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof RefreshType) {
             handleRefresh(channelUID.getId());
             return;
@@ -389,9 +388,8 @@ public class RioZoneHandler extends AbstractThingHandler<RioZoneProtocol>
             getProtocolHandler().refreshZoneFavorites();
         } else if (id.equals(RioConstants.CHANNEL_ZONEPRESETS)) {
             getProtocolHandler().refreshZonePresets();
-        } else {
-            // Can't refresh any others...
         }
+        // Can't refresh any others...
     }
 
     /**

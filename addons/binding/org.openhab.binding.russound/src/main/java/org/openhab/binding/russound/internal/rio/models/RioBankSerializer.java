@@ -22,8 +22,7 @@ import com.google.gson.JsonSerializer;
  * A {@link JsonSerializer} and {@link JsonDeserializer} for the {@link RioBank}. Simply writes/reads the ID and name to
  * elements called "id" and "name"
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 public class RioBankSerializer implements JsonSerializer<RioBank>, JsonDeserializer<RioBank> {
 

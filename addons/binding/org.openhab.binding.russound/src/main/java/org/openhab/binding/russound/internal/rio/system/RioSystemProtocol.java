@@ -29,8 +29,7 @@ import org.slf4j.LoggerFactory;
  * This is the protocol handler for the Russound System. This handler will issue the protocol commands and will
  * process the responses from the Russound system.
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 class RioSystemProtocol extends AbstractRioProtocol {
     // Logger
@@ -192,7 +191,6 @@ class RioSystemProtocol extends AbstractRioProtocol {
         } else {
             logger.warn("Invalid System Notification response: '{}'", resp);
         }
-
     }
 
     /**
@@ -224,7 +222,6 @@ class RioSystemProtocol extends AbstractRioProtocol {
         } else {
             logger.warn("Invalid System Notification response: '{}'", resp);
         }
-
     }
 
     /**
