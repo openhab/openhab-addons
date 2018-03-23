@@ -248,7 +248,7 @@ public class IntegrationTestSupport {
             try {
                 serialServerThread.join(100);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                System.err.println("Serial server thread .join() interrupted! Will interrupt it now.");
             }
             serialServerThread.interrupt();
         } else {
