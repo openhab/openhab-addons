@@ -44,7 +44,7 @@
 		<channels>
 			<channel id="on" typeId="power" />
 			<channel id="mode" typeId="hvac_mode" />
-			<channel id="fan" typeId="fan_speed" />
+			<channel id="fan_speed" typeId="fan_speed" />
 			<channel id="set_temp" typeId="temperature_setpoint" />
 			<channel id="current_temp" typeId="temperature_readback" />
 			<channel id="louvre" typeId="louvre_angle" />

@@ -22,14 +22,14 @@ Bridge coolmasternet:controller:main [ host="192.168.0.100" ] {
 
 ## Channels
 
-| Channel      | Item Type | Description                                                                                                                                      |
-|--------------|-----------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| on           | Switch    | Turn HVAC unit on and off.                                                                                                                       |
-| mode         | String    | HVAC Mode. "Auto", "Cool", "Heat", "Dry" or "Fan Only". Unit may not support all modes.                                                          |
-| fan          | String    | Fan Mode. "Auto", "Low", "Medium", "High" or "Top". Unit may not support all speeds.                                                             |
-| set_temp     | Number    | Temperature target setpoint.                                                                                                                     |
-| current_temp | Number    | Current temperature at HVAC unit.                                                                                                                |
-| louvre       | String    | Louvre angle. "No Control", "Auto Swing", "Horizontal", "30 degrees", "45 degrees", "60 degrees" or "Vertical". Unit may not support all angles. |
+| Channel      | Item Type | Description                                                                                                                                                                            |
+|--------------|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| on           | Switch    | Turn HVAC unit on and off.                                                                                                                                                             |
+| mode         | String    | HVAC mode (cool, heat, auto, dry, fan). Unit may not support all modes.                                                                                                                |
+| fan_speed    | String    | Fan speed (l, m, h, t, a ) for respectively "Low", "Medium", "High", "Top" or "Auto". Unit may not support all speeds.                                                                 |
+| set_temp     | Number    | Temperature target setpoint in Celsius.                                                                                                                                                |
+| current_temp | Number    | Current temperature in Celsius at HVAC unit.                                                                                                                                           |
+| louvre       | String    | Louvre angle (0, a, h, 3, 4, 6, v) for respectively "No Control", "Auto Swing", "Horizontal", "30 degrees", "45 degrees", "60 degrees" or "Vertical". Unit may not support all angles. |
 
 ## Item Configuration
 

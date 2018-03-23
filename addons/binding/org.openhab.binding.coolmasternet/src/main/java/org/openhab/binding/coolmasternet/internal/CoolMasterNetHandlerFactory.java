@@ -10,9 +10,6 @@ package org.openhab.binding.coolmasternet.internal;
 
 import static org.openhab.binding.coolmasternet.CoolMasterNetBindingConstants.*;
 
-import java.util.Collections;
-import java.util.Set;
-
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -23,8 +20,6 @@ import org.openhab.binding.coolmasternet.handler.HVACHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 
-import com.google.common.collect.Sets;
-
 /**
  * The {@link CoolMasterNetHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -33,9 +28,6 @@ import com.google.common.collect.Sets;
  */
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.coolmasternet", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class CoolMasterNetHandlerFactory extends BaseThingHandlerFactory {
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
-            .union(Collections.singleton(THING_TYPE_HVAC), Collections.singleton(THING_TYPE_CONTROLLER));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
