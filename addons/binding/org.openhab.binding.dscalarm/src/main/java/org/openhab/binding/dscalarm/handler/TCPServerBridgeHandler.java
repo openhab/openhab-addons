@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
 
-    private Logger logger = LoggerFactory.getLogger(TCPServerBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(TCPServerBridgeHandler.class);
 
     /**
      * Constructor.

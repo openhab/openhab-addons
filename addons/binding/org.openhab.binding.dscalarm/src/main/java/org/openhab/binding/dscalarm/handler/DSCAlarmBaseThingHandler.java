@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(DSCAlarmBaseThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DSCAlarmBaseThingHandler.class);
 
     /** Bridge Handler for the Thing. */
     public DSCAlarmBaseBridgeHandler dscAlarmBridgeHandler = null;
@@ -95,11 +95,8 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
      * Method to Initialize Thing Handler.
      */
     public void initializeThingHandler() {
-
         if (getDSCAlarmBridgeHandler() != null) {
-
             if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
-
                 Thing thing = getThing();
                 List<Channel> channels = thing.getChannels();
                 logger.debug("initializeThingHandler(): Initialize Thing Handler - {}", thing.getUID());
@@ -132,9 +129,7 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
      * @return dscAlarmBridgeHandler
      */
     public synchronized DSCAlarmBaseBridgeHandler getDSCAlarmBridgeHandler() {
-
         if (this.dscAlarmBridgeHandler == null) {
-
             Bridge bridge = getBridge();
 
             if (bridge == null) {
@@ -189,7 +184,6 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-
         if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
             updateStatus(bridgeStatusInfo.getStatus());
             this.initializeThingHandler();
@@ -207,7 +201,6 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
      * @param dscAlarmDeviceType
      */
     private void getConfiguration(DSCAlarmThingType dscAlarmDeviceType) {
-
         switch (dscAlarmDeviceType) {
             case PANEL:
                 DSCAlarmPanelConfiguration panelConfiguration = getConfigAs(DSCAlarmPanelConfiguration.class);
