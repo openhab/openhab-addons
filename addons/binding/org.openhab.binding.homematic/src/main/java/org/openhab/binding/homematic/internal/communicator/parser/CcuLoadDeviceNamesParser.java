@@ -38,7 +38,7 @@ public class CcuLoadDeviceNamesParser extends CommonRpcParser<TclScriptDataList,
             }
 
             for (TclScriptDataEntry entry : resultList.getEntries()) {
-                HmDevice device = devicesByAddress.get(getAddress(entry.name));
+                HmDevice device = devicesByAddress.get(getSanitizedAddress(entry.name));
                 if (device != null) {
                     device.setName(entry.value);
                 }

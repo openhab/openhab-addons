@@ -34,7 +34,7 @@ public class NewDevicesParser extends CommonRpcParser<Object[], List<String>> {
                 boolean isDevice = !StringUtils.contains(address, ":")
                         && !StringUtils.startsWithIgnoreCase(address, "BidCos");
                 if (isDevice) {
-                    adresses.add(address);
+                    adresses.add(getSanitizedAddress(address));
                 }
             }
         }

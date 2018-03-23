@@ -41,7 +41,7 @@ public class HomegearLoadDeviceNamesParser extends CommonRpcParser<Object[], Voi
             String id = toString(data.get("ID"));
             String name = toString(data.get("NAME"));
 
-            HmDevice device = devicesById.get(getAddress(id));
+            HmDevice device = devicesById.get(getSanitizedAddress(id));
             if (device != null) {
                 device.setName(name);
             }
