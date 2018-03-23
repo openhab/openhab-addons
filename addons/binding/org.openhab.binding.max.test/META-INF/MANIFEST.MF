@@ -9,21 +9,18 @@ Export-Package: org.openhab.binding.max.test;uses:="org.eclipse.smarthom
  e.test"
 Fragment-Host: org.openhab.binding.max
 Import-Package: 
- groovy.json,
- groovy.lang,
- org.codehaus.groovy.reflection,
- org.codehaus.groovy.runtime,
- org.codehaus.groovy.runtime.callsite,
- org.codehaus.groovy.runtime.typehandling,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.core.events,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.util,
- org.eclipse.smarthome.test,
+ org.eclipse.smarthome.test.java,
  org.eclipse.smarthome.test.storage,
  org.hamcrest;core=split,
  org.junit,
  org.junit.runner,
  org.junit.runners,
  org.openhab.binding.max,
+ org.openhab.binding.max.test,
  org.osgi.service.device,
  org.slf4j
