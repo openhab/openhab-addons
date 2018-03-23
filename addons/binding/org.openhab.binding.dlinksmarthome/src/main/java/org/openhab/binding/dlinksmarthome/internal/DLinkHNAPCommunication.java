@@ -159,7 +159,6 @@ public abstract class DLinkHNAPCommunication {
 
             buildRequestAction();
             buildLoginAction();
-
         } catch (final SOAPException e) {
             logger.debug("DLinkHNAPCommunication - Internal error", e);
             status = HNAPStatus.INTERNAL_ERROR;
@@ -416,7 +415,6 @@ public abstract class DLinkHNAPCommunication {
      */
     protected Document sendReceive(final SOAPMessage action, final int timeout) throws IOException, SOAPException,
             SAXException, InterruptedException, TimeoutException, ExecutionException {
-
         Document result;
 
         final Request request = httpClient.POST(uri);
@@ -447,7 +445,6 @@ public abstract class DLinkHNAPCommunication {
      * @param soapResponse
      */
     protected void logUnexpectedResult(final String message, final Document soapResponse) {
-
         // No point formatting for output if debug logging is not enabled
         if (logger.isDebugEnabled()) {
             try {
