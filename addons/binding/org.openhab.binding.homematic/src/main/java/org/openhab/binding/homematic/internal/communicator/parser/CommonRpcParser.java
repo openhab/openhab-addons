@@ -108,9 +108,9 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     }
 
     /**
-     * Returns the address of a device, replacing group address identifier.
+     * Returns the address of a device, replacing group address identifier and illegal characters.
      */
-    protected String getAddress(Object object) {
+    protected String getSanitizedAddress(Object object) {
         String address = StringUtils.trimToNull(StringUtils.replaceOnce(toString(object), "*", "T-"));
         return MiscUtils.validateCharacters(address, "Address", "_");
     }
