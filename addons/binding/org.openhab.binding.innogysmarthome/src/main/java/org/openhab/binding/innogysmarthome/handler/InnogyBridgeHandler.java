@@ -799,6 +799,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
         if (e instanceof RemoteAccessNotAllowedException) {
             logger.debug("Remote access not allowed. Dropping access token and reinitializing binding...");
             innogyConfig.setAccessToken("");
+            getThing().getConfiguration().put(CONFIG_ACCESS_TOKEN, "");
             scheduleReinitialize(0);
         }
 
