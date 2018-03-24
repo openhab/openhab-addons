@@ -40,7 +40,6 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zway.ZWayBindingConstants;
 import org.openhab.binding.zway.internal.converter.ZWayDeviceStateConverter;
 import org.slf4j.Logger;
@@ -68,7 +67,7 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  * sent to one of the channels.
  *
  * @author Patrick Hecker - Initial contribution
- * @author Johannes Einig - handleUpdate deactivated (deprecated); handleCommand debug info added
+ * @author Johannes Einig - Now uses the bridge handler cached device list
  */
 public abstract class ZWayDeviceHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -463,11 +462,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         } else {
             logger.warn("Device unsubscribing failed");
         }
-    }
-
-    @Override
-    public void handleUpdate(ChannelUID channelUID, State newState) {
-        // Deprecated, therefore deactivated
     }
 
     @Override
