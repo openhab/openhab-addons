@@ -8,7 +8,7 @@ Daikin air conditioning units with a BRP072A42 installed. This may work with the
 
 ## Discovery
 
-A discovery scan will find all Daikin air conditioning units with a WiFi adapter on your local network. If your air conditioning unit is not auto discovered you'll need to know the appropriate IP address and a new thing manually.
+This addon will broadcast messages on your local network looking for Daikin air conditioning units and adding them to the queue of new items discovered. You can also manually add a new item if you know the IP address.
 
 ## Thing Configuration
 
