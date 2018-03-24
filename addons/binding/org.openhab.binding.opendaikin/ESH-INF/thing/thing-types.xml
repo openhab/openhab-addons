@@ -15,6 +15,7 @@
 			<channel id="humidity" typeId="acunit-humidity" />
 			<channel id="mode" typeId="acunit-mode" />
 			<channel id="fanspeed" typeId="acunit-fan" />
+			<channel id="fandir" typeId="acunit-fandir" />
 		</channels>
 
 		<config-description>
@@ -117,6 +118,20 @@
 				<option value="LEVEL_3">level 3</option>
 				<option value="LEVEL_4">level 4</option>
 				<option value="LEVEL_5">level 5</option>
+			</options>
+		</state>
+	</channel-type>
+	
+	<channel-type id="acunit-fandir" advanced="true">
+		<item-type>String</item-type>
+		<label>Fan Swing</label>
+		<description>Current fan swing setting of the AC unit</description>
+		<state>
+			<options>
+				<option value="STOPPED">stopped</option>
+				<option value="VERTICAL">vertical</option>
+				<option value="HORIZONTAL">horizontal</option>
+				<option value="VERTICAL_AND_HORIZONTAL">vertical and horizontal</option>
 			</options>
 		</state>
 	</channel-type>

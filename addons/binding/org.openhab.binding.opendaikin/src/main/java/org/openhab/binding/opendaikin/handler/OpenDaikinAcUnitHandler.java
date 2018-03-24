@@ -83,6 +83,14 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
                                 thing.getUID().getAsString(), channelUID.getId());
                     }
                     break;
+                case OpenDaikinBindingConstants.CHANNEL_AC_FAN_DIR:
+                    if (command instanceof StringType) {
+                        changeFanDir(ControlInfo.FanMovement.valueOf(((StringType) command).toString()));
+                    } else {
+                        logger.warn("Received command of wrong type for thing '{}' on channel {}",
+                                thing.getUID().getAsString(), channelUID.getId());
+                    }
+                    break;
                 case OpenDaikinBindingConstants.CHANNEL_AC_MODE:
                     if (command instanceof StringType) {
                         changeMode(ControlInfo.Mode.valueOf(((StringType) command).toString()));
@@ -233,6 +241,12 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
     private void changeFanSpeed(ControlInfo.FanSpeed fanSpeed) throws OpenDaikinCommunicationException {
         ControlInfo info = webTargets.getControlInfo();
         info.fanSpeed = fanSpeed;
+        webTargets.setControlInfo(info);
+    }
+    
+    private void changeFanDir(ControlInfo.FanMovement fanDir) throws OpenDaikinCommunicationException {
+        ControlInfo info = webTargets.getControlInfo();
+        info.fanMovement = fanDir;
         webTargets.setControlInfo(info);
     }
 
