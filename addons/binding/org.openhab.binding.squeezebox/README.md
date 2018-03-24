@@ -143,9 +143,9 @@ when
     Item PlaySounds received command ON
 then
     // Play the sound on the default sink
-    playsound("doorbell.mp3")
+    playSound("doorbell.mp3")
     // Play the sound on a specific sink
-    playsound("squeezebox:squeezeboxplayer:5919BEA2-764B-4590-BC70-D74DCC15491B:20cfbf221510", "doorbell.mp3")
+    playSound("squeezebox:squeezeboxplayer:5919BEA2-764B-4590-BC70-D74DCC15491B:20cfbf221510", "doorbell.mp3")
 end
 ```
 
