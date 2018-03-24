@@ -605,10 +605,6 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
         return deviceList;
     }
 
-    public void setDeviceList(DeviceList deviceList) {
-        this.deviceList = deviceList;
-    }
-
     /********************************
      ****** Z-Way API callback ******
      *******************************/
