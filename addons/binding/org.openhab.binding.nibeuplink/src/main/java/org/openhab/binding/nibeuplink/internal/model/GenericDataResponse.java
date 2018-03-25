@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -22,6 +25,7 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 public class GenericDataResponse implements DataResponse {
+    private final Logger logger = LoggerFactory.getLogger(GenericDataResponse.class);
 
     public static class Value {
         @SerializedName("VariableId")
@@ -59,6 +63,10 @@ public class GenericDataResponse implements DataResponse {
         Map<String, String> valueMap = new HashMap<>();
         for (Value value : values) {
             if (!value.isLoading) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Channel {} updated to: {} ({})", value.variableId, value.currentIntValue,
+                            value.currentValue);
+                }
                 valueMap.put(value.variableId, value.currentIntValue);
             }
         }
