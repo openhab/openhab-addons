@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -337,6 +337,17 @@ public class HeosFacade {
      */
     public void setActivePlayer(String playerID) {
         controller.command().setPlayerID(playerID);
+    }
+
+    /**
+     * Sends a RAW command to the HESO bridge. The command has to be
+     * in accordance with the HEOS CLI specification
+     *
+     * @param command to send
+     */
+
+    public void sendRawCommand(String command) {
+        controller.send(command);
     }
 
     /**

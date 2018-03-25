@@ -28,43 +28,43 @@
         <item-type>String </item-type>
         <label>Song</label>
      </channel-type>
-        <channel-type id="interpret">
+     <channel-type id="interpret">
         <item-type>String</item-type>
         <label>Artist</label>
      </channel-type>
-      <channel-type id="album">
+     <channel-type id="album">
         <item-type>String</item-type>
         <label>Album</label>
      </channel-type>
-      <channel-type id="imageUrl" advanced="true">
+     <channel-type id="imageUrl" advanced="true">
         <item-type>String</item-type>
         <label>Cover</label>
-     </channel-type>   
-      <channel-type id="player">
+     </channel-type>
+     <channel-type id="player">
         <item-type>Switch</item-type>
         <label>Player</label>
      </channel-type>
-       <channel-type id="buildGroup">
+     <channel-type id="buildGroup">
         <item-type>Switch</item-type>
         <label>Made Group</label>
      </channel-type>
-      <channel-type id="dynamicGroupHandling">
+     <channel-type id="dynamicGroupHandling">
         <item-type>Switch</item-type>
         <label>Keep Groups</label>
      </channel-type>
-         <channel-type id="favorit">
+     <channel-type id="favorit">
         <item-type>Switch</item-type>
         <label>Favorites</label>
      </channel-type>
-         <channel-type id="playlists" advanced="true">
+     <channel-type id="playlists" advanced="true">
         <item-type>String</item-type>
         <label>Playlists</label>
-     </channel-type>       
-         <channel-type id="reboot">
+     </channel-type>
+     <channel-type id="reboot">
         <item-type>Switch</item-type>
         <label>Reboot</label>
-     </channel-type>       
-         <channel-type id="input" advanced="true">
+     </channel-type>
+     <channel-type id="input" advanced="true">
         <item-type>String</item-type>
         <label>Input Source</label>
      </channel-type>
@@ -72,27 +72,27 @@
         <item-type>String</item-type>
         <label>Thing Status</label>
      </channel-type>
-        <channel-type id="currentPosition" advanced="true">
+     <channel-type id="currentPosition" advanced="true">
         <item-type>String</item-type>
         <label>Current track position</label>
      </channel-type>
-        <channel-type id="duration" advanced="true">
+     <channel-type id="duration" advanced="true">
         <item-type>String</item-type>
         <label>Track duration</label>
      </channel-type>
-        <channel-type id="rawCommand" advanced="true">
+     <channel-type id="rawCommand" advanced="true">
         <item-type>String</item-type>
         <label>Sending a HEOS command as specified within the HEOS CLI protocol</label>
      </channel-type>
-       <channel-type id="type" advanced="true">
+     <channel-type id="type" advanced="true">
         <item-type>String</item-type>
         <label>The media currently played type (station, song, ...)</label>
      </channel-type>
-       <channel-type id="station" advanced="true">
+     <channel-type id="station" advanced="true">
         <item-type>String</item-type>
         <label>The station name</label>
      </channel-type>
-        <channel-type id="playUrl" advanced="true">
+     <channel-type id="playUrl" advanced="true">
         <item-type>String</item-type>
         <label>Play a media file from URL</label>
      </channel-type>    

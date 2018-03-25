@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -31,9 +31,6 @@ public class HeosDeserializerEvent implements JsonDeserializer<HeosResponseEvent
     private String rawCommand = null;
     private String rawResult = null;
     private String rawMessage = null;
-
-    private String errorCode = null;
-    private String errorMessage = null;
 
     private String eventType = null;
     private String commandType = null;
@@ -74,7 +71,7 @@ public class HeosDeserializerEvent implements JsonDeserializer<HeosResponseEvent
                 decodeMessage(rawMessage);
                 responseHeos.setMessagesMap(messages);
             } else {
-                this.messages.put("command under process", "false"); // noch �berarbeiten!!!!
+                this.messages.put("command under process", "false");
                 responseHeos.setMessagesMap(messages);
             }
         }

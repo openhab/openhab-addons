@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -44,10 +44,6 @@ public class HeosJsonParser {
 
         this.response.setEvent(eventResponse);
         this.response.setPayload(payloadResponse);
-
-        // Some times the messages get mixed up and additional informations are added to the pid Message.
-        // This is just a simple check routine which checks if the pid is bigger than 9 chars.
-        // Setting the pid to 0 can be used to check of message failed during further investigation
 
         if (eventResponse.getMessagesMap().containsKey("pid")) {
             response.setPid((eventResponse.getMessagesMap().get("pid")));

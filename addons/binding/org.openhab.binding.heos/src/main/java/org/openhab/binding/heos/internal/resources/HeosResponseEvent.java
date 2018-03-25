@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,18 +22,18 @@ import org.slf4j.LoggerFactory;
 
 public class HeosResponseEvent {
     // RAW Values filled by Gson not decoded more or less for information
-    private String command = null;
-    private String result = null;
-    private String message = null;
+    private String command;
+    private String result;
+    private String message;
 
     // Values evaluated from Gson filled Values
-    private String commandType = null;
-    private String eventType = null;
+    private String commandType;
+    private String eventType;
     private HashMap<String, String> messagesMap = null;
 
     // Error values
-    private String errorCode = null;
-    private String errorMessage = null;
+    private String errorCode;
+    private String errorMessage;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

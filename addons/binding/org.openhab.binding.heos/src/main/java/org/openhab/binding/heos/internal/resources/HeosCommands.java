@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -30,7 +30,7 @@ public class HeosCommands {
     private String rebootSystem = "heos://system/reboot";
     private String signIn = "heos://system/sign_in?un=" + username + "&pw=" + password;
     private String signOut = "heos://system/sign_out";
-    private String heartBeat = "heos://system/heart_beat";
+    private String heartbeat = "heos://system/heart_beat";
 
     // Player Commands Control
     private String setPlayStatePlay = "heos://player/set_play_state?pid=";
@@ -272,8 +272,8 @@ public class HeosCommands {
         return signOut;
     }
 
-    public String heartBeat() {
-        return heartBeat;
+    public String heartbeat() {
+        return heartbeat;
     }
 
     public String getGroups() {

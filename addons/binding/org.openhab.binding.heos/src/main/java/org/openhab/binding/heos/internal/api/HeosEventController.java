@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,7 +10,6 @@ package org.openhab.binding.heos.internal.api;
 
 import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
-import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.resources.HeosCommands;
 import org.openhab.binding.heos.internal.resources.HeosResponse;
 import org.openhab.binding.heos.internal.resources.MyEventListener;
@@ -31,7 +30,7 @@ public class HeosEventController extends MyEventListener {
     private String eventType = null;
     private String eventCommand = null;
 
-    private Logger logger = LoggerFactory.getLogger(HeosBridgeHandler.class);
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public HeosEventController(HeosResponse response, HeosCommands command, HeosSystem system) {
         this.response = response;
@@ -58,19 +57,19 @@ public class HeosEventController extends MyEventListener {
             this.eventCommand = response.getEvent().getCommandType();
 
             switch (eventType) {
-                case "event":
+                case EVENTTYPE_EVENT:
                     eventTypeEvent();
                     break;
-                case "player":
+                case EVENTTYPE_PLAYER:
                     eventTypePlayer();
                     break;
-                case "system":
+                case EVENTTYPE_SYSTEM:
                     eventTypeSystem();
                     break;
-                case "browse":
+                case EVENTTYPE_BROWSE:
                     eventTypeBrowse();
                     break;
-                case "group":
+                case EVENTTYPE_GROUP:
                     eventTypeGroup();
                     break;
             }
@@ -79,29 +78,29 @@ public class HeosEventController extends MyEventListener {
 
     private void eventTypeEvent() {
         switch (eventCommand) {
-            case "player_now_playing_progress":
+            case PLAYER_NOW_PLAYING_PROGRESS:
                 playerProgressChanged();
                 break;
-            case "players_changed":
-                fireBridgeEvent("event", null, eventCommand);
+            case PLAYERS_CHANGED:
+                fireBridgeEvent(EVENTTYPE_EVENT, SUCCESS, eventCommand);
                 break;
-            case "player_now_playing_changed":
+            case PLAYER_NOW_PLAYING_CHANGED:
                 mediaStateChanged();
                 break;
-            case "player_state_changed":
+            case PLAYER_STATE_CHANGED:
                 playerStateChanged();
                 break;
-            case "player_queue_changed":
+            case PLAYER_QUEUE_CHANGED:
                 break;
-            case "sources_changed":
+            case SOURCES_CHANGED:
                 break;
-            case "player_volume_changed":
+            case PLAYER_VOLUME_CHANGED:
                 volumeChanged();
                 break;
-            case "groups_changed":
-                fireBridgeEvent("event", null, eventCommand);
+            case GROUPS_CHANGED:
+                fireBridgeEvent(EVENTTYPE_EVENT, SUCCESS, eventCommand);
                 break;
-            case "user_changed":
+            case USER_CHANGED:
                 userChanged();
                 break;
         }
@@ -109,39 +108,39 @@ public class HeosEventController extends MyEventListener {
 
     private void eventTypePlayer() {
         switch (eventCommand) {
-            case "get_now_playing_media":
+            case GET_NOW_PLAYING_MEDIA:
                 getMediaState();
                 break;
-            case "get_player_info":
+            case GET_PLAYER_INFO:
                 break;
-            case "get_play_state":
+            case GET_PLAY_STATE:
                 playerStateChanged();
                 break;
-            case "get_volume":
+            case GET_VOLUME:
                 break;
-            case "get_mute":
+            case GET_MUTE:
                 break;
-            case "get_queue":
+            case GET_QUEUE:
                 break;
-            case "set_play_state":
+            case SET_PLAY_STATE:
                 break;
-            case "set_volume":
+            case SET_VOLUME:
                 break;
         }
     }
 
     private void eventTypeBrowse() {
         switch (eventCommand) {
-            case "get_music_sources":
+            case GET_MUSIC_SOURCES:
                 break;
-            case "browse":
+            case BROWSE:
                 break;
         }
     }
 
     private void eventTypeSystem() {
         switch (eventCommand) {
-            case COM_SING_IN:
+            case SING_IN:
                 signIn();
                 break;
         }
@@ -153,27 +152,27 @@ public class HeosEventController extends MyEventListener {
 
     private void playerStateChanged() {
         String pid = response.getPid();
-        String event = "state";
-        String command = response.getEvent().getMessagesMap().get("state");
+        String event = HEOS_STATE;
+        String command = response.getEvent().getMessagesMap().get(HEOS_STATE);
         fireStateEvent(pid, event, command);
     }
 
     private void playerProgressChanged() {
-        String pos = response.getEvent().getMessagesMap().get("cur_pos");
-        String duration = response.getEvent().getMessagesMap().get("duration");
+        String pos = response.getEvent().getMessagesMap().get(HEOS_CUR_POS);
+        String duration = response.getEvent().getMessagesMap().get(HEOS_DURATION);
         String pid = response.getPid();
 
-        fireStateEvent(pid, "curPos", pos);
-        fireStateEvent(pid, "duration", duration);
+        fireStateEvent(pid, HEOS_CUR_POS, pos);
+        fireStateEvent(pid, HEOS_DURATION, duration);
     }
 
     private void volumeChanged() {
         String pid = response.getPid();
-        String event = "volume";
-        String command = response.getEvent().getMessagesMap().get("level");
+        String event = HEOS_VOLUME;
+        String command = response.getEvent().getMessagesMap().get(HEOS_LEVEL);
         fireStateEvent(pid, event, command);
-        event = "mute";
-        command = response.getEvent().getMessagesMap().get("mute");
+        event = HEOS_MUTE;
+        command = response.getEvent().getMessagesMap().get(HEOS_MUTE);
         fireStateEvent(pid, event, command);
     }
 
@@ -190,19 +189,19 @@ public class HeosEventController extends MyEventListener {
 
     private void signIn() {
         if (response.getEvent().getMessagesMap().get(COM_UNDER_PROCESS).equals(FALSE)) {
-            fireBridgeEvent(EVENT_SYSTEM, SUCCESS, COM_SING_IN);
+            fireBridgeEvent(EVENTTYPE_SYSTEM, SUCCESS, SING_IN);
         }
     }
 
     private void userChanged() {
-        fireBridgeEvent(EVENT_SYSTEM, SUCCESS, COM_USER_CHANGED);
+        fireBridgeEvent(EVENTTYPE_SYSTEM, SUCCESS, USER_CHANGED);
     }
 
     public void connectionToSystemLost() {
-        fireBridgeEvent(EVENT_EVENT, FAIL, CONNECTION_LOST);
+        fireBridgeEvent(EVENTTYPE_EVENT, FAIL, CONNECTION_LOST);
     }
 
     public void connectionToSystemRestored() {
-        fireBridgeEvent(EVENT_EVENT, SUCCESS, CONNECTION_RESTORED);
+        fireBridgeEvent(EVENTTYPE_EVENT, SUCCESS, CONNECTION_RESTORED);
     }
 }

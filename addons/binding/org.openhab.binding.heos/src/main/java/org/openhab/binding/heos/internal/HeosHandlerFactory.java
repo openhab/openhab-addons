@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,9 +28,8 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.handler.HeosGroupHandler;
 import org.openhab.binding.heos.handler.HeosPlayerHandler;
+import org.openhab.binding.heos.internal.api.HeosAudioSink;
 import org.openhab.binding.heos.internal.api.HeosFacade;
-import org.openhab.binding.heos.internal.api.HeosGroupAudioSink;
-import org.openhab.binding.heos.internal.api.HeosPlayerAudioSink;
 import org.openhab.binding.heos.internal.api.HeosSystem;
 import org.openhab.binding.heos.internal.discovery.HeosPlayerDiscovery;
 import org.osgi.framework.ServiceRegistration;
@@ -88,7 +87,7 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_PLAYER)) {
             HeosPlayerHandler playerHandler = new HeosPlayerHandler(thing, heos, api);
             // register the speaker as an audio sink
-            HeosPlayerAudioSink audioSink = new HeosPlayerAudioSink(playerHandler, audioHTTPServer, callbackUrl);
+            HeosAudioSink audioSink = new HeosAudioSink(playerHandler, audioHTTPServer, callbackUrl);
             @SuppressWarnings("unchecked")
             ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
                     .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
@@ -98,7 +97,7 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_GROUP)) {
             HeosGroupHandler groupHandler = new HeosGroupHandler(thing, heos, api);
             // register the group as an audio sink
-            HeosGroupAudioSink audioSink = new HeosGroupAudioSink(groupHandler, audioHTTPServer, callbackUrl);
+            HeosAudioSink audioSink = new HeosAudioSink(groupHandler, audioHTTPServer, callbackUrl);
             @SuppressWarnings("unchecked")
             ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
                     .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());

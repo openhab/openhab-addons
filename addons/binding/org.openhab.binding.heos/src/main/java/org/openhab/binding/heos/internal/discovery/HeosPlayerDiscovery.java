@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -168,8 +168,8 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
         logger.trace("Start HEOS Player background discovery");
 
         if (scanningJob == null || scanningJob.isCancelled()) {
-            this.scanningJob = AbstractDiscoveryService.scheduler.scheduleWithFixedDelay(this.scanningRunnable,
-                    INITIAL_DELAY, SCAN_INTERVAL, TimeUnit.SECONDS);
+            this.scanningJob = scheduler.scheduleWithFixedDelay(this.scanningRunnable, INITIAL_DELAY, SCAN_INTERVAL,
+                    TimeUnit.SECONDS);
         }
         logger.trace("scanningJob active");
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,6 +13,7 @@ import static org.openhab.binding.heos.HeosBindingConstants.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -62,25 +63,58 @@ public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
-        DeviceDetails details = device.getDetails();
-        if (details != null) {
-            ModelDetails modelDetails = details.getModelDetails();
-            ManufacturerDetails modelManufacturerDetails = details.getManufacturerDetails();
-            if (modelDetails != null && modelManufacturerDetails != null) {
-                String modelName = modelDetails.getModelName();
-                String modelManufacturer = modelManufacturerDetails.getManufacturer();
-                if (modelName != null && modelManufacturer != null) {
-                    if (modelManufacturer.equals("Denon")) {
-                        if (modelName.startsWith("HEOS") || modelName.endsWith("H")) {
-                            if (device.getType().getType().startsWith("ACT")) {
-                                return new ThingUID(THING_TYPE_BRIDGE,
-                                        device.getIdentity().getUdn().getIdentifierString());
-                            }
-                        }
-                    }
+
+        Optional<RemoteDevice> optDevice = Optional.ofNullable(device);
+        String modelName = optDevice.map(RemoteDevice::getDetails).map(DeviceDetails::getModelDetails)
+                .map(ModelDetails::getModelName).orElse("UNKNOWN");
+        String modelManufacturer = optDevice.map(RemoteDevice::getDetails).map(DeviceDetails::getManufacturerDetails)
+                .map(ManufacturerDetails::getManufacturer).orElse("UNKNOWN");
+
+        if (modelManufacturer.equals("Denon")) {
+            if (modelName.startsWith("HEOS") || modelName.endsWith("H")) {
+                if (device.getType().getType().startsWith("ACT")) {
+                    return new ThingUID(THING_TYPE_BRIDGE,
+                            optDevice.get().getIdentity().getUdn().getIdentifierString());
                 }
             }
         }
         return null;
+
+        // optDevice.map(RemoteDevice::getDetails).map(DeviceDetails::getModelDetails).map(ModelDetails::getModelName)
+        // .ifPresent(modelName -> {
+        // optDevice.map(RemoteDevice::getDetails).map(DeviceDetails::getManufacturerDetails)
+        // .map(ManufacturerDetails::getManufacturer).ifPresent(modelManufacturer -> {
+        // if (modelManufacturer.equals("Denon")) {
+        // if (modelName.startsWith("HEOS") || modelName.endsWith("H")) {
+        // if (device.getType().getType().startsWith("ACT")) {
+        // thingUID = new ThingUID(THING_TYPE_BRIDGE,
+        // optDevice.get().getIdentity().getUdn().getIdentifierString());
+        // }
+        // }
+        // }
+        // });
+        // });
+        // return thingUID;
+
+        // DeviceDetails details = device.getDetails();
+        // if (details != null) {
+        // ModelDetails modelDetails = details.getModelDetails();
+        // ManufacturerDetails modelManufacturerDetails = details.getManufacturerDetails();
+        // if (modelDetails != null && modelManufacturerDetails != null) {
+        // String modelName = modelDetails.getModelName();
+        // String modelManufacturer = modelManufacturerDetails.getManufacturer();
+        // if (modelName != null && modelManufacturer != null) {
+        // if (modelManufacturer.equals("Denon")) {
+        // if (modelName.startsWith("HEOS") || modelName.endsWith("H")) {
+        // if (device.getType().getType().startsWith("ACT")) {
+        // return new ThingUID(THING_TYPE_BRIDGE,
+        // device.getIdentity().getUdn().getIdentifierString());
+        // }
+        // }
+        // }
+        // }
+        // }
+        // }
+        // return null;
     }
 }
