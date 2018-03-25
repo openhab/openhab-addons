@@ -187,8 +187,15 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.keba/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-knx" description="KNX Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.knx/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-kodi" description="Kodi Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-upnp</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.kodi/${project.version}</bundle>
     </feature>
 
@@ -374,6 +381,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.samsungtv/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-satel" description="Satel Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.satel/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-sensebox" description="Sensebox Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.sensebox/${project.version}</bundle>
@@ -484,6 +497,11 @@
     </feature>
 
     <!-- misc -->
+
+    <feature name="openhab-misc-azureiothub" description="azure IOT hub Connector" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.azureiothub/${project.version}</bundle>
+    </feature>
 
     <feature name="openhab-misc-openhabcloud" description="openHAB Cloud Connector" version="${project.version}">
         <feature>openhab-runtime-base</feature>

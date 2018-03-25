@@ -40,7 +40,6 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zway.ZWayBindingConstants;
 import org.openhab.binding.zway.internal.converter.ZWayDeviceStateConverter;
 import org.slf4j.Logger;
@@ -68,6 +67,7 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  * sent to one of the channels.
  *
  * @author Patrick Hecker - Initial contribution
+ * @author Johannes Einig - Now uses the bridge handler cached device list
  */
 public abstract class ZWayDeviceHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -465,14 +465,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleUpdate(ChannelUID channelUID, State newState) {
-        // Refresh update time
-        logger.debug("Handle update for channel: {} with new state: {}", channelUID.getId(), newState.toString());
-
-        refreshLastUpdate();
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, final Command command) {
         logger.debug("Handle command for channel: {} with command: {}", channelUID.getId(), command.toString());
 
@@ -488,7 +480,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         final String deviceId = channel.getProperties().get("deviceId");
 
         if (deviceId != null) {
-            DeviceList deviceList = zwayBridgeHandler.getZWayApi().getDevices();
+            DeviceList deviceList = zwayBridgeHandler.getDeviceList();
             if (deviceList != null) {
                 Device device = deviceList.getDeviceById(deviceId);
                 if (device == null) {

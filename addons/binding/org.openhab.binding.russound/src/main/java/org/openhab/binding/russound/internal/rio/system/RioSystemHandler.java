@@ -48,7 +48,7 @@ import com.google.gson.Gson;
  * The bridge handler for a Russound System. This is the entry point into the whole russound system and is generally
  * points to the main controller. This implementation must be attached to a {@link RioSystemHandler} bridge.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
     // Logger
@@ -165,7 +165,6 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof RefreshType) {
             handleRefresh(channelUID.getId());
             return;
@@ -227,9 +226,8 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
         } else if (id.equals(RioConstants.CHANNEL_SYSSOURCES)) {
             refreshNamedHandler(gson, RioSourceHandler.class, RioConstants.CHANNEL_SYSSOURCES);
 
-        } else {
-            // Can't refresh any others...
         }
+        // Can't refresh any others...
     }
 
     /**
@@ -254,7 +252,7 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
 
         sessionLock.lock();
         try {
-            session = new SocketChannelSession(rioConfig.getIpAddress(), RioConstants.RioPort);
+            session = new SocketChannelSession(rioConfig.getIpAddress(), RioConstants.RIO_PORT);
         } finally {
             sessionLock.unlock();
         }
@@ -491,7 +489,7 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
             throw new IllegalArgumentException("childHandler cannot be null");
         }
         if (childHandler instanceof RioSourceHandler) {
-            final RioHandlerCallback callback = ((RioSourceHandler) childHandler).getCallback();
+            final RioHandlerCallback callback = ((RioSourceHandler) childHandler).getRioHandlerCallback();
             if (callback != null) {
                 if (added) {
                     callback.addListener(RioConstants.CHANNEL_SOURCENAME, handlerCallbackListener);

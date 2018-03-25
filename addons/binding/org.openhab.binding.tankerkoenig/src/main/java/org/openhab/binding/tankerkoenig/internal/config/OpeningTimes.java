@@ -13,10 +13,8 @@ package org.openhab.binding.tankerkoenig.internal.config;
  * of settings like "Montag" "09:00" "18:00")
  * plus the boolean WholeDay (open).
  *
- * @author Jürgen Baginski
- *
+ * @author Jürgen Baginski - Initial contribution
  */
-
 public class OpeningTimes {
 
     private Boolean wholeDay;

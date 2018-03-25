@@ -41,7 +41,7 @@ import gnu.io.UnsupportedCommOperationException;
 public class SerialOceanicThingHandler extends OceanicThingHandler {
 
     private static final long REQUEST_TIMEOUT = 10000;
-    private int BAUD = 19200;
+    private static final int BAUD = 19200;
 
     private final Logger logger = LoggerFactory.getLogger(SerialOceanicThingHandler.class);
 

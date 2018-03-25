@@ -99,7 +99,6 @@ public class DSCAlarmMessage {
             dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(codeReceived);
 
             if (dscAlarmCode != null) {
-
                 name = dscAlarmCode.getName();
                 description = dscAlarmCode.getDescription();
 
@@ -122,7 +121,6 @@ public class DSCAlarmMessage {
                     }
 
                     messageType = messageParms.getType();
-
                 }
 
                 switch (dscAlarmCode) {
@@ -277,7 +275,6 @@ public class DSCAlarmMessage {
      * @return String
      */
     public String getMessageInfo(DSCAlarmMessageInfoType dscAlarmMessageInfoType) {
-
         String info = "";
 
         switch (dscAlarmMessageInfoType) {

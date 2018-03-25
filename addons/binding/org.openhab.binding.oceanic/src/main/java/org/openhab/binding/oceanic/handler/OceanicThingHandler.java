@@ -153,7 +153,7 @@ public abstract class OceanicThingHandler extends BaseThingHandler {
     @SuppressWarnings("unchecked")
     private State createStateForType(OceanicChannelSelector selector, String value) {
         Class<? extends Type> typeClass = selector.getTypeClass();
-        List<Class<? extends State>> stateTypeList = new ArrayList<Class<? extends State>>();
+        List<Class<? extends State>> stateTypeList = new ArrayList<>();
 
         stateTypeList.add((Class<? extends State>) typeClass);
         State state = TypeParser.parseState(stateTypeList, selector.convertValue(value));

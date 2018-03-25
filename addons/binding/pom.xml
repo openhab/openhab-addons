@@ -48,6 +48,8 @@
 		<module>org.openhab.binding.ipp</module>
 		<module>org.openhab.binding.jeelink</module>
 		<module>org.openhab.binding.keba</module>
+		<module>org.openhab.binding.knx</module>
+		<module>org.openhab.binding.knx.test</module>
 		<module>org.openhab.binding.kodi</module>
 		<module>org.openhab.binding.kostalinverter</module>
 		<module>org.openhab.binding.lametrictime</module>
@@ -86,6 +88,7 @@
 		<module>org.openhab.binding.rotelra1x</module>
 		<module>org.openhab.binding.russound</module>
 		<module>org.openhab.binding.samsungtv</module>
+		<module>org.openhab.binding.satel</module>
 		<module>org.openhab.binding.seneye</module>
 		<module>org.openhab.binding.sensebox</module>
 		<module>org.openhab.binding.silvercrestwifisocket</module>

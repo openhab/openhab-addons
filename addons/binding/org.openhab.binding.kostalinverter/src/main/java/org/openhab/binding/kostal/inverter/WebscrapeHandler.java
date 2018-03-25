@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Christian Schneider
+ * @author Christian Schneider - Initial contribution
  */
 public class WebscrapeHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(WebscrapeHandler.class);

@@ -11,7 +11,7 @@ package org.openhab.binding.hdpowerview.internal.api;
 /**
  * A shade type, as returned by the HD Power View Hub.
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public enum ShadePositionKind {
 

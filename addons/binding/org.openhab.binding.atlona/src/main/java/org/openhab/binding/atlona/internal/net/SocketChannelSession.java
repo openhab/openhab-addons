@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * {@link #sendCommand(String)} and responses will be received on any {@link SocketSessionListener}. This implementation
  * of {@link SocketSession} communicates using a {@link SocketChannel} connection.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class SocketChannelSession implements SocketSession {
     private final Logger logger = LoggerFactory.getLogger(SocketChannelSession.class);
@@ -38,37 +38,37 @@ public class SocketChannelSession implements SocketSession {
     /**
      * The host/ip address to connect to
      */
-    private final String _host;
+    private final String host;
 
     /**
      * The port to connect to
      */
-    private final int _port;
+    private final int port;
 
     /**
      * The actual socket being used. Will be null if not connected
      */
-    private final AtomicReference<SocketChannel> _socketChannel = new AtomicReference<SocketChannel>();
+    private final AtomicReference<SocketChannel> socketChannel = new AtomicReference<>();
 
     /**
      * The {@link ResponseReader} that will be used to read from {@link #_readBuffer}
      */
-    private final ResponseReader _responseReader = new ResponseReader();
+    private final ResponseReader responseReader = new ResponseReader();
 
     /**
-     * The responses read from the {@link #_responseReader}
+     * The responses read from the {@link #responseReader}
      */
-    private final BlockingQueue<Object> _responses = new ArrayBlockingQueue<Object>(50);
+    private final BlockingQueue<Object> responses = new ArrayBlockingQueue<>(50);
 
     /**
-     * The dispatcher of responses from {@link #_responses}
+     * The dispatcher of responses from {@link #responses}
      */
-    private final Dispatcher _dispatcher = new Dispatcher();
+    private final Dispatcher dispatcher = new Dispatcher();
 
     /**
-     * The {@link SocketSessionListener} that the {@link #_dispatcher} will call
+     * The {@link SocketSessionListener} that the {@link #dispatcher} will call
      */
-    private List<SocketSessionListener> _listeners = new CopyOnWriteArrayList<SocketSessionListener>();
+    private List<SocketSessionListener> listeners = new CopyOnWriteArrayList<>();
 
     /**
      * Creates the socket session from the given host and port
@@ -84,8 +84,8 @@ public class SocketChannelSession implements SocketSession {
         if (port < 1 || port > 65535) {
             throw new IllegalArgumentException("Port must be between 1 and 65535");
         }
-        _host = host;
-        _port = port;
+        this.host = host;
+        this.port = port;
     }
 
     @Override
@@ -93,17 +93,17 @@ public class SocketChannelSession implements SocketSession {
         if (listener == null) {
             throw new IllegalArgumentException("listener cannot be null");
         }
-        _listeners.add(listener);
+        listeners.add(listener);
     }
 
     @Override
     public void clearListeners() {
-        _listeners.clear();
+        listeners.clear();
     }
 
     @Override
     public boolean removeListener(SocketSessionListener listener) {
-        return _listeners.remove(listener);
+        return listeners.remove(listener);
     }
 
     @Override
@@ -113,8 +113,8 @@ public class SocketChannelSession implements SocketSession {
         final SocketChannel channel = SocketChannel.open();
         channel.configureBlocking(true);
 
-        logger.debug("Connecting to {}:{}", _host, _port);
-        channel.connect(new InetSocketAddress(_host, _port));
+        logger.debug("Connecting to {}:{}", host, port);
+        channel.connect(new InetSocketAddress(host, port));
 
         logger.debug("Waiting for connect");
         while (!channel.finishConnect()) {
@@ -124,29 +124,29 @@ public class SocketChannelSession implements SocketSession {
             }
         }
 
-        _socketChannel.set(channel);
-        new Thread(_dispatcher).start();
-        new Thread(_responseReader).start();
+        socketChannel.set(channel);
+        new Thread(dispatcher).start();
+        new Thread(responseReader).start();
     }
 
     @Override
     public void disconnect() throws IOException {
         if (isConnected()) {
-            logger.debug("Disconnecting from {}:{}", _host, _port);
+            logger.debug("Disconnecting from {}:{}", host, port);
 
-            final SocketChannel channel = _socketChannel.getAndSet(null);
+            final SocketChannel channel = socketChannel.getAndSet(null);
             channel.close();
 
-            _dispatcher.stopRunning();
-            _responseReader.stopRunning();
+            dispatcher.stopRunning();
+            responseReader.stopRunning();
 
-            _responses.clear();
+            responses.clear();
         }
     }
 
     @Override
     public boolean isConnected() {
-        final SocketChannel channel = _socketChannel.get();
+        final SocketChannel channel = socketChannel.get();
         return channel != null && channel.isConnected();
     }
 
@@ -162,7 +162,7 @@ public class SocketChannelSession implements SocketSession {
 
         ByteBuffer toSend = ByteBuffer.wrap((command + "\r\n").getBytes());
 
-        final SocketChannel channel = _socketChannel.get();
+        final SocketChannel channel = socketChannel.get();
         if (channel == null) {
             logger.debug("Cannot send command '{}' - socket channel was closed", command);
         } else {
@@ -183,20 +183,20 @@ public class SocketChannelSession implements SocketSession {
         /**
          * Whether the reader is currently running
          */
-        private final AtomicBoolean _isRunning = new AtomicBoolean(false);
+        private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
         /**
          * Locking to allow proper shutdown of the reader
          */
-        private final CountDownLatch _running = new CountDownLatch(1);
+        private final CountDownLatch running = new CountDownLatch(1);
 
         /**
          * Stops the reader. Will wait 5 seconds for the runnable to stop
          */
         public void stopRunning() {
-            if (_isRunning.getAndSet(false)) {
+            if (isRunning.getAndSet(false)) {
                 try {
-                    if (!_running.await(5, TimeUnit.SECONDS)) {
+                    if (!running.await(5, TimeUnit.SECONDS)) {
                         logger.warn("Waited too long for response reader to finish");
                     }
                 } catch (InterruptedException e) {
@@ -206,7 +206,7 @@ public class SocketChannelSession implements SocketSession {
         }
 
         /**
-         * Runs the logic to read from the socket until {@link #_isRunning} is false. A 'response' is anything that ends
+         * Runs the logic to read from the socket until {@link #isRunning} is false. A 'response' is anything that ends
          * with a carriage-return/newline combo. Additionally, the special "Login: " and "Password: " prompts are
          * treated as responses for purposes of logging in.
          */
@@ -215,10 +215,10 @@ public class SocketChannelSession implements SocketSession {
             final StringBuilder sb = new StringBuilder(100);
             final ByteBuffer readBuffer = ByteBuffer.allocate(1024);
 
-            _isRunning.set(true);
-            _responses.clear();
+            isRunning.set(true);
+            responses.clear();
 
-            while (_isRunning.get()) {
+            while (isRunning.get()) {
                 try {
                     // if reader is null, sleep and try again
                     if (readBuffer == null) {
@@ -226,17 +226,17 @@ public class SocketChannelSession implements SocketSession {
                         continue;
                     }
 
-                    final SocketChannel channel = _socketChannel.get();
+                    final SocketChannel channel = socketChannel.get();
                     if (channel == null) {
                         // socket was closed
-                        _isRunning.set(false);
+                        isRunning.set(false);
                         break;
                     }
 
                     int bytesRead = channel.read(readBuffer);
                     if (bytesRead == -1) {
-                        _responses.put(new IOException("server closed connection"));
-                        _isRunning.set(false);
+                        responses.put(new IOException("server closed connection"));
+                        isRunning.set(false);
                         break;
                     } else if (bytesRead == 0) {
                         readBuffer.clear();
@@ -252,28 +252,27 @@ public class SocketChannelSession implements SocketSession {
                             if (str.endsWith("\r\n") || str.endsWith("Login: ") || str.endsWith("Password: ")) {
                                 sb.setLength(0);
                                 final String response = str.substring(0, str.length() - 2);
-                                _responses.put(response);
+                                responses.put(response);
                             }
                         }
                     }
 
                     readBuffer.flip();
-
                 } catch (InterruptedException e) {
                     // Do nothing - probably shutting down
                 } catch (AsynchronousCloseException e) {
                     // socket was definitely closed by another thread
                 } catch (IOException e) {
                     try {
-                        _isRunning.set(false);
-                        _responses.put(e);
+                        isRunning.set(false);
+                        responses.put(e);
                     } catch (InterruptedException e1) {
                         // Do nothing - probably shutting down
                     }
                 }
             }
 
-            _running.countDown();
+            running.countDown();
         }
     }
 
@@ -290,30 +289,30 @@ public class SocketChannelSession implements SocketSession {
         /**
          * Whether the dispatcher is running or not
          */
-        private final AtomicBoolean _isRunning = new AtomicBoolean(false);
+        private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
         /**
          * Locking to allow proper shutdown of the reader
          */
-        private final CountDownLatch _running = new CountDownLatch(1);
+        private final CountDownLatch running = new CountDownLatch(1);
 
         /**
          * Whether the dispatcher is currently processing a message
          */
-        private final AtomicReference<Thread> _processingThread = new AtomicReference<Thread>();
+        private final AtomicReference<Thread> processingThread = new AtomicReference<>();
 
         /**
          * Stops the reader. Will wait 5 seconds for the runnable to stop (should stop within 1 second based on the poll
          * timeout below)
          */
         public void stopRunning() {
-            if (_isRunning.getAndSet(false)) {
+            if (isRunning.getAndSet(false)) {
                 // only wait if stopRunning didn't get called as part of processing a message
                 // (which would happen if we are processing an exception that forced a session close)
-                final Thread processingThread = _processingThread.get();
+                final Thread processingThread = this.processingThread.get();
                 if (processingThread != null && Thread.currentThread() != processingThread) {
                     try {
-                        if (!_running.await(5, TimeUnit.SECONDS)) {
+                        if (!running.await(5, TimeUnit.SECONDS)) {
                             logger.warn("Waited too long for dispatcher to finish");
                         }
                     } catch (InterruptedException e) {
@@ -324,29 +323,28 @@ public class SocketChannelSession implements SocketSession {
         }
 
         /**
-         * Runs the logic to dispatch any responses to the current listeners until {@link #_isRunning} is false.
+         * Runs the logic to dispatch any responses to the current listeners until {@link #isRunning} is false.
          */
         @Override
         public void run() {
-            _processingThread.set(Thread.currentThread());
+            processingThread.set(Thread.currentThread());
 
-            _isRunning.set(true);
-            while (_isRunning.get()) {
+            isRunning.set(true);
+            while (isRunning.get()) {
                 try {
-
                     // if no listeners, we don't want to start dispatching yet.
-                    if (_listeners.size() == 0) {
+                    if (listeners.size() == 0) {
                         Thread.sleep(250);
                         continue;
                     }
 
-                    final Object response = _responses.poll(1, TimeUnit.SECONDS);
+                    final Object response = responses.poll(1, TimeUnit.SECONDS);
 
                     if (response != null) {
                         if (response instanceof String) {
                             try {
                                 logger.debug("Dispatching response: {}", response);
-                                final SocketSessionListener[] listeners = _listeners
+                                final SocketSessionListener[] listeners = SocketChannelSession.this.listeners
                                         .toArray(new SocketSessionListener[0]);
                                 for (SocketSessionListener listener : listeners) {
                                     listener.responseReceived((String) response);
@@ -356,7 +354,8 @@ public class SocketChannelSession implements SocketSession {
                             }
                         } else if (response instanceof Exception) {
                             logger.debug("Dispatching exception: {}", response);
-                            final SocketSessionListener[] listeners = _listeners.toArray(new SocketSessionListener[0]);
+                            final SocketSessionListener[] listeners = SocketChannelSession.this.listeners
+                                    .toArray(new SocketSessionListener[0]);
                             for (SocketSessionListener listener : listeners) {
                                 listener.responseException((Exception) response);
                             }
@@ -371,9 +370,9 @@ public class SocketChannelSession implements SocketSession {
                     break;
                 }
             }
-            _isRunning.set(false);
-            _processingThread.set(null);
-            _running.countDown();
+            isRunning.set(false);
+            processingThread.set(null);
+            running.countDown();
         }
     }
 }

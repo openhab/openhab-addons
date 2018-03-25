@@ -23,7 +23,7 @@ import org.openhab.binding.russound.internal.net.SocketSessionListener;
  * event processing and the ability to get the current {@link SocketSession}.
  * {@link #sendCommand(String)} and responses will be received on any {@link SocketSessionListener}
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public abstract class AbstractThingHandler<E extends AbstractRioProtocol> extends BaseThingHandler
         implements RioCallbackHandler {
@@ -65,11 +65,11 @@ public abstract class AbstractThingHandler<E extends AbstractRioProtocol> extend
 
     /**
      * Overridden to simply get the protocol handler's {@link RioHandlerCallback}
-     * 
+     *
      * @return the {@link RioHandlerCallback} or null if not found
      */
     @Override
-    public RioHandlerCallback getCallback() {
+    public RioHandlerCallback getRioHandlerCallback() {
         final E protocolHandler = getProtocolHandler();
         return protocolHandler == null ? null : protocolHandler.getCallback();
     }

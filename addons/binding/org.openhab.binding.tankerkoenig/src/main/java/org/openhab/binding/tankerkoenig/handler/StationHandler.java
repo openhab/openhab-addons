@@ -38,8 +38,8 @@ import org.slf4j.LoggerFactory;
  * The {@link StationHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Dennis Dollinger
- * @author Jürgen Baginski
+ * @author Dennis Dollinger - Initial contribution
+ * @author Jürgen Baginski - Initial contribution
  */
 public class StationHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(StationHandler.class);

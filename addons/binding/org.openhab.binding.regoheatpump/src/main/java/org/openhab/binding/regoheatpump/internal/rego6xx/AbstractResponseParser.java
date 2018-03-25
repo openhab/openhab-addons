@@ -17,7 +17,7 @@ import javax.xml.bind.DatatypeConverter;
  * @author Boris Krivonog - Initial contribution
  */
 abstract class AbstractResponseParser<T> implements ResponseParser<T> {
-    private static final byte ComputerAddress = (byte) 0x01;
+    private static final byte COMPUTER_ADDRESS = (byte) 0x01;
 
     @Override
     public abstract int responseLength();
@@ -31,7 +31,7 @@ abstract class AbstractResponseParser<T> implements ResponseParser<T> {
                     "Expected size does not match: " + buffer.length + " != " + responseLength());
         }
 
-        if (buffer[0] != ComputerAddress) {
+        if (buffer[0] != COMPUTER_ADDRESS) {
             throw new Rego6xxProtocolException("Invalid header " + DatatypeConverter.printHexBinary(buffer));
         }
 
