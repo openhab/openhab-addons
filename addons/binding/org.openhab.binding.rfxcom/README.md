@@ -231,6 +231,7 @@ This binding currently supports the following things / message types:
  * [temperaturerain - RFXCOM Temperature-Rain Sensor](#temperaturerain---rfxcom-temperature-rain-sensor)
  * [temperature - RFXCOM Temperature Sensor](#temperature---rfxcom-temperature-sensor)
  * [thermostat1 - RFXCOM Thermostat1 Sensor](#thermostat1---rfxcom-thermostat1-sensor)
+ * [thermostat3 - RFXCOM Thermostat3 Sensor](#thermostat3---rfxcom-thermostat3-sensor)
  * [undecoded - RFXCOM Undecoded RF Messages](#undecoded---rfxcom-undecoded-rf-messages)
  * [uv - RFXCOM UV/Temperature Sensor](#uv---rfxcom-uvtemperature-sensor)
  * [wind - RFXCOM Wind Sensor](#wind---rfxcom-wind-sensor)
@@ -948,6 +949,32 @@ A Thermostat1 device.
 
         * DIGIMAX - Digimax, TLX7506
         * DIGIMAX\_SHORT - Digimax with short format (no set point)
+
+
+
+### thermostat3 - RFXCOM Thermostat3 Sensor
+
+A Thermostat3 device.
+
+#### Channels
+
+| Name        | Channel Type                        | Item Type | Remarks  |
+|-------------|-------------------------------------|-----------|----------|
+| command     | [command](#channels)                | Switch    |          |
+| signalLevel | [system.signal-strength](#channels) | Number    |          |
+
+#### Configuration Options
+
+ * deviceId - Device Id
+    * Sensor Id. Example 106411
+
+ * subType - Sub Type
+    * Specifies device sub type.
+
+        * MERTIK\_\_G6R\_H4T1 - Mertik (G6R H4T1)
+        * MERTIK\_\_G6R\_H4TB\_\_G6_H4T\_\_G6R\_H4T21\_Z22 - Mertik (G6R H4TB, G6R H4T, or G6R H4T21\-Z22)
+        * MERTIK\_\_G6R\_H4TD\_\_G6R\_H4T16 - Mertik (G6R H4TD or G6R H4T16)
+        * MERTIK\_\_G6R\_H4S\_TRANSMIT\_ONLY - Mertik (G6R H4S \- transmit only)
 
 
 ### undecoded - RFXCOM Undecoded RF Messages
