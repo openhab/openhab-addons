@@ -115,7 +115,7 @@ The flashbriefingprofile thing has no configuration parameters. It will be confi
 | bluetoothIdSelection| String    | R/W         | echo, echoshow, echospot, unknown      | Bluetooth device selection. The selection currently only works in PaperUI
 | bluetooth           | Switch    | R/W         | echo, echoshow, echospot, unknown      | Connect/Disconnect to the last used bluetooth device (works after a bluetooth connection was established after the openHAB start) 
 | bluetoothDeviceName | String    | R           | echo, echoshow, echospot, unknown      | User friendly name of the connected bluetooth device
-| radioStationId      | String    | R/W         | echo, echoshow, echospot, wha, unknown | Start playing of a TuneIn radio station by specifying it's id od stops playing if a empty string was provided
+| radioStationId      | String    | R/W         | echo, echoshow, echospot, wha, unknown | Start playing of a TuneIn radio station by specifying it's id or stops playing if a empty string was provided
 | radio               | Switch    | R/W         | echo, echoshow, echospot, wha, unknown | Start playing of the last used TuneIn radio station (works after the radio station started after the openhab start)
 | amazonMusicTrackId      | String    | R/W         | echo, echoshow, echospot, wha, unknown | Start playing of a Amazon Music track by it's id od stops playing if a empty string was provided
 | amazonMusicPlayListId      | String    | W         | echo, echoshow, echospot, wha, unknown | Write Only! Start playing of a Amazon Music playlist by specifying it's id od stops playing if a empty string was provided. Selection will only work in PaperUI

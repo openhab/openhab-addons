@@ -236,8 +236,8 @@ public class Connection {
         return m_loginTime;
     }
 
-    private HttpsURLConnection makeRequest(String verb, String url, String referer, String postData, Boolean json)
-            throws IOException, URISyntaxException {
+    public HttpsURLConnection makeRequest(String verb, String url, String referer, String postData, boolean json,
+            boolean autoredirect) throws IOException, URISyntaxException {
         String currentUrl = url;
         for (int i = 0; i < 30; i++) // loop for handling redirect, using automatic redirect is not possible, because
                                      // all response headers must be catched
@@ -319,18 +319,13 @@ public class Connection {
                             // get redirect location
                             location = header.getValue().get(0);
                             if (location != null) {
-                                if (code == 302) {
-                                    logger.debug("Redirected to {}", location);
-                                }
                                 location = uri.resolve(location).toString();
-
                                 // check for https
                                 if (location.toLowerCase().startsWith("http://")) {
                                     // always use https
                                     location = "https://" + location.substring(7);
                                     logger.debug("Redirect corrected to {}", location);
                                 }
-
                             }
                         }
                     }
@@ -340,15 +335,20 @@ public class Connection {
                     return connection;
                 }
                 if (code == 302 && location != null) {
+                    logger.debug("Redirected to {}", location);
+
                     currentUrl = location;
-                    continue;
+                    if (autoredirect) {
+                        continue;
+                    }
+                    return connection;
                 }
             } catch (IOException e) {
                 logger.warn("Request to url '{}' fails with unkown error", url, e);
                 throw e;
             }
             if (code != 200) {
-                throw new HttpException(code, connection.getResponseMessage());
+                throw new HttpException(code, verb + " url '" + url + "' failed: " + connection.getResponseMessage());
             }
         }
         throw new ConnectionException("To many redirects");
@@ -359,11 +359,11 @@ public class Connection {
     }
 
     public String getLoginPage() throws IOException, URISyntaxException {
+
         // clear session data
         m_cookieManager.getCookieStore().removeAll();
         m_sessionId = null;
         m_loginTime = null;
-
         logger.debug("Start Login to {}", m_alexaServer);
         // get login form
         String loginFormHtml = makeRequestAndReturnString(m_alexaServer);
@@ -443,7 +443,7 @@ public class Connection {
 
         String referer = "https://www." + m_amazonSite + "/ap/signin?" + queryParameters;
         URLConnection request = makeRequest("POST", "https://www." + m_amazonSite + "/ap/signin", referer, postData,
-                false);
+                false, true);
 
         String response = convertStream(request.getInputStream());
         logger.debug("Received content after login {}", response);
@@ -467,13 +467,13 @@ public class Connection {
         return null;
     }
 
-    private String makeRequestAndReturnString(String url) throws IOException, URISyntaxException {
+    public String makeRequestAndReturnString(String url) throws IOException, URISyntaxException {
         return makeRequestAndReturnString("GET", url, null, null, false);
     }
 
     private String makeRequestAndReturnString(String verb, String url, String referer, String postData, Boolean json)
             throws IOException, URISyntaxException {
-        HttpsURLConnection connection = makeRequest(verb, url, referer, postData, json);
+        HttpsURLConnection connection = makeRequest(verb, url, referer, postData, json, true);
         return convertStream(connection.getInputStream());
     }
 
@@ -551,7 +551,7 @@ public class Connection {
     public void command(Device device, String command) throws Exception {
         String url = m_alexaServer + "/api/np/command?deviceSerialNumber=" + device.serialNumber + "&deviceType="
                 + device.deviceType;
-        makeRequest("POST", url, null, command, true);
+        makeRequest("POST", url, null, command, true, true);
 
     }
 
@@ -560,11 +560,11 @@ public class Connection {
             // disconnect
             makeRequest("POST",
                     m_alexaServer + "/api/bluetooth/disconnect-sink/" + device.deviceType + "/" + device.serialNumber,
-                    null, "", true);
+                    null, "", true, true);
         } else {
             makeRequest("POST",
                     m_alexaServer + "/api/bluetooth/pair-sink/" + device.deviceType + "/" + device.serialNumber, null,
-                    "{\"bluetoothDeviceAddress\":\"" + address + "\"}", true);
+                    "{\"bluetoothDeviceAddress\":\"" + address + "\"}", true, true);
 
         }
     }
@@ -577,7 +577,7 @@ public class Connection {
                     m_alexaServer + "/api/tunein/queue-and-play?deviceSerialNumber=" + device.serialNumber
                             + "&deviceType=" + device.deviceType + "&guideId=" + stationId
                             + "&contentType=station&callSign=&mediaOwnerCustomerId=" + device.deviceOwnerCustomerId,
-                    null, "", true);
+                    null, "", true, true);
         }
     }
 
@@ -590,7 +590,7 @@ public class Connection {
                     m_alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
                             + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
                             + device.deviceOwnerCustomerId + "&shuffle=false",
-                    null, command, true);
+                    null, command, true, true);
         }
     }
 
@@ -603,7 +603,7 @@ public class Connection {
                     m_alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
                             + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
                             + device.deviceOwnerCustomerId + "&shuffle=false",
-                    null, command, true);
+                    null, command, true, true);
         }
     }
 
@@ -615,7 +615,7 @@ public class Connection {
                 + "\\\",\\\"deviceSerialNumber\\\":\\\"" + device.serialNumber + "\\\",\\\"customerId\\\":\\\""
                 + device.deviceOwnerCustomerId + "\\\",\\\"locale\\\":\\\"\\\"}}}\",\n" + " \"status\": \"ENABLED\" }";
 
-        makeRequest("POST", m_alexaServer + "/api/behaviors/preview", null, json, true);
+        makeRequest("POST", m_alexaServer + "/api/behaviors/preview", null, json, true, true);
     }
 
     public void startRoutine(Device device, String utterance) throws Exception {
@@ -669,7 +669,7 @@ public class Connection {
             request.sequenceJson = sequenceJson;
 
             String requestJson = gson.toJson(request);
-            makeRequest("POST", m_alexaServer + "/api/behaviors/preview", null, requestJson, true);
+            makeRequest("POST", m_alexaServer + "/api/behaviors/preview", null, requestJson, true, true);
         } else {
             logger.warn("Routine {} not found", utterance);
         }
@@ -698,7 +698,7 @@ public class Connection {
         gsonBuilder.serializeNulls();
         Gson gson = gsonBuilder.create();
         String json = gson.toJson(enabled);
-        makeRequest("POST", m_alexaServer + "/api/content-skills/enabled-feeds", null, json, true);
+        makeRequest("POST", m_alexaServer + "/api/content-skills/enabled-feeds", null, json, true, true);
     }
 
     public JsonNotificationSound[] getNotificationSounds(Device device) throws Exception {

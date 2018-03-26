@@ -8,16 +8,20 @@
  */
 package org.openhab.binding.amazonechocontrol.internal;
 
+import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.Map;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.openhab.binding.amazonechocontrol.handler.AccountHandler;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
@@ -32,6 +36,7 @@ import org.slf4j.LoggerFactory;
 public class LoginServlet extends HttpServlet {
 
     private static final long serialVersionUID = -1453738923337413163L;
+    private static final String FORWARD_URI_PART = "/FORWARD/";
 
     private final Logger logger = LoggerFactory.getLogger(LoginServlet.class);
 
@@ -41,11 +46,13 @@ public class LoginServlet extends HttpServlet {
     Connection connection;
     AccountHandler account;
     AccountConfiguration configuration;
+    String id;
 
     public LoginServlet(HttpService httpService, String id, AccountHandler account,
             AccountConfiguration configuration) {
         this.httpService = httpService;
         this.account = account;
+        this.id = id;
         this.configuration = configuration;
         reCreateConnection();
         servletUrlWithoutRoot = "amazonechocontrol/" + id;
@@ -86,59 +93,134 @@ public class LoginServlet extends HttpServlet {
             String value = map.get(name)[0];
             postDataBuilder.append(URLEncoder.encode(value, "UTF-8"));
             if (name.equals("email") && !value.equalsIgnoreCase(configuration.email)) {
-                resp.getWriter().write(
-                        "<html>Email must match the configured email of your thing. Change your configuration or retype your email</html>");
+                returnError(resp,
+                        "Email must match the configured email of your thing. Change your configuration or retype your email.");
                 return;
             }
-            if (name.equals("password") && !value.equals(configuration.password)) {
-                resp.getWriter().write(
-                        "<html>Password must match the configured password of your thing. Change your configuration or retype your password</html>");
-                return;
-            }
-        }
-        String postData = postDataBuilder.toString();
-        resp.addHeader("content-type", "text/html;charset=UTF-8");
-        String errorHtml = null;
-        try {
-            errorHtml = connection.postLoginData(null, postData);
-            if (errorHtml == null) {
-                resp.getWriter().write("<html>Login succeeded</html>");
-                account.setConnection(this.connection);
-                reCreateConnection();
-                return;
-            }
-            errorHtml = replaceLoginUrl(errorHtml);
 
-        } catch (URISyntaxException e) {
-            logger.error("Post login data failed with uri syntax error{}", e);
-            errorHtml = "<html>Internal error</html>";
+            if (name.equals("password") && !value.equals(configuration.password)) {
+                returnError(resp,
+                        "Password must match the configured password of your thing. Change your configuration or retype your password.");
+                return;
+            }
         }
-        resp.addHeader("Content-Location", servletUrl);
-        resp.getWriter().write(errorHtml);
+
+        String uri = req.getRequestURI();
+        if (!uri.startsWith(servletUrl)) {
+            returnError(resp, "Invalid request uri '" + uri + "'");
+            return;
+        }
+        String relativeUrl = uri.substring(servletUrl.length()).replace(FORWARD_URI_PART, "/");
+
+        String postUrl = "https://www." + connection.getAmazonSite() + relativeUrl;
+        String queryString = req.getQueryString();
+        if (queryString != null && queryString.length() > 0) {
+            postUrl += "?" + queryString;
+        }
+        String referer = "https://www." + connection.getAmazonSite();
+        String postData = postDataBuilder.toString();
+        HandleProxyRequest(resp, "POST", postUrl, referer, postData);
+
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String uri = req.getRequestURI().substring(servletUrl.length());
-        logger.debug("doGet {}", uri);
-        if (!uri.startsWith("/")) {
-            String newUri = req.getServletPath() + "/" + uri;
-            resp.sendRedirect(newUri);
-            return;
+        String queryString = req.getQueryString();
+        if (queryString != null && queryString.length() > 0) {
+            uri += "?" + queryString;
         }
+        logger.debug("doGet {}", uri);
         try {
-            String html = this.connection.getLoginPage();
-            html = replaceLoginUrl(html);
+            if (uri.startsWith(FORWARD_URI_PART)) {
 
-            resp.addHeader("content-type", "text/html;charset=UTF-8");
-            resp.getWriter().write(html);
+                String getUrl = "https://www." + connection.getAmazonSite() + "/"
+                        + uri.substring(FORWARD_URI_PART.length());
+
+                this.HandleProxyRequest(resp, "GET", getUrl, null, null);
+                return;
+            }
+            if (!uri.equals("/")) {
+                String newUri = req.getServletPath() + "/";
+                resp.sendRedirect(newUri);
+                return;
+            }
+            String html = this.connection.getLoginPage();
+            returnHtml(resp, html);
+
         } catch (URISyntaxException e) {
             logger.error("get failed with uri syntax error {}", e);
         }
     }
 
-    private String replaceLoginUrl(String html) {
-        String result = html.replace("https://www." + connection.getAmazonSite() + "/", "");
-        return result;
+    void HandleProxyRequest(HttpServletResponse resp, String verb, String url, String referer, String postData)
+            throws IOException {
+
+        HttpsURLConnection urlConnection;
+        try {
+            urlConnection = connection.makeRequest(verb, url, referer, postData, false, false);
+            if (urlConnection.getResponseCode() == 302) {
+                {
+                    String location = urlConnection.getHeaderField("location");
+                    if (location.contains("//alexa.")) {
+                        if (connection.verifyLogin()) {
+                            resp.getWriter().write(
+                                    "<html>Login succeeded. The account thing sould now be online.<br><a href='/paperui/index.html#/configuration/things/view/"
+                                            + BINDING_ID + ":" + THING_TYPE_ACCOUNT.getId() + ":" + id
+                                            + "'>Check Thing in Paper UI</a></html>");
+                            account.setConnection(this.connection);
+                            reCreateConnection();
+                            return;
+                        }
+                    }
+                    String startString = "https://www." + connection.getAmazonSite() + "/";
+                    String newLocation = null;
+                    if (location.startsWith(startString)) {
+                        newLocation = servletUrl + FORWARD_URI_PART + location.substring(startString.length());
+                    } else {
+                        startString = "/";
+                        if (location.startsWith(startString)) {
+                            newLocation = servletUrl + FORWARD_URI_PART + location.substring(startString.length());
+                        }
+                    }
+                    if (newLocation != null) {
+                        logger.debug("Redirect mapped from {} to {}", location, newLocation);
+                        resp.addHeader("location", newLocation);
+                        resp.sendError(302);
+                        return;
+                    }
+                    returnError(resp, "Invalid redirect to '" + location + "'");
+                    return;
+                }
+            }
+
+        } catch (URISyntaxException e) {
+
+            returnError(resp, e.getLocalizedMessage());
+            return;
+        }
+
+        String response = connection.convertStream(urlConnection.getInputStream());
+        returnHtml(resp, response);
+    }
+
+    private void returnHtml(HttpServletResponse resp, String html) {
+        String resultHtml = html.replace("https://www." + connection.getAmazonSite() + "/", servletUrl + "/");
+        resp.addHeader("content-type", "text/html;charset=UTF-8");
+        try {
+            resp.getWriter().write(resultHtml);
+        } catch (IOException e) {
+            logger.error("return html failed with uri syntax error {}", e);
+        }
+    }
+
+    void returnError(HttpServletResponse resp, String errorMessage) {
+        try {
+
+            resp.getWriter().write("<html>" + StringEscapeUtils.escapeHtml(errorMessage) + "<br><a href='" + servletUrl
+                    + "'>Try again</a></html>");
+        } catch (IOException e) {
+            logger.info("Returning error message failed {}", e);
+        }
     }
 }
