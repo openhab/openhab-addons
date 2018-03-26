@@ -18,7 +18,6 @@ import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -87,7 +86,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      *
      * @param bridge Bridge object representing a FRITZ!Box
      */
-    public BoxHandler(@NonNull Bridge bridge, @NonNull HttpClient httpClient) {
+    public BoxHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
         this.httpClient = httpClient;
     }

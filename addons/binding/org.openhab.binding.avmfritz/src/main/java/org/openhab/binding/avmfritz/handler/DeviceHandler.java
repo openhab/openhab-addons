@@ -18,7 +18,6 @@ import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -93,7 +92,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
      *
      * @param thing Thing object representing a FRITZ! device
      */
-    public DeviceHandler(@NonNull Thing thing, @NonNull HttpClient httpClient) {
+    public DeviceHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
     }
