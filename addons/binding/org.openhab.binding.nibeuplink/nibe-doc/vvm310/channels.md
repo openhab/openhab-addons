@@ -9,6 +9,7 @@
 | general#40008 | Number | -32767 | 32767 | No | BT2 Supply temp S1 |  |
 | general#40012 | Number | -32767 | 32767 | No | EB100-EP14-BT3 Return temp |  |
 | general#40072 | Number | -32767 | 32767 | No | BF1 EP14 Flow |  |
+| general#10033 | String | --- | --- | No | Int. el.add. blocked |  |
 | general#44270 | Number | -32767 | 32767 | No | Calc. Cooling Supply S1 |  |
 | general#43081 | Number | 0 | 1000000 | No | Tot. op.time add. |  |
 | general#43084 | Number | -32767 | 32767 | No | Int. el.add. Power |  |
@@ -43,6 +44,7 @@
 | compressor#44701 | Number | -32767 | 32767 | No | EB101-EP14 Actual Cpr Frequency Outdoor Unit |  |
 | compressor#44702 | String | --- | --- | No | EB101-EP14 Protection Status Register Outdoor Unit |  |
 | compressor#44700 | Number | -32767 | 32767 | No | EB101-EP14 Low Pressure Sensor Outdoor Unit |  |
+| compressor#10012 | String | --- | --- | No | Compressor blocked |  |
 | airsupply#40025 | Number | -32767 | 32767 | No | BT20 Exhaust air temp. 1 |  |
 | airsupply#40026 | Number | -32767 | 32767 | No | BT21 Vented air temp. 1 |  |
 | airsupply#40075 | Number | -32767 | 32767 | No | BT22 Supply air temp. |  |

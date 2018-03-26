@@ -17,6 +17,7 @@
 			<channel id="40008" typeId="f750-type-40008" />
 			<channel id="40012" typeId="f750-type-40012" />
 			<channel id="40072" typeId="f750-type-40072" />
+			<channel id="10033" typeId="f750-type-10033" />
 
 			<channel id="43081" typeId="f750-type-43081" />
 			<channel id="43084" typeId="f750-type-43084" />
@@ -56,6 +57,7 @@
 			<channel id="43136" typeId="f750-type-43136" />
 			<channel id="43122" typeId="f750-type-43122" />
 			<channel id="43123" typeId="f750-type-43123" />
+			<channel id="10012" typeId="f750-type-10012" />
 		</channels>
 	</channel-group-type>
 

@@ -37,6 +37,7 @@ public enum F730Channels implements Channel {
     CH_44308("44308", "Heat Meter - Heat Cpr EP14", ChannelGroup.GENERAL, Double.class),
     CH_44304("44304", "Heat Meter - Pool Cpr EP14", ChannelGroup.GENERAL, Double.class),
     CH_44300("44300", "Heat Meter - Heat Cpr and Add EP14", ChannelGroup.GENERAL, Double.class),
+
     // Hotwater
     CH_40013("40013", "BT7 HW Top", ChannelGroup.HOTWATER, Double.class),
     CH_40014("40014", "BT6 HW Load", ChannelGroup.HOTWATER, Double.class),
@@ -44,6 +45,7 @@ public enum F730Channels implements Channel {
     CH_44298("44298", "Heat Meter - HW Cpr and Add EP14", ChannelGroup.HOTWATER, Double.class),
     CH_48132("48132", "Temporary Lux", ChannelGroup.HOTWATER, String.class),
     CH_47041("47041", "Hot water mode", ChannelGroup.HOTWATER, String.class),
+
     // Compressor
     CH_43181("43181", "Chargepump speed", ChannelGroup.COMPRESSOR, Double.class),
     CH_43424("43424", "EB100-EP14 Tot. HW op.time compr", ChannelGroup.COMPRESSOR, Double.class),
@@ -59,6 +61,7 @@ public enum F730Channels implements Channel {
     CH_43123("43123", "Compr. current max.freq.", ChannelGroup.COMPRESSOR, Double.class),
     CH_10012("10012", "Compressor blocked", ChannelGroup.COMPRESSOR, String.class),
     CH_43066("43066", "Defrosting time", ChannelGroup.COMPRESSOR, Double.class),
+
     // Airsupply
     CH_10001("10001", "Fan speed current", ChannelGroup.AIRSUPPLY, Double.class),
     CH_40025("40025", "BT20 Exhaust air temp. 1", ChannelGroup.AIRSUPPLY, Double.class),

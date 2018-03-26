@@ -26,6 +26,7 @@ public enum VVM310Channels implements Channel {
     CH_40008("40008", "BT2 Supply temp S1", ChannelGroup.GENERAL, Double.class),
     CH_40012("40012", "EB100-EP14-BT3 Return temp", ChannelGroup.GENERAL, Double.class),
     CH_40072("40072", "BF1 EP14 Flow", ChannelGroup.GENERAL, Double.class),
+    CH_10033("10033", "Int. el.add. blocked", ChannelGroup.GENERAL, String.class),
 
     CH_44270("44270", "Calc. Cooling Supply S1", ChannelGroup.GENERAL, Double.class),
     CH_43081("43081", "Tot. op.time add.", ChannelGroup.GENERAL, Double.class),
@@ -38,6 +39,7 @@ public enum VVM310Channels implements Channel {
     CH_44304("44304", "Heat Meter - Pool Cpr EP14", ChannelGroup.GENERAL, Double.class),
     CH_44302("44302", "Heat Meter - Cooling Cpr EP14", ChannelGroup.GENERAL, Double.class),
     CH_44300("44300", "Heat Meter - Heat Cpr and Add EP14", ChannelGroup.GENERAL, Double.class),
+
     // Hotwater
     CH_40013("40013", "BT7 HW Top", ChannelGroup.HOTWATER, Double.class),
     CH_40014("40014", "BT6 HW Load", ChannelGroup.HOTWATER, Double.class),
@@ -45,6 +47,7 @@ public enum VVM310Channels implements Channel {
     CH_44298("44298", "Heat Meter - HW Cpr and Add EP14", ChannelGroup.HOTWATER, Double.class),
     CH_48132("48132", "Temporary Lux", ChannelGroup.HOTWATER, String.class),
     CH_47041("47041", "Hot water mode", ChannelGroup.HOTWATER, String.class),
+
     // Compressor
     CH_44362("44362", "EB101-EP14-BT28 Outdoor Temp", ChannelGroup.COMPRESSOR, Double.class),
     CH_44396("44396", "EB101 Speed charge pump", ChannelGroup.COMPRESSOR, Double.class),
@@ -64,6 +67,8 @@ public enum VVM310Channels implements Channel {
     CH_44701("44701", "EB101-EP14 Actual Cpr Frequency Outdoor Unit", ChannelGroup.COMPRESSOR, Double.class),
     CH_44702("44702", "EB101-EP14 Protection Status Register Outdoor Unit", ChannelGroup.COMPRESSOR, String.class),
     CH_44700("44700", "EB101-EP14 Low Pressure Sensor Outdoor Unit", ChannelGroup.COMPRESSOR, Double.class),
+    CH_10012("10012", "Compressor blocked", ChannelGroup.COMPRESSOR, String.class),
+
     // Airsupply
     CH_40025("40025", "BT20 Exhaust air temp. 1", ChannelGroup.AIRSUPPLY, Double.class),
     CH_40026("40026", "BT21 Vented air temp. 1", ChannelGroup.AIRSUPPLY, Double.class),

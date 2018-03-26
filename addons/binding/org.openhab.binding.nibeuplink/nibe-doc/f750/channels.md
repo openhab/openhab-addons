@@ -10,6 +10,7 @@
 | general#40008 | Number | -32767 | 32767 | No | BT2 Supply temp S1 |  |
 | general#40012 | Number | -32767 | 32767 | No | EB100-EP14-BT3 Return temp |  |
 | general#40072 | Number | -32767 | 32767 | No | BF1 EP14 Flow |  |
+| general#10033 | String | --- | --- | No | Int. el.add. blocked |  |
 | general#43081 | Number | 0 | 1000000 | No | Tot. op.time add. |  |
 | general#43084 | Number | -32767 | 32767 | No | Int. el.add. Power |  |
 | general#47212 | Number | 0 | 4500 | No | Max int add. power |  |
@@ -35,6 +36,7 @@
 | compressor#43136 | Number | 0 | 65535 | No | Compressor Frequency, Actual |  |
 | compressor#43122 | Number | -32767 | 32767 | No | Compr. current min.freq. |  |
 | compressor#43123 | Number | -32767 | 32767 | No | Compr. current max.freq. |  |
+| compressor#10012 | String | --- | --- | No | Compressor blocked |  |
 | airsupply#40025 | Number | -32767 | 32767 | No | BT20 Exhaust air temp. 1 |  |
 | airsupply#40026 | Number | -32767 | 32767 | No | BT21 Vented air temp. 1 |  |
 | airsupply#43124 | Number | -32767 | 32767 | No | Airflow ref. |  |

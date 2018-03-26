@@ -4,6 +4,28 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 
+	<channel-type id="f750-type-10012">
+		<item-type>String</item-type>
+		<label>Compressor blocked</label>
+		<description>states if the compressor is blocked</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f750-type-10033">
+		<item-type>String</item-type>
+		<label>Int. el.add. blocked</label>
+		<description>states if internal electric additional heater is blocked</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="f750-type-40004">
 		<item-type>Number</item-type>
 		<label>BT1 Outdoor Temperature</label>

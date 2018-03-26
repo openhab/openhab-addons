@@ -16,6 +16,10 @@
 		<label>Compressor blocked</label>
 		<description>states if the compressor is blocked</description>
 		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+			</options>
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-10033">
@@ -23,6 +27,10 @@
 		<label>Int. el.add. blocked</label>
 		<description>states if internal electric additional heater is blocked</description>
 		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+			</options>
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-40004">

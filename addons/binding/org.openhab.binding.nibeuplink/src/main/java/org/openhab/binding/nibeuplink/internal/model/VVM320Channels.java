@@ -27,6 +27,7 @@ public enum VVM320Channels implements Channel {
     CH_40012("40012", "EB100-EP14-BT3 Return temp", ChannelGroup.GENERAL, Double.class),
     CH_40071("40071", "BT25 Ext. Supply", ChannelGroup.GENERAL, Double.class),
     CH_40072("40072", "BF1 EP14 Flow", ChannelGroup.GENERAL, Double.class),
+    CH_10033("10033", "Int. el.add. blocked", ChannelGroup.GENERAL, String.class),
 
     CH_44270("44270", "Calc. Cooling Supply S1", ChannelGroup.GENERAL, Double.class),
     CH_43081("43081", "Tot. op.time add.", ChannelGroup.GENERAL, Double.class),
@@ -71,6 +72,7 @@ public enum VVM320Channels implements Channel {
     CH_44702("44702", "EB101-EP14 Protection Status Register Outdoor Unit", ChannelGroup.COMPRESSOR, String.class),
     CH_44700("44700", "EB101-EP14 Low Pressure Sensor Outdoor Unit", ChannelGroup.COMPRESSOR, Double.class),
     CH_44457("44457", "EB101-EP14 Compressor State", ChannelGroup.COMPRESSOR, Double.class),
+    CH_10012("10012", "Compressor blocked", ChannelGroup.COMPRESSOR, String.class),
 
     // Airsupply
     CH_40025("40025", "BT20 Exhaust air temp. 1", ChannelGroup.AIRSUPPLY, Double.class),

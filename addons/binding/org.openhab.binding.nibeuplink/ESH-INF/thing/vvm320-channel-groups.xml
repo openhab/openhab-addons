@@ -17,6 +17,7 @@
 			<channel id="40012" typeId="vvm320-type-40012" />
 			<channel id="40071" typeId="vvm320-type-40071" />
 			<channel id="40072" typeId="vvm320-type-40072" />
+			<channel id="10033" typeId="vvm320-type-10033" />
 
 			<channel id="44270" typeId="vvm320-type-44270" />
 			<channel id="43081" typeId="vvm320-type-43081" />
@@ -69,6 +70,7 @@
 			<channel id="44702" typeId="vvm320-type-44702" />
 			<channel id="44700" typeId="vvm320-type-44700" />
 			<channel id="44457" typeId="vvm320-type-44457" />
+			<channel id="10012" typeId="vvm320-type-10012" />
 		</channels>
 	</channel-group-type>
 

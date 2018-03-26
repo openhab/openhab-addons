@@ -17,6 +17,7 @@
 			<channel id="40008" typeId="f1145-type-40008" />
 			<channel id="40012" typeId="f1145-type-40012" />
 			<channel id="40072" typeId="f1145-type-40072" />
+			<channel id="10033" typeId="f1145-type-10033" />
 
 			<channel id="43081" typeId="f1145-type-43081" />
 			<channel id="43084" typeId="f1145-type-43084" />
@@ -51,6 +52,7 @@
 			<channel id="40019" typeId="f1145-type-40019" />
 			<channel id="40018" typeId="f1145-type-40018" />
 			<channel id="40017" typeId="f1145-type-40017" />
+			<channel id="10012" typeId="f1145-type-10012" />
 		</channels>
 	</channel-group-type>
 
