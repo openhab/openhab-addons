@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -101,6 +102,15 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
 
     @Override
     public void initialize() {
+        if (!getConfig().containsKey(PROPERTY_DEVICE_ID)) {
+            logger.debug(
+                    "Migrating to new Thing configuration. Setting deviceID property based on ThingID {}. This is only required once, when upgrading existing LG WebOS things to binding version to 2.2.",
+                    getThing().getUID().getId());
+            Configuration config = editConfiguration();
+            config.put(PROPERTY_DEVICE_ID, getThing().getUID().getId());
+            updateConfiguration(config);
+        }
+
         discoveryManager.addListener(this);
 
         Optional<ConnectableDevice> device = getDevice();
@@ -230,7 +240,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
     }
 
     private String getDeviceId() {
-        return getThing().getUID().getId();
+        return getConfig().get(PROPERTY_DEVICE_ID).toString();
     }
 
     @Override
