@@ -73,7 +73,6 @@ public class OpenSprinklerApiFactory {
 
             return new OpenSprinklerHttpApiV100(hostname, port, password);
         }
-
     }
 
     /**

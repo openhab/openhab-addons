@@ -89,7 +89,7 @@ public class Parse {
      * @return List of Integers with the values of a JSON Array.
      */
     public static List<Integer> jsonIntArray(String jsonData, String keyName) {
-        List<Integer> returnList = new ArrayList<Integer>();
+        List<Integer> returnList = new ArrayList<>();
 
         JsonElement jelement = jsonParser.parse(jsonData);
         JsonObject jobject = jelement.getAsJsonObject();
@@ -110,7 +110,7 @@ public class Parse {
      * @return List of Strings with the values of a JSON Array.
      */
     public static List<String> jsonStringArray(String jsonData, String keyName) {
-        List<String> returnList = new ArrayList<String>();
+        List<String> returnList = new ArrayList<>();
 
         JsonElement jelement = jsonParser.parse(jsonData);
         JsonObject jobject = jelement.getAsJsonObject();

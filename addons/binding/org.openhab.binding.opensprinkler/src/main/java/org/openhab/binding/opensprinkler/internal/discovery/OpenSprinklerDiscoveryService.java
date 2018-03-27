@@ -30,8 +30,10 @@ import java.util.concurrent.Executors;
 import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +43,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Graham - Initial contribution
  */
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.opensprinkler")
 public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(OpenSprinklerDiscoveryService.class);
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(OPENSPRINKLER_THING));
 
     private ExecutorService discoverySearchPool;
@@ -87,7 +90,7 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
     public void submitDiscoveryResults(String ip) {
         ThingUID uid = new ThingUID(OPENSPRINKLER_THING, ip.replace('.', '_'));
 
-        HashMap<String, Object> properties = new HashMap<String, Object>();
+        HashMap<String, Object> properties = new HashMap<>();
 
         properties.put("hostname", ip);
         properties.put("port", DEFAULT_API_PORT);
@@ -107,7 +110,7 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
      * @throws SocketException
      */
     private List<String> getIpAddressScanList() throws UnknownHostException, SocketException {
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
 
         InetAddress localHost = InetAddress.getLocalHost();
         NetworkInterface networkInterface = NetworkInterface.getByInetAddress(localHost);
