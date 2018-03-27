@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
 Bundle-Name: Helios Binding
 Bundle-SymbolicName: org.openhab.binding.helios;singleton:=true
@@ -9,12 +10,17 @@ Bundle-ClassPath: .,
  lib/cxf-core-3.1.0-SNAPSHOT.jar,
  lib/cxf-services-wsn-api-3.1.0-SNAPSHOT.jar,
  lib/cxf-services-wsn-core-3.1.0-SNAPSHOT.jar
-Import-Package: com.google.common.collect,
+Export-Package: 
+ org.openhab.binding.helios,
+ org.openhab.binding.helios.handler
+Import-Package: 
+ com.google.common.collect,
  com.google.gson,
  javax.ws.rs.client,
  javax.ws.rs.core,
  javax.xml.bind,
  javax.xml.bind.annotation,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.scheduler,
@@ -23,10 +29,8 @@ Import-Package: com.google.common.collect,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.slf4j,
- org.eclipse.jdt.annotation;resolution:=optional,
  org.openhab.binding.helios,
- org.openhab.binding.helios.handler
+ org.openhab.binding.helios.handler,
+ org.osgi.framework,
+ org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.helios,
- org.openhab.binding.helios.handler
