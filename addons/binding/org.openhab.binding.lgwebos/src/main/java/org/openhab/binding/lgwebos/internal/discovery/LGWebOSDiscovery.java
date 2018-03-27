@@ -13,7 +13,6 @@ import static org.openhab.binding.lgwebos.LGWebOSBindingConstants.*;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -136,11 +135,9 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
     // Helpers for DiscoveryManagerListener Impl
     private DiscoveryResult createDiscoveryResult(ConnectableDevice device) {
         ThingUID thingUID = createThingUID(device);
-        Map<String, Object> properties = new HashMap<>(1);
-        properties.put(PROPERTY_DEVICE_ID, device.getId());
-
-        return DiscoveryResultBuilder.create(thingUID).withLabel(device.getFriendlyName()).withProperties(properties)
-                .withRepresentationProperty(PROPERTY_DEVICE_ID).build();
+        return DiscoveryResultBuilder.create(thingUID).withLabel(device.getFriendlyName())
+                .withProperty(PROPERTY_DEVICE_ID, device.getId()).withRepresentationProperty(PROPERTY_DEVICE_ID)
+                .build();
     }
 
     private ThingUID createThingUID(ConnectableDevice device) {

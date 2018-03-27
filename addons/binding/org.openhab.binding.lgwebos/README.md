@@ -53,8 +53,18 @@ Please note that at least one channel must be bound to an item before the bindin
 
 ## Example
 
-This example assumes your TV has ThingID lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46. 
-You can find it in the discovery results in Paper UI.
+Assuming your TV has device ID 3aab9eea-953b-4272-bdbd-f0cd0ecf4a46. 
+By default this binding will create ThingIDs for discovery results with prefix lgwebos:WebOSTV: and the device ID. e.g. lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46.
+Thus, you can find your TV's device ID by looking into discovery results in Paper UI.
+
+You could also specify an alternate ThingID using a .things file, specifying the deviceId as a mandatory configuration parameter:
+
+```
+Thing lgwebos:WebOSTV:tv1 [ deviceId="3aab9eea-953b-4272-bdbd-f0cd0ecf4a46" ]
+```
+
+However, for the next steps of this example we will assumes you are using automatic discovery and the default ThingID.
+
 
 demo.items:
 

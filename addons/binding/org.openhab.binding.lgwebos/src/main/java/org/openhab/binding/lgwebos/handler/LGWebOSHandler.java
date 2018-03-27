@@ -104,7 +104,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
     public void initialize() {
         if (!getConfig().containsKey(PROPERTY_DEVICE_ID)) {
             logger.debug(
-                    "Migrating to new Thing configuration. Setting deviceID property based on ThingID {}. This is only required once, when upgrading existing LG WebOS things to binding version to 2.2.",
+                    "Migrating to new Thing configuration. Setting deviceID property based on ThingID {}. This is only required once, when upgrading existing LG WebOS things to binding version to 2.3.",
                     getThing().getUID().getId());
             Configuration config = editConfiguration();
             config.put(PROPERTY_DEVICE_ID, getThing().getUID().getId());

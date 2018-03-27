@@ -17,8 +17,11 @@
 			<channel id="mediaPlayer" typeId="mediaPlayerType" />
 			<channel id="mediaStop" typeId="mediaStopType" />
 			<channel id="appLauncher" typeId="appLauncherChannelType" />
-
 		</channels>
+
+        <representation-property>deviceId</representation-property>
+        
+		<config-description-ref uri="thing-type:lgwebos:WebOSTV" />
 	</thing-type>
 
 	<channel-type id="powerType">
