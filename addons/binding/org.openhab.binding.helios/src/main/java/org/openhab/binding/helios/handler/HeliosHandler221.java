@@ -183,7 +183,6 @@ public class HeliosHandler221 extends BaseThingHandler {
             try {
                 response = systemTarget.resolveTemplate("ip", ipAddress).resolveTemplate("cmd", INFO)
                         .request(MediaType.APPLICATION_JSON_TYPE).get();
-
             } catch (NullPointerException e) {
                 logger.debug("An exception occurred while fetching system info of the Helios IP Vario '{}' : '{}'",
                         getThing().getUID().toString(), e.getMessage(), e);
@@ -787,7 +786,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                 ThingBuilder thingBuilder = editThing();
                 ChannelTypeUID triggerUID = new ChannelTypeUID(BINDING_ID, IO_TRIGGER);
 
-                Map<String, String> channelProperties = new HashMap<String, String>();
+                Map<String, String> channelProperties = new HashMap<>();
                 channelProperties.put("type", aPort.type);
 
                 Channel channel = ChannelBuilder
@@ -914,7 +913,6 @@ public class HeliosHandler221 extends BaseThingHandler {
                                         updateState(inputChannel, UnDefType.UNDEF);
                                     }
                                     break;
-
                                 }
                                 case OUTPUTCHANGED: {
                                     ChannelUID inputChannel = new ChannelUID(getThing().getUID(),
