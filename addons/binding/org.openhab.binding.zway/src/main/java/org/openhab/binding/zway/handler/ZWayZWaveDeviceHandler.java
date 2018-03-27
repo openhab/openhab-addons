@@ -39,9 +39,9 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
 public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
     public static final ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_DEVICE;
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private ZWayZWaveDeviceConfiguration mConfig = null;
+    private ZWayZWaveDeviceConfiguration mConfig;
 
     private class Initializer implements Runnable {
 

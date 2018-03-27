@@ -37,9 +37,9 @@ import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
 public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
     public static final ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_VIRTUAL_DEVICE;
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private ZWayZAutomationDeviceConfiguration mConfig = null;
+    private ZWayZAutomationDeviceConfiguration mConfig;
 
     private class Initializer implements Runnable {
 
@@ -79,7 +79,6 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                                     "Z-Way virtual device with id " + mConfig.getDeviceId() + " not found.");
                         }
-
                     } catch (Throwable t) {
                         if (t instanceof Exception) {
                             logger.error("{}", t.getMessage());
