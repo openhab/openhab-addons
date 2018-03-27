@@ -9,6 +9,9 @@
 | general#40008 | Number | -32767 | 32767 | No | BT2 Supply temp S1 |  |
 | general#40012 | Number | -32767 | 32767 | No | EB100-EP14-BT3 Return temp |  |
 | general#40072 | Number | -32767 | 32767 | No | BF1 EP14 Flow |  |
+| general#40079 | Number | 0 | 4294967295 | No | EB100-BE3 Current |  |
+| general#40081 | Number | 0 | 4294967295 | No | EB100-BE2 Current |  |
+| general#40083 | Number | 0 | 4294967295 | No | EB100-BE1 Current |  |
 | general#10033 | String | --- | --- | No | Int. el.add. blocked |  |
 | general#44270 | Number | -32767 | 32767 | No | Calc. Cooling Supply S1 |  |
 | general#43081 | Number | 0 | 1000000 | No | Tot. op.time add. |  |

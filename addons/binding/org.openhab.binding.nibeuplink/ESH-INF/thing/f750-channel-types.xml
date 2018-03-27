@@ -138,6 +138,27 @@
 		<state pattern="%.1f l/m" readOnly="true">
 		</state>
 	</channel-type>
+	<channel-type id="f750-type-40079">
+		<item-type>Number</item-type>
+		<label>EB100-BE3 Current</label>
+		<description></description>
+		<state pattern="%.1f A" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f750-type-40081">
+		<item-type>Number</item-type>
+		<label>EB100-BE2 Current</label>
+		<description></description>
+		<state pattern="%.1f A" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f750-type-40083">
+		<item-type>Number</item-type>
+		<label>EB100-BE1 Current</label>
+		<description></description>
+		<state pattern="%.1f A" readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="f750-type-41026">
 		<item-type>Number</item-type>
 		<label>EB100-Adjusted BS1 Air flow</label>

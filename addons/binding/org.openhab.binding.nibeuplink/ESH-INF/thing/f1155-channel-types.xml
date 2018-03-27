@@ -130,6 +130,27 @@
 		<state pattern="%.1f l/m" readOnly="true">
 		</state>
 	</channel-type>
+	<channel-type id="f1155-type-40079">
+		<item-type>Number</item-type>
+		<label>EB100-BE3 Current</label>
+		<description></description>
+		<state pattern="%.1f A" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f1155-type-40081">
+		<item-type>Number</item-type>
+		<label>EB100-BE2 Current</label>
+		<description></description>
+		<state pattern="%.1f A" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f1155-type-40083">
+		<item-type>Number</item-type>
+		<label>EB100-BE1 Current</label>
+		<description></description>
+		<state pattern="%.1f A" readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="f1155-type-43005">
 		<item-type>Number</item-type>
 		<label>Degree Minutes (16 bit)</label>

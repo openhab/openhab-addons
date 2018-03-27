@@ -16,6 +16,9 @@
 			<channel id="40008" typeId="vvm310-type-40008" />
 			<channel id="40012" typeId="vvm310-type-40012" />
 			<channel id="40072" typeId="vvm310-type-40072" />
+			<channel id="40079" typeId="vvm310-type-40079" />
+			<channel id="40081" typeId="vvm310-type-40081" />
+			<channel id="40083" typeId="vvm310-type-40083" />
 			<channel id="10033" typeId="vvm310-type-10033" />
 
 			<channel id="44270" typeId="vvm310-type-44270" />

@@ -26,6 +26,9 @@ public enum VVM310Channels implements Channel {
     CH_40008("40008", "BT2 Supply temp S1", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_40012("40012", "EB100-EP14-BT3 Return temp", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_40072("40072", "BF1 EP14 Flow", ChannelGroup.GENERAL, ValueType.NUMBER_10),
+    CH_40079("40079", "EB100-BE3 Current", ChannelGroup.GENERAL, ValueType.NUMBER_10),
+    CH_40081("40081", "EB100-BE2 Current", ChannelGroup.GENERAL, ValueType.NUMBER_10),
+    CH_40083("40083", "EB100-BE1 Current", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_10033("10033", "Int. el.add. blocked", ChannelGroup.GENERAL, ValueType.STRING),
 
     CH_44270("44270", "Calc. Cooling Supply S1", ChannelGroup.GENERAL, ValueType.NUMBER_10),
