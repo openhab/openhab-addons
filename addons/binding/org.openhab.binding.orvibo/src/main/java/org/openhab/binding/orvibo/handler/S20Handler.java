@@ -37,7 +37,7 @@ import com.github.tavalin.s20.entities.Types.PowerState;
  */
 public class S20Handler extends BaseThingHandler implements SocketStateListener {
 
-    private Logger logger = LoggerFactory.getLogger(S20Handler.class);
+    private final Logger logger = LoggerFactory.getLogger(S20Handler.class);
     private Socket socket;
     private S20Client client;
     private ScheduledFuture<?> subscribeHandler;
