@@ -97,11 +97,11 @@ After the "innogy SmartHome Controller" is added via the Inbox, edit the control
 Authorization is done as oauth2 workflow with the innogy API.
 
 To receive the auth-code, go to one of the following URLs depending on your brand and login with your credentials (you can find this link also in the SHC thing in Paper UI, if you edit it):
-* [innogy SmartHome authorization page](https://api.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635748&redirect_uri=https%3A%2F%2Fwww.ollie.in%2Finnogy-smarthome-token%2F&scope&lang=de-DE)
-* [SmartHome Austria authorization page](https://api.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635749&redirect_uri=https%3A%2F%2Fwww.ollie.in%2Fsmarthome-austria-token%2F&scope&lang=de-DE)
-* [Start SmartHome authorization page](https://api.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635750&redirect_uri=https%3A%2F%2Fwww.ollie.in%2Fstart-smarthome-token%2F&scope&lang=de-DE)
+* [innogy SmartHome authorization page](https://api.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635748&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Finnogy-smarthome.html&scope&lang=de-DE)
+* [SmartHome Austria authorization page](https://api.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635749&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Fsmarthome-austria.html&scope&lang=de-DE)
+* [Start SmartHome authorization page](https://api.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635750&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Fstart-smarthome.html&scope&lang=de-DE)
 
-You will be redirected to the webpage of the maintainer of the binding, that displays the auth-code.
+You will be redirected to openhab.org and the the auth-code will be displayed.
 Copy and paste it into your SHC configuration and you are done.
 
 The binding then requests the access and refresh tokens and saves them in the SHC configuration.
