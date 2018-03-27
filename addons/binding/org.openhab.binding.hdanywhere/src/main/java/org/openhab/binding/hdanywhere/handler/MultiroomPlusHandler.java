@@ -43,7 +43,7 @@ public class MultiroomPlusHandler extends BaseThingHandler {
     public static final String PORTS = "ports";
     public static final String POLLING_INTERVAL = "interval";
 
-    private Logger logger = LoggerFactory.getLogger(MultiroomPlusHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(MultiroomPlusHandler.class);
 
     private ScheduledFuture<?> pollingJob;
 
@@ -91,12 +91,10 @@ public class MultiroomPlusHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof RefreshType) {
             // Simply schedule a single run of the polling runnable to refresh all channels
             scheduler.schedule(pollingRunnable, 0, TimeUnit.SECONDS);
         } else {
-
             String channelID = channelUID.getId();
 
             String host = (String) getConfig().get(IP_ADDRESS);
@@ -113,7 +111,6 @@ public class MultiroomPlusHandler extends BaseThingHandler {
                 logger.warn("Output port {} goes beyond the physical number of {} ports available on the matrix {}",
                         new Object[] { outputPort, numberOfPorts, host });
             } else {
-
                 String httpMethod = "GET";
                 String url = "http://" + host + "/switch.cgi?command=3&data0=";
 
@@ -151,8 +148,8 @@ public class MultiroomPlusHandler extends BaseThingHandler {
 
     private synchronized void onUpdate() {
         if (pollingJob == null || pollingJob.isCancelled()) {
-            int polling_interval = ((BigDecimal) getConfig().get(POLLING_INTERVAL)).intValue();
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, polling_interval, TimeUnit.SECONDS);
+            int pollingInterval = ((BigDecimal) getConfig().get(POLLING_INTERVAL)).intValue();
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, pollingInterval, TimeUnit.SECONDS);
         }
     }
 }

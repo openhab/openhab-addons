@@ -55,7 +55,6 @@ public class HDanywhereBindingConstants {
         }
 
         public static Port get(int valueSelectorNumber) throws IllegalArgumentException {
-
             for (Port c : Port.values()) {
                 if (c.number == valueSelectorNumber) {
                     return c;
@@ -66,7 +65,6 @@ public class HDanywhereBindingConstants {
         }
 
         public static Port get(String valueSelectorText) throws IllegalArgumentException {
-
             for (Port c : Port.values()) {
                 if (c.id.equals(valueSelectorText)) {
                     return c;
