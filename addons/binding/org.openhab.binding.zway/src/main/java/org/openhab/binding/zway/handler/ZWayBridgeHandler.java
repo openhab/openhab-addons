@@ -83,10 +83,10 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
     private ResetInclusionExclusion resetInclusionExclusion;
     private ScheduledFuture<?> resetInclusionExclusionJob;
 
-    private ZWayBridgeConfiguration mConfig = null;
-    private IZWayApi mZWayApi = null;
+    private ZWayBridgeConfiguration mConfig;
+    private IZWayApi mZWayApi;
 
-    private DeviceList deviceList = null;
+    private DeviceList deviceList;
 
     /**
      * Initializer authenticate the Z-Way API instance with bridge configuration.
@@ -329,9 +329,9 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
             logger.debug("Observer mechanism enabled changed from {} to {}", observerMechanismEnabledOld,
                     observerMechanismEnabledNew);
 
-            if (observerMechanismEnabledOld == true && observerMechanismEnabledNew == false) {
+            if (observerMechanismEnabledOld && !observerMechanismEnabledNew) {
                 updateOpenHabConnector(true);
-            } else if (observerMechanismEnabledOld == false && observerMechanismEnabledNew == true) {
+            } else if (!observerMechanismEnabledOld && observerMechanismEnabledNew) {
                 updateOpenHabConnector(false);
             }
         } // if no old configuration available it's not an update
