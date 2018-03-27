@@ -171,7 +171,6 @@ public class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
                 throw new NotPermittedApiException("The OpenSprinkler API returned Not Permitted response code.");
             default:
                 throw new UnknownApiException("Unknown response code from OpenSprinkler API: " + returnCode);
-
         }
     }
 }

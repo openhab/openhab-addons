@@ -19,8 +19,7 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
  * the OpenSprinkler PI when openHAB is installed on the same Raspberry PI
  * that the OpenSprinkler PI device is using.
  *
- * @author Jonathan Giles
- * @author Chris Graham - Initial contribution
+ * @author Jonathan Giles, Chris Graham - Initial contribution
  */
 public class OpenSprinklerGpioApi implements OpenSprinklerApi {
     private int firmwareVersion = -1;
@@ -30,10 +29,10 @@ public class OpenSprinklerGpioApi implements OpenSprinklerApi {
 
     private boolean connectionOpen = false;
 
-    private final GpioPinDigitalOutput SR_CLK_OUTPUT_PIN;
-    private final GpioPinDigitalOutput SR_NOE_OUTPUT_PIN;
-    private final GpioPinDigitalOutput SR_DAT_OUTPUT_PIN;
-    private final GpioPinDigitalOutput SR_LAT_OUTPUT_PIN;
+    private final GpioPinDigitalOutput srClkOutputPin;
+    private final GpioPinDigitalOutput srNoeOutputPin;
+    private final GpioPinDigitalOutput srDatOutputPin;
+    private final GpioPinDigitalOutput srLatOutputPin;
 
     private final GpioController gpio;
 
@@ -54,12 +53,12 @@ public class OpenSprinklerGpioApi implements OpenSprinklerApi {
         gpio = GpioFactory.getInstance();
 
         /* Initialize the OpenSprinkler Pi */
-        SR_CLK_OUTPUT_PIN = gpio.provisionDigitalOutputPin(SR_CLK_PIN);
-        SR_NOE_OUTPUT_PIN = gpio.provisionDigitalOutputPin(SR_NOE_PIN);
-        SR_NOE_OUTPUT_PIN.high(); /* Disable shift register output */
-        SR_DAT_OUTPUT_PIN = gpio.provisionDigitalOutputPin(SR_DAT_PIN);
-        SR_LAT_OUTPUT_PIN = gpio.provisionDigitalOutputPin(SR_LAT_PIN);
-        SR_NOE_OUTPUT_PIN.low(); /* Disable shift register output */
+        srClkOutputPin = gpio.provisionDigitalOutputPin(SR_CLK_PIN);
+        srNoeOutputPin = gpio.provisionDigitalOutputPin(SR_NOE_PIN);
+        srNoeOutputPin.high(); /* Disable shift register output */
+        srDatOutputPin = gpio.provisionDigitalOutputPin(SR_DAT_PIN);
+        srLatOutputPin = gpio.provisionDigitalOutputPin(SR_LAT_PIN);
+        srNoeOutputPin.low(); /* Disable shift register output */
 
         pullStationState();
     }
@@ -143,15 +142,15 @@ public class OpenSprinklerGpioApi implements OpenSprinklerApi {
      * push and update local station state to the device.
      */
     private void pushStationState() {
-        SR_CLK_OUTPUT_PIN.low();
-        SR_LAT_OUTPUT_PIN.low();
+        srClkOutputPin.low();
+        srLatOutputPin.low();
 
         for (int i = 1; i <= numberOfStations; i++) {
-            SR_CLK_OUTPUT_PIN.low();
-            SR_DAT_OUTPUT_PIN.setState(stationState[numberOfStations - i]);
-            SR_CLK_OUTPUT_PIN.high();
+            srClkOutputPin.low();
+            srDatOutputPin.setState(stationState[numberOfStations - i]);
+            srClkOutputPin.high();
         }
 
-        SR_LAT_OUTPUT_PIN.high();
+        srLatOutputPin.high();
     }
 }

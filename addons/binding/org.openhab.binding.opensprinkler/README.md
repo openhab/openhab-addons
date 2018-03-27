@@ -10,7 +10,7 @@ Stations can be controlled to be turned on or off and rain sensor state can be r
 
 ## Discovery
 
-*   OpenSprinkler devices can be manually discovered by sending a request to every IP on the network.
+OpenSprinkler devices can be manually discovered by sending a request to every IP on the network.
 Discovery needs to be run manually as this is a brute force method of finding devices that can saturate network or device available bandwidth.
 
 ## Thing Configuration
