@@ -16,6 +16,15 @@
 			<advanced>true</advanced>
 			<default>8009</default>
 		</parameter>
+		<parameter name="refreshRate" type="integer">
+			<label>Refresh Rate</label>
+			<description>
+				How often the chromecast should schedule a refresh. The chromecast should notify the binding when
+				something changes, but if you want to track duration you'll need to schedule a refresh more often.
+			</description>
+			<advanced>true</advanced>
+			<default>10</default>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

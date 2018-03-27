@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,10 +22,10 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.minecraft.MinecraftBindingConstants;
-import org.openhab.binding.minecraft.config.PlayerConfig;
-import org.openhab.binding.minecraft.message.OHMessage;
-import org.openhab.binding.minecraft.message.data.PlayerData;
-import org.openhab.binding.minecraft.message.data.commands.PlayerCommandData;
+import org.openhab.binding.minecraft.internal.config.PlayerConfig;
+import org.openhab.binding.minecraft.internal.message.OHMessage;
+import org.openhab.binding.minecraft.internal.message.data.PlayerData;
+import org.openhab.binding.minecraft.internal.message.data.commands.PlayerCommandData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,7 +124,6 @@ public class MinecraftPlayerHandler extends BaseThingHandler {
     }
 
     private synchronized MinecraftServerHandler getBridgeHandler() {
-
         Bridge bridge = getBridge();
         if (bridge == null) {
             logger.debug("Required bridge not defined for device {}.");
@@ -132,11 +131,9 @@ public class MinecraftPlayerHandler extends BaseThingHandler {
         } else {
             return getBridgeHandler(bridge);
         }
-
     }
 
     private synchronized MinecraftServerHandler getBridgeHandler(Bridge bridge) {
-
         MinecraftServerHandler bridgeHandler = null;
 
         ThingHandler handler = bridge.getHandler();

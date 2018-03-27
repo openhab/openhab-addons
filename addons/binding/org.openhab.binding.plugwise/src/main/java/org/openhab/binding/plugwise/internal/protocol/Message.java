@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,7 +34,6 @@ import org.openhab.binding.plugwise.internal.protocol.field.MessageType;
 public abstract class Message {
 
     public static String getCRC(String string) {
-
         int crc = 0x0000;
         int polynomial = 0x1021; // 0001 0000 0010 0001 (0, 5, 12)
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -37,17 +37,11 @@ public final class MaxTokenizer implements Enumeration<byte[]> {
         this.decodedRawMessage = decodedRawMessage;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasMoreElements() {
         return offset < decodedRawMessage.length;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public byte[] nextElement() {
         byte length = decodedRawMessage[offset++];

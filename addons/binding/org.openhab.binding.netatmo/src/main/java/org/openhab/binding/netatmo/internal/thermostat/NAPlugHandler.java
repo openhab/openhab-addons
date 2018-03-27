@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,17 +9,21 @@
 package org.openhab.binding.netatmo.internal.thermostat;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
-import org.eclipse.smarthome.core.library.types.OnOffType;
+import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAdjusters;
+
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
-import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
-import org.openhab.binding.netatmo.internal.NADeviceAdapter;
-import org.openhab.binding.netatmo.internal.NAPlugAdapter;
-import org.openhab.binding.netatmo.internal.config.NetatmoDeviceConfiguration;
 
+import io.swagger.client.model.NAPlug;
 import io.swagger.client.model.NAThermostatDataBody;
+import io.swagger.client.model.NAYearMonth;
 
 /**
  * {@link NAPlugHandler} is the class used to handle the plug
@@ -28,34 +32,62 @@ import io.swagger.client.model.NAThermostatDataBody;
  * @author Gaël L'hopital - Initial contribution OH2 version
  *
  */
-public class NAPlugHandler extends NetatmoDeviceHandler<NetatmoDeviceConfiguration> {
-    public NAPlugHandler(Thing thing) {
-        super(thing, NetatmoDeviceConfiguration.class);
+public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
+
+    public NAPlugHandler(@NonNull Thing thing) {
+        super(thing);
     }
 
     @Override
-    protected NADeviceAdapter<?> updateReadings(String equipmentId) {
-        NAThermostatDataBody thermostatDataBody = getBridgeHandler().getThermostatsDataBody(equipmentId);
+    protected NAPlug updateReadings() {
+        NAPlug result = null;
+        NAThermostatDataBody thermostatDataBody = getBridgeHandler().getThermostatsDataBody(getId());
         if (thermostatDataBody != null) {
-            return new NAPlugAdapter(thermostatDataBody);
-        } else {
-            return null;
+            userAdministrative = thermostatDataBody.getUser().getAdministrative();
+
+            result = thermostatDataBody.getDevices().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
+                    .findFirst().orElse(null);
+            if (result != null) {
+                result.getModules().forEach(child -> childs.put(child.getId(), child));
+            }
         }
+        return result;
     }
 
     @Override
     protected State getNAThingProperty(String channelId) {
-        NAPlugAdapter plugAdapter = (NAPlugAdapter) device;
         switch (channelId) {
             case CHANNEL_CONNECTED_BOILER:
-                return plugAdapter.getConnectedBoiler() ? OnOffType.ON : OnOffType.OFF;
+                return device != null ? toOnOffType(device.getPlugConnectedBoiler()) : UnDefType.UNDEF;
             case CHANNEL_LAST_PLUG_SEEN:
-                return ChannelTypeUtils.toDateTimeType(plugAdapter.getLastPlugSeen());
+                return device != null ? toDateTimeType(device.getLastPlugSeen()) : UnDefType.UNDEF;
             case CHANNEL_LAST_BILAN:
-                return ChannelTypeUtils.toDateTimeType(plugAdapter.getLastBilan());
-            default:
-                return super.getNAThingProperty(channelId);
+                return toDateTimeType(getLastBilan());
         }
+        return super.getNAThingProperty(channelId);
+    }
+
+    public @Nullable ZonedDateTime getLastBilan() {
+        if (device != null) {
+            NAYearMonth lastBilan = device.getLastBilan();
+            if (lastBilan != null) {
+                ZonedDateTime zonedDT = ZonedDateTime.of(lastBilan.getY(), lastBilan.getM(), 1, 0, 0, 0, 0,
+                        ZonedDateTime.now().getZone());
+                return zonedDT.with(TemporalAdjusters.lastDayOfMonth());
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected @Nullable Integer getDataTimestamp() {
+        if (device != null) {
+            Integer lastStored = device.getLastStatusStore();
+            if (lastStored != null) {
+                return lastStored;
+            }
+        }
+        return null;
     }
 
 }

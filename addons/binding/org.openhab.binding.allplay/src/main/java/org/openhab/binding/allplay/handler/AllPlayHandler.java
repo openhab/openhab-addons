@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,6 +12,7 @@ import static org.openhab.binding.allplay.AllPlayBindingConstants.*;
 
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
@@ -57,6 +58,7 @@ import de.kaizencode.tchaikovsky.speaker.Speaker;
 import de.kaizencode.tchaikovsky.speaker.Speaker.LoopMode;
 import de.kaizencode.tchaikovsky.speaker.Speaker.ShuffleMode;
 import de.kaizencode.tchaikovsky.speaker.VolumeRange;
+import de.kaizencode.tchaikovsky.speaker.ZoneItem;
 
 /**
  * The {@link AllPlayHandler} is responsible for handling commands, which are
@@ -178,18 +180,18 @@ public class AllPlayHandler extends BaseThingHandler
 
     @Override
     public void dispose() {
+        allPlay.removeSpeakerAnnouncedListener(this);
         if (speaker != null) {
-            logger.debug("Disconnecting from speaker {}", speaker);
-            cancelReconnectionJob();
-            allPlay.removeSpeakerAnnouncedListener(this);
             disconnectFromSpeaker(speaker);
         }
         super.dispose();
     }
 
     private void disconnectFromSpeaker(Speaker speaker) {
+        logger.debug("Disconnecting from speaker {}", speaker);
         speaker.removeSpeakerChangedListener(this);
         speaker.removeSpeakerConnectionListener(this);
+        cancelReconnectionJob();
         if (speaker.isConnected()) {
             speaker.disconnect();
         }
@@ -213,6 +215,11 @@ public class AllPlayHandler extends BaseThingHandler
 
     private void handleSpeakerCommand(String channelId, Command command) throws SpeakerException {
         switch (channelId) {
+            case CLEAR_ZONE:
+                if (OnOffType.ON.equals(command)) {
+                    speaker.zoneManager().releaseZone();
+                }
+                break;
             case CONTROL:
                 handleControlCommand(command);
                 break;
@@ -237,6 +244,9 @@ public class AllPlayHandler extends BaseThingHandler
                 break;
             case VOLUME:
                 handleVolumeCommand(command);
+                break;
+            case ZONE_MEMBERS:
+                handleZoneMembersCommand(command);
                 break;
             default:
                 logger.warn("Unable to handle command {} on unknown channel {}", command, channelId);
@@ -273,8 +283,7 @@ public class AllPlayHandler extends BaseThingHandler
                 onVolumeControlChanged(speaker.volume().isControlEnabled());
                 break;
             case ZONE_ID:
-                logger.debug("Refresh of ZoneID not yet implemented");
-                // TODO: Get ZoneID from speaker and update channel when implemented in allPlay library
+                updateState(ZONE_ID, new StringType(speaker.getPlayerInfo().getZoneInfo().getZoneId()));
                 break;
             default:
                 logger.debug("REFRESH command not implemented on channel {}", channelId);
@@ -339,6 +348,30 @@ public class AllPlayHandler extends BaseThingHandler
         } else if (OnOffType.OFF.equals(command)) {
             speaker.setShuffleMode(ShuffleMode.LINEAR);
         }
+    }
+
+    private void handleZoneMembersCommand(Command command) throws SpeakerException {
+        String[] memberNames = command.toString().split(bindingProperties.getZoneMemberSeparator());
+        logger.debug("{}: Creating new zone with members {}", speaker, String.join(", ", memberNames));
+        List<String> memberIds = new ArrayList<>();
+        for (String memberName : memberNames) {
+            memberIds.add(getHandlerIdByLabel(memberName.trim()));
+        }
+        createZoneInNewThread(memberIds);
+    }
+
+    private void createZoneInNewThread(List<String> memberIds) {
+        scheduler.execute(() -> {
+            try {
+                // This call blocks up to 10 seconds if one of the members is unreachable,
+                // therefore it is executed in a new thread
+                ZoneItem zone = speaker.zoneManager().createZone(memberIds);
+                logger.debug("{}: Zone {} with member ids {} has been created", speaker, zone.getZoneId(),
+                        String.join(", ", zone.getSlaves().keySet()));
+            } catch (SpeakerException e) {
+                logger.warn("{}: Cannot create zone", speaker, e);
+            }
+        });
     }
 
     @Override
@@ -545,17 +578,11 @@ public class AllPlayHandler extends BaseThingHandler
      * Schedules a reconnection job.
      */
     private void scheduleReconnectionJob(final Speaker speaker) {
-
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                discoverSpeaker();
-            }
-        };
         logger.debug("Scheduling job to rediscover to speaker {}", speaker);
         // TODO: Check if it makes sense to repeat the discovery every x minutes or if the AllJoyn library is able to
         // handle re-discovery in _all_ cases.
-        reconnectionJob = scheduler.scheduleWithFixedDelay(runnable, 5, 600, TimeUnit.SECONDS);
+        cancelReconnectionJob();
+        reconnectionJob = scheduler.scheduleWithFixedDelay(this::discoverSpeaker, 5, 600, TimeUnit.SECONDS);
     }
 
     /**
@@ -565,5 +592,16 @@ public class AllPlayHandler extends BaseThingHandler
         if (reconnectionJob != null) {
             reconnectionJob.cancel(true);
         }
+    }
+
+    private String getHandlerIdByLabel(String thingLabel) throws IllegalStateException {
+        if (thingRegistry != null) {
+            for (Thing thing : thingRegistry.getAll()) {
+                if (thingLabel.equals(thing.getLabel())) {
+                    return thing.getUID().getId();
+                }
+            }
+        }
+        throw new IllegalStateException("Could not find thing with label " + thingLabel);
     }
 }

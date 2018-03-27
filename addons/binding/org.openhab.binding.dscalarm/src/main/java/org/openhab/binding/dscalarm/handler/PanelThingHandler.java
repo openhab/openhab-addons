@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PanelThingHandler extends DSCAlarmBaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(PanelThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PanelThingHandler.class);
 
     /**
      * Constructor.
@@ -57,9 +57,6 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
     private static final int PANEL_COMMAND_SET_TIME_DATE = 10;
     private static final int PANEL_COMMAND_CODE_SEND = 200;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void updateChannel(ChannelUID channelUID, int state, String description) {
         logger.debug("updateChannel(): Panel Channel UID: {}", channelUID);
@@ -183,12 +180,8 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         logger.debug("handleCommand(): Command Received - {} {}.", channelUID, command);
 
         if (command instanceof RefreshType) {
@@ -196,7 +189,6 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         }
 
         if (dscAlarmBridgeHandler != null && dscAlarmBridgeHandler.isConnected()) {
-
             int cmd;
 
             switch (channelUID.getId()) {
@@ -267,7 +259,7 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         boolean isTimeStamp = timeStamp != "";
 
         if ((timeStamp == "" && isTimeStamp == false) || (timeStamp != "" && isTimeStamp == true)) {
-            logger.debug("setTimeStampState(): Already Set!", timeStamp);
+            logger.debug("setTimeStampState(): Already Set: {}", timeStamp);
             return;
         } else if (timeStamp != "") {
             state = 1;
@@ -411,12 +403,8 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dscAlarmEventReceived(EventObject event, Thing thing) {
-
         if (thing != null) {
             DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;
             DSCAlarmMessage dscAlarmMessage = dscAlarmEvent.getDSCAlarmMessage();

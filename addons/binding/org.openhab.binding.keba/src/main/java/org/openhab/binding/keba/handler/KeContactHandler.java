@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,29 +11,20 @@ package org.openhab.binding.keba.handler;
 import static org.openhab.binding.keba.KebaBindingConstants.*;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.PortUnreachableException;
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedChannelException;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.NotYetConnectedException;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -69,24 +60,21 @@ public class KeContactHandler extends BaseThingHandler {
 
     public static final String IP_ADDRESS = "ipAddress";
     public static final String POLLING_REFRESH_INTERVAL = "refreshInterval";
-    public static final int LISTENING_INTERVAL = 100;
-    public static final int REPORT_INTERVAL = 2000;
+    public static final int REPORT_INTERVAL = 3000;
     public static final int PING_TIME_OUT = 3000;
     public static final int BUFFER_SIZE = 1024;
     public static final int REMOTE_PORT_NUMBER = 7090;
-    private static final String KEBA_HANDLER_THREADPOOL_NAME = "Keba";
+    private static final String CACHE_REPORT_1 = "REPORT_1";
+    private static final String CACHE_REPORT_2 = "REPORT_2";
+    private static final String CACHE_REPORT_3 = "REPORT_3";
 
     private final Logger logger = LoggerFactory.getLogger(KeContactHandler.class);
 
-    private Selector selector;
-    private DatagramChannel datagramChannel = null;
-    protected SelectionKey datagramChannelKey = null;
-    private final Lock lock = new ReentrantLock();
     protected JsonParser parser = new JsonParser();
 
     private ScheduledFuture<?> pollingJob;
-    private ScheduledFuture<?> listeningJob;
-    private static KeContactBroadcastListener broadcastListener = new KeContactBroadcastListener();
+    private static KeContactTransceiver transceiver = new KeContactTransceiver();
+    private ExpiringCacheMap<String, ByteBuffer> cache;
 
     private int maxPresetCurrent = 0;
     private int maxSystemCurrent = 63000;
@@ -94,6 +82,7 @@ public class KeContactHandler extends BaseThingHandler {
     private KebaFirmware firmware;
     private KebaSeries series;
 
+    @SuppressWarnings("null")
     public KeContactHandler(Thing thing) {
         super(thing);
     }
@@ -101,26 +90,7 @@ public class KeContactHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         if (getConfig().get(IP_ADDRESS) != null && !getConfig().get(IP_ADDRESS).equals("")) {
-
-            broadcastListener.registerHandler(this);
-
-            try {
-                selector = Selector.open();
-            } catch (IOException e) {
-                logger.error("An exception occurred while registering the selector: '{}'", e.getMessage());
-            }
-
-            establishConnection();
-
-            if (listeningJob == null || listeningJob.isCancelled()) {
-                try {
-                    listeningJob = scheduler.scheduleWithFixedDelay(listeningRunnable, 0, LISTENING_INTERVAL,
-                            TimeUnit.MILLISECONDS);
-                } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "An exception occurred while scheduling the listening job");
-                }
-            }
+            transceiver.registerHandler(this);
 
             if (pollingJob == null || pollingJob.isCancelled()) {
                 try {
@@ -131,6 +101,13 @@ public class KeContactHandler extends BaseThingHandler {
                             "An exception occurred while scheduling the polling job");
                 }
             }
+
+            cache = new ExpiringCacheMap<>(
+                    Math.max((((BigDecimal) getConfig().get(POLLING_REFRESH_INTERVAL)).intValue()) - 5, 0) * 1000);
+
+            cache.put(CACHE_REPORT_1, () -> transceiver.send("report 1", getHandler()));
+            cache.put(CACHE_REPORT_2, () -> transceiver.send("report 2", getHandler()));
+            cache.put(CACHE_REPORT_3, () -> transceiver.send("report 3", getHandler()));
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "IP address or port number not set");
@@ -139,308 +116,70 @@ public class KeContactHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        try {
-            selector.close();
-        } catch (IOException e) {
-            logger.error("An exception occurred while closing the selector: '{}'", e.getMessage());
-        }
-
-        try {
-            datagramChannel.close();
-        } catch (IOException e) {
-            logger.warn("An exception occurred while closing the channel '{}': {}", datagramChannel, e.getMessage());
-        }
-
         if (pollingJob != null && !pollingJob.isCancelled()) {
             pollingJob.cancel(true);
             pollingJob = null;
         }
 
-        if (listeningJob != null && !listeningJob.isCancelled()) {
-            listeningJob.cancel(true);
-            listeningJob = null;
-        }
-
-        broadcastListener.unRegisterHandler(this);
+        transceiver.unRegisterHandler(this);
     }
 
     public String getIPAddress() {
         return getConfig().get(IP_ADDRESS) != null ? (String) getConfig().get(IP_ADDRESS) : "";
     }
 
-    protected ByteBuffer onReadable(DatagramChannel theChannel, int bufferSize) {
-        lock.lock();
+    private KeContactHandler getHandler() {
+        return this;
+    }
+
+    @Override
+    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, String description) {
+        super.updateStatus(status, statusDetail, description);
+    }
+
+    @Override
+    protected Configuration getConfig() {
+        return super.getConfig();
+    }
+
+    private Runnable pollingRunnable = () -> {
         try {
-
-            SelectionKey theSelectionKey = theChannel.keyFor(selector);
-
-            if (theSelectionKey != null) {
-
-                synchronized (selector) {
-                    try {
-                        selector.selectNow();
-                    } catch (IOException e) {
-                        logger.error("An exception occurred while selecting: {}", e.getMessage());
-                    }
-                }
-
-                Iterator<SelectionKey> it = selector.selectedKeys().iterator();
-                while (it.hasNext()) {
-                    SelectionKey selKey = it.next();
-                    it.remove();
-                    if (selKey.isValid() && selKey.isReadable() && selKey == theSelectionKey) {
-
-                        ByteBuffer readBuffer = ByteBuffer.allocate(bufferSize);
-                        int numberBytesRead = 0;
-                        boolean error = false;
-
-                        if (selKey == datagramChannelKey) {
-                            try {
-                                numberBytesRead = theChannel.read(readBuffer);
-                            } catch (NotYetConnectedException e) {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                        "The remote host is not yet connected");
-                                error = true;
-                            } catch (PortUnreachableException e) {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                        "The remote host is probably not a KEBA EV Charging station");
-                                error = true;
-                            } catch (IOException e) {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                        "An IO exception occurred");
-                                error = true;
-                            }
-                        }
-
-                        if (numberBytesRead == -1) {
-                            error = true;
-                        }
-
-                        if (error) {
-                            logger.debug("Disconnecting '{}' because of a socket error",
-                                    getThing().getUID().toString());
-                            try {
-                                theChannel.close();
-                            } catch (IOException e) {
-                                logger.error("An exception occurred while closing the channel '{}': {}",
-                                        datagramChannel, e.getMessage());
-                            }
-
-                            onConnectionLost();
-
-                        } else {
-                            readBuffer.flip();
-                            return readBuffer;
-                        }
-                    }
-                }
-            }
-
-            return null;
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    protected void onWritable(ByteBuffer buffer, DatagramChannel theChannel) {
-        lock.lock();
-        try {
-
-            SelectionKey theSelectionKey = theChannel.keyFor(selector);
-
-            if (theSelectionKey != null) {
-
-                synchronized (selector) {
-                    try {
-                        selector.selectNow();
-                    } catch (IOException e) {
-                        logger.error("An exception occurred while selecting: {}", e.getMessage());
-                    }
-                }
-
-                Iterator<SelectionKey> it = selector.selectedKeys().iterator();
-                while (it.hasNext()) {
-                    SelectionKey selKey = it.next();
-                    it.remove();
-                    if (selKey.isValid() && selKey.isWritable() && selKey == theSelectionKey) {
-
-                        boolean error = false;
-                        buffer.rewind();
-
-                        try {
-                            logger.debug("Sending '{}' on the channel '{}'->'{}'",
-                                    new Object[] { new String(buffer.array()), theChannel.getLocalAddress(),
-                                            theChannel.getRemoteAddress() });
-                            theChannel.write(buffer);
-                        } catch (NotYetConnectedException e) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "The remote host is not yet connected");
-                            error = true;
-                        } catch (ClosedChannelException e) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "The connection to the remote host is closed");
-                            error = true;
-                        } catch (IOException e) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "An IO exception occurred");
-                            error = true;
-                        }
-
-                        if (error) {
-                            logger.debug("Disconnecting '{}' because of a socket error",
-                                    getThing().getUID().toString());
-                            try {
-                                theChannel.close();
-                            } catch (IOException e) {
-                                logger.warn("An exception occurred while closing the channel '{}': {}", datagramChannel,
-                                        e.getMessage());
-                            }
-
-                            onConnectionLost();
-
-                        }
-                    }
-                }
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public void onConnectionLost() {
-        establishConnection();
-    }
-
-    public void onConnectionResumed() {
-        updateStatus(ThingStatus.ONLINE);
-    }
-
-    private void establishConnection() {
-        lock.lock();
-        try {
-            if (getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR
-                    && getConfig().get(IP_ADDRESS) != null && !getConfig().get(IP_ADDRESS).equals("")) {
-
-                try {
-                    datagramChannel = DatagramChannel.open();
-                } catch (Exception e2) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "An exception occurred while opening a datagram channel");
-                }
-
-                try {
-                    datagramChannel.configureBlocking(false);
-                } catch (IOException e2) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "An exception occurred while configuring a datagram channel");
-                }
-
-                synchronized (selector) {
-                    selector.wakeup();
-                    int interestSet = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
-                    try {
-                        datagramChannelKey = datagramChannel.register(selector, interestSet);
-                    } catch (ClosedChannelException e1) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "An exception occurred while registering a selector");
-                    }
-
-                    InetSocketAddress remoteAddress = new InetSocketAddress((String) getConfig().get(IP_ADDRESS),
-                            REMOTE_PORT_NUMBER);
-
-                    try {
-                        logger.trace("Connecting the channel for {} ", remoteAddress);
-                        datagramChannel.connect(remoteAddress);
-
-                        onConnectionResumed();
-
-                    } catch (Exception e) {
-                        logger.error("An exception occurred while connecting connecting to '{}:{}' : {}", new Object[] {
-                                (String) getConfig().get(IP_ADDRESS), REMOTE_PORT_NUMBER, e.getMessage() });
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "An exception occurred while connecting");
-                    }
-                }
+            long stamp = System.currentTimeMillis();
+            if (!InetAddress.getByName(((String) getConfig().get(IP_ADDRESS))).isReachable(PING_TIME_OUT)) {
+                logger.debug("Ping timed out after '{}' milliseconds", System.currentTimeMillis() - stamp);
+                transceiver.unRegisterHandler(getHandler());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        getThing().getStatusInfo().getDescription());
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private Runnable listeningRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            try {
-                if (getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR) {
-                    if (datagramChannel == null || !datagramChannel.isConnected()) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "The connection is not yet initialized");
-                        onConnectionLost();
+                if (getThing().getStatus() == ThingStatus.ONLINE) {
+                    ByteBuffer response = cache.get(CACHE_REPORT_1);
+                    if (response != null) {
+                        onData(response);
                     }
 
-                    if (datagramChannel.isConnected()) {
-                        ByteBuffer buffer = onReadable(datagramChannel, BUFFER_SIZE);
-                        if (buffer != null && buffer.remaining() > 0) {
-                            onRead(buffer);
-                        }
+                    Thread.sleep(REPORT_INTERVAL);
+
+                    response = cache.get(CACHE_REPORT_2);
+                    if (response != null) {
+                        onData(response);
+                    }
+
+                    Thread.sleep(REPORT_INTERVAL);
+
+                    response = cache.get(CACHE_REPORT_3);
+                    if (response != null) {
+                        onData(response);
                     }
                 }
-            } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "An exception occurred while receiving event data from the charging station");
             }
+        } catch (InterruptedException | NumberFormatException | IOException e) {
+            logger.debug("An exception occurred while polling the KEBA KeContact '{}': {}", getThing().getUID(),
+                    e.getMessage(), e);
+            Thread.currentThread().interrupt();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "An exception occurred while while polling the charging station");
         }
     };
 
-    private Runnable pollingRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            try {
-                long stamp = System.currentTimeMillis();
-                if (!InetAddress.getByName(((String) getConfig().get(IP_ADDRESS))).isReachable(PING_TIME_OUT)) {
-                    logger.debug("Ping timed out after '{}' milliseconds", System.currentTimeMillis() - stamp);
-                    logger.trace("Disconnecting the datagram channel '{}'", datagramChannel);
-                    datagramChannel.close();
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "A ping timeout occurred");
-                    onConnectionLost();
-                } else {
-                    if (getThing().getStatus() == ThingStatus.ONLINE) {
-                        String command = "report 1";
-                        ByteBuffer byteBuffer = ByteBuffer.allocate(command.getBytes().length);
-                        byteBuffer.put(command.getBytes("ASCII"));
-                        onWritable(byteBuffer, datagramChannel);
-
-                        Thread.sleep(REPORT_INTERVAL);
-
-                        command = "report 2";
-                        byteBuffer = ByteBuffer.allocate(command.getBytes().length);
-                        byteBuffer.put(command.getBytes("ASCII"));
-                        onWritable(byteBuffer, datagramChannel);
-
-                        Thread.sleep(REPORT_INTERVAL);
-
-                        command = "report 3";
-                        byteBuffer = ByteBuffer.allocate(command.getBytes().length);
-                        byteBuffer.put(command.getBytes("ASCII"));
-                        onWritable(byteBuffer, datagramChannel);
-                    }
-
-                }
-            } catch (InterruptedException | NumberFormatException | IOException e) {
-                logger.debug("An exception occurred while polling the KEBA KeContact for '{}': {}", getThing().getUID(),
-                        e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "An exception occurred while while polling the charging station");
-            }
-        }
-    };
-
-    protected void onRead(ByteBuffer byteBuffer) {
+    protected void onData(ByteBuffer byteBuffer) {
         String response = new String(byteBuffer.array(), 0, byteBuffer.limit());
         response = StringUtils.chomp(response);
 
@@ -479,7 +218,6 @@ public class KeContactHandler extends BaseThingHandler {
                         updateProperties(properties);
                         firmware = KebaFirmware.getFirmware(entry.getValue().getAsString());
                         break;
-
                     }
                     case "Plug": {
                         int state = entry.getValue().getAsInt();
@@ -542,7 +280,7 @@ public class KeContactHandler extends BaseThingHandler {
                         State newState = new DecimalType(state);
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_SYSTEM_CURRENT), newState);
                         if (maxSystemCurrent < maxPresetCurrent) {
-                            sendCommand("curr " + String.valueOf(maxSystemCurrent));
+                            transceiver.send("curr " + String.valueOf(maxSystemCurrent), this);
                             updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_PRESET_CURRENT),
                                     new DecimalType(maxSystemCurrent));
                             updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_PRESET_CURRENT_RANGE),
@@ -556,13 +294,20 @@ public class KeContactHandler extends BaseThingHandler {
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_PRESET_CURRENT),
                                 new DecimalType(state));
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_PRESET_CURRENT_RANGE),
-                                new PercentType((state - 6000) * 100 / (maxSystemCurrent - 6000)));
+                                new PercentType(Math.min(100, (state - 6000) * 100 / (maxSystemCurrent - 6000))));
                         break;
                     }
                     case "Curr FS": {
                         int state = entry.getValue().getAsInt();
                         State newState = new DecimalType(state);
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_FAILSAFE_CURRENT), newState);
+                        break;
+                    }
+                    case "Max curr": {
+                        int state = entry.getValue().getAsInt();
+                        maxPresetCurrent = state;
+                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PILOT_CURRENT), new DecimalType(state));
+                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PILOT_PWM), new DecimalType(state));
                         break;
                     }
                     case "Output": {
@@ -668,7 +413,6 @@ public class KeContactHandler extends BaseThingHandler {
                     }
                 }
             }
-
         } catch (JsonParseException e) {
             logger.debug("Invalid JSON data will be ignored: '{}'", response);
         }
@@ -676,23 +420,22 @@ public class KeContactHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            // Refresh all channels by scheduling a single run of the polling runnable
+        if ((command instanceof RefreshType)) {
             scheduler.schedule(pollingRunnable, 0, TimeUnit.SECONDS);
         } else {
-
             switch (channelUID.getId()) {
                 case CHANNEL_MAX_PRESET_CURRENT: {
                     if (command instanceof DecimalType) {
-                        sendCommand("curr " + String.valueOf(
-                                Math.min(Math.max(6000, ((DecimalType) command).intValue()), maxSystemCurrent)));
+                        transceiver.send(
+                                "curr " + String.valueOf(
+                                        Math.min(Math.max(6000, ((DecimalType) command).intValue()), maxSystemCurrent)),
+                                this);
                     }
                     break;
                 }
                 case CHANNEL_MAX_PRESET_CURRENT_RANGE: {
                     if (command instanceof OnOffType || command instanceof IncreaseDecreaseType
                             || command instanceof PercentType) {
-
                         int newValue = 6000;
                         if (command == IncreaseDecreaseType.INCREASE) {
                             newValue = Math.min(Math.max(6000, maxPresetCurrent + 1), maxSystemCurrent);
@@ -708,16 +451,16 @@ public class KeContactHandler extends BaseThingHandler {
                             return;
                         }
 
-                        sendCommand("curr " + String.valueOf(newValue));
+                        transceiver.send("curr " + String.valueOf(newValue), this);
                     }
                     break;
                 }
                 case CHANNEL_ENABLED: {
                     if (command instanceof OnOffType) {
                         if (command == OnOffType.ON) {
-                            sendCommand("ena 1");
+                            transceiver.send("ena 1", this);
                         } else if (command == OnOffType.OFF) {
-                            sendCommand("ena 0");
+                            transceiver.send("ena 0", this);
                         } else {
                             return;
                         }
@@ -727,9 +470,9 @@ public class KeContactHandler extends BaseThingHandler {
                 case CHANNEL_OUTPUT: {
                     if (command instanceof OnOffType) {
                         if (command == OnOffType.ON) {
-                            sendCommand("output 1");
+                            transceiver.send("output 1", this);
                         } else if (command == OnOffType.OFF) {
-                            sendCommand("output 0");
+                            transceiver.send("output 0", this);
                         } else {
                             return;
                         }
@@ -741,36 +484,14 @@ public class KeContactHandler extends BaseThingHandler {
                         if (type == KebaType.P30 && (series == KebaSeries.C || series == KebaSeries.X)) {
                             String cmd = command.toString();
                             int maxLength = (cmd.length() < 23) ? cmd.length() : 23;
-                            sendCommand("display 0 0 0 0 " + cmd.substring(0, maxLength));
+                            transceiver.send("display 0 0 0 0 " + cmd.substring(0, maxLength), this);
                         } else {
-                            logger.warn("'Display' is not supported on a Keba {}:{}", type, series);
+                            logger.warn("'Display' is not supported on a KEBA KeContact {}:{}", type, series);
                         }
                     }
                     break;
                 }
             }
-        }
-    }
-
-    private void sendCommand(String command) {
-        if (command != null) {
-            ByteBuffer byteBuffer = ByteBuffer.allocate(command.getBytes().length);
-            try {
-                byteBuffer.put(command.getBytes("ASCII"));
-                onWritable(byteBuffer, datagramChannel);
-            } catch (UnsupportedEncodingException | NumberFormatException e) {
-                logger.error("An exception occurred while sending a command to the KeContact wallbox for '{}': {}",
-                        getThing().getUID(), e.getMessage());
-            }
-        }
-    }
-
-    public void setBroadcastListenerStatus(boolean status) {
-        if (status) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "The broadcast listener is offline");
         }
     }
 }

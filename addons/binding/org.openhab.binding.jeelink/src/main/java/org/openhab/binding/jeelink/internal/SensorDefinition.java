@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.jeelink.internal;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 import org.eclipse.smarthome.core.thing.Thing;
@@ -17,6 +15,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.jeelink.internal.ec3k.Ec3kSensorDefinition;
 import org.openhab.binding.jeelink.internal.lacrosse.LaCrosseSensorDefinition;
+import org.openhab.binding.jeelink.internal.pca301.Pca301SensorDefinition;
 
 /**
  * Base class for sensor definitions.
@@ -26,30 +25,26 @@ import org.openhab.binding.jeelink.internal.lacrosse.LaCrosseSensorDefinition;
  * @param <R> the Reading type this sensor provides.
  */
 public abstract class SensorDefinition<R extends Reading> {
-    private static final HashMap<JeeLinkHandler, ArrayList<JeeLinkReadingConverter<?>>> CONVERTERS = new HashMap<>();
     private static final HashSet<SensorDefinition<?>> SENSOR_DEFS = new HashSet<>();
 
     final ThingTypeUID thingTypeUid;
-    final String sketchName;
     final String name;
+    final String type;
 
     static {
         SENSOR_DEFS.add(new LaCrosseSensorDefinition());
         SENSOR_DEFS.add(new Ec3kSensorDefinition());
+        SENSOR_DEFS.add(new Pca301SensorDefinition());
     }
 
-    public SensorDefinition(ThingTypeUID thingTypeUid, String sketchName, String name) {
+    public SensorDefinition(ThingTypeUID thingTypeUid, String name, String type) {
         this.thingTypeUid = thingTypeUid;
-        this.sketchName = sketchName;
         this.name = name;
+        this.type = type;
     }
 
     public String getName() {
         return name;
-    }
-
-    public String getSketchName() {
-        return sketchName;
     }
 
     public ThingTypeUID getThingTypeUID() {
@@ -61,28 +56,6 @@ public abstract class SensorDefinition<R extends Reading> {
     public abstract JeeLinkSensorHandler createHandler(Thing thing);
 
     public abstract JeeLinkReadingConverter<R> createConverter();
-
-    public static ArrayList<JeeLinkReadingConverter<?>> createConverters(final JeeLinkHandler handler) {
-        ArrayList<JeeLinkReadingConverter<?>> converters = CONVERTERS.get(handler);
-
-        if (converters == null) {
-            converters = new ArrayList<>();
-            for (SensorDefinition<?> sensor : SENSOR_DEFS) {
-                converters.add(sensor.createConverter());
-            }
-            CONVERTERS.put(handler, converters);
-        }
-
-        return converters;
-    }
-
-    public static ArrayList<JeeLinkReadingConverter<?>> getConverters(final JeeLinkHandler handler) {
-        return CONVERTERS.get(handler);
-    }
-
-    public static void disposeConverters(final JeeLinkHandler handler) {
-        CONVERTERS.remove(handler);
-    }
 
     public static SensorDefinition<?> getSensorDefinition(Reading reading) {
         for (SensorDefinition<?> sensor : SENSOR_DEFS) {
@@ -106,5 +79,18 @@ public abstract class SensorDefinition<R extends Reading> {
         }
 
         return null;
+    }
+
+    public static JeeLinkReadingConverter<?> getConverter(String sensorType) {
+        for (SensorDefinition<?> sensor : SENSOR_DEFS) {
+            if (sensor.getSensorType().equals(sensorType)) {
+                return sensor.createConverter();
+            }
+        }
+        return null;
+    }
+
+    private String getSensorType() {
+        return type;
     }
 }

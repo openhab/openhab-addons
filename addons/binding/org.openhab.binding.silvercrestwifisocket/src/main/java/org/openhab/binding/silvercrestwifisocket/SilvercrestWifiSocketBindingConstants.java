@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,7 +10,9 @@ package org.openhab.binding.silvercrestwifisocket;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.binding.silvercrestwifisocket.internal.enums.SilvercrestWifiSocketVendor;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -19,7 +21,9 @@ import com.google.common.collect.ImmutableSet;
  * used across the whole binding.
  *
  * @author Jaime Vaz - Initial contribution
+ * @author Christian Heimerl - for integration of EasyHome
  */
+@NonNullByDefault
 public class SilvercrestWifiSocketBindingConstants {
 
     /**
@@ -55,12 +59,21 @@ public class SilvercrestWifiSocketBindingConstants {
      * Host address configuration argument key.
      */
     public static final String HOST_ADDRESS_ARG = "hostAddress";
+    /**
+     * Host address configuration argument key.
+     */
+    public static final String VENDOR_ARG = "vendor";
 
     // -------------- Default values ----------------
     /**
      * Default Wifi socket refresh interval.
      */
     public static final long DEFAULT_REFRESH_INTERVAL = 60;
+
+    /**
+     * Default Wifi socket vendor.
+     */
+    public static final SilvercrestWifiSocketVendor DEFAULT_VENDOR = SilvercrestWifiSocketVendor.LIDL_SILVERCREST;
 
     /**
      * Default Wifi socket default UDP port.

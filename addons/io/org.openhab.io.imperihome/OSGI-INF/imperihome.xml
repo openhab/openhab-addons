@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2010-2017 by the respective copyright holders.
+	Copyright (c) 2010-2018 by the respective copyright holders.
 
-    All rights reserved. This program and the accompanying materials
-    are made available under the terms of the Eclipse Public License v1.0
-    which accompanies this distribution, and is available at
-    http://www.eclipse.org/legal/epl-v10.html
+	All rights reserved. This program and the accompanying materials
+	are made available under the terms of the Eclipse Public License v1.0
+	which accompanies this distribution, and is available at
+	http://www.eclipse.org/legal/epl-v10.html
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" modified="modified" deactivate="deactivate" configuration-policy="optional" immediate="true" name="org.openhab.imperihome">
-   <implementation class="org.openhab.io.imperihome.internal.ImperiHomeApiServlet"/>
-   <reference bind="setHttpService" cardinality="1..1" interface="org.osgi.service.http.HttpService" name="HttpService" policy="static" unbind="unsetHttpService"/>
-   <reference bind="setItemRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.items.ItemRegistry" name="ItemRegistry" policy="dynamic" unbind="unsetItemRegistry"/>
-   <reference bind="setEventPublisher" cardinality="1..1" interface="org.eclipse.smarthome.core.events.EventPublisher" name="EventPublisher" policy="static" unbind="unsetEventPublisher"/>
-   <reference bind="setPersistenceServiceRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.persistence.PersistenceServiceRegistry" name="PersistenceServiceRegistry" policy="static" unbind="unsetPersistenceServiceRegistry"/>
-   <property name="service.pid" type="String" value="org.openhab.imperihome"/>
-   <property name="service.config.description.uri" type="String" value="io:imperihome"/>
-   <property name="service.config.label" type="String" value="ImperiHome Integration"/>
-   <property name="service.config.category" type="String" value="io"/>
-   <service>
-      <provide interface="javax.servlet.http.HttpServlet"/>
-   </service>
+	<implementation class="org.openhab.io.imperihome.internal.ImperiHomeApiServlet"/>
+	<reference bind="setHttpService" cardinality="1..1" interface="org.osgi.service.http.HttpService" name="HttpService" policy="static" unbind="unsetHttpService"/>
+	<reference bind="setItemRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.items.ItemRegistry" name="ItemRegistry" policy="dynamic" unbind="unsetItemRegistry"/>
+	<reference bind="setEventPublisher" cardinality="1..1" interface="org.eclipse.smarthome.core.events.EventPublisher" name="EventPublisher" policy="static" unbind="unsetEventPublisher"/>
+	<reference bind="setPersistenceServiceRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.persistence.PersistenceServiceRegistry" name="PersistenceServiceRegistry" policy="static" unbind="unsetPersistenceServiceRegistry"/>
+	<property name="service.pid" type="String" value="org.openhab.imperihome"/>
+	<property name="service.config.description.uri" type="String" value="io:imperihome"/>
+	<property name="service.config.label" type="String" value="ImperiHome Integration"/>
+	<property name="service.config.category" type="String" value="io"/>
+	<service>
+		<provide interface="javax.servlet.http.HttpServlet"/>
+	</service>
 </scr:component>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -72,7 +72,6 @@ public class TeslaChannelSelectorProxy {
                 } else {
                     return someState;
                 }
-
             }
         },
         CALENDAR_SUPPORTED("calendar_supported", "calendarsupported", OnOffType.class, true) {
@@ -151,7 +150,6 @@ public class TeslaChannelSelectorProxy {
                 } else {
                     return someState;
                 }
-
             }
         },
         CHARGE_MILES_ADDED_RANGE("charge_miles_added_rated", "chargeratedmilesadded", DecimalType.class, false) {
@@ -164,7 +162,6 @@ public class TeslaChannelSelectorProxy {
                 } else {
                     return someState;
                 }
-
             }
         },
         CHARGE_RATE("charge_rate", "chargerate", DecimalType.class, false) {
@@ -177,7 +174,6 @@ public class TeslaChannelSelectorProxy {
                 } else {
                     return someState;
                 }
-
             }
         },
         CHARGE_STARTING_RANGE("charge_starting_range", "chargestartingrange", StringType.class, false),
@@ -268,13 +264,12 @@ public class TeslaChannelSelectorProxy {
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
                 if (properties.containsKey("temperatureunits") && properties.get("temperatureunits").equals("F")) {
-                    return super.getState(String.valueOf(CelsiusToFahrenheit(((DecimalType) someState))));
+                    return super.getState(String.valueOf(celsiusToFahrenheit(((DecimalType) someState))));
                 } else {
                     return someState;
                 }
             }
         },
-
         ELEVATION("elevation", "location", DecimalType.class, false) {
 
             @Override
@@ -294,7 +289,6 @@ public class TeslaChannelSelectorProxy {
                 } else {
                     return someState;
                 }
-
             }
         },
         EST_HEADING("est_heading", "estimatedheading", DecimalType.class, false),
@@ -308,7 +302,6 @@ public class TeslaChannelSelectorProxy {
                 } else {
                     return someState;
                 }
-
             }
         },
         EU_VEHICLE("eu_vehicle", "european", OnOffType.class, true) {
@@ -377,10 +370,10 @@ public class TeslaChannelSelectorProxy {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 Date date = new Date();
-                SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
                 date.setTime(Long.valueOf(s) * 1000);
-                return super.getState(DATE_FORMATTER.format(date));
+                return super.getState(dateFormatter.format(date));
             }
         },
         GUI_DISTANCE_UNITS("gui_distance_units", "distanceunits", StringType.class, true),
@@ -423,7 +416,6 @@ public class TeslaChannelSelectorProxy {
                 } else {
                     return someState;
                 }
-
             }
         },
         INSIDE_TEMP("inside_temp", "insidetemp", DecimalType.class, false) {
@@ -431,7 +423,7 @@ public class TeslaChannelSelectorProxy {
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
                 if (properties.containsKey("temperatureunits") && properties.get("temperatureunits").equals("F")) {
-                    return super.getState(String.valueOf(CelsiusToFahrenheit(((DecimalType) someState))));
+                    return super.getState(String.valueOf(celsiusToFahrenheit(((DecimalType) someState))));
                 } else {
                     return someState;
                 }
@@ -532,14 +524,12 @@ public class TeslaChannelSelectorProxy {
         ODOMETER("odometer", "odometer", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                State someState = super.getState(s);
-                double odo = ((DecimalType) someState).doubleValue();
+                double odo = Math.round(((DecimalType) super.getState(s)).doubleValue() * 10.0) / 10.0;
                 if (properties.containsKey("distanceunits") && properties.get("distanceunits").equals("km/hr")) {
-                    return super.getState(String.valueOf(odo * 1.609344));
-                } else {
-                    return someState;
+                    odo = odo * 1.609344;
                 }
 
+                return super.getState(String.valueOf(odo));
             }
         },
         OPTION_CODES("option_codes", "options", StringType.class, true),
@@ -548,7 +538,7 @@ public class TeslaChannelSelectorProxy {
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
                 if (properties.containsKey("temperatureunits") && properties.get("temperatureunits").equals("F")) {
-                    return super.getState(String.valueOf(CelsiusToFahrenheit(((DecimalType) someState))));
+                    return super.getState(String.valueOf(celsiusToFahrenheit(((DecimalType) someState))));
                 } else {
                     return someState;
                 }
@@ -571,7 +561,7 @@ public class TeslaChannelSelectorProxy {
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
                 if (properties.containsKey("temperatureunits") && properties.get("temperatureunits").equals("F")) {
-                    return super.getState(String.valueOf(CelsiusToFahrenheit(((DecimalType) someState))));
+                    return super.getState(String.valueOf(celsiusToFahrenheit(((DecimalType) someState))));
                 } else {
                     return someState;
                 }
@@ -613,7 +603,6 @@ public class TeslaChannelSelectorProxy {
                 } else {
                     return someState;
                 }
-
             }
         },
         REAR_DEFROSTER("is_rear_defroster_on", "reardefroster", OnOffType.class, false) {
@@ -701,7 +690,7 @@ public class TeslaChannelSelectorProxy {
                 return super.getState(s);
             }
         },
-        SEAT_HEATER_LEFT("seat_heater_left", "leftseatheater", OnOffType.class, false) {
+        SEAT_HEATER_LEFT("seat_heater_left", "leftseatheater", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 if (s.equals("true") || s.equals("1")) {
@@ -761,30 +750,8 @@ public class TeslaChannelSelectorProxy {
                 return super.getState(s);
             }
         },
-        SEAT_HEATER_REAR_RIGHT_BACK("seat_heater_rear_right_back", "rightrearbackseatheater", OnOffType.class, false) {
-            @Override
-            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                if (s.equals("true") || s.equals("1")) {
-                    return super.getState("ON");
-                }
-                if (s.equals("false") || s.equals("0")) {
-                    return super.getState("OFF");
-                }
-                return super.getState(s);
-            }
-        },
-        SEAT_HEATER_REAR_RIGHT_LEFT("seat_heater_rear_left_back", "leftrearbackseatheater", OnOffType.class, false) {
-            @Override
-            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                if (s.equals("true") || s.equals("1")) {
-                    return super.getState("ON");
-                }
-                if (s.equals("false") || s.equals("0")) {
-                    return super.getState("OFF");
-                }
-                return super.getState(s);
-            }
-        },
+        SEAT_HEATER_REAR_RIGHT_BACK("seat_heater_rear_right_back", "rightrearbackseatheater", DecimalType.class, false),
+        SEAT_HEATER_REAR_RIGHT_LEFT("seat_heater_rear_left_back", "leftrearbackseatheater", DecimalType.class, false),
         SEAT_TYPE("seat_type", "seattype", DecimalType.class, true),
         SCHEDULED_CHARGING_PENDING("scheduled_charging_pending", "scheduledchargingpending", OnOffType.class, false) {
             @Override
@@ -803,10 +770,10 @@ public class TeslaChannelSelectorProxy {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 Date date = new Date();
-                SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
                 date.setTime(Long.valueOf(s) * 1000);
-                return super.getState(DATE_FORMATTER.format(date));
+                return super.getState(dateFormatter.format(date));
             }
         },
         SHIFTSTATE("shift_state", "shiftstate", StringType.class, false),
@@ -859,7 +826,7 @@ public class TeslaChannelSelectorProxy {
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
                 if (properties.containsKey("temperatureunits") && properties.get("temperatureunits").equals("F")) {
-                    return super.getState(String.valueOf(CelsiusToFahrenheit(((DecimalType) someState))));
+                    return super.getState(String.valueOf(celsiusToFahrenheit(((DecimalType) someState))));
                 } else {
                     return someState;
                 }
@@ -870,7 +837,7 @@ public class TeslaChannelSelectorProxy {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 Date date = new Date(Long.valueOf(s));
-                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
                 return super.getState(dateFormatter.format(date));
             }
         },
@@ -931,16 +898,40 @@ public class TeslaChannelSelectorProxy {
                 return super.getState(s);
             }
         },
+        ALLOWWAKEUP(null, "allowwakeup", OnOffType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                if (s.equals("true") || s.equals("1")) {
+                    return super.getState("ON");
+                }
+                if (s.equals("false") || s.equals("0")) {
+                    return super.getState("OFF");
+                }
+                return super.getState(s);
+            }
+        },
+        ENABLEEVENTS(null, "enableevents", OnOffType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                if (s.equals("true") || s.equals("1")) {
+                    return super.getState("ON");
+                }
+                if (s.equals("false") || s.equals("0")) {
+                    return super.getState("OFF");
+                }
+                return super.getState(s);
+            }
+        },
         WHEEL_TYPE("wheel_type", "wheeltype", StringType.class, true);
 
-        private final String RESTID;
+        private final String restID;
         private final String channelID;
         private Class<? extends Type> typeClass;
         private final boolean isProperty;
 
-        private TeslaChannelSelector(String RESTID, String channelID, Class<? extends Type> typeClass,
+        private TeslaChannelSelector(String restID, String channelID, Class<? extends Type> typeClass,
                 boolean isProperty) {
-            this.RESTID = RESTID;
+            this.restID = restID;
             this.channelID = channelID;
             this.typeClass = typeClass;
             this.isProperty = isProperty;
@@ -948,7 +939,7 @@ public class TeslaChannelSelectorProxy {
 
         @Override
         public String toString() {
-            return RESTID;
+            return restID;
         }
 
         public String getChannelID() {
@@ -985,7 +976,6 @@ public class TeslaChannelSelectorProxy {
 
         public static TeslaChannelSelector getValueSelectorFromChannelID(String valueSelectorText)
                 throws IllegalArgumentException {
-
             for (TeslaChannelSelector c : TeslaChannelSelector.values()) {
                 if (c.channelID.equals(valueSelectorText)) {
                     return c;
@@ -997,9 +987,8 @@ public class TeslaChannelSelectorProxy {
 
         public static TeslaChannelSelector getValueSelectorFromRESTID(String valueSelectorText)
                 throws IllegalArgumentException {
-
             for (TeslaChannelSelector c : TeslaChannelSelector.values()) {
-                if (c.RESTID != null && c.RESTID.equals(valueSelectorText)) {
+                if (c.restID != null && c.restID.equals(valueSelectorText)) {
                     return c;
                 }
             }
@@ -1016,7 +1005,7 @@ public class TeslaChannelSelectorProxy {
         return selector.getState(s, this, properties);
     }
 
-    private static int CelsiusToFahrenheit(DecimalType c) {
+    private static int celsiusToFahrenheit(DecimalType c) {
         float cTemp = c.floatValue();
         return (int) Math.round((cTemp * 9.0 / 5.0) + 32.0);
     }

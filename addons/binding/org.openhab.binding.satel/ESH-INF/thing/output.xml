@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="satel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="output">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ethm-1" />
+			<bridge-type-ref id="int-rs" />
+		</supported-bridge-type-refs>
+
+		<label>Output</label>
+		<description><![CDATA[An output from the alarm system.<br>The system supports the following outputs:<ul>
+<li>hardwired - on the control panel electronics board and in expanders. The number of available hardwired outputs is determined by the control panel during identification procedure.</li>
+<li>wireless - in the INTEGRA 128-WRL control panel and/or when the ACU-120, ACU-270, ACU-100 or ACU-250 controller is connected. The number of available wireless outputs depends on the number of wireless devices registered in the system and is determined during the procedure of adding wireless devices.</li>
+<li>virtual - the outputs which do not exist physically, but can be used e.g. for execution of logical functions.</li></ul>]]>
+		</description>
+
+		<channels>
+			<channel typeId="output_state" id="state" />
+		</channels>
+
+		<config-description>
+			<parameter name="id" type="integer" min="1" max="256" required="true">
+				<label>Output number</label>
+				<description>Number that identifies the output in the alarm system</description>
+			</parameter>
+			<parameter name="invertState" type="boolean" required="false">
+				<label>Invert state</label>
+				<description>Changes active (ON) state to 0</description>
+			</parameter>
+			<parameter name="commandOnly" type="boolean" required="false">
+				<label>Command only</label>
+				<description>Accepts commands only, does not update thing's state</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="output_state">
+		<item-type>Switch</item-type>
+		<label>Output state</label>
+		<description>Represents state of the output</description>
+	</channel-type>
+
+</thing:thing-descriptions>

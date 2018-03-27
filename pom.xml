@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.openhab</groupId>
         <artifactId>pom-tycho</artifactId>
-        <version>2.2.0-SNAPSHOT</version>
-        <relativePath></relativePath>
+        <version>2.3.0-SNAPSHOT</version>
+        <relativePath/>
     </parent>
 
     <groupId>org.openhab</groupId>
     <artifactId>pom-addons2</artifactId>
+    <version>2.3.0-SNAPSHOT</version>
     <name>openHAB 2 Add-ons</name>
 
     <organization>
@@ -26,9 +26,10 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:https://github.com/openhab/openhab2-addons.git</connection>
-        <developerConnection>scm:git:https://github.com/openhab/openhab2-addons.git</developerConnection>
+        <connection>scm:git:${scm.gitBaseUrl}/openhab2-addons.git</connection>
+        <developerConnection>scm:git:${scm.gitBaseUrl}/openhab2-addons.git</developerConnection>
         <url>https://github.com/openhab/openhab2-addons</url>
+        <tag>HEAD</tag>
     </scm>
 
     <issueManagement>
@@ -51,8 +52,29 @@
 
     <packaging>pom</packaging>
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.openhab.tools.sat</groupId>
+                    <artifactId>sat-plugin</artifactId>
+                    <version>{sat.version}</version>
+                    <configuration>
+                        <checkstyleProperties>${basedirRoot}/tools/checkstyle.properties</checkstyleProperties>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
     <properties>
-        <ohc.version>${project.version}</ohc.version>
+        <ohc.version>2.3.0-SNAPSHOT</ohc.version>
     </properties>
 
     <modules>
@@ -88,7 +110,7 @@
     </pluginRepositories>
 
     <repositories>
-        
+
         <!-- releases -->
         <repository>
             <id>jcenter</id>
@@ -130,13 +152,33 @@
             </snapshots>
         </repository>
 
-        <!-- SmartHome p2 repository -->
+        <!-- SmartHome p2 snapshot repository -->
         <repository>
-            <id>p2-smarthome</id>
+            <id>p2-smarthome-snapshot</id>
             <url>https://openhab.jfrog.io/openhab/eclipse-smarthome-stable</url>
             <layout>p2</layout>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
 
+        <!-- SmartHome p2 release repository -->
+<!--        <repository>
+            <id>p2-smarthome-release</id>
+            <url>http://download.eclipse.org/smarthome/updates-release/${esh.releaseVersion}</url>
+            <layout>p2</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+-->
         <!-- openHAB dependencies p2 repository -->
         <repository>
             <id>p2-openhab-deps-repo</id>
@@ -146,4 +188,3 @@
 
     </repositories>
 </project>
-

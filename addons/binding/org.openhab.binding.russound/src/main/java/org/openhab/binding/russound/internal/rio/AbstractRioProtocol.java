@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,8 +21,7 @@ import org.openhab.binding.russound.internal.rio.system.RioSystemHandler;
  * Defines the abstract base for a protocol handler. This base provides managment of the {@link SocketSession} and
  * provides helper methods that will callback {@link RioHandlerCallback}
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 public abstract class AbstractRioProtocol implements SocketSessionListener {
     /**
@@ -44,7 +43,6 @@ public abstract class AbstractRioProtocol implements SocketSessionListener {
      * @param callback a non-null {@link RioHandlerCallback} to update state and status
      */
     protected AbstractRioProtocol(SocketSession session, RioHandlerCallback callback) {
-
         if (session == null) {
             throw new IllegalArgumentException("session cannot be null");
         }

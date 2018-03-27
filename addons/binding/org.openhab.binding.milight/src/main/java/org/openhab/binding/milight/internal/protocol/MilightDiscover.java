@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -75,7 +75,7 @@ public class MilightDiscover extends Thread {
     public MilightDiscover(DiscoverResult discoverResult, int resendTimeoutInMillis, int resendAttempts)
             throws SocketException {
         this.resendAttempts = resendAttempts;
-        this.resendTimeoutInMillis = Math.min(resendTimeoutInMillis, 200);
+        this.resendTimeoutInMillis = resendTimeoutInMillis;
         discoverPacket_v3 = new DatagramPacket(discoverbuffer_v3, discoverbuffer_v3.length);
         discoverPacket_v6 = new DatagramPacket(discoverbuffer_v6, discoverbuffer_v6.length);
         datagramSocket = new DatagramSocket(null);

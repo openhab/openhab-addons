@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,18 +22,11 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  * @author Gerhard Riegler - Initial contribution
  */
 public class StateContactVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return VIRTUAL_DATAPOINT_NAME_STATE_CONTACT;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize(HmDevice device) {
         if (isApplicable(device)) {
@@ -48,17 +41,11 @@ public class StateContactVirtualDatapointHandler extends AbstractVirtualDatapoin
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canHandleEvent(HmDatapoint dp) {
         return isApplicable(dp.getChannel().getDevice()) && DATAPOINT_NAME_STATE.equals(dp.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
         Object value = convertState(dp.getValue());

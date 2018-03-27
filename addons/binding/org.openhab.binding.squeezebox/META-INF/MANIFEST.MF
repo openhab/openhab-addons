@@ -1,14 +1,16 @@
 Manifest-Version: 1.0
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: SqueezeBox Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.squeezebox;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .
-Import-Package: com.google.common.collect,
+Bundle-Version: 2.3.0.qualifier
+Export-Package: 
+ org.openhab.binding.squeezebox,
+ org.openhab.binding.squeezebox.handler
+Import-Package: 
  com.google.gson,
- org.apache.commons.io,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.client,
@@ -20,11 +22,14 @@ Import-Package: com.google.common.collect,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.audio,
  org.eclipse.smarthome.core.audio.utils,
+ org.eclipse.smarthome.core.cache,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.net,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
  org.eclipse.smarthome.io.transport.upnp,
  org.jupnp,
  org.jupnp.model,
@@ -33,8 +38,5 @@ Import-Package: com.google.common.collect,
  org.openhab.binding.squeezebox,
  org.openhab.binding.squeezebox.handler,
  org.osgi.framework,
- org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.squeezebox,
- org.openhab.binding.squeezebox.handler

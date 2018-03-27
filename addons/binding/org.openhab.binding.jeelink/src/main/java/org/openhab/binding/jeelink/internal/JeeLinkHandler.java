@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,6 +15,9 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -36,11 +39,15 @@ import org.slf4j.LoggerFactory;
  * @author Volker Bier - Initial contribution
  */
 public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, ConnectionListener {
+    private static final Pattern READING_P = Pattern.compile("^OK\\s+([0-9]+)(?:\\s+([0-9]+))+$");
+
     private final Logger logger = LoggerFactory.getLogger(JeeLinkHandler.class);
 
     private JeeLinkConnection connection;
-    private Map<String, JeeLinkReadingConverter> converters = new HashMap<>();
-    private Map<JeeLinkReadingConverter, List<ReadingHandler>> convSensorMap = new HashMap<>();
+    private Map<String, JeeLinkReadingConverter<?>> sensorTypeConvertersMap = new HashMap<>();
+    private Map<Class<?>, List<ReadingHandler<? extends Reading>>> readingClassHandlerMap = new HashMap<>();
+
+    private final AtomicReference<ReadingHandler<Reading>> discoveryHandler = new AtomicReference<>();
 
     private AtomicBoolean connectionInitialized = new AtomicBoolean(false);
     private ScheduledFuture<?> connectJob;
@@ -54,10 +61,6 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
         JeeLinkConfig cfg = getConfig().as(JeeLinkConfig.class);
 
         try {
-            for (JeeLinkReadingConverter c : SensorDefinition.createConverters(this)) {
-                converters.put(c.getSketchName(), c);
-            }
-
             connection = AbstractJeeLinkConnection.createFor(cfg, scheduler, this);
             connection.openConnection();
         } catch (java.net.ConnectException e) {
@@ -67,7 +70,15 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
 
     @Override
     public void connectionOpened() {
+        logger.debug("Connection to port {} opened.", connection.getPort());
+
         updateStatus(ThingStatus.ONLINE);
+
+        if (connectJob != null) {
+            logger.debug("Connection to port {} established. Reconnect cancelled.", connection.getPort());
+            connectJob.cancel(true);
+            connectJob = null;
+        }
     }
 
     @Override
@@ -82,30 +93,31 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
         connectionInitialized.set(false);
     }
 
-    public void addReadingHandler(ReadingHandler h) {
-        synchronized (convSensorMap) {
-            JeeLinkReadingConverter c = converters.get(h.getSketchName());
-            List<ReadingHandler> handlers = convSensorMap.get(c);
+    public void addReadingHandler(ReadingHandler<? extends Reading> h) {
+        synchronized (readingClassHandlerMap) {
+            List<ReadingHandler<? extends Reading>> handlers = readingClassHandlerMap.get(h.getReadingClass());
             if (handlers == null) {
                 handlers = new ArrayList<>();
-                convSensorMap.put(c, handlers);
+                readingClassHandlerMap.put(h.getReadingClass(), handlers);
             }
 
             if (!handlers.contains(h)) {
+                logger.debug("Adding reading handler for class {}: {}", h.getReadingClass(), h);
+
                 handlers.add(h);
             }
         }
     }
 
-    public void removeReadingHandler(ReadingHandler h) {
-        synchronized (convSensorMap) {
-            JeeLinkReadingConverter c = converters.get(h.getSketchName());
-            List<ReadingHandler> handlers = convSensorMap.get(c);
+    public void removeReadingHandler(ReadingHandler<? extends Reading> h) {
+        synchronized (readingClassHandlerMap) {
+            List<ReadingHandler<? extends Reading>> handlers = readingClassHandlerMap.get(h.getReadingClass());
             if (handlers != null) {
+                logger.debug("Removing reading handler for class {}: {}", h.getReadingClass(), h);
                 handlers.remove(h);
 
                 if (handlers.isEmpty()) {
-                    convSensorMap.remove(c);
+                    readingClassHandlerMap.remove(h.getReadingClass());
                 }
             }
         }
@@ -117,22 +129,51 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
 
     @Override
     public void handleInput(String input) {
-        synchronized (convSensorMap) {
-            for (JeeLinkReadingConverter c : convSensorMap.keySet()) {
-                Reading r = c.createReading(input);
-                if (r != null) {
-                    if (!connectionInitialized.getAndSet(true)) {
-                        JeeLinkConfig cfg = getConfig().as(JeeLinkConfig.class);
+        Matcher matcher = READING_P.matcher(input);
+        if (matcher.matches()) {
+            if (!connectionInitialized.getAndSet(true)) {
+                JeeLinkConfig cfg = getConfig().as(JeeLinkConfig.class);
 
-                        String initCommands = cfg.initCommands;
-                        if (initCommands != null && !initCommands.trim().isEmpty()) {
-                            logger.debug("Sending init commands for port {}: {}", connection.getPort(), initCommands);
-                            connection.sendInitCommands(initCommands);
-                        }
+                String initCommands = cfg.initCommands;
+                if (initCommands != null && !initCommands.trim().isEmpty()) {
+                    logger.debug("Sending init commands for port {}: {}", connection.getPort(), initCommands);
+                    connection.sendCommands(initCommands);
+                }
+            }
+
+            String sensorType = matcher.group(1);
+            JeeLinkReadingConverter<?> converter;
+
+            synchronized (sensorTypeConvertersMap) {
+                converter = sensorTypeConvertersMap.get(sensorType);
+                if (converter == null) {
+                    converter = SensorDefinition.getConverter(sensorType);
+
+                    if (converter == null) {
+                        logger.debug("Missing converter for sensor type {}. Ignoring readings.", sensorType);
+                        converter = new IgnoringConverter();
+                    } else {
+                        logger.debug("Registering converter for sensor type {}: {}", sensorType, converter);
                     }
 
-                    for (ReadingHandler h : convSensorMap.get(c)) {
-                        h.handleReading(r);
+                    sensorTypeConvertersMap.put(sensorType, converter);
+                }
+            }
+
+            Reading r = converter.createReading(input);
+            if (r != null) {
+                ReadingHandler<Reading> d = discoveryHandler.get();
+                if (d != null) {
+                    d.handleReading(r);
+                }
+
+                // propagate to the appropriate sensor handler
+                synchronized (readingClassHandlerMap) {
+                    List<ReadingHandler<? extends Reading>> handlers = readingClassHandlerMap.get(r.getClass());
+                    if (handlers != null) {
+                        for (ReadingHandler h : handlers) {
+                            h.handleReading(r);
+                        }
                     }
                 }
             }
@@ -150,9 +191,25 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
             connection.closeConnection();
         }
 
-        connectionInitialized.set(false);
+        synchronized (sensorTypeConvertersMap) {
+            sensorTypeConvertersMap.clear();
+        }
+        synchronized (readingClassHandlerMap) {
+            readingClassHandlerMap.clear();
+        }
 
-        SensorDefinition.disposeConverters(this);
         super.dispose();
+    }
+
+    public JeeLinkConnection getConnection() {
+        return connection;
+    }
+
+    public void startDiscovery(ReadingHandler<Reading> handler) {
+        discoveryHandler.set(handler);
+    }
+
+    public void stopDiscovery() {
+        discoveryHandler.set(null);
     }
 }

@@ -5,8 +5,8 @@ Citizen Science Toolkit.
 
 ## Prerequisites
 
-The API server uses Letsencrypt certificates. Therefore, one needs to either import the Letsencrypt
-root certificates into the local keystore (see the description in the
+The API server uses Letsencrypt certificates.
+Therefore, one needs to either import the Letsencrypt root certificates into the local keystore (see the description in the
 [netatmo addon](http://docs.openhab.org/addons/bindings/netatmo/readme.html)).
 Another way would be to simply update the JDK to at least JDK 1.8.0_111
 
@@ -16,7 +16,8 @@ This binding supports a generic "senseBox" API endpoint which is a representatio
 
 ## Discovery
 
-This binding provides no discovery. The desired senseBox must be configured manually or via a things file.
+This binding provides no discovery.
+The desired senseBox must be configured manually or via a things file.
 
 ## Binding configuration
 
@@ -24,9 +25,8 @@ The binding has no configuration options itself, all configuration is done at 'T
 
 ## Thing configuration
 
-The senseBox thing requires the box Id (which can be obtained on the map) and an interval in seconds
-for the API polling. The senseBox support team wrote in an email that polling even every five minutes
-is still o.k., therefore the minimum is hardcoded to be 300 seconds.
+The senseBox thing requires the box Id (which can be obtained on the map) and an interval in seconds for the API polling.
+The senseBox support team wrote in an email that polling even every five minutes is still o.k., therefore the minimum is hardcoded to be 300 seconds.
 
 ```
 Thing sensebox:box:home [ senseBoxId = "foothesmurfingbar", refreshInterval = 600 ]
@@ -37,27 +37,27 @@ Thing sensebox:box:home [ senseBoxId = "foothesmurfingbar", refreshInterval = 60
 In the table is shown more detailed information about each Channel type.
 The binding introduces the following channels:
 
-| Channel ID                                      | Channel Description                                          | Supported item type | Advanced |
-|-------------------------------------------------|--------------------------------------------------------------|---------------------|----------|
-| descriptors#location                            | Location of the box                                          | Point               | False    |
-| measurements#uvIntensity                        | Intensity of Ultraviolet radiation                           | Number              | False    |
-| measurements#luminance                          | Illuminance                                                  | Number              | False    |
-| measurements#pressure                           | Air pressure                                                 | Number              | False    |
-| measurements#humidity                           | Humidity                                                     | Number              | False    |
-| measurements#temperature                        | Temperature                                                  | Number              | False    |
-| measurements#particulateMatter2dot5             | Particulate Matter 2.5 µm in diameter                        | Number              | False    |
-| measurements#particulateMatter10                | Temperature Matter 10 µm in diameter                         | Number              | False    |
-| lastReported#uvIntensityLastReported            | The timestamp when uv radiation intensity was last reported  | DateTime            | True     |
-| lastReported#luminanceLastReported              | The timestamp when illuminance was last reported             | DateTime            | True     |
-| lastReported#pressureLastReported               | The timestamp when pressure was last reported                | DateTime            | True     |
-| lastReported#humidityLastReported               | The timestamp when humidity was last reported                | DateTime            | True     |
-| lastReported#temperatureLastReported            | The timestamp when temperature was last reported             | DateTime            | True     |
-| lastReported#particulateMatter2dot5LastReported | The timestamp when particulate matter 2.5 was last reported  | DateTime            | True     |
-| lastReported#particulateMatter10LastReported    | The timestamp when particulate matter 10 was last reported   | DateTime            | True     |
+| Channel ID                                      | Channel Description                                         | Supported item type | Advanced |
+|-------------------------------------------------|-------------------------------------------------------------|---------------------|----------|
+| descriptors#location                            | Location of the box                                         | Point               | False    |
+| measurements#uvIntensity                        | Intensity of Ultraviolet radiation                          | Number              | False    |
+| measurements#luminance                          | Illuminance                                                 | Number              | False    |
+| measurements#pressure                           | Air pressure                                                | Number              | False    |
+| measurements#humidity                           | Humidity                                                    | Number              | False    |
+| measurements#temperature                        | Temperature                                                 | Number              | False    |
+| measurements#particulateMatter2dot5             | Particulate Matter 2.5 µm in diameter                       | Number              | False    |
+| measurements#particulateMatter10                | Temperature Matter 10 µm in diameter                        | Number              | False    |
+| lastReported#uvIntensityLastReported            | The timestamp when uv radiation intensity was last reported | DateTime            | True     |
+| lastReported#luminanceLastReported              | The timestamp when illuminance was last reported            | DateTime            | True     |
+| lastReported#pressureLastReported               | The timestamp when pressure was last reported               | DateTime            | True     |
+| lastReported#humidityLastReported               | The timestamp when humidity was last reported               | DateTime            | True     |
+| lastReported#temperatureLastReported            | The timestamp when temperature was last reported            | DateTime            | True     |
+| lastReported#particulateMatter2dot5LastReported | The timestamp when particulate matter 2.5 was last reported | DateTime            | True     |
+| lastReported#particulateMatter10LastReported    | The timestamp when particulate matter 10 was last reported  | DateTime            | True     |
 
-The channels starting with "descriptors" are defined on the API server.
+Channels starting with "descriptors" are defined on the API server.
 
-## Full example
+## Example
 
 sensebox.things:
 
@@ -96,9 +96,9 @@ sitemap sensebox label="SenseBox Zugspitze" {
 
 ## senseBox API
 
-* https://docs.opensensemap.org/
-* https://docs.opensensemap.org/#api-Boxes-findBox
-* https://docs.opensensemap.org/#api-Measurements-getMeasurements
+*   <https://docs.opensensemap.org/>
+*   <https://docs.opensensemap.org/#api-Boxes-findBox>
+*   <https://docs.opensensemap.org/#api-Measurements-getMeasurements>
 
-* https://api.opensensemap.org/boxes/:boxId
-* https://api.opensensemap.org/boxes/:senseBoxId/sensors
+*   <https://api.opensensemap.org/boxes/:boxId>
+*   <https://api.opensensemap.org/boxes/:senseBoxId/sensors>

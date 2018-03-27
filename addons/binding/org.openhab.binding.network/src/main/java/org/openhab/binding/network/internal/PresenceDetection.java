@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,10 +25,10 @@ import java.util.function.Consumer;
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.network.internal.dhcp.DHCPListenService;
 import org.openhab.binding.network.internal.dhcp.IPRequestReceivedCallback;
+import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync;
 import org.openhab.binding.network.internal.utils.NetworkUtils;
 import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
 import org.openhab.binding.network.internal.utils.NetworkUtils.IpPingMethodEnum;
-import org.openhab.binding.network.toberemoved.cache.ExpiringCacheAsync;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -381,7 +381,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     }
 
     protected void performServicePing(int tcpPort) {
-        logger.trace("Perform TCP presence detection for {} on port", hostname, tcpPorts);
+        logger.trace("Perform TCP presence detection for {} on port: {}", hostname, tcpPorts);
         try {
             double pingTime = System.nanoTime();
             if (networkUtils.servicePing(destination.getHostAddress(), tcpPort, timeoutInMS)) {
@@ -406,7 +406,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      */
     protected void performARPping(String interfaceName) {
         try {
-            logger.trace("Perform ARP ping presence detection for {} on interface", hostname, interfaceName);
+            logger.trace("Perform ARP ping presence detection for {} on interface: {}", hostname, interfaceName);
             if (iosDevice) {
                 networkUtils.wakeUpIOS(destination);
                 Thread.sleep(50);

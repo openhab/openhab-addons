@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,6 +9,9 @@
 package org.openhab.binding.mihome.handler;
 
 import static org.openhab.binding.mihome.XiaomiGatewayBindingConstants.*;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -37,9 +40,21 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
     private static final int DEFAULT_VOLUME_PCENT = 50;
     private static final int DEFAULT_COLOR = 0xffffff;
 
+    private static final String RGB = "rgb";
+    private static final String ILLUMINATION = "illumination";
+    private static final String MID = "mid";
+    private static final String VOL = "vol";
+    private static final String JOIN_PERMISSION = "join_permission";
+    private static final String YES = "yes";
+    private static final String NO = "no";
+
     private Integer lastBrigthness;
     private Integer lastVolume;
     private Integer lastColor;
+
+    private static final int INCLUSION_MODE_TIMEOUT_MILLIS = 30000;
+    private Timer timer;
+    private boolean timerIsActive;
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiActorGatewayHandler.class);
 
@@ -48,11 +63,37 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
         lastBrigthness = DEFAULT_BRIGTHNESS_PCENT;
         lastVolume = DEFAULT_VOLUME_PCENT;
         lastColor = DEFAULT_COLOR;
+        timerIsActive = false;
+    }
+
+    private class TimerAction extends TimerTask {
+        @Override
+        public synchronized void run() {
+            updateState(CHANNEL_GATEWAY_JOIN_PERMISSION, OnOffType.OFF);
+            timerIsActive = false;
+        }
     }
 
     @Override
     void execute(ChannelUID channelUID, Command command) {
         switch (channelUID.getId()) {
+            case CHANNEL_GATEWAY_JOIN_PERMISSION:
+                if (command instanceof OnOffType) {
+                    if (command == OnOffType.ON) {
+                        timer = new Timer();
+                        timer.schedule(new TimerAction(), INCLUSION_MODE_TIMEOUT_MILLIS);
+                        timerIsActive = true;
+                    } else {
+                        if (timerIsActive) {
+                            timer.cancel();
+                            timerIsActive = false;
+                        }
+                    }
+                    getXiaomiBridgeHandler().writeToBridge(new String[] { JOIN_PERMISSION },
+                            new Object[] { command == OnOffType.ON ? YES : NO });
+                    return;
+                }
+                break;
             case CHANNEL_BRIGHTNESS:
                 if (command instanceof PercentType) {
                     int newBright = ((PercentType) command).intValue();
@@ -162,14 +203,14 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
 
     @Override
     void parseDefault(JsonObject data) {
-        if (data.has("rgb")) {
-            long rgb = data.get("rgb").getAsLong();
+        if (data.has(RGB)) {
+            long rgb = data.get(RGB).getAsLong();
             updateState(CHANNEL_BRIGHTNESS, new PercentType((int) (((rgb >> 24) & 0xff))));
             updateState(CHANNEL_COLOR,
                     HSBType.fromRGB((int) (rgb >> 16) & 0xff, (int) (rgb >> 8) & 0xff, (int) rgb & 0xff));
         }
-        if (data.has("illumination")) {
-            int illu = data.get("illumination").getAsInt();
+        if (data.has(ILLUMINATION)) {
+            int illu = data.get(ILLUMINATION).getAsInt();
             updateState(CHANNEL_ILLUMINATION, new DecimalType(illu));
         }
     }
@@ -180,7 +221,7 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
     }
 
     private void writeBridgeLightColor(long color) {
-        getXiaomiBridgeHandler().writeToBridge(new String[] { "rgb" }, new Object[] { color });
+        getXiaomiBridgeHandler().writeToBridge(new String[] { RGB }, new Object[] { color });
     }
 
     /**
@@ -191,7 +232,7 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
      * @param ringtoneId
      */
     private void writeBridgeRingtone(int ringtoneId, int volume) {
-        getXiaomiBridgeHandler().writeToBridge(new String[] { "mid", "vol" }, new Object[] { ringtoneId, volume });
+        getXiaomiBridgeHandler().writeToBridge(new String[] { MID, VOL }, new Object[] { ringtoneId, volume });
     }
 
     /**
@@ -199,7 +240,7 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
      * by setting "mid" parameter to 10000
      */
     private void stopRingtone() {
-        getXiaomiBridgeHandler().writeToBridge(new String[] { "mid" }, new Object[] { 10000 });
+        getXiaomiBridgeHandler().writeToBridge(new String[] { MID }, new Object[] { 10000 });
     }
 
 }

@@ -70,6 +70,7 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<label>Serial Port name</label>
+				<context>serial-port</context>
 				<description>The Serial port name to use to connect to the AVR.</description>
 			</parameter>
 		</config-description>

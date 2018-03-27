@@ -3,10 +3,54 @@
 	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
+	<config-description uri="thing-type:kodi:kodi">
+		<parameter-group name="network">
+			<label>Network</label>
+			<description>Network settings.</description>
+		</parameter-group>
+		<parameter-group name="connection">
+			<label>Connection</label>
+			<description>Connection settings.</description>
+		</parameter-group>
+		<parameter name="ipAddress" type="text" required="true" groupName="network">
+			<label>Network Address</label>
+			<description>The IP or host name of the Kodi</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="port" type="integer" required="true" min="1" max="65335" groupName="network">
+			<label>Web socket service port</label>
+			<description>Port for the web socket service</description>
+			<default>9090</default>
+		</parameter>
+		<parameter name="httpPort" type="integer" required="true" min="1" max="65335" groupName="network">
+			<label>HTTP service port</label>
+			<description>Port for the HTTP service.</description>
+			<default>8080</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="httpUser" type="text" required="false" groupName="network">
+			<label>Username</label>
+			<description>User name to access HTTP service.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="httpPassword" type="text" required="false" groupName="network">
+			<context>password</context>
+			<label>Password</label>
+			<description>Password to access the HTTP service.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" required="false" min="1" max="60" unit="s" groupName="connection">
+			<label>Refresh Interval</label>
+			<description>The refresh interval to poll Kodi API (in s).</description>
+			<default>10</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
 	<config-description uri="channel-type:kodi:pvr-channel">
 		<parameter name="group" type="text" required="true">
 			<label>PVR channel group</label>
-			<description>The PVR channel group name used to identify the channel id</description>
+			<description>The PVR channel group name used to identify the channel id.</description>
 			<default>All channels</default>
 		</parameter>
 	</config-description>

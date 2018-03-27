@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
-    <config-description uri="thing-type:mihome:device">
-        <parameter name="itemId" type="text">
-            <label>MiHome device ID</label>
-            <description>The identifier of this MiHome device</description>
-            <required>true</required>
-            <advanced>true</advanced>
-        </parameter>
-    </config-description>
+	<config-description uri="thing-type:mihome:device">
+		<parameter name="itemId" type="text">
+			<label>MiHome device ID</label>
+			<description>The identifier of this MiHome device</description>
+			<required>true</required>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
 
-    <config-description uri="bridge-type:mihome:bridge">
-        <parameter name="serialNumber" type="text" readOnly="true">
-            <label>Serial Number</label>
-            <description>Serial number of this Xiaomi bridge</description>
-            <advanced>true</advanced>
-        </parameter>
+	<config-description uri="bridge-type:mihome:bridge">
+		<parameter name="serialNumber" type="text" readOnly="true">
+			<label>Serial Number</label>
+			<description>Serial number of this Xiaomi bridge</description>
+			<advanced>true</advanced>
+		</parameter>
 
-        <parameter name="ipAddress" type="text">
-            <context>network_address</context>
-            <label>Network Address</label>
-            <description>Network address of this Xiaomi bridge</description>
-            <required>true</required>
-        </parameter>
+		<parameter name="ipAddress" type="text">
+			<context>network_address</context>
+			<label>Network Address</label>
+			<description>Network address of this Xiaomi bridge</description>
+			<required>true</required>
+		</parameter>
 
-        <parameter name="port" type="integer">
-            <context>network_address</context>
-            <label>Port</label>
-            <description>Port of the MiHome communication channel</description>
-            <required>true</required>
-            <default>9898</default>
-            <advanced>true</advanced>
-        </parameter>
+		<parameter name="port" type="integer">
+			<context>network_address</context>
+			<label>Port</label>
+			<description>Port of the MiHome communication channel</description>
+			<required>true</required>
+			<default>9898</default>
+			<advanced>true</advanced>
+		</parameter>
 
-        <parameter name="key" type="text">
-            <label>Developer Key</label>
-            <description>Developer key extracted from Xiaomi's app</description>
-            <required>false</required>
-        </parameter>
-    </config-description>
+		<parameter name="key" type="text">
+			<label>Developer Key</label>
+			<description>Developer key extracted from Xiaomi's app</description>
+			<required>false</required>
+		</parameter>
+	</config-description>
 </config-description:config-descriptions>

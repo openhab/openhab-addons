@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -81,6 +81,7 @@ public class RealTimeClockGetResponseMessage extends Message {
         Matcher matcher = PAYLOAD_PATTERN.matcher(payload);
         if (matcher.matches()) {
             macAddress = new MACAddress(matcher.group(1));
+            // Real-time clock values in the message are decimals and not hexadecimals
             seconds = Integer.parseInt(matcher.group(2));
             minutes = Integer.parseInt(matcher.group(3));
             hour = Integer.parseInt(matcher.group(4));

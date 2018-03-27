@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -99,7 +99,7 @@ public class FritzahaWebInterface {
             loginXml = HttpUtil.executeUrl("GET", getURL("login_sid.lua", addSID("")),
                     10 * this.config.getSyncTimeout());
         } catch (IOException e) {
-            logger.debug("Failed to get loginXML {}", e);
+            logger.debug("Failed to get loginXML {}", e.getLocalizedMessage(), e);
         }
         if (loginXml == null) {
             this.fbHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -136,11 +136,10 @@ public class FritzahaWebInterface {
             loginXml = HttpUtil.executeUrl("GET",
                     getURL("login_sid.lua",
                             (this.config.getUser() != null && !"".equals(this.config.getUser())
-                                    ? ("username=" + this.config.getUser() + "&")
-                                    : "") + "response=" + response),
+                                    ? ("username=" + this.config.getUser() + "&") : "") + "response=" + response),
                     10 * this.config.getSyncTimeout());
         } catch (IOException e) {
-            logger.debug("Failed to get loginXML {}", e);
+            logger.debug("Failed to get loginXML {}", e.getLocalizedMessage(), e);
         }
         if (loginXml == null) {
             this.fbHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SMAEnergyMeterHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(SMAEnergyMeterHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SMAEnergyMeterHandler.class);
     private EnergyMeter energyMeter;
     private ScheduledFuture<?> pollingJob;
 
@@ -71,12 +71,7 @@ public class SMAEnergyMeterHandler extends BaseThingHandler {
         }
 
         int pollingPeriod = (config.getPollingPeriod() == null) ? 30 : config.getPollingPeriod();
-        pollingJob = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                updateData();
-            }
-        }, 0, pollingPeriod, TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, pollingPeriod, TimeUnit.SECONDS);
         logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
 
         updateStatus(ThingStatus.ONLINE);

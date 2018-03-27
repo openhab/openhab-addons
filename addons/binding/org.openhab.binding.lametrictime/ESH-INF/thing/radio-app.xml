@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lametrictime"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="radioApp" listed="true">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="device" />
+		</supported-bridge-type-refs>
+
+		<label>LaMetric Time Radio</label>
+		<description>Provides control for the radio app on the LaMetric Time</description>
+
+		<channels>
+			<channel id="control" typeId="controlType">
+				<label>Player</label>
+				<description>Control interface for manipulating the radio</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="widgetId" type="text" required="false">
+				<label>Widget ID</label>
+				<description>Unique identifier for the application instance (defaults to first instance)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="controlType">
+		<item-type>Player</item-type>
+		<label>Player</label>
+		<description>Player control</description>
+	</channel-type>
+
+</thing:thing-descriptions>

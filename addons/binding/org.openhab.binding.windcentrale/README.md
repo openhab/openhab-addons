@@ -21,18 +21,18 @@ Optional configuration is the number of wind shares ("Winddelen") and the refres
 
 ## Channels
 
-- **windSpeed** Measured current wind speed 
-- **windDirection** Current wind direction
-- **powerAbsTot** Total power
-- **powerAbsWd** Power provided for your wind shares
-- **powerRel** Relative power
-- **kwh** Current energy
-- **kwhForecast** Energy forecast
-- **runPercentage** Run percentage this year
-- **timestamp** Timestamp of the last update
+-   **windSpeed** Measured current wind speed
+-   **windDirection** Current wind direction
+-   **powerAbsTot** Total power
+-   **powerAbsWd** Power provided for your wind shares
+-   **powerRel** Relative power
+-   **kwh** Current energy
+-   **kwhForecast** Energy forecast
+-   **runPercentage** Run percentage this year
+-   **timestamp** Timestamp of the last update
 
 
-## Full example
+## Example
 
 ```
 Group   gReiger "Windcentrale Reiger"   <wind>
@@ -46,5 +46,4 @@ Number  ReigerKwh               "kwh [%1.0f]"                     <wind>    (gRe
 Number  ReigerKwhForecast       "Productie forecast [%1.0f]"      <wind>    (gReiger) {channel="windcentrale:mill:reiger:kwhForecast")
 Number  ReigerRunPercentage     "Run percentage [%1.0f %%]"       <wind>    (gReiger) {channel="windcentrale:mill:reiger:runPercentage")
 Number  ReigerTimestamp         "Update timestamp [%1$ta %1$tR]"  <wind>    (gReiger) {channel="windcentrale:mill:reiger:timestamp")
-
 ```

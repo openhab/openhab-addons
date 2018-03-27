@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -58,6 +58,11 @@ public interface HomematicGateway {
      * Loads all values into the given channel.
      */
     public void loadChannelValues(HmChannel channel) throws IOException;
+
+    /**
+     * Reenumerates the set of VALUES datapoints for the given channel.
+     */
+    public void updateChannelValueDatapoints(HmChannel channel) throws IOException;
 
     /**
      * Prepares the device for reloading all values from the gateway.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -205,7 +205,11 @@ public class NetworkUtils {
         if (StringUtils.isBlank(result)) {
             return null;
         } else if (result.contains("Thomas Habets")) {
-            return ArpPingUtilEnum.THOMAS_HABERT_ARPING;
+            if (result.contains("-w sec Specify a timeout")) {
+                return ArpPingUtilEnum.THOMAS_HABERT_ARPING;
+            } else {
+                return ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT;
+            }
         } else if (result.contains("-w timeout")) {
             return ArpPingUtilEnum.IPUTILS_ARPING;
         }
@@ -231,15 +235,23 @@ public class NetworkUtils {
             throws IOException, InterruptedException {
         Process proc;
         // Yes, all supported operating systems have their own ping utility with a different command line
-        if (SystemUtils.IS_OS_WINDOWS) {
-            proc = new ProcessBuilder("ping", "-w", String.valueOf(timeoutInMS), "-n", "1", hostname).start();
-        } else if (SystemUtils.IS_OS_MAC) {
-            proc = new ProcessBuilder("ping", "-t", String.valueOf(timeoutInMS / 1000), "-c", "1", hostname).start();
-        } else if (SystemUtils.IS_OS_UNIX) {
-            proc = new ProcessBuilder("ping", "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", hostname).start();
-        } else {
-            // We cannot estimate the command line for any other operating system and just return false
-            return false;
+        switch (method) {
+            case IPUTILS_LINUX_PING:
+                proc = new ProcessBuilder("ping", "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", hostname)
+                        .start();
+                break;
+            case MAC_OS_PING:
+                proc = new ProcessBuilder("ping", "-t", String.valueOf(timeoutInMS / 1000), "-c", "1", hostname)
+                        .start();
+                break;
+            case WINDOWS_PING:
+                proc = new ProcessBuilder("ping", "-w", String.valueOf(timeoutInMS), "-n", "1", hostname).start();
+                break;
+            case JAVA_PING:
+            default:
+                // We cannot estimate the command line for any other operating system and just return false
+                return false;
+
         }
 
         // The return code is 0 for a successful ping. 1 if device didn't respond and 2 if there is another error like
@@ -250,7 +262,8 @@ public class NetworkUtils {
     public enum ArpPingUtilEnum {
         UNKNOWN_TOOL,
         IPUTILS_ARPING,
-        THOMAS_HABERT_ARPING
+        THOMAS_HABERT_ARPING,
+        THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT
     }
 
     /**
@@ -273,10 +286,12 @@ public class NetworkUtils {
             return false;
         }
         Process proc;
-        // IPutilsArping uses "-w", ThomasHabertArping "-W" for the timeout
-        String timeoutFlag = arpingTool == ArpPingUtilEnum.IPUTILS_ARPING ? "-w" : "-W";
-        proc = new ProcessBuilder(arpUtilPath, timeoutFlag, String.valueOf(timeoutInMS / 1000), "-c", "1", "-I",
-                interfaceName, ipV4address).start();
+        if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT) {
+            proc = new ProcessBuilder(arpUtilPath, "-c", "1", "-I", interfaceName, ipV4address).start();
+        } else {
+            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", "-I",
+                    interfaceName, ipV4address).start();
+        }
 
         // The return code is 0 for a successful ping. 1 if device didn't respond and 2 if there is another error like
         // network interface not ready.

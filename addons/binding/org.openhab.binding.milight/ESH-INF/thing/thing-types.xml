@@ -1,314 +1,314 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="milight"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridgeV3">
-        <label>Milight/Easybulb Bridge</label>
-        <description>A Milight/Easybulb bridge. This bridge cannot handle newer light bulbs (2016+) of the aforementioned manufacturers.</description>
-        
-        <config-description>
-            <parameter name="ADDR" type="text" required="true">
-                <label>IP or Host Name</label>
-                <description>Will be resolved by discovery if auto configured
-                </description>
-            </parameter>
-            <parameter name="REPEAT" type="integer" required="false" min="0" max="5">
-                <label>Repeat commands</label>
-                <description>Usually the bridge receives all commands albeit UDP is used. But the actual bulbs might be slightly out of bridge radio range and it sometimes helps to send commands multiple times. 
-                </description>
-                <default>1</default>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="WAIT_BETWEEN_COMMANDS" type="integer" required="false" min="0" max="400">
-                <label>Wait between commands (ms)</label>
-                <description>Time to wait before sending another command to the bridge. It is safe to have a wait time of 1/10s but usually sufficient to just wait 50ms. If the value is too high, commands queue up.  
-                </description>
-                <default>100</default>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="CUSTOM_PORT" type="integer" required="false">
-                <label>Custom port</label>
-                <description>You can set a custom port that will take precedence over the default port which is selected depending on the bridge version: Version 6 uses 5987, Version 3/4/5 uses 8899. Version 2 uses 50000.
-                </description>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="ID" type="text" required="true">
-                <label>Bridge ID</label>
-                <description>The mac address of the bridge in upper case letters without delimiter.
-                This is used to check if the given IP corresponds to the right device. The bridge is set offline if the device
-                does not respond with the correct Bride ID and a re-detection is started. Useful for DHCP environments where
-                IPs may change over time, after power outage etc. Will be resolved by discovery if auto configured.
-                </description>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="REFRESH_IN_SEC" type="integer" min="5" max="300">
-                <label>Refresh interval</label>
-                <description>Interval in seconds to check for device presence. The Bridge ID is used to check if the IP is still the right one.
-                </description>
-                <default>10</default>
-                <advanced>true</advanced>
-            </parameter>
-        </config-description>
+		<label>Milight/Easybulb Bridge</label>
+		<description>A Milight/Easybulb bridge. This bridge cannot handle newer light bulbs (2016+) of the aforementioned manufacturers.</description>
+
+		<config-description>
+			<parameter name="ADDR" type="text" required="true">
+				<label>IP or Host Name</label>
+				<description>Will be resolved by discovery if auto configured
+				</description>
+			</parameter>
+			<parameter name="REPEAT" type="integer" required="false" min="0" max="5">
+				<label>Repeat commands</label>
+				<description>Usually the bridge receives all commands albeit UDP is used. But the actual bulbs might be slightly out of bridge radio range and it sometimes helps to send commands multiple times.
+				</description>
+				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="WAIT_BETWEEN_COMMANDS" type="integer" required="false" min="0" max="400">
+				<label>Wait between commands (ms)</label>
+				<description>Time to wait before sending another command to the bridge. It is safe to have a wait time of 1/10s but usually sufficient to just wait 50ms. If the value is too high, commands queue up.
+				</description>
+				<default>100</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CUSTOM_PORT" type="integer" required="false">
+				<label>Custom port</label>
+				<description>You can set a custom port that will take precedence over the default port which is selected depending on the bridge version: Version 6 uses 5987, Version 3/4/5 uses 8899. Version 2 uses 50000.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ID" type="text" required="true">
+				<label>Bridge ID</label>
+				<description>The mac address of the bridge in upper case letters without delimiter.
+				This is used to check if the given IP corresponds to the right device. The bridge is set offline if the device
+				does not respond with the correct Bride ID and a re-detection is started. Useful for DHCP environments where
+				IPs may change over time, after power outage etc. Will be resolved by discovery if auto configured.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="REFRESH_IN_SEC" type="integer" min="5" max="300">
+				<label>Refresh interval</label>
+				<description>Interval in seconds to check for device presence. The Bridge ID is used to check if the IP is still the right one.
+				</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
 	</bridge-type>
-	
-	
-    <bridge-type id="bridgeV6">
-        <label>iBox/iBox2</label>
-        <description>A Milight/Easybulb bridge for all newer light bulbs (2016+) of the aforementioned companies.</description>
-        
-        <properties>
-        <property name="sessionid">N/A</property>
-        <property name="sessionid_last_refresh">N/A</property>
-        </properties>
-        
-        <config-description>
-            <parameter name="ADDR" type="text" required="true">
-                <label>IP or Host Name</label>
-                <description>Will be resolved by discovery if auto configured
-                </description>
-            </parameter>
-            <parameter name="PASSWORD_BYTE_1" type="integer" required="false">
-                <label>Password Byte 1</label>
-                <description>Bridge V6 allows to set two password bytes. A value from 0-255 is allowed.
-                </description>
-                <default>0</default>
-            </parameter>
-            <parameter name="PASSWORD_BYTE_2" type="integer" required="false">
-                <label>Password Byte 2</label>
-                <description>Bridge V6 allows to set two password bytes. A value from 0-255 is allowed.
-                </description>
-                <default>0</default>
-            </parameter>
-            <parameter name="REPEAT" type="integer" required="false" min="0" max="5">
-                <label>Repeat commands</label>
-                <description>Usually the bridge receives all commands albeit UDP is used. But the actual bulbs might be slightly out of bridge radio range and it sometimes helps to send commands multiple times. 
-                </description>
-                <default>1</default>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="WAIT_BETWEEN_COMMANDS" type="integer" required="false" min="0" max="400">
-                <label>Wait between commands (ms)</label>
-                <description>Time to wait before sending another command to the bridge. It is safe to have a wait time of 1/10s but usually sufficient to just wait 50ms. If the value is too high, commands queue up.  
-                </description>
-                <default>100</default>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="CUSTOM_PORT" type="integer" required="false">
-                <label>Custom port</label>
-                <description>You can set a custom port that will take precedence over the default port which is selected depending on the bridge version: Version 6 uses 5987, Version 3/4/5 uses 8899. Version 2 uses 50000.
-                </description>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="ID" type="text" required="true">
-                <label>Bridge ID</label>
-                <description>The mac address of the bridge in upper case letters without delimiter.
-                This is used to check if the given IP corresponds to the right device. The bridge is set offline if the device
-                does not respond with the correct Bride ID and a re-detection is started. Useful for DHCP environments where
-                IPs may change over time, after power outage etc. Will be resolved by discovery if auto configured.
-                </description>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="REFRESH_IN_SEC" type="integer" min="5" max="300">
-                <label>Keep alive interval</label>
-                <description>Interval in seconds to send a keep alive ping. If a session expires and need to be reestablished, the bridge and all devices could go offline for a few seconds.
-                </description>
-                <default>5</default>
-                <advanced>true</advanced>
-            </parameter>
-        </config-description>
-    </bridge-type>
-    
-    <thing-type id="rgbv2Led">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bridgeV3" />
-        </supported-bridge-type-refs>
-        <label>RGB Led</label>
-        <description>Milight RGB Led (Without a white channel)</description>
 
-        <channels>
-            <channel id="ledbrightness" typeId="ledbrightness"/>
-            <channel id="ledcolor" typeId="ledcolor"/>
-            <channel id="animation_mode_relative" typeId="animation_mode_relative"/>
-        </channels>
-    </thing-type>
-    
-    <thing-type id="rgbLed">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bridgeV3" />
-        </supported-bridge-type-refs>
-        <label>RGB Led</label>
-        <description>Milight RGB Led with white channel. No saturation control. If the set saturation is below a threshold of 50%, the bulb turns into white mode.</description>
 
-        <channels>
-            <channel id="lednightmode" typeId="lednightmode"/>
-            <channel id="ledwhitemode" typeId="ledwhitemode"/>
-            <channel id="ledbrightness" typeId="ledbrightness"/>
-            <channel id="ledcolor" typeId="ledcolor"/>
-            <channel id="animation_speed_relative" typeId="animation_speed_relative"/>
-            <channel id="animation_mode_relative" typeId="animation_mode_relative"/>
-        </channels>
-    </thing-type>
-    
-    <thing-type id="rgbiboxLed">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bridgeV6" />
-        </supported-bridge-type-refs>
-        <label>IBox integrated Led</label>
-        <description>Integrated led of the ibox bridge with no dedicated white channel and therefore no saturation control</description>
+	<bridge-type id="bridgeV6">
+		<label>iBox/iBox2</label>
+		<description>A Milight/Easybulb bridge for all newer light bulbs (2016+) of the aforementioned companies.</description>
 
-        <channels>
-            <channel id="ledwhitemode" typeId="ledwhitemode"/>
-            <channel id="ledbrightness" typeId="ledbrightness"/>
-            <channel id="ledcolor" typeId="ledcolor"/>
-            <channel id="animation_speed_relative" typeId="animation_speed_relative"/>
-            <channel id="animation_mode" typeId="animation_mode"/>
-            <channel id="animation_mode_relative" typeId="animation_mode_relative"/>
-        </channels>
-    </thing-type>
-    
-    <thing-type id="rgbwLed">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bridgeV6" />
-        </supported-bridge-type-refs>
-        <label>RGBW Led</label>
-        <description>RGBW Led (Bridge v6) with 16320 colours</description>
+		<properties>
+		<property name="sessionid">N/A</property>
+		<property name="sessionid_last_refresh">N/A</property>
+		</properties>
 
-        <channels>
-            <channel id="ledlink" typeId="ledlink"/>
-            <channel id="ledunlink" typeId="ledunlink"/>
-            <channel id="lednightmode" typeId="lednightmode"/>
-            <channel id="ledwhitemode" typeId="ledwhitemode"/>
-            <channel id="ledbrightness" typeId="ledbrightness"/>
-            <channel id="ledcolor" typeId="ledcolor"/>
-            <channel id="animation_speed_relative" typeId="animation_speed_relative"/>
-            <channel id="animation_mode" typeId="animation_mode"/>
-            <channel id="animation_mode_relative" typeId="animation_mode_relative"/>
-        </channels>
-    </thing-type>
-    
-    <thing-type id="rgbwwLed">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bridgeV6" />
-        </supported-bridge-type-refs>
-        <label>RGBWW/White Led</label>
-        <description>RGBWW or White Led (Bridge v6)</description>
+		<config-description>
+			<parameter name="ADDR" type="text" required="true">
+				<label>IP or Host Name</label>
+				<description>Will be resolved by discovery if auto configured
+				</description>
+			</parameter>
+			<parameter name="PASSWORD_BYTE_1" type="integer" required="false">
+				<label>Password Byte 1</label>
+				<description>Bridge V6 allows to set two password bytes. A value from 0-255 is allowed.
+				</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="PASSWORD_BYTE_2" type="integer" required="false">
+				<label>Password Byte 2</label>
+				<description>Bridge V6 allows to set two password bytes. A value from 0-255 is allowed.
+				</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="REPEAT" type="integer" required="false" min="0" max="5">
+				<label>Repeat commands</label>
+				<description>Usually the bridge receives all commands albeit UDP is used. But the actual bulbs might be slightly out of bridge radio range and it sometimes helps to send commands multiple times.
+				</description>
+				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="WAIT_BETWEEN_COMMANDS" type="integer" required="false" min="0" max="400">
+				<label>Wait between commands (ms)</label>
+				<description>Time to wait before sending another command to the bridge. It is safe to have a wait time of 1/10s but usually sufficient to just wait 50ms. If the value is too high, commands queue up.
+				</description>
+				<default>100</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CUSTOM_PORT" type="integer" required="false">
+				<label>Custom port</label>
+				<description>You can set a custom port that will take precedence over the default port which is selected depending on the bridge version: Version 6 uses 5987, Version 3/4/5 uses 8899. Version 2 uses 50000.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ID" type="text" required="true">
+				<label>Bridge ID</label>
+				<description>The mac address of the bridge in upper case letters without delimiter.
+				This is used to check if the given IP corresponds to the right device. The bridge is set offline if the device
+				does not respond with the correct Bride ID and a re-detection is started. Useful for DHCP environments where
+				IPs may change over time, after power outage etc. Will be resolved by discovery if auto configured.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="REFRESH_IN_SEC" type="integer" min="5" max="300">
+				<label>Keep alive interval</label>
+				<description>Interval in seconds to send a keep alive ping. If a session expires and need to be reestablished, the bridge and all devices could go offline for a few seconds.
+				</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
 
-        <channels>
-            <channel id="ledlink" typeId="ledlink"/>
-            <channel id="ledunlink" typeId="ledunlink"/>
-            <channel id="lednightmode" typeId="lednightmode"/>
-            <channel id="ledwhitemode" typeId="ledwhitemode"/>
-            <channel id="ledtemperature" typeId="ledtemperature"/>
-            <channel id="ledbrightness" typeId="ledbrightness"/>
-            <channel id="ledsaturation" typeId="ledsaturation"/>
-            <channel id="ledcolor" typeId="ledcolor"/>
-            <channel id="animation_speed_relative" typeId="animation_speed_relative"/>
-            <channel id="animation_mode" typeId="animation_mode"/>
-            <channel id="animation_mode_relative" typeId="animation_mode_relative"/>
-        </channels>
-    </thing-type>
-    
-    <thing-type id="whiteLed">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bridgeV3" />
-        </supported-bridge-type-refs>
-        <label>White Led</label>
-        <description>White Led</description>
+	<thing-type id="rgbv2Led">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridgeV3" />
+		</supported-bridge-type-refs>
+		<label>RGB Led</label>
+		<description>Milight RGB Led (Without a white channel)</description>
 
-        <channels>
-            <channel id="lednightmode" typeId="lednightmode"/>
-            <channel id="ledbrightness" typeId="ledbrightness"/>
-            <channel id="ledtemperature" typeId="ledtemperature"/>
-            <channel id="animation_mode_relative" typeId="animation_mode_relative"/>
-        </channels>
-    </thing-type>
+		<channels>
+			<channel id="ledbrightness" typeId="ledbrightness"/>
+			<channel id="ledcolor" typeId="ledcolor"/>
+			<channel id="animation_mode_relative" typeId="animation_mode_relative"/>
+		</channels>
+	</thing-type>
 
-    <channel-type id="lednightmode">
-        <kind>trigger</kind>
-        <label>Nightmode</label>
-        <description>Switch to night mode, a very dimmed brightness mode</description>
-    </channel-type>
-    
-    <channel-type id="ledwhitemode">
-        <kind>trigger</kind>
-        <label>Whitemode</label>
-        <description>Switch to white mode, which basically sets the saturation to 0 (turns off the color leds)</description>
-    </channel-type>
+	<thing-type id="rgbLed">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridgeV3" />
+		</supported-bridge-type-refs>
+		<label>RGB Led</label>
+		<description>Milight RGB Led with white channel. No saturation control. If the set saturation is below a threshold of 50%, the bulb turns into white mode.</description>
 
-    <channel-type id="ledlink" advanced="true">
-        <kind>trigger</kind>
-        <label>Link bulb</label>
-        <description>Sync bulb to this zone within 3 seconds of light bulb socket power on</description>
-    </channel-type>
-    
-    <channel-type id="ledunlink" advanced="true">
-        <kind>trigger</kind>
-        <label>Unlink bulb</label>
-        <description>Clear bulb from this zone within 3 seconds of light bulb socket power on</description>
-    </channel-type>
-    
-    <channel-type id="ledcolor">
-        <item-type>Color</item-type>
-        <label>Color</label>
-        <description>Color of the LED. Bind to a Dimmer to just set the brightness, bind to a Color chooser for the full control and bind to a Switch for turning the led on or off.</description>
-        <category>ColorLight</category>
-    </channel-type>
-    
-    <channel-type id="ledbrightness">
-        <item-type>Dimmer</item-type>
-        <label>Brightness</label>
-        <description>The brightness can be set in 16 steps for RGBW/White leds and in 64 steps for RGBWW leds</description>
-        <category>DimmableLight</category>
-        <state min="0" max="100" step="1" pattern="%d"></state>
-    </channel-type>
-    
-    <channel-type id="ledsaturation" advanced="true">
-        <item-type>Dimmer</item-type>
-        <label>Saturation</label>
-        <description>The saturation can be set in 64 steps for RGBWW leds</description>
-        <category>DimmableLight</category>
-        <state min="0" max="100" step="1" pattern="%d"></state>
-    </channel-type>
-    
-    <channel-type id="ledtemperature">
-        <item-type>Dimmer</item-type>
-        <label>Color temperature</label>
-        <description>White leds and RGBWW allow to change between a cold and a warm color temperature. White support 16, RGBWW support 64 steps</description>
-        <category>DimmableLight</category>
-        <state min="0" max="100" step="1" pattern="%d"></state>
-    </channel-type>
-    
-    <channel-type id="animation_speed_relative">
-        <kind>trigger</kind>
-        <label>Animation speed</label>
-        <description>The speed of some animations can be increased or decreased</description>
-    </channel-type>
-    
-    <channel-type id="animation_mode_relative">
-        <kind>trigger</kind>
-        <label>Animation mode</label>
-        <description>Switch to the next/previous animation mode of your RGBW or white LED. Bind this to a Next/Previous channel type.</description>
-    </channel-type>
-    
-    <channel-type id="animation_mode">
-        <item-type>Number</item-type>
-        <label>Animation mode</label>
-        <description>Animation mode of your LED. RGBWW leds support 9 animation modes.</description>
-        <category>Light</category>
-        <state>
-            <options>
-                <option value="1">Animation 1</option>
-                <option value="2">Animation 2</option>
-                <option value="3">Animation 3</option>
-                <option value="4">Animation 4</option>
-                <option value="5">Animation 5</option>
-                <option value="6">Animation 6</option>
-                <option value="7">Animation 7</option>
-                <option value="8">Animation 8</option>
-                <option value="9">Animation 9</option>
-            </options>
-        </state>
-    </channel-type>
+		<channels>
+			<channel id="lednightmode" typeId="lednightmode"/>
+			<channel id="ledwhitemode" typeId="ledwhitemode"/>
+			<channel id="ledbrightness" typeId="ledbrightness"/>
+			<channel id="ledcolor" typeId="ledcolor"/>
+			<channel id="animation_speed_relative" typeId="animation_speed_relative"/>
+			<channel id="animation_mode_relative" typeId="animation_mode_relative"/>
+		</channels>
+	</thing-type>
+
+	<thing-type id="rgbiboxLed">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridgeV6" />
+		</supported-bridge-type-refs>
+		<label>IBox integrated Led</label>
+		<description>Integrated led of the ibox bridge with no dedicated white channel and therefore no saturation control</description>
+
+		<channels>
+			<channel id="ledwhitemode" typeId="ledwhitemode"/>
+			<channel id="ledbrightness" typeId="ledbrightness"/>
+			<channel id="ledcolor" typeId="ledcolor"/>
+			<channel id="animation_speed_relative" typeId="animation_speed_relative"/>
+			<channel id="animation_mode" typeId="animation_mode"/>
+			<channel id="animation_mode_relative" typeId="animation_mode_relative"/>
+		</channels>
+	</thing-type>
+
+	<thing-type id="rgbwLed">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridgeV6" />
+		</supported-bridge-type-refs>
+		<label>RGBW Led</label>
+		<description>RGBW Led (Bridge v6) with 16320 colours</description>
+
+		<channels>
+			<channel id="ledlink" typeId="ledlink"/>
+			<channel id="ledunlink" typeId="ledunlink"/>
+			<channel id="lednightmode" typeId="lednightmode"/>
+			<channel id="ledwhitemode" typeId="ledwhitemode"/>
+			<channel id="ledbrightness" typeId="ledbrightness"/>
+			<channel id="ledcolor" typeId="ledcolor"/>
+			<channel id="animation_speed_relative" typeId="animation_speed_relative"/>
+			<channel id="animation_mode" typeId="animation_mode"/>
+			<channel id="animation_mode_relative" typeId="animation_mode_relative"/>
+		</channels>
+	</thing-type>
+
+	<thing-type id="rgbwwLed">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridgeV6" />
+		</supported-bridge-type-refs>
+		<label>RGBWW/White Led</label>
+		<description>RGBWW or White Led (Bridge v6)</description>
+
+		<channels>
+			<channel id="ledlink" typeId="ledlink"/>
+			<channel id="ledunlink" typeId="ledunlink"/>
+			<channel id="lednightmode" typeId="lednightmode"/>
+			<channel id="ledwhitemode" typeId="ledwhitemode"/>
+			<channel id="ledtemperature" typeId="ledtemperature"/>
+			<channel id="ledbrightness" typeId="ledbrightness"/>
+			<channel id="ledsaturation" typeId="ledsaturation"/>
+			<channel id="ledcolor" typeId="ledcolor"/>
+			<channel id="animation_speed_relative" typeId="animation_speed_relative"/>
+			<channel id="animation_mode" typeId="animation_mode"/>
+			<channel id="animation_mode_relative" typeId="animation_mode_relative"/>
+		</channels>
+	</thing-type>
+
+	<thing-type id="whiteLed">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridgeV3" />
+		</supported-bridge-type-refs>
+		<label>White Led</label>
+		<description>White Led</description>
+
+		<channels>
+			<channel id="lednightmode" typeId="lednightmode"/>
+			<channel id="ledbrightness" typeId="ledbrightness"/>
+			<channel id="ledtemperature" typeId="ledtemperature"/>
+			<channel id="animation_mode_relative" typeId="animation_mode_relative"/>
+		</channels>
+	</thing-type>
+
+	<channel-type id="lednightmode">
+		<item-type>Switch</item-type>
+		<label>Nightmode</label>
+		<description>Switch to night mode, a very dimmed brightness mode</description>
+	</channel-type>
+
+	<channel-type id="ledwhitemode">
+		<item-type>Switch</item-type>
+		<label>Whitemode</label>
+		<description>Switch to white mode, which basically sets the saturation to 0 (turns off the color leds)</description>
+	</channel-type>
+
+	<channel-type id="ledlink" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Link bulb</label>
+		<description>Sync bulb to this zone within 3 seconds of light bulb socket power on</description>
+	</channel-type>
+
+	<channel-type id="ledunlink" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Unlink bulb</label>
+		<description>Clear bulb from this zone within 3 seconds of light bulb socket power on</description>
+	</channel-type>
+
+	<channel-type id="ledcolor">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Color of the LED. Bind to a Dimmer to just set the brightness, bind to a Color chooser for the full control and bind to a Switch for turning the led on or off.</description>
+		<category>ColorLight</category>
+	</channel-type>
+
+	<channel-type id="ledbrightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>The brightness can be set in 16 steps for RGBW/White leds and in 64 steps for RGBWW leds</description>
+		<category>DimmableLight</category>
+		<state min="0" max="100" step="1" pattern="%d"></state>
+	</channel-type>
+
+	<channel-type id="ledsaturation" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Saturation</label>
+		<description>The saturation can be set in 64 steps for RGBWW leds</description>
+		<category>DimmableLight</category>
+		<state min="0" max="100" step="1" pattern="%d"></state>
+	</channel-type>
+
+	<channel-type id="ledtemperature">
+		<item-type>Dimmer</item-type>
+		<label>Color temperature</label>
+		<description>White leds and RGBWW allow to change between a cold and a warm color temperature. White support 16, RGBWW support 64 steps</description>
+		<category>DimmableLight</category>
+		<state min="0" max="100" step="1" pattern="%d"></state>
+	</channel-type>
+
+	<channel-type id="animation_speed_relative">
+		<item-type>Dimmer</item-type>
+		<label>Animation speed</label>
+		<description>The speed of some animations can be increased or decreased</description>
+	</channel-type>
+
+	<channel-type id="animation_mode_relative">
+		<item-type>Dimmer</item-type>
+		<label>Animation mode</label>
+		<description>Switch to the next/previous animation mode of your RGBW or white LED. Bind this to a Next/Previous channel type.</description>
+	</channel-type>
+
+	<channel-type id="animation_mode">
+		<item-type>Number</item-type>
+		<label>Animation mode</label>
+		<description>Animation mode of your LED. RGBWW leds support 9 animation modes.</description>
+		<category>Light</category>
+		<state>
+			<options>
+				<option value="1">Animation 1</option>
+				<option value="2">Animation 2</option>
+				<option value="3">Animation 3</option>
+				<option value="4">Animation 4</option>
+				<option value="5">Animation 5</option>
+				<option value="6">Animation 6</option>
+				<option value="7">Animation 7</option>
+				<option value="8">Animation 8</option>
+				<option value="9">Animation 9</option>
+			</options>
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

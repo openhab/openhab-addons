@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="avmfritz"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Channel definitions of all FRITZ! devices -->
@@ -22,6 +21,15 @@
 		<item-type>Contact</item-type>
 		<label>Device locked (external)</label>
 		<description>Device is locked for switching over external sources.
+		</description>
+		<category>Contact</category>
+		<state pattern="%s" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="device_locked" advanced="true">
+		<item-type>Contact</item-type>
+		<label>Locked (manual)</label>
+		<description>Device is locked for switching by pressing the button on the device.
 		</description>
 		<category>Contact</category>
 		<state pattern="%s" readOnly="true" />

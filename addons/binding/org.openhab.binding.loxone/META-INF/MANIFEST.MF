@@ -1,17 +1,22 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: Loxone Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.loxone;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .
+Bundle-Version: 2.3.0.qualifier
+Export-Package: 
+ org.openhab.binding.loxone,
+ org.openhab.binding.loxone.handler
 Import-Package: 
  com.google.common.collect,
  com.google.gson,
  com.google.gson.annotations,
  org.apache.commons.codec,
  org.apache.commons.codec.binary,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.http,
  org.eclipse.jetty.util,
  org.eclipse.jetty.util.component,
@@ -24,6 +29,7 @@ Import-Package:
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.common,
+ org.eclipse.smarthome.core.id,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
@@ -40,6 +46,3 @@ Import-Package:
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.loxone,
- org.openhab.binding.loxone.handler
-Bundle-ActivationPolicy: lazy

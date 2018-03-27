@@ -1,10 +1,17 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.openhab.ui.cometvisu.internal.CvActivator
+Bundle-ClassPath: 
+ .,
+ lib/rrd4j-2.2.jar,
+ lib/sqlite-jdbc-3.8.7.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: CometVisu backend
-Bundle-SymbolicName: org.openhab.ui.cometvisu;singleton:=true
-Bundle-Version: 2.2.0.qualifier
-Bundle-Vendor: openHAB
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.ui.cometvisu;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Export-Package: org.openhab.ui.cometvisu.php
 Import-Package: 
  com.google.gson,
  javax.servlet,
@@ -49,9 +56,3 @@ Import-Package:
  org.slf4j,
  org.xml.sax
 Service-Component: OSGI-INF/*.xml
-Bundle-ClassPath: .,
- lib/rrd4j-2.2.jar,
- lib/sqlite-jdbc-3.8.7.jar
-Export-Package: org.openhab.ui.cometvisu.php
-Bundle-Activator: org.openhab.ui.cometvisu.internal.CvActivator
-Bundle-ActivationPolicy: lazy

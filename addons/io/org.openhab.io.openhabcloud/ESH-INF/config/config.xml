@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config-description:config-descriptions
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
-        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
-    <config-description uri="io:openhabcloud">
-        <parameter name="mode" type="text" required="true">
-            <label>Mode</label>
-            <description>What features of the openHAB Cloud service should be used.</description>
-            <options>
-                <option value="notification">Notifications</option>
-                <option value="remote">Notifications &amp; Remote Access</option>
-            </options>
-            <default>remote</default>
-        </parameter>
-        <parameter name="expose" type="text" required="false" multiple="true">
-            <label>Items to expose to apps such as IFTTT</label>
-            <description>List of items that are made accessible to IFTTT and similar services.</description>
-            <context>item</context>
-        </parameter>
-        <parameter name="baseURL" type="text" required="false">
-            <label>Base URL for the openHAB Cloud server</label>
-            <description>Base URL for the openHAB Cloud server</description>
-            <default>https://myopenhab.org/</default>
-        </parameter>
-    </config-description>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	<config-description uri="io:openhabcloud">
+		<parameter name="mode" type="text" required="true">
+			<label>Mode</label>
+			<description>What features of the openHAB Cloud service should be used.</description>
+			<options>
+				<option value="notification">Notifications</option>
+				<option value="remote">Notifications &amp; Remote Access</option>
+			</options>
+			<default>remote</default>
+		</parameter>
+		<parameter name="expose" type="text" required="false" multiple="true">
+			<label>Items to expose to apps such as IFTTT</label>
+			<description>List of items that are made accessible to IFTTT and similar services.</description>
+			<context>item</context>
+		</parameter>
+		<parameter name="baseURL" type="text" required="false">
+			<label>Base URL for the openHAB Cloud server</label>
+			<description>Base URL for the openHAB Cloud server</description>
+			<default>https://myopenhab.org/</default>
+		</parameter>
+	</config-description>
 </config-description:config-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -43,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 public class IppPrinterHandler extends BaseThingHandler implements DiscoveryListener {
 
-    private Logger logger = LoggerFactory.getLogger(IppPrinterHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(IppPrinterHandler.class);
 
     private URL url;
     private String name;
@@ -61,9 +62,6 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         Configuration config = getThing().getConfiguration();
@@ -92,11 +90,6 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#dispose()
-     */
     @Override
     public void dispose() {
         if (refreshJob != null && !refreshJob.isCancelled()) {
@@ -108,18 +101,14 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
     }
 
     private void deviceOnlineWatchdog() {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    onDeviceStateChanged(printer);
-                } catch (Exception e) {
-                    logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
-
-                }
+        Runnable runnable = () -> {
+            try {
+                onDeviceStateChanged(printer);
+            } catch (Exception e) {
+                logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
             }
         };
-        refreshJob = scheduler.scheduleAtFixedRate(runnable, 0, refresh, TimeUnit.SECONDS);
+        refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, refresh, TimeUnit.SECONDS);
     }
 
     @Override
@@ -176,7 +165,8 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
 
     @Override
     public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-            Collection<ThingTypeUID> thingTypeUIDs) {
-        return null;
+            Collection<ThingTypeUID> thingTypeUIDs, ThingUID bridgeUID) {
+        return Collections.emptyList();
     }
+
 }

@@ -1,0 +1,2 @@
+# service xml files are generated and should not be commmited.
+*.xml

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -61,7 +61,7 @@ import org.openhab.ui.cometvisu.internal.config.beans.Stylings;
 import org.openhab.ui.cometvisu.internal.config.beans.Text;
 import org.openhab.ui.cometvisu.internal.config.beans.Trigger;
 import org.openhab.ui.cometvisu.internal.config.beans.Widgetinfo;
-import org.openhab.ui.cometvisu.servlet.CometVisuApp;
+import org.openhab.ui.cometvisu.internal.servlet.CometVisuApp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -173,14 +173,10 @@ public class ConfigHelper {
         }
 
         // add download link
-        String filename = "visu_config";
-        if (this.sitemapName.length() > 0) {
-            filename += "_oh_" + this.sitemapName;
-        }
-        filename += ".xml";
         CDataStatus downloadConfig = new CDataStatus();
         downloadConfig.setType("html");
-        downloadConfig.setValue(" - <a href=\"config/" + filename + "\">Download</a>");
+        downloadConfig
+                .setValue(" - <a href=\"config/" + this.sitemapName + "\" download target=\"_blank\">Download</a>");
         statusbar.getStatus().add(downloadConfig);
 
         // version information

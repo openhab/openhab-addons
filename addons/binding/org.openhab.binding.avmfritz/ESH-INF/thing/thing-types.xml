@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="avmfritz"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+<thing:thing-descriptions bindingId="avmfritz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Supported FRITZ! devices and features -->
@@ -16,6 +16,7 @@
 		<channels>
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
 			<channel id="temperature" typeId="temperature" />
 			<channel id="actual_temp" typeId="actual_temp" />
 			<channel id="set_temp" typeId="set_temp" />
@@ -26,6 +27,37 @@
 			<channel id="next_temp" typeId="next_temp" />
 			<channel id="battery_low" typeId="system.low-battery" />
 		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
+	</thing-type>
+
+	<thing-type id="FRITZ_DECT_301">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox" />
+			<bridge-type-ref id="fritzpowerline" />
+		</supported-bridge-type-refs>
+
+		<label>FRITZ!DECT 301</label>
+		<description>FRITZ!DECT 301 heating thermostat.</description>
+
+		<channels>
+			<channel id="mode" typeId="mode" />
+			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
+			<channel id="temperature" typeId="temperature" />
+			<channel id="actual_temp" typeId="actual_temp" />
+			<channel id="set_temp" typeId="set_temp" />
+			<channel id="eco_temp" typeId="eco_temp" />
+			<channel id="comfort_temp" typeId="comfort_temp" />
+			<channel id="radiator_mode" typeId="radiator_mode" />
+			<channel id="next_change" typeId="next_change" />
+			<channel id="next_temp" typeId="next_temp" />
+			<channel id="battery_low" typeId="system.low-battery" />
+		</channels>
+
+		<representation-property>ain</representation-property>
 
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
@@ -42,6 +74,7 @@
 		<channels>
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
 			<channel id="temperature" typeId="temperature" />
 			<channel id="actual_temp" typeId="actual_temp" />
 			<channel id="set_temp" typeId="set_temp" />
@@ -52,6 +85,8 @@
 			<channel id="next_temp" typeId="next_temp" />
 			<channel id="battery_low" typeId="system.low-battery" />
 		</channels>
+
+		<representation-property>ain</representation-property>
 
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
@@ -68,11 +103,14 @@
 		<channels>
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
 			<channel id="temperature" typeId="temperature" />
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
 			<channel id="outlet" typeId="outlet" />
 		</channels>
+
+		<representation-property>ain</representation-property>
 
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
@@ -89,11 +127,14 @@
 		<channels>
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
 			<channel id="temperature" typeId="temperature" />
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
 			<channel id="outlet" typeId="outlet" />
 		</channels>
+
+		<representation-property>ain</representation-property>
 
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
@@ -111,10 +152,13 @@
 		<channels>
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
 			<channel id="outlet" typeId="outlet" />
 		</channels>
+
+		<representation-property>ain</representation-property>
 
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
@@ -127,10 +171,13 @@
 		<channels>
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
 			<channel id="outlet" typeId="outlet" />
 		</channels>
+
+		<representation-property>ipAddress</representation-property>
 
 		<config-description-ref uri="bridge-type:avmfritz:fritzpowerline" />
 	</thing-type>
@@ -145,8 +192,10 @@
 		<description>FRITZ!DECT Repeater 100 DECT repeater.</description>
 
 		<channels>
-			<channel typeId="temperature" id="temperature"></channel>
+			<channel typeId="temperature" id="temperature" />
 		</channels>
+
+		<representation-property>ain</representation-property>
 
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>

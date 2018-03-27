@@ -11,6 +11,8 @@
 		<channels>
 			<channel id="alarm" typeId="gas_alarm"></channel>
 			<channel id="status" typeId="status"></channel>
+			<channel id="batteryLevel" typeId="system.battery-level" />
+			<channel id="lowBattery" typeId="system.low-battery" />
 		</channels>
 		<config-description-ref uri="thing-type:mihome:device" />
 	</thing-type>

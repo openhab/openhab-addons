@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,6 +15,7 @@ import java.math.RoundingMode;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.ReadingPublisher;
 import org.openhab.binding.jeelink.internal.RollingAveragePublisher;
@@ -36,8 +37,8 @@ public class Ec3kSensorHandler extends JeeLinkSensorHandler<Ec3kReading> {
     }
 
     @Override
-    public String getSketchName() {
-        return "ec3kSerial";
+    public Class<Ec3kReading> getReadingClass() {
+        return Ec3kReading.class;
     }
 
     @Override
@@ -45,7 +46,7 @@ public class Ec3kSensorHandler extends JeeLinkSensorHandler<Ec3kReading> {
         ReadingPublisher<Ec3kReading> publisher = new ReadingPublisher<Ec3kReading>() {
             @Override
             public void publish(Ec3kReading reading) {
-                if (reading != null) {
+                if (reading != null && getThing().getStatus() == ThingStatus.ONLINE) {
                     BigDecimal currentWatt = new BigDecimal(reading.getCurrentWatt()).setScale(1, RoundingMode.HALF_UP);
                     BigDecimal maxWatt = new BigDecimal(reading.getMaxWatt()).setScale(1, RoundingMode.HALF_UP);
 

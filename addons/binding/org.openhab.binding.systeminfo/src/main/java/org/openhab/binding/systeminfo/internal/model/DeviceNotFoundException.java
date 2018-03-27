@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,8 +14,7 @@ import java.io.IOException;
  * {@link DeviceNotFoundException} is used to indicate that device can not be found on this hardware configuration, most
  * probably because the device is not installed.
  *
- * @author Svilen Valkanov
- *
+ * @author Svilen Valkanov - Initial contribution
  */
 public class DeviceNotFoundException extends IOException {
     private static final long serialVersionUID = -707507777792259512L;

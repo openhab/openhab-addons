@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,11 +27,6 @@ public class LaCrosseTemperatureReadingConverter implements JeeLinkReadingConver
     private final Logger logger = LoggerFactory.getLogger(LaCrosseTemperatureReadingConverter.class);
 
     @Override
-    public String getSketchName() {
-        return "LaCrosseITPlusReader";
-    }
-
-    @Override
     public LaCrosseTemperatureReading createReading(String inputLine) {
         // parse lines only if we have registered listeners
         if (inputLine != null) {
@@ -57,7 +52,8 @@ public class LaCrosseTemperatureReadingConverter implements JeeLinkReadingConver
                 int int3 = Integer.parseInt(matcher.group(3));
 
                 int batteryNewInt = (int3 & 0x80) >> 7;
-                int type = (int3 & 0x70) >> 7;
+                int type = (int3 & 0x70) >> 4;
+                int channel = int3 & 0x0F;
 
                 float temperature = (float) (Integer.parseInt(matcher.group(4)) * 256
                         + Integer.parseInt(matcher.group(5)) - 1000) / 10;
@@ -67,7 +63,8 @@ public class LaCrosseTemperatureReadingConverter implements JeeLinkReadingConver
                 boolean batteryLow = batteryLowInt == 1;
                 boolean batteryNew = batteryNewInt == 1;
 
-                return new LaCrosseTemperatureReading(sensorId, type, temperature, humidity, batteryNew, batteryLow);
+                return new LaCrosseTemperatureReading(sensorId, type, channel, temperature, humidity, batteryNew,
+                        batteryLow);
             }
         }
 

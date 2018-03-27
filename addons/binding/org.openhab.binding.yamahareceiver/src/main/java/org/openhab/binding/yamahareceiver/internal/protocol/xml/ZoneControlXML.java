@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -151,6 +151,13 @@ public class ZoneControlXML implements ZoneControl {
     }
 
     @Override
+    public void setDialogueLevel(int level) throws IOException, ReceivedMessageParseException {
+        comReference.get().send(XMLUtils.wrZone(zone, "<Sound_Video><Dialogue_Adjust><Dialogue_Lvl>" + level
+                + "</Dialogue_Lvl></Dialogue_Adjust></Sound_Video>"));
+        update();
+    }
+
+    @Override
     public void update() throws IOException, ReceivedMessageParseException {
         if (observer == null) {
             return;
@@ -199,8 +206,11 @@ public class ZoneControlXML implements ZoneControl {
         value = XMLUtils.getNodeContentOrDefault(basicStatus, "Volume/Mute", "");
         state.mute = "On".equalsIgnoreCase(value);
 
-        logger.trace("Zone {} state - power: {}, input: {}, mute: {}, surroundProgram: {}, volume: {}",
-                zone, state.power, state.inputID, state.mute, state.surroundProgram, state.volume);
+        value = XMLUtils.getNodeContentOrDefault(basicStatus, "Sound_Video/Dialogue_Adjust/Dialogue_Lvl", "0");
+        state.dialogueLevel = Integer.parseInt(value);
+
+        logger.trace("Zone {} state - power: {}, input: {}, mute: {}, surroundProgram: {}, volume: {}", zone,
+                state.power, state.inputID, state.mute, state.surroundProgram, state.volume);
 
         observer.zoneStateChanged(state);
     }

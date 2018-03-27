@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -183,17 +183,17 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
         presenceDetection.setRefreshInterval(handlerConfiguration.refreshInterval.longValue());
         presenceDetection.setTimeout(handlerConfiguration.timeout.intValue());
 
-        // Update properties
+        updateStatus(ThingStatus.ONLINE);
+        presenceDetection.startAutomaticRefresh(scheduler);
+
+        // Update properties (after startAutomaticRefresh, to get the correct dhcp state)
         updateProperty(NetworkBindingConstants.PROPERTY_ARP_STATE,
                 presenceDetection.arpPingMethod() != null ? presenceDetection.arpPingMethod().name() : "Disabled");
         updateProperty(NetworkBindingConstants.PROPERTY_ICMP_STATE,
                 presenceDetection.getPingMethod() != null ? presenceDetection.getPingMethod().name() : "Disabled");
-        updateProperty(NetworkBindingConstants.PROPERTY_DHCP_STATE, presenceDetection.getDhcpState());
         updateProperty(NetworkBindingConstants.PROPERTY_PRESENCE_DETECTION_TYPE, "");
         updateProperty(NetworkBindingConstants.PROPERTY_IOS_WAKEUP, presenceDetection.isIOSdevice() ? "On" : "Off");
-
-        updateStatus(ThingStatus.ONLINE);
-        presenceDetection.startAutomaticRefresh(scheduler);
+        updateProperty(NetworkBindingConstants.PROPERTY_DHCP_STATE, presenceDetection.getDhcpState());
     }
 
     // Create a new network service and apply all configurations.

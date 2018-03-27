@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,9 +18,13 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.nikohomecontrol.NikoHomeControlBindingConstants;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlDiscover;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,11 +34,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Herwege
  */
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.nikohomecontrol")
 public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryService {
 
     private Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeDiscoveryService.class);
 
     private ScheduledFuture<?> nhcDiscoveryJob;
+
+    private NetworkAddressService networkAddressService;
 
     private static final int TIMEOUT = 5;
     private static final int REFRESH_INTERVAL = 60;
@@ -49,19 +56,18 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
      */
     private void discoverBridge() {
         try {
-            NikoHomeControlDiscover nhcDiscover = new NikoHomeControlDiscover();
+            String broadcastAddr = networkAddressService.getConfiguredBroadcastAddress();
+            if (broadcastAddr == null) {
+                logger.warn("Niko Home Control: discovery not possible, no broadcast address found");
+                return;
+            }
+            logger.debug("Niko Home Control: discovery broadcast on {}", broadcastAddr);
+            NikoHomeControlDiscover nhcDiscover = new NikoHomeControlDiscover(broadcastAddr);
             addBridge(nhcDiscover.getAddr(), nhcDiscover.getNhcBridgeId());
         } catch (IOException e) {
             logger.debug("Niko Home Control: no bridge found.");
         }
     }
-
-    private Runnable nhcDiscoveryRunnable = new Runnable() {
-        @Override
-        public void run() {
-            discoverBridge();
-        }
-    };
 
     private void addBridge(InetAddress addr, String bridgeId) {
         logger.debug("Niko Home Control: bridge found at {}", addr);
@@ -89,7 +95,7 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
     protected void startBackgroundDiscovery() {
         logger.debug("Niko Home Control: Start background bridge discovery");
         if (nhcDiscoveryJob == null || nhcDiscoveryJob.isCancelled()) {
-            nhcDiscoveryJob = scheduler.scheduleAtFixedRate(nhcDiscoveryRunnable, 0, REFRESH_INTERVAL,
+            nhcDiscoveryJob = scheduler.scheduleWithFixedDelay(this::discoverBridge, 0, REFRESH_INTERVAL,
                     TimeUnit.SECONDS);
         }
     }
@@ -101,5 +107,14 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
             nhcDiscoveryJob.cancel(true);
             nhcDiscoveryJob = null;
         }
+    }
+
+    @Reference
+    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = networkAddressService;
+    }
+
+    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = null;
     }
 }

@@ -1,11 +1,14 @@
 Manifest-Version: 1.0
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: LG TV Serial Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.lgtvserial;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .
+Bundle-Version: 2.3.0.qualifier
+Export-Package: 
+ org.openhab.binding.lgtvserial,
+ org.openhab.binding.lgtvserial.handler
 Import-Package: 
  gnu.io,
  org.eclipse.jdt.annotation;resolution:=optional,
@@ -20,5 +23,3 @@ Import-Package:
  org.openhab.binding.lgtvserial.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.lgtvserial,
- org.openhab.binding.lgtvserial.handler

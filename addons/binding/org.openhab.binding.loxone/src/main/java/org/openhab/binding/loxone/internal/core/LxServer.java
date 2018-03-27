@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,14 +11,15 @@ package org.openhab.binding.loxone.internal.core;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.openhab.binding.loxone.internal.core.LxServerEvent.EventType;
 import org.slf4j.Logger;
@@ -52,17 +53,34 @@ import org.slf4j.LoggerFactory;
  */
 public class LxServer {
 
+    class Configuration {
+        Object get(String name) {
+            // this interface is going to be refactored, there can never be more than one listener
+            for (LxServerListener listener : listeners) {
+                return listener.getSetting(name);
+            }
+            return null;
+        }
+
+        void setSettings(Map<String, String> properties) {
+            listeners.forEach(listener -> listener.setSettings(properties));
+        }
+    }
+
     // Configuration
     private final InetAddress host;
     private final int port;
     private final String user;
     private final String password;
+    private final Configuration configuration = new Configuration();
 
     private String miniserverName = "";
     private String projectName = "";
     private String location = "";
     private String serial = "";
     private String cloudAddress = "";
+    private String swVersion = "";
+    private String macAddress = "";
 
     private int firstConDelay = 1;
     private int connectErrDelay = 10;
@@ -70,26 +88,30 @@ public class LxServer {
     private int comErrorDelay = 30;
 
     // Data structures
-    private Set<LxUuid> uuids = new HashSet<>();
-    private Map<LxUuid, LxControl> controls = new HashMap<>();
-    private Map<LxUuid, LxContainer> rooms = new HashMap<>();
-    private Map<LxUuid, LxCategory> categories = new HashMap<>();
-    private Map<LxUuid, LxControlState> states = new HashMap<>();
-    private List<LxServerListener> listeners = new ArrayList<>();
+    private final Map<LxUuid, LxControl> controls = new HashMap<>();
+    private final Map<LxUuid, LxContainer> rooms = new HashMap<>();
+    private final Map<LxUuid, LxCategory> categories = new HashMap<>();
+    // Map of state UUID to a map of control UUID and state objects
+    // State with a unique UUID can be configured in many controls and each control can even have a different name of
+    // the state. It must be ensured that updates received for this state UUID are passed to all controls that have this
+    // state UUID configured.
+    private final Map<LxUuid, Map<LxUuid, LxControlState>> states = new HashMap<>();
+    private final List<LxServerListener> listeners = new ArrayList<>();
 
     // Services
-    private boolean running = true;
     private LxWsClient socketClient;
     private Thread monitorThread;
-    private BlockingQueue<LxServerEvent> queue = new LinkedBlockingQueue<>();
-
-    private Logger logger = LoggerFactory.getLogger(LxServer.class);
-
-    private int debugId;
-    private static AtomicInteger staticDebugId = new AtomicInteger(1);
+    private final Lock threadLock = new ReentrantLock();
+    private final BlockingQueue<LxServerEvent> queue = new LinkedBlockingQueue<>();
+    private final Logger logger = LoggerFactory.getLogger(LxServer.class);
+    private final int debugId;
+    private static final AtomicInteger STATIC_DEBUG_ID = new AtomicInteger(1);
 
     /**
      * Creates a new instance of Loxone Miniserver with provided host address and credentials.
+     *
+     * @param securityType
+     *            type of authentication/encryption method to use
      *
      * @param host
      *            host address of the Miniserver
@@ -100,14 +122,14 @@ public class LxServer {
      * @param password
      *            password used for logging in
      */
-    public LxServer(InetAddress host, int port, String user, String password) {
+    public LxServer(LxWsSecurityType securityType, InetAddress host, int port, String user, String password) {
         this.host = host;
         this.port = port;
         this.user = user;
         this.password = password;
 
-        debugId = staticDebugId.getAndIncrement();
-        socketClient = new LxWsClient(debugId, queue, host, port, user, password);
+        debugId = STATIC_DEBUG_ID.getAndIncrement();
+        socketClient = new LxWsClient(debugId, queue, configuration, securityType, host, port, user, password);
     }
 
     /**
@@ -116,9 +138,14 @@ public class LxServer {
      */
     public void start() {
         logger.debug("[{}] Server start", debugId);
-        if (monitorThread == null) {
-            monitorThread = new LxServerThread(this);
-            monitorThread.start();
+        threadLock.lock();
+        try {
+            if (monitorThread == null) {
+                monitorThread = new LxServerThread(this);
+                monitorThread.start();
+            }
+        } finally {
+            threadLock.unlock();
         }
     }
 
@@ -126,23 +153,21 @@ public class LxServer {
      * Stop server thread, close communication with Miniserver.
      */
     public void stop() {
-        if (monitorThread != null) {
-            logger.debug("[{}] Server stop", debugId);
-            synchronized (monitorThread) {
-                if (queue != null) {
-                    LxServerEvent event = new LxServerEvent(EventType.CLIENT_CLOSING, LxOfflineReason.NONE, null);
-                    try {
-                        queue.put(event);
-                        monitorThread.notify();
-                    } catch (InterruptedException e) {
-                        monitorThread.interrupt();
-                    }
-                } else {
+        threadLock.lock();
+        try {
+            if (monitorThread != null) {
+                logger.debug("[{}] Server stop", debugId);
+                LxServerEvent event = new LxServerEvent(EventType.CLIENT_CLOSING, LxOfflineReason.NONE, null);
+                try {
+                    queue.put(event);
+                } catch (InterruptedException e) {
                     monitorThread.interrupt();
                 }
+            } else {
+                logger.debug("[{}] Server stop - no thread", debugId);
             }
-        } else {
-            logger.debug("[{}] Server stop - no thread", debugId);
+        } finally {
+            threadLock.unlock();
         }
     }
 
@@ -173,7 +198,6 @@ public class LxServer {
      */
     public void update(int firstConDelay, int keepAlivePeriod, int connectErrDelay, int connectTimeout,
             int userErrorDelay, int comErrorDelay, int maxBinMsgSize, int maxTextMsgSize) {
-
         logger.debug("[{}] Server update configuration", debugId);
 
         if (firstConDelay >= 0 && this.firstConDelay != firstConDelay) {
@@ -326,6 +350,26 @@ public class LxServer {
     }
 
     /**
+     * Gets device software version
+     *
+     * @return
+     *         software version (e.g. '9.1.0.3')
+     */
+    public String getSwVersion() {
+        return swVersion;
+    }
+
+    /**
+     * Gets device MAC address
+     *
+     * @return
+     *         MAC address
+     */
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    /**
      * Thread that performs and supervises communication with the Miniserver.
      * <p>
      * It will try to maintain the connection as long as possible, handling errors and interruptions. There are two
@@ -337,7 +381,9 @@ public class LxServer {
      *
      */
     private class LxServerThread extends Thread {
-        LxServer server;
+        private final LxServer server;
+        private boolean running = true;
+        private int waitTime = firstConDelay;
 
         LxServerThread(LxServer server) {
             this.server = server;
@@ -346,119 +392,120 @@ public class LxServer {
         @Override
         public void run() {
             logger.debug("[{}] Thread starting", debugId);
-
-            // initial delay to initiate connection
-            int waitTime = firstConDelay * 1000;
-
-            while (running) {
-                // wait until next connect attempt, this time depends on what happened before
-                synchronized (monitorThread) {
-                    try {
-                        monitorThread.wait(waitTime);
-                    } catch (InterruptedException e) {
-                        logger.debug("[{}] Server thread sleep interrupted, terminating", debugId);
-                        running = false;
-                        break;
-                    }
-                }
-
-                // attempt to connect to the Miniserver
-                logger.debug("[{}] Server connecting to websocket", debugId);
-                boolean connected = socketClient.connect();
-                if (!connected) {
-                    logger.debug("[{}] Websocket connect failed, retrying after pause", debugId);
-                    waitTime = connectErrDelay * 1000;
-                    continue;
-                }
-
-                while (connected) {
-                    try {
-                        LxServerEvent wsMsg = queue.take();
-                        EventType event = wsMsg.getEvent();
-                        logger.trace("[{}] Server received event: {}", debugId, event);
-
-                        switch (event) {
-                            case RECEIVED_CONFIG:
-                                LxJsonApp3 config = (LxJsonApp3) wsMsg.getObject();
-                                if (config != null) {
-                                    updateConfig(config);
-                                    for (LxServerListener listener : listeners) {
-                                        listener.onNewConfig(server);
-                                    }
-                                } else {
-                                    logger.debug("[{}] Server failed processing received configuration", debugId);
-                                }
-                                break;
-                            case STATE_UPDATE:
-                                LxWsStateUpdateEvent update = (LxWsStateUpdateEvent) wsMsg.getObject();
-                                LxControlState state = findState(update.getUuid());
-                                if (state != null) {
-                                    state.setValue(update.getValue(), update.getText());
-                                    LxControl control = state.getControl();
-                                    if (control != null) {
-                                        logger.debug("[{}] State update {} ({}:{}) to value {}, text '{}'", debugId,
-                                                update.getUuid(), control.getName(), state.getName(), update.getValue(),
-                                                update.getText());
-                                        for (LxServerListener listener : listeners) {
-                                            listener.onControlStateUpdate(control);
-                                        }
-                                    } else {
-                                        logger.debug("[{}] State update {} ({}) of unknown control", debugId,
-                                                update.getUuid(), state.getName());
-                                    }
-                                }
-                                break;
-                            case SERVER_ONLINE:
-                                for (LxServerListener listener : listeners) {
-                                    listener.onServerGoesOnline();
-                                }
-                                break;
-                            case SERVER_OFFLINE:
-                                LxOfflineReason reason = wsMsg.getOfflineReason();
-                                String details = null;
-                                if (wsMsg.getObject() instanceof String) {
-                                    details = (String) wsMsg.getObject();
-                                }
-                                logger.debug("[{}] Websocket goes OFFLINE, reason {} : {}.", debugId, reason, details);
-
-                                if (reason == LxOfflineReason.TOO_MANY_FAILED_LOGIN_ATTEMPTS) {
-                                    // assume credentials are wrong, do not re-attempt connections
-                                    // close thread and expect a new LxServer object will have to be re-created
-                                    // with corrected configuration
-                                    running = false;
-                                } else {
-                                    if (reason == LxOfflineReason.UNAUTHORIZED) {
-                                        waitTime = userErrorDelay * 1000;
-                                    } else {
-                                        waitTime = comErrorDelay * 1000;
-                                    }
-                                    socketClient.disconnect();
-                                }
-                                connected = false;
-                                for (LxServerListener listener : listeners) {
-                                    listener.onServerGoesOffline(reason, details);
-                                }
-                                break;
-                            case CLIENT_CLOSING:
-                                connected = false;
-                                running = false;
-                                break;
-                            default:
-                                logger.debug("[{}] Received unknown request {}", debugId, wsMsg.getEvent().name());
-                                break;
+            try {
+                boolean connected = false;
+                while (running) {
+                    while (!connected) {
+                        LxServerEvent wsMsg;
+                        do {
+                            wsMsg = queue.poll(waitTime, TimeUnit.SECONDS);
+                            if (wsMsg != null) {
+                                processMessage(wsMsg);
+                            }
+                        } while (wsMsg != null);
+                        logger.debug("[{}] Server connecting to websocket", debugId);
+                        connected = socketClient.connect();
+                        if (!connected) {
+                            waitTime = connectErrDelay;
                         }
-                    } catch (InterruptedException e) {
-                        logger.debug("[{}] Waiting for sync event interrupted, reason = {}", debugId, e.getMessage());
-                        connected = false;
-                        running = false;
+                    }
+                    while (connected) {
+                        LxServerEvent wsMsg = queue.take();
+                        connected = processMessage(wsMsg);
                     }
                 }
+            } catch (InterruptedException e) {
+                logger.debug("[{}] Server thread interrupted, terminating", debugId);
             }
             logger.debug("[{}] Thread ending", debugId);
-            socketClient.disconnect();
-            monitorThread = null;
-            queue = null;
+            threadLock.lock();
+            try {
+                socketClient.disconnect();
+                monitorThread = null;
+                queue.clear();
+            } finally {
+                threadLock.unlock();
+            }
         }
+
+        private boolean processMessage(LxServerEvent wsMsg) {
+            EventType event = wsMsg.getEvent();
+            logger.trace("[{}] Server received event: {}", debugId, event);
+            switch (event) {
+                case RECEIVED_CONFIG:
+                    LxJsonApp3 config = (LxJsonApp3) wsMsg.getObject();
+                    if (config != null) {
+                        updateConfig(config);
+                        for (LxServerListener listener : listeners) {
+                            listener.onNewConfig(server);
+                        }
+                    } else {
+                        logger.debug("[{}] Server failed processing received configuration", debugId);
+                    }
+                    break;
+                case STATE_UPDATE:
+                    LxWsStateUpdateEvent update = (LxWsStateUpdateEvent) wsMsg.getObject();
+                    Map<LxUuid, LxControlState> perStateUuid = findState(update.getUuid());
+                    if (perStateUuid != null) {
+                        perStateUuid.forEach((controlUuid, state) -> {
+                            state.setValue(update.getValue(), update.getText());
+                            LxControl control = state.getControl();
+                            if (control != null) {
+                                logger.debug("[{}] State update {} ({}:{}) to value {}, text '{}'", debugId,
+                                        update.getUuid(), control.getName(), state.getName(), update.getValue(),
+                                        update.getText());
+                                for (LxServerListener listener : listeners) {
+                                    listener.onControlStateUpdate(control, state.getName().toLowerCase());
+                                }
+                            } else {
+                                logger.debug("[{}] State update {} ({}) of unknown control", debugId, update.getUuid(),
+                                        state.getName());
+                            }
+                        });
+                    }
+                    break;
+                case SERVER_ONLINE:
+                    for (LxServerListener listener : listeners) {
+                        listener.onServerGoesOnline();
+                    }
+                    break;
+                case SERVER_OFFLINE:
+                    LxOfflineReason reason = wsMsg.getOfflineReason();
+                    String details = null;
+                    if (wsMsg.getObject() instanceof String) {
+                        details = (String) wsMsg.getObject();
+                    }
+                    logger.debug("[{}] Websocket goes OFFLINE, reason {} : {}.", debugId, reason, details);
+
+                    if (reason == LxOfflineReason.TOO_MANY_FAILED_LOGIN_ATTEMPTS) {
+                        // assume credentials are wrong, do not re-attempt connections
+                        // close thread and expect a new LxServer object will have to be re-created
+                        // with corrected configuration
+                        running = false;
+                    } else {
+                        if (reason == LxOfflineReason.UNAUTHORIZED) {
+                            waitTime = userErrorDelay;
+                        } else if (reason == LxOfflineReason.REPEAT_CONNECTION) {
+                            waitTime = 1;
+                        } else {
+                            waitTime = comErrorDelay;
+                        }
+                        socketClient.disconnect();
+                    }
+                    for (LxServerListener listener : listeners) {
+                        listener.onServerGoesOffline(reason, details);
+                    }
+                    return false;
+                case CLIENT_CLOSING:
+                    running = false;
+                    return false;
+                default:
+                    logger.debug("[{}] Received unknown request {}", debugId, wsMsg.getEvent().name());
+                    break;
+            }
+            return true;
+        }
+
     }
 
     /**
@@ -470,12 +517,10 @@ public class LxServer {
     private void updateConfig(LxJsonApp3 config) {
         logger.trace("[{}] Updating configuration from Miniserver", debugId);
 
-        for (LxUuid id : uuids) {
-            id.setUpdate(false);
-        }
-        for (LxUuid id : states.keySet()) {
-            id.setUpdate(false);
-        }
+        invalidateMap(rooms);
+        invalidateMap(categories);
+        invalidateMap(controls);
+        invalidateMap(states);
 
         if (config.msInfo != null) {
             logger.trace("[{}] updating global config", debugId);
@@ -484,6 +529,8 @@ public class LxServer {
             location = buildName(config.msInfo.location);
             serial = buildName(config.msInfo.serialNr);
             cloudAddress = buildName(config.msInfo.remoteUrl);
+            swVersion = buildName(config.msInfo.swVersion);
+            macAddress = buildName(config.msInfo.macAddress);
         } else {
             logger.warn("[{}] missing global configuration msInfo on Loxone", debugId);
         }
@@ -508,7 +555,7 @@ public class LxServer {
                 try {
                     addOrUpdateControl(ctrl);
                 } catch (Exception e) {
-                    logger.error("[{}] exception creating control {}: {}", debugId, ctrl.name, e);
+                    logger.error("[{}] exception creating control {}: ", debugId, ctrl.name, e);
                 }
             }
         }
@@ -533,7 +580,6 @@ public class LxServer {
         for (Iterator<Map.Entry<LxUuid, T>> it = map.entrySet().iterator(); it.hasNext();) {
             Map.Entry<LxUuid, T> entry = it.next();
             if (!entry.getKey().getUpdate()) {
-                uuids.remove(entry.getKey());
                 it.remove();
                 if (entry.getValue() instanceof LxControl) {
                     ((LxControl) entry.getValue()).dispose();
@@ -543,41 +589,15 @@ public class LxServer {
     }
 
     /**
-     * Searches for an UUID of an object (control, category, room, ...) that this server contains
+     * Sets all entries in a map to not updated
      *
-     * @param id
-     *            UUID to search for
-     * @return
-     *         found UUID object or null if not found
+     * @param map
+     *            map to invalidate entries in
      */
-    private LxUuid findUuid(LxUuid id) {
-        if (uuids == null || id == null) {
-            return null;
-        }
-        for (LxUuid i : uuids) {
-            if (id.equals(i)) {
-                return i;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Adds a new UUID object to server, if an object with same UUID value does not exist yet. Otherwise return
-     * already existing object.
-     *
-     * @param id
-     *            UUID to search for
-     * @return
-     *         object belonging to server (either same as provided as an argument or already existing one)
-     */
-    private LxUuid addUuid(LxUuid id) {
-        LxUuid i = findUuid(id);
-        if (i != null) {
-            return i;
-        }
-        uuids.add(id);
-        return id;
+    private void invalidateMap(Map<LxUuid, ?> map) {
+        map.keySet().forEach(k -> {
+            k.setUpdate(false);
+        });
     }
 
     /**
@@ -617,7 +637,6 @@ public class LxServer {
             r.setName(name);
             return r;
         }
-        id = addUuid(id);
         LxContainer nr = new LxContainer(id, name);
         rooms.put(id, nr);
         return nr;
@@ -629,9 +648,9 @@ public class LxServer {
      * @param id
      *            UUID of state to locate
      * @return
-     *         state object
+     *         map of all state objects with control UUID as key
      */
-    private LxControlState findState(LxUuid id) {
+    private Map<LxUuid, LxControlState> findState(LxUuid id) {
         if (states == null || id == null) {
             return null;
         }
@@ -681,7 +700,6 @@ public class LxServer {
             c.setType(type);
             return c;
         }
-        id = addUuid(id);
         LxCategory nc = new LxCategory(id, name, type);
         categories.put(id, nc);
         return nc;
@@ -714,8 +732,7 @@ public class LxServer {
         if (control != null) {
             control.update(json, room, category);
         } else {
-            id = addUuid(id);
-            control = LxControl.createControl(socketClient, id, json, room, category);
+            control = LxControlFactory.createControl(socketClient, id, json, room, category);
         }
         if (control != null) {
             updateControls(control);
@@ -731,7 +748,12 @@ public class LxServer {
     private void updateControls(LxControl control) {
         for (LxControlState state : control.getStates().values()) {
             state.getUuid().setUpdate(true);
-            states.put(state.getUuid(), state);
+            Map<LxUuid, LxControlState> perUuid = states.get(state.getUuid());
+            if (perUuid == null) {
+                perUuid = new HashMap<>();
+                states.put(state.getUuid(), perUuid);
+            }
+            perUuid.put(control.uuid, state);
         }
         controls.put(control.uuid, control);
         control.uuid.setUpdate(true);
