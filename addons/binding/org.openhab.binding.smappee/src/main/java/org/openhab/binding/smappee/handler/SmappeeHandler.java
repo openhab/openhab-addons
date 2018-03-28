@@ -121,7 +121,7 @@ public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate 
         try {
             smappeeService.initialize();
         } catch (CommunicationException ex) {
-            // try again in 30 secs
+            // try again in 30 seconds
             scheduler.schedule(new Runnable() {
                 @Override
                 public void run() {

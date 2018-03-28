@@ -127,6 +127,11 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
 
         SmappeeServiceLocationInfo serviceLocationInfo = _smappeeService.getServiceLocationInfo();
 
+        if (serviceLocationInfo == null) {
+            logger.warn("failed to scan for new smappee devices");
+            return;
+        }
+
         for (SmappeeServiceLocationInfoActuator actuator : serviceLocationInfo.actuators) {
             String id = actuator.id;
             ThingTypeUID typeId = SmappeeBindingConstants.THING_TYPE_ACTUATOR;

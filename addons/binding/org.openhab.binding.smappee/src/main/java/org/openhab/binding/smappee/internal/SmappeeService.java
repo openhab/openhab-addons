@@ -18,6 +18,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link SamppeeService} handles the connection to the Smappee API
@@ -132,8 +134,10 @@ public class SmappeeService {
 
                 return readings;
 
-            } catch (Exception se) {
+            } catch (CommunicationException se) {
                 logger.error("failed to read smappee '{}'", se.getMessage());
+            } catch (JsonSyntaxException pe) {
+                logger.warn("failed to read response from smappee : {}", pe.getMessage());
             }
         } while (currentTry++ < this.retry);
 
@@ -159,8 +163,10 @@ public class SmappeeService {
 
                 return readings;
 
-            } catch (Exception se) {
+            } catch (CommunicationException se) {
                 logger.warn("failed to read servicelocationinfo '{}'", se.getMessage());
+            } catch (JsonSyntaxException pe) {
+                logger.warn("failed to read response from smappee : {}", pe.getMessage());
             }
         } while (currentTry++ < this.retry);
 
@@ -203,9 +209,12 @@ public class SmappeeService {
                 }
                 return null;
 
-            } catch (Exception se) {
+            } catch (CommunicationException se) {
                 logger.warn("failed to read smappee '{}' - appliance '{}' : {}", this.serviceLocationId, applianceId,
                         se.getMessage());
+            } catch (JsonSyntaxException pe) {
+                logger.warn("failed to read response from smappee '{}' - appliance '{}' : {}", this.serviceLocationId,
+                        applianceId, pe.getMessage());
             }
         } while (currentTry++ < this.retry);
 
@@ -247,9 +256,12 @@ public class SmappeeService {
                 }
                 return null;
 
-            } catch (Exception se) {
+            } catch (CommunicationException ce) {
                 logger.warn("failed to read smappee '{}' - sensorId '{}' : {}, Retry ({}/{})", this.serviceLocationId,
-                        sensorId, se.getMessage(), currentTry + 1, this.retry);
+                        sensorId, ce.getMessage(), currentTry + 1, this.retry);
+            } catch (JsonSyntaxException pe) {
+                logger.warn("failed to read response from smappee '{}' - sensorId '{}' : {}", this.serviceLocationId,
+                        sensorId, pe.getMessage());
             }
         } while (currentTry++ < this.retry);
 
@@ -274,39 +286,41 @@ public class SmappeeService {
         do {
             try {
                 if (turnOn) {
-                    setData("/dev/v1/servicelocation/" + this.serviceLocationId + "/actuator/" + actuatorID + "/on");
+                    setData("/dev/v1/servicelocation/" + this.serviceLocationId + "/actuator/" + actuatorID + "/on",
+                            "{}");
                 } else {
-                    setData("/dev/v1/servicelocation/" + this.serviceLocationId + "/actuator/" + actuatorID + "/off");
+                    setData("/dev/v1/servicelocation/" + this.serviceLocationId + "/actuator/" + actuatorID + "/off",
+                            "{}");
                 }
                 return;
-            } catch (Exception se) {
+            } catch (CommunicationException se) {
                 logger.warn("failed to set smappee plug '{}' - sensorId '{}' : {}, Retry ({}/{})",
                         this.serviceLocationId, actuatorID, se.getMessage(), currentTry + 1, this.retry);
             }
         } while (currentTry++ < this.retry);
     }
 
-    public boolean initialize() throws CommunicationException, InvalidConfigurationException {
+    public void initialize() throws CommunicationException, InvalidConfigurationException {
         // get service locations
         String response = getData("/dev/v1/servicelocation");
 
-        if (response.isEmpty()) {
-            return false;
-        }
+        try {
+            SmappeeServiceLocationResponse smappeeServiceLocationResponse = gson.fromJson(response,
+                    SmappeeServiceLocationResponse.class);
 
-        SmappeeServiceLocationResponse smappeeServiceLocationResponse = gson.fromJson(response,
-                SmappeeServiceLocationResponse.class);
-
-        for (SmappeeServiceLocation smappeeServiceLocation : smappeeServiceLocationResponse.serviceLocations) {
-            if (smappeeServiceLocation.name.equals(config.service_location_name)) {
-                this.serviceLocationId = Integer.toString(smappeeServiceLocation.serviceLocationId);
-                initialized = true;
-
-                return true;
-
+            for (SmappeeServiceLocation smappeeServiceLocation : smappeeServiceLocationResponse.serviceLocations) {
+                if (smappeeServiceLocation.name.equals(config.service_location_name)) {
+                    this.serviceLocationId = Integer.toString(smappeeServiceLocation.serviceLocationId);
+                    initialized = true;
+                    return;
+                }
             }
+
+            throw new InvalidConfigurationException("Could not find a valid servicelotion for "
+                    + config.service_location_name + ", check binding configuration");
+        } catch (JsonSyntaxException pe) {
+            throw new CommunicationException("Failed to parse servicelocation response", pe);
         }
-        return false;
     }
 
     public boolean isInitialized() {
@@ -317,24 +331,17 @@ public class SmappeeService {
         String url = "https://app1pub.smappee.net" + request;
 
         Request getMethod = httpClient.newRequest(url);
-        // getMethod.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3,
-        // false));
         getMethod.agent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
         getMethod.accept("application/json");
 
         String accessTokenToInclude = getAccessToken();
-        if (accessTokenToInclude.isEmpty()) {
-            logger.warn("Could not get access token");
-            return "";
-        }
 
         getMethod.header("Authorization", "Bearer " + accessTokenToInclude);
 
         try {
             ContentResponse response = getMethod.send();
             if (response.getStatus() != HttpStatus.OK_200) {
-                logger.warn("Get readings method failed: {}", response.getReason());
-                return "";
+                throw new CommunicationException("Get data method failed : " + response.getReason());
             }
 
             return response.getContentAsString();
@@ -347,29 +354,23 @@ public class SmappeeService {
         }
     }
 
-    private void setData(String request) throws CommunicationException {
+    private void setData(String request, String jsonContent) throws CommunicationException {
         String url = "https://app1pub.smappee.net" + request;
 
         Request postMethod = httpClient.newRequest(url);
-        // postMethod.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3,
-        // false));
         postMethod.method(HttpMethod.POST);
         postMethod.agent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
         postMethod.accept("application/json");
+        postMethod.content(new StringContentProvider(jsonContent));
 
         String accessTokenToInclude = getAccessToken();
-        if (accessTokenToInclude.isEmpty()) {
-            logger.warn("Could not get access token");
-            return;
-        }
 
         postMethod.header("Authorization", "Bearer " + accessTokenToInclude);
 
         try {
             ContentResponse response = postMethod.send();
             if (response.getStatus() != HttpStatus.OK_200) {
-                logger.warn("Post method failed: {}", response.getReason());
-                return;
+                throw new CommunicationException("Post data method failed : " + response.getReason());
             }
 
             return;
@@ -383,13 +384,15 @@ public class SmappeeService {
     }
 
     private String getAccessToken() throws CommunicationException {
+
+        // current access token is still valid ?
         if (accessToken != null && !accessToken.isEmpty() && accessTokenValidity != null
                 && accessTokenValidity.isBeforeNow()) {
             return accessToken;
         }
 
         if (accessTokenValidity != null) {
-            // get new accesstoken by using the refreshToken
+            // get new access token by using the refreshToken
             Request postMethod = httpClient.newRequest("https://app1pub.smappee.net/dev/v1/oauth2/token");
             postMethod.method(HttpMethod.POST);
             postMethod.accept("application/json");
@@ -405,8 +408,7 @@ public class SmappeeService {
             try {
                 ContentResponse response = postMethod.send();
                 if (response.getStatus() != HttpStatus.OK_200) {
-                    logger.warn("Refresh Access Token failed: {}", response.getReason());
-                    return "";
+                    throw new CommunicationException("Refresh Access Token failed");
                 }
 
                 String result = response.getContentAsString();
@@ -420,22 +422,17 @@ public class SmappeeService {
                 return accessToken;
 
             } catch (InterruptedException e) {
-                logger.warn("Request aborted", e);
-                return "";
+                throw new CommunicationException("Request aborted", e);
             } catch (TimeoutException e) {
-                logger.warn("Timeout error", e);
-                return "";
+                throw new CommunicationException("Timeout error", e);
             } catch (ExecutionException e) {
-                logger.warn("Communication error", e.getCause());
-                return "";
-            } catch (Exception e) {
-                logger.warn("Error occured", e);
-                return "";
+                throw new CommunicationException("Communication error", e.getCause());
+            } catch (JsonSyntaxException e) {
+                throw new CommunicationException("Response parsing error occured", e);
             }
         }
 
-        // get new accesstoken by using the credentials
-
+        // get new access token by using the credentials
         Request postMethod = httpClient.newRequest("https://app1pub.smappee.net/dev/v1/oauth2/token");
         postMethod.method(HttpMethod.POST);
         postMethod.accept("application/json");
@@ -452,8 +449,7 @@ public class SmappeeService {
         try {
             ContentResponse response = postMethod.send();
             if (response.getStatus() != HttpStatus.OK_200) {
-                logger.warn("Get Access token failed: {}", response.getReason());
-                return "";
+                throw new CommunicationException("Get Access token failed:");
             }
 
             String result = response.getContentAsString();
@@ -465,17 +461,13 @@ public class SmappeeService {
 
             return accessToken;
         } catch (InterruptedException e) {
-            logger.warn("Request aborted", e);
-            return "";
+            throw new CommunicationException("Request aborted", e);
         } catch (TimeoutException e) {
-            logger.warn("Timeout error", e);
-            return "";
+            throw new CommunicationException("Timeout error", e);
         } catch (ExecutionException e) {
-            logger.warn("Communication error", e.getCause());
-            return "";
-        } catch (Exception e) {
-            logger.warn("Error occured", e);
-            return "";
+            throw new CommunicationException("Communication error", e.getCause());
+        } catch (JsonSyntaxException e) {
+            throw new CommunicationException("Response parsing error occured", e);
         }
     }
 }
