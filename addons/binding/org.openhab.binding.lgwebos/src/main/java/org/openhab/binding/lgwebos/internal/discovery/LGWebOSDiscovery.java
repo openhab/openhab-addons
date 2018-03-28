@@ -206,7 +206,6 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
             logger.warn("Configured primary IP cannot be parsed: {} Details: {}", ipAddress, e.getMessage());
             return Optional.empty();
         }
-
     }
 
 }

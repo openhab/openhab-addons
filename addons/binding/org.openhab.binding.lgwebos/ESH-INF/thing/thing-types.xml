@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="lgwebos" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="lgwebos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -19,8 +20,8 @@
 			<channel id="appLauncher" typeId="appLauncherChannelType" />
 		</channels>
 
-        <representation-property>deviceId</representation-property>
-        
+		<representation-property>deviceId</representation-property>
+
 		<config-description-ref uri="thing-type:lgwebos:WebOSTV" />
 	</thing-type>
 
