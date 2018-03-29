@@ -246,7 +246,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          */
         dptMainTypeMap.put(9, DecimalType.class);
         /** Exceptions Datapoint Types "2-Octet Float Value", Main number 9 */
-        // Example: dptTypeMap.put(DPTXlator2ByteFloat.DPT_TEMPERATURE.getID(), DecimalType.class);
+        dptTypeMap.put(DPTXlator2ByteFloat.DPT_HUMIDITY.getID(), PercentType.class);
 
         /**
          * MainType: 10
