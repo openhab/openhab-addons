@@ -59,6 +59,7 @@ import org.openhab.binding.homematic.internal.communicator.virtual.VirtualGatewa
 import org.openhab.binding.homematic.internal.misc.DelayedExecuter;
 import org.openhab.binding.homematic.internal.misc.DelayedExecuter.DelayedExecuterCallback;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
+import org.openhab.binding.homematic.internal.misc.HomematicConstants;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
@@ -519,6 +520,76 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 }
             }
         }
+    }
+
+    @Override
+    public void setInstallMode(boolean enable, int seconds) throws IOException {
+        HmDevice gwExtrasHm = devices.get(HmDevice.ADDRESS_GATEWAY_EXTRAS);
+        
+        if (gwExtrasHm != null) {
+            // since the homematic virtual device exist: try setting install mode via its dataPoints
+            HmDatapoint installModeDataPoint = null;
+            HmDatapoint installModeDurationDataPoint = null;
+
+            // collect virtual datapoints to be accessed
+            HmChannel hmChannel = gwExtrasHm.getChannel(HmChannel.CHANNEL_NUMBER_EXTRAS);            
+            HmDatapointInfo installModeDurationDataPointInfo = new HmDatapointInfo(HmParamsetType.VALUES, hmChannel,
+                    HomematicConstants.VIRTUAL_DATAPOINT_NAME_INSTALL_MODE_DURATION);
+            if (enable) {
+                installModeDurationDataPoint = hmChannel.getDatapoint(installModeDurationDataPointInfo);
+            }
+
+            HmDatapointInfo installModeDataPointInfo = new HmDatapointInfo(HmParamsetType.VALUES, hmChannel,
+                    HomematicConstants.VIRTUAL_DATAPOINT_NAME_INSTALL_MODE);
+            
+            installModeDataPoint = hmChannel.getDatapoint(installModeDataPointInfo);
+                        
+            // first set duration on the datapoint
+            if (installModeDurationDataPoint != null) {
+                try {
+                    VirtualDatapointHandler handler = getVirtualDatapointHandler(installModeDurationDataPoint, null);
+                    handler.handleCommand(this, installModeDurationDataPoint, new HmDatapointConfig(), seconds);
+                    
+                    // notify thing if exists 
+                    gatewayAdapter.onStateUpdated(installModeDurationDataPoint);
+                } catch (HomematicClientException ex) {
+                    logger.warn("Failed to send datapoint {}", installModeDurationDataPoint, ex);
+                }
+            }
+
+            // now that the duration is set, we can enable / disable
+            if (installModeDataPoint != null) {
+                try {
+                    VirtualDatapointHandler handler = getVirtualDatapointHandler(installModeDataPoint, null);
+                    handler.handleCommand(this, installModeDataPoint, new HmDatapointConfig(), enable);
+                    
+                    // notify thing if exists
+                    gatewayAdapter.onStateUpdated(installModeDataPoint);
+                    
+                    return;
+                } catch (HomematicClientException ex) {
+                    logger.warn("Failed to send datapoint {}", installModeDataPoint, ex);
+                }
+            }
+        }
+        
+        // no gwExtrasHm available (or previous approach failed), therefore use rpc client directly
+        for (HmInterface hmInterface : availableInterfaces.keySet()) {
+            if (hmInterface == HmInterface.RF || hmInterface == HmInterface.CUXD) {
+                getRpcClient(hmInterface).setInstallMode(hmInterface, enable, seconds);
+            }
+        }
+    }
+    
+    @Override
+    public int getInstallMode() throws IOException {
+        for (HmInterface hmInterface : availableInterfaces.keySet()) {
+            if (hmInterface == HmInterface.RF || hmInterface == HmInterface.CUXD) {
+                return getRpcClient(hmInterface).getInstallMode(hmInterface);
+            }
+        }
+        
+        throw new IllegalStateException("Could not determine install mode because no suitable interface exists");
     }
 
     private void updateRssiInfo(String address, String datapointName, Integer value) {
