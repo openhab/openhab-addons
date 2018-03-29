@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -229,7 +229,7 @@ public class AutelisHandler extends BaseThingHandler {
                 }
 
                 String cmd;
-                // name ending in sp are setpoints, ht are heat types?
+                // name ending in sp are setpoints, ht are heater?
                 if (name.endsWith("sp")) {
                     cmd = "temp";
                 } else if (name.endsWith("ht")) {

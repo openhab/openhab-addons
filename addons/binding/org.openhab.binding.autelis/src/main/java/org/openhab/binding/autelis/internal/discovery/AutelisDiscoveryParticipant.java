@@ -71,20 +71,16 @@ public class AutelisDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public ThingUID getThingUID(RemoteDevice device) {
-        if (device != null) {
-            if (device.getDetails().getManufacturerDetails().getManufacturer() != null
-                    && device.getDetails().getModelDetails().getModelNumber() != null) {
-                if (device.getDetails().getManufacturerDetails().getManufacturer().toLowerCase()
-                        .startsWith(MANUFACTURER)) {
-                    logger.debug("Autelis Pool Control Found at {}", device.getDetails().getBaseURL());
-                    String id = device.getIdentity().getUdn().getIdentifierString().replaceAll(":", "").toUpperCase();
-                    if (device.getDetails().getModelDetails().getModelNumber().toLowerCase()
-                            .startsWith(MODEL_PENTAIR)) {
-                        return new ThingUID(AutelisBindingConstants.PENTAIR_THING_TYPE_UID, id);
-                    }
-                    if (device.getDetails().getModelDetails().getModelNumber().toLowerCase().startsWith(MODEL_JANDY)) {
-                        return new ThingUID(AutelisBindingConstants.JANDY_THING_TYPE_UID, id);
-                    }
+        if (device.getDetails().getManufacturerDetails().getManufacturer() != null
+                && device.getDetails().getModelDetails().getModelNumber() != null) {
+            if (device.getDetails().getManufacturerDetails().getManufacturer().toLowerCase().startsWith(MANUFACTURER)) {
+                logger.debug("Autelis Pool Control Found at {}", device.getDetails().getBaseURL());
+                String id = device.getIdentity().getUdn().getIdentifierString().replaceAll(":", "").toUpperCase();
+                if (device.getDetails().getModelDetails().getModelNumber().toLowerCase().startsWith(MODEL_PENTAIR)) {
+                    return new ThingUID(AutelisBindingConstants.PENTAIR_THING_TYPE_UID, id);
+                }
+                if (device.getDetails().getModelDetails().getModelNumber().toLowerCase().startsWith(MODEL_JANDY)) {
+                    return new ThingUID(AutelisBindingConstants.JANDY_THING_TYPE_UID, id);
                 }
             }
         }
