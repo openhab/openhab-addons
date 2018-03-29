@@ -9,14 +9,12 @@
 package org.openhab.binding.innogysmarthome.internal.manager;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.innogysmarthome.InnogyBindingConstants;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
 import org.openhab.binding.innogysmarthome.internal.client.entity.Message;
@@ -65,8 +63,7 @@ public class DeviceStructureManager {
         logger.debug("Starting device structure manager.");
 
         refreshDevices();
-        logger.info("Devices loaded. Device structure manager ready.");
-        writeExampleConfigToLog();
+        logger.debug("Devices loaded. Device structure manager ready.");
     }
 
     /**
@@ -148,52 +145,6 @@ public class DeviceStructureManager {
             }
             logger.debug("====================================");
         }
-    }
-
-    /**
-     * Writes an exemplary openHAB configuration for the found {@link Device}s to the logfile
-     * which then can be copied to the config files easily for initial use of the things.
-     */
-    private void writeExampleConfigToLog() {
-        Device bridge = getBridgeDevice();
-        if (bridge == null) {
-            logger.warn("Cannot create example config. No bridge found - add one first!");
-            return;
-        }
-
-        String bridgeId = "SHC";
-        List<String> exampleConfig = new ArrayList<String>();
-        String exampleThingId;
-        String exampleThingLocation;
-        Map<String, String> deviceThingIdMap = new HashMap<String, String>();
-
-        Collection<Device> devices = getDeviceList();
-        for (Device d : devices) {
-            if (d.isController()) {
-                continue;
-            }
-
-            exampleThingId = "ngy" + d.getType() + d.getId().substring(0, 5);
-            if (d.getLocation() != null) {
-                exampleThingLocation = d.getLocation().getName();
-            } else {
-                exampleThingLocation = null;
-            }
-            deviceThingIdMap.put(d.getId(), exampleThingId);
-            exampleConfig.add(String.format("\tThing %s %s \"%s\" [ id=\"%s\" ]", d.getType(), exampleThingId,
-                    d.getName() + (exampleThingLocation != null
-                            ? " (" + exampleThingLocation + ")\" @ \"" + exampleThingLocation
-                            : ""),
-                    d.getId()));
-        }
-
-        Collections.sort(exampleConfig);
-        exampleConfig.add(0, String.format(
-                "Bridge innogysmarthome:bridge:%s \"innogy SmartHome Controller\" [ refreshtoken=\"<insert-your-refresh-token-here>\" ] {",
-                bridgeId));
-        exampleConfig.add("}");
-        logger.info("EXAMPLE Thing configuration (copy to your 'innogy.things' config file):\n{}",
-                StringUtils.join(exampleConfig, "\n"));
     }
 
     /**

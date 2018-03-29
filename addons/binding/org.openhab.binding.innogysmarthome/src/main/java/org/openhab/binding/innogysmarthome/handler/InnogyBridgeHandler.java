@@ -103,11 +103,11 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
             client = new InnogyClient(innogyConfig);
             client.setCredentialRefreshListener(InnogyBridgeHandler.this);
             try {
-                logger.info("Initializing innogy SmartHome client...");
+                logger.debug("Initializing innogy SmartHome client...");
                 client.initialize();
             } catch (Exception e) {
                 if (!handleClientException(e)) {
-                    logger.error("Error initializing innogy SmartHome client.");
+                    logger.error("Error initializing innogy SmartHome client.", e);
                     return;
                 }
             }
@@ -128,7 +128,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
                 deviceStructMan.start();
             } catch (Exception e) {
                 if (!handleClientException(e)) {
-                    logger.error("Error starting device structure manager.");
+                    logger.error("Error starting device structure manager.", e);
                     return;
                 }
             }
@@ -187,11 +187,11 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
 
                 BigDecimal idleTimeout = (BigDecimal) getConfig().get(CONFIG_WEBSOCKET_IDLE_TIMEOUT);
                 webSocket = new InnogyWebSocket(bridgeHandler, URI.create(webSocketUrl), idleTimeout.intValue() * 1000);
-                logger.info("Starting innogy websocket.");
+                logger.debug("Starting innogy websocket.");
                 webSocket.start();
             } catch (Exception e) {
                 if (!handleClientException(e)) {
-                    logger.error("Error starting websocket.");
+                    logger.error("Error starting websocket.", e);
                     return;
                 }
             }

@@ -28,6 +28,7 @@ The channels are described in detail in the next chapter.
 | PSS | Pluggable Smart Switch, indoor | switch |
 | PSSO | Pluggable Smart Switch, outdoor | switch |
 | RST | Radiator Mounted Smart Thermostat | set_temperature, temperature, frost_warning, humidity, mold_warning, operation_mode, window_reduction_active, battery_low |
+| RST2 | Radiator Mounted Smart Thermostat (newer two battery version since 2018) | set_temperature, temperature, frost_warning, humidity, mold_warning, operation_mode, window_reduction_active, battery_low |
 | | VariableActuator | switch |
 | WDS | Window Door Sensor | contact, battery_low |
 | WMD| Wall Mounted Motion Detector, indoor | motion_count, luminance, battery_low |
@@ -36,6 +37,16 @@ The channels are described in detail in the next chapter.
 | WSC2 | Wall Mounted Smart Controller | button1, button2, button1_count, button2_count, battery_low |
 | WSD | Wall Mounted Smoke Detector, old version | smoke, alarm, battery_low |
 | WSD2 | Wall Mounted Smoke Detector, new version | smoke, alarm, battery_low |
+
+Powermeter devices
+
+| Device | Description | Supported channels |
+| ------ | ----------- | ------------------ |
+| AnalogMeter | The Analog Meter from the innogy EnergyControl product | energy_consumption_month_kwh, absolute_energy_consumption, energy_consumption_month_euro, energy_consumption_day_euro, energy_consumption_day_kwh |
+| GenerationMeter | The Generation Meter from the innogy PowerControlSolar product | energy_generation_month_kwh, total_energy_generation, energy_generation_month_euro, energy_generation_day_euro, energy_generation_day_kwh, power_generation_watt |
+| SmartMeter | The Smart Meter from the innogy PowerControl product. | energy_consumption_month_kwh, absolute_energy_consumption, energy_consumption_month_euro, energy_consumption_day_euro, energy_consumption_day_kwh, power_consumption_watt |
+| Two-Way-Meter | The Two-Way-Meter from the innogy PowerControlSolar product | energy_month_kwh, total_energy, energy_month_euro, energy_day_euro, energy_day_kwh, energy_feed_month_kwh, total_energy_fed, energy_feed_month_euro, energy_feed_day_euro, energy_feed_day_kwh, power_watt |
+  
 
 ## Discovery
 
@@ -77,7 +88,7 @@ However, only devices will appear that are added in the innogy SmartHome app bef
 | mold_warning | Switch | active, if the measured humidity is too low (ON/OFF) | RST | 
 | motion_count | Number | Number of detected motions, increases with each detected motion | WMD, WMDO |
 | operation_mode | String | the mode of a thermostat (auto/manual) | RST | 
-| rollershutter | Rollershutter | Controlls a roller shutter | ISR2 |
+| rollershutter | Rollershutter | Controls a roller shutter | ISR2 |
 | set_temperature | Number | Sets the target temperature in °C | RST, WRT |
 | smoke | Switch | Indicates, if smoke was detected (ON/OFF) | WSD, WSD2 |
 | switch | Switch | A switch to turn the device or variable on/off (ON/OFF) | ISS2, PSS, PSSO, VariableActuator |
@@ -88,9 +99,12 @@ However, only devices will appear that are added in the innogy SmartHome app bef
 
 ### Configuring the SmartHome Controller (SHC)
 
-The SmartHome Controller (SHC) can be configured in the PaperUI as follows:
+The SmartHome Controller (SHC) can be configured in the Paper UI as follows:
 
-After the "innogy SmartHome Controller" is added via the Inbox, edit the controller and add the "Authorization code" by following the hints in the description. Save your changes. The SHC should now login and go online. Be sure it is connected to the internet.
+After the "innogy SmartHome Controller" is added via the Inbox, edit the controller and add the "Authorization code" by following the hints in the description. 
+Save your changes. 
+The SHC should now login and go online. 
+Be sure it is connected to the Internet.
 
 ### Obtaining the authorization code and tokens
 
@@ -101,7 +115,7 @@ To receive the auth-code, go to one of the following URLs depending on your bran
 * [SmartHome Austria authorization page](https://api.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635749&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Fsmarthome-austria.html&scope&lang=de-DE)
 * [Start SmartHome authorization page](https://api.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635750&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Fstart-smarthome.html&scope&lang=de-DE)
 
-You will be redirected to openhab.org and the the auth-code will be displayed.
+You will be redirected to openhab.org and the auth-code will be displayed.
 Copy and paste it into your SHC configuration and you are done.
 
 The binding then requests the access and refresh tokens and saves them in the SHC configuration.
@@ -148,7 +162,8 @@ All other innogy devices can be added using the following syntax:
 Thing WDS <thing-id> "<thing-name>" @ "<room-name>" [ id="<the-device-id>" ]
 ```
 
-To make things easier and to get the right device ids, the binding **outputs a useable example configuration during startup**, that you can copy & paste into your .things-configuration (just insert your refresh-token).
+The device ID (e.g. e9a74941a3807b57332214f346fb1129) can be found in the Paper UI inbox, as you find it below all things there in the form `innogysmarthome:<device-type>:<bridge-id>:<the-device-id>` (example: `innogysmarthome:WSC2:SMARTHOME01:e9a74941a3807b57332214f346fb1129`).
+
 However, a full example .things configuration look like this:
 
 ```

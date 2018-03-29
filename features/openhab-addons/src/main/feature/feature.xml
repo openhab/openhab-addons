@@ -68,7 +68,7 @@
         <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.cm11a/${project.version}</bundle>
     </feature>
-    
+
     <feature name="openhab-binding-coolmasternet" description="CoolMasterNet Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.coolmasternet/${project.version}</bundle>
@@ -131,7 +131,7 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.harmonyhub/${project.version}</bundle>
     </feature>
-    
+
     <feature name="openhab-binding-helios" description="Helios Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.helios/${project.version}</bundle>
@@ -157,10 +157,17 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.hdpowerview/${project.version}</bundle>
     </feature>
-	
-	<feature name="openhab-binding-icloud" description="icloud Binding" version="${project.version}">
+
+    <feature name="openhab-binding-icloud" description="icloud Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.icloud/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-innogysmarthome" description="innogy Smarthome Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-http</feature>
+        <feature>openhab-httpclient</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.innogysmarthome/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-irtrans" description="IRTrans Binding" version="${project.version}">
@@ -396,7 +403,7 @@
     <feature name="openhab-binding-seneye" description="Seneye Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.seneye/${project.version}</bundle>
-    </feature>    
+    </feature>
 
     <feature name="openhab-binding-silvercrestwifisocket" description="Silvercrest Wifi Plug Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>

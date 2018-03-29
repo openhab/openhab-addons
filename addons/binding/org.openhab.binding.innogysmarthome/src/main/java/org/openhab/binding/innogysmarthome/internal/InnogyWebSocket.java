@@ -104,7 +104,7 @@ public class InnogyWebSocket {
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        logger.info("Connected to innogy WebSocket.");
+        logger.info("Connected to Innogy Webservice.");
         logger.trace("innogy Websocket session: {}", session);
     }
 
@@ -112,9 +112,9 @@ public class InnogyWebSocket {
     public void onClose(int statusCode, String reason) {
         this.closeLatch.countDown();
         if (statusCode == StatusCode.NORMAL) {
-            logger.info("Connection to innogy WebSocket was closed normally.");
+            logger.info("Connection to innogy Webservice was closed normally.");
         } else {
-            logger.info("Connection to innogy WebSocket was closed abnormally (code: {}). Reason: {}", statusCode,
+            logger.info("Connection to innogy Webservice was closed abnormally (code: {}). Reason: {}", statusCode,
                     reason);
             eventListener.connectionClosed();
         }
