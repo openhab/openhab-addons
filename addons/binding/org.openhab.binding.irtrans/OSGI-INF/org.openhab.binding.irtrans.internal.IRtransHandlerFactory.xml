@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" configuration-pid="binding.irtrans" configuration-policy="optional" immediate="true" name="org.openhab.binding.irtrans.internal.IRtransHandlerFactory">
+   <service>
+      <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
+   </service>
+   <implementation class="org.openhab.binding.irtrans.internal.IRtransHandlerFactory"/>
+</scr:component>
