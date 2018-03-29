@@ -32,6 +32,7 @@ public class HomematicConfig {
     private static final int DEFAULT_PORT_HMIP = 2010;
     private static final int DEFAULT_PORT_CUXD = 8701;
     private static final int DEFAULT_PORT_GROUP = 9292;
+    public static final int DEFAULT_INSTALL_MODE_DURATION = 60;
 
     private String gatewayAddress;
     private String gatewayType = GATEWAY_TYPE_AUTO;
@@ -48,6 +49,7 @@ public class HomematicConfig {
 
     private int socketMaxAlive = 900;
     private int timeout = 15;
+    private int installModeDuration = DEFAULT_INSTALL_MODE_DURATION;
 
     private HmGatewayInfo gatewayInfo;
 
@@ -171,6 +173,26 @@ public class HomematicConfig {
      */
     public void setGatewayType(String gatewayType) {
         this.gatewayType = gatewayType;
+    }
+    
+    /**
+     * Returns time in seconds that the controller will be in install mode when
+     * a device discovery is initiated
+     * 
+     * @return time in seconds that the controller remains in install mode
+     */
+    public int getInstallModeDuration() {
+        return installModeDuration;
+    }
+    
+    /**
+     * Sets installModeDuration
+     * 
+     * @param installModeDuration time in seconds that the controller remains in
+     *        install mode
+     */
+    public void setInstallModeDuration(int installModeDuration) {
+        this.installModeDuration = installModeDuration;
     }
 
     /**
@@ -299,7 +321,8 @@ public class HomematicConfig {
                 .append("xmlCallbackPort", xmlCallbackPort).append("binCallbackPort", binCallbackPort)
                 .append("gatewayType", gatewayType).append("rfPort", getRfPort()).append("wiredPort", getWiredPort())
                 .append("hmIpPort", getHmIpPort()).append("cuxdPort", getCuxdPort()).append("groupPort", getGroupPort())
-                .append("timeout", timeout).append("socketMaxAlive", socketMaxAlive);
+                .append("timeout", timeout).append("installModeDuration", installModeDuration)
+                .append("socketMaxAlive", socketMaxAlive);
         return tsb.toString();
     }
 }

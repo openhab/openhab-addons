@@ -80,6 +80,11 @@
 				<advanced>true</advanced>
 				<default>9292</default>
 			</parameter>
+			<parameter name="installModeDuration" type="integer" min="10" max="300" unit="s">
+				<label>Install mode duration</label>
+				<description>Time in seconds that the controller will be in install mode when a device discovery is initiated</description>
+				<default>60</default>
+			</parameter>
 
 		</config-description>
 	</bridge-type>

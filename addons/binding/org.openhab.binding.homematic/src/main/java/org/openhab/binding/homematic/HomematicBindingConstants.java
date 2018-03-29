@@ -53,4 +53,6 @@ public class HomematicBindingConstants {
     public static final String PROPERTY_BATTERY_TYPE = "batteryType";
     public static final String PROPERTY_AES_KEY = "aesKey";
     public static final String PROPERTY_DYNAMIC_FUNCTION_FORMAT = "dynamicFunction-%d";
+    
+    public static final int INSTALL_MODE_NORMAL = 1;
 }

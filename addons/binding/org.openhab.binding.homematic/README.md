@@ -77,6 +77,14 @@ If you are using a YAHM for example, you have to manually set the gateway type i
 If autodetection can not identify the gateway, the binding uses the default gateway implementation.
 The difference is, that variables, scripts and device names are not supported, everything else is the same.
 
+### Automatic install mode during discovery
+
+Besides discovering devices that are already known by the gateway, it may be desired to connect new devices to your system - which requires your gateway to be in install mode. Starting the binding's DiscoveryService will automatically put your gateway(s) in install mode for a specified period of time (see installModeDuration).
+
+**Note:** Enabling / disabling of install mode is also available via GATEWAY_EXTRAS. You may use this if you prefer.
+
+**Exception:** If a gateway is not ONLINE, the install mode will not be set automatically. _For instance during initialization of the binding its DiscoveryService is started and will discover devices that are already connected. However, the install mode is not automatically enabled in this situation because the gateway is in the status INITIALIZING._
+
 ## Bridge Configuration
 
 There are several settings for a bridge:
@@ -125,6 +133,9 @@ The port number of the HMIP server (default = 2010)
 
 -   **cuxdPort**  
 The port number of the CUxD daemon (default = 8701)
+
+-   **installModeDuration**
+Time in seconds that the controller will be in install mode when a device discovery is initiated (default = 60)
 
 The syntax for a bridge is:
 
