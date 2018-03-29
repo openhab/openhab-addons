@@ -20,7 +20,6 @@ import java.util.regex.Pattern;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -53,13 +52,9 @@ public class FritzahaWebInterface {
      */
     protected String sid;
     /**
-     * HTTP client for asynchronous calls
+     * shared instance of HTTP client for asynchronous calls
      */
     protected HttpClient asyncclient;
-    /**
-     * Maximum number of simultaneous asynchronous connections
-     */
-    protected int asyncmaxconns = 20;
     /**
      * Bridge thing handler for updating thing status
      */
@@ -136,7 +131,8 @@ public class FritzahaWebInterface {
             loginXml = HttpUtil.executeUrl("GET",
                     getURL("login_sid.lua",
                             (this.config.getUser() != null && !"".equals(this.config.getUser())
-                                    ? ("username=" + this.config.getUser() + "&") : "") + "response=" + response),
+                                    ? ("username=" + this.config.getUser() + "&")
+                                    : "") + "response=" + response),
                     10 * this.config.getSyncTimeout());
         } catch (IOException e) {
             logger.debug("Failed to get loginXML {}", e.getLocalizedMessage(), e);
@@ -221,17 +217,11 @@ public class FritzahaWebInterface {
      *
      * @param config Bridge configuration
      */
-    public FritzahaWebInterface(AvmFritzConfiguration config, IFritzHandler handler) {
+    public FritzahaWebInterface(AvmFritzConfiguration config, IFritzHandler handler, HttpClient httpClient) {
         this.config = config;
         this.fbHandler = handler;
+        this.asyncclient = httpClient;
         sid = null;
-        asyncclient = new HttpClient(new SslContextFactory(true));
-        asyncclient.setMaxConnectionsPerDestination(asyncmaxconns);
-        try {
-            asyncclient.start();
-        } catch (Exception e) {
-            logger.error("Could not start HTTP Client for {}", getURL(""));
-        }
         authenticate();
         logger.debug("Starting with SID {}", sid);
     }

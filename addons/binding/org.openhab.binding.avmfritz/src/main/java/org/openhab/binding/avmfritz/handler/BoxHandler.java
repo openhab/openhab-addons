@@ -8,16 +8,18 @@
  */
 package org.openhab.binding.avmfritz.handler;
 
-import static org.eclipse.smarthome.core.thing.Thing.*;
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -75,14 +77,19 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      * Schedule for polling
      */
     private ScheduledFuture<?> pollingJob;
+    /**
+     * shared instance of HTTP client for asynchronous calls
+     */
+    private HttpClient httpClient;
 
     /**
      * Constructor
      *
      * @param bridge Bridge object representing a FRITZ!Box
      */
-    public BoxHandler(@NonNull Bridge bridge) {
+    public BoxHandler(@NonNull Bridge bridge, HttpClient httpClient) {
         super(bridge);
+        this.httpClient = httpClient;
     }
 
     /**
@@ -97,7 +104,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
         logger.debug("Discovered FRITZ!Box initialized: {}", config);
 
         this.refreshInterval = config.getPollingInterval();
-        this.connection = new FritzahaWebInterface(config, this);
+        this.connection = new FritzahaWebInterface(config, this, httpClient);
         if (config.getPassword() != null) {
             this.onUpdate();
         } else {
@@ -205,9 +212,10 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
                     if (device.getHkr().getNextchange().getEndperiod() == 0) {
                         updateThingChannelState(thing, CHANNEL_NEXTCHANGE, UnDefType.UNDEF);
                     } else {
-                        final Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(new Date(device.getHkr().getNextchange().getEndperiod() * 1000L));
-                        updateThingChannelState(thing, CHANNEL_NEXTCHANGE, new DateTimeType(calendar));
+                        updateThingChannelState(thing, CHANNEL_NEXTCHANGE,
+                                new DateTimeType(ZonedDateTime.ofInstant(
+                                        Instant.ofEpochMilli(device.getHkr().getNextchange().getEndperiod()),
+                                        ZoneId.systemDefault())));
                     }
                     if (HeatingModel.TEMP_FRITZ_UNDEFINED.equals(device.getHkr().getNextchange().getTchange())) {
                         updateThingChannelState(thing, CHANNEL_NEXTTEMP, UnDefType.UNDEF);

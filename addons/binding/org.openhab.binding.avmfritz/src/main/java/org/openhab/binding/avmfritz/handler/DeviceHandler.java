@@ -8,16 +8,18 @@
  */
 package org.openhab.binding.avmfritz.handler;
 
-import static org.eclipse.smarthome.core.thing.Thing.*;
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -76,6 +78,10 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
      * Schedule for polling
      */
     private ScheduledFuture<?> pollingJob;
+    /**
+     * shared instance of HTTP client for asynchronous calls
+     */
+    private HttpClient httpClient;
 
     /**
      * keeps track of the current state for handling of increase/decrease
@@ -87,8 +93,9 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
      *
      * @param thing Thing object representing a FRITZ! device
      */
-    public DeviceHandler(@NonNull Thing thing) {
+    public DeviceHandler(@NonNull Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
     }
 
     /**
@@ -105,7 +112,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
             logger.debug("discovered PL546E initialized: {}", config);
 
             this.refreshInterval = config.getPollingInterval();
-            this.connection = new FritzahaWebInterface(config, this);
+            this.connection = new FritzahaWebInterface(config, this, httpClient);
             if (config.getPassword() != null) {
                 this.onUpdate();
             } else {
@@ -148,8 +155,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
     }
 
     /**
-     * Handle the commands for switchable outlets or heating thermostats. TODO:
-     * test switch behaviour on PL546E stand-alone
+     * Handle the commands for switchable outlets or heating thermostats.
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -223,15 +229,15 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                         updateState(CHANNEL_SETTEMP,
                                 new DecimalType(HeatingModel.toCelsius(HeatingModel.TEMP_FRITZ_OFF)));
                     } else if (MODE_COMFORT.equals(commandString)) {
-                        BigDecimal comfort_temp = state.getHkr().getKomfort();
-                        state.getHkr().setTsoll(comfort_temp);
-                        fritzBox.setSetTemp(ain, comfort_temp);
-                        updateState(CHANNEL_SETTEMP, new DecimalType(HeatingModel.toCelsius(comfort_temp)));
+                        BigDecimal comfortTemperature = state.getHkr().getKomfort();
+                        state.getHkr().setTsoll(comfortTemperature);
+                        fritzBox.setSetTemp(ain, comfortTemperature);
+                        updateState(CHANNEL_SETTEMP, new DecimalType(HeatingModel.toCelsius(comfortTemperature)));
                     } else if (MODE_ECO.equals(commandString)) {
-                        BigDecimal eco_temp = state.getHkr().getAbsenk();
-                        state.getHkr().setTsoll(eco_temp);
-                        fritzBox.setSetTemp(ain, eco_temp);
-                        updateState(CHANNEL_SETTEMP, new DecimalType(HeatingModel.toCelsius(eco_temp)));
+                        BigDecimal ecoTemperature = state.getHkr().getAbsenk();
+                        state.getHkr().setTsoll(ecoTemperature);
+                        fritzBox.setSetTemp(ain, ecoTemperature);
+                        updateState(CHANNEL_SETTEMP, new DecimalType(HeatingModel.toCelsius(ecoTemperature)));
                     } else if (MODE_BOOST.equals(commandString)) {
                         state.getHkr().setTsoll(HeatingModel.TEMP_FRITZ_MAX);
                         fritzBox.setSetTemp(ain, HeatingModel.TEMP_FRITZ_MAX);
@@ -344,9 +350,10 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                     if (device.getHkr().getNextchange().getEndperiod() == 0) {
                         updateThingChannelState(thing, CHANNEL_NEXTCHANGE, UnDefType.UNDEF);
                     } else {
-                        final Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(new Date(device.getHkr().getNextchange().getEndperiod() * 1000L));
-                        updateThingChannelState(thing, CHANNEL_NEXTCHANGE, new DateTimeType(calendar));
+                        updateThingChannelState(thing, CHANNEL_NEXTCHANGE,
+                                new DateTimeType(ZonedDateTime.ofInstant(
+                                        Instant.ofEpochMilli(device.getHkr().getNextchange().getEndperiod()),
+                                        ZoneId.systemDefault())));
                     }
                     if (HeatingModel.TEMP_FRITZ_UNDEFINED.equals(device.getHkr().getNextchange().getTchange())) {
                         updateThingChannelState(thing, CHANNEL_NEXTTEMP, UnDefType.UNDEF);
