@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="irtrans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Bridge Thing Type -->
+	<bridge-type id="ethernet">
+		<label>IRtrans Ethernet Bridge</label>
+		<description>This is an Ethernet (PoE) IRtrans transceiver equipped with an on-board IRDB database</description>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>Network address</label>
+				<description>Network address of the ethernet transceiver</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="portNumber" type="integer" required="true">
+				<label>Port number</label>
+				<description>TCP port number of the transceiver service</description>
+			</parameter>
+			<parameter name="bufferSize" type="integer" required="false">
+				<label>Buffer size</label>
+				<description>Buffer size used by the TCP socket when sending and receiving commands to the transceiver</description>
+				<default>1024</default>
+			</parameter>
+			<parameter name="responseTimeOut" type="integer" required="false">
+				<label>Response time out</label>
+				<description>Specifies the time milliseconds to wait for a response from the transceiver when sending a command.</description>
+				<default>100</default>
+			</parameter>
+			<parameter name="pingTimeOut" type="integer" required="false">
+				<label>Ping time out</label>
+				<description>Specifies the time milliseconds to wait for a response from the transceiver when pinging the device</description>
+				<default>1000</default>
+			</parameter>
+			<parameter name="reconnectInterval" type="integer" required="false">
+				<label>Reconnect interval</label>
+				<description>Specifies the time seconds to wait before reconnecting to a transceiver after a communication failure</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<channel-type id="blaster">
+		<item-type>String</item-type>
+		<label>Blaster Channel</label>
+		<description>The Blaster Channel allows to send (filtered) infrared commands over the specified blaster led of the transceiver</description>
+		<config-description>
+			<parameter name="led" type="text" required="true">
+				<label>Led</label>
+				<description>The Led on which infrared commands will be emitted</description>
+			</parameter>
+			<parameter name="remote" type="text" required="true">
+				<label>Remote</label>
+				<description>The remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server database and flashed into the transceiver. Can be '*' for any remote</description>
+			</parameter>
+			<parameter name="command" type="text" required="true">
+				<label>Command</label>
+				<description>The name of the command will be allowed, as defined in the IRtrans server database and flashed into the transceiver. Can be '*' for any command</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="receiver">
+		<item-type>String</item-type>
+		<label>Receiver Channel</label>
+		<description>The Receiver Channel allows to receive (filtered) infrared commands on the receiver led of the transceiver</description>
+		<config-description>
+			<parameter name="remote" type="text" required="true">
+				<label>Remote</label>
+				<description>The remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server database and flashed into the transceiver. Can be '*' for any remote</description>
+			</parameter>
+			<parameter name="command" type="text" required="true">
+				<label>Command</label>
+				<description>The name of the command will be allowed, as defined in the IRtrans server database and flashed into the transceiver. Can be '*' for any command</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+</thing:thing-descriptions>
