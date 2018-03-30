@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="innogysmarthome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="VariableActuator">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Variable Actuator</label>
+		<description>A variable from the innogy SmartHome System that can be switched on and off.</description>
+
+		<channels>
+			<channel id="switch" typeId="BooleanStateActuator" />
+		</channels>
+
+		<config-description-ref uri="thing-type:innogysmarthome:config" />
+	</thing-type>
+</thing:thing-descriptions>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="innogysmarthome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ISS2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>In wall Smart Switch (ISS2)</label>
+		<description>An in wall switch with push buttons that can be switched on and off.</description>
+
+		<channels>
+			<channel id="switch" typeId="SwitchActuator" />
+			<channel id="button1" typeId="system.button" />
+			<channel id="button2" typeId="system.button" />
+			<channel id="button1_count" typeId="PushButtonCounter" />
+			<channel id="button2_count" typeId="PushButtonCounter" />
+		</channels>
+
+		<config-description-ref uri="thing-type:innogysmarthome:config" />
+	</thing-type>
+</thing:thing-descriptions>

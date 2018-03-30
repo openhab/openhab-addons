@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="innogysmarthome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="PSD">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Pluggable Smart Dimmer (PSD)</label>
+		<description>A pluggable dimmer.</description>
+
+		<channels>
+			<channel id="dimmer" typeId="DimmerActuator" />
+		</channels>
+
+		<config-description-ref uri="thing-type:innogysmarthome:config" />
+	</thing-type>
+</thing:thing-descriptions>

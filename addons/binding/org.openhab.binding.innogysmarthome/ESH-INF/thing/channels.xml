@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="innogysmarthome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Switch Channel -->
+	<channel-type id="SwitchActuator">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switches the current on/off</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<!-- Dimmer Channel -->
+	<channel-type id="DimmerActuator">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<description>Dimms the connected light</description>
+		<category>DimmableLight</category>
+	</channel-type>
+
+	<!-- RollerShutter Channel -->
+	<channel-type id="RollerShutterActuator">
+		<item-type>Rollershutter</item-type>
+		<label>Blinds position</label>
+		<description>Controls the blinds</description>
+		<category>Blinds</category>
+	</channel-type>
+
+	<!-- BooleanSwitch Channel -->
+	<channel-type id="BooleanStateActuator">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switches the state on/off</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<!-- ThermostatActuator -->
+	<channel-type id="ThermostatActuator_PointTemperature">
+		<item-type>Number</item-type>
+		<label>Target Temperature</label>
+		<description>Thermostat target temperature</description>
+		<category>Temperature</category>
+		<state min="6" max="30" step="0.5" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="ThermostatActuator_OperationMode" advanced="true">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<description>Thermostat operation mode (manual/auto)</description>
+		<category>Mode</category>
+		<state>
+			<options>
+				<option value="Auto">auto</option>
+				<option value="Manu">manual</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="ThermostatActuator_WindowReductionActive" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Window reduction active</label>
+		<description>Thermostat temperature reduced, if window is open.</description>
+		<category>Temperature</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- TemperatureSensor -->
+	<channel-type id="TemperatureSensor_Temperature">
+		<item-type>Number</item-type>
+		<label>Actual Temperature</label>
+		<description>Actual measured room temperature</description>
+		<category>Temperature</category>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="TemperatureSensor_FrostWarning" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Frost Warning</label>
+		<description>Warns, if temperature drop below a threshold (configured in innogy app)</description>
+		<category>Temperature</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- HumiditySensor -->
+	<channel-type id="HumiditySensor_Humidity">
+		<item-type>Number</item-type>
+		<label>Actual Humidity</label>
+		<description>Actual measured room humidity</description>
+		<category>Humidity</category>
+		<state pattern="%.1f%%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="HumiditySensor_MoldWarning" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Mold Warning</label>
+		<description>Active, if humidity is over a threshold (configured in innogy app)</description>
+		<category>Humidity</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- WindowDoorSensor Channel -->
+	<channel-type id="WindowDoorSensor">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+		<description>Shows the open/close state</description>
+		<category>Contact</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- SmokeDetectorSensor Channel -->
+	<channel-type id="SmokeDetectorSensor">
+		<item-type>Switch</item-type>
+		<label>Smoke</label>
+		<description>Shows if smoke was detected</description>
+		<category>Smoke</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- AlarmActuator Channel -->
+	<channel-type id="AlarmActuator">
+		<item-type>Switch</item-type>
+		<label>Alarm</label>
+		<description>Switches the alarm on/off</description>
+		<category>Alarm</category>
+	</channel-type>
+
+	<!-- MotionDetectionSensor Channel -->
+	<channel-type id="MotionDetectionSensor">
+		<item-type>Number</item-type>
+		<label>Motion count</label>
+		<description>The count of detected motions</description>
+		<category>Count</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- LuminanceSensor Channel -->
+	<channel-type id="LuminanceSensor">
+		<item-type>Number</item-type>
+		<label>Luminance</label>
+		<description>Shows the detected luminance in percent</description>
+		<category>Light</category>
+		<state pattern="%d%%" readOnly="true"></state>
+	</channel-type>
+
+	<!-- PushButtonCounter Channel -->
+	<channel-type id="PushButtonCounter" advanced="true">
+		<item-type>Number</item-type>
+		<label>Button pushed count</label>
+		<description>The count of button pushes.</description>
+		<category>Count</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- EnergyConsumptionMonthKWh -->
+	<channel-type id="EnergyConsumptionMonthKWh">
+		<item-type>Number</item-type>
+		<label>Consumption (month)</label>
+		<description>The energy consumption per month in kWh</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- AbsoluteEnergyConsumption -->
+	<channel-type id="AbsoluteEnergyConsumption">
+		<item-type>Number</item-type>
+		<label>Total consumption</label>
+		<description>The absolute Energy consumption</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- EnergyConsumptionMonthEuro -->
+	<channel-type id="EnergyConsumptionMonthEuro" advanced="true">
+		<item-type>Number</item-type>
+		<label>Consumption costs (month)</label>
+		<description>The energy consumption per month in Euro</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- EnergyConsumptionDayEuro -->
+	<channel-type id="EnergyConsumptionDayEuro" advanced="true">
+		<item-type>Number</item-type>
+		<label>Consumption costs (day)</label>
+		<description>The energy consumption per day in Euro</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- EnergyConsumptionDayKWh -->
+	<channel-type id="EnergyConsumptionDayKWh">
+		<item-type>Number</item-type>
+		<label>Consumption (day)</label>
+		<description>The energy consumption per day in kWh</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- PowerConsumptionWatt -->
+	<channel-type id="PowerConsumptionWatt">
+		<item-type>Number</item-type>
+		<label>Current Power Consumption</label>
+		<description>The current power consumption in Watt</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- EnergyGenerationMonthKWh -->
+	<channel-type id="EnergyGenerationMonthKWh">
+		<item-type>Number</item-type>
+		<label>Generation (month)</label>
+		<description>The energy generation per month in kWh</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- TotalEnergyGeneration -->
+	<channel-type id="TotalEnergyGeneration">
+		<item-type>Number</item-type>
+		<label>Total generation</label>
+		<description>The total Energy generation</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- EnergyGenerationMonthEuro -->
+	<channel-type id="EnergyGenerationMonthEuro" advanced="true">
+		<item-type>Number</item-type>
+		<label>Generation value (month)</label>
+		<description>The energy generation per month in Euro</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- EnergyGenerationDayEuro -->
+	<channel-type id="EnergyGenerationDayEuro" advanced="true">
+		<item-type>Number</item-type>
+		<label>Generation value (day)</label>
+		<description>The energy generation per day in Euro</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- EnergyGenerationDayKWh -->
+	<channel-type id="EnergyGenerationDayKWh">
+		<item-type>Number</item-type>
+		<label>Generation (day)</label>
+		<description>The energy generation per day in kWh</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- PowerGenerationWatt -->
+	<channel-type id="PowerGenerationWatt">
+		<item-type>Number</item-type>
+		<label>Current Power generation</label>
+		<description>The current power generation in Watt</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- TotalEnergyConsumption -->
+	<channel-type id="TotalEnergyConsumption">
+		<item-type>Number</item-type>
+		<label>Total consumption</label>
+		<description>The total Energy consumption</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- EnergyFeedMonthKWh -->
+	<channel-type id="EnergyFeedMonthKWh">
+		<item-type>Number</item-type>
+		<label>Feed (month)</label>
+		<description>The energy feed per month in kWh</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- TotalEnergyFeed -->
+	<channel-type id="TotalEnergyFed">
+		<item-type>Number</item-type>
+		<label>Total fed</label>
+		<description>The total Energy fed</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- EnergyFeedMonthEuro -->
+	<channel-type id="EnergyFeedMonthEuro" advanced="true">
+		<item-type>Number</item-type>
+		<label>Feed income (month)</label>
+		<description>The energy feed per month in Euro</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- EnergyFeedDayEuro -->
+	<channel-type id="EnergyFeedDayEuro" advanced="true">
+		<item-type>Number</item-type>
+		<label>Feed income (day)</label>
+		<description>The energy feed per day in Euro</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- EnergyFeedDayKWh -->
+	<channel-type id="EnergyFeedDayKWh">
+		<item-type>Number</item-type>
+		<label>Feed (day)</label>
+		<description>The energy feed per day in kWh</description>
+		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

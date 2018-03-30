@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+	http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:innogysmarthome:config">
+		<parameter name="id" type="text">
+			<label>ID</label>
+			<description>The identifier uniquely identifies this device.</description>
+			<required>true</required>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
