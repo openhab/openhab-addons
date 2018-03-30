@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageTooLongException;
@@ -29,15 +30,15 @@ public class RFXComUndecodedRFMessageTest {
     private void testMessage(String hexMsg, RFXComUndecodedRFMessage.SubType subType, int seqNbr, String rawPayload)
             throws RFXComException {
         final RFXComUndecodedRFMessage msg = (RFXComUndecodedRFMessage) RFXComMessageFactory
-                .createMessage(DatatypeConverter.parseHexBinary(hexMsg));
+                .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals("SubType", subType, msg.subType);
         assertEquals("Seq Number", seqNbr, (short) (msg.seqNbr & 0xFF));
         assertEquals("Device Id", "UNDECODED", msg.getDeviceId());
-        assertEquals("Payload", rawPayload, DatatypeConverter.printHexBinary(msg.rawPayload));
+        assertEquals("Payload", rawPayload, HexUtils.bytesToHex(msg.rawPayload));
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMsg, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", hexMsg, HexUtils.bytesToHex(decoded));
     }
 
     @Test

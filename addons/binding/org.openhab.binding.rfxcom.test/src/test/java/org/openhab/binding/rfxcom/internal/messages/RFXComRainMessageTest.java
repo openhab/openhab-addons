@@ -13,6 +13,7 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComRainMessage.Sub
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
@@ -27,7 +28,7 @@ public class RFXComRainMessageTest {
     @Test
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "0B550217B6000000004D3C69";
-        byte[] message = DatatypeConverter.parseHexBinary(hexMessage);
+        byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComRainMessage msg = (RFXComRainMessage) RFXComMessageFactory.createMessage(message);
         assertEquals("SubType", RAIN2, msg.subType);
         assertEquals("Seq Number", 23, msg.seqNbr);
@@ -39,6 +40,6 @@ public class RFXComRainMessageTest {
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
     }
 }

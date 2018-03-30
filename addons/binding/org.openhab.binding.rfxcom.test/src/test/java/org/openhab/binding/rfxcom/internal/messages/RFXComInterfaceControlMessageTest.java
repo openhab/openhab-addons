@@ -61,7 +61,7 @@ public class RFXComInterfaceControlMessageTest {
     private void testMessage(RFXComInterfaceMessage.TransceiverType transceiverType, RFXComBridgeConfiguration configuration, String data)
             throws RFXComException {
 
-        assertArrayEquals(DatatypeConverter.parseHexBinary(data),
+        assertArrayEquals(HexUtils.hexToBytes(data),
             new RFXComInterfaceControlMessage(transceiverType, configuration).decodeMessage());
     }
 

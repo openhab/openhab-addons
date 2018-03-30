@@ -44,7 +44,7 @@ public class RFXComRfyMessageTest {
 	message.command = command;
         message.setDeviceId(deviceId);
 
-        assertArrayEquals(DatatypeConverter.parseHexBinary(data), message.decodeMessage());
+        assertArrayEquals(HexUtils.hexToBytes(data), message.decodeMessage());
     }
 
     @Test

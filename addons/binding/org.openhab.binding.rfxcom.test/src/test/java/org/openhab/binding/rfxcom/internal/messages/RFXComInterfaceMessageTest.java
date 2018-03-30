@@ -31,7 +31,7 @@ public class RFXComInterfaceMessageTest {
     private RFXComInterfaceMessage testMessage(String hexMsg, SubType subType, int seqNbr, Commands command,
             boolean skipDecode) throws RFXComException {
         RFXComInterfaceMessage msg = (RFXComInterfaceMessage) RFXComMessageFactory
-                .createMessage(DatatypeConverter.parseHexBinary(hexMsg));
+                .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals("SubType", subType, msg.subType);
         assertEquals("Seq Number", seqNbr, (short) (msg.seqNbr & 0xFF));
         assertEquals("Command", command, msg.command);
