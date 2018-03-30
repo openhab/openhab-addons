@@ -73,7 +73,6 @@
 		<item-type>String</item-type>
 		<label>Play a Favorite</label>
 		<description>Play the given favorite by sending a command with the favorite's title</description>
-		<state pattern="%s" />
 	</channel-type>
 	<channel-type id="pvr-open-tv" advanced="true">
 		<item-type>String</item-type>
