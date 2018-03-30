@@ -104,7 +104,7 @@ public class InnogyWebSocket {
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        logger.info("Connected to Innogy Webservice.");
+        logger.info("Connected to innogy Webservice.");
         logger.trace("innogy Websocket session: {}", session);
     }
 

@@ -44,7 +44,7 @@ public class InnogyHandlerFactory extends BaseThingHandlerFactory implements Thi
             InnogyDeviceHandler.SUPPORTED_THING_TYPES);
 
     private final Logger logger = LoggerFactory.getLogger(InnogyHandlerFactory.class);
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -73,8 +73,8 @@ public class InnogyHandlerFactory extends BaseThingHandlerFactory implements Thi
      */
     private synchronized void registerDeviceDiscoveryService(InnogyBridgeHandler bridgeHandler) {
         InnogyDeviceDiscoveryService discoveryService = new InnogyDeviceDiscoveryService(bridgeHandler);
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     @Override

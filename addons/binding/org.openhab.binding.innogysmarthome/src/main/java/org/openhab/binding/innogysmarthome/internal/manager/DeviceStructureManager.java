@@ -49,8 +49,8 @@ public class DeviceStructureManager {
      */
     public DeviceStructureManager(InnogyClient client) {
         this.client = client;
-        deviceMap = Collections.synchronizedMap(new HashMap<String, Device>());
-        capabilityToDeviceMap = Collections.synchronizedMap(new HashMap<String, Device>());
+        deviceMap = Collections.synchronizedMap(new HashMap<>());
+        capabilityToDeviceMap = Collections.synchronizedMap(new HashMap<>());
     }
 
     /**

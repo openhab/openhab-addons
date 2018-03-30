@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
  */
 public class InnogyDeviceDiscoveryService extends AbstractDiscoveryService {
 
-    private static int SEARCH_TIME = 60;
-    private Logger logger = LoggerFactory.getLogger(InnogyDeviceDiscoveryService.class);
+    private static final int SEARCH_TIME = 60;
+    private final Logger logger = LoggerFactory.getLogger(InnogyDeviceDiscoveryService.class);
     private InnogyBridgeHandler bridgeHandler;
 
     /**
@@ -96,7 +96,7 @@ public class InnogyDeviceDiscoveryService extends AbstractDiscoveryService {
                 name = device.getSerialnumber();
             }
 
-            Map<String, Object> properties = new HashMap<String, Object>();
+            Map<String, Object> properties = new HashMap<>();
             properties.put(PROPERTY_ID, device.getId());
 
             String label;

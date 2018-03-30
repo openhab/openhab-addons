@@ -90,7 +90,7 @@ public class InnogyClient {
     private HttpRequestFactory requestFactory;
     private Device bridgeDetails;
     private long currentConfigurationVersion;
-    private CredentialRefreshListener credentialRefreshListener = null;
+    private CredentialRefreshListener credentialRefreshListener;
     private long apiCallCounter = 0;
 
     public InnogyClient(InnogyConfig config) {
@@ -600,21 +600,21 @@ public class InnogyClient {
 
         // CAPABILITY STATES
         List<CapabilityState> capabilityStateList = getCapabilityStates();
-        Map<String, CapabilityState> capabilityStateMap = new HashMap<String, CapabilityState>();
+        Map<String, CapabilityState> capabilityStateMap = new HashMap<>();
         for (CapabilityState cs : capabilityStateList) {
             capabilityStateMap.put(cs.getId(), cs);
         }
 
         // DEVICE STATES
         List<DeviceState> deviceStateList = getDeviceStates();
-        Map<String, DeviceState> deviceStateMap = new HashMap<String, DeviceState>();
+        Map<String, DeviceState> deviceStateMap = new HashMap<>();
         for (DeviceState es : deviceStateList) {
             deviceStateMap.put(es.getId(), es);
         }
 
         // MESSAGES
         List<Message> messageList = getMessages();
-        Map<String, List<Message>> deviceMessageMap = new HashMap<String, List<Message>>();
+        Map<String, List<Message>> deviceMessageMap = new HashMap<>();
         for (Message m : messageList) {
             if (m.getDeviceLinkList() != null && !m.getDeviceLinkList().isEmpty()) {
                 String deviceId = m.getDeviceLinkList().get(0).getValue().replace("/device/", "");
@@ -693,7 +693,7 @@ public class InnogyClient {
 
         // CAPABILITY STATES
         List<CapabilityState> capabilityStateList = getCapabilityStates();
-        Map<String, CapabilityState> capabilityStateMap = new HashMap<String, CapabilityState>();
+        Map<String, CapabilityState> capabilityStateMap = new HashMap<>();
         for (CapabilityState cs : capabilityStateList) {
             capabilityStateMap.put(cs.getId(), cs);
         }
@@ -707,7 +707,7 @@ public class InnogyClient {
         // MESSAGES
         List<Message> messageList = getMessages();
 
-        List<Message> ml = new ArrayList<Message>();
+        List<Message> ml = new ArrayList<>();
 
         for (Message m : messageList) {
             if (m.getDeviceLinkList() != null && !m.getDeviceLinkList().isEmpty()) {

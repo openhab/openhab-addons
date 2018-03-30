@@ -193,7 +193,7 @@ public abstract class PropertyList {
      * @return
      */
     public static HashMap<String, Property> getHashMap(List<Property> propertyList) {
-        HashMap<String, Property> map = new HashMap<String, Property>();
+        HashMap<String, Property> map = new HashMap<>();
         for (Property p : propertyList) {
             map.put(p.getName(), p);
         }

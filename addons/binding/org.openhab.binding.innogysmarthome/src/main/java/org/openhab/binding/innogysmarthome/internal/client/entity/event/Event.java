@@ -182,7 +182,7 @@ public class Event extends PropertyList {
     }
 
     public List<Message> getDataListAsMessage() {
-        List<Message> messageList = new ArrayList<Message>();
+        List<Message> messageList = new ArrayList<>();
         List<JsonObject> objectList = getDataList();
         for (JsonObject o : objectList) {
             Message m = new Message();
@@ -193,7 +193,7 @@ public class Event extends PropertyList {
             m.setDesc(o.get("desc").getAsString());
             m.setTimestamp(o.get("timestamp").getAsString());
             if (o.has("Devices")) {
-                List<Link> deviceLinkList = new ArrayList<Link>();
+                List<Link> deviceLinkList = new ArrayList<>();
                 JsonArray deviceArr = o.get("Devices").getAsJsonArray();
 
                 for (JsonElement deviceObject : deviceArr) {

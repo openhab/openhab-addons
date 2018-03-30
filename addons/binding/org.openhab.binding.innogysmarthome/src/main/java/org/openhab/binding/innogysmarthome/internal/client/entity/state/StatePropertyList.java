@@ -101,7 +101,7 @@ public abstract class StatePropertyList extends PropertyList {
     @Override
     protected List<Property> getPropertyList() {
         if (stateList == null) {
-            stateList = new ArrayList<Property>();
+            stateList = new ArrayList<>();
         }
 
         return stateList;

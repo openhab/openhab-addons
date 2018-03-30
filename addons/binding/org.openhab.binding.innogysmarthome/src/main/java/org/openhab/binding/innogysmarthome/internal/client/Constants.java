@@ -10,6 +10,8 @@ package org.openhab.binding.innogysmarthome.internal.client;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -18,6 +20,7 @@ import com.google.common.collect.ImmutableSet;
  * @author Oliver Kuhl - Initial contribution
  *
  */
+@NonNullByDefault
 public class Constants {
 
     // devices

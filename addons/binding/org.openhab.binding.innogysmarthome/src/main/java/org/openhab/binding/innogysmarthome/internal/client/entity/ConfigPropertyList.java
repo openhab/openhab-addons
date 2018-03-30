@@ -122,7 +122,7 @@ public abstract class ConfigPropertyList extends PropertyList {
     @Override
     protected List<Property> getPropertyList() {
         if (configList == null) {
-            configList = new ArrayList<Property>();
+            configList = new ArrayList<>();
         }
 
         return configList;

@@ -41,7 +41,7 @@ public class SetStateAction extends Action {
         super(ACTION_TYPE_SETSTATE);
         setCapabilityLink(capabilityId);
 
-        List<ActionParameter> parameterList = new ArrayList<ActionParameter>();
+        List<ActionParameter> parameterList = new ArrayList<>();
 
         if (capabilityType.equals(Capability.TYPE_SWITCHACTUATOR)) {
             parameterList.add(new ActionParameter(ACTION_PARAMETER_SWITCHACTUATOR_ONSTATE, "/entity/Constant",
@@ -67,7 +67,7 @@ public class SetStateAction extends Action {
         super(ACTION_TYPE_SETSTATE);
         setCapabilityLink(capabilityId);
 
-        List<ActionParameter> parameterList = new ArrayList<ActionParameter>();
+        List<ActionParameter> parameterList = new ArrayList<>();
 
         if (capabilityType.equals(Capability.TYPE_THERMOSTATACTUATOR)) {
             parameterList.add(new ActionParameter(ACTION_PARAMETER_THERMOSTATACTUATOR_POINTTEMPERATURE,
@@ -87,7 +87,7 @@ public class SetStateAction extends Action {
         super(ACTION_TYPE_SETSTATE);
         setCapabilityLink(capabilityId);
 
-        List<ActionParameter> parameterList = new ArrayList<ActionParameter>();
+        List<ActionParameter> parameterList = new ArrayList<>();
 
         if (capabilityType.equals(Capability.TYPE_DIMMERACTUATOR)) {
             parameterList.add(new ActionParameter(ACTION_PARAMETER_DIMMERACTUATOR_VALUE, "/entity/Constant",
@@ -111,7 +111,7 @@ public class SetStateAction extends Action {
         super(ACTION_TYPE_SETSTATE);
         setCapabilityLink(capabilityId);
 
-        List<ActionParameter> parameterList = new ArrayList<ActionParameter>();
+        List<ActionParameter> parameterList = new ArrayList<>();
 
         if (capabilityType.equals(Capability.TYPE_THERMOSTATACTUATOR)) {
             parameterList.add(new ActionParameter(ACTION_PARAMETER_THERMOSTATACTUATOR_OPERATIONMODE, "/entity/Constant",

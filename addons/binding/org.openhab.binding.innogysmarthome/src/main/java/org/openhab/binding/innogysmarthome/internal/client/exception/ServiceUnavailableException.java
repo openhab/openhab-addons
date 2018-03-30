@@ -16,9 +16,6 @@ package org.openhab.binding.innogysmarthome.internal.client.exception;
  */
 public class ServiceUnavailableException extends ApiException {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -9148687420729079329L;
 
     public ServiceUnavailableException(String message) {
