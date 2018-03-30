@@ -1,8 +1,8 @@
-# Nibe heat pump binding
+# Nibe Heatpump Binding
 
-The Nibe heat pump binding is used to get live data from from Nibe heat pumps without using expensive MODBUS40 adapter. This binding should be compatible with at least the F1145 and F1245 heat pump models.
+The Nibe Heatpump binding is used to get live data from from Nibe heat pumps without using expensive MODBUS40 adapter. This binding should be compatible with at least the F1145 and F1245 heat pump models.
 
-Binding support data telegrams (contains max 20 registers) from the heat pump, but binding can also read other registers from the pump.
+The binding support data telegrams (contains max 20 registers) from the heat pump, but binding can also read other registers from the pump.
 It's recommend to add most changed variables to telegram, binding will then read all other registers automatically from the pump when channels are linked to item.
 Register reading need to be enabled from the thing configuration.
 Binding have also experimental support for register writing.
