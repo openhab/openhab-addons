@@ -53,7 +53,8 @@ e.g.
 
 ### Channel config
 
-**conversionRatio:** This configuration is available for every Number OBIS channels. This is a quotient to easily convert  to a different unit. For example if the total electrical consumption is given in Wh from the device you usually want to convert it to kWh. To do this use `1000` as conversionRatio.
+**conversionRatio:** This configuration is available for every Number OBIS channels. This is a quotient to easily convert  to a different unit. It is useful whenever the meter provides no/wrong Unit information. Please use default unit conversion provided by openhab.
+For example if the total electrical consumption is given in Wh from the device you usually want to convert it to kWh. To do this use `1000` as conversionRatio.
 
 **negate:** Energy meters often provides absolute values and provide information about the *energy direction* in a separate bit. With this config you can specify the channel where this bit is located, the bit position and the bits value which shall be set.
 
@@ -65,6 +66,11 @@ e.g.:
 "1-0#1-8-0:5:1:status" // negate if status(1-0#1-8-0) and 2^5 = 1
 "1-0#96-5-5:5:1" // negate if 1-0#96-5-5 and 2^5 = 1
 ```
+
+## Unit conversion
+
+Please use the [Units Of Measurement](https://docs.openhab.org/concepts/units-of-measurement.html) concept of openhab for unit conversion which is fully supported by this binding. Please see the item example on how to use it.
+*NOTE:* your meter device needs to provide correct unit information to work properly.
 
 ## Full Example
 
@@ -88,13 +94,13 @@ meterreader:meter:BinderPower     [port="/dev/ttyUSB0", refresh=20] {
 Items:
 
 ```
-Number HeatingTarif1        "Heating high price tariff [%.2f kwh]"      { channel="meterreader:meter:heating:1-0#1-8-1" }
-Number HeatingTarif2        "Heating low price tariff [%.2f kwh]"       {  channel="meterreader:meter:heating:1-0#1-8-2" }
+Number:Energy HeatingTarif1        "Heating high price tariff [%.2f kWh]"      { channel="meterreader:meter:heating:1-0#1-8-1" }
+Number:Energy HeatingTarif2        "Heating low price tariff [%.2f kWh]"       {  channel="meterreader:meter:heating:1-0#1-8-2" }
 
-Number HouseTarif           "Tariff [%.2f kwh]"                         { channel="meterreader:meter:house:1-0#1-8-0" }
+Number:Energy HouseTarif           "Tariff [%.2f kWh]"                         { channel="meterreader:meter:house:1-0#1-8-0" }
 
-Number HeatingActualUsage   "Heating Current usage [%.2f W]"            { channel="meterreader:meter:heating:1-0#16-7-0" }
-Number HouseActualUsage     "Current usage [%.2f W]"                    { channel="meterreader:meter:house:1-0#16-7-0" }
+Number:Power HeatingActualUsage   "Heating Current usage [%.2f %unit%]"       { channel="meterreader:meter:heating:1-0#16-7-0" }
+Number:Power HouseActualUsage     "Current usage [%.2f %unit%]"               { channel="meterreader:meter:house:1-0#16-7-0" }
 ```
 
 ## Known limitations/issues

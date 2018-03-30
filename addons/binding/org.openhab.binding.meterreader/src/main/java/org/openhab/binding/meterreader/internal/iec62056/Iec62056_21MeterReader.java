@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.meterreader.internal.iec62056;
 
+import javax.measure.Quantity;
+
 import org.openhab.binding.meterreader.connectors.IMeterReaderConnector;
 import org.openhab.binding.meterreader.internal.MeterDevice;
 import org.openhab.binding.meterreader.internal.MeterValue;
@@ -35,12 +37,13 @@ public class Iec62056_21MeterReader extends MeterDevice<DataMessage> {
     }
 
     @Override
-    protected void populateValueCache(DataMessage smlFile) {
+    protected <Q extends Quantity<Q>> void populateValueCache(DataMessage smlFile) {
         for (DataSet dataSet : smlFile.getDataSets()) {
             String address = dataSet.getAddress();
             if (address != null && !address.isEmpty()) {
 
-                addObisCache(new MeterValue(address, dataSet.getValue(), dataSet.getUnit()));
+                addObisCache(new MeterValue<Q>(address, dataSet.getValue(),
+                        Iec62056_21UnitConversion.getUnit(dataSet.getUnit())));
             }
         }
     }

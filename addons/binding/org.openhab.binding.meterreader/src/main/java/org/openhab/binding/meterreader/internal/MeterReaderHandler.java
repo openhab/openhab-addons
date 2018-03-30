@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.meterreader.internal;
 
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -15,11 +16,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.measure.Unit;
+
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -59,6 +63,8 @@ public class MeterReaderHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing SmlReader handler.");
+
+        UnitService.getInstance().addDefaultUnits();
 
         MeterReaderConfiguration config = getConfigAs(MeterReaderConfiguration.class);
         logger.debug("config port = {}", config.port);
@@ -233,10 +239,11 @@ public class MeterReaderHandler extends BaseThingHandler {
         ChannelTypeUID channelType;
         if (this.smlDevice != null) {
 
-            MeterValue obisValue = this.smlDevice.getSmlValue(obis);
+            MeterValue<?> obisValue = this.smlDevice.getSmlValue(obis);
             if (obisValue != null) {
+                Unit<?> unit = obisValue.getUnit();
                 try {
-                    type = DecimalType.valueOf(obisValue.getValue());
+                    type = new QuantityType<>(new BigDecimal(obisValue.getValue()), unit);
                     itemType = "Number";
                     channelType = new ChannelTypeUID(MeterReaderBindingConstants.BINDING_ID,
                             MeterReaderBindingConstants.CHANNEL_TYPE_NUMBER);
@@ -245,8 +252,7 @@ public class MeterReaderHandler extends BaseThingHandler {
                         Number conversionRatio = (Number) channel.getConfiguration()
                                 .get(MeterReaderBindingConstants.CONFIGURATION_CONVERSION);
                         if (conversionRatio != null) {
-                            double newValue = ((DecimalType) type).doubleValue() / conversionRatio.doubleValue();
-                            type = new DecimalType(newValue);
+                            type = ((QuantityType<?>) type).divide(BigDecimal.valueOf(conversionRatio.doubleValue()));
                         }
                     }
 
@@ -282,7 +288,9 @@ public class MeterReaderHandler extends BaseThingHandler {
                 });
 
                 if (shouldNegateState) {
-
+                    if (currentState instanceof QuantityType) {
+                        return ((QuantityType) currentState).negate();
+                    }
                     return new DecimalType(((DecimalType) currentState).doubleValue() * -1);
                 }
             }

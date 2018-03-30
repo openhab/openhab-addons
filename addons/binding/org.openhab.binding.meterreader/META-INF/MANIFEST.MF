@@ -10,6 +10,10 @@ Bundle-ClassPath: .,
  lib/j62056.jar
 Import-Package: 
  gnu.io,
+ javax.measure;version="1.0.0",
+ javax.measure.format;version="1.0.0",
+ javax.measure.quantity;version="1.0.0",
+ javax.measure.spi;version="1.0.0",
  org.apache.commons.codec;version="1.6.0",
  org.apache.commons.codec.binary;version="1.6.0",
  org.apache.commons.lang;version="2.6.0",
@@ -19,6 +23,7 @@ Import-Package:
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.common,
  org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.binding.builder,
@@ -28,7 +33,8 @@ Import-Package:
  org.junit;version="4.11.0";resolution:=optional,
  org.openhab.binding.meterreader,
  org.osgi.service.component;version="1.2.2",
- org.slf4j
+ org.slf4j,
+ tec.uom.se.spi;version="1.0.8"
 Service-Component: OSGI-INF/*.xml
 Export-Package: gnu.io.factory;x-internal:=true,
  gnu.io.rfc2217;x-internal:=true,

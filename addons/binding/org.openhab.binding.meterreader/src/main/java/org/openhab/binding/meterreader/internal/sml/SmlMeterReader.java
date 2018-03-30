@@ -112,7 +112,7 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
                         SmlValueExtractor valueExtractor = new SmlValueExtractor(entry);
                         String obis = valueExtractor.getObisCode();
 
-                        MeterValue smlValue = getSmlValue(obis);
+                        MeterValue<?> smlValue = getSmlValue(obis);
 
                         if (smlValue == null) {
                             smlValue = valueExtractor.getSmlValue();

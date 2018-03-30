@@ -8,27 +8,32 @@
  */
 package org.openhab.binding.meterreader.internal;
 
+import javax.measure.Quantity;
+import javax.measure.Unit;
+
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
+
 /**
  * Represents one value of the meter device.
  *
  * @author MatthiasS
  *
  */
-public class MeterValue {
+public class MeterValue<Q extends Quantity<Q>> {
 
     private String obis;
     private String value;
-    private String unit;
+    private Unit<? extends Q> unit;
     private String status;
 
-    public MeterValue(String obis, String value, String unit, String status) {
+    public MeterValue(String obis, String value, Unit<? extends Q> unit, String status) {
         this.obis = obis;
         this.unit = unit;
         this.value = value;
         this.status = status;
     }
 
-    public MeterValue(String obis, String value, String unit) {
+    public MeterValue(String obis, String value, Unit<Q> unit) {
         this(obis, value, unit, null);
     }
 
@@ -37,8 +42,8 @@ public class MeterValue {
      *
      * @return the string representation of the values unit - otherwise null.
      */
-    public String getUnit() {
-        return unit;
+    public Unit<? extends Q> getUnit() {
+        return unit == null ? (Unit<? extends Q>) SmartHomeUnits.ONE : unit;
     }
 
     /**

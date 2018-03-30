@@ -18,6 +18,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Quantity;
+
 import org.openhab.binding.meterreader.connectors.IMeterReaderConnector;
 import org.openhab.binding.meterreader.internal.helper.ProtocolMode;
 import org.slf4j.Logger;
@@ -38,7 +40,7 @@ public abstract class MeterDevice<T> {
     /**
      * Map of all values captured from the device during the read request.
      */
-    private Map<String, MeterValue> valueCache;
+    private Map<String, MeterValue<?>> valueCache;
     private byte[] initMessage;
     /**
      * The id of the SML device from openHAB configuration.
@@ -56,7 +58,7 @@ public abstract class MeterDevice<T> {
             ProtocolMode protocolMode) {
         super();
         this.deviceId = deviceId;
-        this.valueCache = new HashMap<String, MeterValue>();
+        this.valueCache = new HashMap<String, MeterValue<?>>();
         this.valueChangeListeners = new ArrayList<>();
         this.printMeterInfo = true;
         this.connector = createConnector(serialPort, baudrate, baudrateChangeDelay, protocolMode);
@@ -81,7 +83,7 @@ public abstract class MeterDevice<T> {
      * @return the OBIS value as String if available - otherwise null.
      */
     public String getValue(String obisId) {
-        MeterValue smlValue = getSmlValue(obisId);
+        MeterValue<?> smlValue = getSmlValue(obisId);
         if (smlValue != null) {
             return smlValue.getValue();
         }
@@ -94,10 +96,11 @@ public abstract class MeterDevice<T> {
      * @param obis the OBIS code which value should be retrieved.
      * @return the OBIS value if available - otherwise null.
      */
-    public MeterValue getSmlValue(String obisId) {
+    @SuppressWarnings("unchecked")
+    public <Q extends Quantity<Q>> MeterValue<Q> getSmlValue(String obisId) {
 
         if (valueCache.containsKey(obisId)) {
-            return valueCache.get(obisId);
+            return (MeterValue<Q>) valueCache.get(obisId);
         }
 
         return null;
@@ -121,7 +124,7 @@ public abstract class MeterDevice<T> {
 
         try {
             connector.addValueChangeListener((value) -> {
-                Map<String, MeterValue> obisCodes = new HashMap<>(valueCache);
+                Map<String, MeterValue<?>> obisCodes = new HashMap<>(valueCache);
                 clearValueCache();
                 populateValueCache(value);
                 printInfo();
@@ -165,9 +168,9 @@ public abstract class MeterDevice<T> {
         valueCache.clear();
     }
 
-    protected abstract void populateValueCache(T smlFile);
+    protected abstract <Q extends Quantity<Q>> void populateValueCache(T smlFile);
 
-    protected void addObisCache(MeterValue value) {
+    protected <Q extends Quantity<Q>> void addObisCache(MeterValue<Q> value) {
         logger.debug("Value changed: {}", value);
         this.valueCache.put(value.getObisCode(), value);
         this.valueChangeListeners.forEach((listener) -> {
@@ -186,7 +189,7 @@ public abstract class MeterDevice<T> {
         stringBuilder.append(getDeviceId());
         stringBuilder.append(System.lineSeparator());
 
-        for (Entry<String, MeterValue> entry : valueCache.entrySet()) {
+        for (Entry<String, MeterValue<?>> entry : valueCache.entrySet()) {
             stringBuilder.append("Obis: " + entry.getKey() + " " + entry.getValue().toString());
             stringBuilder.append(System.lineSeparator());
         }
@@ -202,7 +205,7 @@ public abstract class MeterDevice<T> {
         this.valueChangeListeners.remove(valueChangeListener);
     }
 
-    private void notifyValuesRemoved(MeterValue value) {
+    private <Q extends Quantity<Q>> void notifyValuesRemoved(MeterValue<Q> value) {
         this.valueChangeListeners.forEach((listener) -> listener.valueRemoved(value));
     }
 

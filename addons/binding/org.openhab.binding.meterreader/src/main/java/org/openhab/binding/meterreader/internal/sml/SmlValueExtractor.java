@@ -10,6 +10,8 @@ package org.openhab.binding.meterreader.internal.sml;
 
 import java.util.Arrays;
 
+import javax.measure.Quantity;
+
 import org.openhab.binding.meterreader.MeterReaderBindingConstants;
 import org.openhab.binding.meterreader.internal.MeterValue;
 import org.openmuc.jsml.EObis;
@@ -39,8 +41,8 @@ public final class SmlValueExtractor {
         smlListEntry = listEntry;
     }
 
-    public MeterValue getSmlValue() {
-        return new MeterValue(getObisCode(), getValue(), getUnitName());
+    public <Q extends Quantity<Q>> MeterValue<Q> getSmlValue() {
+        return new MeterValue<Q>(getObisCode(), getValue(), SmlUnitConversion.getUnit(getUnit()));
     }
 
     /**
@@ -48,14 +50,11 @@ public final class SmlValueExtractor {
      *
      * @return the values unit if available - Integer.MIN_VALUE.
      */
-    public int getUnit() {
-        int unit = Integer.MIN_VALUE;
-
+    public EUnit getUnit() {
         if (smlListEntry != null) {
-            unit = smlListEntry.getUnit().getVal();
+            return EUnit.from(smlListEntry.getUnit().getVal());
         }
-
-        return unit;
+        return null;
     }
 
     /**
@@ -64,13 +63,11 @@ public final class SmlValueExtractor {
      * @return the string representation of the values unit - otherwise null.
      */
     public String getUnitName() {
-        String unit = null;
-        if (smlListEntry != null) {
-            EUnit smlUnit = EUnit.from(smlListEntry.getUnit().getVal());
-            unit = smlUnit.name();
+        EUnit unitEnum = getUnit();
+        if (unitEnum != null) {
+            return unitEnum.name();
         }
-
-        return unit;
+        return null;
     }
 
     /**
