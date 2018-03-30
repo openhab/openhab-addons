@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="innogysmarthome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="TwoWayMeter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Two-Way-Meter</label>
+		<description>The Two-Way-Meter from the innogy PowerControlSolar product.</description>
+
+		<channels>
+			<channel id="energy_month_kwh" typeId="EnergyConsumptionMonthKWh" />
+			<channel id="total_energy" typeId="TotalEnergyConsumption" />
+			<channel id="energy_month_euro" typeId="EnergyConsumptionMonthEuro" />
+			<channel id="energy_day_euro" typeId="EnergyConsumptionDayEuro" />
+			<channel id="energy_day_kwh" typeId="EnergyConsumptionDayKWh" />
+
+			<channel id="energy_feed_month_kwh" typeId="EnergyFeedMonthKWh" />
+			<channel id="total_energy_fed" typeId="TotalEnergyFed" />
+			<channel id="energy_feed_month_euro" typeId="EnergyFeedMonthEuro" />
+			<channel id="energy_feed_day_euro" typeId="EnergyFeedDayEuro" />
+			<channel id="energy_feed_day_kwh" typeId="EnergyFeedDayKWh" />
+
+			<channel id="power_watt" typeId="PowerConsumptionWatt" />
+		</channels>
+
+		<config-description-ref uri="thing-type:innogysmarthome:config" />
+	</thing-type>
+</thing:thing-descriptions>
