@@ -46,6 +46,7 @@ public class KodiBindingConstants {
     public static final String CHANNEL_STOP = "stop";
     public static final String CHANNEL_CONTROL = "control";
     public static final String CHANNEL_PLAYURI = "playuri";
+    public static final String CHANNEL_PLAYFAVORITE = "playfavorite";
     public static final String CHANNEL_PVR_OPEN_TV = "pvr-open-tv";
     public static final String CHANNEL_PVR_OPEN_RADIO = "pvr-open-radio";
     public static final String CHANNEL_SHOWNOTIFICATION = "shownotification";
