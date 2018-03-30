@@ -21,9 +21,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.commons.io.IOUtils;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpCommand;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpException;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpMessage;
@@ -146,7 +145,7 @@ public class OnkyoConnection {
                 String data = EiscpProtocol.createEiscpPdu(msg);
                 if (logger.isTraceEnabled()) {
                     logger.trace("Sending {} bytes: {}", data.length(),
-                            DatatypeConverter.printHexBinary(data.toString().getBytes()));
+                            HexUtils.bytesToHex(data.getBytes()));
                 }
 
                 outStream.writeBytes(data);
