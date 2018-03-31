@@ -10,6 +10,8 @@ package org.openhab.binding.amazonechocontrol.handler;
 
 import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_ENTITY_ID;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -100,13 +102,13 @@ public abstract class SmartHomeBaseHandler extends BaseThingHandler {
         String channelId = channelUID.getId();
         try {
             handleCommand(temp, entityId, channelId, command);
-        } catch (Exception e) {
+        } catch (IOException | URISyntaxException e) {
             logger.warn("handle command {} for {} failed", command, channelUID, e);
         }
     }
 
     protected abstract void handleCommand(Connection connection, String entityId, String channelId, Command command)
-            throws Exception;
+            throws IOException, URISyntaxException;
 
     public static @Nullable SmartHomeBaseHandler find(ThingUID uid) {
         synchronized (instances) {

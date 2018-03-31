@@ -10,6 +10,8 @@ package org.openhab.binding.amazonechocontrol.handler;
 
 import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -171,7 +173,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException | URISyntaxException e) {
             logger.warn("Handle command failed {}", e);
         }
         if (waitForUpdate >= 0) {
@@ -214,13 +216,10 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
 
     private String saveCurrentProfile(AccountHandler connection) {
         String configurationJson = "";
-        try {
-            configurationJson = connection.getEnabledFlashBriefingsJson();
-            removeFromDiscovery();
-            this.currentConfigurationJson = configurationJson;
-        } catch (Exception e) {
-            logger.warn("get flash briefing configuration failed {}", e);
-        }
+        configurationJson = connection.getEnabledFlashBriefingsJson();
+        removeFromDiscovery();
+        this.currentConfigurationJson = configurationJson;
+
         if (!configurationJson.isEmpty()) {
             this.stateStorage.storeState("configurationJson", configurationJson);
         }

@@ -10,6 +10,8 @@ package org.openhab.binding.amazonechocontrol.handler;
 
 import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Locale;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -42,7 +44,7 @@ public class SmartHomeDimmerHandler extends SmartHomeBaseHandler {
 
     @Override
     public void handleCommand(Connection connection, String entityId, String channelId, Command command)
-            throws Exception {
+            throws IOException, URISyntaxException {
 
         if (channelId.equals(CHANNEL_SWITCH) || channelId.equals(CHANNEL_DIMMER)) {
             if (command == OnOffType.ON) {

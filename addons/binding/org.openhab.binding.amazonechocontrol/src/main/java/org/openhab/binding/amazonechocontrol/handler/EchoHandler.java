@@ -10,6 +10,8 @@ package org.openhab.binding.amazonechocontrol.handler;
 
 import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -409,12 +411,8 @@ public class EchoHandler extends BaseThingHandler {
                 BluetoothState state = null;
                 if (bluetoothRefresh) {
                     JsonBluetoothStates states;
-                    try {
-                        states = temp.getBluetoothConnectionStates();
-                        state = states.findStateByDevice(device);
-                    } catch (Exception e) {
-                        logger.info("getBluetoothConnectionStates fails: {}", e);
-                    }
+                    states = temp.getBluetoothConnectionStates();
+                    state = states.findStateByDevice(device);
 
                 }
                 this.disableUpdate = false;
@@ -429,7 +427,7 @@ public class EchoHandler extends BaseThingHandler {
                 this.updateStateJob = scheduler.schedule(doRefresh, waitForUpdate, TimeUnit.MILLISECONDS);
             }
 
-        } catch (Exception e) {
+        } catch (IOException | URISyntaxException e) {
             logger.info("handleCommand fails: {}", e);
         }
     }
@@ -447,7 +445,7 @@ public class EchoHandler extends BaseThingHandler {
             if (tempConnection != null) {
                 try {
                     tempConnection.stopNotification(tempCurrentNotification);
-                } catch (Exception e) {
+                } catch (IOException | URISyntaxException e) {
                     logger.warn("Stop notification failed: {}", e);
                 }
             }
@@ -467,7 +465,7 @@ public class EchoHandler extends BaseThingHandler {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException | URISyntaxException e) {
             logger.warn("update notification state fails: {}", e);
         }
         if (stopCurrentNotifcation) {
@@ -525,7 +523,7 @@ public class EchoHandler extends BaseThingHandler {
             } else {
                 logger.info("getPlayer fails: {}", e);
             }
-        } catch (Exception e) {
+        } catch (IOException | URISyntaxException e) {
             logger.info("getPlayer fails: {}", e);
         }
         JsonMediaState mediaState = null;
@@ -540,7 +538,7 @@ public class EchoHandler extends BaseThingHandler {
             } else {
                 logger.info("getMediaState fails: {}", e);
             }
-        } catch (Exception e) {
+        } catch (IOException | URISyntaxException e) {
             logger.info("getMediaState fails: {}", e);
         }
 

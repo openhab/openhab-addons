@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.amazonechocontrol.handler;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -78,14 +80,9 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
 
     }
 
-    public Device[] getLastKnownDevices() {
-        Map<String, Device> temp = jsonSerialNumberDeviceMapping;
-        if (temp == null) {
-            return new Device[0];
-        }
-        Device[] devices = new Device[temp.size()];
-        temp.values().toArray(devices);
-        return devices;
+    @Override
+    public void initialize() {
+        start();
     }
 
     @Override
@@ -97,10 +94,14 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
         }
     }
 
-    @Override
-    public void initialize() {
-
-        start();
+    public Device[] getLastKnownDevices() {
+        Map<String, Device> temp = jsonSerialNumberDeviceMapping;
+        if (temp == null) {
+            return new Device[0];
+        }
+        Device[] devices = new Device[temp.size()];
+        temp.values().toArray(devices);
+        return devices;
     }
 
     public void addEchoHandler(@NonNull EchoHandler echoHandler) {
@@ -150,22 +151,34 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
         BluetoothState state = null;
 
         JsonBluetoothStates states = null;
-        try {
-            if (temp.getIsLoggedIn()) {
-                states = temp.getBluetoothConnectionStates();
-            }
-        } catch (Exception e) {
-
-            logger.info("getBluetoothConnectionStates failed: {}", e);
+        if (temp.getIsLoggedIn()) {
+            states = temp.getBluetoothConnectionStates();
         }
+
         if (states != null) {
             state = states.findStateByDevice(device);
         }
         echoHandler.updateState(device, state);
     }
 
+    private void intializeChildDevice(@NonNull Connection connection, @NonNull EchoHandler child) {
+        Device deviceJson = this.findDeviceJson(child);
+        if (deviceJson != null) {
+            child.intialize(connection, deviceJson);
+        }
+    }
+
+    @Override
+    public void handleRemoval() {
+
+        cleanup();
+        super.handleRemoval();
+    }
+
     @Override
     public void childHandlerDisposed(@NonNull ThingHandler childHandler, @NonNull Thing childThing) {
+
+        // echo handler?
         if (childHandler instanceof EchoHandler) {
             synchronized (echoHandlers) {
                 echoHandlers.remove(childHandler);
@@ -176,11 +189,15 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                 instance.removeExistingEchoHandler(childThing.getUID());
             }
         }
+
+        // flash briefing profile handler?
         if (childHandler instanceof FlashBriefingProfileHandler) {
             synchronized (flashBriefingProfileHandlers) {
                 flashBriefingProfileHandlers.remove(childHandler);
             }
         }
+
+        // smart home handler?
         if (childHandler instanceof SmartHomeBaseHandler) {
             synchronized (smartHomeHandlers) {
                 smartHomeHandlers.remove(childHandler);
@@ -192,13 +209,6 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             }
         }
         super.childHandlerDisposed(childHandler, childThing);
-    }
-
-    @Override
-    public void handleRemoval() {
-
-        cleanup();
-        super.handleRemoval();
     }
 
     @Override
@@ -271,7 +281,8 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             if (connection == null || !connection.getEmail().equals(config.email)
                     || !connection.getPassword().equals(config.password)
                     || !connection.getAmazonSite().equals(config.amazonSite)) {
-                connection = new Connection(config.email, config.password, config.amazonSite);
+                connection = new Connection(config.email, config.password, config.amazonSite,
+                        this.getThing().getUID().getId());
             }
         }
         if (this.loginServlet == null) {
@@ -312,7 +323,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                     if (!temp.verifyLogin()) {
                         temp.logout();
                     }
-                } catch (Exception e) {
+                } catch (IOException | URISyntaxException e) {
                     logger.info("logout failed: {}", e.getMessage());
                     temp.logout();
                 }
@@ -322,7 +333,8 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             {
                 // Recreate session
                 this.stateStorage.storeState("sessionStorage", "");
-                temp = new Connection(temp.getEmail(), temp.getPassword(), temp.getAmazonSite());
+                temp = new Connection(temp.getEmail(), temp.getPassword(), temp.getAmazonSite(),
+                        this.getThing().getUID().getId());
             }
             boolean loginIsValid = true;
             if (!temp.getIsLoggedIn()) {
@@ -347,7 +359,12 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                                     throw e;
                                 }
                                 // give amazon some time
-                                Thread.sleep(2000);
+                                try {
+                                    Thread.sleep(2000);
+                                } catch (InterruptedException exception) {
+                                    // throw the original exception
+                                    throw e;
+                                }
                             }
                         }
                         // store session data in property
@@ -363,25 +380,29 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                     loginIsValid = false;
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Unknown host name '" + e.getMessage() + "'. Maybe your internet connection is offline");
-                } catch (Exception e) {
+                } catch (IOException e) {
+                    loginIsValid = false;
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+                } catch (URISyntaxException e) {
                     loginIsValid = false;
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
                 }
                 if (loginIsValid) {
                     handleValidLogin();
                 }
-
             }
         }
     }
 
     private void handleValidLogin() {
-        // update the device list
+
         updateDeviceList(false);
         updateStatus(ThingStatus.ONLINE);
+
         AmazonEchoDiscovery.addDiscoveryHandler(this);
     }
 
+    // used to set a valid connection from the web proxy login
     public void setConnection(Connection connection) {
         this.connection = connection;
         String serializedStorage = connection.serializeLoginData();
@@ -395,46 +416,42 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
 
     private void refreshData() {
         logger.debug("amazon account bridge refreshing data ...");
-        try {
-            Connection temp = null;
-            synchronized (synchronizeConnection) {
-                temp = connection;
-                if (temp != null) {
-                    if (!temp.getIsLoggedIn()) {
-                        return;
-                    }
+
+        // check if logged in
+        Connection temp = null;
+        synchronized (synchronizeConnection) {
+            temp = connection;
+            if (temp != null) {
+                if (!temp.getIsLoggedIn()) {
+                    return;
                 }
             }
-            if (temp == null) {
-                return;
-            }
-
-            updateDeviceList(false);
-
-            JsonBluetoothStates states = null;
-            if (temp.getIsLoggedIn()) {
-                try {
-                    states = temp.getBluetoothConnectionStates();
-                } catch (Exception e) {
-                    logger.info("getBluetoothConnectionStates failed: {}", e);
-                }
-            }
-
-            for (EchoHandler child : echoHandlers) {
-                Device device = findDeviceJson(child);
-                BluetoothState state = null;
-                if (states != null) {
-                    state = states.findStateByDevice(device);
-                }
-                child.updateState(device, state);
-            }
-
-            updateStatus(ThingStatus.ONLINE);
-
-        } catch (Exception e) {
-            logger.warn("Update states of amazon account failed: {}", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
+        if (temp == null) {
+            return;
+        }
+
+        // get all devices registered in the account
+        updateDeviceList(false);
+
+        // update bluetooth states
+        JsonBluetoothStates states = null;
+        if (temp.getIsLoggedIn()) {
+            states = temp.getBluetoothConnectionStates();
+        }
+
+        // forward device information to echo handler
+        for (EchoHandler child : echoHandlers) {
+            Device device = findDeviceJson(child);
+            BluetoothState state = null;
+            if (states != null) {
+                state = states.findStateByDevice(device);
+            }
+            child.updateState(device, state);
+        }
+
+        // update account state
+        updateStatus(ThingStatus.ONLINE);
     }
 
     public Device findDeviceJson(EchoHandler echoHandler) {
@@ -490,7 +507,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             if (temp.getIsLoggedIn()) {
                 devices = temp.getDeviceList();
             }
-        } catch (Exception e) {
+        } catch (IOException | URISyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
         if (devices != null) {
@@ -525,7 +542,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             List<JsonSmartHomeDevice> smartHomeDevices = null;
             try {
                 smartHomeDevices = temp.getSmartHomeDevices();
-            } catch (Exception e) {
+            } catch (IOException | URISyntaxException e) {
                 logger.warn("Update smart home list failed {}", e);
             }
             if (smartHomeDevices != null) {
@@ -542,7 +559,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
         if (temp != null) {
             try {
                 temp.setEnabledFlashBriefings(feeds);
-            } catch (Exception e) {
+            } catch (IOException | URISyntaxException e) {
                 logger.warn("Set flashbriefing profile failed {}", e);
             }
         }
@@ -609,17 +626,10 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             Gson gson = new Gson();
             this.currentFlashBriefingJson = gson.toJson(forSerializer);
 
-        } catch (Exception e) {
+        } catch (IOException | URISyntaxException e) {
             logger.warn("get flash briefing profiles fails {}", e);
         }
 
-    }
-
-    private void intializeChildDevice(@NonNull Connection connection, @NonNull EchoHandler child) {
-        Device deviceJson = this.findDeviceJson(child);
-        if (deviceJson != null) {
-            child.intialize(connection, deviceJson);
-        }
     }
 
 }

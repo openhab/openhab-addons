@@ -10,6 +10,9 @@ package org.openhab.binding.amazonechocontrol.handler;
 
 import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.CHANNEL_SWITCH;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -24,12 +27,11 @@ public class SmartHomeSwitchHandler extends SmartHomeBaseHandler {
 
     public SmartHomeSwitchHandler(Thing thing) {
         super(thing);
-
     }
 
     @Override
     public void handleCommand(Connection connection, String entityId, String channelId, Command command)
-            throws Exception {
+            throws IOException, URISyntaxException {
 
         if (channelId.equals(CHANNEL_SWITCH)) {
             if (command == OnOffType.ON) {

@@ -29,7 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Forwards the login dialog from amazon to the user, so the user can enter a captcha
+ * Simple http proxy to forwards the login dialog from amazon to the user through the binding
+ * so the user can enter a captcha or other extended login information
  *
  * @author Michael Geramb - Initial Contribution
  */
@@ -69,7 +70,8 @@ public class LoginServlet extends HttpServlet {
     }
 
     private void reCreateConnection() {
-        this.connection = new Connection(configuration.email, configuration.password, configuration.amazonSite);
+        this.connection = new Connection(configuration.email, configuration.password, configuration.amazonSite,
+                this.id);
     }
 
     public void dispose() {
