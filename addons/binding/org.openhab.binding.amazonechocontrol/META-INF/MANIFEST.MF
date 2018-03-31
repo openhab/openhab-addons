@@ -9,10 +9,10 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.3.0.qualifier
 Import-Package: com.google.gson;resolution:=optional,
  com.google.gson.annotations,
- javax.servlet;version="3.1.0",
- javax.servlet.http;version="3.1.0",
- javax.ws.rs.core;version="2.0.1",
- org.apache.commons.lang;version="2.6.0",
+ javax.servlet,
+ javax.servlet.http,
+ javax.ws.rs.core,
+ org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
@@ -28,7 +28,7 @@ Import-Package: com.google.gson;resolution:=optional,
  org.openhab.binding.amazonechocontrol.handler,
  org.osgi.framework,
  org.osgi.service.component.annotations;resolution:=optional,
- org.osgi.service.http;version="1.2.1",
+ org.osgi.service.http,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: 

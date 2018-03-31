@@ -547,7 +547,7 @@ public class Connection {
         try {
             json = makeRequestAndReturnString(m_alexaServer + "/api/bluetooth?cached=true");
         } catch (IOException | URISyntaxException e) {
-            logger.debug(e.getMessage());
+            logger.debug("failed to get bluetooth state: {}", e.getMessage());
             return new JsonBluetoothStates();
         }
         JsonBluetoothStates bluetoothStates = parseJson(json, JsonBluetoothStates.class);
