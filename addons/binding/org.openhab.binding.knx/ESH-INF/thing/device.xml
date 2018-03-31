@@ -100,8 +100,8 @@
 		<config-description-ref uri="channel-type:knx:single" />
 	</channel-type>
 	<channel-type id="number-control">
-		<item-type>Number Control</item-type>
-		<label>Number</label>
+		<item-type>Number</item-type>
+		<label>Number Control</label>
 		<description>Control a number item (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:single" />
 	</channel-type>
@@ -114,8 +114,8 @@
 		<config-description-ref uri="channel-type:knx:single" />
 	</channel-type>
 	<channel-type id="string-control">
-		<item-type>String Control</item-type>
-		<label>String</label>
+		<item-type>String</item-type>
+		<label>String Control</label>
 		<description>Control a string item (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:single" />
 	</channel-type>
