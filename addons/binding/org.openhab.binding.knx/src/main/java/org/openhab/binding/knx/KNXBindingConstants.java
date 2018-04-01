@@ -61,12 +61,8 @@ public class KNXBindingConstants {
     public static final String CHANNEL_DATETIME_CONTROL = "datetime-control";
     public static final String CHANNEL_DIMMER = "dimmer";
     public static final String CHANNEL_DIMMER_CONTROL = "dimmer-control";
-    // public static final String CHANNEL_LOCATION = "location";
-    // public static final String CHANNEL_LOCATION_CONTROL = "location-control";
     public static final String CHANNEL_NUMBER = "number";
     public static final String CHANNEL_NUMBER_CONTROL = "number-control";
-    // public static final String CHANNEL_PLAYER = "player";
-    // public static final String CHANNEL_PLAYER_CONTROL = "player-control";
     public static final String CHANNEL_ROLLERSHUTTER = "rollershutter";
     public static final String CHANNEL_ROLLERSHUTTER_CONTROL = "rollershutter-control";
     public static final String CHANNEL_STRING = "string";
@@ -78,9 +74,7 @@ public class KNXBindingConstants {
             CHANNEL_CONTACT_CONTROL, //
             CHANNEL_DATETIME_CONTROL, //
             CHANNEL_DIMMER_CONTROL, //
-            // CHANNEL_LOCATION_CONTROL, //
             CHANNEL_NUMBER_CONTROL, //
-            // CHANNEL_PLAYER_CONTROL, //
             CHANNEL_ROLLERSHUTTER_CONTROL, //
             CHANNEL_STRING_CONTROL, //
             CHANNEL_SWITCH_CONTROL //
