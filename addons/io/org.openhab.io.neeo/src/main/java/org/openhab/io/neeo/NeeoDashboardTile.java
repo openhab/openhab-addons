@@ -8,13 +8,14 @@
  */
 package org.openhab.io.neeo;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.ui.dashboard.DashboardTile;
 import org.osgi.service.component.annotations.Component;
 
 /**
  * Implementation of the {@link DashboardTile} for the NEEO Transport
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 @Component(service = org.openhab.ui.dashboard.DashboardTile.class, immediate = true)
 public class NeeoDashboardTile implements DashboardTile {
@@ -34,9 +35,9 @@ public class NeeoDashboardTile implements DashboardTile {
         return ".." + NeeoConstants.WEBAPP_PREFIX + "/img/neeo.jpg";
     }
 
+    @Nullable
     @Override
     public String getOverlay() {
         return null;
     }
-
 }

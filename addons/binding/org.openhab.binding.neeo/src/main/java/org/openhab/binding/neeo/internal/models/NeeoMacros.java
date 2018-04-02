@@ -9,8 +9,10 @@
 package org.openhab.binding.neeo.internal.models;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The model representing Neeo Macros (serialize/deserialize json use only).
@@ -20,7 +22,7 @@ import org.apache.commons.lang.StringUtils;
 public class NeeoMacros {
 
     /** The macros. */
-    private final NeeoMacro[] macros;
+    private final NeeoMacro @Nullable [] macros;
 
     /**
      * Instantiates a new neeo macros.
@@ -28,6 +30,7 @@ public class NeeoMacros {
      * @param macros the macros
      */
     public NeeoMacros(NeeoMacro[] macros) {
+        Objects.requireNonNull(macros, "macros cannot be null");
         this.macros = macros;
     }
 
@@ -37,7 +40,8 @@ public class NeeoMacros {
      * @return the macros
      */
     public NeeoMacro[] getMacros() {
-        return macros;
+        final NeeoMacro @Nullable [] localMacros = macros;
+        return localMacros == null ? new NeeoMacro[0] : localMacros;
     }
 
     /**
@@ -46,8 +50,9 @@ public class NeeoMacros {
      * @param key the key
      * @return the macro
      */
+    @Nullable
     public NeeoMacro getMacro(String key) {
-        for (NeeoMacro macro : macros) {
+        for (NeeoMacro macro : getMacros()) {
             if (StringUtils.equalsIgnoreCase(key, macro.getKey())) {
                 return macro;
             }

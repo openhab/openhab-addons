@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neeo.internal.models.NeeoDevices;
 import org.openhab.binding.neeo.internal.models.NeeoDevicesDeserializer;
 import org.openhab.binding.neeo.internal.models.NeeoMacros;
@@ -55,7 +56,7 @@ public class NeeoUtil {
      *
      * @param closeable a possibly null {@link AutoCloseable}. If null, no action is done.
      */
-    public static void close(AutoCloseable closeable) {
+    public static void close(@Nullable AutoCloseable closeable) {
         if (closeable != null) {
             try {
                 closeable.close();
@@ -82,7 +83,7 @@ public class NeeoUtil {
      *
      * @param future a possibly null future. If null, no action is done
      */
-    public static void cancel(Future<?> future) {
+    public static void cancel(@Nullable Future<?> future) {
         if (future != null) {
             future.cancel(true);
         }
@@ -103,16 +104,4 @@ public class NeeoUtil {
         }
     }
 
-    /**
-     * Helper method to simply create a string from an integer
-     *
-     * @param i the integer
-     * @return the resulting string representation
-     */
-    public static String toString(Integer i) {
-        if (i == null) {
-            return "";
-        }
-        return i.toString();
-    }
 }

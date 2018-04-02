@@ -13,12 +13,15 @@ import org.openhab.io.neeo.internal.NeeoUtil;
 /**
  * This class represents the status of the brain.
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class BrainStatus {
 
     /** The brain identifier */
     private final String brainId;
+
+    /** The brain name */
+    private final String brainName;
 
     /** The brain url */
     private final String brainUrl;
@@ -33,16 +36,19 @@ public class BrainStatus {
      * Creates a new brain status
      *
      * @param brainId the non-empty brain id
+     * @param brainName the non-empty brain name
      * @param brainUrl the non-empty brain url
      * @param callbackUrl the non-empty callback url
      * @param connected true if connected, false otherwise
      */
-    public BrainStatus(String brainId, String brainUrl, String callbackUrl, boolean connected) {
+    public BrainStatus(String brainId, String brainName, String brainUrl, String callbackUrl, boolean connected) {
         NeeoUtil.requireNotEmpty(brainId, "brainId cannot be empty");
+        NeeoUtil.requireNotEmpty(brainName, "brainName cannot be empty");
         NeeoUtil.requireNotEmpty(brainUrl, "brainUrl cannot be empty");
         NeeoUtil.requireNotEmpty(callbackUrl, "callbackUrl cannot be empty");
 
         this.brainId = brainId;
+        this.brainName = brainName;
         this.brainUrl = brainUrl;
         this.callbackUrl = callbackUrl;
         this.connected = connected;
@@ -55,6 +61,15 @@ public class BrainStatus {
      */
     public String getBrainId() {
         return brainId;
+    }
+
+    /**
+     * Gets the brain name
+     *
+     * @return the brain name
+     */
+    public String getBrainName() {
+        return brainName;
     }
 
     /**
@@ -86,8 +101,8 @@ public class BrainStatus {
 
     @Override
     public String toString() {
-        return "BrainStatus [brainId=" + brainId + ", brainUrl=" + brainUrl + ", callbackUrl=" + callbackUrl
-                + ", connected=" + connected + "]";
+        return "BrainStatus [brainId=" + brainId + ", brainName=" + brainName + ", brainUrl=" + brainUrl
+                + ", callbackUrl=" + callbackUrl + ", connected=" + connected + "]";
     }
 
 }

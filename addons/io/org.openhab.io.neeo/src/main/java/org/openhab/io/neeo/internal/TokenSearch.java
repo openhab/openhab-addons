@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * The class emulates the same search pattern that the NEEO brain uses (https://github.com/neophob/tokensearch.js) on
  * all the exposed things in the registry.
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class TokenSearch {
 
@@ -94,7 +94,10 @@ public class TokenSearch {
 
             final Thing thing = context.getThingRegistry().get(device.getUid().asThingUID());
             if (thing != null) {
-                score += searchAlgorithm(thing.getLocation(), needles);
+                final String location = thing.getLocation();
+                if (location != null && StringUtils.isNotEmpty(location)) {
+                    score += searchAlgorithm(location, needles);
+                }
 
                 final Map<@NonNull String, String> properties = thing.getProperties();
                 final String vendor = properties.get(Thing.PROPERTY_VENDOR);

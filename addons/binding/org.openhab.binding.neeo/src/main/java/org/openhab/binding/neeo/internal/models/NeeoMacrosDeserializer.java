@@ -12,6 +12,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -24,10 +27,14 @@ import com.google.gson.JsonParseException;
  *
  * @author Tim Roberts - Initial contribution
  */
-public class NeeoMacrosDeserializer implements JsonDeserializer<NeeoMacros> {
+public class NeeoMacrosDeserializer implements JsonDeserializer<@Nullable NeeoMacros> {
+    @Nullable
     @Override
-    public NeeoMacros deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context)
-            throws JsonParseException {
+    public NeeoMacros deserialize(@Nullable JsonElement jsonElement, @Nullable Type type,
+            @Nullable JsonDeserializationContext context) throws JsonParseException {
+        Objects.requireNonNull(jsonElement, "jsonElement cannot be null");
+        Objects.requireNonNull(context, "context cannot be null");
+
         if (jsonElement instanceof JsonObject) {
             final List<NeeoMacro> scenarios = new ArrayList<>();
             for (Map.Entry<String, JsonElement> entry : ((JsonObject) jsonElement).entrySet()) {

@@ -18,7 +18,7 @@ import java.util.Objects;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This class represents an {@link HttpRequest} response
@@ -36,11 +36,8 @@ public class HttpResponse {
     /** The http headers */
     private final Map<String, String> headers = new HashMap<>();
 
-    /** The http encoding */
-    private final String encoding;
-
     /** The contents as a raw byte array */
-    private final byte[] contents;
+    private final byte @Nullable [] contents;
 
     /**
      * Instantiates a new http response from the {@link Response}.
@@ -54,7 +51,6 @@ public class HttpResponse {
         httpStatus = response.getStatus();
         httpReason = response.getStatusInfo().getReasonPhrase();
 
-        encoding = null;
         if (response.hasEntity()) {
             InputStream is = response.readEntity(InputStream.class);
             contents = IOUtils.toByteArray(is);
@@ -76,7 +72,6 @@ public class HttpResponse {
     HttpResponse(int httpCode, String msg) {
         httpStatus = httpCode;
         httpReason = msg;
-        encoding = null;
         contents = null;
     }
 
@@ -95,17 +90,13 @@ public class HttpResponse {
      * @return the content
      */
     public String getContent() {
-        if (contents == null) {
+        final byte[] localContents = contents;
+        if (localContents == null || localContents.length == 0) {
             return "";
         }
 
-        // Workaround to bug in jetty when encoding includes double quotes "utf-8" vs utf-8
-        String theEncoding = encoding;
-        if (StringUtils.isEmpty(encoding)) {
-            theEncoding = "utf-8";
-        }
-        final Charset charSet = Charset.forName(theEncoding.replaceAll("\"", ""));
-        return new String(contents, charSet);
+        final Charset charSet = Charset.forName("utf-8");
+        return new String(localContents, charSet);
     }
 
     /**

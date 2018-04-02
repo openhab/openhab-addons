@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This class represents an HTTP session with a client
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class HttpRequest implements AutoCloseable {
 
@@ -86,7 +86,7 @@ public class HttpRequest implements AutoCloseable {
         try {
             final Builder request = client.target(uri).request(MediaType.APPLICATION_JSON);
 
-            final Response content = request.post(Entity.entity(body == null ? "" : body, MediaType.APPLICATION_JSON));
+            final Response content = request.post(Entity.entity(body, MediaType.APPLICATION_JSON));
 
             try {
                 return new HttpResponse(content);

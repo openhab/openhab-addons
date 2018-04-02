@@ -18,11 +18,12 @@ import java.util.Objects;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This class represents an {@link HttpRequest} response
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class HttpResponse {
 
@@ -36,7 +37,7 @@ public class HttpResponse {
     private final Map<String, String> headers = new HashMap<>();
 
     /** The contents as a raw byte array */
-    private final byte[] contents;
+    private final byte @Nullable [] contents;
 
     /**
      * Instantiates a new http response from the {@link Response}.
@@ -89,7 +90,8 @@ public class HttpResponse {
      * @return the content
      */
     public String getContent() {
-        if (contents == null) {
+        final byte[] localContents = contents;
+        if (localContents == null || localContents.length == 0) {
             return "";
         }
 

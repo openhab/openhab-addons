@@ -8,10 +8,12 @@
  */
 package org.openhab.io.neeo.internal.models;
 
+import org.openhab.io.neeo.internal.NeeoUtil;
+
 /**
  * The model representing an adapter registration (serialize/deserialize json use only).
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class NeeoAdapterRegistration {
 
@@ -28,6 +30,9 @@ public class NeeoAdapterRegistration {
      * @param baseUrl the base url
      */
     public NeeoAdapterRegistration(String name, String baseUrl) {
+        NeeoUtil.requireNotEmpty(name, "name cannot be empty");
+        NeeoUtil.requireNotEmpty(baseUrl, "baseUrl cannot be empty");
+
         this.name = name;
         this.baseUrl = baseUrl;
     }

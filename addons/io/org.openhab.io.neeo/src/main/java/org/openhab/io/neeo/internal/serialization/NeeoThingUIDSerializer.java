@@ -11,6 +11,7 @@ package org.openhab.io.neeo.internal.serialization;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
 
 import com.google.gson.JsonDeserializationContext;
@@ -24,13 +25,13 @@ import com.google.gson.JsonSerializer;
 /**
  * Implementation of {@link JsonSerializer} and {@link JsonDeserializer} to serialize/deserial {@link NeeoThingUID}
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class NeeoThingUIDSerializer implements JsonSerializer<NeeoThingUID>, JsonDeserializer<NeeoThingUID> {
 
     @Override
-    public NeeoThingUID deserialize(JsonElement elm, Type type, JsonDeserializationContext jsonContext)
-            throws JsonParseException {
+    public NeeoThingUID deserialize(@Nullable JsonElement elm, @Nullable Type type,
+            @Nullable JsonDeserializationContext jsonContext) throws JsonParseException {
         Objects.requireNonNull(elm, "elm cannot be null");
         Objects.requireNonNull(type, "type cannot be null");
         Objects.requireNonNull(jsonContext, "jsonContext cannot be null");
@@ -47,7 +48,8 @@ public class NeeoThingUIDSerializer implements JsonSerializer<NeeoThingUID>, Jso
     }
 
     @Override
-    public JsonElement serialize(NeeoThingUID uid, Type type, JsonSerializationContext jsonContext) {
+    public JsonElement serialize(NeeoThingUID uid, @Nullable Type type,
+            @Nullable JsonSerializationContext jsonContext) {
         Objects.requireNonNull(uid, "uid cannot be null");
         Objects.requireNonNull(type, "type cannot be null");
         Objects.requireNonNull(jsonContext, "jsonContext cannot be null");

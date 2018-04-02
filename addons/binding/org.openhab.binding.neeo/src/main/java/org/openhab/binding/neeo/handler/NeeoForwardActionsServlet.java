@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.openhab.binding.neeo.NeeoConstants;
@@ -44,6 +45,7 @@ public class NeeoForwardActionsServlet extends HttpServlet {
     private final Callback callback;
 
     /** The forwarding chain */
+    @Nullable
     private final String forwardChain;
 
     /** The scheduler to use to schedule recipe execution */
@@ -55,7 +57,7 @@ public class NeeoForwardActionsServlet extends HttpServlet {
      * @param callback a non-null {@link Callback}
      * @param forwardChain a possibly null, possibly empty forwarding chain
      */
-    NeeoForwardActionsServlet(Callback callback, String forwardChain) {
+    NeeoForwardActionsServlet(Callback callback, @Nullable String forwardChain) {
         super();
 
         Objects.requireNonNull(callback, "callback cannot be null");
@@ -65,14 +67,15 @@ public class NeeoForwardActionsServlet extends HttpServlet {
     }
 
     /**
-     * Processes the post action from the NEEO brain. Simply get's the specified json, posts the change to the
-     * {@link #eventPublisher} and then forwards it on (if needed)
+     * Processes the post action from the NEEO brain. Simply get's the specified json and then forwards it on (if
+     * needed)
      *
      * @param req the non-null request
      * @param resp the non-null response
      */
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
+            throws ServletException, IOException {
         Objects.requireNonNull(req, "req cannot be null");
         Objects.requireNonNull(resp, "resp cannot be null");
 
@@ -81,14 +84,17 @@ public class NeeoForwardActionsServlet extends HttpServlet {
 
         callback.post(json);
 
-        if (forwardChain != null && StringUtils.isNotEmpty(forwardChain.toString())) {
+        final String fc = forwardChain;
+        if (fc != null && StringUtils.isNotEmpty(fc)) {
             scheduler.execute(() -> {
                 try (final HttpRequest request = new HttpRequest()) {
-                    for (final String forwardUrl : forwardChain.toString().split(",")) {
-                        final HttpResponse httpResponse = request.sendPostJsonCommand(forwardUrl, json);
-                        if (httpResponse.getHttpCode() != HttpStatus.OK_200) {
-                            logger.debug("Cannot forward event {} to {}: {}", json, forwardUrl,
-                                    httpResponse.getHttpCode());
+                    for (final String forwardUrl : fc.split(",")) {
+                        if (StringUtils.isNotEmpty(forwardUrl)) {
+                            final HttpResponse httpResponse = request.sendPostJsonCommand(forwardUrl, json);
+                            if (httpResponse.getHttpCode() != HttpStatus.OK_200) {
+                                logger.debug("Cannot forward event {} to {}: {}", json, forwardUrl,
+                                        httpResponse.getHttpCode());
+                            }
                         }
                     }
                 }

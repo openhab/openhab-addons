@@ -9,12 +9,13 @@
 package org.openhab.io.neeo.internal.models;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.neeo.internal.NeeoUtil;
 
 /**
  * The model representing an NEEO notification (serialize/deserialize json use only).
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class NeeoNotification {
 
@@ -31,7 +32,7 @@ public class NeeoNotification {
      * @param itemName the non-null, non-empty item name
      * @param data the possibly null, possibly empty (if a string) data
      */
-    public NeeoNotification(String deviceKey, String itemName, Object data) {
+    public NeeoNotification(String deviceKey, String itemName, @Nullable Object data) {
         NeeoUtil.requireNotEmpty(deviceKey, "deviceKey cannot be empty");
         NeeoUtil.requireNotEmpty(itemName, "itemName cannot be empty");
         this.type = deviceKey + ":" + itemName;

@@ -11,6 +11,7 @@ package org.openhab.io.neeo.internal.serialization;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.neeo.internal.models.NeeoDeviceType;
 
 import com.google.gson.JsonDeserializationContext;
@@ -25,13 +26,13 @@ import com.google.gson.JsonSerializer;
  * Implementation of {@link JsonSerializer} and {@link JsonDeserializer} to serialize/deserial
  * {@link NeeoDeviceTypeSerializer}
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class NeeoDeviceTypeSerializer implements JsonSerializer<NeeoDeviceType>, JsonDeserializer<NeeoDeviceType> {
 
     @Override
-    public NeeoDeviceType deserialize(JsonElement elm, Type type, JsonDeserializationContext jsonContext)
-            throws JsonParseException {
+    public NeeoDeviceType deserialize(@Nullable JsonElement elm, @Nullable Type type,
+            @Nullable JsonDeserializationContext jsonContext) throws JsonParseException {
         Objects.requireNonNull(elm, "elm cannot be null");
         Objects.requireNonNull(type, "type cannot be null");
         Objects.requireNonNull(jsonContext, "jsonContext cannot be null");
@@ -40,15 +41,12 @@ public class NeeoDeviceTypeSerializer implements JsonSerializer<NeeoDeviceType>,
             throw new JsonParseException("NeeoDeviceType could not be parsed from null");
         }
 
-        final NeeoDeviceType ndt = NeeoDeviceType.parse(elm.getAsString());
-        if (ndt == null) {
-            throw new JsonParseException("Unknown NeeoDeviceType: " + elm.getAsString());
-        }
-        return ndt;
+        return NeeoDeviceType.parse(elm.getAsString());
     }
 
     @Override
-    public JsonElement serialize(NeeoDeviceType ndt, Type type, JsonSerializationContext jsonContext) {
+    public JsonElement serialize(NeeoDeviceType ndt, @Nullable Type type,
+            @Nullable JsonSerializationContext jsonContext) {
         Objects.requireNonNull(ndt, "ndt cannot be null");
         Objects.requireNonNull(type, "type cannot be null");
         Objects.requireNonNull(jsonContext, "jsonContext cannot be null");

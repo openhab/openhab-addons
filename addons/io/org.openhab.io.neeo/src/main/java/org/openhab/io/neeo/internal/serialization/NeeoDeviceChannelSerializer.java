@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -22,6 +23,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.io.neeo.internal.NeeoUtil;
 import org.openhab.io.neeo.internal.ServiceContext;
+import org.openhab.io.neeo.internal.models.ItemSubType;
 import org.openhab.io.neeo.internal.models.NeeoCapabilityType;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannel;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannelKind;
@@ -39,12 +41,13 @@ import com.google.gson.JsonSerializer;
  * Implementation of {@link JsonSerializer} and {@link JsonDeserializer} to serialize/deserial
  * {@link NeeoDeviceChannel}
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class NeeoDeviceChannelSerializer
         implements JsonSerializer<NeeoDeviceChannel>, JsonDeserializer<NeeoDeviceChannel> {
 
     /** The service context */
+    @Nullable
     private final ServiceContext context;
 
     /**
@@ -60,12 +63,13 @@ public class NeeoDeviceChannelSerializer
      *
      * @param context the possibly null context
      */
-    public NeeoDeviceChannelSerializer(ServiceContext context) {
+    public NeeoDeviceChannelSerializer(@Nullable ServiceContext context) {
         this.context = context;
     }
 
     @Override
-    public JsonElement serialize(NeeoDeviceChannel chnl, Type type, JsonSerializationContext jsonContext) {
+    public JsonElement serialize(NeeoDeviceChannel chnl, @Nullable Type type,
+            @Nullable JsonSerializationContext jsonContext) {
         Objects.requireNonNull(chnl, "chnl cannot be null");
         Objects.requireNonNull(type, "type cannot be null");
         Objects.requireNonNull(jsonContext, "jsonContext cannot be null");
@@ -78,16 +82,18 @@ public class NeeoDeviceChannelSerializer
         jo.addProperty("value", chnl.getValue());
         jo.addProperty("channelNbr", chnl.getChannelNbr());
         jo.add("type", jsonContext.serialize(chnl.getType()));
+        jo.add("subType", jsonContext.serialize(chnl.getSubType()));
         jo.add("range", jsonContext.serialize(chnl.getRange()));
 
-        if (context != null) {
+        final ServiceContext localContext = context;
+        if (localContext != null) {
             final List<String> commandTypes = new ArrayList<>();
             boolean isReadOnly = false;
             String itemLabel = chnl.getLabel();
             String itemType = null;
 
             try {
-                final Item item = context.getItemRegistry().getItem(chnl.getItemName());
+                final Item item = localContext.getItemRegistry().getItem(chnl.getItemName());
                 itemType = item.getType();
 
                 if (StringUtils.isNotEmpty(item.getLabel())) {
@@ -100,13 +106,13 @@ public class NeeoDeviceChannelSerializer
                     }
                 }
 
-                for (ChannelUID channelUid : context.getItemChannelLinkRegistry()
+                for (ChannelUID channelUid : localContext.getItemChannelLinkRegistry()
                         .getBoundChannels(chnl.getItemName())) {
                     if (channelUid != null) {
                         jo.addProperty("groupId", channelUid.getGroupId());
-                        final Channel channel = context.getThingRegistry().getChannel(channelUid);
+                        final Channel channel = localContext.getThingRegistry().getChannel(channelUid);
                         if (channel != null) {
-                            final ChannelType channelType = context.getChannelTypeRegistry()
+                            final ChannelType channelType = localContext.getChannelTypeRegistry()
                                     .getChannelType(channel.getChannelTypeUID());
                             if (channelType != null && channelType.getState() != null) {
                                 isReadOnly = channelType.getState().isReadOnly();
@@ -116,6 +122,25 @@ public class NeeoDeviceChannelSerializer
                 }
             } catch (ItemNotFoundException e) {
                 itemType = "N/A";
+            }
+
+            if (StringUtils.isNotEmpty(itemLabel)) {
+                switch (chnl.getSubType()) {
+                    case HUE:
+                        itemType += " (Hue)";
+                        break;
+
+                    case SATURATION:
+                        itemType += " (Sat)";
+                        break;
+
+                    case BRIGHTNESS:
+                        itemType += " (Bri)";
+                        break;
+
+                    default:
+                        break;
+                }
             }
 
             jo.addProperty("itemType", itemType);
@@ -128,8 +153,8 @@ public class NeeoDeviceChannelSerializer
     }
 
     @Override
-    public NeeoDeviceChannel deserialize(JsonElement elm, Type type, JsonDeserializationContext context)
-            throws JsonParseException {
+    public NeeoDeviceChannel deserialize(@Nullable JsonElement elm, @Nullable Type type,
+            @Nullable JsonDeserializationContext context) throws JsonParseException {
         Objects.requireNonNull(elm, "elm cannot be null");
         Objects.requireNonNull(type, "type cannot be null");
         Objects.requireNonNull(context, "context cannot be null");
@@ -140,6 +165,13 @@ public class NeeoDeviceChannelSerializer
 
         final JsonObject jo = (JsonObject) elm;
         final String itemName = NeeoUtil.getString(jo, "itemName");
+
+        if (itemName == null || StringUtils.isEmpty(itemName)) {
+            throw new JsonParseException("Element requires an itemName attribute: " + elm);
+        }
+
+        final ItemSubType itemSubType = jo.has("subType") ? context.deserialize(jo.get("subType"), ItemSubType.class)
+                : ItemSubType.NONE;
 
         final String label = NeeoUtil.getString(jo, "label");
         final String value = NeeoUtil.getString(jo, "value");
@@ -159,7 +191,8 @@ public class NeeoDeviceChannelSerializer
                 : NeeoDeviceChannelKind.ITEM;
 
         try {
-            return new NeeoDeviceChannel(kind, itemName, channelNbr, capType, label, value, range);
+            return new NeeoDeviceChannel(kind, itemName, channelNbr, capType, itemSubType,
+                    label == null || StringUtils.isEmpty(label) ? NeeoUtil.NOTAVAILABLE : label, value, range);
         } catch (NullPointerException | IllegalArgumentException e) {
             throw new JsonParseException(e);
         }

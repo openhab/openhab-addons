@@ -12,6 +12,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -24,13 +27,16 @@ import com.google.gson.JsonParseException;
  *
  * @author Tim Roberts - Initial contribution
  */
-public class NeeoScenariosDeserializer implements JsonDeserializer<NeeoScenarios> {
+public class NeeoScenariosDeserializer implements JsonDeserializer<@Nullable NeeoScenarios> {
+    @Nullable
     @Override
-    public NeeoScenarios deserialize(JsonElement jelm, Type jtype, JsonDeserializationContext context)
-            throws JsonParseException {
-        if (jelm instanceof JsonObject) {
+    public NeeoScenarios deserialize(@Nullable JsonElement jsonElement, @Nullable Type jtype,
+            @Nullable JsonDeserializationContext context) throws JsonParseException {
+        Objects.requireNonNull(jsonElement, "jsonElement cannot be null");
+        Objects.requireNonNull(context, "context cannot be null");
+        if (jsonElement instanceof JsonObject) {
             final List<NeeoScenario> scenarios = new ArrayList<>();
-            for (Map.Entry<String, JsonElement> entry : ((JsonObject) jelm).entrySet()) {
+            for (Map.Entry<String, JsonElement> entry : ((JsonObject) jsonElement).entrySet()) {
                 final NeeoScenario scenario = context.deserialize(entry.getValue(), NeeoScenario.class);
                 scenarios.add(scenario);
             }

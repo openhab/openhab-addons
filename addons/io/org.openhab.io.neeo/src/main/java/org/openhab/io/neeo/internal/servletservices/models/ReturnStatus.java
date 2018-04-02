@@ -8,7 +8,10 @@
  */
 package org.openhab.io.neeo.internal.servletservices.models;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.neeo.internal.models.NeeoDevice;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannel;
 
@@ -16,7 +19,7 @@ import org.openhab.io.neeo.internal.models.NeeoDeviceChannel;
  * The class that encapsulates a result of a NEEO Brain call. THe result can be successful or not, include a message and
  * a device
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class ReturnStatus {
 
@@ -27,13 +30,16 @@ public class ReturnStatus {
     private final boolean success;
 
     /** The optional message if not successful */
+    @Nullable
     private final String message;
 
     /** The optional device if successful */
+    @Nullable
     private final NeeoDevice device;
 
     /** The optional channel if successful */
-    private final NeeoDeviceChannel channel;
+    @Nullable
+    private final List<NeeoDeviceChannel> channels;
 
     /**
      * Creates a return status of true or not (with no message or device)
@@ -56,10 +62,10 @@ public class ReturnStatus {
     /**
      * Creates a return status of SUCCESS with a channel. If channel is null, same result as calling 'constructor(true)'
      *
-     * @param channel the possibly null channel
+     * @param channels the possibly null channel
      */
-    public ReturnStatus(NeeoDeviceChannel channel) {
-        this(true, null, null, channel);
+    public ReturnStatus(@Nullable List<NeeoDeviceChannel> channels) {
+        this(true, null, null, channels);
     }
 
     /**
@@ -68,7 +74,7 @@ public class ReturnStatus {
      *
      * @param message the possibly null, possibly empty message
      */
-    public ReturnStatus(String message) {
+    public ReturnStatus(@Nullable String message) {
         this(StringUtils.isEmpty(message), message, null, null);
     }
 
@@ -88,13 +94,14 @@ public class ReturnStatus {
      * @param success whether the call was successful
      * @param message the possibly null, possibly empty message
      * @param device the possibly null device
-     * @param channel the possibly null channel
+     * @param channels the possibly null channels
      */
-    private ReturnStatus(boolean success, String message, NeeoDevice device, NeeoDeviceChannel channel) {
+    private ReturnStatus(boolean success, @Nullable String message, @Nullable NeeoDevice device,
+            @Nullable List<NeeoDeviceChannel> channels) {
         this.success = success;
         this.message = message;
         this.device = device;
-        this.channel = channel;
+        this.channels = channels;
     }
 
     /**
@@ -111,6 +118,7 @@ public class ReturnStatus {
      *
      * @return the possibly empty, possibly null message
      */
+    @Nullable
     public String getMessage() {
         return message;
     }
@@ -120,6 +128,7 @@ public class ReturnStatus {
      *
      * @return the possibly null device
      */
+    @Nullable
     public NeeoDevice getDevice() {
         return device;
     }
@@ -129,13 +138,14 @@ public class ReturnStatus {
      *
      * @return the possibly null channel
      */
-    public NeeoDeviceChannel getChannel() {
-        return channel;
+    @Nullable
+    public List<NeeoDeviceChannel> getChannels() {
+        return channels;
     }
 
     @Override
     public String toString() {
-        return "ReturnStatus [success=" + success + ", message=" + message + ", device=" + device + ", channel="
-                + channel + "]";
+        return "ReturnStatus [success=" + success + ", message=" + message + ", device=" + device + ", channels="
+                + channels + "]";
     }
 }

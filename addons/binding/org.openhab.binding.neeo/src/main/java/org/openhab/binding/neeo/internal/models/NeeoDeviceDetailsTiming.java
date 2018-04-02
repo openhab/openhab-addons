@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.neeo.internal.models;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The model representing an Neeo Device Details Timings (serialize/deserialize json use only)
  *
@@ -16,50 +18,43 @@ package org.openhab.binding.neeo.internal.models;
 public class NeeoDeviceDetailsTiming {
 
     /** Standby delay in ms (time to turn on device) */
-    private final Integer standbyCommandDelay;
+    @Nullable
+    private Integer standbyCommandDelay;
 
     /** Source switch in ms (time to switch inputs) */
-    private final Integer sourceSwitchDelay;
+    @Nullable
+    private Integer sourceSwitchDelay;
 
-    /** Shutdown delay in ms (tiem to shutdown device) */
-    private final Integer shutdownDelay;
-
-    /**
-     * Constructs the timings option
-     * 
-     * @param standbyCommandDelay the standby delay (in ms)
-     * @param sourceSwitchDelay the source switch delay (in ms)
-     * @param shutdownDelay the shutdown delay (in ms)
-     */
-    public NeeoDeviceDetailsTiming(Integer standbyCommandDelay, Integer sourceSwitchDelay, Integer shutdownDelay) {
-        this.standbyCommandDelay = standbyCommandDelay;
-        this.sourceSwitchDelay = sourceSwitchDelay;
-        this.shutdownDelay = shutdownDelay;
-    }
+    /** Shutdown delay in ms (time to shutdown device) */
+    @Nullable
+    private Integer shutdownDelay;
 
     /**
      * The time (in ms) to turn on device. May be null if not supported
-     * 
+     *
      * @return a possibly null time to turn on device
      */
+    @Nullable
     public Integer getStandbyCommandDelay() {
         return standbyCommandDelay;
     }
 
     /**
      * The time (in ms) to switch inputs. May be null if not supported
-     * 
+     *
      * @return a possibly null time to switch inputs
      */
+    @Nullable
     public Integer getSourceSwitchDelay() {
         return sourceSwitchDelay;
     }
 
     /**
      * The time (in ms) to shutdown device. May be null if not supported
-     * 
+     *
      * @return a possibly null time to shut down device
      */
+    @Nullable
     public Integer getShutdownDelay() {
         return shutdownDelay;
     }

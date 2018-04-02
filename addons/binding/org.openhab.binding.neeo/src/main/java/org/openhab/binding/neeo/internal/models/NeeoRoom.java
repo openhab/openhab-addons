@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.neeo.internal.models;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The model representing an Neeo Room (serialize/deserialize json use only).
  *
@@ -16,44 +18,31 @@ package org.openhab.binding.neeo.internal.models;
 public class NeeoRoom {
 
     /** The room name */
-    private final String name;
+    @Nullable
+    private String name;
 
     /** The room key */
-    private final String key;
+    @Nullable
+    private String key;
 
-    /** The devices in teh room */
-    private final NeeoDevices devices;
+    /** The devices in the room */
+    @Nullable
+    private NeeoDevices devices;
 
     /** The scenarios in the room */
-    private final NeeoScenarios scenarios;
+    @Nullable
+    private NeeoScenarios scenarios;
 
     /** The recipes in the room */
-    private final NeeoRecipes recipes;
-
-    /**
-     * Instantiates a new neeo room.
-     *
-     * @param name the name
-     * @param hasController the has controller
-     * @param key the key
-     * @param scenarios the scenarios
-     * @param devices the devices
-     * @param recipes the recipes
-     */
-    public NeeoRoom(String name, boolean hasController, String key, NeeoScenarios scenarios, NeeoDevices devices,
-            NeeoRecipes recipes) {
-        this.name = name;
-        this.key = key;
-        this.scenarios = scenarios;
-        this.devices = devices;
-        this.recipes = recipes;
-    }
+    @Nullable
+    private NeeoRecipes recipes;
 
     /**
      * Gets the room name
      *
      * @return the name
      */
+    @Nullable
     public String getName() {
         return name;
     }
@@ -63,6 +52,7 @@ public class NeeoRoom {
      *
      * @return the key
      */
+    @Nullable
     public String getKey() {
         return key;
     }
@@ -73,7 +63,8 @@ public class NeeoRoom {
      * @return the recipes
      */
     public NeeoRecipes getRecipes() {
-        return recipes;
+        final NeeoRecipes localRecipes = recipes;
+        return localRecipes == null ? new NeeoRecipes(new NeeoRecipe[0]) : localRecipes;
     }
 
     /**
@@ -82,7 +73,8 @@ public class NeeoRoom {
      * @return the devices
      */
     public NeeoDevices getDevices() {
-        return devices;
+        final NeeoDevices localDevices = devices;
+        return localDevices == null ? new NeeoDevices(new NeeoDevice[0]) : localDevices;
     }
 
     /**
@@ -91,7 +83,8 @@ public class NeeoRoom {
      * @return the scenarios
      */
     public NeeoScenarios getScenarios() {
-        return scenarios;
+        final NeeoScenarios localScenarios = scenarios;
+        return localScenarios == null ? new NeeoScenarios(new NeeoScenario[0]) : localScenarios;
     }
 
     @Override

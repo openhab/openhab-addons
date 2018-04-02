@@ -11,13 +11,14 @@ package org.openhab.io.neeo.internal.models;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This helper class provides information about button groups that can be specified by the user (like binding a switch
  * to an up/down button pair). The button group will be used by the system to determine what buttons (and URL suffixes
  * to identify those button) will be created when a button group is chosen by the user.
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class NeeoButtonGroup {
     /**
@@ -101,6 +102,7 @@ public class NeeoButtonGroup {
      * @param text the text to parse
      * @return the possibly null {@link NeeoButtonGroup}
      */
+    @Nullable
     public static NeeoButtonGroup parse(final String text) {
         if (StringUtils.isEmpty(text)) {
             return null;

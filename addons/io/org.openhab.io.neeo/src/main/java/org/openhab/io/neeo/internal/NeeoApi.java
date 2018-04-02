@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -23,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.id.InstanceUUID;
@@ -38,11 +40,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * The class provides the API for communicating with a NEEO brain
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class NeeoApi implements AutoCloseable {
 
@@ -53,7 +58,7 @@ public class NeeoApi implements AutoCloseable {
     private final Logger logger = LoggerFactory.getLogger(NeeoApi.class);
 
     /** The gson used in communications */
-    private static final Gson gson = NeeoUtil.createGson();
+    private static final Gson GSON = NeeoUtil.createGson();
 
     /** The brain's IP address */
     private final String brainIpAddress;
@@ -63,6 +68,9 @@ public class NeeoApi implements AutoCloseable {
 
     /** The brain identifier */
     private final String brainId;
+
+    /** The name of the brain */
+    private final String brainName;
 
     /** The known device keys on the brain. */
     private final NeeoDeviceKeys deviceKeys;
@@ -77,7 +85,7 @@ public class NeeoApi implements AutoCloseable {
     private final URL callbackUrl;
 
     /** The ansi escape color conversion */
-    private static final String[] ansiColors = new String[] { "black", "red", "green", "yellow", "blue", "magenta",
+    private static final String[] ANSICOLORS = new String[] { "black", "red", "green", "yellow", "blue", "magenta",
             "cyan", "white" };
 
     /** The scheduler used to schedule tasks */
@@ -85,13 +93,13 @@ public class NeeoApi implements AutoCloseable {
             .getScheduledPool(NeeoConstants.THREAD_POOL_NAME);
 
     /** The connection task (not-null when connecting, null otherwise) */
-    private final AtomicReference<Future<?>> connect = new AtomicReference<>(null);
+    private final AtomicReference<@Nullable Future<?>> connect = new AtomicReference<>(null);
 
     /** The check status task (not-null when connecting, null otherwise) */
-    private final AtomicReference<ScheduledFuture<?>> checkStatus = new AtomicReference<>(null);
+    private final AtomicReference<@Nullable ScheduledFuture<?>> checkStatus = new AtomicReference<>(null);
 
     /** The {@link HttpRequest} used for making requests */
-    private final AtomicReference<HttpRequest> request = new AtomicReference<>(null);
+    private final AtomicReference<HttpRequest> request = new AtomicReference<>(new HttpRequest());
 
     /** Whether the brain is currently connected */
     private final AtomicBoolean connected = new AtomicBoolean(false);
@@ -102,6 +110,7 @@ public class NeeoApi implements AutoCloseable {
      * @param ipAddress the non-empty ip address
      * @param brainId the non-empty brain id
      * @param context the non-null {@link ServiceContext}
+     * @throws IOException if an exception occurs connecting to the brain
      */
     public NeeoApi(String ipAddress, String brainId, ServiceContext context) throws IOException {
         NeeoUtil.requireNotEmpty(ipAddress, "ipAddress cannot be empty");
@@ -113,6 +122,27 @@ public class NeeoApi implements AutoCloseable {
         this.brainUrl = NeeoConstants.PROTOCOL + (ipAddress.startsWith("/") ? ipAddress.substring(1) : ipAddress) + ":"
                 + NeeoConstants.DEFAULT_BRAIN_PORT;
         deviceKeys = new NeeoDeviceKeys(brainUrl);
+
+        String name = brainId;
+        try (HttpRequest request = new HttpRequest()) {
+            logger.debug("Getting existing device mappings from {}{}", brainUrl, NeeoConstants.PROJECTS_HOME);
+            final HttpResponse resp = request.sendGetCommand(brainUrl + NeeoConstants.PROJECTS_HOME);
+            if (resp.getHttpCode() != HttpStatus.OK_200) {
+                throw resp.createException();
+            }
+
+            final JsonParser parser = new JsonParser();
+            final JsonObject root = parser.parse(resp.getContent()).getAsJsonObject();
+            for (Map.Entry<String, JsonElement> room : root.getAsJsonObject("rooms").entrySet()) {
+                final JsonObject roomObj = (JsonObject) room.getValue();
+
+                if (roomObj.get("hasController").getAsBoolean()) {
+                    name = roomObj.get("name").getAsString();
+                    break;
+                }
+            }
+        }
+        this.brainName = name;
 
         final Object statusCheck = context.getComponentContext().getProperties()
                 .get(NeeoConstants.CFG_CHECKSTATUSINTERVAL);
@@ -156,11 +186,20 @@ public class NeeoApi implements AutoCloseable {
         try (HttpRequest req = new HttpRequest()) {
             final HttpResponse res = req.sendGetCommand(sysInfo);
             if (res.getHttpCode() == HttpStatus.OK_200) {
-                return gson.fromJson(res.getContent(), NeeoSystemInfo.class);
+                return GSON.fromJson(res.getContent(), NeeoSystemInfo.class);
             } else {
                 throw res.createException();
             }
         }
+    }
+
+    /**
+     * Returns the name of the brain
+     *
+     * @return a non-null, non-empty brain name
+     */
+    public String getBrainName() {
+        return brainName;
     }
 
     /**
@@ -174,10 +213,6 @@ public class NeeoApi implements AutoCloseable {
                 + NeeoConstants.DEFAULT_BRAIN_PORT + NeeoConstants.IDENTBRAIN;
 
         final HttpRequest rqst = request.get();
-        if (rqst == null) {
-            throw new IOException("request cannot be null");
-        }
-
         final HttpResponse res = rqst.sendGetCommand(identBrain);
         if (res.getHttpCode() != HttpStatus.OK_200) {
             throw res.createException();
@@ -186,6 +221,8 @@ public class NeeoApi implements AutoCloseable {
 
     /**
      * Helper method to get the log file from the brain, convert the ANSI escaped result to HTML and return it
+     * 
+     * @return a non-empty string containing the log file from the brain
      *
      * @throws IOException Signals that an I/O exception has occurred or the URL is not a brain
      */
@@ -195,10 +232,6 @@ public class NeeoApi implements AutoCloseable {
                 + NeeoConstants.DEFAULT_BRAIN_PORT + NeeoConstants.GETLOG;
 
         final HttpRequest rqst = request.get();
-        if (rqst == null) {
-            throw new IOException("request cannot be null");
-        }
-
         final HttpResponse res = rqst.sendGetCommand(logUrl);
         if (res.getHttpCode() != HttpStatus.OK_200) {
             throw res.createException();
@@ -235,11 +268,9 @@ public class NeeoApi implements AutoCloseable {
                         } else if (cint == 4) {
                             style += "font-style:italic;";
                         } else if (cint >= 30 && cint <= 37) {
-                            style += "color:" + ansiColors[cint - 30];
+                            style += "color:" + ANSICOLORS[cint - 30];
                         } else if (cint >= 40 && cint <= 47) {
-                            style += "background-color:" + ansiColors[cint - 40];
-                        } else {
-                            // we don't support it
+                            style += "background-color:" + ANSICOLORS[cint - 40];
                         }
                     } catch (NumberFormatException e) {
                         // ignore
@@ -356,13 +387,9 @@ public class NeeoApi implements AutoCloseable {
         deregisterApi();
 
         final HttpRequest rqst = request.get();
-        if (rqst == null) {
-            throw new IOException("request cannot be null");
-        }
-
         logger.debug("Registering {} for {}{} using callback {}", brainId, brainUrl, NeeoConstants.REGISTER_SDK_ADAPTER,
                 callbackUrl);
-        final String register = gson.toJson(new NeeoAdapterRegistration(
+        final String register = GSON.toJson(new NeeoAdapterRegistration(
                 NeeoConstants.ADAPTER_NAME + "-" + InstanceUUID.get(), callbackUrl.toExternalForm()));
         final HttpResponse resp = rqst.sendPostJsonCommand(brainUrl + NeeoConstants.REGISTER_SDK_ADAPTER, register);
         if (resp.getHttpCode() != HttpStatus.OK_200) {
@@ -406,10 +433,6 @@ public class NeeoApi implements AutoCloseable {
     public void notify(String msg) throws IOException {
         if (isConnected()) {
             final HttpRequest rqst = request.get();
-            if (rqst == null) {
-                throw new IOException("request cannot be null");
-            }
-
             logger.debug("Sending Notification to brain ({}): {}", brainId, msg);
             final HttpResponse resp = rqst.sendPostJsonCommand(brainUrl + NeeoConstants.NOTIFICATION, msg);
             if (resp.getHttpCode() != HttpStatus.OK_200) {
@@ -427,14 +450,10 @@ public class NeeoApi implements AutoCloseable {
      */
     private void deregisterApi() throws IOException {
         final HttpRequest rqst = request.get();
-        if (rqst == null) {
-            throw new IOException("request cannot be null");
-        }
-
         try {
             logger.debug("Deregistering {} for {}{} using callback {}", brainId, brainUrl,
                     NeeoConstants.UNREGISTER_SDK_ADAPTER, callbackUrl);
-            final String deregister = gson.toJson(new NeeoAdapterRegistration(
+            final String deregister = GSON.toJson(new NeeoAdapterRegistration(
                     NeeoConstants.ADAPTER_NAME + "-" + InstanceUUID.get(), callbackUrl.toExternalForm()));
             final HttpResponse resp = rqst.sendPostJsonCommand(brainUrl + NeeoConstants.UNREGISTER_SDK_ADAPTER,
                     deregister);
@@ -457,21 +476,17 @@ public class NeeoApi implements AutoCloseable {
         NeeoUtil.requireNotEmpty(deviceKey, "deviceKey cannot be empty");
 
         final HttpRequest rqst = request.get();
-        if (rqst == null) {
-            throw new IOException("request cannot be null");
-        }
-
         final HttpResponse resp = rqst.sendGetCommand(brainUrl + NeeoConstants.RECIPES);
         if (resp.getHttpCode() != HttpStatus.OK_200) {
             throw resp.createException();
         }
 
-        for (NeeoRecipe recipe : gson.fromJson(resp.getContent(), NeeoRecipe[].class)) {
+        for (NeeoRecipe recipe : GSON.fromJson(resp.getContent(), NeeoRecipe[].class)) {
             if (StringUtils.equalsIgnoreCase(recipe.getUid(), deviceKey)) {
                 final NeeoRecipeUrls urls = recipe.getUrls();
                 final String url = urls == null ? null : (on ? urls.getSetPowerOn() : urls.getSetPowerOff());
 
-                if (StringUtils.isNotEmpty(url)) {
+                if (url != null && StringUtils.isNotEmpty(url)) {
                     final HttpResponse cmdResp = rqst.sendGetCommand(url);
                     if (cmdResp.getHttpCode() != HttpStatus.OK_200) {
                         throw cmdResp.createException();
@@ -497,7 +512,7 @@ public class NeeoApi implements AutoCloseable {
             logger.debug("Exception while deregistring api during close - ignoring: {}", e.getMessage(), e);
         } finally {
             // Do this regardless if a runtime exception was thrown
-            NeeoUtil.close(request.getAndSet(null));
+            NeeoUtil.close(request.get());
             setConnected(false);
         }
 

@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.neeo.internal.models;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The model representing an error response (serialize/deserialize json use only)
  *
@@ -16,27 +18,19 @@ package org.openhab.binding.neeo.internal.models;
 public class ErrorResponse {
 
     /** The error */
-    private final String error;
+    @Nullable
+    private String error;
 
     /** The message */
-    private final String message;
-
-    /**
-     * Instantiates a new error response.
-     *
-     * @param error the error
-     * @param message the message
-     */
-    public ErrorResponse(String error, String message) {
-        this.error = error;
-        this.message = message;
-    }
+    @Nullable
+    private String message;
 
     /**
      * Gets the error.
      *
      * @return the error
      */
+    @Nullable
     public String getError() {
         return error;
     }
@@ -46,6 +40,7 @@ public class ErrorResponse {
      *
      * @return the message
      */
+    @Nullable
     public String getMessage() {
         return message;
     }

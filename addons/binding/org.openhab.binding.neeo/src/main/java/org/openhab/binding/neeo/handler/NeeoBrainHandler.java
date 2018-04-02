@@ -18,7 +18,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
@@ -27,6 +26,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.servlet.ServletException;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -74,21 +76,24 @@ public class NeeoBrainHandler extends AbstractBridgeHandler {
     /**
      * The initialization task (null until set by {@link #initializeTask()} and set back to null in {@link #dispose()}
      */
-    private final AtomicReference<Future<?>> initializationTask = new AtomicReference<>(null);
+    private final AtomicReference<@Nullable Future<?>> initializationTask = new AtomicReference<>();
 
     /** The check status task (not-null when connecting, null otherwise) */
-    private final AtomicReference<ScheduledFuture<?>> checkStatus = new AtomicReference<>(null);
+    private final AtomicReference<@Nullable Future<?>> checkStatus = new AtomicReference<>();
 
-    /** The lock that protected multithreaded access to the state variables */
+    /** The lock that protected multi-threaded access to the state variables */
     private final ReadWriteLock stateLock = new ReentrantReadWriteLock();
 
     /** The {@link NeeoBrainApi} (null until set by {@link #initializationTask}) */
+    @Nullable
     private NeeoBrainApi neeoBrainApi;
 
     /** The path to the forward action servlet - will be null if not enabled */
+    @Nullable
     private String servletPath;
 
     /** The servlet for forward actions - will be null if not enabled */
+    @Nullable
     private NeeoForwardActionsServlet forwardActionServlet;
 
     /**
@@ -137,8 +142,8 @@ public class NeeoBrainHandler extends AbstractBridgeHandler {
     }
 
     /**
-     * Initializes the bridge by connecting to the configuration ipaddress and parsing the results. Properties will be
-     * set and the thing will go online. Rooms will then be discovered via {@link #startScan()}
+     * Initializes the bridge by connecting to the configuration ip address and parsing the results. Properties will be
+     * set and the thing will go online.
      */
     private void initializeTask() {
         final Lock writerLock = stateLock.writeLock();
@@ -147,7 +152,13 @@ public class NeeoBrainHandler extends AbstractBridgeHandler {
             NeeoUtil.checkInterrupt();
 
             final NeeoBrainConfig config = getBrainConfig();
-            final NeeoBrainApi api = new NeeoBrainApi(config.getIpAddress());
+            final String ipAddress = config.getIpAddress();
+            if (ipAddress == null || StringUtils.isEmpty(ipAddress)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Brain IP Address must be specified");
+                return;
+            }
+            final NeeoBrainApi api = new NeeoBrainApi(ipAddress);
             final NeeoBrain brain = api.getBrain();
             final String brainId = getNeeoBrainId();
 
@@ -155,13 +166,13 @@ public class NeeoBrainHandler extends AbstractBridgeHandler {
             neeoBrainApi = api;
 
             final Map<String, String> properties = new HashMap<>();
-            properties.put("Name", brain.getName());
-            properties.put("Version", brain.getVersion());
-            properties.put("Label", brain.getLabel());
-            properties.put("Is Configured", String.valueOf(brain.isConfigured()));
-            properties.put("Key", brain.getKey());
-            properties.put("AirKey", brain.getAirkey());
-            properties.put("Last Change", String.valueOf(brain.getLastchange()));
+            addProperty(properties, "Name", brain.getName());
+            addProperty(properties, "Version", brain.getVersion());
+            addProperty(properties, "Label", brain.getLabel());
+            addProperty(properties, "Is Configured", String.valueOf(brain.isConfigured()));
+            addProperty(properties, "Key", brain.getKey());
+            addProperty(properties, "AirKey", brain.getAirkey());
+            addProperty(properties, "Last Change", String.valueOf(brain.getLastChange()));
             updateProperties(properties);
 
             if (config.isEnableForwardActions()) {
@@ -206,13 +217,12 @@ public class NeeoBrainHandler extends AbstractBridgeHandler {
 
             NeeoUtil.checkInterrupt();
             updateStatus(ThingStatus.ONLINE);
-
             NeeoUtil.checkInterrupt();
             if (config.getCheckStatusInterval() > 0) {
-                NeeoUtil.cancel(checkStatus.getAndSet(scheduler.scheduleAtFixedRate(() -> {
+                NeeoUtil.cancel(checkStatus.getAndSet(scheduler.scheduleWithFixedDelay(() -> {
                     try {
                         NeeoUtil.checkInterrupt();
-                        checkStatus(config.getIpAddress());
+                        checkStatus(ipAddress);
                     } catch (InterruptedException e) {
                         // do nothing - we were interrupted and should stop
                     }
@@ -232,10 +242,26 @@ public class NeeoBrainHandler extends AbstractBridgeHandler {
     }
 
     /**
+     * Helper method to add a property to the properties map if the value is not null
+     *
+     * @param properties a non-null properties map
+     * @param key a non-null, non-empty key
+     * @param value a possibly null, possibly empty key
+     */
+    private void addProperty(Map<String, String> properties, String key, @Nullable String value) {
+        Objects.requireNonNull(properties, "properties cannot be null");
+        NeeoUtil.requireNotEmpty(key, "key cannot be empty");
+        if (value != null && StringUtils.isNotEmpty(value)) {
+            properties.put(key, value);
+        }
+    }
+
+    /**
      * Gets the {@link NeeoBrainApi} used by this bridge
      *
      * @return a possibly null {@link NeeoBrainApi}
      */
+    @Nullable
     @Override
     public NeeoBrainApi getNeeoBrainApi() {
         final Lock readerLock = stateLock.readLock();
@@ -252,6 +278,7 @@ public class NeeoBrainHandler extends AbstractBridgeHandler {
      *
      * @return a non-null, non-empty brain id
      */
+    @NonNull
     @Override
     public String getNeeoBrainId() {
         return getThing().getUID().getId();
@@ -316,10 +343,13 @@ public class NeeoBrainHandler extends AbstractBridgeHandler {
             if (forwardActionServlet != null) {
                 forwardActionServlet = null;
 
-                try {
-                    api.deregisterForwardActions();
-                } catch (IOException e) {
-                    logger.debug("IOException occurred deregistering the forward actions: {}", e.getMessage(), e);
+                if (api != null) {
+                    try {
+                        api.deregisterForwardActions();
+                    } catch (IOException e) {
+                        logger.debug("IOException occurred deregistering the forward actions: {}", e.getMessage(), e);
+                    }
+
                 }
 
                 if (servletPath != null) {
@@ -343,6 +373,7 @@ public class NeeoBrainHandler extends AbstractBridgeHandler {
      * @return the callback URL
      * @throws MalformedURLException if the URL is malformed
      */
+    @Nullable
     private URL createCallbackUrl(String brainId, NeeoBrainConfig config) throws MalformedURLException {
         NeeoUtil.requireNotEmpty(brainId, "brainId cannot be empty");
         Objects.requireNonNull(config, "config cannot be null");

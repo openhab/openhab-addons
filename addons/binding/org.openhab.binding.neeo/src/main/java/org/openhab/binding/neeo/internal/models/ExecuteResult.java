@@ -10,51 +10,32 @@ package org.openhab.binding.neeo.internal.models;
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The model representing an execute result (serialize/deserialize json use only)
  *
  * @author Tim Roberts - Initial contribution
  */
+
 public class ExecuteResult {
 
     /** The estimated duration */
-    private final int estimatedDuration;
+    private int estimatedDuration;
 
     /** The name */
-    private final String name;
+    @Nullable
+    private String name;
 
     /** The start time */
-    private final long startTime;
+    private long startTime;
 
     /** The steps */
-    private final ExecuteStep[] steps;
+    private ExecuteStep @Nullable [] steps;
 
     /** The type */
-    private final String type;
-
-    /**
-     * Instantiates a new execute result.
-     */
-    public ExecuteResult() {
-        this(0, "", 0, new ExecuteStep[0], "");
-    }
-
-    /**
-     * Instantiates a new execute result.
-     *
-     * @param estimatedDuration the estimated duration
-     * @param name the name
-     * @param startTime the start time
-     * @param steps the steps
-     * @param type the type
-     */
-    public ExecuteResult(int estimatedDuration, String name, long startTime, ExecuteStep[] steps, String type) {
-        this.estimatedDuration = estimatedDuration;
-        this.name = name;
-        this.startTime = startTime;
-        this.steps = steps;
-        this.type = type;
-    }
+    @Nullable
+    private String type;
 
     /**
      * Gets the estimated duration.
@@ -70,6 +51,7 @@ public class ExecuteResult {
      *
      * @return the name
      */
+    @Nullable
     public String getName() {
         return name;
     }
@@ -89,7 +71,8 @@ public class ExecuteResult {
      * @return the steps
      */
     public ExecuteStep[] getSteps() {
-        return steps;
+        final ExecuteStep @Nullable [] localSteps = steps;
+        return localSteps == null ? new ExecuteStep[0] : localSteps;
     }
 
     /**
@@ -97,6 +80,7 @@ public class ExecuteResult {
      *
      * @return the type
      */
+    @Nullable
     public String getType() {
         return type;
     }

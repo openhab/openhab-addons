@@ -9,8 +9,10 @@
 package org.openhab.binding.neeo.internal.models;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The model representing Neeo Scenarios (serialize/deserialize json use only).
@@ -20,7 +22,7 @@ import org.apache.commons.lang.StringUtils;
 public class NeeoScenarios {
 
     /** The scenarios. */
-    private final NeeoScenario[] scenarios;
+    private final NeeoScenario @Nullable [] scenarios;
 
     /**
      * Instantiates a new neeo scenarios.
@@ -28,6 +30,7 @@ public class NeeoScenarios {
      * @param scenarios the scenarios
      */
     public NeeoScenarios(NeeoScenario[] scenarios) {
+        Objects.requireNonNull(scenarios, "scenarios cannot be null");
         this.scenarios = scenarios;
     }
 
@@ -37,7 +40,8 @@ public class NeeoScenarios {
      * @return the scenarios
      */
     public NeeoScenario[] getScenarios() {
-        return scenarios;
+        final NeeoScenario @Nullable [] localScenarios = scenarios;
+        return localScenarios == null ? new NeeoScenario[0] : localScenarios;
     }
 
     /**
@@ -46,8 +50,9 @@ public class NeeoScenarios {
      * @param key the key
      * @return the scenario
      */
+    @Nullable
     public NeeoScenario getScenario(String key) {
-        for (NeeoScenario scenario : scenarios) {
+        for (NeeoScenario scenario : getScenarios()) {
             if (StringUtils.equalsIgnoreCase(key, scenario.getKey())) {
                 return scenario;
             }

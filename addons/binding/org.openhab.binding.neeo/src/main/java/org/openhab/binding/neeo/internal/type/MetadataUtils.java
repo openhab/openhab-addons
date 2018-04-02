@@ -29,7 +29,6 @@ import org.openhab.binding.neeo.internal.models.NeeoScenario;
  *
  * @author Tim Roberts - Initial Contribution
  */
-
 class MetadataUtils {
     /**
      * Gets the group definitions from a {@link NeeoRoom}

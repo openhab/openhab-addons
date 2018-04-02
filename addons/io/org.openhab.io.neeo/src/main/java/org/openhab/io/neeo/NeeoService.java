@@ -10,21 +10,17 @@ package org.openhab.io.neeo;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javax.servlet.ServletException;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.binding.BindingInfoRegistry;
 import org.eclipse.smarthome.core.events.Event;
 import org.eclipse.smarthome.core.events.EventFilter;
@@ -59,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * The main entry point for the transport service. The transport service will listen for brain broadcasts and create a
  * transport for that brain (in addition to starting up the dashboard tile)
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 @Component(service = org.eclipse.smarthome.core.events.EventSubscriber.class, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true, property = {
         "service.pid=org.openhab.io.neeo.NeeoService", "service.config.description.uri=io:neeo",
@@ -72,42 +68,46 @@ public class NeeoService implements EventSubscriber {
     private final Logger logger = LoggerFactory.getLogger(NeeoService.class);
 
     /**
-     * This lock controls access to all 'context' type of state. This includes the {@link #context} and all services
-     * that are set by openHAB
-     */
-    private final Lock contextLock = new ReentrantLock();
-
-    /**
      * This is the context created in the activate method (and nulled in the deactivate method) that will provide the
      * context to all services for all servlets
      */
+    @Nullable
     private ServiceContext context;
 
-    // The following services are set by openHAB via the getter/setters - access to them is controlled via contextLock
+    // The following services are set by openHAB via the getter/setters
+    @Nullable
     private HttpService httpService;
+    @Nullable
     private ItemRegistry itemRegistry;
+    @Nullable
     private BindingInfoRegistry bindingInfoRegistry;
+    @Nullable
     private ThingRegistry thingRegistry;
+    @Nullable
     private ThingTypeRegistry thingTypeRegistry;
+    @Nullable
     private ItemChannelLinkRegistry itemChannelLinkRegistry;
+    @Nullable
     private ChannelTypeRegistry channelTypeRegistry;
+    @Nullable
     private MDNSClient mdnsClient;
+    @Nullable
     private EventPublisher eventPublisher;
+    @Nullable
     private NetworkAddressService networkAddressService;
 
     /** The main dashboard servlet. Only created in the activate method (and disposed of in the deactivate method) */
-    private final AtomicReference<NeeoServlet> dashboardServlet = new AtomicReference<>(null);
+    @Nullable
+    private NeeoDashboardServlet dashboardServlet;
 
     /**
      * The various servlets being used (should be one per brain + the status one)
      */
-    private final List<NeeoServlet> servlets = new CopyOnWriteArrayList<>();
+    private final List<NeeoBrainServlet> servlets = new CopyOnWriteArrayList<>();
 
     /** The brain discovery service */
+    @Nullable
     private BrainDiscovery discovery;
-
-    /** The event filter to use */
-    private final AtomicReference<EventFilter> eventFilter = new AtomicReference<>();
 
     /** The discovery listener to the brain discovery service */
     private final DiscoveryListener discoveryListener = new DiscoveryListener() {
@@ -139,6 +139,31 @@ public class NeeoService implements EventSubscriber {
     };
 
     /**
+     * The event filter to apply to this service
+     */
+    private final EventFilter eventFilter = new EventFilter() {
+        @Override
+        public boolean apply(@Nullable Event event) {
+            logger.trace("apply: {}", event);
+
+            for (NeeoBrainServlet ns : servlets) {
+                final List<EventFilter> efs = ns.getEventFilters();
+                if (efs != null) {
+                    for (EventFilter ef : efs) {
+                        if (ef.apply(event)) {
+                            logger.trace("apply (true): {}", event);
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            logger.trace("apply (false): {}", event);
+            return false;
+        }
+    };
+
+    /**
      * Sets the http service.
      *
      * @param httpService the non-null http service
@@ -146,12 +171,7 @@ public class NeeoService implements EventSubscriber {
     @Reference
     public void setHttpService(HttpService httpService) {
         Objects.requireNonNull(httpService, "httpService cannot be null");
-        contextLock.lock();
-        try {
-            this.httpService = httpService;
-        } finally {
-            contextLock.unlock();
-        }
+        this.httpService = httpService;
     }
 
     /**
@@ -160,12 +180,7 @@ public class NeeoService implements EventSubscriber {
      * @param httpService the http service (ignored)
      */
     public void unsetHttpService(HttpService httpService) {
-        contextLock.lock();
-        try {
-            this.httpService = null;
-        } finally {
-            contextLock.unlock();
-        }
+        this.httpService = null;
     }
 
     /**
@@ -176,12 +191,7 @@ public class NeeoService implements EventSubscriber {
     @Reference
     public void setItemRegistry(ItemRegistry itemRegistry) {
         Objects.requireNonNull(itemRegistry, "itemRegistry cannot be null");
-        contextLock.lock();
-        try {
-            this.itemRegistry = itemRegistry;
-        } finally {
-            contextLock.unlock();
-        }
+        this.itemRegistry = itemRegistry;
     }
 
     /**
@@ -190,12 +200,7 @@ public class NeeoService implements EventSubscriber {
      * @param itemRegistry the item registry (ignored)
      */
     public void unsetItemRegistry(ItemRegistry itemRegistry) {
-        contextLock.lock();
-        try {
-            this.itemRegistry = null;
-        } finally {
-            contextLock.unlock();
-        }
+        this.itemRegistry = null;
     }
 
     /**
@@ -206,12 +211,7 @@ public class NeeoService implements EventSubscriber {
     @Reference
     public void setBindingInfoRegistry(BindingInfoRegistry bindingInfoRegistry) {
         Objects.requireNonNull(bindingInfoRegistry, "bindingInfoRegistry cannot be null");
-        contextLock.lock();
-        try {
-            this.bindingInfoRegistry = bindingInfoRegistry;
-        } finally {
-            contextLock.unlock();
-        }
+        this.bindingInfoRegistry = bindingInfoRegistry;
     }
 
     /**
@@ -220,12 +220,7 @@ public class NeeoService implements EventSubscriber {
      * @param bindingInfoRegistry the binding info registry (ignored)
      */
     public void unsetBindingInfoRegistry(BindingInfoRegistry bindingInfoRegistry) {
-        contextLock.lock();
-        try {
-            this.bindingInfoRegistry = null;
-        } finally {
-            contextLock.unlock();
-        }
+        this.bindingInfoRegistry = null;
     }
 
     /**
@@ -236,12 +231,7 @@ public class NeeoService implements EventSubscriber {
     @Reference
     public void setThingRegistry(ThingRegistry thingRegistry) {
         Objects.requireNonNull(thingRegistry, "thingRegistry cannot be null");
-        contextLock.lock();
-        try {
-            this.thingRegistry = thingRegistry;
-        } finally {
-            contextLock.unlock();
-        }
+        this.thingRegistry = thingRegistry;
     }
 
     /**
@@ -250,12 +240,7 @@ public class NeeoService implements EventSubscriber {
      * @param thingRegistry the thing registry (ignored)
      */
     public void unsetThingRegistry(ThingRegistry thingRegistry) {
-        contextLock.lock();
-        try {
-            this.thingRegistry = null;
-        } finally {
-            contextLock.unlock();
-        }
+        this.thingRegistry = null;
     }
 
     /**
@@ -266,12 +251,7 @@ public class NeeoService implements EventSubscriber {
     @Reference
     public void setThingTypeRegistry(ThingTypeRegistry thingTypeRegistry) {
         Objects.requireNonNull(thingTypeRegistry, "thingTypeRegistry cannot be null");
-        contextLock.lock();
-        try {
-            this.thingTypeRegistry = thingTypeRegistry;
-        } finally {
-            contextLock.unlock();
-        }
+        this.thingTypeRegistry = thingTypeRegistry;
     }
 
     /**
@@ -280,12 +260,7 @@ public class NeeoService implements EventSubscriber {
      * @param thingTypeRegistry the thing type registry (ignored)
      */
     public void unsetThingTypeRegistry(ThingTypeRegistry thingTypeRegistry) {
-        contextLock.lock();
-        try {
-            this.thingTypeRegistry = null;
-        } finally {
-            contextLock.unlock();
-        }
+        this.thingTypeRegistry = null;
     }
 
     /**
@@ -296,12 +271,7 @@ public class NeeoService implements EventSubscriber {
     @Reference
     public void setItemChannelLinkRegistry(ItemChannelLinkRegistry itemChannelLinkRegistry) {
         Objects.requireNonNull(itemChannelLinkRegistry, "itemChannelLinkRegistry cannot be null");
-        contextLock.lock();
-        try {
-            this.itemChannelLinkRegistry = itemChannelLinkRegistry;
-        } finally {
-            contextLock.unlock();
-        }
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
     }
 
     /**
@@ -310,12 +280,7 @@ public class NeeoService implements EventSubscriber {
      * @param itemChannelLinkRegistry the item channel link registry (ignored)
      */
     public void unsetItemChannelLinkRegistry(ItemChannelLinkRegistry itemChannelLinkRegistry) {
-        contextLock.lock();
-        try {
-            this.itemChannelLinkRegistry = null;
-        } finally {
-            contextLock.unlock();
-        }
+        this.itemChannelLinkRegistry = null;
     }
 
     /**
@@ -326,12 +291,7 @@ public class NeeoService implements EventSubscriber {
     @Reference
     public void setChannelTypeRegistry(ChannelTypeRegistry channelTypeRegistry) {
         Objects.requireNonNull(channelTypeRegistry, "channelTypeRegistry cannot be null");
-        contextLock.lock();
-        try {
-            this.channelTypeRegistry = channelTypeRegistry;
-        } finally {
-            contextLock.unlock();
-        }
+        this.channelTypeRegistry = channelTypeRegistry;
     }
 
     /**
@@ -340,12 +300,7 @@ public class NeeoService implements EventSubscriber {
      * @param channelTypeRegistry the channel type registry (ignored)
      */
     public void unsetChannelTypeRegistry(ChannelTypeRegistry channelTypeRegistry) {
-        contextLock.lock();
-        try {
-            this.channelTypeRegistry = null;
-        } finally {
-            contextLock.unlock();
-        }
+        this.channelTypeRegistry = null;
     }
 
     /**
@@ -356,12 +311,7 @@ public class NeeoService implements EventSubscriber {
     @Reference
     public void setMDNSClient(MDNSClient mdnsClient) {
         Objects.requireNonNull(mdnsClient, "mdnsClient cannot be null");
-        contextLock.lock();
-        try {
-            this.mdnsClient = mdnsClient;
-        } finally {
-            contextLock.unlock();
-        }
+        this.mdnsClient = mdnsClient;
     }
 
     /**
@@ -370,12 +320,7 @@ public class NeeoService implements EventSubscriber {
      * @param mdnsClient the mdns client (ignored)
      */
     public void unsetMDNSClient(MDNSClient mdnsClient) {
-        contextLock.lock();
-        try {
-            this.mdnsClient = null;
-        } finally {
-            contextLock.unlock();
-        }
+        this.mdnsClient = null;
     }
 
     /**
@@ -386,12 +331,7 @@ public class NeeoService implements EventSubscriber {
     @Reference
     public void setEventPublisher(EventPublisher eventPublisher) {
         Objects.requireNonNull(eventPublisher, "eventPublisher cannot be null");
-        contextLock.lock();
-        try {
-            this.eventPublisher = eventPublisher;
-        } finally {
-            contextLock.unlock();
-        }
+        this.eventPublisher = eventPublisher;
     }
 
     /**
@@ -400,12 +340,7 @@ public class NeeoService implements EventSubscriber {
      * @param eventPublisher the event publisher (ignored)
      */
     public void unsetEventPublisher(EventPublisher eventPublisher) {
-        contextLock.lock();
-        try {
-            this.eventPublisher = null;
-        } finally {
-            contextLock.unlock();
-        }
+        this.eventPublisher = null;
     }
 
     /**
@@ -416,26 +351,16 @@ public class NeeoService implements EventSubscriber {
     @Reference
     public void setNetworkAddressService(NetworkAddressService networkAddressService) {
         Objects.requireNonNull(networkAddressService, "networkAddressService cannot be null");
-        contextLock.lock();
-        try {
-            this.networkAddressService = networkAddressService;
-        } finally {
-            contextLock.unlock();
-        }
+        this.networkAddressService = networkAddressService;
     }
 
     /**
-     * Unset network address service
+     * Unsets network address service
      *
-     * @param network address service
+     * @param networkAddressService address service
      */
     public void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        contextLock.lock();
-        try {
-            this.networkAddressService = null;
-        } finally {
-            contextLock.unlock();
-        }
+        this.networkAddressService = null;
     }
 
     /**
@@ -444,39 +369,47 @@ public class NeeoService implements EventSubscriber {
      * @param componentContext the non-null component context
      */
     @Activate
-    public void activate(final ComponentContext componentContext, Map<String, Object> config) {
+    public void activate(final ComponentContext componentContext) {
         Objects.requireNonNull(componentContext, "componentContext cannot be null");
 
         logger.debug("Neeo Service activated");
-        contextLock.lock();
+        final ServiceContext localContext = new ServiceContext(componentContext, validate(httpService, "httpService"),
+                validate(itemRegistry, "itemRegistry"), validate(bindingInfoRegistry, "bindingInfoRegistry"),
+                validate(thingRegistry, "thingRegistry"), validate(thingTypeRegistry, "thingTypeRegistry"),
+                validate(itemChannelLinkRegistry, "itemChannelLinkRegistry"),
+                validate(channelTypeRegistry, "channelTypeRegistry"), validate(mdnsClient, "mdnsClient"),
+                validate(eventPublisher, "eventPublisher"), validate(networkAddressService, "networkAddressService"));
+
+        context = localContext;
+        discovery = new MdnsBrainDiscovery(context);
+        discovery.addListener(discoveryListener);
+
         try {
-            context = new ServiceContext(componentContext, httpService, itemRegistry, bindingInfoRegistry,
-                    thingRegistry, thingTypeRegistry, itemChannelLinkRegistry, channelTypeRegistry, mdnsClient,
-                    eventPublisher, networkAddressService);
+            final String servletUrl = NeeoConstants.WEBAPP_PREFIX + NeeoConstants.WEBAPP_DASHBOARD_PREFIX;
+            dashboardServlet = new NeeoDashboardServlet(this, servletUrl, localContext);
 
-            discovery = new MdnsBrainDiscovery(context);
-            discovery.addListener(discoveryListener);
+            localContext.getHttpService().registerServlet(servletUrl, dashboardServlet, new Hashtable<>(),
+                    localContext.getHttpService().createDefaultHttpContext());
 
-            try {
-                final String servletUrl = NeeoConstants.WEBAPP_PREFIX + NeeoConstants.WEBAPP_STATUS_PREFIX;
-                final NeeoServlet ns = new NeeoServlet(this, servletUrl, context);
-                NeeoUtil.close(dashboardServlet.getAndSet(ns));
-
-                context.getHttpService().registerServlet(servletUrl, ns, new Hashtable<>(),
-                        context.getHttpService().createDefaultHttpContext());
-
-                context.getHttpService().registerResources(NeeoConstants.WEBAPP_PREFIX, "web",
-                        context.getHttpService().createDefaultHttpContext());
-                logger.debug("Started NEEO Dashboard tile at {}", NeeoConstants.WEBAPP_PREFIX);
-            } catch (ServletException | NamespaceException e) {
-                logger.debug("Exception starting status servlet: {}", e.getMessage(), e);
-            }
-        } finally {
-            contextLock.unlock();
+            localContext.getHttpService().registerResources(NeeoConstants.WEBAPP_PREFIX, "web",
+                    localContext.getHttpService().createDefaultHttpContext());
+            logger.debug("Started NEEO Dashboard tile at {}", NeeoConstants.WEBAPP_PREFIX);
+        } catch (ServletException | NamespaceException e) {
+            logger.debug("Exception starting status servlet: {}", e.getMessage(), e);
         }
 
         // Start discovery and re-discover those that we already found
-        discovery.startDiscovery();
+        BrainDiscovery localDiscovery = discovery;
+        if (localDiscovery != null) {
+            localDiscovery.startDiscovery();
+        }
+    }
+
+    private static <T> T validate(@Nullable T t, String name) {
+        if (t == null) {
+            throw new IllegalStateException(name + " was not instantiated");
+        }
+        return t;
     }
 
     /**
@@ -488,34 +421,30 @@ public class NeeoService implements EventSubscriber {
     public void deactivate(ComponentContext componentContext) {
         logger.debug("Neeo Service deactivated");
 
-        discovery.removeListener(discoveryListener);
-        discovery.close();
-
-        // DON'T clear the foundBrains cache - must survive restarts
-        // since MDNS doesn't seem to find them again.
-
-        // If we have a context, save any pending definition changes and
-        // then close down all servlets
-        contextLock.lock();
-        try {
-            if (context != null) {
-                context.getDefinitions().save();
-
-                final HttpService service = context.getHttpService();
-                for (NeeoServlet servlet : servlets) {
-                    service.unregister(NeeoUtil.getServletUrl(servlet.getBrainStatus().getBrainId()));
-                    NeeoUtil.close(servlet);
-                }
-                servlets.clear();
-                eventFilter.set(null);
-
-                context = null;
-            }
-        } finally {
-            contextLock.unlock();
+        final BrainDiscovery localDiscovery = discovery;
+        if (localDiscovery != null) {
+            localDiscovery.removeListener(discoveryListener);
+            localDiscovery.close();
         }
 
-        NeeoUtil.close(dashboardServlet.getAndSet(null));
+        final ServiceContext localContext = context;
+        if (localContext != null) {
+            localContext.getDefinitions().save();
+
+            final HttpService service = localContext.getHttpService();
+            for (NeeoBrainServlet servlet : servlets) {
+                service.unregister(NeeoUtil.getServletUrl(servlet.getBrainStatus().getBrainId()));
+                NeeoUtil.close(servlet);
+            }
+            servlets.clear();
+
+            context = null;
+        }
+
+        if (dashboardServlet != null) {
+            dashboardServlet.close();
+            dashboardServlet = null;
+        }
 
         logger.debug("Stopped NEEO Listener");
     }
@@ -530,36 +459,27 @@ public class NeeoService implements EventSubscriber {
         Objects.requireNonNull(sysInfo, "sysInfo cannot be null");
         Objects.requireNonNull(ipAddress, "ipAddress cannot be null");
 
-        contextLock.lock();
-        try {
-            // this should really never happen. The listener that calls this method is only created/activated in the
-            // activation method AFTER the context has been created. The only possibility really is if a brain is
-            // discovered during deactivation - which in that case we are shutting down anyway and can safetly ignore
-            // the call
-            if (context != null) {
-                final String servletUrl = NeeoUtil.getServletUrl(sysInfo.getHostname());
+        final ServiceContext localContext = context;
+        if (localContext != null) {
+            final String servletUrl = NeeoUtil.getServletUrl(sysInfo.getHostname());
 
-                if (getServletByUrl(servletUrl) == null) {
-                    logger.debug("Brain discovered: {} at {} and starting servlet at {}", sysInfo.getHostname(),
-                            ipAddress, servletUrl);
-                    try {
-                        final NeeoServlet newServlet = new NeeoServlet(sysInfo.getHostname(), ipAddress, servletUrl,
-                                context);
-                        servlets.add(newServlet);
-                        eventFilter.set(null); // regenerate the event filter
+            if (getServletByUrl(servletUrl) == null) {
+                logger.debug("Brain discovered: {} at {} and starting servlet at {}", sysInfo.getHostname(), ipAddress,
+                        servletUrl);
+                try {
+                    final NeeoBrainServlet newServlet = NeeoBrainServlet.create(localContext, servletUrl,
+                            sysInfo.getHostname(), ipAddress);
+                    servlets.add(newServlet);
 
-                        context.getHttpService().registerServlet(servletUrl, newServlet,
-                                new Hashtable<String, String>(), context.getHttpService().createDefaultHttpContext());
-                        logger.debug("Started NEEO Listener at {}", servletUrl);
-                    } catch (NamespaceException | ServletException | IOException e) {
-                        logger.error("Error during servlet startup", e);
-                    }
-                } else {
-                    logger.debug("Brain servlet with URL of {} already exists - ignored", servletUrl);
+                    localContext.getHttpService().registerServlet(servletUrl, newServlet,
+                            new Hashtable<String, String>(), localContext.getHttpService().createDefaultHttpContext());
+                    logger.debug("Started NEEO Listener at {}", servletUrl);
+                } catch (NamespaceException | ServletException | IOException e) {
+                    logger.error("Error during servlet startup", e);
                 }
+            } else {
+                logger.debug("Brain servlet with URL of {} already exists - ignored", servletUrl);
             }
-        } finally {
-            contextLock.unlock();
         }
     }
 
@@ -573,14 +493,14 @@ public class NeeoService implements EventSubscriber {
 
         final String servletUrl = NeeoUtil.getServletUrl(sysInfo.getHostname());
 
-        final NeeoServlet servlet = getServletByUrl(servletUrl);
+        final NeeoBrainServlet servlet = getServletByUrl(servletUrl);
+        final ServiceContext localContext = context;
 
-        if (servlet == null) {
+        if (servlet == null || localContext == null) {
             logger.debug("Tried to remove a servlet for {} but none were found - ignored.", servletUrl);
         } else {
             servlets.remove(servlet);
-            context.getHttpService().unregister(NeeoUtil.getServletUrl(servlet.getBrainStatus().getBrainId()));
-            eventFilter.set(null); // regenerate the event filter
+            localContext.getHttpService().unregister(NeeoUtil.getServletUrl(servlet.getBrainStatus().getBrainId()));
             NeeoUtil.close(servlet);
             logger.debug("Servlet at {} was successfully removed", servletUrl);
         }
@@ -594,7 +514,13 @@ public class NeeoService implements EventSubscriber {
      */
     public boolean addBrain(String ipAddress) {
         NeeoUtil.requireNotEmpty(ipAddress, "ipAddress cannot be empty");
-        return discovery.addDiscovered(ipAddress);
+
+        final BrainDiscovery localDiscovery = discovery;
+        if (localDiscovery == null) {
+            return false;
+        } else {
+            return localDiscovery.addDiscovered(ipAddress);
+        }
     }
 
     /**
@@ -605,33 +531,40 @@ public class NeeoService implements EventSubscriber {
      */
     public boolean removeBrain(String brainId) {
         NeeoUtil.requireNotEmpty(brainId, "brainId cannot be empty");
-        final NeeoServlet servlet = getServlet(brainId);
+        final AbstractServlet servlet = getServlet(brainId);
         if (servlet == null) {
             logger.debug("Tried to remove a servlet for {} but none were found - ignored.", brainId);
             return false;
         }
 
         final String servletUrl = servlet.getServletUrl();
-        return discovery.removeDiscovered(servletUrl);
+        final BrainDiscovery localDiscovery = discovery;
+        if (localDiscovery == null) {
+            return false;
+        } else {
+            return localDiscovery.removeDiscovered(servletUrl);
+        }
     }
 
     /**
-     * Returns an immutable list of {@link NeeoServlet}. Please note this list also 'disconnected' (i.e. the list is
+     * Returns an immutable list of {@link NeeoBrainServlet}. Please note this list also 'disconnected' (i.e. the list
+     * is
      * not modified if servlets are added/removed)
      *
-     * @return immutable list of {@link NeeoServlet}
+     * @return immutable list of {@link NeeoBrainServlet}
      */
-    public List<NeeoServlet> getServlets() {
+    public List<NeeoBrainServlet> getServlets() {
         return Collections.unmodifiableList(servlets);
     }
 
     /**
-     * Gets the {@link NeeoServlet} that is associated with the brain ID
+     * Gets the {@link AbstractServlet} that is associated with the brain ID
      *
      * @param brainId the non-empty brain id
      * @return the servlet for the brainId or null if none
      */
-    public NeeoServlet getServlet(String brainId) {
+    @Nullable
+    public NeeoBrainServlet getServlet(String brainId) {
         NeeoUtil.requireNotEmpty(brainId, "brainId cannot be empty");
 
         final String url = NeeoUtil.getServletUrl(brainId);
@@ -644,9 +577,10 @@ public class NeeoService implements EventSubscriber {
      * @param servletUrl a non-null, non-empty servlet URL
      * @return the servlet for the URL or null if not found
      */
-    private NeeoServlet getServletByUrl(String servletUrl) {
+    @Nullable
+    private NeeoBrainServlet getServletByUrl(String servletUrl) {
         NeeoUtil.requireNotEmpty(servletUrl, "ServletURL cannot be empty");
-        for (NeeoServlet servlet : servlets) {
+        for (NeeoBrainServlet servlet : servlets) {
             if (StringUtils.equalsIgnoreCase(servletUrl, servlet.getServletUrl())) {
                 return servlet;
             }
@@ -664,54 +598,16 @@ public class NeeoService implements EventSubscriber {
         return Collections.singleton(ItemStateChangedEvent.TYPE);
     }
 
-    /**
-     * Returns a null for event filtering
-     *
-     * @see org.eclipse.smarthome.core.events.EventSubscriber#getEventFilter()
-     */
+    @Nullable
     @Override
     public EventFilter getEventFilter() {
-        logger.trace("getEventFilter");
-        return eventFilter.getAndUpdate((ef) -> {
-            if (ef == null) {
-                logger.trace("getEventFilter - creating");
-                final List<EventFilter> eventFilters = new ArrayList<>();
-                for (NeeoServlet ns : servlets) {
-                    final List<EventFilter> efs = ns.getEventFilters();
-                    if (efs != null) {
-                        eventFilters.addAll(efs);
-                    }
-                }
-
-                return new EventFilter() {
-                    @Override
-                    public boolean apply(Event event) {
-                        logger.trace("apply: {}", event);
-                        for (EventFilter ef : eventFilters) {
-                            if (ef.apply(event)) {
-                                logger.trace("apply (true): {}", event);
-                                return true;
-                            }
-                        }
-                        logger.trace("apply (false): {}", event);
-                        return false;
-                    }
-                };
-            }
-
-            return ef;
-        });
+        return eventFilter;
     }
 
-    /**
-     * Forwards the event to all servlets (via {@link NeeoServlet#receive(Event)})
-     *
-     * @see org.eclipse.smarthome.core.events.EventSubscriber#receive(org.eclipse.smarthome.core.events.Event)
-     */
     @Override
     public void receive(final Event event) {
         logger.trace("receive: {}", event);
-        for (NeeoServlet servlet : servlets) {
+        for (AbstractServlet servlet : servlets) {
             servlet.receive(event);
         }
     }

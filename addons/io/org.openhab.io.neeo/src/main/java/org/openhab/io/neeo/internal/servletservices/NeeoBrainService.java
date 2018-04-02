@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.events.Event;
 import org.eclipse.smarthome.core.events.EventFilter;
@@ -60,7 +62,7 @@ import com.google.gson.Gson;
 /**
  * The implementation of {@link ServletService} that will handle device callbacks from the Neeo Brain
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class NeeoBrainService extends DefaultServletService {
 
@@ -88,8 +90,8 @@ public class NeeoBrainService extends DefaultServletService {
 
     private final PropertyChangeListener listener = new PropertyChangeListener() {
         @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            if ((Boolean) evt.getNewValue()) {
+        public void propertyChange(@Nullable PropertyChangeEvent evt) {
+            if (evt != null && (Boolean) evt.getNewValue()) {
                 resendState();
             }
         }
@@ -200,35 +202,32 @@ public class NeeoBrainService extends DefaultServletService {
 
         logger.debug("handleSetValue {}", pathInfo);
         final EventPublisher publisher = context.getEventPublisher();
-        if (publisher != null) {
-            final NeeoDevice device = context.getDefinitions().getDevice(pathInfo.getThingUid());
-            if (device != null) {
-                final NeeoDeviceChannel channel = device.getChannel(pathInfo.getItemName(), pathInfo.getChannelNbr());
-                if (channel != null && channel.getKind() == NeeoDeviceChannelKind.TRIGGER) {
-                    final ChannelTriggeredEvent event = ThingEventFactory.createTriggerEvent(channel.getValue(),
-                            new ChannelUID(device.getUid(), channel.getItemName()));
-                    logger.debug("Posting triggered event: {}", event);
-                    publisher.post(event);
-                } else {
-                    try {
-                        final Item item = context.getItemRegistry().getItem(pathInfo.getItemName());
-                        final Command cmd = NeeoItemValueConverter.convert(item, pathInfo);
-                        if (cmd != null) {
-                            final ItemCommandEvent event = ItemEventFactory.createCommandEvent(item.getName(), cmd);
-                            logger.debug("Posting item event: {}", event);
-                            publisher.post(event);
-                        } else {
-                            logger.debug("Cannot set value - no command for path: {}", pathInfo);
-                        }
-                    } catch (ItemNotFoundException e) {
-                        logger.debug("Cannot set value - no linked items: {}", pathInfo);
-                    }
-                }
+        final NeeoDevice device = context.getDefinitions().getDevice(pathInfo.getThingUid());
+        if (device != null) {
+            final NeeoDeviceChannel channel = device.getChannel(pathInfo.getItemName(), pathInfo.getSubType(),
+                    pathInfo.getChannelNbr());
+            if (channel != null && channel.getKind() == NeeoDeviceChannelKind.TRIGGER) {
+                final ChannelTriggeredEvent event = ThingEventFactory.createTriggerEvent(channel.getValue(),
+                        new ChannelUID(device.getUid(), channel.getItemName()));
+                logger.debug("Posting triggered event: {}", event);
+                publisher.post(event);
             } else {
-                logger.debug("Cannot set value - no device definition: {}", pathInfo);
+                try {
+                    final Item item = context.getItemRegistry().getItem(pathInfo.getItemName());
+                    final Command cmd = NeeoItemValueConverter.convert(item, pathInfo);
+                    if (cmd != null) {
+                        final ItemCommandEvent event = ItemEventFactory.createCommandEvent(item.getName(), cmd);
+                        logger.debug("Posting item event: {}", event);
+                        publisher.post(event);
+                    } else {
+                        logger.debug("Cannot set value - no command for path: {}", pathInfo);
+                    }
+                } catch (ItemNotFoundException e) {
+                    logger.debug("Cannot set value - no linked items: {}", pathInfo);
+                }
             }
         } else {
-            logger.debug("Cannot set value - no event publisher: {}", pathInfo);
+            logger.debug("Cannot set value - no device definition: {}", pathInfo);
         }
     }
 
@@ -243,30 +242,33 @@ public class NeeoBrainService extends DefaultServletService {
         Objects.requireNonNull(resp, "resp cannot be null");
         Objects.requireNonNull(pathInfo, "pathInfo cannot be null");
 
-        logger.debug("handleGetValue {}", pathInfo);
-
         NeeoItemValue niv = new NeeoItemValue("");
 
-        final NeeoDevice device = context.getDefinitions().getDevice(pathInfo.getThingUid());
-        if (device != null) {
-            final NeeoDeviceChannel channel = device.getChannel(pathInfo.getItemName(), pathInfo.getChannelNbr());
-            if (channel != null && channel.getKind() == NeeoDeviceChannelKind.ITEM) {
-                try {
-                    final Item item = context.getItemRegistry().getItem(pathInfo.getItemName());
-                    niv = itemConverter.convert(channel, item.getState());
-                } catch (ItemNotFoundException e) {
-                    logger.debug("Item '{}' not found to get a value ({})", pathInfo.getItemName(), pathInfo);
+        try {
+            final NeeoDevice device = context.getDefinitions().getDevice(pathInfo.getThingUid());
+            if (device != null) {
+                final NeeoDeviceChannel channel = device.getChannel(pathInfo.getItemName(), pathInfo.getSubType(),
+                        pathInfo.getChannelNbr());
+                if (channel != null && channel.getKind() == NeeoDeviceChannelKind.ITEM) {
+                    try {
+                        final Item item = context.getItemRegistry().getItem(pathInfo.getItemName());
+                        niv = itemConverter.convert(channel, item.getState());
+                    } catch (ItemNotFoundException e) {
+                        logger.debug("Item '{}' not found to get a value ({})", pathInfo.getItemName(), pathInfo);
+                    }
+                } else {
+                    logger.debug("Channel definition for '{}' not found to get a value ({})", pathInfo.getItemName(),
+                            pathInfo);
                 }
             } else {
-                logger.debug("Channel definition for '{}' not found to get a value ({})", pathInfo.getItemName(),
+                logger.debug("Device definition for '{}' not found to get a value ({})", pathInfo.getItemName(),
                         pathInfo);
             }
-        } else {
-            logger.debug("Device definition for '{}' not found to get a value ({})", pathInfo.getItemName(), pathInfo);
-        }
 
-        logger.debug("handleGetValue {}: {}", pathInfo, niv.getValue());
-        NeeoUtil.write(resp, gson.toJson(niv));
+            NeeoUtil.write(resp, gson.toJson(niv));
+        } finally {
+            logger.debug("handleGetValue {}: {}", pathInfo, niv.getValue());
+        }
     }
 
     /**
@@ -328,12 +330,13 @@ public class NeeoBrainService extends DefaultServletService {
      *
      * @return a non-null {@link EventFilter}
      */
+    @NonNull
     @Override
     public EventFilter getEventFilter() {
         return new EventFilter() {
 
             @Override
-            public boolean apply(Event event) {
+            public boolean apply(@Nullable Event event) {
                 Objects.requireNonNull(event, "event cannot be null");
 
                 final ItemStateChangedEvent ise = (ItemStateChangedEvent) event;

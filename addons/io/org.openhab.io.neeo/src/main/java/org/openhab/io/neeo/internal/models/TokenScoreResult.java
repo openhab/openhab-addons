@@ -13,7 +13,8 @@ import java.util.Objects;
 /**
  * The model represents a token score result given to the NEEO brain (serialize/deserialize json use only)
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
+ * @param <T> the type that will be scored
  */
 public class TokenScoreResult<T> {
 

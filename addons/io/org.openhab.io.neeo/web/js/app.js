@@ -16,7 +16,7 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
         { value: "", text: "(Exclude)"}, 
         { value: "ACCESSORY", text: "Accessory"}, 
         { value: "AUDIO", text: "Audio"},
-        { value: "AVRECEIVER", text: "AV Receiver"},
+        { value: "AVRECEIVER", text: "AV waReceiver"},
         { value: "CLIMA", text: "Climate Control"},
         { value: "DVB", text: "DVB"},
         { value: "DVD", text: "DVD Player"},
@@ -108,13 +108,12 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
     }
 
     ctrl.isSwitch = function(channel) {
-
         if (channel.isReadOnly === true) {
             return false;
         }
 
         return _.find(channel.acceptedCommandTypes, function(type) {            
-            return _.contains(["onofftype", "increasedecreasetype", "nextprevioustype","openclosedtype","playpausetype","rewindfastforwardtype","stopmovetype","updowntype"], type);
+            return ["onofftype", "increasedecreasetype", "nextprevioustype","openclosedtype","playpausetype","rewindfastforwardtype","stopmovetype","updowntype"].includes(type);
         }) !== undefined;
     }
 
@@ -122,12 +121,27 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
         return channel.isReadOnly === true ? false : (channel.acceptedCommandTypes.includes("decimaltype") || channel.acceptedCommandTypes.includes("percenttype"));
     }
 
-    ctrl.isPower = function(channel) {
-        return channel.acceptedCommandTypes.length === 1 && channel.acceptedCommandTypes.includes("onofftype");
+    ctrl.isHsb = function(channel) {
+        return channel.isReadOnly === true ? false : (channel.acceptedCommandTypes.includes("hsbtype"));
     }
 
-    ctrl.isSensor = function(channel) {
+    ctrl.isPower = function(channel) {
+        return channel.acceptedCommandTypes.includes("onofftype");
+    }
+
+    ctrl.isRangeSensor = function(channel) {
         return (channel.acceptedCommandTypes.includes("decimaltype") || channel.acceptedCommandTypes.includes("percenttype"));
+    }
+    
+    ctrl.isBinarySensor = function(channel) {
+        return (channel.acceptedCommandTypes.includes("onofftype") 
+                || channel.acceptedCommandTypes.includes("increasedecreasetype") 
+                || channel.acceptedCommandTypes.includes("nextprevioustype") 
+                || channel.acceptedCommandTypes.includes("openclosedtype") 
+                || channel.acceptedCommandTypes.includes("playpausetype") 
+                || channel.acceptedCommandTypes.includes("rewindfastforwardtype") 
+                || channel.acceptedCommandTypes.includes("updowntype") 
+                || channel.acceptedCommandTypes.includes("stopmovetype"));
     }
     
     ctrl.addVirtualDevice = function() {
@@ -135,8 +149,8 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
         .then(function(response) {
             if (response.data.success === true) {
                 var newDevice = response.data.device;
-                newDevice.isNewDevice = true;
                 ctrl.devices.splice(0,0,newDevice);
+                ctrl.oldDevices.splice(0,0,undefined);
             } else {
                 $.jGrowl("Error getting new virtual device: " + response.status + " " + response.statusText, {theme : 'jgrowl-error', sticky: true});
             }
@@ -146,6 +160,21 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
         });
     }
     
+    $scope.$watch(function() { return ctrl.devices; }, function(nv, ov) {
+        for(var d = ctrl.devices.length - 1; d>=0; d--) {
+            var device = ctrl.devices[d];
+            var oldDevice = ctrl.oldDevices[d];
+            
+            // Delete our made up properties to prevent equals from checking htem
+            delete device.hasChanges;
+            delete device.isNewDevice;
+            
+            device.hasChanges = !angular.equals(device, oldDevice);
+            device.isNewDevice = oldDevice === undefined;
+        }
+    }, true);
+    
+    
     ctrl.deleteDevice = function(device) {
         for(var i = ctrl.devices.length - 1; i>=0;i--) {
             if (ctrl.devices[i] === device) {
@@ -154,6 +183,7 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
                     .then(function(response) {
                         if (response.data.success === true) {
                             ctrl.devices.splice(i, 1);
+                            ctrl.oldDevices.splice(i, 1);
                             
                             if (ctrl.selectedDevice === device) {
                                 ctrl.selectedDevice = undefined;
@@ -166,6 +196,7 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
                     })
                 } else {
                     ctrl.devices.splice(i, 1);
+                    ctrl.oldDevices.splice(i, 1);
                     
                     if (ctrl.selectedDevice === device) {
                         ctrl.selectedDevice = undefined;
@@ -189,73 +220,12 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
             $.jGrowl(response.status + " " + response.statusText, {theme : 'jgrowl-error'});
         })
     }
-    
-    var resetDevice = function (device) {
-        device.isNewDevice = false;
-        device.old = {
-           type: device.type || '',
-           deviceCapabilities: device.deviceCapabilities || [],
-           timing: {
-               standbyCommandDelay: device.timing.standbyCommandDelay,
-               sourceSwitchDelay: device.timing.sourceSwitchDelay,
-               shutdownDelay: device.timing.shutdownDelay
-           }
-        };
-        _.each(device.channels, function(c) {
-            c.old = {
-              type: c.type || '',
-              value: c.value || '',
-              label: c.label || ''
-            };
-        })
         
-        device.isNewDevice = false;
-        device.hasChanges = false;
-        device.hasChannelChanges = false;
-        device.hasAdded = false;
-        device.hasDeleted = false;
-    };
-    
-    $scope.$watch(function() { return ctrl.devices; }, function(nv, ov) {
-        for(var d = ctrl.devices.length - 1; d>=0; d--) {
-            var device = ctrl.devices[d];
-            device.hasChanges = false;
-            if (device.old.type !== (device.type || '') 
-                || device.timing.standbyCommandDelay != device.old.timing.standbyCommandDelay 
-                || device.timing.sourceSwitchDelay != device.old.timing.sourceSwitchDelay 
-                || device.timing.shutdownDelay != device.old.timing.shutdownDelay 
-                || !_.isEqual(device.deviceCapabilities, device.old.deviceCapabilities) 
-                    
-            ) {
-                device.hasChanges = true;
-            }
-        }
-    }, true);
-
-    $scope.$watch(function() { return ctrl.selectedDevice; }, function(nv, ov) {
-        if (ctrl.selectedDevice !== undefined) {
-            ctrl.selectedDevice.hasChannelChanges = false;
-            for(var c = ctrl.selectedDevice.channels.length - 1 ; c>=0; c--) {
-                var chnl = ctrl.selectedDevice.channels[c];
-                if (chnl.old.label !== undefined && chnl.old.label !== (chnl.label  || '')) {
-                    ctrl.selectedDevice.hasChannelChanges = true;
-                    break;
-                } else if (chnl.old.value !== undefined && chnl.old.value !== (chnl.value  || '')) {
-                    ctrl.selectedDevice.hasChannelChanges = true;
-                    break;
-                } else if (chnl.old.type !== undefined && chnl.old.type !== (chnl.type || '')) {
-                    ctrl.selectedDevice.hasChannelChanges = true;
-                    break;
-                }
-            }
-        }
-
-    }, true);
-
     ctrl.brainStatuses = [];
     ctrl.selectedBrainId = undefined;
 
     ctrl.devices = [];
+    ctrl.oldDevices = [];
     ctrl.selectedDevice = undefined;
 
     $scope.$watch(function() { return ctrl.brainStatuses; }, function(nv, ov) {
@@ -280,24 +250,6 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
         }
     }
 
-    ctrl.sortDevices = function() {
-        ctrl.devices = orderBy(ctrl.devices, function(device) {
-            var sortString = "";
-            
-            if (device.isEditing === true) {
-                sortString = "0:";
-            } else if (device.isNewDevice) {
-                sortString = "1:";
-            } else if (ctrl.isVirtualDevice(device)) {
-                sortString = "2:";
-            } else {
-                sortString = "3:";
-            }
-            
-            return sortString + device.name;
-        });
-    }
-    
 
     ctrl.addChannel = function(device, channel) {
         var itemMap = new Map();
@@ -319,7 +271,6 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
         
         newChannel.channelNbr = maxNbr +1;
         device.channels.push(newChannel);
-        device.hasAdded = true;
     }
     
     ctrl.addTriggerChannel = function(device) {
@@ -338,7 +289,6 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
         }
         
         device.channels.push(newChannel);
-        device.hasAdded = true;
     }
     
     ctrl.removeChannel = function(device, channel) {
@@ -348,7 +298,6 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
             for(var x = device.channels.length - 1; x>=0;x--) {
                 if (device.channels[x] == channel) {
                     device.channels.splice(x, 1);
-                    device.hasDeleted = true;
                     break;
                 }
             }
@@ -384,6 +333,7 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
         for(var x = ctrl.devices.length - 1; x >= 0; x--) {
             if (ctrl.devices[x] === device) {
                 ctrl.devices[x] = newDevice;
+                ctrl.oldDevices[x] = _.cloneDeep(newDevice);
                 if (ctrl.selectedDevice === device) {
                     ctrl.selectedDevice = newDevice;
                 }
@@ -423,19 +373,13 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
         $http.post("neeostatus/updatedevice", device)
         .then(function(response) {
             if (response.data.success === true) {
-                resetDevice(device);
-                device.old == { timing: {}};
-                
-                _.each(device.channels, function(c) {
-                    c.old = {};
-                })
-                
-                device.isNewDevice = false;
-                device.hasChanges = false;
-                device.hasChannelChanges = false;
-                device.hasAdded = false;
-                device.hasDeleted = false;
+                delete device.hasChanges;
+                delete device.isNewDevice;
 
+                var idx = _.indexOf(ctrl.devices, device);
+                if (idx >=0) {
+                    ctrl.oldDevices[idx] = _.cloneDeep(device);
+                }
                 if (device.keys !== undefined && device.keys.length > 0) {
                     $.jGrowl("'" + device.name + "' was saved but you'll need to drop and re-add the device on the brain to see changes/");
                 }
@@ -537,7 +481,7 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
         var pendingChanges = false;
         for(var i = ctrl.devices.length - 1; i>=0; i--) {
             var device = ctrl.devices[i];
-            if (device.hasChanges === true || device.hasChannelChanges === true || device.hasAdded === true || device.hasDeleted === true) {
+            if (device.hasChanges === true) {
                 pendingChanges = true;
                 break;
             }
@@ -549,6 +493,7 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
         
         ctrl.isRefreshingDevices = true;
         ctrl.devices = [];
+        ctrl.oldDevices = [];
         
         $http.get("neeostatus/thingstatus")
         .then(function(response) {
@@ -557,15 +502,32 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
             for(var i = data.length - 1; i>=0; i--) {
                 
                 var device = data[i];                
-                resetDevice(device);
                 device.channels = orderBy(device.channels, ["itemName", "channelNbr"]);
                 ctrl.devices.push(device);
             }
             ctrl.isRefreshingDevices = false;
-            ctrl.sortDevices();
+            
+            ctrl.devices = orderBy(ctrl.devices, function(device) {
+                var sortString = "";
+                
+                if (device.isEditing === true) {
+                    sortString = "0:";
+                } else if (device.isNewDevice) {
+                    sortString = "1:";
+                } else if (ctrl.isVirtualDevice(device)) {
+                    sortString = "2:";
+                } else {
+                    sortString = "3:";
+                }
+                
+                return sortString + device.name;
+            });
+            
+            ctrl.oldDevices = _.cloneDeep(ctrl.devices);
         }
         , function(response) {
             ctrl.devices = [];
+            ctrl.oldDevices = [];
             ctrl.isRefreshingDevices = false;
         });
         
@@ -641,8 +603,10 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
                 .then(function(response) {
                     var data = response.data;
                     if (response.data.success === true) {
-                        var channel = response.data.channel;
-                        ctrl.addChannel(device, channel);
+                        var channels = response.data.channels;
+                        for(var x = 0; x < channels.length; x++) {
+                            ctrl.addChannel(device, channels[x]);
+                        }
                     } else {
                         $.jGrowl("Error getting channel (" + itemName + "): " + response.status + " " + response.statusText, {theme : 'jgrowl-error', sticky: true});
                     }
@@ -672,11 +636,6 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
           });
         
         modalInstance.result.then(function (props) {
-            device.old.timing.standbyCommandDelay = device.timing.standbyCommandDelay;
-            device.old.timing.sourceSwitchDelay = device.timing.sourceSwitchDelay;
-            device.old.timing.shutdownDelay = device.timing.shutdownDelay;
-            device.old.deviceCapabilities = device.deviceCapabilities.slice();
-            
             device.timing.standbyCommandDelay = props.timing.standbyCommandDelay;
             device.timing.sourceSwitchDelay = props.timing.sourceSwitchDelay;
             device.timing.shutdownDelay = props.timing.shutdownDelay;
@@ -794,6 +753,260 @@ angular.module('ui.bootstrap').controller('AddItemsInstanceCtrl', function ($sco
 
 angular.module('ui.bootstrap').controller('AdvanceProperties', function ($scope, $uibModalInstance, device) {
     var $ctrl = this;
+    
+    $ctrl.imageNames = [
+        { value : "account" },
+        { value : "action" },
+        { value : "add" },
+        { value : "add-3" },
+        { value : "add-3-1" },
+        { value : "alarm-clock" },
+        { value : "alert-1" },
+        { value : "align-justify" },
+        { value : "arrange-4-2" },
+        { value : "arrow-65" },
+        { value : "arrow-66" },
+        { value : "arrow-67" },
+        { value : "arrow-68" },
+        { value : "arrow-left-2" },
+        { value : "audio" },
+        { value : "av-receiver" },
+        { value : "avr" },
+        { value : "avreceiver" },
+        { value : "award-1" },
+        { value : "award-2" },
+        { value : "award-3" },
+        { value : "award-4" },
+        { value : "award-5" },
+        { value : "award-6" },
+        { value : "back" },
+        { value : "backward" },
+        { value : "backward-2" },
+        { value : "balloon" },
+        { value : "battery-charging" },
+        { value : "bed" },
+        { value : "bedroom" },
+        { value : "beer" },
+        { value : "bomb" },
+        { value : "books-2" },
+        { value : "brightness" },
+        { value : "brightness-high" },
+        { value : "cable" },
+        { value : "camera-symbol-1" },
+        { value : "cctv-1" },
+        { value : "cd-1" },
+        { value : "channel-down" },
+        { value : "channel-up" },
+        { value : "chat-2" },
+        { value : "checkmark" },
+        { value : "checkmark-empty" },
+        { value : "cheese-1" },
+        { value : "chef-hat-1" },
+        { value : "chevron-down" },
+        { value : "chevron-left-thick" },
+        { value : "chevron-right-thick" },
+        { value : "chevron-up" },
+        { value : "clear-input" },
+        { value : "clima" },
+        { value : "cloud-sync" },
+        { value : "cocktail-2" },
+        { value : "coffee-cup-1" },
+        { value : "color-brightness" },
+        { value : "cube" },
+        { value : "cursor-down" },
+        { value : "cursor-left" },
+        { value : "cursor-right" },
+        { value : "cursor-up" },
+        { value : "customize" },
+        { value : "degree" },
+        { value : "delete" },
+        { value : "delete-3" },
+        { value : "delete-3-1" },
+        { value : "device" },
+        { value : "device-apple-tv" },
+        { value : "device-sensor-light" },
+        { value : "device-sonos" },
+        { value : "door" },
+        { value : "dvb" },
+        { value : "dvd-player" },
+        { value : "edit" },
+        { value : "edit-2" },
+        { value : "edit-marker" },
+        { value : "enter" },
+        { value : "error" },
+        { value : "flower" },
+        { value : "folder-media" },
+        { value : "folder-music" },
+        { value : "forward" },
+        { value : "forward-2" },
+        { value : "full-moon" },
+        { value : "function-blue" },
+        { value : "function-green" },
+        { value : "function-red" },
+        { value : "function-yellow" },
+        { value : "garage" },
+        { value : "gramophone-record" },
+        { value : "hammer-2" },
+        { value : "hand-like-2" },
+        { value : "hand-touch-2" },
+        { value : "hdmiswitch" },
+        { value : "header" },
+        { value : "heart-2" },
+        { value : "help" },
+        { value : "home" },
+        { value : "hotspot-1" },
+        { value : "ir-remote" },
+        { value : "joystick-3" },
+        { value : "key-1" },
+        { value : "keypad" },
+        { value : "kitchen" },
+        { value : "lamp-4" },
+        { value : "large" },
+        { value : "library" },
+        { value : "light-eco" },
+        { value : "lightbulb-1" },
+        { value : "list-3" },
+        { value : "list-3-1" },
+        { value : "love" },
+        { value : "magnifier" },
+        { value : "mail" },
+        { value : "mail-2" },
+        { value : "menu" },
+        { value : "message" },
+        { value : "minus-3" },
+        { value : "more" },
+        { value : "move" },
+        { value : "move-vertical-2" },
+        { value : "move-vertical-2-1" },
+        { value : "movie-play-2" },
+        { value : "music" },
+        { value : "music-note-3" },
+        { value : "mute-off" },
+        { value : "mute-on" },
+        { value : "mute-onoff" },
+        { value : "mute-toggle" },
+        { value : "my-recordings" },
+        { value : "navdown" },
+        { value : "navicon" },
+        { value : "navleft" },
+        { value : "navright" },
+        { value : "navup" },
+        { value : "neeo-recipe-0-4" },
+        { value : "neeo-recipe-1-4" },
+        { value : "neeo-recipe-2-4" },
+        { value : "neeo-recipe-3-4" },
+        { value : "neeo-recipe-4-4" },
+        { value : "next-2" },
+        { value : "next-track" },
+        { value : "notes-1" },
+        { value : "numeric-keypad" },
+        { value : "ok" },
+        { value : "open" },
+        { value : "order" },
+        { value : "pacman" },
+        { value : "pause" },
+        { value : "pause-2" },
+        { value : "pizza" },
+        { value : "play" },
+        { value : "play-2" },
+        { value : "play-pause-toggle" },
+        { value : "playing" },
+        { value : "playlist" },
+        { value : "plug-slot" },
+        { value : "plugin-1" },
+        { value : "pop-corn" },
+        { value : "power-5" },
+        { value : "power-off" },
+        { value : "power-on" },
+        { value : "power-onoff" },
+        { value : "power-toggle" },
+        { value : "preset-down" },
+        { value : "preset-up" },
+        { value : "previous-2" },
+        { value : "previous-track" },
+        { value : "profile-1" },
+        { value : "projector" },
+        { value : "radio-1" },
+        { value : "rec" },
+        { value : "recipe" },
+        { value : "record" },
+        { value : "record-2" },
+        { value : "record-2-1" },
+        { value : "recordings" },
+        { value : "recycle" },
+        { value : "refresh" },
+        { value : "remote" },
+        { value : "remove" },
+        { value : "reorder" },
+        { value : "reset" },
+        { value : "restore" },
+        { value : "reverse" },
+        { value : "room" },
+        { value : "router" },
+        { value : "scenario" },
+        { value : "screen-3" },
+        { value : "script" },
+        { value : "search" },
+        { value : "setting-adjustment" },
+        { value : "settings" },
+        { value : "shortcut" },
+        { value : "show-more" },
+        { value : "shuffle" },
+        { value : "size-normal" },
+        { value : "skip-backward" },
+        { value : "skip-forward" },
+        { value : "small" },
+        { value : "smartphone" },
+        { value : "snorkel" },
+        { value : "sofa-1" },
+        { value : "sofa-3" },
+        { value : "sonos" },
+        { value : "soundbar" },
+        { value : "speaker-2" },
+        { value : "star-2" },
+        { value : "stop" },
+        { value : "stop-2" },
+        { value : "streamline-large" },
+        { value : "study" },
+        { value : "sync-2" },
+        { value : "target-temp-decrease" },
+        { value : "target-temp-high-decrease" },
+        { value : "target-temp-high-increase" },
+        { value : "target-temp-increase" },
+        { value : "target-temp-low-decrease" },
+        { value : "target-temp-low-increase" },
+        { value : "text-wrapping-3" },
+        { value : "thermometer-high" },
+        { value : "thermometer-low" },
+        { value : "thermometer-medium" },
+        { value : "thermostat" },
+        { value : "thumbnails-2" },
+        { value : "transport-backward" },
+        { value : "transport-forward" },
+        { value : "tune-down" },
+        { value : "tune-up" },
+        { value : "tuner" },
+        { value : "tv" },
+        { value : "update" },
+        { value : "virus" },
+        { value : "vod" },
+        { value : "volume-down" },
+        { value : "volume-down-2" },
+        { value : "volume-medium" },
+        { value : "volume-medium-1" },
+        { value : "volume-minus" },
+        { value : "volume-mute" },
+        { value : "volume-mute-1" },
+        { value : "volume-plus" },
+        { value : "volume-up" },
+        { value : "volume-up-2" },
+        { value : "warning" },
+        { value : "webcam" },
+        { value : "wifi" },
+        { value : "wireless-router-2" },
+        { value : "z-wave" },
+        { value : "zwave" }
+        ];
     
     $ctrl.device = device;
     

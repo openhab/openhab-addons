@@ -37,8 +37,11 @@ public class NeeoMdnsDiscovery extends AbstractDiscoveryService {
     private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
             .singleton(new ThingTypeUID(NeeoConstants.BINDING_ID, "mdns"));
 
+    /**
+     * Creates the discovery
+     */
     public NeeoMdnsDiscovery() {
-        super(DISCOVERABLE_THING_TYPES_UIDS, 10);
+        super(DISCOVERABLE_THING_TYPES_UIDS, NeeoConstants.BRAIN_DISCOVERY_TIMEOUT);
     }
 
     @Override

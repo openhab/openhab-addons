@@ -14,6 +14,8 @@ import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
@@ -39,11 +41,15 @@ import org.osgi.service.http.HttpService;
 public class NeeoHandlerFactory extends BaseThingHandlerFactory {
 
     /** The {@link HttpService} used to register callbacks */
+    @NonNullByDefault({})
     private HttpService httpService;
 
     /** The {@link NetworkAddressService} used for ip lookup */
+    @NonNullByDefault({})
     private NetworkAddressService networkAddressService;
 
+    /** The {@link DiscoveryServiceRegistry} used to initiate discovery */
+    @NonNullByDefault({})
     private DiscoveryServiceRegistry discoveryServiceRegistry;
 
     /** The scheduler used to schedule tasks */
@@ -72,7 +78,7 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Sets the {@link NetworkAddressService}.
      *
-     * @param httpService the non-null {@link NetworkAddressService} to use
+     * @param networkAddressService the non-null {@link NetworkAddressService} to use
      */
     @Reference
     protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
@@ -83,7 +89,7 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Unsets the {@link HttpService}
      *
-     * @param httpService the {@link HttpService} (not used in this implementation)
+     * @param networkAddressService the {@link HttpService} (not used in this implementation)
      */
     protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
         this.networkAddressService = null;
@@ -92,7 +98,7 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Sets the {@link NetworkAddressService}.
      *
-     * @param httpService the non-null {@link NetworkAddressService} to use
+     * @param discoveryServiceRegistry the non-null {@link NetworkAddressService} to use
      */
     @Reference
     protected void setDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
@@ -103,7 +109,7 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Unsets the {@link HttpService}
      *
-     * @param httpService the {@link HttpService} (not used in this implementation)
+     * @param discoveryServiceRegistry the {@link HttpService} (not used in this implementation)
      */
     protected void unsetDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
         this.discoveryServiceRegistry = null;
@@ -116,17 +122,24 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
         return NeeoConstants.BINDING_ID.equals(thingTypeUID.getBindingId());
     }
 
+    @Nullable
     @Override
     protected ThingHandler createHandler(Thing thing) {
         Objects.requireNonNull(thing, "thing cannot be null");
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(BRIDGE_TYPE_BRAIN)) {
+            final HttpService localHttpService = httpService;
+            final NetworkAddressService localNetworkAddressService = networkAddressService;
+
+            Objects.requireNonNull(localHttpService, "HttpService cannot be null");
+            Objects.requireNonNull(localNetworkAddressService, "networkAddressService cannot be null");
+
             final int port = HttpServiceUtil.getHttpServicePort(this.bundleContext);
 
             startScan(NeeoConstants.SCAN_ROOMS); // starts scan for rooms
             return new NeeoBrainHandler((Bridge) thing, port < 0 ? NeeoConstants.DEFAULT_BRAIN_HTTP_PORT : port,
-                    httpService, networkAddressService);
+                    localHttpService, localNetworkAddressService);
         } else if (thingTypeUID.getId().startsWith("room")) {
             startScan(NeeoConstants.SCAN_DEVICES); // starts scan for devices
             return new NeeoRoomHandler((Bridge) thing);
@@ -147,8 +160,12 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
         if (waitMilliSeconds < 0) {
             throw new IllegalArgumentException("waitMilliSeconds cannot be below 0: " + waitMilliSeconds);
         }
-        scheduler.schedule(() -> {
-            discoveryServiceRegistry.startScan(NeeoConstants.BINDING_ID, null);
-        }, waitMilliSeconds, TimeUnit.MILLISECONDS);
+        final DiscoveryServiceRegistry localRegistry = discoveryServiceRegistry;
+
+        if (localRegistry != null) {
+            scheduler.schedule(() -> {
+                localRegistry.startScan(NeeoConstants.BINDING_ID, null);
+            }, waitMilliSeconds, TimeUnit.MILLISECONDS);
+        }
     }
 }

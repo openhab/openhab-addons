@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -63,20 +64,20 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
     /**
      * The initialization task (null until set by {@link #initializeTask()} and set back to null in {@link #dispose()}
      */
-    private final AtomicReference<Future<?>> initializationTask = new AtomicReference<>(null);
+    private final AtomicReference<@Nullable Future<?>> initializationTask = new AtomicReference<>(null);
 
     /**
      * The refresh task (null until set by {@link #initializeTask()} and set back to null in {@link #dispose()}
      */
-    private final AtomicReference<ScheduledFuture<?>> refreshTask = new AtomicReference<>(null);
+    private final AtomicReference<@Nullable ScheduledFuture<?>> refreshTask = new AtomicReference<>(null);
 
     /** The {@link NeeoDeviceProtocol} (null until set by {@link #initializationTask}) */
-    private final AtomicReference<NeeoDeviceProtocol> deviceProtocol = new AtomicReference<>();
+    private final AtomicReference<@Nullable NeeoDeviceProtocol> deviceProtocol = new AtomicReference<>();
 
     /**
      * Instantiates a new neeo device handler.
      *
-     * @param typeGenerator the non-null type generator
+     * @param thing the non-null thing
      */
     NeeoDeviceHandler(Thing thing) {
         super(thing);
@@ -147,9 +148,16 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
         final NeeoDeviceConfig config = getConfigAs(NeeoDeviceConfig.class);
 
         final String roomKey = getRoomKey();
-        if (StringUtils.isEmpty(roomKey)) {
+        if (roomKey == null || StringUtils.isEmpty(roomKey)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Room key (from the parent room bridge) was not found");
+            return;
+        }
+
+        final String deviceKey = config.getDeviceKey();
+        if (deviceKey == null || StringUtils.isEmpty(deviceKey)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Device key was not found or empty");
             return;
         }
 
@@ -162,13 +170,8 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
             }
 
             final NeeoRoom room = brainApi.getRoom(roomKey);
-            if (room == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Room (" + roomKey + ") was not found");
-                return;
-            }
 
-            final NeeoDevice device = room.getDevices().getDevice(config.getDeviceKey());
+            final NeeoDevice device = room.getDevices().getDevice(deviceKey);
             if (device == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Device (" + config.getDeviceKey() + ") was not found in room (" + roomKey + ")");
@@ -193,17 +196,17 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
             final NeeoDeviceDetails details = device.getDetails();
             if (details != null) {
                 /** The following properties have matches in org.openhab.io.neeo.OpenHabToDeviceConverter.java */
-                properties.put("Source Name", details.getSourceName());
-                properties.put("Adapter Name", details.getAdapterName());
-                properties.put("Type", details.getType());
-                properties.put("Manufacturer", details.getManufacturer());
-                properties.put("Name", details.getName());
+                addProperty(properties, "Source Name", details.getSourceName());
+                addProperty(properties, "Adapter Name", details.getAdapterName());
+                addProperty(properties, "Type", details.getType());
+                addProperty(properties, "Manufacturer", details.getManufacturer());
+                addProperty(properties, "Name", details.getName());
 
                 final NeeoDeviceDetailsTiming timing = details.getTiming();
                 if (timing != null) {
-                    properties.put("Standby Command Delay", NeeoUtil.toString(timing.getStandbyCommandDelay()));
-                    properties.put("Source Switch Delay", NeeoUtil.toString(timing.getSourceSwitchDelay()));
-                    properties.put("Shutdown Delay", NeeoUtil.toString(timing.getShutdownDelay()));
+                    properties.put("Standby Command Delay", toString(timing.getStandbyCommandDelay()));
+                    properties.put("Source Switch Delay", toString(timing.getSourceSwitchDelay()));
+                    properties.put("Shutdown Delay", toString(timing.getShutdownDelay()));
                 }
 
                 properties.put("Device Capabilities", StringUtils.join(details.getDeviceCapabilities(), ','));
@@ -238,11 +241,12 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
                     triggerChannel(channelID, event);
                 }
 
+                @Nullable
                 @Override
                 public NeeoBrainApi getApi() {
                     return getNeeoBrainApi();
                 }
-            }, roomKey, config.getDeviceKey());
+            }, roomKey, deviceKey);
             deviceProtocol.getAndSet(protocol);
 
             NeeoUtil.checkInterrupt();
@@ -259,10 +263,26 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
     }
 
     /**
+     * Helper method to add a property to the properties map if the value is not null
+     *
+     * @param properties a non-null properties map
+     * @param key a non-null, non-empty key
+     * @param value a possibly null, possibly empty key
+     */
+    private void addProperty(Map<String, String> properties, String key, @Nullable String value) {
+        Objects.requireNonNull(properties, "properties cannot be null");
+        NeeoUtil.requireNotEmpty(key, "key cannot be empty");
+        if (value != null && StringUtils.isNotEmpty(value)) {
+            properties.put(key, value);
+        }
+    }
+
+    /**
      * Helper method to get the room key from the parent bridge (which should be a room)
      *
      * @return a non-null, non-empty room key if found, null if not found
      */
+    @Nullable
     private String getRoomKey() {
         final Bridge bridge = getBridge();
         if (bridge != null) {
@@ -272,6 +292,19 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
             }
         }
         return null;
+    }
+
+    /**
+     * Helper method to simply create a string from an integer
+     *
+     * @param i the integer
+     * @return the resulting string representation
+     */
+    private static String toString(@Nullable Integer i) {
+        if (i == null) {
+            return "";
+        }
+        return i.toString();
     }
 
     @Override

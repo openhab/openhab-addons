@@ -11,6 +11,7 @@ package org.openhab.io.neeo.internal.serialization;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 
 import com.google.gson.JsonDeserializationContext;
@@ -24,13 +25,13 @@ import com.google.gson.JsonSerializer;
 /**
  * Implementation of {@link JsonSerializer} and {@link JsonDeserializer} to serialize/deserial {@link ChannelUID}
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class ChannelUIDSerializer implements JsonSerializer<ChannelUID>, JsonDeserializer<ChannelUID> {
 
     @Override
-    public ChannelUID deserialize(JsonElement elm, Type type, JsonDeserializationContext context)
-            throws JsonParseException {
+    public ChannelUID deserialize(@Nullable JsonElement elm, @Nullable Type type,
+            @Nullable JsonDeserializationContext context) throws JsonParseException {
         Objects.requireNonNull(elm, "elm cannot be null");
         Objects.requireNonNull(type, "type cannot be null");
         Objects.requireNonNull(context, "context cannot be null");
@@ -47,7 +48,7 @@ public class ChannelUIDSerializer implements JsonSerializer<ChannelUID>, JsonDes
     }
 
     @Override
-    public JsonElement serialize(ChannelUID uid, Type type, JsonSerializationContext context) {
+    public JsonElement serialize(ChannelUID uid, @Nullable Type type, @Nullable JsonSerializationContext context) {
         Objects.requireNonNull(uid, "uid cannot be null");
         Objects.requireNonNull(type, "type cannot be null");
         Objects.requireNonNull(context, "context cannot be null");

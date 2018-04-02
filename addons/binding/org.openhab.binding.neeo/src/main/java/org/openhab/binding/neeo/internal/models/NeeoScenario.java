@@ -10,6 +10,8 @@ package org.openhab.binding.neeo.internal.models;
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The model representing an Neeo Scenario (serialize/deserialize json use only).
  *
@@ -18,63 +20,46 @@ import java.util.Arrays;
 public class NeeoScenario {
 
     /** The scenario name */
-    private final String name;
+    @Nullable
+    private String name;
 
     /** The main device key */
-    private final String mainDeviceKey;
+    @Nullable
+    private String mainDeviceKey;
 
     /** The volume device key */
-    private final String volumeDeviceKey;
+    @Nullable
+    private String volumeDeviceKey;
 
     /** The scenario key */
-    private final String key;
+    @Nullable
+    private String key;
 
     /** Whether the scenario is pending configuration */
-    private final boolean configured;
+    private boolean configured;
 
     /** The associated room key */
-    private final String roomKey;
+    @Nullable
+    private String roomKey;
 
     /** The associated room name */
-    private final String roomName;
+    @Nullable
+    private String roomName;
 
     /** The devices that make up the scenario */
-    private final String[] devices;
+    private String @Nullable [] devices;
 
     // may be used in the future
     // private final NeeoShortcut[] shortcuts;
-    // private final String[] deviceInputMacroNames;
+    // @Nullable private String[] deviceInputMacroNames;
     // private final NeeoCapability[] capabilities;
-
-    /**
-     * Instantiates a new neeo scenario.
-     *
-     * @param name the name
-     * @param mainDeviceKey the main device key
-     * @param volumeDeviceKey the volume device key
-     * @param key the key
-     * @param configured the configured
-     * @param roomKey the room key
-     * @param roomName the room name
-     * @param devices the devices
-     */
-    public NeeoScenario(String name, String mainDeviceKey, String volumeDeviceKey, String key, boolean configured,
-            String roomKey, String roomName, String[] devices) {
-        this.name = name;
-        this.mainDeviceKey = mainDeviceKey;
-        this.volumeDeviceKey = volumeDeviceKey;
-        this.key = key;
-        this.configured = configured;
-        this.roomKey = roomKey;
-        this.roomName = roomName;
-        this.devices = devices;
-    }
 
     /**
      * Gets the scenario name
      *
      * @return the name
      */
+    @Nullable
     public String getName() {
         return name;
     }
@@ -84,6 +69,7 @@ public class NeeoScenario {
      *
      * @return the main device key
      */
+    @Nullable
     public String getMainDeviceKey() {
         return mainDeviceKey;
     }
@@ -93,6 +79,7 @@ public class NeeoScenario {
      *
      * @return the volume device key
      */
+    @Nullable
     public String getVolumeDeviceKey() {
         return volumeDeviceKey;
     }
@@ -102,6 +89,7 @@ public class NeeoScenario {
      *
      * @return the key
      */
+    @Nullable
     public String getKey() {
         return key;
     }
@@ -120,6 +108,7 @@ public class NeeoScenario {
      *
      * @return the room key
      */
+    @Nullable
     public String getRoomKey() {
         return roomKey;
     }
@@ -129,6 +118,7 @@ public class NeeoScenario {
      *
      * @return the room name
      */
+    @Nullable
     public String getRoomName() {
         return roomName;
     }
@@ -138,8 +128,10 @@ public class NeeoScenario {
      *
      * @return the devices
      */
+    @Nullable
     public String[] getDevices() {
-        return devices;
+        final String @Nullable [] localDevices = devices;
+        return localDevices == null ? new String[0] : localDevices;
     }
 
     @Override

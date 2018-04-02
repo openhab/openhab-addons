@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.neeo.internal.models;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The model representing an forward actions request (serialize/deserialize json use only).
  *
@@ -15,12 +17,14 @@ package org.openhab.binding.neeo.internal.models;
  */
 public class NeeoForwardActions {
     /** The host to forward actions to */
+    @Nullable
     private final String host;
 
     /** The port to use */
     private final int port;
 
     /** The path the actions should go to */
+    @Nullable
     private final String path;
 
     /**
@@ -41,6 +45,7 @@ public class NeeoForwardActions {
      *
      * @return the hostname
      */
+    @Nullable
     public String getHost() {
         return host;
     }
@@ -59,6 +64,7 @@ public class NeeoForwardActions {
      *
      * @return the path
      */
+    @Nullable
     public String getPath() {
         return path;
     }

@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigDescription;
 import org.eclipse.smarthome.config.core.ConfigDescriptionProvider;
 import org.osgi.service.component.annotations.Component;
@@ -31,12 +32,13 @@ public class NeeoConfigDescriptionProviderImpl implements NeeoConfigDescriptionP
     private Map<URI, ConfigDescription> configDescriptionsByURI = new HashMap<>();
 
     @Override
-    public Collection<ConfigDescription> getConfigDescriptions(Locale locale) {
+    public Collection<ConfigDescription> getConfigDescriptions(@Nullable Locale locale) {
         return configDescriptionsByURI.values();
     }
 
+    @Nullable
     @Override
-    public ConfigDescription getConfigDescription(URI uri, Locale locale) {
+    public ConfigDescription getConfigDescription(URI uri, @Nullable Locale locale) {
         return configDescriptionsByURI.get(uri);
     }
 

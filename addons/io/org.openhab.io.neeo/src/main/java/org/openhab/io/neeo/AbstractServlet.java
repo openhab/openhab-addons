@@ -9,11 +9,9 @@
 package org.openhab.io.neeo;
 
 import java.io.IOException;
-import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,18 +20,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.events.Event;
 import org.eclipse.smarthome.core.events.EventFilter;
-import org.openhab.io.neeo.internal.NeeoApi;
-import org.openhab.io.neeo.internal.NeeoDeviceKeys;
 import org.openhab.io.neeo.internal.NeeoUtil;
 import org.openhab.io.neeo.internal.ServiceContext;
-import org.openhab.io.neeo.internal.models.BrainStatus;
-import org.openhab.io.neeo.internal.servletservices.BrainStatusService;
-import org.openhab.io.neeo.internal.servletservices.NeeoBrainService;
-import org.openhab.io.neeo.internal.servletservices.SearchService;
 import org.openhab.io.neeo.internal.servletservices.ServletService;
-import org.openhab.io.neeo.internal.servletservices.ThingStatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,67 +33,53 @@ import org.slf4j.LoggerFactory;
  * This implementation of {@link HttpServlet} handles all the routing for the servlet. {@link ServletService}'s are
  * added in the constructor and then delegated to by this class.
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
-public class NeeoServlet extends HttpServlet implements AutoCloseable {
+public abstract class AbstractServlet extends HttpServlet implements AutoCloseable {
 
     /** The serial UID */
     private static final long serialVersionUID = -9109038869609595306L;
 
     /** The logger */
-    private final Logger logger = LoggerFactory.getLogger(NeeoServlet.class);
-
-    /** The NEEO API to use. Can be null if not a NEEO servlet */
-    private final NeeoApi api;
+    private final Logger logger = LoggerFactory.getLogger(AbstractServlet.class);
 
     /** The services for this servlet */
     private final ServletService[] services;
 
-    /** The event filters used by this servlet (may be null if services don't implement an event filter) */
-    private final List<EventFilter> eventFilters;
-
     /** URL of the servlet */
     private final String servletUrl;
+
+    /** Any event filters */
+    @Nullable
+    private final List<EventFilter> eventFilters;
 
     /**
      * Creates a servlet to serve the status/definitions web pages
      *
-     * @param service the non-null parent service
      * @param context the non-null service context
+     * @param servletUrl the non-null servletUrl
+     * @param services the non-null list of services
      */
-    NeeoServlet(NeeoService service, String servletUrl, ServiceContext context) {
+    AbstractServlet(ServiceContext context, String servletUrl, ServletService... services) {
         NeeoUtil.requireNotEmpty(servletUrl, "servletUrl cannot be empty");
-        Objects.requireNonNull(service, "service cannot be null");
         Objects.requireNonNull(context, "context cannot be null");
+        Objects.requireNonNull(services, "services cannot be null");
 
         this.servletUrl = servletUrl;
-        api = null;
+        this.services = services;
 
-        services = new ServletService[] { new BrainStatusService(service), new ThingStatusService(service, context) };
-        eventFilters = Stream.of(services).map((s) -> s.getEventFilter()).filter((ef -> ef != null))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Create a servlet to handle transport duties with the NEEO brain
-     *
-     * @param brainId the non-empty brain id
-     * @param ipAddress the non-null ip address
-     * @param context the non-null service context
-     */
-    NeeoServlet(String brainId, InetAddress ipAddress, String servletUrl, ServiceContext context) throws IOException {
-        NeeoUtil.requireNotEmpty(servletUrl, "servletUrl cannot be empty");
-        NeeoUtil.requireNotEmpty(brainId, "brainId cannot be empty");
-        Objects.requireNonNull(ipAddress, "ipAddress cannot be null");
-        Objects.requireNonNull(context, "context cannot be null");
-
-        this.servletUrl = servletUrl;
-        api = new NeeoApi(ipAddress.getHostAddress(), brainId, context);
-        api.start();
-
-        services = new ServletService[] { new SearchService(context), new NeeoBrainService(api, context) };
-        eventFilters = Stream.of(services).map((s) -> s.getEventFilter()).filter((ef -> ef != null))
-                .collect(Collectors.toList());
+        final List<EventFilter> efs = new ArrayList<>();
+        for (ServletService service : services) {
+            EventFilter ef = service.getEventFilter();
+            if (ef != null) {
+                efs.add(ef);
+            }
+        }
+        if (efs.isEmpty()) {
+            eventFilters = null;
+        } else {
+            eventFilters = efs;
+        }
     }
 
     /**
@@ -114,41 +92,11 @@ public class NeeoServlet extends HttpServlet implements AutoCloseable {
     }
 
     /**
-     * Returns the status of the brain
-     *
-     * @return a non-null {@link BrainStatus}
-     */
-    public BrainStatus getBrainStatus() {
-        return new BrainStatus(api.getBrainId(), api.getBrainUrl(), NeeoUtil.getServletUrl(api.getBrainId()),
-                api.isConnected());
-    }
-
-    /**
-     * Returns the {@link NeeoApi} related to the brain
-     *
-     * @return a non-null {@link NeeoApi}
-     */
-    public NeeoApi getBrainApi() {
-        return api;
-    }
-
-    /**
-     * Returns the device keys used by the brain
-     *
-     * @return a non-null {@link NeeoDeviceKeys}
-     */
-    public NeeoDeviceKeys getDeviceKeys() {
-        return api.getDeviceKeys();
-    }
-
-    /**
      * Handles the get by routing it to the appropriate {@link ServletService} or logging it if no route found
-     *
-     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
-     *      javax.servlet.http.HttpServletResponse)
      */
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
+            throws ServletException, IOException {
         Objects.requireNonNull(req, "req cannot be null");
         Objects.requireNonNull(resp, "resp cannot be null");
 
@@ -175,12 +123,10 @@ public class NeeoServlet extends HttpServlet implements AutoCloseable {
 
     /**
      * Handles the post by routing it to the appropriate {@link ServletService} or logging it if no route found
-     *
-     * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
-     *      javax.servlet.http.HttpServletResponse)
      */
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
+            throws ServletException, IOException {
         Objects.requireNonNull(req, "req cannot be null");
         Objects.requireNonNull(resp, "resp cannot be null");
 
@@ -207,7 +153,8 @@ public class NeeoServlet extends HttpServlet implements AutoCloseable {
      * @param paths the non-null, non-empty paths
      * @return the service that can handle the path or null if none can
      */
-    private ServletService getService(String[] paths) {
+    @Nullable
+    protected ServletService getService(String[] paths) {
         Objects.requireNonNull(paths, "paths cannot be null");
         if (paths.length == 0) {
             throw new IllegalArgumentException("paths cannot be of 0 length");
@@ -227,7 +174,7 @@ public class NeeoServlet extends HttpServlet implements AutoCloseable {
      * @param request the non-null request
      * @return the full URL
      */
-    private static String getFullURL(HttpServletRequest request) {
+    protected static String getFullURL(HttpServletRequest request) {
         Objects.requireNonNull(request, "request cannot be null");
 
         StringBuffer requestURL = request.getRequestURL();
@@ -261,6 +208,7 @@ public class NeeoServlet extends HttpServlet implements AutoCloseable {
      *
      * @return the possibly null event filters;
      */
+    @Nullable
     public List<EventFilter> getEventFilters() {
         return eventFilters;
     }
@@ -270,7 +218,6 @@ public class NeeoServlet extends HttpServlet implements AutoCloseable {
      */
     @Override
     public void close() {
-        NeeoUtil.close(api);
         for (ServletService service : services) {
             NeeoUtil.close(service);
         }

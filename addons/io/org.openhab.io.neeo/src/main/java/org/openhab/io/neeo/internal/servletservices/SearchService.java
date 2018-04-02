@@ -39,7 +39,7 @@ import com.google.gson.JsonObject;
 /**
  * The implementation of {@link ServletService} that will handle device search requests from the NEEO Brain
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class SearchService extends DefaultServletService {
 
@@ -197,13 +197,10 @@ public class SearchService extends DefaultServletService {
 
         for (TokenScore<NeeoDevice> ts : filtered) {
             final NeeoDevice device = ts.getItem();
+            final TokenScoreResult<NeeoDevice> result = new TokenScoreResult<>(device, searchItems.size(),
+                    ts.getScore(), -1);
 
-            if (device != null) {
-                final TokenScoreResult<NeeoDevice> result = new TokenScoreResult<>(device, searchItems.size(),
-                        ts.getScore(), -1);
-
-                searchItems.add(result);
-            }
+            searchItems.add(result);
         }
 
         final Map<Integer, NeeoThingUID> results = new HashMap<>();

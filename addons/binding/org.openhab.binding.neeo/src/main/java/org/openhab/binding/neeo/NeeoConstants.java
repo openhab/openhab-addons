@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.neeo;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -17,7 +16,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Tim Roberts - Initial contribution
  */
-@NonNullByDefault
 public class NeeoConstants {
 
     /** The main binding */
@@ -67,6 +65,7 @@ public class NeeoConstants {
     public static final String DEVICE_CHANNEL_MACRO_STATUS = "device-macros-status";
 
     /** Discovery timeouts (in seconds) */
+    public static final int BRAIN_DISCOVERY_TIMEOUT = 10;
     public static final int ROOM_DISCOVERY_TIMEOUT = 5;
     public static final int DEVICE_DISCOVERY_TIMEOUT = 5;
 

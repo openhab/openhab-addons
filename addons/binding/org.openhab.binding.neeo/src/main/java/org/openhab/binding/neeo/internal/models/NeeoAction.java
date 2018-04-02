@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.neeo.internal.models;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -18,43 +20,32 @@ import com.google.gson.annotations.SerializedName;
  */
 public class NeeoAction {
     /** The action - can be null */
-    private final String action;
+    @Nullable
+    private String action;
 
     /** The action parameter - generally null */
+    @Nullable
     @SerializedName("actionparameter")
-    private final String actionParameter;
+    private String actionParameter;
 
     /** The recipe name - only valid on launch of recipe */
-    private final String recipe;
+    @Nullable
+    private String recipe;
 
     /** The device name - usually filled */
-    private final String device;
+    @Nullable
+    private String device;
 
     /** The room name - usually filled */
-    private final String room;
-
-    /**
-     * Constructs the action from the given parameters
-     *
-     * @param action a possibly null, possibly empty action
-     * @param actionParameter a possibly null, possibly empty actionparameter
-     * @param recipe a possibly null, possibly empty recipe name
-     * @param device a possibly null, possibly empty device name
-     * @param room a possibly null, possibly empty room name
-     */
-    public NeeoAction(String action, String actionParameter, String recipe, String device, String room) {
-        this.action = action;
-        this.actionParameter = actionParameter;
-        this.recipe = recipe;
-        this.device = device;
-        this.room = room;
-    }
+    @Nullable
+    private String room;
 
     /**
      * Returns the action
      *
      * @return a possibly null, possibly empty action
      */
+    @Nullable
     public String getAction() {
         return action;
     }
@@ -64,6 +55,7 @@ public class NeeoAction {
      *
      * @return a possibly null, possibly empty action parameter
      */
+    @Nullable
     public String getActionParameter() {
         return actionParameter;
     }
@@ -73,6 +65,7 @@ public class NeeoAction {
      *
      * @return a possibly null, possibly empty recipe name
      */
+    @Nullable
     public String getRecipe() {
         return recipe;
     }
@@ -82,6 +75,7 @@ public class NeeoAction {
      *
      * @return a possibly null, possibly empty device name
      */
+    @Nullable
     public String getDevice() {
         return device;
     }
@@ -91,6 +85,7 @@ public class NeeoAction {
      *
      * @return a possibly null, possibly room name
      */
+    @Nullable
     public String getRoom() {
         return room;
     }

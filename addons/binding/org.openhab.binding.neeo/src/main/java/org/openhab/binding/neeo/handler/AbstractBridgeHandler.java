@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.neeo.handler;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
@@ -35,6 +36,7 @@ abstract class AbstractBridgeHandler extends BaseBridgeHandler {
      *
      * @return the {@link NeeoBrainApi} or null if not found
      */
+    @Nullable
     public NeeoBrainApi getNeeoBrainApi() {
         final Bridge bridge = getBridge();
         if (bridge != null) {
@@ -46,6 +48,7 @@ abstract class AbstractBridgeHandler extends BaseBridgeHandler {
         return null;
     }
 
+    @Nullable
     /**
      * Returns the brain ID associated with this {@link Bridge}. Will iterate through
      * the parent handlers until one returns an ID or null if not found

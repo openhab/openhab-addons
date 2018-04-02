@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.openhab.io.neeo.NeeoConstants;
@@ -86,9 +87,7 @@ public class NeeoDeviceDefinitions {
                 final byte[] contents = Files.readAllBytes(file.toPath());
                 final String json = new String(contents, StandardCharsets.UTF_8);
 
-                // devices can be null on an empty file
-                // (even though this is marked as @NotNull - it definitely will return
-                // null if it's an empty file)
+                // devices can be null on an empty file regardless if Eclipse doesn't think so
                 final NeeoDevice[] devices = gson.fromJson(json, NeeoDevice[].class);
                 if (devices != null) {
                     for (NeeoDevice device : devices) {
@@ -117,14 +116,12 @@ public class NeeoDeviceDefinitions {
 
             // filter for only things that are still valid
             final ThingRegistry thingRegistry = context.getThingRegistry();
-            if (thingRegistry != null) {
-                for (NeeoDevice device : uidToDevice.values()) {
-                    if (StringUtils.equalsIgnoreCase(NeeoConstants.NEEOIO_BINDING_ID, device.getUid().getBindingId())) {
+            for (NeeoDevice device : uidToDevice.values()) {
+                if (StringUtils.equalsIgnoreCase(NeeoConstants.NEEOIO_BINDING_ID, device.getUid().getBindingId())) {
+                    devices.add(device);
+                } else {
+                    if (thingRegistry.get(device.getUid().asThingUID()) != null) {
                         devices.add(device);
-                    } else {
-                        if (thingRegistry.get(device.getUid().asThingUID()) != null) {
-                            devices.add(device);
-                        }
                     }
                 }
             }
@@ -233,7 +230,7 @@ public class NeeoDeviceDefinitions {
      * @param itemName a possibly null, possibly empty item name to use
      * @return a non-null, possibly empty list
      */
-    public List<Map.Entry<NeeoDevice, NeeoDeviceChannel>> getBound(NeeoDeviceKeys keys, String itemName) {
+    public List<Map.Entry<NeeoDevice, NeeoDeviceChannel>> getBound(NeeoDeviceKeys keys, @Nullable String itemName) {
         Objects.requireNonNull(keys, "keys cannot be null");
 
         final List<Map.Entry<NeeoDevice, NeeoDeviceChannel>> channels = new ArrayList<>();
@@ -258,6 +255,7 @@ public class NeeoDeviceDefinitions {
      * @param uid the non-null uid
      * @return the neeo device or null if unknown (or a neeo uid)
      */
+    @Nullable
     public NeeoDevice getDevice(NeeoThingUID uid) {
         Objects.requireNonNull(uid, "uid cannot be null");
 
@@ -291,7 +289,10 @@ public class NeeoDeviceDefinitions {
                 if (thing == null) {
                     logger.debug("Thing {} doesn't exist in registry anymore", entry.getKey());
                 } else {
-                    devices.add(entry.getValue().merge(context));
+                    final NeeoDevice mergedDevice = entry.getValue().merge(context);
+                    if (mergedDevice != null) {
+                        devices.add(mergedDevice);
+                    }
                 }
             }
         }
@@ -314,7 +315,7 @@ public class NeeoDeviceDefinitions {
      * @param itemName a possibly empty, possibly null item name
      * @return a {@link NeeoDeviceChannel} representing the item name or null if not found
      */
-    public NeeoDeviceChannel getNeeoDeviceChannel(String itemName) {
+    public @Nullable List<NeeoDeviceChannel> getNeeoDeviceChannel(String itemName) {
         return converter.getNeeoDeviceChannel(itemName);
     }
 }

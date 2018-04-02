@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * send out queries that NEEO responds to. We use this class to send out the query that NEEO will respond to and provide
  * discovery of all Brains.
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  *
  */
 public class MdnsHelper {
@@ -41,10 +41,9 @@ public class MdnsHelper {
     /**
      * Sends an MDNS query to all the NEEO Brains for discovery
      *
-     * @throws IOException
+     * @throws IOException if an IO exception occurs sending the broadcast
      */
     public static void sendQuery() throws IOException {
-
         final Logger logger = LoggerFactory.getLogger(MdnsHelper.class);
         final InetAddress multicastAddress = InetAddress.getByName(MDNS_BROADCAST_ADDR);
 

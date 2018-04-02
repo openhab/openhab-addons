@@ -8,13 +8,15 @@
  */
 package org.openhab.io.neeo.internal.models;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.neeo.internal.NeeoUtil;
 
 /**
  * The model representing an NEEO system information (serialize/deserialize json use only). This model only represents a
  * small portion of the system information
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class NeeoSystemInfo {
 
@@ -42,29 +44,16 @@ public class NeeoSystemInfo {
 
     @Override
     public int hashCode() {
-        return (hostname == null) ? 0 : hostname.hashCode();
+        return hostname.hashCode();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null || !(obj instanceof NeeoSystemInfo)) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        NeeoSystemInfo other = (NeeoSystemInfo) obj;
-        if (hostname == null) {
-            if (other.hostname != null) {
-                return false;
-            }
-        } else if (!hostname.equals(other.hostname)) {
-            return false;
-        }
-        return true;
+
+        return StringUtils.equals(hostname, ((NeeoSystemInfo) obj).hostname);
     }
 
 }

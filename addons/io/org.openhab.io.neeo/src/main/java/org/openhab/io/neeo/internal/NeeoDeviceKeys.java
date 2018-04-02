@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.io.neeo.NeeoConstants;
@@ -34,7 +35,7 @@ import com.google.gson.JsonParser;
 /**
  * Stores the mapping of {@link ThingUID} to all brain keys
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class NeeoDeviceKeys {
 
@@ -42,7 +43,7 @@ public class NeeoDeviceKeys {
     private final Logger logger = LoggerFactory.getLogger(NeeoDeviceKeys.class);
 
     /** The mapping between ThingUID to brain keys */
-    private final ConcurrentHashMap<NeeoThingUID, Set<String>> uidToKey = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<NeeoThingUID, @Nullable Set<String>> uidToKey = new ConcurrentHashMap<>();
 
     /** The brain's url */
     private final String brainUrl;
@@ -151,20 +152,24 @@ public class NeeoDeviceKeys {
     boolean isBound(NeeoThingUID uid) {
         Objects.requireNonNull(uid, "uid cannot be null");
 
-        return uidToKey.get(uid) != null;
+        return uidToKey.containsKey(uid);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder(200);
-        for (Entry<NeeoThingUID, Set<String>> entry : uidToKey.entrySet()) {
+        for (Entry<NeeoThingUID, @Nullable Set<String>> entry : uidToKey.entrySet()) {
+            final Set<String> entries = entry.getValue();
+            if (entries == null) {
+                continue;
+            }
             if (sb.length() > 0) {
                 sb.append(",");
             }
             sb.append("[");
             sb.append(entry.getKey());
             sb.append("=");
-            sb.append(StringUtils.join(entry.getValue().toArray()));
+            sb.append(StringUtils.join(entries.toArray()));
             sb.append("]");
         }
 

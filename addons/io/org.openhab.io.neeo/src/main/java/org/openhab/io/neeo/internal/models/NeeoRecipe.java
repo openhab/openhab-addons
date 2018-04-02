@@ -8,25 +8,25 @@
  */
 package org.openhab.io.neeo.internal.models;
 
-import java.util.Objects;
-
-import org.openhab.io.neeo.internal.NeeoUtil;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
  * The model representing an NEEO recipe (serialize/deserialize json use only).
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class NeeoRecipe {
 
     /** The recipe identifier */
-    private final String uid;
+    @Nullable
+    private String uid;
 
     /** The recipe URLs */
+    @Nullable
     @SerializedName(value = "url", alternate = { "urls" })
-    private final NeeoRecipeUrls url;
+    private NeeoRecipeUrls url;
 
     // may be used in the future
     // private final String type;
@@ -36,23 +36,11 @@ public class NeeoRecipe {
     // private final NeeoRecipeDetail detail;
 
     /**
-     * Creates a new recipe from the identifier and urls
-     *
-     * @param uid the non-empty uid
-     * @param url the non-null url
-     */
-    public NeeoRecipe(String uid, NeeoRecipeUrls url) {
-        NeeoUtil.requireNotEmpty(uid, "uid cannot be empty");
-        Objects.requireNonNull(url, "urls cannot be empty");
-        this.uid = uid;
-        this.url = url;
-    }
-
-    /**
      * Gets the recipe identifier.
      *
      * @return the recipe identifier
      */
+    @Nullable
     public String getUid() {
         return uid;
     }
@@ -62,6 +50,7 @@ public class NeeoRecipe {
      *
      * @return the possibly null urls
      */
+    @Nullable
     public NeeoRecipeUrls getUrls() {
         return url;
     }

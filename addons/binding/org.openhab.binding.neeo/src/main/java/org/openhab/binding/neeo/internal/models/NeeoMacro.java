@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.neeo.internal.models;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The model representing an Neeo Macro (serialize/deserialize json use only)
  *
@@ -16,47 +18,35 @@ package org.openhab.binding.neeo.internal.models;
 public class NeeoMacro {
 
     /** The macro key */
-    private final String key;
+    @Nullable
+    private String key;
 
     /** The component type */
-    private final String componentType;
+    @Nullable
+    private String componentType;
 
     /** The macro name */
-    private final String name;
+    @Nullable
+    private String name;
 
     /** The macro label */
-    private final String label;
+    @Nullable
+    private String label;
 
     /** The associated device name */
-    private final String deviceName;
+    @Nullable
+    private String deviceName;
 
     /** The associated room name */
-    private final String roomName;
-
-    /**
-     * Instantiates a new neeo macro.
-     *
-     * @param key the key
-     * @param componentType the component type
-     * @param name the name
-     * @param label the label
-     * @param deviceName the device name
-     * @param roomName the room name
-     */
-    public NeeoMacro(String key, String componentType, String name, String label, String deviceName, String roomName) {
-        this.key = key;
-        this.componentType = componentType;
-        this.name = name;
-        this.label = label;
-        this.deviceName = deviceName;
-        this.roomName = roomName;
-    }
+    @Nullable
+    private String roomName;
 
     /**
      * Gets the macro key
      *
      * @return the key
      */
+    @Nullable
     public String getKey() {
         return key;
     }
@@ -66,6 +56,7 @@ public class NeeoMacro {
      *
      * @return the component type
      */
+    @Nullable
     public String getComponentType() {
         return componentType;
     }
@@ -75,6 +66,7 @@ public class NeeoMacro {
      *
      * @return the name
      */
+    @Nullable
     public String getName() {
         return name;
     }
@@ -84,6 +76,7 @@ public class NeeoMacro {
      *
      * @return the label
      */
+    @Nullable
     public String getLabel() {
         return label;
     }
@@ -93,6 +86,7 @@ public class NeeoMacro {
      *
      * @return the device name
      */
+    @Nullable
     public String getDeviceName() {
         return deviceName;
     }
@@ -102,6 +96,7 @@ public class NeeoMacro {
      *
      * @return the room name
      */
+    @Nullable
     public String getRoomName() {
         return roomName;
     }

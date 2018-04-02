@@ -11,6 +11,7 @@ package org.openhab.binding.neeo.internal.net;
 import java.util.Objects;
 import java.util.logging.LogRecord;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 
 /**
@@ -35,7 +36,7 @@ class Slf4LoggingAdapter extends java.util.logging.Logger {
     }
 
     @Override
-    public void log(LogRecord record) {
-        logger.debug("{}", record.getMessage());
+    public void log(@Nullable LogRecord record) {
+        logger.debug("{}", record == null ? "" : record.getMessage());
     }
 }

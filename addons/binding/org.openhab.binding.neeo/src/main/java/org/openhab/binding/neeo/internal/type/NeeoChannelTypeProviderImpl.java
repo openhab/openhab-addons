@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
@@ -35,23 +36,27 @@ public class NeeoChannelTypeProviderImpl implements NeeoChannelTypeProvider {
     /** The list of {@link ChannelGroupType } */
     private final Map<ChannelGroupTypeUID, ChannelGroupType> channelGroupTypes = new ConcurrentHashMap<>();
 
+    @Nullable
     @Override
-    public Collection<ChannelType> getChannelTypes(Locale locale) {
+    public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
         return channelTypes.values();
     }
 
+    @Nullable
     @Override
-    public ChannelType getChannelType(ChannelTypeUID channelTypeUID, Locale locale) {
+    public ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
         return channelTypes.get(channelTypeUID);
     }
 
+    @Nullable
     @Override
-    public ChannelGroupType getChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID, Locale locale) {
+    public ChannelGroupType getChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID, @Nullable Locale locale) {
         return channelGroupTypes.get(channelGroupTypeUID);
     }
 
+    @Nullable
     @Override
-    public Collection<ChannelGroupType> getChannelGroupTypes(Locale locale) {
+    public Collection<ChannelGroupType> getChannelGroupTypes(@Nullable Locale locale) {
         return channelGroupTypes.values();
     }
 

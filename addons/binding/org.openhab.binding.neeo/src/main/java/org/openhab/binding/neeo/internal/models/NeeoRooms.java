@@ -9,8 +9,10 @@
 package org.openhab.binding.neeo.internal.models;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The model representing Neeo Rooms (serialize/deserialize json use only).
@@ -20,7 +22,7 @@ import org.apache.commons.lang.StringUtils;
 public class NeeoRooms {
 
     /** The rooms. */
-    private final NeeoRoom[] rooms;
+    private final NeeoRoom @Nullable [] rooms;
 
     /**
      * Instantiates a new neeo rooms.
@@ -28,6 +30,7 @@ public class NeeoRooms {
      * @param rooms the rooms
      */
     public NeeoRooms(NeeoRoom[] rooms) {
+        Objects.requireNonNull(rooms, "rooms cannot be null");
         this.rooms = rooms;
     }
 
@@ -37,7 +40,8 @@ public class NeeoRooms {
      * @return the rooms
      */
     public NeeoRoom[] getRooms() {
-        return rooms;
+        final NeeoRoom @Nullable [] localRooms = rooms;
+        return localRooms == null ? new NeeoRoom[0] : localRooms;
     }
 
     /**
@@ -47,12 +51,12 @@ public class NeeoRooms {
      * @return the room
      */
     public NeeoRoom getRoom(String key) {
-        for (NeeoRoom room : rooms) {
+        for (NeeoRoom room : getRooms()) {
             if (StringUtils.equalsIgnoreCase(key, room.getKey())) {
                 return room;
             }
         }
-        return null;
+        return new NeeoRoom();
     }
 
     @Override

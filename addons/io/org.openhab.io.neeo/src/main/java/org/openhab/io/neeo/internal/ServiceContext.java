@@ -69,6 +69,21 @@ public class ServiceContext {
     /** The network address service. */
     private final NetworkAddressService networkAddressService;
 
+    /**
+     * Creates teh service context from the variable services
+     *
+     * @param componentContext a non-null component context
+     * @param httpService a non-null http service
+     * @param itemRegistry a non-null item registry
+     * @param bindingInfoRegistry a non-null binding information registry
+     * @param thingRegistry a non-null thing registry
+     * @param thingTypeRegistry a non-null thing type registry
+     * @param itemChannelLinkRegistry a non-null item channel link registry
+     * @param channelTypeRegistry a non-null channel type registry
+     * @param mdnsClient a non-null mdns client
+     * @param eventPublisher a non-null event publisher
+     * @param networkAddressService a non-null network address service
+     */
     public ServiceContext(ComponentContext componentContext, HttpService httpService, ItemRegistry itemRegistry,
             BindingInfoRegistry bindingInfoRegistry, ThingRegistry thingRegistry, ThingTypeRegistry thingTypeRegistry,
             ItemChannelLinkRegistry itemChannelLinkRegistry, ChannelTypeRegistry channelTypeRegistry,
@@ -211,7 +226,6 @@ public class ServiceContext {
      * Helper utility to generate a random {@link NeeoThingUID}. Will try to generate a non-used random 8 digit alpha
      * numeric UID and if it fails after 100 attempts, will return one with a random UUID as the ID
      *
-     * @param context a non-null context
      * @param thingType a non-null thingType
      * @return a non-null {@link NeeoThingUID}
      */

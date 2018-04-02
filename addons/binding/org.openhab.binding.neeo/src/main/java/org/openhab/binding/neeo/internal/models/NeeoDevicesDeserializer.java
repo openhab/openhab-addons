@@ -12,6 +12,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -24,10 +27,14 @@ import com.google.gson.JsonParseException;
  *
  * @author Tim Roberts - Initial contribution
  */
-public class NeeoDevicesDeserializer implements JsonDeserializer<NeeoDevices> {
+public class NeeoDevicesDeserializer implements JsonDeserializer<@Nullable NeeoDevices> {
+    @Nullable
     @Override
-    public NeeoDevices deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context)
-            throws JsonParseException {
+    public NeeoDevices deserialize(@Nullable JsonElement jsonElement, @Nullable Type type,
+            @Nullable JsonDeserializationContext context) throws JsonParseException {
+        Objects.requireNonNull(jsonElement, "jsonElement cannot be null");
+        Objects.requireNonNull(context, "context cannot be null");
+
         if (jsonElement instanceof JsonObject) {
             final List<NeeoDevice> scenarios = new ArrayList<>();
             for (Map.Entry<String, JsonElement> entry : ((JsonObject) jsonElement).entrySet()) {
@@ -39,5 +46,4 @@ public class NeeoDevicesDeserializer implements JsonDeserializer<NeeoDevices> {
         }
         return null;
     }
-
 }

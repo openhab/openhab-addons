@@ -15,7 +15,7 @@ import org.openhab.io.neeo.NeeoConstants;
  * Wrapper around a {@link ThingUID} to provide common initialization and to provide a non deprecated way to get the
  * thing type (which is the second element)
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  *
  */
 public class NeeoThingUID extends ThingUID {

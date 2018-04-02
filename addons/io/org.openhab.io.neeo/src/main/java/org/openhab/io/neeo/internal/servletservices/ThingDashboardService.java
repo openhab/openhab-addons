@@ -38,12 +38,12 @@ import com.google.gson.JsonParseException;
 /**
  * A subclass of {@link DefaultServletService} that handles thing status/definitions for the web pages
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
-public class ThingStatusService extends DefaultServletService {
+public class ThingDashboardService extends DefaultServletService {
 
     /** The logger */
-    private final Logger logger = LoggerFactory.getLogger(ThingStatusService.class);
+    private final Logger logger = LoggerFactory.getLogger(ThingDashboardService.class);
 
     /** The gson used for json manipulation */
     private final Gson gson;
@@ -57,7 +57,7 @@ public class ThingStatusService extends DefaultServletService {
      * @param service the non-null {@link NeeoService}
      * @param context the non-null {@link ServiceContext}
      */
-    public ThingStatusService(NeeoService service, ServiceContext context) {
+    public ThingDashboardService(NeeoService service, ServiceContext context) {
         Objects.requireNonNull(service, "service cannot be null");
         Objects.requireNonNull(context, "context cannot be null");
 
@@ -97,15 +97,19 @@ public class ThingStatusService extends DefaultServletService {
         try {
             if (StringUtils.equalsIgnoreCase(paths[0], "thingstatus")) {
                 final List<NeeoDevice> devices = context.getDefinitions().getAllDevices();
-                NeeoUtil.write(resp, gson.toJson(devices == null ? new NeeoDevice[0] : devices));
+                NeeoUtil.write(resp, gson.toJson(devices));
             } else if (StringUtils.equalsIgnoreCase(paths[0], "getchannel")) {
                 final String itemName = NeeoUtil.decodeURIComponent(req.getParameter("itemname"));
-                final NeeoDeviceChannel channel = context.getDefinitions().getNeeoDeviceChannel(itemName);
-                NeeoUtil.write(resp, gson.toJson(new ReturnStatus(channel)));
+                final List<NeeoDeviceChannel> channels = context.getDefinitions().getNeeoDeviceChannel(itemName);
+                if (channels == null) {
+                    NeeoUtil.write(resp, gson.toJson(new ReturnStatus("Channel no longer exists")));
+                } else {
+                    NeeoUtil.write(resp, gson.toJson(new ReturnStatus(channels)));
+                }
             } else if (StringUtils.equalsIgnoreCase(paths[0], "getvirtualdevice")) {
                 final NeeoThingUID uid = context.generate(NeeoConstants.VIRTUAL_THING_TYPE);
                 final NeeoDevice device = new NeeoDevice(uid, NeeoDeviceType.EXCLUDE, "NEEO Transport",
-                        "New Virtual Thing", new ArrayList<>(), null, null);
+                        "New Virtual Thing", new ArrayList<>(), null, null, null, null);
                 NeeoUtil.write(resp, gson.toJson(new ReturnStatus(device)));
             } else {
                 logger.debug("Unknown get path: {}", StringUtils.join(paths, ','));
@@ -138,10 +142,20 @@ public class ThingStatusService extends DefaultServletService {
             } else if (StringUtils.equalsIgnoreCase(paths[0], "restoredevice")) {
                 final NeeoThingUID uid = new NeeoThingUID(IOUtils.toString(req.getReader()));
                 context.getDefinitions().remove(uid);
-                NeeoUtil.write(resp, gson.toJson(new ReturnStatus(context.getDefinitions().getDevice(uid))));
+                final NeeoDevice device = context.getDefinitions().getDevice(uid);
+                if (device == null) {
+                    NeeoUtil.write(resp, gson.toJson(new ReturnStatus("Device no longer exists in openHAB!")));
+                } else {
+                    NeeoUtil.write(resp, gson.toJson(new ReturnStatus(device)));
+                }
             } else if (StringUtils.equalsIgnoreCase(paths[0], "refreshdevice")) {
                 final NeeoThingUID uid = new NeeoThingUID(IOUtils.toString(req.getReader()));
-                NeeoUtil.write(resp, gson.toJson(new ReturnStatus(context.getDefinitions().getDevice(uid))));
+                final NeeoDevice device = context.getDefinitions().getDevice(uid);
+                if (device == null) {
+                    NeeoUtil.write(resp, gson.toJson(new ReturnStatus("Device no longer exists in openHAB!")));
+                } else {
+                    NeeoUtil.write(resp, gson.toJson(new ReturnStatus(device)));
+                }
             } else if (StringUtils.equalsIgnoreCase(paths[0], "deletedevice")) {
                 final NeeoThingUID uid = new NeeoThingUID(IOUtils.toString(req.getReader()));
                 final boolean deleted = context.getDefinitions().remove(uid);

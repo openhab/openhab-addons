@@ -8,6 +8,7 @@
  */
 package org.openhab.io.neeo.internal.models;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,8 +19,8 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -32,9 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The model representing a NEEO device (serialize/deserialize json use only).
+ * The model representing a NEEO device
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class NeeoDevice {
 
@@ -63,6 +64,18 @@ public class NeeoDevice {
     private final NeeoDeviceTiming timing;
 
     /**
+     * The specific name for the device, if null - NEEO will default it based on the type (ie "ACCESSORY", etc)
+     */
+    @Nullable
+    private final String specificName;
+
+    /**
+     * The icon name to assign. If null, NEEO will default it to a standard icon based on the type
+     */
+    @Nullable
+    private final String iconName;
+
+    /**
      * Creates the device from the given parameters
      *
      * @param thing the non-null thing
@@ -70,9 +83,9 @@ public class NeeoDevice {
      * @param type the device type
      * @param timing the possibly null device timings
      */
-    public NeeoDevice(Thing thing, List<NeeoDeviceChannel> channels, NeeoDeviceType type, NeeoDeviceTiming timing) {
-        this(thing == null ? null : new NeeoThingUID(thing.getUID()), type, "openHAB",
-                thing == null ? null : thing.getLabel(), channels, timing, null);
+    public NeeoDevice(Thing thing, List<NeeoDeviceChannel> channels, NeeoDeviceType type,
+            @Nullable NeeoDeviceTiming timing) {
+        this(new NeeoThingUID(thing.getUID()), type, "openHAB", thing.getLabel(), channels, timing, null, null, null);
     }
 
     /**
@@ -85,26 +98,30 @@ public class NeeoDevice {
      * @param channels the non-null, possibly empty list of channels
      * @param deviceTiming a possibly null device timings
      * @param deviceCapabilities a possibly null, possibly empty list of device capabilities
+     * @param specificName a possibly null, possibly empty specific name
+     * @param iconName a possibly null, possibly empty custom icon name
      */
-    public NeeoDevice(NeeoThingUID uid, NeeoDeviceType type, String manufacturer, String name,
-            List<NeeoDeviceChannel> channels, NeeoDeviceTiming deviceTiming, List<String> deviceCapabilities) {
+    public NeeoDevice(NeeoThingUID uid, NeeoDeviceType type, String manufacturer, @Nullable String name,
+            List<NeeoDeviceChannel> channels, @Nullable NeeoDeviceTiming deviceTiming,
+            @Nullable List<String> deviceCapabilities, @Nullable String specificName, @Nullable String iconName) {
         Objects.requireNonNull(uid, "UID is required");
         Objects.requireNonNull(type, "type is required");
         NeeoUtil.requireNotEmpty(manufacturer, "manufacturer is required");
-        NeeoUtil.requireNotEmpty(name, "name is required");
         Objects.requireNonNull(channels, "channels is required");
 
         String powerSensorItem = null;
         final Set<String> uniqueLabels = new HashSet<>();
-        final Map<String, Set<Integer>> uniqueIds = new HashMap<>();
+        final Map<Entry<String, ItemSubType>, Set<Integer>> uniqueIds = new HashMap<>();
 
         for (NeeoDeviceChannel channel : channels) {
             final String itemName = channel.getItemName();
-            Set<Integer> ids = uniqueIds.get(itemName);
-            if (ids == null) {
-                ids = new HashSet<>();
-                uniqueIds.put(itemName, ids);
+            final Entry<String, ItemSubType> key = new AbstractMap.SimpleEntry<String, ItemSubType>(
+                    channel.getItemName(), channel.getSubType());
+
+            if (!uniqueIds.containsKey(key)) {
+                uniqueIds.put(key, new HashSet<>());
             }
+            final Set<Integer> ids = uniqueIds.get(key);
 
             final Integer channelNbr = channel.getChannelNbr();
             if (ids.contains(channelNbr)) {
@@ -132,7 +149,7 @@ public class NeeoDevice {
             }
         }
 
-        for (Entry<String, Set<Integer>> entry : uniqueIds.entrySet()) {
+        for (Entry<Entry<String, ItemSubType>, Set<Integer>> entry : uniqueIds.entrySet()) {
             if (!entry.getValue().contains(1)) {
                 throw new IllegalArgumentException(
                         "Channel " + entry.getKey() + " doesn't have the original channel nbr (1)");
@@ -142,9 +159,11 @@ public class NeeoDevice {
         this.uid = uid;
         this.type = type;
         this.manufacturer = manufacturer;
-        this.name = name;
+        this.name = name == null || StringUtils.isEmpty(name) ? "(N/A)" : name;
+        this.specificName = specificName;
+        this.iconName = iconName;
         this.channels.addAll(channels);
-        this.timing = deviceTiming;
+        this.timing = deviceTiming == null ? new NeeoDeviceTiming() : deviceTiming;
         if (deviceCapabilities != null) {
             this.deviceCapabilities.addAll(deviceCapabilities);
         }
@@ -187,6 +206,26 @@ public class NeeoDevice {
     }
 
     /**
+     * Returns the specific name assigned to the device
+     *
+     * @return a possibly null, possibly empty specific name
+     */
+    @Nullable
+    public String getSpecificName() {
+        return specificName;
+    }
+
+    /**
+     * Returns the custom icon assigned to the device
+     *
+     * @return a possibly null, possibly empty icon name
+     */
+    @Nullable
+    public String getIconName() {
+        return iconName;
+    }
+
+    /**
      * Gets the channels (this is a disconnected array)
      *
      * @return the channels
@@ -200,6 +239,7 @@ public class NeeoDevice {
      *
      * @return a possibly null {@link NeeoDeviceTiming}
      */
+    @Nullable
     public NeeoDeviceTiming getDeviceTiming() {
         if (supportTiming(this)) {
             return timing;
@@ -246,8 +286,7 @@ public class NeeoDevice {
 
             final boolean notExcluded = channel.getType() != NeeoCapabilityType.EXCLUDE;
             final boolean notEmpty = StringUtils.isNotEmpty(channel.getType().toString());
-            final boolean isItemMatch = itemName == null
-                    || StringUtils.equalsIgnoreCase(itemName, channel.getItemName());
+            final boolean isItemMatch = StringUtils.equalsIgnoreCase(itemName, channel.getItemName());
 
             logger.trace("isExposed(channel): {} --- notExcluded({}) -- notEmpty({}) -- isItemMatch({}) -- {}",
                     itemName, notExcluded, notEmpty, isItemMatch, channel);
@@ -261,17 +300,20 @@ public class NeeoDevice {
     }
 
     /**
-     * Gets the channel for the given itemn ame (and channel number)
+     * Gets the channel for the given item name (and channel number)
      *
      * @param itemName the non-empty item name
+     * @param subType the non-null sub type
      * @param channelNbr the channel nbr
      * @return the channel or null if none found
      */
-    public NeeoDeviceChannel getChannel(String itemName, int channelNbr) {
+    @Nullable
+    public NeeoDeviceChannel getChannel(String itemName, ItemSubType subType, int channelNbr) {
         NeeoUtil.requireNotEmpty(itemName, "itemName cannot be empty");
+        Objects.requireNonNull(subType, "subType cannot be null");
 
         for (NeeoDeviceChannel channel : channels) {
-            if (StringUtils.equalsIgnoreCase(itemName, channel.getItemName())
+            if (StringUtils.equalsIgnoreCase(itemName, channel.getItemName()) && channel.getSubType() == subType
                     && channel.getChannelNbr() == channelNbr) {
                 return channel;
             }
@@ -286,6 +328,7 @@ public class NeeoDevice {
      * @param context the non-null service context
      * @return the new {@link NeeoDevice} or null if the {@link Thing} doesn't exist anymore
      */
+    @Nullable
     public NeeoDevice merge(ServiceContext context) {
         Objects.requireNonNull(context, "context cannot be null");
 
@@ -330,19 +373,17 @@ public class NeeoDevice {
             if (linkedItems != null) {
                 for (Item item : linkedItems) {
                     if (!itemNames.contains(item.getName())) {
-                        newChannels.add(
-                                new NeeoDeviceChannel(NeeoDeviceChannelKind.get(channel.getKind()), item.getName(), 1,
-                                        exposeAll ? NeeoCapabilityType.guessType(channelType)
-                                                : NeeoCapabilityType.EXCLUDE,
-                                        NeeoUtil.getUniqueLabel(existinglabels, NeeoUtil.getLabel(item, channelType)),
-                                        NeeoUtil.getPattern(item, channelType), NeeoDeviceChannelRange.from(item)));
+                        newChannels.addAll(NeeoDeviceChannel.from(item, channel, channelType,
+                                exposeAll ? NeeoCapabilityType.guessType(channelType) : NeeoCapabilityType.EXCLUDE,
+                                existinglabels));
                     }
 
                 }
             }
         }
 
-        return new NeeoDevice(uid, type, manufacturer, thing.getLabel(), newChannels, timing, deviceCapabilities);
+        return new NeeoDevice(uid, type, manufacturer, thing.getLabel(), newChannels, timing, deviceCapabilities,
+                specificName, iconName);
     }
 
     /**
@@ -357,9 +398,4 @@ public class NeeoDevice {
                 && !NeeoDeviceType.LIGHT.equals(device.type);
     }
 
-    @Override
-    public String toString() {
-        return "NeeoDevice [uid=" + uid + ", type=" + type + ", manufacturer=" + manufacturer + ", name=" + name
-                + ", channels=" + ArrayUtils.toString(channels) + "]";
-    };
 }

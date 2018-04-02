@@ -15,6 +15,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.binding.neeo.NeeoConstants;
 import org.openhab.binding.neeo.NeeoUtil;
 import org.openhab.binding.neeo.internal.models.NeeoDevice;
+import org.openhab.binding.neeo.internal.models.NeeoDevices;
 import org.openhab.binding.neeo.internal.models.NeeoMacro;
 import org.openhab.binding.neeo.internal.models.NeeoRoom;
 import org.openhab.binding.neeo.internal.type.UidUtils;
@@ -34,10 +35,13 @@ public class NeeoDeviceProtocol {
     /** The {@link NeeoHandlerCallback} */
     private final NeeoHandlerCallback callback;
 
-    /** The {@link NeeoRoom} */
-    private final NeeoRoom neeoRoom;
+    /** The room key */
+    private final String roomKey;
 
-    /** The {@link NeeoDevice} */
+    /** The device key */
+    private final String deviceKey;
+
+    /** The {@link NeeoDevice} in the room */
     private final NeeoDevice neeoDevice;
 
     /**
@@ -50,26 +54,28 @@ public class NeeoDeviceProtocol {
      */
     public NeeoDeviceProtocol(NeeoHandlerCallback callback, String roomKey, String deviceKey) throws IOException {
         Objects.requireNonNull(callback, "callback cannot be null");
-        Objects.requireNonNull(roomKey, "roomKey cannot be empty");
-        Objects.requireNonNull(deviceKey, "deviceKey cannot be empty");
+        NeeoUtil.requireNotEmpty(roomKey, "roomKey cannot be empty");
+        NeeoUtil.requireNotEmpty(deviceKey, "deviceKey cannot be empty");
 
+        this.roomKey = roomKey;
         this.callback = callback;
+        this.deviceKey = deviceKey;
 
         final NeeoBrainApi api = callback.getApi();
         if (api == null) {
             throw new IllegalArgumentException("NeeoBrainApi cannot be null");
         }
 
-        neeoRoom = api.getRoom(roomKey);
-        if (neeoRoom == null) {
-            throw new IllegalArgumentException("Room (" + roomKey + ") was not found in the NEEO Brain");
-        }
+        final NeeoRoom neeoRoom = api.getRoom(roomKey);
 
-        neeoDevice = neeoRoom.getDevices().getDevice(deviceKey);
-        if (neeoDevice == null) {
+        final NeeoDevices devices = neeoRoom.getDevices();
+        final NeeoDevice device = devices.getDevice(deviceKey);
+        if (device == null) {
             throw new IllegalArgumentException(
                     "Device (" + deviceKey + ") was not found in the NEEO Brain for room (" + roomKey + ")");
         }
+
+        neeoDevice = device;
     }
 
     /**
@@ -111,7 +117,7 @@ public class NeeoDeviceProtocol {
         } else {
             try {
                 if (start) {
-                    api.triggerMacro(neeoRoom.getKey(), neeoDevice.getKey(), macroKey);
+                    api.triggerMacro(roomKey, deviceKey, macroKey);
 
                     // NEEO macros are not what we generally think of for macros
                     // Trigger a NEEO macro is simply asking the brain to send an IR pulse

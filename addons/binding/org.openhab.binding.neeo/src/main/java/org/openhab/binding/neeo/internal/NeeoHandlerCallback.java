@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.neeo.internal;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -70,5 +71,6 @@ public interface NeeoHandlerCallback {
      *
      * @return a possibly null {@link NeeoBrainApi}
      */
+    @Nullable
     NeeoBrainApi getApi();
 }

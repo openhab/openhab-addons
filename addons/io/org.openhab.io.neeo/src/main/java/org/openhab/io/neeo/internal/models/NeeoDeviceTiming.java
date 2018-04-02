@@ -8,10 +8,12 @@
  */
 package org.openhab.io.neeo.internal.models;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * This model specifies the various timings associated with the {@link NeeoDevice}
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  *
  */
 public class NeeoDeviceTiming {
@@ -45,7 +47,8 @@ public class NeeoDeviceTiming {
      * @param sourceSwitchDelay the time (in ms) to switch inputs
      * @param shutdownDelay the time (in ms) to power off
      */
-    public NeeoDeviceTiming(Integer standbyCommandDelay, Integer sourceSwitchDelay, Integer shutdownDelay) {
+    public NeeoDeviceTiming(@Nullable Integer standbyCommandDelay, @Nullable Integer sourceSwitchDelay,
+            @Nullable Integer shutdownDelay) {
         this.standbyCommandDelay = constrainTime(standbyCommandDelay == null ? DEFAULT_DELAY : standbyCommandDelay);
         this.sourceSwitchDelay = constrainTime(sourceSwitchDelay == null ? DEFAULT_DELAY : sourceSwitchDelay);
         this.shutdownDelay = constrainTime(shutdownDelay == null ? DEFAULT_DELAY : shutdownDelay);

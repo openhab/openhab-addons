@@ -11,6 +11,7 @@ package org.openhab.io.neeo.internal.models;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Defines a NEEO device type. There are many unknown and not working device types that NEEO supports and has never
@@ -21,13 +22,17 @@ import org.apache.commons.lang.StringUtils;
  * Note: this class will also be used for backward compatibility at some point (when they change ACCESSOIRE to
  * ACCESSORY) and any other transformations that may come up.
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class NeeoDeviceType {
+    /** Represents an device that should be excluded */
     public static final NeeoDeviceType EXCLUDE = new NeeoDeviceType("");
+    /** Represents an accessory device (spelled the way NEEO spells it) */
     public static final NeeoDeviceType ACCESSOIRE = new NeeoDeviceType("ACCESSOIRE");
+    /** Represents an light device */
     static final NeeoDeviceType LIGHT = new NeeoDeviceType("LIGHT");
 
+    /** Represents the propery way to spell accessory! */
     private static final String ACCESSORY = "ACCESSORY";
 
     /** The text value of the device type */
@@ -63,32 +68,15 @@ public class NeeoDeviceType {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((text == null) ? 0 : text.hashCode());
-        return result;
+        return text.hashCode();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        NeeoDeviceType other = (NeeoDeviceType) obj;
-        if (text == null) {
-            if (other.text != null) {
-                return false;
-            }
-        } else if (!text.equals(other.text)) {
-            return false;
-        }
-        return true;
+        return StringUtils.equals(text, ((NeeoDeviceType) obj).text);
     }
 
     @Override

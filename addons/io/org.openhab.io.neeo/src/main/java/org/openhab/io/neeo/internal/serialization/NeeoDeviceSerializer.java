@@ -16,12 +16,13 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.type.ThingType;
+import org.openhab.io.neeo.NeeoBrainServlet;
 import org.openhab.io.neeo.NeeoConstants;
 import org.openhab.io.neeo.NeeoService;
-import org.openhab.io.neeo.NeeoServlet;
 import org.openhab.io.neeo.internal.NeeoDeviceKeys;
 import org.openhab.io.neeo.internal.NeeoUtil;
 import org.openhab.io.neeo.internal.ServiceContext;
@@ -45,14 +46,16 @@ import com.google.gson.JsonSerializer;
  * {@link NeeoDevice}. This implementation should NOT be used in communications with the NEEO brain (use
  * {@link NeeoBrainDeviceSerializer} instead)
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class NeeoDeviceSerializer implements JsonSerializer<NeeoDevice>, JsonDeserializer<NeeoDevice> {
 
     /** The service */
+    @Nullable
     private final NeeoService service;
 
-    /** The serivce context */
+    /** The service context */
+    @Nullable
     private final ServiceContext context;
 
     /**
@@ -69,14 +72,14 @@ public class NeeoDeviceSerializer implements JsonSerializer<NeeoDevice>, JsonDes
      * @param service the possibly null service
      * @param context the possibly null context
      */
-    public NeeoDeviceSerializer(NeeoService service, ServiceContext context) {
+    public NeeoDeviceSerializer(@Nullable NeeoService service, @Nullable ServiceContext context) {
         this.service = service;
         this.context = context;
     }
 
     @Override
-    public NeeoDevice deserialize(JsonElement elm, Type type, JsonDeserializationContext jsonContext)
-            throws JsonParseException {
+    public NeeoDevice deserialize(@Nullable JsonElement elm, @Nullable Type type,
+            @Nullable JsonDeserializationContext jsonContext) throws JsonParseException {
         Objects.requireNonNull(elm, "elm cannot be null");
         Objects.requireNonNull(type, "type cannot be null");
         Objects.requireNonNull(jsonContext, "jsonContext cannot be null");
@@ -99,16 +102,23 @@ public class NeeoDeviceSerializer implements JsonSerializer<NeeoDevice>, JsonDes
                 ? jsonContext.deserialize(jo.get("deviceCapabilities"), String[].class)
                 : null;
 
+        final String specificName = jo.has("specificName") ? jo.get("specificName").getAsString() : null;
+
+        final String iconName = jo.has("iconName") ? jo.get("iconName").getAsString() : null;
+
         try {
-            return new NeeoDevice(uid, devType, manufacturer, name, Arrays.asList(channels), timing,
-                    deviceCapabilities == null ? null : Arrays.asList(deviceCapabilities));
+            return new NeeoDevice(uid, devType,
+                    manufacturer == null || StringUtils.isEmpty(manufacturer) ? NeeoUtil.NOTAVAILABLE : manufacturer,
+                    name, Arrays.asList(channels), timing,
+                    deviceCapabilities == null ? null : Arrays.asList(deviceCapabilities), specificName, iconName);
         } catch (NullPointerException | IllegalArgumentException e) {
             throw new JsonParseException(e);
         }
     }
 
     @Override
-    public JsonElement serialize(NeeoDevice device, Type deviceType, JsonSerializationContext jsonContext) {
+    public JsonElement serialize(NeeoDevice device, @Nullable Type deviceType,
+            @Nullable JsonSerializationContext jsonContext) {
         Objects.requireNonNull(device, "device cannot be null");
         Objects.requireNonNull(deviceType, "deviceType cannot be null");
         Objects.requireNonNull(jsonContext, "jsonContext cannot be null");
@@ -120,6 +130,8 @@ public class NeeoDeviceSerializer implements JsonSerializer<NeeoDevice>, JsonDes
         jsonObject.add("type", jsonContext.serialize(device.getType()));
         jsonObject.addProperty("manufacturer", device.getManufacturer());
         jsonObject.addProperty("name", device.getName());
+        jsonObject.addProperty("specificName", device.getSpecificName());
+        jsonObject.addProperty("iconName", device.getIconName());
 
         final JsonArray channels = (JsonArray) jsonContext.serialize(device.getChannels());
 
@@ -134,14 +146,16 @@ public class NeeoDeviceSerializer implements JsonSerializer<NeeoDevice>, JsonDes
             jsonObject.addProperty("thingStatus", uid.getThingType().toUpperCase());
         }
 
-        if (context != null) {
+        final ServiceContext localContext = context;
+        if (localContext != null) {
             if (!StringUtils.equalsIgnoreCase(NeeoConstants.NEEOIO_BINDING_ID, uid.getBindingId())) {
-                final Thing thing = context.getThingRegistry().get(device.getUid().asThingUID());
+                final Thing thing = localContext.getThingRegistry().get(device.getUid().asThingUID());
                 jsonObject.addProperty("thingStatus",
                         thing == null ? ThingStatus.UNKNOWN.name() : thing.getStatus().name());
 
                 if (thing != null) {
-                    final ThingType thingType = context.getThingTypeRegistry().getThingType(thing.getThingTypeUID());
+                    final ThingType thingType = localContext.getThingTypeRegistry()
+                            .getThingType(thing.getThingTypeUID());
 
                     if (thingType != null) {
                         for (JsonElement chnl : channels) {
@@ -167,11 +181,12 @@ public class NeeoDeviceSerializer implements JsonSerializer<NeeoDevice>, JsonDes
 
         jsonObject.add("channels", channels);
 
-        if (service != null) {
+        final NeeoService localService = service;
+        if (localService != null) {
             List<String> foundKeys = new ArrayList<>();
-            for (final NeeoServlet servlet : service.getServlets()) {
+            for (final NeeoBrainServlet servlet : localService.getServlets()) {
                 final NeeoDeviceKeys servletKeys = servlet.getDeviceKeys();
-                final Set<String> keys = servletKeys == null ? null : servletKeys.get(device.getUid());
+                final Set<String> keys = servletKeys.get(device.getUid());
                 foundKeys.addAll(keys);
             }
             jsonObject.add("keys", jsonContext.serialize(foundKeys));

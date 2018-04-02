@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -26,11 +27,10 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.openhab.io.neeo.NeeoConstants;
+import org.openhab.io.neeo.internal.models.ItemSubType;
 import org.openhab.io.neeo.internal.models.NeeoCapabilityType;
 import org.openhab.io.neeo.internal.models.NeeoDevice;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannel;
-import org.openhab.io.neeo.internal.models.NeeoDeviceChannelKind;
-import org.openhab.io.neeo.internal.models.NeeoDeviceChannelRange;
 import org.openhab.io.neeo.internal.models.NeeoDeviceTiming;
 import org.openhab.io.neeo.internal.models.NeeoDeviceType;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The class will handle the conversion between a {@link Thing} and a {@link NeeoDevice}
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 class OpenHabToDeviceConverter {
 
@@ -76,6 +76,7 @@ class OpenHabToDeviceConverter {
      * @param thing the non-null thing
      * @return a potentially null neeo device
      */
+    @Nullable
     NeeoDevice convert(Thing thing) {
         Objects.requireNonNull(thing, "thing cannot be null");
 
@@ -88,9 +89,8 @@ class OpenHabToDeviceConverter {
             final ChannelUID uid = channel.getUID();
 
             if (channel.getKind() == ChannelKind.TRIGGER) {
-                channels.add(new NeeoDeviceChannel(NeeoDeviceChannelKind.get(channel.getKind()), uid.getId(), 1,
-                        NeeoCapabilityType.BUTTON, NeeoUtil.getUniqueLabel(existingLabels, uid.getIdWithoutGroup()), "",
-                        null));
+                channels.addAll(
+                        NeeoDeviceChannel.from(channel, NeeoCapabilityType.BUTTON, ItemSubType.NONE, existingLabels));
             } else {
                 final ChannelType channelType = context.getChannelTypeRegistry()
                         .getChannelType(channel.getChannelTypeUID());
@@ -110,9 +110,7 @@ class OpenHabToDeviceConverter {
                 final Set<Item> linkedItems = context.getItemChannelLinkRegistry().getLinkedItems(uid);
                 if (linkedItems != null) {
                     for (Item item : linkedItems) {
-                        channels.add(new NeeoDeviceChannel(NeeoDeviceChannelKind.get(channel.getKind()), item.getName(),
-                                1, type, NeeoUtil.getUniqueLabel(existingLabels, NeeoUtil.getLabel(item, channelType)),
-                                NeeoUtil.getPattern(item, channelType), NeeoDeviceChannelRange.from(item)));
+                        channels.addAll(NeeoDeviceChannel.from(item, channel, channelType, type, existingLabels));
                     }
                 }
             }
@@ -144,7 +142,7 @@ class OpenHabToDeviceConverter {
             try {
                 return new NeeoDevice(new NeeoThingUID(thing.getUID()),
                         exposeNeeoBinding ? NeeoDeviceType.parse(neeoType) : NeeoDeviceType.EXCLUDE, manufacturer,
-                        thing.getLabel(), channels, timing, Arrays.asList(deviceCapabilities));
+                        thing.getLabel(), channels, timing, Arrays.asList(deviceCapabilities), null, null);
             } catch (IllegalArgumentException e) {
                 logger.debug("NeeoDevice constructor threw an IAE - ignoring device: {} - {}", thing.getUID(),
                         e.getMessage(), e);
@@ -168,6 +166,7 @@ class OpenHabToDeviceConverter {
      * @param value a possibly null, possibly empty value to parse
      * @return an Integer or null if not a number
      */
+    @Nullable
     private static Integer parseInteger(String value) {
         if (StringUtils.isEmpty(value)) {
             return null;
@@ -185,15 +184,15 @@ class OpenHabToDeviceConverter {
      * @param itemName a possibly empty, possibly null item name
      * @return a {@link NeeoDeviceChannel} representing the item name or null if not found
      */
-    NeeoDeviceChannel getNeeoDeviceChannel(String itemName) {
+    @Nullable
+    List<NeeoDeviceChannel> getNeeoDeviceChannel(String itemName) {
         if (StringUtils.isEmpty(itemName)) {
             return null;
         }
 
         try {
             final Item item = context.getItemRegistry().getItem(itemName);
-            return new NeeoDeviceChannel(NeeoDeviceChannelKind.ITEM, item.getName(), 1, NeeoCapabilityType.EXCLUDE,
-                    item.getLabel(), NeeoUtil.getPattern(item, null), NeeoDeviceChannelRange.from(item));
+            return NeeoDeviceChannel.from(item, null, null, NeeoCapabilityType.EXCLUDE, new HashSet<String>());
         } catch (ItemNotFoundException e) {
             return null;
         }

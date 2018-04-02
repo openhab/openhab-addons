@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.osgi.service.component.annotations.Component;
@@ -30,12 +31,13 @@ public class NeeoThingTypeProviderImpl implements NeeoThingTypeProvider {
     private Map<ThingTypeUID, ThingType> thingTypesByUID = new ConcurrentHashMap<>();
 
     @Override
-    public Collection<ThingType> getThingTypes(Locale locale) {
+    public Collection<ThingType> getThingTypes(@Nullable Locale locale) {
         return thingTypesByUID.values();
     }
 
+    @Nullable
     @Override
-    public ThingType getThingType(ThingTypeUID thingTypeUID, Locale locale) {
+    public ThingType getThingType(ThingTypeUID thingTypeUID, @Nullable Locale locale) {
         return thingTypesByUID.get(thingTypeUID);
     }
 

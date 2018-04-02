@@ -8,34 +8,28 @@
  */
 package org.openhab.io.neeo.internal.servletservices.models;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The brain information class. This class will be used to communicate the brain ID or IP address between the transport
  * page and the servlet
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class BrainInfo {
     /** The possibly null, possibly empty brain identifier (used when removing a brain) */
-    private final String brainId;
+    @Nullable
+    private String brainId;
     /** The possibly null, possibly empty brain ip address (used when adding a brain) */
-    private final String brainIp;
-
-    /**
-     * Constructs the brain information object
-     *
-     * @param brainId a possibly null, possibly empty brain ID
-     * @param brainIp a possibly null, possibly empty brain ip address
-     */
-    public BrainInfo(String brainId, String brainIp) {
-        this.brainId = brainId;
-        this.brainIp = brainIp;
-    }
+    @Nullable
+    private String brainIp;
 
     /**
      * Returns the brain identifier
      *
      * @return a possibly null, possibly empty brain ID
      */
+    @Nullable
     public String getBrainId() {
         return brainId;
     }
@@ -45,6 +39,7 @@ public class BrainInfo {
      *
      * @return a possibly null, possibly empty brain ip address
      */
+    @Nullable
     public String getBrainIp() {
         return brainIp;
     }

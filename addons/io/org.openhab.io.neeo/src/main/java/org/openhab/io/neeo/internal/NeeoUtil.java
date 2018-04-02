@@ -17,11 +17,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -30,16 +30,18 @@ import org.eclipse.smarthome.core.thing.type.ChannelGroupDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.io.neeo.NeeoConstants;
 import org.openhab.io.neeo.NeeoService;
+import org.openhab.io.neeo.internal.models.ItemSubType;
 import org.openhab.io.neeo.internal.models.NeeoCapabilityType;
 import org.openhab.io.neeo.internal.models.NeeoDevice;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannel;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannelKind;
 import org.openhab.io.neeo.internal.models.NeeoDeviceType;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
-import org.openhab.io.neeo.internal.serialization.AtomicStringTypeAdapter;
 import org.openhab.io.neeo.internal.serialization.ChannelUIDSerializer;
+import org.openhab.io.neeo.internal.serialization.ItemSubTypeSerializer;
 import org.openhab.io.neeo.internal.serialization.NeeoBrainDeviceSerializer;
 import org.openhab.io.neeo.internal.serialization.NeeoCapabilityTypeSerializer;
 import org.openhab.io.neeo.internal.serialization.NeeoDeviceChannelKindSerializer;
@@ -54,7 +56,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * Various utility functions used by the NEEO Transport
@@ -62,6 +63,11 @@ import com.google.gson.reflect.TypeToken;
  * @author Tim Roberts - initial contribution
  */
 public class NeeoUtil {
+
+    /**
+     * Static variable representing something is not available
+     */
+    public static final String NOTAVAILABLE = "N/A";
 
     /**
      * Builds and returns a {@link GsonBuilder}. The GsonBuilder has adapters registered for {@link ThingUID},
@@ -74,8 +80,6 @@ public class NeeoUtil {
 
         gsonBuilder.registerTypeAdapter(ThingUID.class, new NeeoThingUIDSerializer());
         gsonBuilder.registerTypeAdapter(ChannelUID.class, new ChannelUIDSerializer());
-        gsonBuilder.registerTypeAdapter(new TypeToken<AtomicReference<String>>() {
-        }.getType(), new AtomicStringTypeAdapter());
         return gsonBuilder;
     }
 
@@ -102,11 +106,13 @@ public class NeeoUtil {
      * @param context a possibly null {@link ServiceContext}
      * @return a non-null {@link GsonBuilder} to use
      */
-    public static GsonBuilder createNeeoDeviceGsonBuilder(NeeoService service, ServiceContext context) {
+    public static GsonBuilder createNeeoDeviceGsonBuilder(@Nullable NeeoService service,
+            @Nullable ServiceContext context) {
         final GsonBuilder gsonBuilder = createGsonBuilder();
         gsonBuilder.registerTypeAdapter(NeeoThingUID.class, new NeeoThingUIDSerializer());
         gsonBuilder.registerTypeAdapter(NeeoDeviceChannelKind.class, new NeeoDeviceChannelKindSerializer());
         gsonBuilder.registerTypeAdapter(NeeoCapabilityType.class, new NeeoCapabilityTypeSerializer());
+        gsonBuilder.registerTypeAdapter(ItemSubType.class, new ItemSubTypeSerializer());
         gsonBuilder.registerTypeAdapter(NeeoDeviceChannel.class, new NeeoDeviceChannelSerializer(context));
         gsonBuilder.registerTypeAdapter(NeeoDeviceType.class, new NeeoDeviceTypeSerializer());
         gsonBuilder.registerTypeAdapter(NeeoDevice.class, new NeeoDeviceSerializer(service, context));
@@ -142,10 +148,6 @@ public class NeeoUtil {
      * @return the decoded String
      */
     public static String decodeURIComponent(String s) {
-        if (s == null) {
-            return null;
-        }
-
         String result = null;
 
         try {
@@ -212,7 +214,7 @@ public class NeeoUtil {
      *
      * @param closeable a possibly null {@link AutoCloseable}. If null, no action is done.
      */
-    public static void close(AutoCloseable closeable) {
+    public static void close(@Nullable AutoCloseable closeable) {
         if (closeable != null) {
             try {
                 closeable.close();
@@ -239,7 +241,7 @@ public class NeeoUtil {
      *
      * @param future a possibly null future. If null, no action is done
      */
-    static void cancel(Future<?> future) {
+    static void cancel(@Nullable Future<?> future) {
         if (future != null) {
             future.cancel(true);
         }
@@ -266,6 +268,7 @@ public class NeeoUtil {
      * @param propertyName the non-empty property name
      * @return the possibly null string representation
      */
+    @Nullable
     public static String getString(JsonObject jo, String propertyName) {
         Objects.requireNonNull(jo, "jo cannot be null");
         requireNotEmpty(propertyName, "propertyName cannot be empty");
@@ -281,6 +284,7 @@ public class NeeoUtil {
      * @param propertyName the non-empty property name
      * @return the possibly null integer
      */
+    @Nullable
     public static Integer getInt(JsonObject jo, String propertyName) {
         Objects.requireNonNull(jo, "jo cannot be null");
         requireNotEmpty(propertyName, "propertyName cannot be empty");
@@ -296,16 +300,15 @@ public class NeeoUtil {
      * @param enumName the non-empty enum name to search for
      * @return the {@link Command} or null if not found (or null if cmd's class is not an enum)
      */
+    @Nullable
     static Command getEnum(Class<? extends Command> cmd, String enumName) {
         Objects.requireNonNull(cmd, "cmd cannot be null");
         requireNotEmpty(enumName, "enumName cannot be null");
 
         if (cmd.isEnum()) {
             for (Command cmdEnum : cmd.getEnumConstants()) {
-                if (cmdEnum != null) {
-                    if (StringUtils.equalsIgnoreCase(((Enum<?>) cmdEnum).name(), enumName)) {
-                        return cmdEnum;
-                    }
+                if (StringUtils.equalsIgnoreCase(((Enum<?>) cmdEnum).name(), enumName)) {
+                    return cmdEnum;
                 }
             }
         }
@@ -330,10 +333,10 @@ public class NeeoUtil {
      * @param channelType the possibly null channel type
      * @return the label to use (or null if no label)
      */
-    public static String getLabel(Item item, ChannelType channelType) {
+    public static String getLabel(@Nullable Item item, @Nullable ChannelType channelType) {
         if (item != null) {
             final String label = item.getLabel();
-            if (StringUtils.isNotEmpty(label)) {
+            if (label != null && StringUtils.isNotEmpty(label)) {
                 return label;
             }
         }
@@ -345,7 +348,7 @@ public class NeeoUtil {
             }
         }
 
-        return null;
+        return NOTAVAILABLE;
     }
 
     /**
@@ -355,9 +358,11 @@ public class NeeoUtil {
      * @param channelType the possibly null channel type
      * @return the pattern to use (or null if no pattern to use)
      */
-    public static String getPattern(Item item, ChannelType channelType) {
+    @Nullable
+    public static String getPattern(@Nullable Item item, @Nullable ChannelType channelType) {
         if (item != null) {
-            final String format = item.getStateDescription() == null ? null : item.getStateDescription().getPattern();
+            final StateDescription sd = item.getStateDescription();
+            final String format = sd == null ? null : sd.getPattern();
             if (StringUtils.isEmpty(format)) {
                 if (StringUtils.equalsIgnoreCase("datetime", item.getType())) {
                     return "%tF %<tT";
@@ -383,7 +388,7 @@ public class NeeoUtil {
     /**
      * Returns the unique label name given a set of labels. The unique label will be added to the set of labels.
      *
-     * @param labels the non-null, possibly empty set of lables
+     * @param labels the non-null, possibly empty set of labels
      * @param itemLabel the possibly null, possibly empty item label to get a unique name for
      * @return the unique label
      */
@@ -410,12 +415,15 @@ public class NeeoUtil {
      * @param groupId a possibly empty, possibly null group ID
      * @return the group label or null if none
      */
-    public static String getGroupLabel(ThingType thingType, String groupId) {
+    @Nullable
+    public static String getGroupLabel(ThingType thingType, @Nullable String groupId) {
         Objects.requireNonNull(thingType, "thingType cannot be null");
 
-        for (ChannelGroupDefinition cgd : thingType.getChannelGroupDefinitions()) {
-            if (StringUtils.equals(groupId, cgd.getId())) {
-                return cgd.getLabel();
+        if (groupId != null) {
+            for (ChannelGroupDefinition cgd : thingType.getChannelGroupDefinitions()) {
+                if (StringUtils.equals(groupId, cgd.getId())) {
+                    return cgd.getLabel();
+                }
             }
         }
 

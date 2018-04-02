@@ -32,6 +32,7 @@ import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.io.transport.mdns.MDNSClient;
 import org.openhab.io.neeo.NeeoConstants;
@@ -67,18 +68,24 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
     private final ServiceListener mdnsListener = new ServiceListener() {
 
         @Override
-        public void serviceAdded(ServiceEvent event) {
-            considerService(event.getInfo());
+        public void serviceAdded(@Nullable ServiceEvent event) {
+            if (event != null) {
+                considerService(event.getInfo());
+            }
         }
 
         @Override
-        public void serviceRemoved(ServiceEvent event) {
-            removeService(event.getInfo());
+        public void serviceRemoved(@Nullable ServiceEvent event) {
+            if (event != null) {
+                removeService(event.getInfo());
+            }
         }
 
         @Override
-        public void serviceResolved(ServiceEvent event) {
-            considerService(event.getInfo());
+        public void serviceResolved(@Nullable ServiceEvent event) {
+            if (event != null) {
+                considerService(event.getInfo());
+            }
         }
 
     };
@@ -112,7 +119,6 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
      * <li>Getting a list of all current announcements</li>
      * </ol>
      *
-     * @see org.openhab.io.neeo.internal.BrainDiscovery#startDiscovery()
      */
     @Override
     public void startDiscovery() {
@@ -173,6 +179,7 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
      * @param info the non-null {@link ServiceInfo}
      * @return an {@link Entry} that represents the brain ID and the associated IP address
      */
+    @Nullable
     private Entry<String, InetAddress> getNeeoBrainInfo(ServiceInfo info) {
         Objects.requireNonNull(info, "info cannot be null");
         if (!StringUtils.equals("neeo", info.getApplication())) {
@@ -342,7 +349,6 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
         } finally {
             systemsLock.unlock();
         }
-
     }
 
     /**
@@ -406,6 +412,7 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
      * @param service the non-null {@link ServiceInfo}
      * @return the ip address of the service or null if not found
      */
+    @Nullable
     private InetAddress getIpAddress(ServiceInfo service) {
         Objects.requireNonNull(service, "service cannot be null");
 

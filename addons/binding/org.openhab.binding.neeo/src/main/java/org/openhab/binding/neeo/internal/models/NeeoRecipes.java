@@ -9,8 +9,10 @@
 package org.openhab.binding.neeo.internal.models;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The model representing Neeo Recipes (serialize/deserialize json use only).
@@ -20,15 +22,16 @@ import org.apache.commons.lang.StringUtils;
 public class NeeoRecipes {
 
     /** The recipes. */
-    private final NeeoRecipe[] recipes;
+    private NeeoRecipe @Nullable [] recipes;
 
     /**
-     * Instantiates a new neeo recipes.
+     * Creates the recipes from the given recipes
      *
-     * @param receipes the receipes
+     * @param recipes the recipes
      */
-    public NeeoRecipes(NeeoRecipe[] receipes) {
-        this.recipes = receipes;
+    public NeeoRecipes(NeeoRecipe[] recipes) {
+        Objects.requireNonNull(recipes, "recipes cannot be null");
+        this.recipes = recipes;
     }
 
     /**
@@ -37,7 +40,8 @@ public class NeeoRecipes {
      * @return the recipes
      */
     public NeeoRecipe[] getRecipes() {
-        return recipes;
+        final NeeoRecipe[] localRecipes = recipes;
+        return localRecipes == null ? new NeeoRecipe[0] : localRecipes;
     }
 
     /**
@@ -46,12 +50,13 @@ public class NeeoRecipes {
      * @param key the key
      * @return the recipe or null if none found
      */
+    @Nullable
     public NeeoRecipe getRecipe(String key) {
         if (recipes == null || StringUtils.isEmpty(key)) {
             return null;
         }
 
-        for (NeeoRecipe recipe : recipes) {
+        for (NeeoRecipe recipe : getRecipes()) {
             if (StringUtils.equalsIgnoreCase(key, recipe.getKey())) {
                 return recipe;
             }
@@ -66,12 +71,13 @@ public class NeeoRecipes {
      * @param type the recipe type
      * @return the recipe or null if none found
      */
+    @Nullable
     public NeeoRecipe getRecipeByScenarioKey(String key, String type) {
         if (recipes == null || StringUtils.isEmpty(key)) {
             return null;
         }
 
-        for (NeeoRecipe recipe : recipes) {
+        for (NeeoRecipe recipe : getRecipes()) {
             if (StringUtils.equalsIgnoreCase(key, recipe.getScenarioKey())
                     && StringUtils.equalsIgnoreCase(type, recipe.getType())) {
                 return recipe;
@@ -86,12 +92,13 @@ public class NeeoRecipes {
      * @param name the recipe name
      * @return the recipe or null if none found
      */
+    @Nullable
     public NeeoRecipe getRecipeByName(String name) {
         if (recipes == null || StringUtils.isEmpty(name)) {
             return null;
         }
 
-        for (NeeoRecipe recipe : recipes) {
+        for (NeeoRecipe recipe : getRecipes()) {
             if (StringUtils.equalsIgnoreCase(name, recipe.getName())) {
                 return recipe;
             }

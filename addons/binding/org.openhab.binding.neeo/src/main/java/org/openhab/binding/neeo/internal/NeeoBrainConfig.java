@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.neeo.internal;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neeo.handler.NeeoBrainHandler;
 
 /**
@@ -18,12 +19,14 @@ import org.openhab.binding.neeo.handler.NeeoBrainHandler;
 public class NeeoBrainConfig {
 
     /** The ip address */
+    @Nullable
     private String ipAddress;
 
     /** Whether to enable forward actions */
     private boolean enableForwardActions;
 
     /** The forward actions chain (comma delimited) */
+    @Nullable
     private String forwardChain;
 
     /** Whether to discover empty rooms or not */
@@ -37,6 +40,7 @@ public class NeeoBrainConfig {
      *
      * @return the ip address
      */
+    @Nullable
     public String getIpAddress() {
         return ipAddress;
     }
@@ -73,6 +77,7 @@ public class NeeoBrainConfig {
      *
      * @return the forward chain
      */
+    @Nullable
     public String getForwardChain() {
         return forwardChain;
     }

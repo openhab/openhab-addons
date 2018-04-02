@@ -10,19 +10,18 @@ package org.openhab.io.neeo;
 
 import java.io.File;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 
 /**
  * The constants class for the NEEO Transport
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class NeeoConstants {
 
     /** Binding ID/Thing Types for transport created things - must match app.js */
-    public static final @NonNull String NEEOBINDING_BINDING_ID = "neeo";
-    public static final @NonNull String NEEOBINDING_DEVICE_ID = NEEOBINDING_BINDING_ID + ":device";
+    public static final String NEEOBINDING_BINDING_ID = "neeo";
+    public static final String NEEOBINDING_DEVICE_ID = NEEOBINDING_BINDING_ID + ":device";
     public static final String NEEOIO_BINDING_ID = "neeo_io";
     public static final String VIRTUAL_THING_TYPE = "virtual";
 
@@ -31,7 +30,7 @@ public class NeeoConstants {
 
     /** Constants used for the Web APP */
     public static final String WEBAPP_PREFIX = "/neeo";
-    static final String WEBAPP_STATUS_PREFIX = "/neeostatus";
+    static final String WEBAPP_DASHBOARD_PREFIX = "/neeostatus";
 
     /** The MDNS type for neeo */
     public static final String NEEO_MDNS_TYPE = "_neeo._tcp.local.";

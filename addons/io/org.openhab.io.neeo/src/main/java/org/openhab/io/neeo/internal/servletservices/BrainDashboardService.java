@@ -17,8 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.openhab.io.neeo.NeeoBrainServlet;
 import org.openhab.io.neeo.NeeoService;
-import org.openhab.io.neeo.NeeoServlet;
 import org.openhab.io.neeo.internal.MdnsHelper;
 import org.openhab.io.neeo.internal.NeeoUtil;
 import org.openhab.io.neeo.internal.models.BrainStatus;
@@ -33,12 +33,12 @@ import com.google.gson.JsonParseException;
 /**
  * A subclass of {@link DefaultServletService} that handles brain status update for the web pages
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
-public class BrainStatusService extends DefaultServletService {
+public class BrainDashboardService extends DefaultServletService {
 
     /** The logger */
-    private final Logger logger = LoggerFactory.getLogger(BrainStatusService.class);
+    private final Logger logger = LoggerFactory.getLogger(BrainDashboardService.class);
 
     /** The gson used for json operations */
     private final Gson gson = NeeoUtil.createGson();
@@ -51,7 +51,7 @@ public class BrainStatusService extends DefaultServletService {
      *
      * @param service the non-null service
      */
-    public BrainStatusService(NeeoService service) {
+    public BrainDashboardService(NeeoService service) {
         Objects.requireNonNull(service, "service cannot be null");
 
         this.service = service;
@@ -88,13 +88,13 @@ public class BrainStatusService extends DefaultServletService {
                 MdnsHelper.sendQuery();
 
                 final List<BrainStatus> status = new ArrayList<>();
-                for (NeeoServlet servlet : service.getServlets()) {
+                for (NeeoBrainServlet servlet : service.getServlets()) {
                     status.add(servlet.getBrainStatus());
                 }
                 NeeoUtil.write(resp, gson.toJson(status));
             } else if (StringUtils.equalsIgnoreCase(paths[0], "blinkled")) {
                 final String brainId = req.getParameter("brainid");
-                final NeeoServlet servlet = service.getServlet(brainId);
+                final NeeoBrainServlet servlet = service.getServlet(brainId);
                 if (servlet == null) {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus("Unknown BraidID: " + brainId)));
                 } else {
@@ -108,7 +108,7 @@ public class BrainStatusService extends DefaultServletService {
                 }
             } else if (StringUtils.equalsIgnoreCase(paths[0], "getlog")) {
                 final String brainId = req.getParameter("brainid");
-                final NeeoServlet servlet = service.getServlet(brainId);
+                final NeeoBrainServlet servlet = service.getServlet(brainId);
                 if (servlet == null) {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus("Unknown BraidID: " + brainId)));
                 } else {
@@ -147,19 +147,25 @@ public class BrainStatusService extends DefaultServletService {
         try {
             if (StringUtils.equalsIgnoreCase(paths[0], "removebrain")) {
                 final BrainInfo info = gson.fromJson(req.getReader(), BrainInfo.class);
-                if (service.removeBrain(info.getBrainId())) {
+                final String brainId = info.getBrainId();
+                if (brainId == null) {
+                    NeeoUtil.write(resp, gson.toJson(new ReturnStatus("BrainID not specified")));
+                } else if (service.removeBrain(brainId)) {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus(true)));
                 } else {
                     NeeoUtil.write(resp,
-                            gson.toJson(new ReturnStatus("BrainID (" + info.getBrainId() + ") could not be removed")));
+                            gson.toJson(new ReturnStatus("BrainID (" + brainId + ") could not be removed")));
                 }
             } else if (StringUtils.equalsIgnoreCase(paths[0], "addbrain")) {
                 final BrainInfo info = gson.fromJson(req.getReader(), BrainInfo.class);
-                if (service.addBrain(info.getBrainIp())) {
+                final String brainIp = info.getBrainIp();
+                if (brainIp == null) {
+                    NeeoUtil.write(resp, gson.toJson(new ReturnStatus("BrainIP not specified")));
+                } else if (service.addBrain(brainIp)) {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus(true)));
                 } else {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus(
-                            "Brain (" + info.getBrainIp() + ") could not be added - no brain at that IP Address")));
+                            "Brain (" + brainIp + ") could not be added - no brain at that IP Address")));
                 }
             } else {
                 logger.debug("Unknown get path: {}", StringUtils.join(paths, ','));

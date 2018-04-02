@@ -16,6 +16,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -53,16 +56,18 @@ public class NeeoRoomDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(NeeoRoomDiscoveryService.class);
 
     /** The scanning task (not-null when connecting, null otherwise) */
-    private final AtomicReference<Future<?>> scan = new AtomicReference<>(null);
+    private final AtomicReference<@Nullable Future<?>> scan = new AtomicReference<>();
 
     /** The scheduler used to schedule tasks */
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(NeeoConstants.THREADPOOL_ID);
 
     /** The thing registry that we use */
-    private AtomicReference<ThingRegistry> thingRegistry = new AtomicReference<>();
+    @NonNullByDefault({})
+    private ThingRegistry thingRegistry;
 
     /** The type generator */
-    private AtomicReference<NeeoTypeGenerator> typeGenerator = new AtomicReference<>();
+    @NonNullByDefault({})
+    private NeeoTypeGenerator typeGenerator;
 
     /**
      * The thing types we discover. Since the room types are all dynamically generated, we simply return the binding
@@ -89,16 +94,16 @@ public class NeeoRoomDiscoveryService extends AbstractDiscoveryService {
     protected void setThingRegistry(ThingRegistry thingRegistry) {
         Objects.requireNonNull(thingRegistry, "thingRegistry cannot be null");
 
-        this.thingRegistry.set(thingRegistry);
+        this.thingRegistry = thingRegistry;
     }
 
     /**
-     * Unsets thing type provider.
+     * Unsets thing registry.
      *
-     * @param thingTypeProvider the thing type provider (ignored)
+     * @param thingRegistry the thing registry (ignored)
      */
     protected void unsetThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry.set(null);
+        this.thingRegistry = null;
     }
 
     /**
@@ -110,16 +115,16 @@ public class NeeoRoomDiscoveryService extends AbstractDiscoveryService {
     protected void setNeeoTypeGenerator(NeeoTypeGenerator typeGenerator) {
         Objects.requireNonNull(typeGenerator, "typeGenerator cannot be null");
 
-        this.typeGenerator.set(typeGenerator);
+        this.typeGenerator = typeGenerator;
     }
 
     /**
      * Unsets neeo type generator
      *
-     * @param thingTypeProvider the thing type provider (ignored)
+     * @param typeGenerator the neeo type provider (ignored)
      */
     protected void unsetNeeoTypeGenerator(NeeoTypeGenerator typeGenerator) {
-        this.typeGenerator.set(null);
+        this.typeGenerator = null;
     }
 
     @Override
@@ -149,20 +154,20 @@ public class NeeoRoomDiscoveryService extends AbstractDiscoveryService {
     private void scanForRooms() throws InterruptedException {
         NeeoUtil.checkInterrupt();
 
-        final ThingRegistry thingRegistry = this.thingRegistry.get();
-        if (thingRegistry == null) {
+        final ThingRegistry localThingRegistry = this.thingRegistry;
+        if (localThingRegistry == null) {
             logger.debug("ThingRegistry is null - scan aborted");
             return;
         }
 
-        final NeeoTypeGenerator typeGenerator = this.typeGenerator.get();
-        if (typeGenerator == null) {
+        final NeeoTypeGenerator localTypeGenerator = this.typeGenerator;
+        if (localTypeGenerator == null) {
             logger.debug("TypeGenerator is null - scan aborted");
             return;
         }
 
         logger.debug("Scanning all things for NeeoBrainHandlers");
-        for (final Thing thing : thingRegistry.getAll()) {
+        for (final Thing thing : localThingRegistry.getAll()) {
             NeeoUtil.checkInterrupt();
 
             final ThingHandler handler = thing.getHandler();
@@ -185,39 +190,43 @@ public class NeeoRoomDiscoveryService extends AbstractDiscoveryService {
 
                     final NeeoBrainConfig config = thing.getConfiguration().as(NeeoBrainConfig.class);
 
-                    if (brain != null && brain.getRooms() != null) {
-                        final NeeoRoom[] rooms = brain.getRooms().getRooms();
-                        if (rooms == null || rooms.length == 0) {
-                            logger.debug("Brain {} ({}) found - but there were no rooms - skipping", brain.getName(),
-                                    brainId);
-                        } else {
-                            logger.debug("Brain {} ({}) found, scanning {} rooms in it", brain.getName(), brainId,
-                                    rooms.length);
-                            for (NeeoRoom room : rooms) {
-                                NeeoUtil.checkInterrupt();
+                    final NeeoRoom[] rooms = brain.getRooms().getRooms();
+                    if (rooms.length == 0) {
+                        logger.debug("Brain {} ({}) found - but there were no rooms - skipping", brain.getName(),
+                                brainId);
+                    } else {
+                        logger.debug("Brain {} ({}) found, scanning {} rooms in it", brain.getName(), brainId,
+                                rooms.length);
+                        for (NeeoRoom room : rooms) {
+                            NeeoUtil.checkInterrupt();
 
-                                if ((room.getDevices() == null || room.getDevices().getDevices().length == 0)
-                                        && !config.isDiscoverEmptyRooms()) {
-                                    logger.debug("Room {} ({}) found but has no devices, ignoring - {}", room.getKey(),
-                                            brainId, room.getName());
-                                    continue;
-                                }
-
-                                logger.debug("Room {} ({}) found - {}", room.getKey(), brainId, room.getName());
-
-                                logger.debug("Generating thing type for {}: {}", brainId, room);
-                                typeGenerator.generate(brainId, room);
-
-                                final ThingUID thingUID = new ThingUID(UidUtils.generateThingTypeUID(room), brainUid,
-                                        "room");
-
-                                final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                                        .withProperty(NeeoConstants.CONFIG_ROOMKEY, room.getKey())
-                                        .withProperty(NeeoConstants.CONFIG_EXCLUDE_THINGS, true).withBridge(brainUid)
-                                        .withLabel(room.getName() + " (NEEO " + brainId + ")").build();
-                                thingDiscovered(discoveryResult);
+                            final String roomKey = room.getKey();
+                            if (roomKey == null || StringUtils.isEmpty(roomKey)) {
+                                logger.debug("Room didn't have a room key: {}", room);
+                                continue;
                             }
+
+                            if ((room.getDevices().getDevices().length == 0) && !config.isDiscoverEmptyRooms()) {
+                                logger.debug("Room {} ({}) found but has no devices, ignoring - {}", room.getKey(),
+                                        brainId, room.getName());
+                                continue;
+                            }
+
+                            logger.debug("Room {} ({}) found - {}", room.getKey(), brainId, room.getName());
+
+                            logger.debug("Generating thing type for {}: {}", brainId, room);
+                            localTypeGenerator.generate(brainId, room);
+
+                            final ThingUID thingUID = new ThingUID(UidUtils.generateThingTypeUID(room), brainUid,
+                                    "room");
+
+                            final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
+                                    .withProperty(NeeoConstants.CONFIG_ROOMKEY, roomKey)
+                                    .withProperty(NeeoConstants.CONFIG_EXCLUDE_THINGS, true).withBridge(brainUid)
+                                    .withLabel(room.getName() + " (NEEO " + brainId + ")").build();
+                            thingDiscovered(discoveryResult);
                         }
+
                     }
                 } catch (IOException e) {
                     logger.debug("IOException occurred getting brain info ({}): {}", brainId, e.getMessage(), e);

@@ -210,19 +210,27 @@
 
 .openhabThings .devices .deviceInfo .deviceLinked {
 	width: 1.5em;
+    max-width: 1.5em;
+    min-width: 1.5em;
 	min-height: 1px; /* trick to make sure width is applied if empty */
 }
 
 .openhabThings .devices .deviceInfo .deviceExpand {
 	width: 12px;
+    max-width: 12px;
+    min-width: 12px;
 }
 
 .openhabThings .devices .deviceInfo .deviceInfoPopup {
 	width: 12px;
+    max-width: 12px;
+    min-width: 12px;
 }
 
 .openhabThings .devices .deviceInfo .deviceName {
 	width: 20em;
+    max-width: 20em;
+    min-width: 20em;
 	white-space: nowrap;
 	overflow: hidden;
 }
@@ -275,53 +283,69 @@
 
 .openhabThings .devices .detailInfoPopup {
 	width: 1.5em;
+	min-width: 1.5em;
+	max-width: 1.5em;
 }
 
 .openhabThings .devices .detailInfoActions {
 	width: 2em;
+	min-width: 2em;
+	max-width: 2em;
 }
 
 .openhabThings .devices .channelItemType {
 	width: 7em;
 	max-width: 7em;
+	min-width: 7em;
 }
 
 .openhabThings .devices .channelName, .openhabThings .devices .channelItemName
 	{
 	width: 15em;
 	max-width: 15em;
+	min-width: 15em;
 }
 
 .openhabThings .devices .channelLabel {
 	width: 15em;
 	max-width: 15em;
+	min-width: 15em;
 }
 
 .openhabThings .devices .channelLabel input {
 	width: 12em;
+	min-width: 12em;
+	max-width: 12em;
 }
 
 .openhabThings .devices .channelChannelType {
 	width: 15em;
 	max-width: 15em;
+	min-width: 15em;
 }
 
 .openhabThings .devices .channelType {
 	width: 10em;
 	max-width: 10em;
+	min-width: 10em;
 }
 
 .openhabThings .devices .channelValue {
 	width: 15em;
 	max-width: 15em;
+	min-width: 15em;
 }
 
 .openhabThings .devices .channelValue input {
 	width: 12em;
+    max-width: 12em;
+    min-width: 12em;
 }
 
 .openhabThings .devices .channelRange input {
 	width: 3em;
+    max-width: 15em;
+    min-width: 15em;
 }
 
 .openhabThings .devices .deviceActions button.save.canSave {
@@ -376,6 +400,7 @@
     padding: .35em .625em .75em;
     margin: 0 2px;
     border: 1px solid silver;
+    margin-bottom: 1em;
 }
 
 .advProp-body legend {
@@ -386,9 +411,9 @@
     margin-bottom: 10px;
 }
 
-.advProp-body .timing label {
+.advProp-body .props label {
     display: inline-block;
-    width: 5em;
+    width: 10em;
     font-weight: normal;
 }
 
@@ -402,7 +427,6 @@
 }
 
 .advProp-body .deviceCapabilities {
-	margin-top: 1em;
 }
 
 .logfile {

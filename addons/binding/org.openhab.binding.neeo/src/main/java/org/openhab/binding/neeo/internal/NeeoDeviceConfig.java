@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.neeo.internal;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neeo.handler.NeeoDeviceHandler;
 
 /**
@@ -18,6 +19,7 @@ import org.openhab.binding.neeo.handler.NeeoDeviceHandler;
 public class NeeoDeviceConfig {
 
     /** The NEEO device key */
+    @Nullable
     private String deviceKey;
 
     /**
@@ -25,6 +27,7 @@ public class NeeoDeviceConfig {
      *
      * @return the device key
      */
+    @Nullable
     public String getDeviceKey() {
         return deviceKey;
     }
@@ -32,7 +35,7 @@ public class NeeoDeviceConfig {
     /**
      * Sets the device key.
      *
-     * @param key the new device key
+     * @param deviceKey the new device key
      */
     public void setKey(String deviceKey) {
         this.deviceKey = deviceKey;

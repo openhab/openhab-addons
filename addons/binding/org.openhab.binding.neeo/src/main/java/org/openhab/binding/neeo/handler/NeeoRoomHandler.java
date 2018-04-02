@@ -13,10 +13,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -32,7 +33,6 @@ import org.openhab.binding.neeo.internal.NeeoHandlerCallback;
 import org.openhab.binding.neeo.internal.NeeoRoomConfig;
 import org.openhab.binding.neeo.internal.NeeoRoomProtocol;
 import org.openhab.binding.neeo.internal.models.NeeoAction;
-import org.openhab.binding.neeo.internal.models.NeeoRoom;
 import org.openhab.binding.neeo.internal.type.UidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,15 +50,15 @@ public class NeeoRoomHandler extends AbstractBridgeHandler {
     /**
      * The initialization task (null until set by {@link #initializeTask()} and set back to null in {@link #dispose()}
      */
-    private final AtomicReference<Future<?>> initializationTask = new AtomicReference<>(null);
+    private final AtomicReference<@Nullable Future<?>> initializationTask = new AtomicReference<>();
 
     /**
      * The refresh task (null until set by {@link #initializeTask()} and set back to null in {@link #dispose()}
      */
-    private final AtomicReference<ScheduledFuture<?>> refreshTask = new AtomicReference<>(null);
+    private final AtomicReference<@Nullable Future<?>> refreshTask = new AtomicReference<>();
 
     /** The {@link NeeoRoomProtocol} (null until set by {@link #initializationTask}) */
-    private final AtomicReference<NeeoRoomProtocol> roomProtocol = new AtomicReference<>();
+    private final AtomicReference<@Nullable NeeoRoomProtocol> roomProtocol = new AtomicReference<>();
 
     /**
      * Instantiates a new neeo room handler.
@@ -181,6 +181,14 @@ public class NeeoRoomHandler extends AbstractBridgeHandler {
      */
     private void initializeTask() {
         final NeeoRoomConfig config = getConfigAs(NeeoRoomConfig.class);
+
+        final String roomKey = config.getRoomKey();
+        if (roomKey == null || StringUtils.isEmpty(roomKey)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Room key (from the parent room bridge) was not found");
+            return;
+        }
+
         try {
             NeeoUtil.checkInterrupt();
             final NeeoBrainApi brainApi = getNeeoBrainApi();
@@ -189,15 +197,8 @@ public class NeeoRoomHandler extends AbstractBridgeHandler {
                 return;
             }
 
-            final NeeoRoom room = brainApi.getRoom(config.getRoomKey());
-            if (room == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Room (" + config.getRoomKey() + ") was not found");
-                return;
-            }
-
             final Map<String, String> properties = new HashMap<>();
-            properties.put("Key", room.getKey());
+            properties.put("Key", roomKey);
             updateProperties(properties);
 
             NeeoUtil.checkInterrupt();
@@ -228,11 +229,12 @@ public class NeeoRoomHandler extends AbstractBridgeHandler {
                     triggerChannel(channelID, event);
                 }
 
+                @Nullable
                 @Override
                 public NeeoBrainApi getApi() {
                     return getNeeoBrainApi();
                 }
-            }, config.getRoomKey());
+            }, roomKey);
             roomProtocol.getAndSet(protocol);
 
             NeeoUtil.checkInterrupt();
@@ -275,7 +277,7 @@ public class NeeoRoomHandler extends AbstractBridgeHandler {
     /**
      * Refreshes the state of the room by calling {@link NeeoRoomProtocol#refreshState()}
      *
-     * @throws InterruptedException
+     * @throws InterruptedException if the call is interrupted
      */
     private void refreshState() throws InterruptedException {
         NeeoUtil.checkInterrupt();

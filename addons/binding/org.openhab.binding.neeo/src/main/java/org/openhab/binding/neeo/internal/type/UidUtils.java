@@ -11,6 +11,7 @@ package org.openhab.binding.neeo.internal.type;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -19,6 +20,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.neeo.NeeoConstants;
 import org.openhab.binding.neeo.NeeoUtil;
 import org.openhab.binding.neeo.internal.models.NeeoDevice;
+import org.openhab.binding.neeo.internal.models.NeeoDeviceDetails;
 import org.openhab.binding.neeo.internal.models.NeeoMacro;
 import org.openhab.binding.neeo.internal.models.NeeoRecipe;
 import org.openhab.binding.neeo.internal.models.NeeoRoom;
@@ -42,12 +44,13 @@ public class UidUtils {
      * @return true if a thing, false otherwise
      */
     public static boolean isThing(NeeoDevice device) {
-        if (device == null || device.getDetails() == null) {
+        final NeeoDeviceDetails details = device.getDetails();
+        if (details == null) {
             return false;
         }
 
         try {
-            new ThingUID(device.getDetails().getAdapterName());
+            new ThingUID(details.getAdapterName());
             return true;
         } catch (IllegalArgumentException e) {
             return false;
@@ -142,7 +145,7 @@ public class UidUtils {
      * @param channelKey the possibly empty/null channel key
      * @return the full channel id
      */
-    public static String createChannelId(String groupId, String channelId, String channelKey) {
+    public static String createChannelId(String groupId, String channelId, @Nullable String channelKey) {
         NeeoUtil.requireNotEmpty(channelId, "channelId cannot be empty");
 
         return StringUtils.isEmpty(groupId) ? channelId

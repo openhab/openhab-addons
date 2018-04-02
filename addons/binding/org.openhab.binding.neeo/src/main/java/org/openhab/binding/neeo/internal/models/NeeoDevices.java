@@ -9,8 +9,10 @@
 package org.openhab.binding.neeo.internal.models;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The model representing Neeo Devices (serialize/deserialize json use only).
@@ -20,7 +22,7 @@ import org.apache.commons.lang.StringUtils;
 public class NeeoDevices {
 
     /** The devices. */
-    private final NeeoDevice[] devices;
+    private final NeeoDevice @Nullable [] devices;
 
     /**
      * Instantiates a new neeo devices.
@@ -28,6 +30,7 @@ public class NeeoDevices {
      * @param devices the devices
      */
     public NeeoDevices(NeeoDevice[] devices) {
+        Objects.requireNonNull(devices, "devices cannot be null");
         this.devices = devices;
     }
 
@@ -37,7 +40,8 @@ public class NeeoDevices {
      * @return the devices
      */
     public NeeoDevice[] getDevices() {
-        return devices;
+        final NeeoDevice[] localDevices = devices;
+        return localDevices == null ? new NeeoDevice[0] : localDevices;
     }
 
     /**
@@ -46,8 +50,9 @@ public class NeeoDevices {
      * @param key the key
      * @return the device
      */
+    @Nullable
     public NeeoDevice getDevice(String key) {
-        for (NeeoDevice device : devices) {
+        for (NeeoDevice device : getDevices()) {
             if (StringUtils.equalsIgnoreCase(key, device.getKey())) {
                 return device;
             }

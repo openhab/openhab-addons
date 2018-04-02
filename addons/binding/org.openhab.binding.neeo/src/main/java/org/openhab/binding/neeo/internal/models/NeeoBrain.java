@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.neeo.internal.models;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The model representing an Neeo Brain(serialize/deserialize json use only)
  *
@@ -16,58 +18,41 @@ package org.openhab.binding.neeo.internal.models;
 public class NeeoBrain {
 
     /** The brain name */
-    private final String name;
+    @Nullable
+    private String name;
 
     /** The version of the brain */
-    private final String version;
+    @Nullable
+    private String version;
 
     /** The brain's label */
-    private final String label;
+    @Nullable
+    private String label;
 
     /** Whether the brain has been configured */
-    private final boolean configured;
+    private boolean configured;
 
     /** The brain key */
-    private final String key;
+    @Nullable
+    private String key;
 
     /** ?? The brain airkey ?? */
-    private final String airkey;
+    @Nullable
+    private String airkey;
 
     /** Last time the brain was changed */
-    private final long lastchange;
+    private long lastchange;
 
     /** The rooms in the brain */
-    private final NeeoRooms rooms;
-
-    /**
-     * Instantiates a new neeo brain.
-     *
-     * @param name the name
-     * @param version the version
-     * @param label the label
-     * @param configured the configured
-     * @param key the key
-     * @param airkey the airkey
-     * @param lastchange the lastchange
-     * @param rooms the rooms
-     */
-    public NeeoBrain(String name, String version, String label, boolean configured, String key, String airkey,
-            int lastchange, NeeoRooms rooms) {
-        this.name = name;
-        this.version = version;
-        this.label = label;
-        this.configured = configured;
-        this.key = key;
-        this.airkey = airkey;
-        this.lastchange = lastchange;
-        this.rooms = rooms;
-    }
+    @Nullable
+    private NeeoRooms rooms;
 
     /**
      * Gets the brain name
      *
      * @return the name
      */
+    @Nullable
     public String getName() {
         return name;
     }
@@ -77,6 +62,7 @@ public class NeeoBrain {
      *
      * @return the version
      */
+    @Nullable
     public String getVersion() {
         return version;
     }
@@ -86,6 +72,7 @@ public class NeeoBrain {
      *
      * @return the label
      */
+    @Nullable
     public String getLabel() {
         return label;
     }
@@ -104,6 +91,7 @@ public class NeeoBrain {
      *
      * @return the key
      */
+    @Nullable
     public String getKey() {
         return key;
     }
@@ -113,6 +101,7 @@ public class NeeoBrain {
      *
      * @return the airkey
      */
+    @Nullable
     public String getAirkey() {
         return airkey;
     }
@@ -122,7 +111,7 @@ public class NeeoBrain {
      *
      * @return the lastchange
      */
-    public long getLastchange() {
+    public long getLastChange() {
         return lastchange;
     }
 
@@ -132,7 +121,8 @@ public class NeeoBrain {
      * @return the rooms
      */
     public NeeoRooms getRooms() {
-        return rooms;
+        final NeeoRooms localRooms = rooms;
+        return localRooms == null ? new NeeoRooms(new NeeoRoom[0]) : localRooms;
     }
 
     /**
@@ -141,8 +131,9 @@ public class NeeoBrain {
      * @param key the key
      * @return the room
      */
+    @Nullable
     public NeeoRoom getRoom(String key) {
-        return rooms.getRoom(key);
+        return getRooms().getRoom(key);
     }
 
     @Override

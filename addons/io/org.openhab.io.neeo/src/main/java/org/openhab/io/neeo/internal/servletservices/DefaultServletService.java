@@ -13,6 +13,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.events.Event;
 import org.eclipse.smarthome.core.events.EventFilter;
 
@@ -20,7 +21,7 @@ import org.eclipse.smarthome.core.events.EventFilter;
  * The default implementation of {@link ServletService} that simply does nothing (allowing subclasses to override
  * whatever functionality they need).
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 class DefaultServletService implements ServletService {
 
@@ -70,6 +71,7 @@ class DefaultServletService implements ServletService {
      *
      * @see ServletService#getEventFilter()
      */
+    @Nullable
     @Override
     public EventFilter getEventFilter() {
         return null;

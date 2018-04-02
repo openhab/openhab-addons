@@ -16,11 +16,12 @@ import org.eclipse.smarthome.core.thing.type.ChannelKind;
 /**
  * Enumeration of channel kinds (item or trigger)
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public enum NeeoDeviceChannelKind {
-
+    /** Represents an item */
     ITEM("item"),
+    /** Represents an trigger item */
     TRIGGER("trigger");
 
     /** The text value of the enum */

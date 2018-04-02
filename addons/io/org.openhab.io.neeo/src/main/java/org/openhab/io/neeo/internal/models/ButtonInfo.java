@@ -15,13 +15,15 @@ import org.openhab.io.neeo.internal.NeeoUtil;
  * identify the name and the label used by NEEO Brain. The suffix is what is appended to the button action URL to
  * identify the action required when the button is pressed.
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class ButtonInfo {
     private final String label;
     private final String suffix;
 
+    /** Represents a power ON button */
     public static final ButtonInfo POWERON = new ButtonInfo("POWER ON", "on");
+    /** Represents a power OFF button */
     public static final ButtonInfo POWEROFF = new ButtonInfo("POWER OFF", "off");
 
     /**

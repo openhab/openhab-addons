@@ -67,10 +67,6 @@ public class NeeoBrainApi implements AutoCloseable {
         final String url = urlBuilder.append(NeeoConstants.PROJECTS_HOME).toString();
 
         final HttpRequest rqst = request.get();
-        if (rqst == null) {
-            throw new IOException("Request was null - likely already closed");
-        }
-
         final HttpResponse resp = rqst.sendGetCommand(url);
         if (resp.getHttpCode() != HttpStatus.OK_200) {
             throw resp.createException();
@@ -92,10 +88,6 @@ public class NeeoBrainApi implements AutoCloseable {
         final String url = urlBuilder.append(NeeoConstants.GET_ROOM).sub("roomkey", roomKey).toString();
 
         final HttpRequest rqst = request.get();
-        if (rqst == null) {
-            throw new IOException("Request was null - likely already closed");
-        }
-
         final HttpResponse resp = rqst.sendGetCommand(url);
         if (resp.getHttpCode() != HttpStatus.OK_200) {
             throw resp.createException();
@@ -120,10 +112,6 @@ public class NeeoBrainApi implements AutoCloseable {
                 .sub("recipekey", recipeKey).toString();
 
         final HttpRequest rqst = request.get();
-        if (rqst == null) {
-            throw new IOException("Request was null - likely already closed");
-        }
-
         final HttpResponse resp = rqst.sendGetCommand(url);
         if (resp.getHttpCode() != HttpStatus.OK_200) {
             throw resp.createException();
@@ -148,10 +136,6 @@ public class NeeoBrainApi implements AutoCloseable {
                 .sub("scenariokey", scenarioKey).toString();
 
         final HttpRequest rqst = request.get();
-        if (rqst == null) {
-            throw new IOException("Request was null - likely already closed");
-        }
-
         final HttpResponse resp = rqst.sendGetCommand(url);
         if (resp.getHttpCode() != HttpStatus.OK_200) {
             throw resp.createException();
@@ -170,10 +154,6 @@ public class NeeoBrainApi implements AutoCloseable {
         final String url = urlBuilder.append(NeeoConstants.GET_ACTIVESCENARIOS).toString();
 
         final HttpRequest rqst = request.get();
-        if (rqst == null) {
-            throw new IOException("Request was null - likely already closed");
-        }
-
         final HttpResponse resp = rqst.sendGetCommand(url);
         if (resp.getHttpCode() != HttpStatus.OK_200) {
             throw resp.createException();
@@ -200,10 +180,6 @@ public class NeeoBrainApi implements AutoCloseable {
                 .sub("devicekey", deviceKey).sub("macrokey", macroKey).toString();
 
         final HttpRequest rqst = request.get();
-        if (rqst == null) {
-            throw new IOException("Request was null - likely already closed");
-        }
-
         final HttpResponse resp = rqst.sendGetCommand(url);
         if (resp.getHttpCode() != HttpStatus.OK_200) {
             throw resp.createException();
@@ -228,10 +204,6 @@ public class NeeoBrainApi implements AutoCloseable {
         final String forwardActions = gson.toJson(new NeeoForwardActions(url.getHost(), url.getPort(), url.getPath()));
 
         final HttpRequest rqst = request.get();
-        if (rqst == null) {
-            throw new IOException("Request was null - likely already closed");
-        }
-
         final HttpResponse resp = rqst.sendPostJsonCommand(brainUrl, forwardActions);
         if (resp.getHttpCode() != HttpStatus.OK_200) {
             throw resp.createException();
@@ -248,10 +220,6 @@ public class NeeoBrainApi implements AutoCloseable {
 
         logger.debug("Deregistering forward actions callback {}", brainUrl);
         final HttpRequest rqst = request.get();
-        if (rqst == null) {
-            throw new IOException("Request was null - likely already closed");
-        }
-
         final HttpResponse resp = rqst.sendPostJsonCommand(brainUrl, "");
         if (resp.getHttpCode() != HttpStatus.OK_200) {
             throw resp.createException();
@@ -260,7 +228,7 @@ public class NeeoBrainApi implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        NeeoUtil.close(request.getAndSet(null));
+        NeeoUtil.close(request.getAndSet(new HttpRequest()));
     }
 
     /**

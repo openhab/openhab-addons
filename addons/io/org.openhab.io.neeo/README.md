@@ -19,9 +19,16 @@ The openHAB NEEO Transport will provide the following
 * Discovery of openHAB things on the NEEO app  
 * Full two-way communcation between openHAB and brain.  Item changes in openHAB will appear in NEEO and vice-versa.
 
+## Troubleshooting
+
+If searching for openHAB devices on the NEEO Brain is always returning nothing, here are a few tips to solve the issue:
+1.  Make sure the openHAB primary address is set to an address that is reachable from the NEEO Brain (see openHAB Primary Address section below).
+2.  Make sure your firewall is not blocking access to the openHAB server
+3.  Your search criteria has included too many openHAB devices (especially if "Expose ALL" setting has been turned on).   The NEEO brain has an (unknown) size limit to the amount of items that can be returned for a search and you may be going beyond that limit.  Narrow your search to a specific item to see if you were hitting that search limit. 
+
 ## openHAB Primary Address
 
-This transport will use the primary address defined in openHAB to register itself as an SDK with the NEEO Brain (allowing the NEEO Brain to discover your things and to callback to openHAB to retrieve item values).  If you have multiple network interfaces on the machine that openHAB runs on or if forward actions are not being recieved, you'll likely need to set the primary address configuration field (PaperUI->Configuration->System->Network Settings->Primary Address)
+This transport will use the primary address defined in openHAB to register itself as an SDK with the NEEO Brain (allowing the NEEO Brain to discover your things and to callback to openHAB to retrieve item values).  If you have multiple network interfaces on the machine that openHAB runs on or if forward actions are not being recieved, you'll likely need to set the primary address configuration field (PaperUI->Configuration->System->Network Settings->Primary Address).  Please set this BEFORE YOU INSTALL THE TRANSPORT.  If you set the primary address AFTER install the transport, you'll need to restart openHAB for the transport to register the correct callback address with the brains.
 
 ## Mappings
 
@@ -100,7 +107,17 @@ The list of device types is unknown, must match those that NEEO expects (such as
 
 Please note that "ACCESSORIE" is not a misspelling.  That is how the NEEO brain expects it.  You may specify a type of "ACCESSORY" when defining a new type, but after saving - the type will switch back to "ACCESSORIE"
 
-##### Device Timings (found on the properties page)
+#### Properties Page
+
+The properties page (accessible via the gear icon) will present properties specific to the device.
+
+##### Advanced Properties
+
+1. The 'Specific name' can be used to override the thing name presented to the NEEO Brain.  
+2. The 'Custom Icon' can be used to assign a custom icon to the device (if left blank, the icon is assigned by the NEEO Brain according to the NEEO Type).  The only 'officially' supported custom icon is "sonos" however you can assign any variety of icons available on the brain. A list of some of the icons that can be assigned: ![Configuration](doc/icons.png)
+ 
+ 
+##### Device Timings
 
 You can specify three device timings for any non ACCESSORIE and non LIGHT thing:
 
@@ -110,13 +127,13 @@ You can specify three device timings for any non ACCESSORIE and non LIGHT thing:
 
 If the device does not have power state or doesn't support input switching, the numbers will be ignored.  
 
-##### Device Capabilities (found on the properties page)
+##### Device Capabilities
 
 This following device capabilities are available:
 
 1.  "Always On" - check if there is no power management for the device.  You do NOT need to specify any POWER buttons or POWER STATE sensor nor will the device be marked as 'stupid' 
 
-##### Example
+#### Example
 
 In the example screen shown above:
 
@@ -125,7 +142,7 @@ In the example screen shown above:
 
 Any device type that is marked with any type will be visible to the NEEO App when searching for devices.
 
-#### Format
+### Format
 
 When you have a text label, you can specify the text format to use and will be prefilled if the channel provides a default.  You can use any standard java string format for the value.  You may also provide a transformation format (in the same format as in .items file).  Example: "MAP(stuff.map):%s" will use the MAP tranformation file "stuff.map" to convert the value to a string. 
 
@@ -163,7 +180,25 @@ The following chart shows what openHAB command types are supported for each NEEO
 | ImageURL             | stringtype                                                                                                                   |
 | Slider               | percenttype, decimaltype                                                                                                     |
 | Power                | onofftype                                                                                                                    |
+
+##### HSBType
+
+HSBType has three attributes - Hue, Brightness and Saturation.  This type is special in that the transport will create 4 capabilities for it:
+
+1.  The first capability will you to control the on/off and will be named simply "item"
+2.  The second capability will allow you to control the HUE and will be named "item (Hue)"
+3.  The third capability will allow you to control the brightness and will be named "item (Bri)"
+4.  The forth capability will allow you to control the saturation and will be named "item (Sat)"
+
+If you are trying to bind a LIFX or HUE bulb, here are the following channels you need to create to enable the NEEO Light capability:
+1.  Set the device type to "LIGHT"
+2.  Set the overall (HSBType) item to a NEEO type of "Power"
+3.  Duplicate the overall item and on the duplicate, set the NEEO Type to "Switch" with the label "POWERONOFF"
+4.  Duplicate the overall item (again) and on the duplicate, set the NEEO Type to "Switch" with a label of "power"
+5.  Set the HUE/SATURATION/TEMPERATURE to a NEEO type of "Slider" (you can set the BRIGHTNESS as well - but NEEO will automatically assign that for you).
   
+Please note that NEEO will automatically combine all your "LIGHT" types into a single light on the remote (not ideal).  You'll get a single screen with all lights listed with a power toggle and slider for brightness.  You'll need to add the HUE/SATURATION/TEMPERATURE as shortcuts.   
+
 ##### Power State Capability type
 
 The power state capability type *REQUIRES a POWER ON and POWER OFF button to be assigned as well*.  This is a NEEO Brain requirement for the power state.  Sending ON to the power state item will start the device (similar to POWER ON button) and will stop the device on OFF.

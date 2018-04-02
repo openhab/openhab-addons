@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.neeo.NeeoConstants;
@@ -46,14 +47,17 @@ public class NeeoRoomProtocol {
     /** The {@link NeeoHandlerCallback} */
     private final NeeoHandlerCallback callback;
 
+    /** The room key */
+    private final String roomKey;
+
     /** The {@link NeeoRoom} */
     private final NeeoRoom neeoRoom;
 
     /** The currently active scenarios */
-    private final AtomicReference<String[]> activeScenarios = new AtomicReference<>(null);
+    private final AtomicReference<String[]> activeScenarios = new AtomicReference<>(new String[0]);
 
     /** The currently active step */
-    private final AtomicReference<String> currentStep = new AtomicReference<>(null);
+    private final AtomicReference<@Nullable String> currentStep = new AtomicReference<>();
 
     /** Gson to serialize active scenarios */
     private final Gson gson = NeeoUtil.getGson();
@@ -67,9 +71,10 @@ public class NeeoRoomProtocol {
      */
     public NeeoRoomProtocol(NeeoHandlerCallback callback, String roomKey) throws IOException {
         Objects.requireNonNull(callback, "callback cannot be null");
-        Objects.requireNonNull(roomKey, "roomKey cannot be empty");
+        NeeoUtil.requireNotEmpty(roomKey, "roomKey cannot be empty");
 
         this.callback = callback;
+        this.roomKey = roomKey;
 
         final NeeoBrainApi api = callback.getApi();
         if (api == null) {
@@ -77,10 +82,6 @@ public class NeeoRoomProtocol {
         }
 
         neeoRoom = api.getRoom(roomKey);
-
-        if (neeoRoom == null) {
-            throw new IllegalArgumentException("room (" + roomKey + ") was not found in the NEEO Brain");
-        }
     }
 
     /**
@@ -98,11 +99,9 @@ public class NeeoRoomProtocol {
      * @param action a non-null action to process
      */
     public void processAction(NeeoAction action) {
-        final NeeoRecipes recipes = neeoRoom.getRecipes();
-        if (recipes == null) {
-            return;
-        }
+        Objects.requireNonNull(action, "action cannot be null");
 
+        final NeeoRecipes recipes = neeoRoom.getRecipes();
         final boolean launch = StringUtils.equalsIgnoreCase(NeeoRecipe.LAUNCH, action.getAction());
         final boolean poweroff = StringUtils.equalsIgnoreCase(NeeoRecipe.POWEROFF, action.getAction());
 
@@ -111,11 +110,14 @@ public class NeeoRoomProtocol {
             return;
         }
 
-        final NeeoRecipe recipe = recipes.getRecipeByName(action.getRecipe());
-        if (recipe != null) {
-            processScenarioChange(recipe.getScenarioKey(), launch);
+        final String recipeName = action.getRecipe();
+        final NeeoRecipe recipe = recipeName == null ? null : recipes.getRecipeByName(recipeName);
+        final String scenarioKey = recipe == null ? null : recipe.getScenarioKey();
+
+        if (scenarioKey != null && StringUtils.isNotEmpty(scenarioKey)) {
+            processScenarioChange(scenarioKey, launch);
         } else {
-            logger.debug("Could not find a recipe named '{}' for the action {}", action.getRecipe(), action);
+            logger.debug("Could not find a recipe named '{}' for the action {}", recipeName, action);
         }
     }
 
@@ -129,7 +131,6 @@ public class NeeoRoomProtocol {
         NeeoUtil.requireNotEmpty(scenarioKey, "scenarioKey cannot be empty");
 
         final String[] activeScenarios = this.activeScenarios.get();
-
         final int idx = ArrayUtils.indexOf(activeScenarios, scenarioKey);
 
         // already set that way
@@ -153,15 +154,15 @@ public class NeeoRoomProtocol {
         final String[] newScenarios = this.activeScenarios.get();
 
         final List<String> scenarioNames = new ArrayList<>();
-        if (newScenarios != null) {
-            for (String key : newScenarios) {
-                final NeeoScenario scenario = neeoRoom.getScenarios().getScenario(key);
-                if (scenario == null) {
-                    scenarioNames.add(key);
-                } else {
-                    scenarioNames.add(scenario.getName());
-                }
+        for (String key : newScenarios) {
+            final NeeoScenario scenario = neeoRoom.getScenarios().getScenario(key);
+            final String scenarioName = scenario == null ? null : scenario.getName();
+            if (scenarioName == null || StringUtils.isEmpty(scenarioName)) {
+                scenarioNames.add(key);
+            } else {
+                scenarioNames.add(scenarioName);
             }
+
         }
         callback.triggerEvent(UidUtils.createChannelId(NeeoConstants.ROOM_CHANNEL_GROUP_STATEID,
                 NeeoConstants.ROOM_CHANNEL_ACTIVESCENARIOS), gson.toJson(scenarioNames));
@@ -298,19 +299,15 @@ public class NeeoRoomProtocol {
                 final String[] oldScenarios = this.activeScenarios.getAndSet(activeScenarios);
 
                 if (!ArrayUtils.isEquals(activeScenarios, oldScenarios)) {
-                    if (activeScenarios != null) {
-                        triggerActiveScenarios();
+                    triggerActiveScenarios();
 
-                        for (String scenario : activeScenarios) {
-                            refreshScenarioStatus(scenario);
-                        }
+                    for (String scenario : activeScenarios) {
+                        refreshScenarioStatus(scenario);
                     }
 
-                    if (oldScenarios != null) {
-                        for (String oldScenario : oldScenarios) {
-                            if (!ArrayUtils.contains(activeScenarios, oldScenario)) {
-                                refreshScenarioStatus(oldScenario);
-                            }
+                    for (String oldScenario : oldScenarios) {
+                        if (!ArrayUtils.contains(activeScenarios, oldScenario)) {
+                            refreshScenarioStatus(oldScenario);
                         }
                     }
                 }
@@ -326,8 +323,11 @@ public class NeeoRoomProtocol {
      */
     private void refreshCurrentStep() {
         final String step = currentStep.get();
-        callback.triggerEvent(UidUtils.createChannelId(NeeoConstants.ROOM_CHANNEL_GROUP_STATEID,
-                NeeoConstants.ROOM_CHANNEL_CURRENTSTEP), step);
+
+        if (step != null) {
+            callback.triggerEvent(UidUtils.createChannelId(NeeoConstants.ROOM_CHANNEL_GROUP_STATEID,
+                    NeeoConstants.ROOM_CHANNEL_CURRENTSTEP), step);
+        }
     }
 
     /**
@@ -343,18 +343,17 @@ public class NeeoRoomProtocol {
             logger.debug("API is null [likely bridge is offline] - cannot start recipe: {}", recipeKey);
         } else {
             final NeeoRecipe recipe = neeoRoom.getRecipes().getRecipe(recipeKey);
+            final String scenarioKey = recipe == null ? null : recipe.getScenarioKey();
 
-            if (recipe != null) {
+            if (recipe != null && scenarioKey != null) {
                 if (recipe.isEnabled()) {
                     final boolean isLaunch = StringUtils.equalsIgnoreCase(NeeoRecipe.LAUNCH, recipe.getType());
 
                     try {
                         if (isLaunch) {
-                            handleExecuteResult(recipe.getScenarioKey(), recipeKey, true,
-                                    api.executeRecipe(neeoRoom.getKey(), recipeKey));
+                            handleExecuteResult(scenarioKey, recipeKey, true, api.executeRecipe(roomKey, recipeKey));
                         } else {
-                            handleExecuteResult(recipe.getScenarioKey(), recipeKey, false,
-                                    api.stopScenario(neeoRoom.getKey(), recipe.getScenarioKey()));
+                            handleExecuteResult(scenarioKey, recipeKey, false, api.stopScenario(roomKey, scenarioKey));
                         }
                     } catch (IOException e) {
                         logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
@@ -379,10 +378,11 @@ public class NeeoRoomProtocol {
 
         final NeeoRecipe recipe = neeoRoom.getRecipes().getRecipeByScenarioKey(scenarioKey,
                 start ? NeeoRecipe.LAUNCH : NeeoRecipe.POWEROFF);
+        final String recipeKey = recipe == null ? null : recipe.getKey();
 
-        if (recipe != null) {
+        if (recipe != null && recipeKey != null && StringUtils.isNotEmpty(recipeKey)) {
             if (recipe.isEnabled()) {
-                startRecipe(recipe.getKey());
+                startRecipe(recipeKey);
             } else {
                 logger.debug("Recipe ({}) found for scenario {} but was not enabled", recipe.getKey(), scenarioKey);
             }

@@ -10,10 +10,13 @@ package org.openhab.io.neeo.internal.models;
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The model represents a token score for a given item (as defined by tokensearch.js)
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
+ * @param <T> the type that will be scored
  */
 public class TokenScore<T> implements Comparable<TokenScore<T>> {
 
@@ -55,7 +58,7 @@ public class TokenScore<T> implements Comparable<TokenScore<T>> {
     }
 
     @Override
-    public int compareTo(TokenScore<T> o) {
+    public int compareTo(@Nullable TokenScore<T> o) {
         if (o == null) {
             return 1;
         }

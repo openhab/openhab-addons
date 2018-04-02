@@ -8,6 +8,8 @@
  */
 package org.openhab.io.neeo.internal.models;
 
+import java.util.Objects;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -19,7 +21,7 @@ import org.eclipse.smarthome.core.types.StateDescription;
  *
  * Note that the unit is just a label that is put on the slider itself for the user
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class NeeoDeviceChannelRange {
     /** The range unit representing a number */
@@ -89,13 +91,11 @@ public class NeeoDeviceChannelRange {
     /**
      * Helper function to create a {@link NeeoDeviceChannelRange} from a given {@link Item}
      *
-     * @param item a possibly null item
+     * @param item a non-null item
      * @return a non-null {@link NeeoDeviceChannelRange} representing the {@link Item}
      */
     public static NeeoDeviceChannelRange from(Item item) {
-        if (item == null) {
-            return NeeoDeviceChannelRange.DEFAULT;
-        }
+        Objects.requireNonNull(item, "item cannot be null");
 
         final boolean supportsPercent = item.getAcceptedDataTypes().contains(PercentType.class);
 

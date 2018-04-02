@@ -16,6 +16,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -54,16 +57,18 @@ public class NeeoDeviceDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(NeeoDeviceDiscoveryService.class);
 
     /** The scanning task (not-null when connecting, null otherwise) */
-    private final AtomicReference<Future<?>> scan = new AtomicReference<>(null);
+    private final AtomicReference<@Nullable Future<?>> scan = new AtomicReference<>();
 
     /** The scheduler used to schedule tasks */
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(NeeoConstants.THREADPOOL_ID);
 
     /** The thing registry that we use */
-    private AtomicReference<ThingRegistry> thingRegistry = new AtomicReference<>();
+    @NonNullByDefault({})
+    private ThingRegistry thingRegistry;
 
     /** The type generator */
-    private AtomicReference<NeeoTypeGenerator> typeGenerator = new AtomicReference<>();
+    @NonNullByDefault({})
+    private NeeoTypeGenerator typeGenerator;
 
     /**
      * The thing types we discover. Since the device types are all dynamically generated, we simply return the binding
@@ -90,16 +95,16 @@ public class NeeoDeviceDiscoveryService extends AbstractDiscoveryService {
     protected void setThingRegistry(ThingRegistry thingRegistry) {
         Objects.requireNonNull(thingRegistry, "thingRegistry cannot be null");
 
-        this.thingRegistry.set(thingRegistry);
+        this.thingRegistry = thingRegistry;
     }
 
     /**
-     * Unsets thing type provider.
+     * Unsets thing registry.
      *
-     * @param thingTypeProvider the thing type provider (ignored)
+     * @param thingRegistry the thing registry (ignored)
      */
     protected void unsetThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry.set(null);
+        this.thingRegistry = null;
     }
 
     /**
@@ -111,16 +116,16 @@ public class NeeoDeviceDiscoveryService extends AbstractDiscoveryService {
     protected void setNeeoTypeGenerator(NeeoTypeGenerator typeGenerator) {
         Objects.requireNonNull(typeGenerator, "typeGenerator cannot be null");
 
-        this.typeGenerator.set(typeGenerator);
+        this.typeGenerator = typeGenerator;
     }
 
     /**
      * Unsets neeo type generator
      *
-     * @param thingTypeProvider the thing type provider (ignored)
+     * @param typeGenerator the neeo type provider (ignored)
      */
     protected void unsetNeeoTypeGenerator(NeeoTypeGenerator typeGenerator) {
-        this.typeGenerator.set(null);
+        this.typeGenerator = null;
     }
 
     @Override
@@ -150,20 +155,20 @@ public class NeeoDeviceDiscoveryService extends AbstractDiscoveryService {
     private void scanForDevices() throws InterruptedException {
         NeeoUtil.checkInterrupt();
 
-        final ThingRegistry thingRegistry = this.thingRegistry.get();
-        if (thingRegistry == null) {
+        final ThingRegistry localThingRegistry = this.thingRegistry;
+        if (localThingRegistry == null) {
             logger.debug("ThingRegistry is null - scan aborted");
             return;
         }
 
-        final NeeoTypeGenerator typeGenerator = this.typeGenerator.get();
-        if (typeGenerator == null) {
+        final NeeoTypeGenerator localTypeGenerator = this.typeGenerator;
+        if (localTypeGenerator == null) {
             logger.debug("TypeGenerator is null - scan aborted");
             return;
         }
 
         logger.debug("Scanning all things for NeeoRoomHandlers");
-        for (final Thing thing : thingRegistry.getAll()) {
+        for (final Thing thing : localThingRegistry.getAll()) {
             NeeoUtil.checkInterrupt();
 
             final ThingHandler handler = thing.getHandler();
@@ -171,6 +176,11 @@ public class NeeoDeviceDiscoveryService extends AbstractDiscoveryService {
                 final NeeoRoomHandler roomHandler = (NeeoRoomHandler) handler;
 
                 final String brainId = roomHandler.getNeeoBrainId();
+                if (brainId == null || StringUtils.isEmpty(brainId)) {
+                    logger.debug("Unknown brain ID for roomHandler: {}", roomHandler);
+                    continue;
+                }
+
                 final NeeoBrainApi api = roomHandler.getNeeoBrainApi();
                 if (api == null) {
                     logger.debug("Brain API was not available for {} - skipping", brainId);
@@ -178,44 +188,53 @@ public class NeeoDeviceDiscoveryService extends AbstractDiscoveryService {
                 }
 
                 final NeeoRoomConfig config = thing.getConfiguration().as(NeeoRoomConfig.class);
+                final String roomKey = config.getRoomKey();
+                if (roomKey == null || StringUtils.isEmpty(roomKey)) {
+                    logger.debug("RoomKey wasn't configured for {} - skipping", brainId);
+                    continue;
+                }
+
                 final ThingUID roomUid = thing.getUID();
                 final ThingTypeUID roomTypeUid = thing.getThingTypeUID();
 
                 try {
                     // Important to re-retrieve new room info in case devices have changed
                     // since the NeeoRoomHandler was started...
-                    final NeeoRoom room = api.getRoom(config.getRoomKey());
+                    final NeeoRoom room = api.getRoom(roomKey);
+                    final NeeoDevice[] devices = room.getDevices().getDevices();
 
-                    if (room != null && room.getDevices() != null) {
-                        final NeeoDevice[] devices = room.getDevices().getDevices();
-                        if (devices == null || devices.length == 0) {
-                            logger.debug("Room {} found - but there were no devices - skipping", room.getName());
-                        } else {
-                            logger.debug("Room {} found, scanning {} devices in it", room.getName(), devices.length);
-                            for (NeeoDevice device : devices) {
-                                NeeoUtil.checkInterrupt();
+                    if (devices.length == 0) {
+                        logger.debug("Room {} found - but there were no devices - skipping", room.getName());
+                    } else {
+                        logger.debug("Room {} found, scanning {} devices in it", room.getName(), devices.length);
+                        for (NeeoDevice device : devices) {
+                            NeeoUtil.checkInterrupt();
 
-                                if (config.isExcludeThings() && UidUtils.isThing(device)) {
-                                    logger.debug("Found openHAB thing but ignoring per configuration: {}", device);
-                                    continue;
-                                }
-
-                                logger.debug("Device #{} found - {}", device.getKey(), device.getName());
-
-                                logger.debug("Generating thing type for {}, {}: {}", brainId, roomTypeUid, device);
-                                typeGenerator.generate(brainId, roomTypeUid, device);
-
-                                final ThingUID thingUID = new ThingUID(UidUtils.generateThingTypeUID(device), roomUid,
-                                        "device");
-
-                                final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                                        .withProperty(NeeoConstants.CONFIG_DEVICEKEY, device.getKey())
-                                        .withBridge(roomUid).withLabel(device.getName() + " (NEEO " + brainId + ")")
-                                        .build();
-
-                                NeeoUtil.checkInterrupt();
-                                thingDiscovered(discoveryResult);
+                            final String deviceKey = device.getKey();
+                            if (deviceKey == null || StringUtils.isEmpty(deviceKey)) {
+                                logger.debug("Device key wasn't found for device: {}", device);
+                                continue;
                             }
+
+                            if (config.isExcludeThings() && UidUtils.isThing(device)) {
+                                logger.debug("Found openHAB thing but ignoring per configuration: {}", device);
+                                continue;
+                            }
+
+                            logger.debug("Device #{} found - {}", deviceKey, device.getName());
+
+                            logger.debug("Generating thing type for {}, {}: {}", brainId, roomTypeUid, device);
+                            localTypeGenerator.generate(brainId, roomTypeUid, device);
+
+                            final ThingUID thingUID = new ThingUID(UidUtils.generateThingTypeUID(device), roomUid,
+                                    "device");
+
+                            final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
+                                    .withProperty(NeeoConstants.CONFIG_DEVICEKEY, deviceKey).withBridge(roomUid)
+                                    .withLabel(device.getName() + " (NEEO " + brainId + ")").build();
+
+                            NeeoUtil.checkInterrupt();
+                            thingDiscovered(discoveryResult);
                         }
                     }
                 } catch (IOException e) {

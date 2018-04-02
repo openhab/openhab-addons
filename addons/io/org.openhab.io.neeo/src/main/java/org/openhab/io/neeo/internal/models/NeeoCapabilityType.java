@@ -11,25 +11,37 @@ package org.openhab.io.neeo.internal.models;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 
 /**
  * Defines the various NEEO capability types
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public enum NeeoCapabilityType {
+    /** Represents the NEEO BUTTON capability */
     BUTTON("button"),
+    /** Represents the NEEO SWITCH capability */
     SWITCH("switch"),
+    /** Represents the NEEO SLIDER capability */
     SLIDER("slider"),
+    /** Represents the NEEO SENSOR capability */
     SENSOR("sensor"),
+    /** Represents the NEEO TEXT LABEL capability */
     TEXTLABEL("textlabel"),
+    /** Represents the NEEO IMAGE URL capability */
     IMAGEURL("imageurl"),
-    DISCOVER("discover"),
+
+    /** Represents the NEEO CUSTOM SENSOR capability */
     SENSOR_CUSTOM("custom"),
+    /** Represents the NEEO RANGE SENSOR capability */
     SENSOR_RANGE("range"),
+    /** Represents the NEEO BINARY SENSOR capability */
     SENSOR_BINARY("binary"),
+    /** Represents the NEEO POWER SENSOR capability */
     SENSOR_POWER("power"),
+    /** Represents no capability (and should be excluded) */
     EXCLUDE("");
 
     /** The text value of the enum */
@@ -70,7 +82,7 @@ public enum NeeoCapabilityType {
      * @param channelType the possibly null channel type
      * @return the best guess {@link NeeoCapabilityType}
      */
-    public static NeeoCapabilityType guessType(ChannelType channelType) {
+    public static NeeoCapabilityType guessType(@Nullable ChannelType channelType) {
         if (channelType == null || StringUtils.isEmpty(channelType.getItemType())) {
             return NeeoCapabilityType.EXCLUDE;
         }

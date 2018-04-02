@@ -21,7 +21,7 @@ Since this binding allows you to trigger actions on NEEO Devices, this allows yo
 
 ## openHAB Primary Address
 
-This binding will use the primary address defined in openHAB to register itself with the NEEO Brain (allowing the NEEO Brain to forward events back to the binding).  If you have multiple network interfaces on the machine that openHAB runs on or if forward actions are not being recieved, you'll likely need to set the primary address configuration field (PaperUI->Configuration->System->Network Settings->Primary Address)
+This binding will use the primary address defined in openHAB to register itself with the NEEO Brain (allowing the NEEO Brain to forward events back to the binding).  If you have multiple network interfaces on the machine that openHAB runs on or if forward actions are not being recieved, you'll likely need to set the primary address configuration field (PaperUI->Configuration->System->Network Settings->Primary Address).  Please set this BEFORE YOU INSTALL THE TRANSPORT.  If you set the primary address AFTER install the transport, you'll need to restart openHAB for the transport to use the correct address.
 
 ## Definitions
 

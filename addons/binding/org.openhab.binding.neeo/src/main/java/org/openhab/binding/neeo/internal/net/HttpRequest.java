@@ -11,6 +11,7 @@ package org.openhab.binding.neeo.internal.net;
 import java.io.IOException;
 import java.util.Objects;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -92,7 +93,9 @@ public class HttpRequest implements AutoCloseable {
             } finally {
                 content.close();
             }
-        } catch (IOException | IllegalStateException e) {
+            // IllegalArgumentException/ProcessingException catches issues with the URI being invalid
+            // as well
+        } catch (IOException | IllegalStateException | IllegalArgumentException | ProcessingException e) {
             return new HttpResponse(HttpStatus.SERVICE_UNAVAILABLE_503, e.getMessage());
         }
     }

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.ConfigDescription;
 import org.eclipse.smarthome.config.core.ConfigDescriptionParameter;
 import org.eclipse.smarthome.config.core.ConfigDescriptionParameter.Type;
@@ -49,12 +50,15 @@ public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
     private final Logger logger = LoggerFactory.getLogger(NeeoTypeGeneratorImpl.class);
 
     /** The thing type provider */
+    @NonNullByDefault({})
     private NeeoThingTypeProvider thingTypeProvider;
 
     /** The config description provider */
+    @NonNullByDefault({})
     private NeeoConfigDescriptionProvider configDescriptionProvider;
 
     /** The channel type provider */
+    @NonNullByDefault({})
     private NeeoChannelTypeProvider channelTypeProvider;
 
     /**
@@ -134,10 +138,11 @@ public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
         NeeoUtil.requireNotEmpty(brainId, "brainId cannot be empty");
         Objects.requireNonNull(room, "room cannot be null");
 
-        if (thingTypeProvider != null) {
-            logger.debug("Generating ThingType for room '{}' ({})", room.getName(), room.getKey());
-            thingTypeProvider.addThingType(createThingType(brainId, room));
-        }
+        final NeeoThingTypeProvider localThingTypeProvider = thingTypeProvider;
+        Objects.requireNonNull(localThingTypeProvider, "thingTypeProvider cannot be null");
+
+        logger.debug("Generating ThingType for room '{}' ({})", room.getName(), room.getKey());
+        localThingTypeProvider.addThingType(createThingType(brainId, room));
     }
 
     /**
@@ -151,6 +156,9 @@ public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
         NeeoUtil.requireNotEmpty(brainId, "brainId cannot be empty");
         Objects.requireNonNull(room, "room cannot be null");
 
+        final NeeoConfigDescriptionProvider localConfigDescriptionProvider = configDescriptionProvider;
+        Objects.requireNonNull(localConfigDescriptionProvider, "configDescriptionProvider cannot be null");
+
         final String label = "NEEO Room " + room.getName() + " (" + brainId + ")";
         final String description = String.format("%s (%s)", label, room.getKey());
 
@@ -162,7 +170,7 @@ public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
         final Map<String, String> properties = new HashMap<>();
 
         final URI configDescriptionURI = getConfigDescriptionURI(room);
-        if (configDescriptionProvider.getConfigDescription(configDescriptionURI, null) == null) {
+        if (localConfigDescriptionProvider.getConfigDescription(configDescriptionURI, null) == null) {
             generateConfigDescription(room, configDescriptionURI);
         }
 
@@ -183,6 +191,9 @@ public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
         Objects.requireNonNull(room, "room cannot be null");
         Objects.requireNonNull(configDescriptionURI, "configDescriptionURI cannot be null");
 
+        final NeeoConfigDescriptionProvider localConfigDescriptionProvider = configDescriptionProvider;
+        Objects.requireNonNull(localConfigDescriptionProvider, "configDescriptionProvider cannot be null");
+
         final List<ConfigDescriptionParameter> parms = new ArrayList<>();
         final List<ConfigDescriptionParameterGroup> groups = new ArrayList<>();
 
@@ -202,7 +213,7 @@ public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
                 .withDescription("Exclude openHAB things (from NEEO transport)").withDefault("true").withAdvanced(true);
         parms.add(exludeParmBuilder.build());
 
-        configDescriptionProvider.addConfigDescription(new ConfigDescription(configDescriptionURI, parms, groups));
+        localConfigDescriptionProvider.addConfigDescription(new ConfigDescription(configDescriptionURI, parms, groups));
     }
 
     /**
@@ -218,8 +229,7 @@ public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
             return new URI(String.format("%s:%s", NeeoConstants.CONFIG_DESCRIPTION_URI_ROOM,
                     UidUtils.generateThingTypeUID(room)));
         } catch (URISyntaxException ex) {
-            logger.warn("Can't create configDescriptionURI for room {}", room.getKey());
-            return null;
+            throw new UnsupportedOperationException("Can't create configDescriptionURI for room " + room.getKey());
         }
     }
 
@@ -229,10 +239,11 @@ public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
         Objects.requireNonNull(roomUid, "roomUid cannot be null");
         Objects.requireNonNull(device, "device cannot be null");
 
-        if (thingTypeProvider != null) {
-            logger.debug("Generating ThingType for device '{}' ({})", device.getName(), device.getKey());
-            thingTypeProvider.addThingType(createThingType(brainId, roomUid, device));
-        }
+        final NeeoThingTypeProvider localThingTypeProvider = thingTypeProvider;
+        Objects.requireNonNull(localThingTypeProvider, "thingTypeProvider cannot be null");
+
+        logger.debug("Generating ThingType for device '{}' ({})", device.getName(), device.getKey());
+        localThingTypeProvider.addThingType(createThingType(brainId, roomUid, device));
     }
 
     /**
@@ -248,6 +259,12 @@ public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
         Objects.requireNonNull(roomUid, "roomUid cannot be null");
         Objects.requireNonNull(device, "device cannot be null");
 
+        final NeeoConfigDescriptionProvider localConfigDescriptionProvider = configDescriptionProvider;
+        Objects.requireNonNull(localConfigDescriptionProvider, "configDescriptionProvider cannot be null");
+
+        final NeeoChannelTypeProvider localChannelTypeProvider = channelTypeProvider;
+        Objects.requireNonNull(localChannelTypeProvider, "channelTypeProvider cannot be null");
+
         final String label = "NEEO Device " + device.getName() + " (" + brainId + ")";
         final String description = String.format("%s (%s)", label, device.getKey());
 
@@ -259,12 +276,12 @@ public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
         final Map<String, String> properties = new HashMap<>();
 
         final URI configDescriptionURI = getConfigDescriptionURI(device);
-        if (configDescriptionProvider.getConfigDescription(configDescriptionURI, null) == null) {
+        if (localConfigDescriptionProvider.getConfigDescription(configDescriptionURI, null) == null) {
             generateConfigDescription(device, configDescriptionURI);
         }
 
-        channelTypeProvider.addChannelTypes(MetadataUtils.getChannelTypes(device));
-        channelTypeProvider.addChannelGroupTypes(MetadataUtils.getChannelGroupTypes(device));
+        localChannelTypeProvider.addChannelTypes(MetadataUtils.getChannelTypes(device));
+        localChannelTypeProvider.addChannelGroupTypes(MetadataUtils.getChannelGroupTypes(device));
 
         final List<ChannelGroupDefinition> groupDefinitions = MetadataUtils.getGroupDefinitions(device);
 
@@ -283,6 +300,9 @@ public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
         Objects.requireNonNull(device, "device cannot be null");
         Objects.requireNonNull(configDescriptionURI, "configDescriptionURI cannot be null");
 
+        final NeeoConfigDescriptionProvider localConfigDescriptionProvider = configDescriptionProvider;
+        Objects.requireNonNull(localConfigDescriptionProvider, "configDescriptionProvider cannot be null");
+
         final List<ConfigDescriptionParameter> parms = new ArrayList<>();
         final List<ConfigDescriptionParameterGroup> groups = new ArrayList<>();
 
@@ -291,7 +311,7 @@ public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
                 .withDescription("Unique key of the device").withRequired(true);
         parms.add(keyParmBuilder.build());
 
-        configDescriptionProvider.addConfigDescription(new ConfigDescription(configDescriptionURI, parms, groups));
+        localConfigDescriptionProvider.addConfigDescription(new ConfigDescription(configDescriptionURI, parms, groups));
     }
 
     /**
@@ -307,8 +327,8 @@ public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
             return new URI(String.format("%s:%s", NeeoConstants.CONFIG_DESCRIPTION_URI_DEVICE,
                     UidUtils.generateThingTypeUID(device)));
         } catch (URISyntaxException ex) {
-            logger.warn("Can't create configDescriptionURI for device {}", device.getKey());
-            return null;
+            throw new UnsupportedOperationException(
+                    "Can't create configDescriptionURI for device {}" + device.getKey());
         }
     }
 }

@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.neeo.internal.models;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The model representing an Neeo Recipe (serialize/deserialize json use only).
  *
@@ -22,73 +24,52 @@ public class NeeoRecipe {
     public static final String POWEROFF = "poweroff";
 
     /** The recipe key */
-    private final String key;
+    @Nullable
+    private String key;
 
     /** The type of recipe (generally launch/poweroff) */
-    private final String type;
+    @Nullable
+    private String type;
 
     /** The name of the recipe */
-    private final String name;
+    @Nullable
+    private String name;
 
     /** Whether the recipe is enabled */
-    private final boolean enabled;
+    private boolean enabled;
 
     /** ?? whether the recipe is dirty ?? */
-    private final boolean dirty;
+    private boolean dirty;
 
     // May be used in the future...
-    // private final NeeoStep[] steps;
-    // private final NeeoCondition[] conditions;
-    // private final NeeoTrigger trigger;
+    // private NeeoStep[] steps;
+    // private NeeoCondition[] conditions;
+    // private NeeoTrigger trigger;
 
     /** The associated room key */
-    private final String roomKey;
+    @Nullable
+    private String roomKey;
 
     /** The associated room name. */
-    private final String roomName;
+    @Nullable
+    private String roomName;
 
     /** The scenario key recipe is linked to */
-    private final String scenarioKey;
+    @Nullable
+    private String scenarioKey;
 
     /** Whether the recipe is hidden or not */
-    private final boolean isHiddenRecipe;
+    private boolean isHiddenRecipe;
 
     /** ?? whether this is a custom recipe ?? */
-    private final boolean isCustom;
-
-    /**
-     * Instantiates a new neeo recipe.
-     *
-     * @param key the key
-     * @param type the type
-     * @param name the name
-     * @param enabled the enabled
-     * @param dirty the dirty
-     * @param roomKey the room key
-     * @param roomName the room name
-     * @param scenarioKey the scenario key
-     * @param isHiddenRecipe the is hidden recipe
-     * @param isCustom the is custom
-     */
-    public NeeoRecipe(String key, String type, String name, boolean enabled, boolean dirty, String roomKey,
-            String roomName, String scenarioKey, boolean isHiddenRecipe, boolean isCustom) {
-        this.key = key;
-        this.type = type;
-        this.name = name;
-        this.enabled = enabled;
-        this.dirty = dirty;
-        this.roomKey = roomKey;
-        this.roomName = roomName;
-        this.scenarioKey = scenarioKey;
-        this.isHiddenRecipe = isHiddenRecipe;
-        this.isCustom = isCustom;
-    }
+    private boolean isCustom;
 
     /**
      * Gets the recipe key
      *
      * @return the key
      */
+    @Nullable
     public String getKey() {
         return key;
     }
@@ -98,6 +79,7 @@ public class NeeoRecipe {
      *
      * @return the type
      */
+    @Nullable
     public String getType() {
         return type;
     }
@@ -107,6 +89,7 @@ public class NeeoRecipe {
      *
      * @return the name
      */
+    @Nullable
     public String getName() {
         return name;
     }
@@ -134,6 +117,7 @@ public class NeeoRecipe {
      *
      * @return the room key
      */
+    @Nullable
     public String getRoomKey() {
         return roomKey;
     }
@@ -143,6 +127,7 @@ public class NeeoRecipe {
      *
      * @return the room name
      */
+    @Nullable
     public String getRoomName() {
         return roomName;
     }
@@ -152,6 +137,7 @@ public class NeeoRecipe {
      *
      * @return the scenario key
      */
+    @Nullable
     public String getScenarioKey() {
         return scenarioKey;
     }

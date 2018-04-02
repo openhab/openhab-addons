@@ -8,15 +8,24 @@
  */
 package org.openhab.io.neeo.internal.models;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.type.ChannelKind;
+import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.openhab.io.neeo.internal.NeeoUtil;
 
 /**
  * The model representing a Neeo Channel (serialize/deserialize json use only).
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class NeeoDeviceChannel {
 
@@ -29,6 +38,9 @@ public class NeeoDeviceChannel {
     /** The channel number */
     private final int channelNbr;
 
+    /** The item subtype id (the subtype allows multiple channels for the same itemName/channelNbr) */
+    private final ItemSubType subType;
+
     /** The capability type */
     private final NeeoCapabilityType type;
 
@@ -36,6 +48,7 @@ public class NeeoDeviceChannel {
     private final String label;
 
     /** The action/text value */
+    @Nullable
     private final String value; // could be either a format (text label) or a value to send (button)
 
     /** The device channel range */
@@ -48,15 +61,17 @@ public class NeeoDeviceChannel {
      * @param itemName the non-empty item name
      * @param channelNbr the channel number (must be >= 0)
      * @param type the non-null type
+     * @param subType the non-null subtype
      * @param label the non-empty label
      * @param value the possibly null, possibly empty value
      * @param range the possibly null range
      */
     public NeeoDeviceChannel(NeeoDeviceChannelKind kind, String itemName, int channelNbr, NeeoCapabilityType type,
-            String label, String value, NeeoDeviceChannelRange range) {
+            ItemSubType subType, String label, @Nullable String value, @Nullable NeeoDeviceChannelRange range) {
         Objects.requireNonNull(kind, "kind cannot be null");
         NeeoUtil.requireNotEmpty(itemName, "itemName is required");
         Objects.requireNonNull(type, "type is required");
+        Objects.requireNonNull(subType, "subType is required");
         if (channelNbr < 0) {
             throw new IllegalArgumentException("channelNbr must be >= 0");
         }
@@ -65,9 +80,82 @@ public class NeeoDeviceChannel {
         this.itemName = itemName;
         this.channelNbr = channelNbr;
         this.type = type;
-        this.label = StringUtils.isEmpty(label) ? "N/A" : label;
+        this.subType = subType;
+        this.label = label;
         this.value = value;
-        this.range = range;
+        this.range = range == null ? NeeoDeviceChannelRange.DEFAULT : range;
+    }
+
+    /**
+     * Create a list of {@link NeeoDeviceChannel} from the given channel, capability type, sub type and labels
+     *
+     * @param channel a non-null channel
+     * @param capabilityType a non-null capability type
+     * @param subType a non-null sub type
+     * @param existingLabels a non-null, possibly empty set of existing labels
+     * @return a non-null, possibly empty list of device channels
+     */
+    public static List<NeeoDeviceChannel> from(Channel channel, NeeoCapabilityType capabilityType, ItemSubType subType,
+            Set<String> existingLabels) {
+        Objects.requireNonNull(channel);
+        Objects.requireNonNull(capabilityType);
+        Objects.requireNonNull(subType);
+        Objects.requireNonNull(existingLabels);
+
+        final ChannelUID uid = channel.getUID();
+        return Arrays.asList(new NeeoDeviceChannel(NeeoDeviceChannelKind.get(channel.getKind()), uid.getId(), 1,
+                capabilityType, subType, NeeoUtil.getUniqueLabel(existingLabels, uid.getIdWithoutGroup()), "", null));
+
+    }
+
+    /**
+     * Create a list of {@link NeeoDeviceChannel} from the given item, channel, channel type, capability type and labels
+     *
+     * @param item a non-null item
+     * @param channel a possibly null channel
+     * @param channelType a possibly null channel type
+     * @param capabilityType a non-null capability type
+     * @param existingLabels a non-null, possibly empty set of existing labels
+     * @return a non-null, possibly empty list of device channels
+     */
+    public static List<NeeoDeviceChannel> from(Item item, @Nullable Channel channel, @Nullable ChannelType channelType,
+            NeeoCapabilityType capabilityType, Set<String> existingLabels) {
+        Objects.requireNonNull(item);
+        Objects.requireNonNull(capabilityType);
+        Objects.requireNonNull(existingLabels);
+
+        if (item.getAcceptedDataTypes().contains(HSBType.class)) {
+            return Arrays.asList(
+                    new NeeoDeviceChannel(
+                            NeeoDeviceChannelKind.get(channel == null ? ChannelKind.STATE : channel.getKind()),
+                            item.getName(), 1, capabilityType, ItemSubType.NONE,
+                            NeeoUtil.getUniqueLabel(existingLabels, NeeoUtil.getLabel(item, channelType)),
+                            NeeoUtil.getPattern(item, channelType), NeeoDeviceChannelRange.from(item)),
+                    new NeeoDeviceChannel(
+                            NeeoDeviceChannelKind.get(channel == null ? ChannelKind.STATE : channel.getKind()),
+                            item.getName(), 1, capabilityType, ItemSubType.HUE,
+                            NeeoUtil.getUniqueLabel(existingLabels, NeeoUtil.getLabel(item, channelType) + " (Hue)"),
+                            NeeoUtil.getPattern(item, channelType), NeeoDeviceChannelRange.from(item)),
+                    new NeeoDeviceChannel(
+                            NeeoDeviceChannelKind.get(channel == null ? ChannelKind.STATE : channel.getKind()),
+                            item.getName(), 1, capabilityType, ItemSubType.SATURATION,
+                            NeeoUtil.getUniqueLabel(existingLabels,
+                                    NeeoUtil.getLabel(item, channelType) + " (Saturation)"),
+                            NeeoUtil.getPattern(item, channelType), NeeoDeviceChannelRange.from(item)),
+                    new NeeoDeviceChannel(
+                            NeeoDeviceChannelKind.get(channel == null ? ChannelKind.STATE : channel.getKind()),
+                            item.getName(), 1, capabilityType, ItemSubType.BRIGHTNESS,
+                            NeeoUtil.getUniqueLabel(existingLabels,
+                                    NeeoUtil.getLabel(item, channelType) + " (Brightness)"),
+                            NeeoUtil.getPattern(item, channelType), NeeoDeviceChannelRange.from(item)));
+
+        } else {
+            return Arrays.asList(new NeeoDeviceChannel(
+                    NeeoDeviceChannelKind.get(channel == null ? ChannelKind.STATE : channel.getKind()), item.getName(),
+                    1, capabilityType, ItemSubType.NONE,
+                    NeeoUtil.getUniqueLabel(existingLabels, NeeoUtil.getLabel(item, channelType)),
+                    NeeoUtil.getPattern(item, channelType), NeeoDeviceChannelRange.from(item)));
+        }
     }
 
     /**
@@ -88,7 +176,7 @@ public class NeeoDeviceChannel {
         if (isPowerState()) {
             return "powerstate";
         }
-        return itemName + (channelNbr > 1 ? ("-" + channelNbr) : "");
+        return itemName + "-" + subType + (channelNbr > 1 ? ("-" + channelNbr) : "");
     }
 
     /**
@@ -107,6 +195,15 @@ public class NeeoDeviceChannel {
      */
     public NeeoCapabilityType getType() {
         return type;
+    }
+
+    /**
+     * Gets the sub type
+     *
+     * @return the sub type
+     */
+    public ItemSubType getSubType() {
+        return subType;
     }
 
     /**
@@ -135,6 +232,7 @@ public class NeeoDeviceChannel {
      *
      * @return the value
      */
+    @Nullable
     public String getValue() {
         return value;
     }
@@ -145,7 +243,7 @@ public class NeeoDeviceChannel {
      * @return the possibly null {@link NeeoDeviceChannelRange}
      */
     public NeeoDeviceChannelRange getRange() {
-        return range == null ? NeeoDeviceChannelRange.DEFAULT : range;
+        return range;
     }
 
     /**
@@ -160,6 +258,6 @@ public class NeeoDeviceChannel {
     @Override
     public String toString() {
         return "NeeoDeviceChannel [kind=" + kind + ", itemName=" + itemName + ", channelNbr=" + channelNbr + ", type="
-                + type + ", label=" + label + ", value=" + value + ", range=" + range + "]";
+                + type + ", subType=" + subType + ", label=" + label + ", value=" + value + ", range=" + range + "]";
     }
 }

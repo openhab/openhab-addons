@@ -10,7 +10,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-jgrowl/1.4.1/jquery.jgrowl.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.5/lodash.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-select/0.20.0/select.min.js"></script>
         <script src="js/app.js"></script>
         <script src="http://cdn.jsdelivr.net/g/filesaver.js"></script>
@@ -87,17 +87,39 @@
                     <h3 class="advProp-title modal-title" id="advProp-title">Advanced Properties</h3>
                 </div>
                 <div class="advProp-body modal-body" id="advProp-body">
-                    <fieldset class="timings" ng-hide="$ctl.device.type == '' || $ctl.device.type == 'ACCESSOIRE' || $ctrl.device.type == 'LIGHT'">
+                    <fieldset class="other">
+                        <legend>Properties</legend>
+                        <div class="props">
+                            <label for="specificname">Specific Name</label>
+                            <input id="specificname" ng-model='$ctrl.device.specificName' placeholder='{{$ctrl.device.name}}'>
+                        </div>
+                        <div class="props">
+                            <label for="iconname">Icon Name</label>
+                            <input id="iconname" ng-model='$ctrl.device.iconName'>
+                                                <span uib-dropdown>
+                                                    <button class="btn btn-xs" uib-dropdown-toggle>
+                                                        <i class="fas fa-caret-down" aria-hidden="true"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-right scrollable-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
+                                                        <li ng-repeat="x in $ctrl.imageNames track by $index ">
+                                                            <a href="#" ng-click="$ctrl.device.iconname = x.value" ng-bind="x.value"></a>
+                                                        </li>
+                                                    </ul>
+                                                </span>
+
+                        </div>
+                    </fieldset>
+                    <fieldset class="timings" ng-hide="$ctrl.device.type == '' || $ctrl.device.type == 'ACCESSOIRE' || $ctrl.device.type == 'LIGHT'">
                         <legend>Device Timings</legend>
-                        <div class="timing">
+                        <div class="props timing">
                             <label for="timingOn">ON</label>
                             <input id='timingOn' type='number' ng-model="$ctrl.props.timing.standbyCommandDelay" min="0" max="60000"/>
                         </div>
-                        <div class="timing">
+                        <div class="props timing">
                             <label for="timingSwitch">Switch</label>
                             <input id='timingSwitch' type='number' ng-model="$ctrl.props.timing.sourceSwitchDelay" min="0" max="60000"/>
                         </div>
-                        <div class="timing">
+                        <div class="props timing">
                             <label for="timingOff">OFF</label>
                             <input id='timingOff' type='number' ng-model="$ctrl.props.timing.shutdownDelay" min="0" max="60000"/>
                         </div>
@@ -123,21 +145,21 @@
                     <div class="addItems-buttons">
                         <div class="addItems-action">
                             <button class="btn btn-xs" uib-tooltip="Add a new Virtual Thing" ng-click="$ctrl.addNewItem()">
-                                <span class="fa fa-plus"></span>
+                                <span class="far fa-plus-square"></span>
                                 <span class="buttonText">Add Item</span>
                             </button>
                         </div>
 
                         <div class="addItems-action itemDelete">
                             <button class="btn btn-xs" uib-tooltip="Delete All Things" ng-click="$ctrl.deleteAllNewItems()">
-                                <span class="fa fa-plus"></span>
+                                <span class="far fa-plus-square"></span>
                                 <span class="buttonText">Delete All</span>
                             </button>
                         </div>
 
                         <div class="addItems-action itemImport">
                             <label for="addItems-itemImport" class="importLabel btn btn-xs">
-                                <i class="fa fa-upload"></i> Import Items
+                                <i class="fas fa-upload"></i> Import Items
                             </label>
                             <input id="addItems-itemImport"
                                 onchange="angular.element(this).scope().importItems(this)"
@@ -153,19 +175,19 @@
                                 </ui-select-choices>
                             </ui-select>
                             <button class="btn btn-xs" uib-tooltip="Import Thing Items" ng-disabled="$ctrl.selectedDevice === undefined" ng-click="$ctrl.addThingItems()">
-                                <span class="fa fa-plus"></span>
+                                <span class="far fa-plus-square"></span>
                                 <span class="buttonText">Add Thing Items</span>
                             </button>                       
                         </div>       
                     </div>
                     <div class="addItems-importing" ng-if="$ctrl.isImporting === true">
-                        <i class="fa fa-refresh fa-spin"></i>
+                        <i class="fas fa-sync fa-spin"></i>
                         <span>Importing Items...</span>
                     </div>
                     <div class="addItems-items" ng-if="$ctrl.isImporting === false">
                         <div class="addItems-item" ng-repeat="newItem in $ctrl.newItems track by $index ">
                             <button class="btn btn-xs" uib-tooltip="Delete Item" ng-click="$ctrl.deleteNewItem($index)">
-                                <span class="fa fa-minus"></span>
+                                <span class="fas fa-minus"></span>
                             </button>                       
                             <ui-select ng-model="$ctrl.newItems[$index]" theme="select2" style="min-width: 300px;" title="Choose an item">
                                 <ui-select-match placeholder="Select an item...">{{$select.selected.name}}</ui-select-match>
@@ -231,6 +253,7 @@
                                     <thead>
                                         <tr>
                                             <th>Brain ID</th>
+                                            <th>Brain Name</th>
                                             <th>Brain URL</th>
                                             <th>Callback URL</th>
                                             <th>Connected?</th>
@@ -240,12 +263,13 @@
                                     <tbody>
                                         <tr ng-repeat="status in ctrl.brainStatuses track by $index " ng-class-even="'evenRow'">
                                             <td>{{status.brainId}}</td>
+                                            <td>{{status.brainName}}</td>
                                             <td>{{status.brainUrl}}</td>
                                             <td>{{status.callbackUrl}}</td>
                                             <td class="connected" ng-class="{ 'success': status.connected, 'danger': !status.connected }">{{ status.connected ? "OK" : "OFFLINE" }}</td>
                                             <td class="brainActions2">
                                                 <button class="btn btn-xs" uib-tooltip="Show EUI" ng-disabled="!status.connected" ng-click="ctrl.showEui(status.brainUrl)">
-                                                    <i class="fa fa-mobile-alt" aria-hidden="true"></i>
+                                                    <i class="fas fa-mobile-alt" aria-hidden="true"></i>
                                                 </button>
                                                 <button class="btn btn-xs" uib-tooltip="Show Brain Log" ng-disabled="!status.connected" ng-click="ctrl.showLog(status.brainId)">
                                                     <i class="far fa-file-alt" aria-hidden="true"></i>
@@ -254,7 +278,7 @@
                                                     <i class="far fa-dot-circle" aria-hidden="true"></i>
                                                 </button>
                                                 <button class="btn btn-xs" uib-tooltip="Disconnects from the Brain" ng-click="ctrl.removeBrain(status.brainId)">
-                                                    <i class="fa fa-trash-alt" aria-hidden="true"></i>
+                                                    <i class="fas fa-trash-alt" aria-hidden="true"></i>
                                                 </button>
                                             </td>
                                         </tr>
@@ -272,12 +296,12 @@
                         <div class="toolBarAction">
                             <input ng-model="ctrl.thingSearch.name" placeholder="Search Things..."/>
                             <button class="btn btn-xs" uib-tooltip="Clear search" ng-disabled="ctrl.devices.length===0" ng-click="ctrl.clearSearch()">
-                                <span class="fa fa-times"></span>
+                                <span class="fas fa-times"></span>
                             </button>
                         </div>
                         <div class="toolBarAction">
                             <button class="btn btn-xs" uib-tooltip="Add a new Virtual Thing" ng-disabled="ctrl.devices.length===0" ng-click="ctrl.addVirtualDevice()">
-                                <span class="fa fa-plus"></span>
+                                <span class="far fa-plus-square"></span>
                                 <span class="buttonText">Virtual</span>
                             </button>
                         </div>
@@ -321,14 +345,14 @@
                                         </div>
                                         <div class="deviceInfo" ng-class-even="'deviceEvenRow'" ng-class="{'info': ctrl.selectedDevice == device }">
                                             <div class="deviceLinked">
-                                                <i class="fa fa-check" aria-hidden="true" ng-show='device.keys !== undefined && device.keys.length > 0'></i>
+                                                <i class="far fa-check-circle" aria-hidden="true" ng-show='device.keys !== undefined && device.keys.length > 0'></i>
                                             </div>
                                             <div class="deviceExpand">
-                                                <i class="fa fa-plus-square-o" aria-hidden="true" ng-if='ctrl.selectedDevice != device' ng-click="ctrl.selectDevice(device)"></i> <i class="fa fa-minus-square-o" aria-hidden="true" ng-if='ctrl.selectedDevice == device' ng-click="ctrl.selectDevice(undefined)"></i>
+                                                <i class="far fa-plus-square" aria-hidden="true" ng-if='ctrl.selectedDevice != device' ng-click="ctrl.selectDevice(device)"></i> <i class="fas fa-minus-square" aria-hidden="true" ng-if='ctrl.selectedDevice == device' ng-click="ctrl.selectDevice(undefined)"></i>
                                             </div>
 
                                             <div class="deviceInfoPopup" uib-popover-template="'devicePopover.html'" popover-trigger="'outsideClick'" popover-placement="bottom">
-                                                <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                                <i class="fas fa-info-circle" aria-hidden="true"></i>
                                             </div>
                                             <div class="deviceName" ng-if="!ctrl.isVirtualDevice(device)" ng-bind="device.name"></div>
                                             <div class="deviceName" ng-if="ctrl.isVirtualDevice(device)">
@@ -338,7 +362,7 @@
                                                 <input ng-model="device.type" ng-change="device.type = device.type.toUpperCase()" />
                                                 <span uib-dropdown>
                                                     <button class="btn btn-xs" uib-dropdown-toggle>
-                                                        <i class="fa fa-caret-down" aria-hidden="true"></i>
+                                                        <i class="fas fa-caret-down" aria-hidden="true"></i>
                                                     </button>
                                                     <ul class="dropdown-menu dropdown-menu-right scrollable-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
                                                         <li ng-repeat="x in ctrl.deviceTypes track by $index ">
@@ -350,28 +374,28 @@
 
                                             <div class="deviceActions">
                                                 <button uib-tooltip="Advanced Properties" ng-click="ctrl.showAdvancedProperties(device)" class="advProp btn btn-xs" ng-class="">
-                                                    <i class="fa fa-cog" aria-hidden="true"></i>
+                                                    <i class="fas fa-cog" aria-hidden="true"></i>
                                                 </button>
                                                 <button uib-tooltip="Add a virtual item" ng-if="ctrl.isVirtualDevice(device)" ng-click="ctrl.addVirtualItems(device)" class="addItem btn btn-xs" ng-class="">
-                                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                                    <i class="far fa-plus-square" aria-hidden="true"></i>
                                                 </button>
                                                 <button uib-tooltip="Add a trigger item" ng-click="ctrl.addTriggerChannel(device)" class="addItem btn btn-xs" ng-class="">
-                                                    <i class="fa fa-puzzle-piece" aria-hidden="true"></i>
+                                                    <i class="fas fa-puzzle-piece" aria-hidden="true"></i>
                                                 </button>
-                                                <button uib-tooltip="Save the device changes" ng-click="ctrl.saveDevice(device)" class="save btn btn-xs" ng-disabled="device.name == undefined || device.channels.length === 0" ng-class="{ 'canSave': device.hasChanges === true || device.hasChannelChanges === true || device.hasAdded === true || device.hasDeleted === true }">
-                                                    <i class="fa fa-save" aria-hidden="true"></i>
+                                                <button uib-tooltip="Save the device changes" ng-click="ctrl.saveDevice(device)" class="save btn btn-xs" ng-disabled="device.name == undefined || device.channels.length === 0" ng-class="{ 'canSave': device.hasChanges === true }">
+                                                    <i class="fas fa-save" aria-hidden="true"></i>
                                                 </button>
                                                 <button uib-tooltip="Refresh device (losing any changes)" ng-disabled="device.isNewDevice" ng-click="ctrl.refreshDevice(device)" class="refresh btn btn-xs">
-                                                    <i class="fa fa-sync-alt" aria-hidden="true"></i>
+                                                    <i class="fas fa-sync-alt" aria-hidden="true"></i>
                                                 </button>
                                                 <button uib-tooltip="Delete device" ng-if="ctrl.isVirtualDevice(device)" ng-click="ctrl.deleteDevice(device)" class="deleteItem btn btn-xs" ng-class="">
-                                                    <i class="fa fa-trash-alt" aria-hidden="true"></i>
+                                                    <i class="fas fa-trash-alt" aria-hidden="true"></i>
                                                 </button>
                                                 <button uib-tooltip="Restore to defaults (losing any changes)" ng-if="!ctrl.isVirtualDevice(device)" ng-click="ctrl.restoreDevice(device)" class="restore btn btn-xs">
-                                                    <i class="fa fa-eraser" aria-hidden="true"></i>
+                                                    <i class="fas fa-eraser" aria-hidden="true"></i>
                                                 </button>
-                                                <button uib-tooltip="Export rules template" ng-disabled="device.hasChanges === true || device.hasChannelChanges === true || device.hasAdded === true || device.hasDeleted === true" ng-if="ctrl.hasChannel(device, 'trigger')" ng-click="ctrl.exportRules(device)" class="exportRules btn btn-xs">
-                                                    <i class="fa fa-download" aria-hidden="true"></i>
+                                                <button uib-tooltip="Export rules template" ng-disabled="device.hasChanges === true" ng-if="ctrl.hasChannel(device, 'trigger')" ng-click="ctrl.exportRules(device)" class="exportRules btn btn-xs">
+                                                    <i class="fas fa-download" aria-hidden="true"></i>
                                                 </button>
                                             </div>
                                         </div>
@@ -387,7 +411,7 @@
                                             <div class="detailInfo" ng-repeat="channel in ctrl.getChannels(device, 'trigger') track by $index" ng-class-even="'detailEvenRow'">
                                                 <div class="detailInfoActions">
                                                     <button class="btn btn-xs" ng-click="ctrl.removeChannel(device, channel)">
-                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                        <i class="fas fa-trash" aria-hidden="true"></i>
                                                     </button>
                                                 </div>
                                                 <div class="channelItemName">
@@ -424,14 +448,14 @@
                                             <div class="detailInfo" ng-repeat="channel in ctrl.getChannels(device, 'item') track by $index" ng-class-even="'detailEvenRow'">
                                                 <div class="detailInfoActions">
                                                     <button class="btn btn-xs" ng-if="channel.channelNbr === 1" ng-click="ctrl.addChannel(device, channel)">
-                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                        <i class="far fa-plus-square" aria-hidden="true"></i>
                                                     </button>
                                                     <button class="btn btn-xs" ng-if="channel.channelNbr > 1 || ctrl.isVirtualDevice(device)" ng-click="ctrl.removeChannel(device, channel)" ng-class="{'secondButton': channel.channelNbr === 1 && ctrl.isVirtualDevice(device)}">
-                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                        <i class="fas fa-trash" aria-hidden="true"></i>
                                                     </button>
                                                 </div>
                                                 <div class="detailInfoPopup" uib-popover-template="'channelPopover.html'" popover-trigger="'outsideClick'" popover-placement="bottom">
-                                                    <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                                    <i class="fas fa-info-circle" aria-hidden="true"></i>
                                                 </div>
 
                                                 <div class="channelItemType" ng-bind="channel.itemType"></div>
@@ -446,7 +470,7 @@
                                                         <option value="power" ng-if='ctrl.isPower(channel)'>Power</option>
                                                         <option value="slider" ng-if='ctrl.isSlider(channel)'>Slider</option>
                                                         <option value="imageurl" ng-if='ctrl.isImageUrl(channel)'>Image URL</option>
-                                                        <option value="sensor" ng-if='ctrl.isSensor(channel)'>Sensor</option>
+                                                        <option value="sensor" ng-if='ctrl.isRangeSensor(channel) || ctrl.isBinarySensor(channel)'>Sensor</option>
                                                     </select>
                                                 </div>
 
@@ -459,7 +483,7 @@
                                                         <input ng-model="channel.label" placeholder="Label" />
                                                         <span uib-dropdown>
                                                             <button class="btn btn-xs" uib-dropdown-toggle>
-                                                                <i class="fa fa-caret-down" aria-hidden="true"></i>
+                                                                <i class="fas fa-caret-down" aria-hidden="true"></i>
                                                             </button>
                                                             <ul class="dropdown-menu dropdown-menu-right scrollable-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
                                                                 <li class="dropdown-header">Hard Buttons</li>
@@ -475,7 +499,7 @@
                                                         <input ng-model="channel.label" />
                                                         <span uib-dropdown>
                                                             <button class="btn btn-xs" uib-dropdown-toggle>
-                                                                <i class="fa fa-caret-down" aria-hidden="true"></i>
+                                                                <i class="fas fa-caret-down" aria-hidden="true"></i>
                                                             </button>
                                                             <ul class="dropdown-menu dropdown-menu-right scrollable-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
                                                                 <li ng-repeat="x in ctrl.dualButtons" ng-click="channel.label = x.value" ng-bind="x.text"></li>
@@ -495,7 +519,7 @@
                                                         <input ng-model="channel.value" placeholder="Image Size" />
                                                         <span uib-dropdown>
                                                             <button class="btn btn-xs" uib-dropdown-toggle>
-                                                                <i class="fa fa-caret-down" aria-hidden="true"></i>
+                                                                <i class="fas fa-caret-down" aria-hidden="true"></i>
                                                             </button>
                                                             <ul class="dropdown-menu dropdown-menu-right scrollable-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
                                                                 <li ng-click="channel.value = 'small'">Small</li>
@@ -507,7 +531,7 @@
                                                         <input ng-model="channel.value" placeholder="Command" />
                                                         <span uib-dropdown>
                                                             <button class="btn btn-xs" uib-dropdown-toggle>
-                                                                <i class="fa fa-caret-down" aria-hidden="true"></i>
+                                                                <i class="fas fa-caret-down" aria-hidden="true"></i>
                                                             </button>
                                                             <ul class="dropdown-menu dropdown-menu-right scrollable-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
                                                                 <li ng-click="channel.value = 'On'" ng-if="channel.acceptedCommandTypes.includes('onofftype')">On</li>
@@ -529,7 +553,7 @@
                                                             </ul>
                                                         </span>
                                                     </div>
-                                                    <div class="channelRange" ng-if="channel.type==='slider' || channel.type==='sensor'">
+                                                    <div class="channelRange" ng-if="channel.type==='slider' || (channel.type==='sensor' && ctrl.isRangeSensor(channel))">
                                                         <input class='rangeInput' ng-model="channel.range.minValue" placeholder="Min" />
                                                         <input class='rangeInput' ng-model="channel.range.maxValue" placeholder="Max" />
                                                         <input class='rangeInput' ng-model="channel.range.unit" placeholder="Unit" />

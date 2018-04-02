@@ -21,11 +21,12 @@ import java.util.Set;
 import javax.jmdns.ServiceInfo;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
 import org.openhab.binding.neeo.NeeoConstants;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ public class NeeoBrainDiscovery implements MDNSDiscoveryParticipant {
     private Logger logger = LoggerFactory.getLogger(NeeoBrainDiscovery.class);
 
     @Override
-    public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
+    public Set<@Nullable ThingTypeUID> getSupportedThingTypeUIDs() {
         return Collections.singleton(BRIDGE_TYPE_BRAIN);
     }
 
@@ -52,12 +53,18 @@ public class NeeoBrainDiscovery implements MDNSDiscoveryParticipant {
         return NeeoConstants.NEEO_MDNS_TYPE;
     }
 
+    @Nullable
     @Override
-    public DiscoveryResult createResult(ServiceInfo service) {
+    public DiscoveryResult createResult(@Nullable ServiceInfo service) {
+        if (service == null) {
+            return null;
+        }
+
         final ThingUID uid = getThingUID(service);
         if (uid == null) {
             return null;
         }
+
         logger.debug("createResult is evaluating: {}", service);
 
         final Map<String, Object> properties = new HashMap<>(2);
@@ -79,8 +86,13 @@ public class NeeoBrainDiscovery implements MDNSDiscoveryParticipant {
         return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
     }
 
+    @Nullable
     @Override
-    public ThingUID getThingUID(ServiceInfo service) {
+    public ThingUID getThingUID(@Nullable ServiceInfo service) {
+        if (service == null) {
+            return null;
+        }
+
         logger.debug("getThingUID is evaluating: {}", service);
         if (!StringUtils.equals("neeo", service.getApplication())) {
             logger.debug("Application not 'neeo' in MDNS serviceinfo: {}", service);
@@ -119,6 +131,7 @@ public class NeeoBrainDiscovery implements MDNSDiscoveryParticipant {
      * @param service a non-null service
      * @return the ip address of the service or null if none found.
      */
+    @Nullable
     private InetAddress getIpAddress(ServiceInfo service) {
         Objects.requireNonNull(service, "service cannot be null");
 
@@ -139,4 +152,5 @@ public class NeeoBrainDiscovery implements MDNSDiscoveryParticipant {
         }
         return null;
     }
+
 }

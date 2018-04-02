@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.neeo.internal;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neeo.handler.NeeoRoomHandler;
 
 /**
@@ -18,6 +19,7 @@ import org.openhab.binding.neeo.handler.NeeoRoomHandler;
 public class NeeoRoomConfig {
 
     /** The NEEO room key */
+    @Nullable
     private String roomKey;
 
     /** The refresh polling (in seconds) */
@@ -31,6 +33,7 @@ public class NeeoRoomConfig {
      *
      * @return the room key
      */
+    @Nullable
     public String getRoomKey() {
         return roomKey;
     }

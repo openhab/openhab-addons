@@ -11,12 +11,14 @@ package org.openhab.io.neeo.internal.servletservices.models;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.neeo.internal.models.ItemSubType;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
 
 /**
  * The route path information class. This class will evaluate the route path into it's logical components.
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class PathInfo {
 
@@ -25,6 +27,9 @@ public class PathInfo {
 
     /** The item name */
     private final String itemName;
+
+    /** The channel number */
+    private final ItemSubType subType;
 
     /** The channel number */
     private final int channelNbr;
@@ -36,6 +41,7 @@ public class PathInfo {
     private final String componentSubType;
 
     /** The action value */
+    @Nullable
     private final String actionValue;
 
     /**
@@ -43,36 +49,46 @@ public class PathInfo {
      *
      * @param paths the non-null, non-empty route paths
      */
-    public PathInfo(String[] paths) throws IllegalArgumentException {
+    public PathInfo(String[] paths) {
         Objects.requireNonNull(paths, "paths cannot be null");
 
         // Note - the following check ensures that the path contains exactly what we check
         // and will fail if not (in the case of when a firmware update changes what we expect)
-        if (paths.length < 7 || paths.length > 8) {
+        if (paths.length < 7 || paths.length > 9) {
             throw new IllegalArgumentException(
-                    "Path length invalid (must be between 7 and 8): " + String.join(",", paths));
+                    "Path length invalid (must be between 7 and 9): " + String.join(",", paths));
         }
 
-        // new ThingUID can throw illegal argument exception as well
-        thingUid = new NeeoThingUID(paths[1]);
+        // The path can be one of the following formats:
+        // 1. /device/{thingUID}/{itemName}/{channelNbr}/button/on/default
+        // 2. /device/{thingUID}/{itemName}/{channelNbr}/{component}/{componentsubtype}/default/[value]
+        // 3. /device/{thingUID}/{itemName}/{itemSubType}/{channelNbr}/button/on/default
+        // 4. /device/{thingUID}/{itemName}/{itemSubType}/{channelNbr}/{component}/{componentsubtype}/default/[value]
 
-        itemName = paths[2];
+        // new ThingUID can throw illegal argument exception as well
+        int idx = 1;
+        thingUid = new NeeoThingUID(paths[idx++]);
+
+        itemName = paths[idx++];
+
+        subType = ItemSubType.isValid(paths[idx]) ? ItemSubType.parse(paths[idx++]) : ItemSubType.NONE;
+
         try {
-            channelNbr = Integer.parseInt(paths[3]);
+            channelNbr = Integer.parseInt(paths[idx++]);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("channelNbr is not a valid integer: " + paths[3]);
+            throw new IllegalArgumentException("channelNbr is not a valid integer: " + paths[idx - 1]);
         }
 
         // button/textlabel/slider/etc
-        componentType = paths[4];
+        componentType = paths[idx++];
 
         // actor/sensor/buttoncmd
         if (StringUtils.equalsIgnoreCase("button", componentType)) {
             componentSubType = "actor";
-            actionValue = paths[5];
+            actionValue = paths[idx++];
         } else {
-            componentSubType = paths[5];
-            actionValue = paths.length == 8 ? paths[7] : null;
+            componentSubType = paths[idx++];
+            actionValue = paths.length == 9 ? paths[idx + 1] : null;
         }
 
         // we don't care about the next one currently (always 'default')
@@ -95,6 +111,15 @@ public class PathInfo {
      */
     public String getItemName() {
         return itemName;
+    }
+
+    /**
+     * Gets the item subtype
+     *
+     * @return the item subtype
+     */
+    public ItemSubType getSubType() {
+        return subType;
     }
 
     /**
@@ -129,15 +154,16 @@ public class PathInfo {
      *
      * @return the action value
      */
+    @Nullable
     public String getActionValue() {
         return actionValue;
     }
 
     @Override
     public String toString() {
-        return "PathInfo [thingUid=" + thingUid + ", itemName=" + itemName + ", channelNbr=" + channelNbr
-                + ", componentType=" + componentType + ", componentSubType=" + componentSubType + ", actionValue="
-                + actionValue + "]";
+        return "PathInfo [thingUid=" + thingUid + ", itemName=" + itemName + ", subType=" + subType + ", channelNbr="
+                + channelNbr + ", componentType=" + componentType + ", componentSubType=" + componentSubType
+                + ", actionValue=" + actionValue + "]";
     }
 
 }

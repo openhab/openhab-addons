@@ -41,7 +41,7 @@ public class MdnsHelper {
     /**
      * Sends an MDNS query to all the NEEO Brains for discovery
      *
-     * @throws IOException
+     * @throws IOException if an exception occurs sending the discovery packet
      */
     public static void sendQuery() throws IOException {
         final Logger logger = LoggerFactory.getLogger(MdnsHelper.class);

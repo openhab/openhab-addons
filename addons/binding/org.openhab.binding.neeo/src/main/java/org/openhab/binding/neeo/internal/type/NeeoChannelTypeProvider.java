@@ -31,7 +31,7 @@ public interface NeeoChannelTypeProvider extends ChannelTypeProvider {
     /**
      * Adds a list of {@link ChannelGroupType} to the provider
      *
-     * @param channelTypes a non-null, possibly empty list of {@link ChannelGroupType}
+     * @param groupTypes a non-null, possibly empty list of {@link ChannelGroupType}
      */
     public void addChannelGroupTypes(List<ChannelGroupType> groupTypes);
 }

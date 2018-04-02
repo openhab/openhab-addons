@@ -13,6 +13,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.events.Event;
 import org.eclipse.smarthome.core.events.EventFilter;
 
@@ -21,7 +22,7 @@ import org.eclipse.smarthome.core.events.EventFilter;
  * to be a service for a servlet - which includes determining whether a route is valid for it, handling get/post and
  * handling events.
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public interface ServletService extends AutoCloseable {
 
@@ -63,8 +64,9 @@ public interface ServletService extends AutoCloseable {
 
     /**
      * Returns the {@link EventFilter} to use to filter events
-     * 
+     *
      * @return the possibly null event filter;
      */
+    @Nullable
     EventFilter getEventFilter();
 }

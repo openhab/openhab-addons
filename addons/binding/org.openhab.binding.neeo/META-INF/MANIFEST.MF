@@ -26,6 +26,7 @@ Import-Package:
  org.eclipse.jetty.http,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.mdns,
  org.eclipse.smarthome.core.common,
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.events,

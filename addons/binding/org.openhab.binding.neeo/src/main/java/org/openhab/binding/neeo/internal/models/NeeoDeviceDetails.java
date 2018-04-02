@@ -9,6 +9,7 @@
 package org.openhab.binding.neeo.internal.models;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The model representing an Neeo Device Details (serialize/deserialize json use only)
@@ -18,53 +19,38 @@ import org.apache.commons.lang.StringUtils;
 public class NeeoDeviceDetails {
 
     /** The source name (neeo-deviceadapter or sdk name) */
-    private final String sourceName;
+    @Nullable
+    private String sourceName;
 
     /** The adapter name (name given by source) */
-    private final String adapterName;
+    @Nullable
+    private String adapterName;
 
     /** The NEEO type */
-    private final String type;
+    @Nullable
+    private String type;
 
     /** The manufacture */
-    private final String manufacturer;
+    @Nullable
+    private String manufacturer;
 
     /** The name of the device given by source */
-    private final String name;
+    @Nullable
+    private String name;
 
     /** The timings of the device */
-    private final NeeoDeviceDetailsTiming timing;
+    @Nullable
+    private NeeoDeviceDetailsTiming timing;
 
     /** The device capabilities */
-    private final String[] deviceCapabilities;
-
-    /**
-     * Constructs the device details
-     *
-     * @param sourceName the source name
-     * @param adapterName the adapter name
-     * @param type the neeo type
-     * @param manufacturer the manufacturer
-     * @param name the name of the device
-     * @param timing the device timings
-     * @param deviceCapabilities the device capabilities
-     */
-    public NeeoDeviceDetails(String sourceName, String adapterName, String type, String manufacturer, String name,
-            NeeoDeviceDetailsTiming timing, String[] deviceCapabilities) {
-        this.sourceName = sourceName;
-        this.adapterName = adapterName;
-        this.type = type;
-        this.manufacturer = manufacturer;
-        this.name = name;
-        this.timing = timing;
-        this.deviceCapabilities = deviceCapabilities;
-    }
+    private String @Nullable [] deviceCapabilities;
 
     /**
      * The device source name
      *
      * @return the device source name
      */
+    @Nullable
     public String getSourceName() {
         return sourceName;
     }
@@ -74,6 +60,7 @@ public class NeeoDeviceDetails {
      *
      * @return the adapter name
      */
+    @Nullable
     public String getAdapterName() {
         return adapterName;
     }
@@ -83,6 +70,7 @@ public class NeeoDeviceDetails {
      *
      * @return the NEEO device type
      */
+    @Nullable
     public String getType() {
         return type;
     }
@@ -92,6 +80,7 @@ public class NeeoDeviceDetails {
      *
      * @return the manufacturer
      */
+    @Nullable
     public String getManufacturer() {
         return manufacturer;
     }
@@ -101,6 +90,7 @@ public class NeeoDeviceDetails {
      *
      * @return the device name
      */
+    @Nullable
     public String getName() {
         return name;
     }
@@ -110,6 +100,7 @@ public class NeeoDeviceDetails {
      *
      * @return the timings
      */
+    @Nullable
     public NeeoDeviceDetailsTiming getTiming() {
         return timing;
     }
@@ -120,7 +111,8 @@ public class NeeoDeviceDetails {
      * @return the capabilities
      */
     public String[] getDeviceCapabilities() {
-        return deviceCapabilities;
+        final String[] localCapabilities = deviceCapabilities;
+        return localCapabilities == null ? new String[0] : localCapabilities;
     }
 
     @Override

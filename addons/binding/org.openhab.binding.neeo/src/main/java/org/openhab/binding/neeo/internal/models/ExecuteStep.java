@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.neeo.internal.models;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The model representing an execute setp (serialize/deserialize json use only)
  *
@@ -16,21 +18,11 @@ package org.openhab.binding.neeo.internal.models;
 public class ExecuteStep {
 
     /** The duration of the step */
-    private final int duration;
+    private int duration;
 
     /** The text describing the step */
-    private final String text;
-
-    /**
-     * Instantiates a new execute step.
-     *
-     * @param duration the duration
-     * @param text the text
-     */
-    public ExecuteStep(int duration, String text) {
-        this.duration = duration;
-        this.text = text;
-    }
+    @Nullable
+    private String text;
 
     /**
      * Gets the duration of the step
@@ -46,6 +38,7 @@ public class ExecuteStep {
      *
      * @return the text
      */
+    @Nullable
     public String getText() {
         return text;
     }
