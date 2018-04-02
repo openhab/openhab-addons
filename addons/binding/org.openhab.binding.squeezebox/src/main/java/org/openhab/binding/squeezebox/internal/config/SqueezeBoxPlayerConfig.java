@@ -24,7 +24,7 @@ public class SqueezeBoxPlayerConfig {
     /**
      * Number of seconds to wait to time out a notification
      */
-    public Integer notificationTimeout;
+    public int notificationTimeout;
 
     /**
      * Volume used for playing notifications

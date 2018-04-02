@@ -623,7 +623,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     /*
      * Give the notification player access to the notification timeout
      */
-    public Integer getNotificationTimeout() {
+    public int getNotificationTimeout() {
         return getConfigAs(SqueezeBoxPlayerConfig.class).notificationTimeout;
     }
 

@@ -191,7 +191,7 @@ class SqueezeBoxNotificationPlayer implements Closeable {
         squeezeBoxServerHandler.playPlaylistItem(mac, notificationMessagePlaylistsIndex);
 
         try {
-            int notificationTimeout = squeezeBoxPlayerHandler.getNotificationTimeout().intValue();
+            int notificationTimeout = squeezeBoxPlayerHandler.getNotificationTimeout();
             int timeoutCount = 0;
 
             logger.trace("Waiting up to {} s for stop...", notificationTimeout);

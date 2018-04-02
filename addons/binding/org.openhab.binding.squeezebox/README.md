@@ -35,8 +35,13 @@ The binding requires no special configuration
 
 The Squeeze Server bridge requires the ip address, web port, and cli port to access it on.
 If Squeeze Server authentication is enabled, the userId and password also are required.
-Squeeze Players are identified by their MAC address.
-In the thing file, this looks e.g. like
+
+Squeeze Players are identified by their MAC address, which is required.
+In addition, the notification timeout can be specified.
+If omitted, the default timeout value will be used.
+A notification volume can be optionally specified, which, if provided, will override the player's current volume level when playing notifications.
+
+Here are some examples of how to define the Squeeze Server and Player things in a things file.
 
 ```
 Bridge squeezebox:squeezeboxserver:myServer [ ipAddress="192.168.1.10", webport=9000, cliport=9090 ]
@@ -45,10 +50,19 @@ Bridge squeezebox:squeezeboxserver:myServer [ ipAddress="192.168.1.10", webport=
 }
 ```
 
-Or, if Squeeze Server authentication is enabled:
+If Squeeze Server authentication is enabled, the user ID and password can be specified for the Squeeze Server:
 
 ```
 Bridge squeezebox:squeezeboxserver:myServer [ ipAddress="192.168.1.10", webport=9000, cliport=9090, userId="yourid", password="yourpassword" ]
+{
+    Thing squeezeboxplayer myplayer[ mac="00:f1:bb:00:00:f1" ]
+}
+```
+
+The notification timeout and/or notification volume can be specified for the Squeeze Player:
+
+```
+Bridge squeezebox:squeezeboxserver:myServer [ ipAddress="192.168.1.10", webport=9000, cliport=9090 ]
 {
     Thing squeezeboxplayer myplayer[ mac="00:f1:bb:00:00:f1", notificationTimeout=30, notificationVolume=35 ]
 }
