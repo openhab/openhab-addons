@@ -34,6 +34,10 @@ This binding can discover the supported Onkyo AV Receivers. At the moment only t
 -   TX-NR828
 -   TX-NR838
 
+This binding also discover the supported newer Pioneer AV Reveicers (since 2015)
+
+-   VSX-1131
+
 ## Binding Configuration
 
 The binding can auto-discover the Onkyo AVRs present on your local network.
@@ -99,14 +103,17 @@ The Onkyo AVR supports the following channels (some channels are model specific)
 | zone1#mute                | Switch    | Mute/unmute zone 1                                                                                               |
 | zone1#input               | Number    | The input for zone 1                                                                                             |
 | zone1#volume              | Dimmer    | Volume of zone 1                                                                                                 |
+| zone1#volumedb            | Number    | Volume (dB) of zone 1                                                                                            |
 | zone2#power               | Switch    | Power on/off zone 2                                                                                              |
 | zone2#mute                | Switch    | Mute/unmute zone 2                                                                                               |
 | zone2#input               | Number    | The input for zone 2                                                                                             |
 | zone2#volume              | Dimmer    | Volume of zone 2                                                                                                 |
+| zone2#volumedb            | Number    | Volume (dB) of zone 2                                                                                            |
 | zone3#power               | Switch    | Power on/off zone 3                                                                                              |
 | zone3#mute                | Switch    | Mute/unmute zone 3                                                                                               |
 | zone3#input               | Number    | The input for zone 3                                                                                             |
 | zone3#volume              | Dimmer    | Volume of zone 3                                                                                                 |
+| zone3#volumedb            | Number    | Volume (dB) of zone 3                                                                                            |
 | player#control            | Player    | Control the Zone Player, e.g.  play/pause/next/previous/ffward/rewind (available if playing from Network or USB) |
 | player#title              | String    | Title of the current song (available if playing from Network or USB)                                             |
 | player#album              | String    | Album name of the current song (available if playing from Network or USB)                                        |
@@ -162,15 +169,17 @@ Here after are the ID values of the input sources:
 demo.items
 
 ```java
-Switch avrLrZ1_Power  "Power"       <switch>      { channel="onkyo:onkyoAVR:avr-livingroom:zone1#power" }
-Switch avrLrZ1_Mute   "Mute"        <soundvolume> { channel="onkyo:onkyoAVR:avr-livingroom:zone1#mute" }
-Number avrLrZ1_Input  "Input [%s]"  <text>        { channel="onkyo:onkyoAVR:avr-livingroom:zone1#input" }
-Dimmer avrLrZ1_Volume "Volume [%d]" <soundvolume> { channel="onkyo:onkyoAVR:avr-livingroom:zone1#volume" }
+Switch avrLrZ1_Power    "Power"       <switch>      { channel="onkyo:onkyoAVR:avr-livingroom:zone1#power" }
+Switch avrLrZ1_Mute     "Mute"        <soundvolume> { channel="onkyo:onkyoAVR:avr-livingroom:zone1#mute" }
+Number avrLrZ1_Input    "Input [%s]"  <text>        { channel="onkyo:onkyoAVR:avr-livingroom:zone1#input" }
+Dimmer avrLrZ1_Volume   "Volume [%d]" <soundvolume> { channel="onkyo:onkyoAVR:avr-livingroom:zone1#volume" }
+Number avrLrZ1_Volumedb "Volume [%.1f] dB]" <soundvolume> { channel="onkyo:onkyoAVR:avr-livingroom:zone1#volumedb" }
 
-Switch avrLrZ2_Power  "Power [%s]"  <switch>      { channel="onkyo:onkyoAVR:avr-livingroom:zone2#power" }
-Switch avrLrZ2_Mute   "Mute [%s]"                 { channel="onkyo:onkyoAVR:avr-livingroom:zone2#mute" }
-Number avrLrZ2_Input  "Input [%s]"  <text>        { channel="onkyo:onkyoAVR:avr-livingroom:zone2#input" }
-Dimmer avrLrZ2_Volume "Volume [%s]" <soundvolume> { channel="onkyo:onkyoAVR:avr-livingroom:zone2#volume" }
+Switch avrLrZ2_Power    "Power [%s]"  <switch>      { channel="onkyo:onkyoAVR:avr-livingroom:zone2#power" }
+Switch avrLrZ2_Mute     "Mute [%s]"                 { channel="onkyo:onkyoAVR:avr-livingroom:zone2#mute" }
+Number avrLrZ2_Input    "Input [%s]"  <text>        { channel="onkyo:onkyoAVR:avr-livingroom:zone2#input" }
+Dimmer avrLrZ2_Volume   "Volume [%s]" <soundvolume> { channel="onkyo:onkyoAVR:avr-livingroom:zone2#volume" }
+Number avrLrZ2_Volumedb "Volume [%.1f] dB]" <soundvolume> { channel="onkyo:onkyoAVR:avr-livingroom:zone2#volumedb" }
 
 Player avrLrPlayer_Control            "Control"                 <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#control" }
 String avrLrPlayer_Title              "Title [%s]"              <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#title" }
@@ -209,6 +218,7 @@ sitemap demo label="Onkyo AVR"
         Switch    item=avrLrZ1_Mute
         Selection item=avrLrZ1_Input  mappings=[ 0='DVR/VCR', 1='SATELLITE/CABLE', 2='GAME', 3='AUX', 4='GAME', 5='PC', 16='BLURAY/DVD', 32='TAPE1', 33='TAPE2', 34='PHONO', 35='CD', 36='FM', 37='AM', 38='TUNER', 39='MUSICSERVER', 40='INTERNETRADIO', 41='USB', 42='USB_BACK', 43='NETWORK', 45='AIRPLAY', 48='MULTICH', 50='SIRIUS' ]
         Slider    item=avrLrZ1_Volume
+		Setpoint  item=avrLrZ1_Volumedb label="Volume [%.1f dB]" minValue=-82 maxValue=0 step=0.5
     }
 
     Frame label="Zone 2" {
@@ -216,6 +226,7 @@ sitemap demo label="Onkyo AVR"
         Switch    item=avrLrZ2_Mute
         Selection item=avrLrZ2_Input  mappings=[ 0='DVR/VCR', 1='SATELLITE/CABLE', 2='GAME', 3='AUX', 4='GAME', 5='PC', 16='BLURAY/DVD', 32='TAPE1', 33='TAPE2', 34='PHONO', 35='CD', 36='FM', 37='AM', 38='TUNER', 39='MUSICSERVER', 40='INTERNETRADIO', 41='USB', 42='USB_BACK', 43='NETWORK', 45='AIRPLAY', 48='MULTICH', 50='SIRIUS' ]
         Slider    item=avrLrZ2_Volume
+		Setpoint  item=avrLrZ2_Volumedb label="Volume [%.1f dB]" minValue=-82 maxValue=0 step=0.5
     }
 
     Frame label="Player" {
