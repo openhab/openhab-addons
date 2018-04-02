@@ -57,6 +57,13 @@
 		<state min="0" max="100" step="1" pattern="%d %%">
 		</state>
 	</channel-type>
+	<channel-type id="volumedb">
+		<item-type>Number</item-type>
+		<label>Volume</label>
+		<description>Volume of your device (dB)</description>
+		<state min="-82" max="0" step="0.5" pattern="%.1f dB">
+		</state>
+	</channel-type>
 	<channel-type id="control" advanced="true">
 		<item-type>Player</item-type>
 		<label>Control</label>
