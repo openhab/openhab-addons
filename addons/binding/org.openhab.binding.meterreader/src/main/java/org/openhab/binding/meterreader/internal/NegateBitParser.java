@@ -44,8 +44,4 @@ public class NegateBitParser {
         }
         throw new IllegalArgumentException("Negate property cannot be parsed: " + negateProperty);
     }
-
-    protected String getObisChannelId(String obis) {
-        return obis.replaceAll("\\.", "-").replaceAll(":|\\*", "#");
-    }
 }

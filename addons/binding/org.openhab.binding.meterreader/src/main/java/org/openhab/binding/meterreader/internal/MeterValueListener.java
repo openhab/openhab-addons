@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.meterreader.internal;
 
+import javax.measure.Quantity;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +26,7 @@ public interface MeterValueListener {
         logger.error("", e);
     }
 
-    public void valueChanged(MeterValue value);
+    public <Q extends Quantity<Q>> void valueChanged(MeterValue<Q> value);
 
-    public void valueRemoved(MeterValue value);
+    public <Q extends Quantity<Q>> void valueRemoved(MeterValue<Q> value);
 }

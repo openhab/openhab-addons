@@ -27,4 +27,6 @@ public class MeterReaderConfiguration {
     public String baudrate;
 
     public String mode;
+
+    public String conformity;
 }

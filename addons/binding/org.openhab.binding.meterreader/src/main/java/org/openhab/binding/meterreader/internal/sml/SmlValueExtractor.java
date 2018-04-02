@@ -160,7 +160,7 @@ public final class SmlValueExtractor {
      */
     protected static String getObisAsString(byte[] octetBytes) {
 
-        String formattedObis = String.format(MeterReaderBindingConstants.OBIS_FORMAT, byteToInt(octetBytes[0]),
+        String formattedObis = String.format(MeterReaderBindingConstants.OBIS_FORMAT_MINIMAL, byteToInt(octetBytes[0]),
                 byteToInt(octetBytes[1]), byteToInt(octetBytes[2]), byteToInt(octetBytes[3]), byteToInt(octetBytes[4]));
 
         return formattedObis;

@@ -17,9 +17,10 @@ import java.util.function.Function;
  */
 public class NegateHandler {
 
-    public static boolean shouldNegateState(String negateProperty, Function<String, MeterValue> getObisValueFunction) {
+    public static boolean shouldNegateState(String negateProperty,
+            Function<String, MeterValue<?>> getObisValueFunction) {
         NegateBitModel negateModel = NegateBitParser.parseNegateProperty(negateProperty);
-        MeterValue value = getObisValueFunction.apply(negateModel.getNegateChannelId());
+        MeterValue<?> value = getObisValueFunction.apply(negateModel.getNegateChannelId());
         if (value != null) {
             boolean negateBit = isNegateSet(negateModel.isStatus() ? value.getStatus() : value.getValue(),
                     negateModel.getNegatePosition());
@@ -29,7 +30,7 @@ public class NegateHandler {
         return false;
     }
 
-    private static boolean isNegateSet(String value, int negatePosition) {
+    public static boolean isNegateSet(String value, int negatePosition) {
         long longValue = Long.parseLong(value);
         return (longValue & (1L << negatePosition)) != 0;
     }

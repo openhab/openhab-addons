@@ -9,6 +9,7 @@
 package org.openhab.binding.meterreader;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.binding.meterreader.internal.ObisCode;
 
 /**
  * The {@link SmlReaderBinding} class defines common constants, which are
@@ -29,6 +30,8 @@ public class MeterReaderBindingConstants {
 
     public static final String CONFIGURATION_BAUDRATE = "baudrate";
 
+    public static final String CONFIGURATION_CONFORMITY = "conformity";
+
     public static final String CONFIGURATION_INIT_MESSAGE = "initMessage";
 
     public static final String CONFIGURATION_CONVERSION = "conversionRatio";
@@ -37,12 +40,12 @@ public class MeterReaderBindingConstants {
 
     public static final String CHANNEL_PROPERTY_OBIS = "obis";
 
-    public static final String OBIS_PATTERN = "((?<A>[0-9])-(?<B>[0-9]{1,2}):)?(?<C>[0-9]{1,2}).(?<D>[0-9]{1,2}).(?<E>[0-9])(\\*(?<F>[0-9][0-9]{1,2}))?";
-
-    public static final String OBIS_PATTERN_CHANNELID = getObisChannelId(OBIS_PATTERN);
+    public static final String OBIS_PATTERN_CHANNELID = getObisChannelId(ObisCode.OBIS_PATTERN);
 
     /** Obis format */
-    public static final String OBIS_FORMAT = "%d-%d:%d.%d.%d";
+    public static final String OBIS_FORMAT_MINIMAL = "%d-%d:%d.%d.%d";
+    /** Obis format */
+    public static final String OBIS_FORMAT = OBIS_FORMAT_MINIMAL + "*%d";
 
     public static final String CHANNEL_TYPE_NUMBER = "NumberChannel";
     public static final String CHANNEL_TYPE_STRING = "StringChannel";

@@ -16,13 +16,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.measure.Quantity;
 import javax.measure.Unit;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -55,6 +55,7 @@ public class MeterReaderHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(MeterReaderHandler.class);
     private MeterDevice<?> smlDevice;
     private Cancelable valueReader;
+    private Conformity conformity;
 
     public MeterReaderHandler(Thing thing) {
         super(thing);
@@ -81,6 +82,7 @@ public class MeterReaderHandler extends BaseThingHandler {
             try {
                 int baudrate = config.baudrate == null ? Baudrate.AUTO.getBaudrate()
                         : Baudrate.fromString(config.baudrate).getBaudrate();
+                this.conformity = config.conformity == null ? Conformity.NONE : Conformity.valueOf(config.conformity);
                 byte[] pullSequence = config.initMessage == null ? null
                         : Hex.decodeHex(StringUtils.deleteWhitespace(config.initMessage).toCharArray());
                 this.smlDevice = MeterDeviceFactory.getDevice(config.mode, this.thing.getUID().getAsString(),
@@ -128,7 +130,7 @@ public class MeterReaderHandler extends BaseThingHandler {
 
             this.smlDevice.addValueChangeListener(new MeterValueListener() {
                 @Override
-                public void valueChanged(MeterValue value) {
+                public <Q extends Quantity<Q>> void valueChanged(MeterValue<Q> value) {
                     ThingBuilder thingBuilder = editThing();
 
                     String obis = value.getObisCode();
@@ -187,7 +189,7 @@ public class MeterReaderHandler extends BaseThingHandler {
                 }
 
                 @Override
-                public void valueRemoved(MeterValue value) {
+                public <Q extends Quantity<Q>> void valueRemoved(MeterValue<Q> value) {
 
                     // channels that are not available are removed
                     String obisChannelId = MeterReaderBindingConstants.getObisChannelId(value.getObisCode());
@@ -233,7 +235,7 @@ public class MeterReaderHandler extends BaseThingHandler {
         }
     }
 
-    private OBISTypeValue getObisType(String obis, Channel channel) {
+    private <Q extends Quantity<Q>> OBISTypeValue getObisType(String obis, Channel channel) {
         State type;
         String itemType;
         ChannelTypeUID channelType;
@@ -248,7 +250,7 @@ public class MeterReaderHandler extends BaseThingHandler {
                     channelType = new ChannelTypeUID(MeterReaderBindingConstants.BINDING_ID,
                             MeterReaderBindingConstants.CHANNEL_TYPE_NUMBER);
                     if (channel != null) {
-                        type = applyNegation(channel, type);
+                        type = applyConformity(channel, (QuantityType<Q>) type);
                         Number conversionRatio = (Number) channel.getConfiguration()
                                 .get(MeterReaderBindingConstants.CONFIGURATION_CONVERSION);
                         if (conversionRatio != null) {
@@ -271,29 +273,9 @@ public class MeterReaderHandler extends BaseThingHandler {
         return null;
     }
 
-    private State applyNegation(Channel channel, State currentState) {
+    private <Q extends Quantity<Q>> State applyConformity(Channel channel, QuantityType<Q> currentState) {
         try {
-
-            String negateProperty = (String) channel.getConfiguration()
-                    .get(MeterReaderBindingConstants.CONFIGURATION_CHANNEL_NEGATE);
-            if (negateProperty != null && !negateProperty.trim().isEmpty()) {
-                boolean shouldNegateState = NegateHandler.shouldNegateState(negateProperty, channelId -> {
-                    Channel negateChannel = getThing().getChannel(channelId);
-                    if (negateChannel != null) {
-
-                        return smlDevice.getSmlValue(
-                                negateChannel.getProperties().get(MeterReaderBindingConstants.CHANNEL_PROPERTY_OBIS));
-                    }
-                    return null;
-                });
-
-                if (shouldNegateState) {
-                    if (currentState instanceof QuantityType) {
-                        return ((QuantityType) currentState).negate();
-                    }
-                    return new DecimalType(((DecimalType) currentState).doubleValue() * -1);
-                }
-            }
+            return this.conformity.apply(channel, currentState, getThing(), this.smlDevice);
         } catch (Exception e) {
             logger.error("Failed to apply negation for channel: {}", channel.getUID(), e);
         }
@@ -303,10 +285,10 @@ public class MeterReaderHandler extends BaseThingHandler {
     class OBISTypeValue {
         String itemType;
         State type;
-        MeterValue obisValue;
+        MeterValue<?> obisValue;
         ChannelTypeUID channelType;
 
-        public OBISTypeValue(String itemType, State type, MeterValue obisValue, ChannelTypeUID channelType) {
+        public OBISTypeValue(String itemType, State type, MeterValue<?> obisValue, ChannelTypeUID channelType) {
             super();
             this.itemType = itemType;
             this.type = type;

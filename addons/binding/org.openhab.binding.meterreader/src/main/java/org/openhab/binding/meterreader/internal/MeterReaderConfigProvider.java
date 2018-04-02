@@ -62,6 +62,14 @@ public class MeterReaderConfigProvider implements ConfigOptionProvider {
                     options.add(new ParameterOption(baudrate.getBaudrate() + "", baudrate.toString()));
                 }
                 return options;
+
+            case MeterReaderBindingConstants.CONFIGURATION_CONFORMITY:
+                options = new ArrayList<ParameterOption>();
+
+                for (Conformity conformity : Conformity.values()) {
+                    options.add(new ParameterOption(conformity.name(), conformity.toString()));
+                }
+                return options;
         }
         return null;
     }
