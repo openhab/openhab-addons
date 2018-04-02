@@ -41,7 +41,7 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
     }
 
     protected void unbindDiscovery(LGWebOSDiscovery discovery) {
-        discovery = null;
+        this.discovery = null;
     }
 
     @Override

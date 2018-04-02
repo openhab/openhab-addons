@@ -28,6 +28,8 @@ public class LGWebOSBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_WEBOSTV);
 
+    public static final String PROPERTY_DEVICE_ID = "deviceId";
+
     // List of all Channel ids. Values have to match ids in thing-types.xml
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_POWER = "power";

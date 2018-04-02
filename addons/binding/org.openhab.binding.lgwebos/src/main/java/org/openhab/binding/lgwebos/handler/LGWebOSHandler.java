@@ -230,7 +230,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
     }
 
     private String getDeviceId() {
-        return getThing().getUID().getId();
+        return getConfig().get(PROPERTY_DEVICE_ID).toString();
     }
 
     @Override
