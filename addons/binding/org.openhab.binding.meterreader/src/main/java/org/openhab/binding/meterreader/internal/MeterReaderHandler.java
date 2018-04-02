@@ -87,7 +87,8 @@ public class MeterReaderHandler extends BaseThingHandler {
                         : Hex.decodeHex(StringUtils.deleteWhitespace(config.initMessage).toCharArray());
                 this.smlDevice = MeterDeviceFactory.getDevice(config.mode, this.thing.getUID().getAsString(),
                         config.port, pullSequence, baudrate, config.baudrateChangeDelay);
-                updateStatus(ThingStatus.ONLINE);
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
+                        "Waiting for messages from device");
             } catch (DecoderException e) {
                 logger.error("Failed to decode init message", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

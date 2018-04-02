@@ -10,15 +10,15 @@ Bundle-ClassPath: .,
  lib/j62056.jar
 Import-Package: 
  gnu.io,
- javax.measure;version="1.0.0",
- javax.measure.format;version="1.0.0",
- javax.measure.quantity;version="1.0.0",
- javax.measure.spi;version="1.0.0",
- org.apache.commons.codec;version="1.6.0",
- org.apache.commons.codec.binary;version="1.6.0",
- org.apache.commons.lang;version="2.6.0",
- org.apache.commons.net;version="3.2.0",
- org.apache.commons.net.telnet;version="3.2.0",
+ javax.measure,
+ javax.measure.format,
+ javax.measure.quantity,
+ javax.measure.spi,
+ org.apache.commons.codec,
+ org.apache.commons.codec.binary,
+ org.apache.commons.lang,
+ org.apache.commons.net,
+ org.apache.commons.net.telnet,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.common,
@@ -29,15 +29,11 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.hamcrest;version="1.1.0";resolution:=optional,
- org.junit;version="4.11.0";resolution:=optional,
  org.openhab.binding.meterreader,
- org.osgi.service.component;version="1.2.2",
+ org.osgi.service.component,
  org.slf4j,
- tec.uom.se.spi;version="1.0.8"
+ tec.uom.se.spi
 Service-Component: OSGI-INF/*.xml
-Export-Package: gnu.io.factory;x-internal:=true,
- gnu.io.rfc2217;x-internal:=true,
- org.openhab.binding.meterreader,
+Export-Package: org.openhab.binding.meterreader,
  org.openhab.binding.meterreader.connectors
 Bundle-ActivationPolicy: lazy

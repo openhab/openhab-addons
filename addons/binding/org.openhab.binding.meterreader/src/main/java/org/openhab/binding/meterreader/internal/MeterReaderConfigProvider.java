@@ -20,14 +20,17 @@ import org.openhab.binding.meterreader.MeterReaderBindingConstants;
 import org.openhab.binding.meterreader.internal.helper.Baudrate;
 import org.openhab.binding.meterreader.internal.helper.ProtocolMode;
 
-import gnu.io.NRSerialPort;
-
 /**
  *
  * @author MatthiasS
  *
  */
 public class MeterReaderConfigProvider implements ConfigOptionProvider {
+
+    @Override
+    public Collection<ParameterOption> getParameterOptions(URI uri, String param, String context, Locale locale) {
+        return ConfigOptionProvider.super.getParameterOptions(uri, param, context, locale);
+    }
 
     @Override
     public Collection<ParameterOption> getParameterOptions(URI uri, String param, Locale locale) {
@@ -40,15 +43,9 @@ public class MeterReaderConfigProvider implements ConfigOptionProvider {
         }
 
         switch (param) {
-            case MeterReaderBindingConstants.CONFIGURATION_PORT:
-                List<ParameterOption> options = new ArrayList<ParameterOption>();
-                for (String port : NRSerialPort.getAvailableSerialPorts()) {
-                    options.add(new ParameterOption(port, port));
-                }
-                return options;
 
             case MeterReaderBindingConstants.CONFIGURATION_SERIAL_MODE:
-                options = new ArrayList<ParameterOption>();
+                List<ParameterOption> options = new ArrayList<ParameterOption>();
 
                 for (ProtocolMode mode : ProtocolMode.values()) {
                     options.add(new ParameterOption(mode.name(), mode.toString()));

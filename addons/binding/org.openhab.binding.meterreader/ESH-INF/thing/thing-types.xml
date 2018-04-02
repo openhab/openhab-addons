@@ -1,82 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="meterreader" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="meter">
-		<label>Meter device</label>
-		<description>The meter device to read the SML or IEC 62056-21 messages from</description>
+    <thing-type id="meter">
+        <label>Meter device</label>
+        <description>The meter device to read the SML or IEC 62056-21 messages from</description>
 
-		<config-description>
-			<parameter name="port" type="text">
-				<label>Connected serial port</label>
-				<description>The device serial port (e.g. /dev/tty0 or COM1)</description>
-				<required>true</required>
-				<limitToOptions>false</limitToOptions>
-			</parameter>
-			<parameter name="refresh" type="integer">
-				<label>Refresh Rate</label>
-				<description>Refresh rate in seconds</description>
-				<default>20</default>
-				<required>true</required>
-				<unitLabel>s</unitLabel>
-			</parameter>
-			
+        <config-description>
+            <parameter name="port" type="text">
+                <label>Connected serial port</label>
+                <description>The device serial port (e.g. /dev/tty0 or COM1)</description>
+                <required>true</required>
+                <limitToOptions>false</limitToOptions>
+                <context>serial-port</context>
+            </parameter>
+            <parameter name="refresh" type="integer">
+                <label>Refresh Rate</label>
+                <description>Refresh rate in seconds</description>
+                <default>20</default>
+                <unitLabel>s</unitLabel>
+            </parameter>
             <parameter name="baudrateChangeDelay" type="integer">
                 <label>Delay of baudrate change in ms</label>
                 <default>0</default>
                 <description>USB to serial converters often require a delay of up to 250ms after the ACK before changing baudrate</description>
-                <required>true</required>
             </parameter>
             <parameter name="baudrate" type="text">
                 <label>Baudrate</label>
                 <default>AUTO</default>
                 <description>The baudrate of the serial port. If set to 'AUTO', it is dependent on the selected mode. The default is 300 baud for modes A, B, and C and 2400 baud for mode D, and 9600 baud for SML.</description>
-                <required>true</required>
                 <limitToOptions>false</limitToOptions>
             </parameter>
             <parameter name="mode" type="text">
                 <label>The protocol mode to use</label>
                 <default>SML</default>
                 <description>Can be SML (PUSH mode), Mode A,B,C (PULL)or D (PUSH)</description>
-                <required>true</required>
             </parameter>
             <parameter name="conformity" type="text">
                 <label>Conform to specific standard semantics</label>
                 <default>NONE</default>
                 <description>Reserved to conform to special semantics specified in specific standards. EDL_FNN: Currently applies the energy direction to WATT channels (which are absolute values) (see https://www.vde.com/resource/blob/951000/252eb3cdf1c7f6cdea10847be399da0d/fnn-lastenheft-edl-1-0-2010-01-13-data.pdf)</description>
-                <required>true</required>
                 <limitToOptions>true</limitToOptions>
             </parameter>
-		</config-description>
+        </config-description>
 
-	</thing-type>
+    </thing-type>
 
-	<channel-type id="NumberChannel">
-		<item-type>Number</item-type>
-		<label>Number obis</label>
-		<state readOnly="true" />
-		<config-description>
-			<parameter name="conversionRatio" type="decimal">
-				<label>Conversion ratio</label>
-				<description>An quotient to use for conversion of the number</description>
-				<default>1.0</default>
-			</parameter>
-			
+    <channel-type id="NumberChannel">
+        <item-type>Number</item-type>
+        <label>Number obis</label>
+        <description>Channel used to represent all OBIS channels which can be converted to a number</description>
+        <state readOnly="true" />
+        <config-description>
+            <parameter name="conversionRatio" type="decimal">
+                <label>Conversion ratio</label>
+                <description>An quotient to use for conversion of the number</description>
+                <default>1.0</default>
+            </parameter>
             <parameter name="negate" type="text">
                 <advanced>true</advanced>
                  <label>Negate property</label>
                  <description>e.g. 1-0#1-8-0:5:1:status //negate if status(1-0#1-8-0) and 2^5 = 1</description>
             </parameter>
-		</config-description>
-        
-	</channel-type>
+        </config-description>
+    </channel-type>
 
-	<channel-type id="StringChannel">
-		<item-type>String</item-type>
-		<label>String obis</label>
-		<state readOnly="true" />
-	</channel-type>
+    <channel-type id="StringChannel">
+        <item-type>String</item-type>
+        <label>String obis</label>
+        <description>Channel used to represent all OBIS channels which can only be represented as a text</description>
+        <state readOnly="true" />
+    </channel-type>
 
 </thing:thing-descriptions>

@@ -11,6 +11,7 @@ package org.openhab.binding.meterreader.internal;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.format.UnitFormat;
+import javax.measure.spi.ServiceProvider;
 
 import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -26,6 +27,8 @@ public class UnitService {
 
     private static final UnitService INSTANCE = new UnitService();
 
+    private ServiceProvider defaultServiceProvider = new DefaultServiceProvider();
+
     private UnitService() {
     }
 
@@ -40,7 +43,7 @@ public class UnitService {
     }
 
     public UnitFormat getUnitFormat() {
-        return new DefaultServiceProvider().getUnitFormatService().getUnitFormat();
+        return defaultServiceProvider.getUnitFormatService().getUnitFormat();
     }
 
     public static UnitService getInstance() {

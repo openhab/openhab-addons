@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <binding:binding id="meterreader" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-	<name>MeterReader Binding</name>
-	<description>
-	            The meter reader binding is able to read SML messages (PUSH) and supports IEC 62056-21 modes A,B,C (PULL)and D (PUSH).
+    <name>MeterReader Binding</name>
+    <description>
+        The meter reader binding is able to read SML messages (PUSH) and supports IEC 62056-21 modes A,B,C (PULL)and D (PUSH).
     </description>
-	<author>Matthias Steigenberger</author>
 
 </binding:binding>
