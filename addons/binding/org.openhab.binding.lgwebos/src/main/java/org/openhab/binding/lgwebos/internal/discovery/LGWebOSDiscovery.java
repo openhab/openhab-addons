@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.lgwebos.internal.discovery;
 
-import static org.openhab.binding.lgwebos.LGWebOSBindingConstants.THING_TYPE_WEBOSTV;
+import static org.openhab.binding.lgwebos.LGWebOSBindingConstants.*;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -135,7 +135,9 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
     // Helpers for DiscoveryManagerListener Impl
     private DiscoveryResult createDiscoveryResult(ConnectableDevice device) {
         ThingUID thingUID = createThingUID(device);
-        return DiscoveryResultBuilder.create(thingUID).withLabel(device.getFriendlyName()).build();
+        return DiscoveryResultBuilder.create(thingUID).withLabel(device.getFriendlyName())
+                .withProperty(PROPERTY_DEVICE_ID, device.getId()).withRepresentationProperty(PROPERTY_DEVICE_ID)
+                .build();
     }
 
     private ThingUID createThingUID(ConnectableDevice device) {
@@ -204,7 +206,6 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
             logger.warn("Configured primary IP cannot be parsed: {} Details: {}", ipAddress, e.getMessage());
             return Optional.empty();
         }
-
     }
 
 }
