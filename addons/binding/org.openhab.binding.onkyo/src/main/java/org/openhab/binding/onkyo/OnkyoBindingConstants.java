@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Paul Frank - Initial contribution
  * @author Pauli Anttila
+ * @author Herbert Sigg - Extension for new Pioneer AVRs
  */
 @NonNullByDefault
 public class OnkyoBindingConstants {
@@ -47,12 +48,15 @@ public class OnkyoBindingConstants {
     public static final String ONKYO_TYPE_TXNR828 = "TX-NR828";
     public static final String ONKYO_TYPE_TXNR838 = "TX-NR838";
 
+    // List of all supported Pioneer Models
+    public static final String PIONEER_TYPE_VSX1131 = "VSX-1131";
+
     // Extend this set with all successfully tested models
     public static final Set<String> SUPPORTED_DEVICE_MODELS = Stream
             .of(ONKYO_TYPE_TXNR414, ONKYO_TYPE_TXNR509, ONKYO_TYPE_TXNR515, ONKYO_TYPE_TXNR525, ONKYO_TYPE_TXNR535,
                     ONKYO_TYPE_TXNR555, ONKYO_TYPE_TXNR616, ONKYO_TYPE_TXNR626, ONKYO_TYPE_TXNR646, ONKYO_TYPE_TXNR656,
                     ONKYO_TYPE_TXNR717, ONKYO_TYPE_TXNR727, ONKYO_TYPE_TXNR737, ONKYO_TYPE_TXNR747, ONKYO_TYPE_TXNR757,
-                    ONKYO_TYPE_TXNR818, ONKYO_TYPE_TXNR828, ONKYO_TYPE_TXNR838)
+                    ONKYO_TYPE_TXNR818, ONKYO_TYPE_TXNR828, ONKYO_TYPE_TXNR838, PIONEER_TYPE_VSX1131)
             .collect(Collectors.toSet());
 
     // List of all Thing Type UIDs
@@ -76,12 +80,14 @@ public class OnkyoBindingConstants {
     public static final ThingTypeUID THING_TYPE_TXNR818 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR818);
     public static final ThingTypeUID THING_TYPE_TXNR828 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR828);
     public static final ThingTypeUID THING_TYPE_TXNR838 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR838);
+    public static final ThingTypeUID THING_TYPE_VSX1131 = new ThingTypeUID(BINDING_ID, PIONEER_TYPE_VSX1131);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(THING_TYPE_ONKYOAV, THING_TYPE_ONKYO_UNSUPPORTED, THING_TYPE_TXNR414, THING_TYPE_TXNR515,
                     THING_TYPE_TXNR525, THING_TYPE_TXNR535, THING_TYPE_TXNR555, THING_TYPE_TXNR616, THING_TYPE_TXNR626,
                     THING_TYPE_TXNR646, THING_TYPE_TXNR656, THING_TYPE_TXNR717, THING_TYPE_TXNR727, THING_TYPE_TXNR737,
-                    THING_TYPE_TXNR747, THING_TYPE_TXNR757, THING_TYPE_TXNR818, THING_TYPE_TXNR828, THING_TYPE_TXNR838)
+                    THING_TYPE_TXNR747, THING_TYPE_TXNR757, THING_TYPE_TXNR818, THING_TYPE_TXNR828, THING_TYPE_TXNR838,
+                    THING_TYPE_VSX1131)
             .collect(Collectors.toSet());
 
     // List of thing parameters names
@@ -95,16 +101,19 @@ public class OnkyoBindingConstants {
     public static final String CHANNEL_INPUT = "zone1#input";
     public static final String CHANNEL_MUTE = "zone1#mute";
     public static final String CHANNEL_VOLUME = "zone1#volume";
+    public static final String CHANNEL_VOLUMEDB = "zone1#volumedb";
 
     public static final String CHANNEL_POWERZONE2 = "zone2#power";
     public static final String CHANNEL_INPUTZONE2 = "zone2#input";
     public static final String CHANNEL_MUTEZONE2 = "zone2#mute";
     public static final String CHANNEL_VOLUMEZONE2 = "zone2#volume";
+    public static final String CHANNEL_VOLUMEDBZONE2 = "zone2#volumedb";
 
     public static final String CHANNEL_POWERZONE3 = "zone3#power";
     public static final String CHANNEL_INPUTZONE3 = "zone3#input";
     public static final String CHANNEL_MUTEZONE3 = "zone3#mute";
     public static final String CHANNEL_VOLUMEZONE3 = "zone3#volume";
+    public static final String CHANNEL_VOLUMEDBZONE3 = "zone3#volumedb";
 
     public static final String CHANNEL_CONTROL = "player#control";
     public static final String CHANNEL_CURRENTPLAYINGTIME = "player#currentPlayingTime";
