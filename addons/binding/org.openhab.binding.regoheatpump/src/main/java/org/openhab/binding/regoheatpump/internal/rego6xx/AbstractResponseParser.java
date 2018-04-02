@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.regoheatpump.internal.rego6xx;
 
-import javax.xml.bind.DatatypeConverter;
+import org.eclipse.smarthome.core.util.HexUtils;
 
 /**
  * The {@link AbstractResponseParser} is responsible for parsing responses coming from
@@ -32,11 +32,11 @@ abstract class AbstractResponseParser<T> implements ResponseParser<T> {
         }
 
         if (buffer[0] != COMPUTER_ADDRESS) {
-            throw new Rego6xxProtocolException("Invalid header " + DatatypeConverter.printHexBinary(buffer));
+            throw new Rego6xxProtocolException("Invalid header " + HexUtils.bytesToHex(buffer));
         }
 
         if (Checksum.calculate(buffer, 1, responseLength() - 2) != buffer[responseLength() - 1]) {
-            throw new Rego6xxProtocolException("Invalid crc - " + DatatypeConverter.printHexBinary(buffer));
+            throw new Rego6xxProtocolException("Invalid crc - " + HexUtils.bytesToHex(buffer));
         }
 
         return convert(buffer);
