@@ -31,8 +31,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -45,6 +43,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.irtrans.IRtransBindingConstants;
 import org.openhab.binding.irtrans.IRtransBindingConstants.Led;
 import org.openhab.binding.irtrans.IrCommand;
@@ -779,13 +778,18 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
 
     protected void onRead(ByteBuffer byteBuffer) {
         try {
-            logger.trace("Received bytebuffer : '{}'", DatatypeConverter.printHexBinary(byteBuffer.array()));
+            if (logger.isTraceEnabled()) {
+                logger.trace("Received bytebuffer : '{}'", HexUtils.bytesToHex(byteBuffer.array()));
+            }
             int byteCount = getByteCount(byteBuffer);
 
             while (byteCount > 0) {
                 byte[] message = new byte[byteCount];
                 byteBuffer.get(message, 0, byteCount);
-                logger.trace("Received message : '{}'", DatatypeConverter.printHexBinary(message));
+
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Received message : '{}'", HexUtils.bytesToHex(message));
+                }
 
                 String strippedBuffer = stripByteCount(ByteBuffer.wrap(message));
 
@@ -818,7 +822,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
             }
         } catch (Exception e) {
             logger.error("An exception occurred while reading bytebuffer '{}' : {}",
-                    DatatypeConverter.printHexBinary(byteBuffer.array()), e.getMessage(), e);
+                    HexUtils.bytesToHex(byteBuffer.array()), e.getMessage(), e);
         }
     }
 
