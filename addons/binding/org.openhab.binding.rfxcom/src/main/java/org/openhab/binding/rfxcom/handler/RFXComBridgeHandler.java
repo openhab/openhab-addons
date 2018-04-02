@@ -258,7 +258,9 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                                 }
 
                                 if (setMode != null) {
-                                    logger.debug("Setting RFXCOM mode using: {}", HexUtils.bytesToHex(setMode));
+                                    if (logger.isDebugEnabled()) {
+                                        logger.debug("Setting RFXCOM mode using: {}", HexUtils.bytesToHex(setMode));
+                                    }
                                     connector.sendMessage(setMode);
                                 }
                             }

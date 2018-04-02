@@ -87,7 +87,9 @@ public class RFXComTcpConnector extends RFXComBaseConnector {
 
     @Override
     public void sendMessage(byte[] data) throws IOException {
-        logger.trace("Send data (len={}): {}", data.length, HexUtils.bytesToHex(data));
+        if (logger.isTraceEnabled()) {
+            logger.trace("Send data (len={}): {}", data.length, HexUtils.bytesToHex(data));
+        }
         out.write(data);
         out.flush();
     }

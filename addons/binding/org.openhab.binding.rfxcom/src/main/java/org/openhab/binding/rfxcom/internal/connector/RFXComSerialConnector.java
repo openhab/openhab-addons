@@ -119,7 +119,10 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
             throw new IOException("Not connected sending messages is not possible");
         }
 
-        logger.trace("Send data (len={}): {}", data.length, HexUtils.bytesToHex(data));
+        if (logger.isTraceEnabled()) {
+            logger.trace("Send data (len={}): {}", data.length, HexUtils.bytesToHex(data));
+        }
+
         out.write(data);
         out.flush();
     }
