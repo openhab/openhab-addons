@@ -1,20 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.openhab.binding</groupId>
 		<artifactId>pom</artifactId>
+		<groupId>org.openhab.binding</groupId>
 		<version>2.3.0-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.openhab.binding</groupId>
 	<artifactId>org.openhab.binding.avmfritz.test</artifactId>
 	<version>2.3.0-SNAPSHOT</version>
+	<packaging>eclipse-test-plugin</packaging>
 
 	<name>AVM FRITZ! Binding Tests</name>
-	<packaging>eclipse-test-plugin</packaging>
 
 	<build>
 		<plugins>
@@ -26,12 +27,12 @@
 						<extraRequirements>
 							<dependency>
 								<type>eclipse-plugin</type>
-								<id>org.eclipse.equinox.event</id>
+								<id>org.eclipse.equinox.ds</id>
 								<versionRange>0.0.0</versionRange>
 							</dependency>
 							<dependency>
 								<type>eclipse-plugin</type>
-								<id>org.eclipse.equinox.ds</id>
+								<id>org.eclipse.equinox.event</id>
 								<versionRange>0.0.0</versionRange>
 							</dependency>
 							<dependency>
@@ -41,12 +42,12 @@
 							</dependency>
 							<dependency>
 								<type>eclipse-plugin</type>
-								<id>org.eclipse.smarthome.core.thing.xml</id>
+								<id>org.eclipse.smarthome.core.binding.xml</id>
 								<versionRange>0.0.0</versionRange>
 							</dependency>
 							<dependency>
 								<type>eclipse-plugin</type>
-								<id>org.eclipse.smarthome.core.binding.xml</id>
+								<id>org.eclipse.smarthome.core.thing.xml</id>
 								<versionRange>0.0.0</versionRange>
 							</dependency>
 						</extraRequirements>
@@ -58,6 +59,11 @@
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<configuration>
 					<dependencies>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>org.eclipse.equinox.ds</artifactId>
+							<version>0.0.0</version>
+						</dependency>
 						<dependency>
 							<type>eclipse-plugin</type>
 							<artifactId>ch.qos.logback.classic</artifactId>
@@ -86,12 +92,7 @@
 							<autoStart>true</autoStart>
 						</bundle>
 						<bundle>
-							<id>org.eclipse.smarthome.core</id>
-							<level>4</level>
-							<autoStart>true</autoStart>
-						</bundle>
-						<bundle>
-							<id>org.eclipse.smarthome.core.thing</id>
+							<id>org.eclipse.smarthome.config.core</id>
 							<level>4</level>
 							<autoStart>true</autoStart>
 						</bundle>
@@ -101,12 +102,22 @@
 							<autoStart>true</autoStart>
 						</bundle>
 						<bundle>
-							<id>org.eclipse.smarthome.core.thing.xml</id>
+							<id>org.eclipse.smarthome.core</id>
 							<level>4</level>
 							<autoStart>true</autoStart>
 						</bundle>
 						<bundle>
 							<id>org.eclipse.smarthome.core.binding.xml</id>
+							<level>4</level>
+							<autoStart>true</autoStart>
+						</bundle>
+						<bundle>
+							<id>org.eclipse.smarthome.core.thing</id>
+							<level>4</level>
+							<autoStart>true</autoStart>
+						</bundle>
+						<bundle>
+							<id>org.eclipse.smarthome.core.thing.xml</id>
 							<level>4</level>
 							<autoStart>true</autoStart>
 						</bundle>

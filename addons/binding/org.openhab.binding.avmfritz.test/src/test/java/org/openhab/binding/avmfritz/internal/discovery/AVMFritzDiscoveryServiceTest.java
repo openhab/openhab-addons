@@ -11,8 +11,6 @@ package org.openhab.binding.avmfritz.internal.discovery;
 import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
 import java.io.StringReader;
@@ -28,12 +26,10 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultFlag;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.binding.builder.BridgeBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.openhab.binding.avmfritz.handler.BoxHandler;
+import org.openhab.binding.avmfritz.handler.AVMFritzThingHandlerOSGiTest;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
@@ -43,23 +39,20 @@ import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
-public class AVMFritzDiscoveryServiceTest {
+public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
 
     private static final ThingUID BRIGE_THING_ID = new ThingUID("avmfritz:fritzbox:1");
-
-    @Mock
-    private BoxHandler handler;
 
     private DiscoveryListener listener;
     private DiscoveryResult discoveryResult;
 
     private AVMFritzDiscoveryService discovery;
 
+    @Override
     @Before
     public void setUp() {
-        initMocks(this);
-        when(handler.getThing()).thenReturn(BridgeBuilder.create(BRIDGE_THING_TYPE, "1").build());
-        discovery = new AVMFritzDiscoveryService(handler);
+        super.setUp();
+        discovery = new AVMFritzDiscoveryService(bridgeHandler);
         listener = new DiscoveryListener() {
             @Override
             public void thingRemoved(DiscoveryService source, ThingUID thingUID) {

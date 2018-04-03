@@ -31,8 +31,11 @@ public class BindingConstants {
 
     public static final String BINDING_ID = "avmfritz";
     public static final String CONFIG_IP_ADDRESS = "ipAddress";
+    public static final String CONFIG_PROTOCOL = "protocol";
     public static final String CONFIG_USER = "user";
     public static final String CONFIG_PASSWORD = "password";
+    public static final String CONFIG_POLLING_INTERVAL = "pollingInterval";
+    public static final String CONFIG_SYNC_TIMEOUT = "syncTimeout";
     public static final String BRIDGE_FRITZBOX = "fritzbox";
     public static final String BOX_MODEL_NAME = "FRITZ!Box";
     public static final String POWERLINE_MODEL_NAME = "FRITZ!Powerline";
