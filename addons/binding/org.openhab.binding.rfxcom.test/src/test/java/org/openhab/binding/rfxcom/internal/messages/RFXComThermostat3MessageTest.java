@@ -12,8 +12,6 @@ import static org.junit.Assert.assertEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.THERMOSTAT3;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComThermostat3Message.SubType.MERTIK__G6R_H4TB__G6R_H4T__G6R_H4T21_Z22;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;

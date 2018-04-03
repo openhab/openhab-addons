@@ -13,8 +13,6 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComTemperatureHumi
 import static org.openhab.binding.rfxcom.internal.messages.RFXComTemperatureHumidityBarometricMessage.HumidityStatus.DRY;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComTemperatureHumidityBarometricMessage.SubType.THB2;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;

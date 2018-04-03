@@ -11,8 +11,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.junit.Assert.assertArrayEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.TransceiverType._433_92MHZ_TRANSCEIVER;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;

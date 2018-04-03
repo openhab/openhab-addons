@@ -17,8 +17,6 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting4Messag
 import java.util.Arrays;
 import java.util.List;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
