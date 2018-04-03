@@ -13,11 +13,10 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.Pac
 
 import java.util.Arrays;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageTooLongException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
@@ -136,10 +135,10 @@ public class RFXComUndecodedRFMessage extends RFXComDeviceMessageImpl<RFXComUnde
     public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_RAW_MESSAGE:
-                return new StringType(DatatypeConverter.printHexBinary(rawMessage));
+                return new StringType(HexUtils.bytesToHex(rawMessage));
 
             case CHANNEL_RAW_PAYLOAD:
-                return new StringType(DatatypeConverter.printHexBinary(rawPayload));
+                return new StringType(HexUtils.bytesToHex(rawPayload));
 
             default:
                 throw new RFXComUnsupportedChannelException("Nothing relevant for " + channelId);

@@ -14,9 +14,8 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.Pac
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.Commands.ON;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.SubType.IT;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
@@ -35,7 +34,7 @@ public class RFXComLighting5MessageTest {
         itMessageObject.setSubType(IT);
         itMessageObject.convertFromState(CHANNEL_COMMAND, OnOffType.ON);
         byte[] message = itMessageObject.decodeMessage();
-        String hexMessage = DatatypeConverter.printHexBinary(message);
+        String hexMessage = HexUtils.bytesToHex(message);
         assertEquals("Message is not as expected", "0A140F0000080D01010000", hexMessage);
         RFXComLighting5Message msg = (RFXComLighting5Message) RFXComMessageFactory.createMessage(message);
         assertEquals("SubType", IT, msg.subType);

@@ -12,8 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComTemperatureHumidityMessage.HumidityStatus.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComTemperatureHumidityMessage.SubType.*;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComTemperatureHumidityMessage.HumidityStatus;
@@ -30,7 +29,7 @@ public class RFXComTemperatureHumidityMessageTest {
     private void testMessage(String hexMsg, RFXComTemperatureHumidityMessage.SubType subType, int seqNbr, int sensorId,
             double temperature, int humidity, HumidityStatus humidityStatus, int signalLevel, int batteryLevel)
             throws RFXComException {
-        byte[] binaryMessage = DatatypeConverter.parseHexBinary(hexMsg);
+        byte[] binaryMessage = HexUtils.hexToBytes(hexMsg);
         final RFXComTemperatureHumidityMessage msg = (RFXComTemperatureHumidityMessage) RFXComMessageFactory
                 .createMessage(binaryMessage);
         assertEquals("SubType", subType, msg.subType);
@@ -44,7 +43,7 @@ public class RFXComTemperatureHumidityMessageTest {
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMsg, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", hexMsg, HexUtils.bytesToHex(decoded));
     }
 
     @Test

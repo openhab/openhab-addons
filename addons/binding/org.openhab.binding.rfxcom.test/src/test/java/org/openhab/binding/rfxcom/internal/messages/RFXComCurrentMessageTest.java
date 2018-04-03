@@ -8,13 +8,12 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.junit.Assert.assertEquals;
+
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-
-import javax.xml.bind.DatatypeConverter;
-
-import static org.junit.Assert.assertEquals;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComCurrentMessage.*;
+import org.openhab.binding.rfxcom.internal.messages.RFXComCurrentMessage.SubType;
 
 /**
  * Test for RFXCom-binding
@@ -28,7 +27,7 @@ public class RFXComCurrentMessageTest {
         String message = "0D59010F860004001D0000000049";
 
         final RFXComCurrentMessage msg = (RFXComCurrentMessage) RFXComMessageFactory
-                .createMessage(DatatypeConverter.parseHexBinary(message));
+                .createMessage(HexUtils.hexToBytes(message));
         assertEquals("SubType", SubType.ELEC1, msg.subType);
         assertEquals("Seq Number", 15, (short) (msg.seqNbr & 0xFF));
         assertEquals("Sensor Id", "34304", msg.getDeviceId());
@@ -41,7 +40,7 @@ public class RFXComCurrentMessageTest {
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", message, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", message, HexUtils.bytesToHex(decoded));
 
     }
 }

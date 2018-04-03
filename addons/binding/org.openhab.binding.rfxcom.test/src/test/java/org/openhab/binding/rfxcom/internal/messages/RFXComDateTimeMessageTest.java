@@ -11,9 +11,8 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.junit.Assert.assertEquals;
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
@@ -27,7 +26,7 @@ public class RFXComDateTimeMessageTest {
     @Test
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "0D580117B90003041D030D150A69";
-        byte[] message = DatatypeConverter.parseHexBinary(hexMessage);
+        byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComDateTimeMessage msg = (RFXComDateTimeMessage) RFXComMessageFactory.createMessage(message);
         assertEquals("SubType", RFXComDateTimeMessage.SubType.RTGR328N, msg.subType);
         assertEquals("Seq Number", 23, (short) (msg.seqNbr & 0xFF));
@@ -39,6 +38,6 @@ public class RFXComDateTimeMessageTest {
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
     }
 }

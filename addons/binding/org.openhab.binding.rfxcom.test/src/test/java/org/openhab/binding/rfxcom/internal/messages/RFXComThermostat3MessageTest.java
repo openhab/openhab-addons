@@ -8,14 +8,13 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import org.junit.Test;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-
-import javax.xml.bind.DatatypeConverter;
-
 import static org.junit.Assert.assertEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.THERMOSTAT3;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComThermostat3Message.SubType.MERTIK__G6R_H4TB__G6R_H4T__G6R_H4T21_Z22;
+
+import org.eclipse.smarthome.core.util.HexUtils;
+import org.junit.Test;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
 /**
  * Test for RFXCom-binding
@@ -41,7 +40,7 @@ public class RFXComThermostat3MessageTest {
     @Test
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "08420101019FAB0280";
-        byte[] message = DatatypeConverter.parseHexBinary(hexMessage);
+        byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComThermostat3Message msg = (RFXComThermostat3Message) RFXComMessageFactory.createMessage(message);
         assertEquals("SubType", MERTIK__G6R_H4TB__G6R_H4T__G6R_H4T21_Z22, msg.subType);
         assertEquals("Seq Number", 1, (short) (msg.seqNbr & 0xFF));
@@ -51,7 +50,7 @@ public class RFXComThermostat3MessageTest {
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
     }
     // TODO please add tests for real messages
 }

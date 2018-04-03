@@ -12,9 +12,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.TooManyListenersException;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.commons.io.IOUtils;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,7 +119,10 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
             throw new IOException("Not connected sending messages is not possible");
         }
 
-        logger.trace("Send data (len={}): {}", data.length, DatatypeConverter.printHexBinary(data));
+        if (logger.isTraceEnabled()) {
+            logger.trace("Send data (len={}): {}", data.length, HexUtils.bytesToHex(data));
+        }
+
         out.write(data);
         out.flush();
     }

@@ -10,8 +10,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
@@ -26,7 +25,7 @@ public class RFXComLighting2MessageTest {
     @Test
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "0B11000600109B520B000080";
-        byte[] message = DatatypeConverter.parseHexBinary(hexMessage);
+        byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComLighting2Message msg = (RFXComLighting2Message) RFXComMessageFactory.createMessage(message);
         assertEquals("SubType", RFXComLighting2Message.SubType.AC, msg.subType);
         assertEquals("Seq Number", 6, (short) (msg.seqNbr & 0xFF));
@@ -36,6 +35,6 @@ public class RFXComLighting2MessageTest {
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
     }
 }

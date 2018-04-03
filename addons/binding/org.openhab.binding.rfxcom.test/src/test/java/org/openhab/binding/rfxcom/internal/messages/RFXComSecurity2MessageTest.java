@@ -10,8 +10,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComSecurity2Message.SubType;
@@ -28,7 +27,7 @@ public class RFXComSecurity2MessageTest {
     @Test
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "1C21020000000000131211C30000000000000000000000000000000045";
-        byte[] message = DatatypeConverter.parseHexBinary(hexMessage);
+        byte[] message = HexUtils.hexToBytes(hexMessage);
 
         RFXComSecurity2Message msg = (RFXComSecurity2Message) RFXComMessageFactory.createMessage(message);
         assertEquals("SubType", SubType.RAW_AES_KEELOQ, msg.subType);
@@ -39,6 +38,6 @@ public class RFXComSecurity2MessageTest {
         assertEquals("Signal Level", 5, msg.signalLevel);
 
         byte[] decoded = msg.decodeMessage();
-        assertEquals("Message converted back", hexMessage, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
     }
 }
