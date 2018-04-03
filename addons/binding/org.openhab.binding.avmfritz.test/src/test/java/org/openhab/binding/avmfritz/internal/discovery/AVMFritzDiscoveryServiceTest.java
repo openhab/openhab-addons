@@ -34,7 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.openhab.binding.avmfritz.handler.BoxHandler;
-import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
+import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 
@@ -42,7 +42,6 @@ import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
  * Tests for {@link AVMFritzDiscoveryService}.
  *
  * @author Christoph Weitkamp - Initial contribution
- *
  */
 public class AVMFritzDiscoveryServiceTest {
 
@@ -87,7 +86,7 @@ public class AVMFritzDiscoveryServiceTest {
 
     @Test
     public void correctSupportedTypes() {
-        assertThat(discovery.getSupportedThingTypes().size(), is(7));
+        assertThat(discovery.getSupportedThingTypes().size(), is(9));
         assertTrue(discovery.getSupportedThingTypes().contains(DECT100_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(DECT200_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(DECT210_THING_TYPE));
@@ -95,16 +94,24 @@ public class AVMFritzDiscoveryServiceTest {
         assertTrue(discovery.getSupportedThingTypes().contains(DECT301_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(PL546E_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(COMETDECT_THING_TYPE));
+        assertTrue(discovery.getSupportedThingTypes().contains(GROUP_HEATING_THING_TYPE));
+        assertTrue(discovery.getSupportedThingTypes().contains(GROUP_SWITCH_THING_TYPE));
     }
 
     @Test
     public void invalidDiscoveryResult() throws JAXBException {
-        String xml = "<devicelist version=\"1\"><group identifier=\"F0:A3:7F-900\" id=\"20001\" functionbitmask=\"640\" fwversion=\"1.0\" manufacturer=\"AVM\" productname=\"\"><present>1</present><switch><state>0</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><power>0</power><energy>2087</energy></powermeter><groupinfo><masterdeviceid>1000</masterdeviceid><members>20000</members></groupinfo></group></devicelist>";
+        String xml = "<devicelist version=\"1\"><device identifier=\"11934 0110051-1\" id=\"2000\" functionbitmask=\"8208\" fwversion=\"0.0\" manufacturer=\"0x0feb\" productname=\"HAN-FUN\"><present>1</present><name>HAN-FUN #1</name><etsiunitinfo><etsideviceid>411</etsideviceid><unittype>514</unittype><interfaces>256</interfaces></etsiunitinfo><alert><state>0</state></alert></device></devicelist>";
 
         Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
         DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
-        assertThat(devices.getDevicelist().size(), is(0));
+        assertThat(devices.getDevicelist().size(), is(1));
+
+        AVMFritzBaseModel device = devices.getDevicelist().get(0);
+        assertNotNull(device);
+
+        discovery.onDeviceAddedInternal(device);
+        assertNull(discoveryResult);
     }
 
     @Test
@@ -116,7 +123,7 @@ public class AVMFritzDiscoveryServiceTest {
         assertNotNull(devices);
         assertThat(devices.getDevicelist().size(), is(1));
 
-        DeviceModel device = devices.getDevicelist().get(0);
+        AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
         discovery.onDeviceAddedInternal(device);
@@ -143,7 +150,7 @@ public class AVMFritzDiscoveryServiceTest {
         assertNotNull(devices);
         assertThat(devices.getDevicelist().size(), is(1));
 
-        DeviceModel device = devices.getDevicelist().get(0);
+        AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
         discovery.onDeviceAddedInternal(device);
@@ -170,7 +177,7 @@ public class AVMFritzDiscoveryServiceTest {
         assertNotNull(devices);
         assertThat(devices.getDevicelist().size(), is(1));
 
-        DeviceModel device = devices.getDevicelist().get(0);
+        AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
         discovery.onDeviceAddedInternal(device);
@@ -197,7 +204,7 @@ public class AVMFritzDiscoveryServiceTest {
         assertNotNull(devices);
         assertThat(devices.getDevicelist().size(), is(1));
 
-        DeviceModel device = devices.getDevicelist().get(0);
+        AVMFritzBaseModel device = devices.getDevicelist().get(0);
         assertNotNull(device);
 
         discovery.onDeviceAddedInternal(device);
@@ -213,6 +220,35 @@ public class AVMFritzDiscoveryServiceTest {
         assertThat(discoveryResult.getProperties().get(PROPERTY_MODEL_ID), is("19"));
         assertThat(discoveryResult.getProperties().get(PROPERTY_SERIAL_NUMBER), is("5C:49:79:F0:A3:84"));
         assertThat(discoveryResult.getProperties().get(PROPERTY_FIRMWARE_VERSION), is("06.92"));
+        assertThat(discoveryResult.getRepresentationProperty(), is(THING_AIN));
+    }
+
+    @Test
+    public void validSwitchGroupDiscoveryResult() throws JAXBException {
+        String xml = "<devicelist version=\"1\"><group identifier=\"F0:A3:7F-900\" id=\"20001\" functionbitmask=\"640\" fwversion=\"1.0\" manufacturer=\"AVM\" productname=\"\"><present>1</present><name>Schlafzimmer</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><power>0</power><energy>2087</energy></powermeter><groupinfo><masterdeviceid>1000</masterdeviceid><members>20000</members></groupinfo></group></devicelist>";
+
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
+        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        assertNotNull(devices);
+        assertThat(devices.getDevicelist().size(), is(1));
+
+        AVMFritzBaseModel device = devices.getDevicelist().get(0);
+        assertNotNull(device);
+
+        discovery.onDeviceAddedInternal(device);
+        assertNotNull(discoveryResult);
+
+        assertThat(discoveryResult.getFlag(), is(DiscoveryResultFlag.NEW));
+        assertThat(discoveryResult.getThingUID(), is(new ThingUID("avmfritz:FRITZ_GROUP_SWITCH:1:F0_A3_7F_900")));
+        assertThat(discoveryResult.getThingTypeUID(), is(GROUP_SWITCH_THING_TYPE));
+        assertThat(discoveryResult.getBridgeUID(), is(BRIGE_THING_ID));
+        assertThat(discoveryResult.getProperties().get(THING_AIN), is("F0:A3:7F-900"));
+        assertThat(discoveryResult.getProperties().get(PROPERTY_VENDOR), is("AVM"));
+        assertThat(discoveryResult.getProperties().get(PROPERTY_MODEL_ID), is("20001"));
+        assertThat(discoveryResult.getProperties().get(PROPERTY_SERIAL_NUMBER), is("F0:A3:7F-900"));
+        assertThat(discoveryResult.getProperties().get(PROPERTY_FIRMWARE_VERSION), is("1.0"));
+        assertThat(discoveryResult.getProperties().get(PROPERTY_MASTER), is("1000"));
+        assertThat(discoveryResult.getProperties().get(PROPERTY_MEMBERS), is("20000"));
         assertThat(discoveryResult.getRepresentationProperty(), is(THING_AIN));
     }
 }
