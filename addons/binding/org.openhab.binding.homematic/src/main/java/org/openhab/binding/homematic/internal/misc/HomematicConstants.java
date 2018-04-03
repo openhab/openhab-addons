@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.homematic.internal.misc;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Defines common constants, which are used across the Homematic implementation.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HomematicConstants {
     public static final String DEVICE_TYPE_VIRTUAL = "HM-RCV-50";
     public static final String DEVICE_TYPE_VIRTUAL_WIRED = "HMW-RCV-50";
@@ -38,6 +41,8 @@ public class HomematicConstants {
     public static final String CHANNEL_TYPE_WINMATIC = "WINMATIC";
     public static final String CHANNEL_TYPE_AKKU = "AKKU";
     public static final String CHANNEL_TYPE_JALOUSIE = "JALOUSIE";
+    public static final String CHANNEL_TYPE_SHUTTER_TRANSMITTER = "SHUTTER_TRANSMITTER";
+    public static final String CHANNEL_TYPE_SHUTTER_VIRTUAL_RECEIVER = "SHUTTER_VIRTUAL_RECEIVER";
 
     public static final String DATAPOINT_NAME_CONFIG_PENDING = "CONFIG_PENDING";
     public static final String DATAPOINT_NAME_UPDATE_PENDING = "UPDATE_PENDING";
@@ -69,6 +74,8 @@ public class HomematicConstants {
     public static final String DATAPOINT_NAME_AES_KEY = "AES_KEY";
     public static final String DATAPOINT_NAME_VALUE = "VALUE";
     public static final String DATAPOINT_NAME_CALIBRATION = "CALIBRATION";
+    public static final String DATAPOINT_NAME_LOWBAT_IP = "LOW_BAT";
+    public static final String DATAPOINT_NAME_CHANNEL_FUNCTION = "CHANNEL_FUNCTION";
 
     public static final String VIRTUAL_DATAPOINT_NAME_BATTERY_TYPE = "BATTERY_TYPE";
     public static final String VIRTUAL_DATAPOINT_NAME_DELETE_DEVICE_MODE = "DELETE_DEVICE_MODE";
@@ -84,6 +91,7 @@ public class HomematicConstants {
     public static final String VIRTUAL_DATAPOINT_NAME_RSSI = "RSSI";
     public static final String VIRTUAL_DATAPOINT_NAME_STATE_CONTACT = "STATE_CONTACT";
     public static final String VIRTUAL_DATAPOINT_NAME_SIGNAL_STRENGTH = "SIGNAL_STRENGTH";
+    public static final String VIRTUAL_DATAPOINT_NAME_PRESS = "PRESS";
 
     public static final String RPC_METHODNAME_EVENT = "event";
     public static final String RPC_METHODNAME_LIST_DEVICES = "listDevices";

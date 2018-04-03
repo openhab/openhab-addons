@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -75,11 +75,6 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
         discoverCube();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.smarthome.config.discovery.AbstractDiscoveryService#stopBackgroundDiscovery()
-     */
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stop MAX! Cube background discovery");
@@ -89,11 +84,6 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.smarthome.config.discovery.AbstractDiscoveryService#startBackgroundDiscovery()
-     */
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start MAX! Cube background discovery");

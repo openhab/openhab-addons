@@ -1,33 +1,44 @@
 Manifest-Version: 1.0
+Bundle-ClassPath: 
+ .,
+ lib/tchaikovsky.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: AllPlay Binding
-Bundle-SymbolicName: org.openhab.binding.allplay;singleton:=true
-Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .,
- lib/tchaikovsky.jar
-Bundle-NativeCode: lib/x86-64/win/alljoyn_java.dll;processor=amd64;osname=win32;osname=Windows8;osname=Windows 8;osname=Win8;osname=Windows10;osname=Windows 10;osname=Win10,
- lib/x86/win/alljoyn_java.dll;processor=x86;osname=win32;osname=Windows8;osname=Windows 8;osname=Win8;osname=Windows10;osname=Windows 10;osname=Win10,  
+Bundle-NativeCode: 
+ lib/x86-64/win/alljoyn_java.dll;processor=amd64;osname=win32;osname=Win
+ dows8;osname=Windows 8;osname=Win8;osname=Windows10;osname=Windows 10;o
+ sname=Win10,
+ lib/x86/win/alljoyn_java.dll;processor=x86;osname=win32;osname=Windows8
+ ;osname=Windows 8;osname=Win8;osname=Windows10;osname=Windows 10;osname
+ =Win10,
  lib/x86/linux/liballjoyn_java.so;processor=x86;osname=linux,
  lib/x86-64/linux/liballjoyn_java.so;processor=amd64;osname=linux,
- lib/arm/linux/liballjoyn_java.so;processor=arm;osname=linux,*
-Import-Package: com.google.common.collect,
+ lib/arm/linux/liballjoyn_java.so;processor=arm;osname=linux,
+ *
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.allplay;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Export-Package: 
+ org.openhab.binding.allplay,
+ org.openhab.binding.allplay.handler
+Import-Package: 
+ com.google.common.collect,
  org.apache.commons.io,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.audio,
  org.eclipse.smarthome.core.common,
+ org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.net,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
+ org.openhab.binding.allplay,
+ org.openhab.binding.allplay.handler,
  org.osgi.framework,
  org.osgi.service.component,
- org.slf4j,
- org.openhab.binding.allplay,
- org.openhab.binding.allplay.handler
+ org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.allplay,
- org.openhab.binding.allplay.handler

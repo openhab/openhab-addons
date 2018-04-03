@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,6 +27,8 @@ import com.google.gson.JsonObject;
 public abstract class XiaomiSensorBaseAlarmHandler extends XiaomiSensorBaseHandler {
 
     private static final Map<Integer, String> ALARM_STATUS_MAP = new HashMap<>();
+    private static final String ALARM = "alarm";
+    private static final String UNKNOWN = "unknown";
 
     public XiaomiSensorBaseAlarmHandler(Thing thing) {
         super(thing);
@@ -34,18 +36,20 @@ public abstract class XiaomiSensorBaseAlarmHandler extends XiaomiSensorBaseHandl
 
     @Override
     void parseReport(JsonObject data) {
-        if (data.has("alarm")) {
-            int alarm = data.get("alarm").getAsInt();
-            if (alarm >= 1 && alarm <= 2) {
+        if (data.has(ALARM)) {
+            int alarm = data.get(ALARM).getAsInt();
+            // alarm channel only receives the "real alarm"
+            if (alarm == 1) {
                 updateState(CHANNEL_ALARM, OnOffType.ON);
             } else {
                 updateState(CHANNEL_ALARM, OnOffType.OFF);
             }
+            // status shows faults
             String status = ALARM_STATUS_MAP.get(alarm);
             if (status != null) {
                 updateState(CHANNEL_ALARM_STATUS, StringType.valueOf(status));
             } else {
-                updateState(CHANNEL_ALARM_STATUS, StringType.valueOf("unknown"));
+                updateState(CHANNEL_ALARM_STATUS, StringType.valueOf(UNKNOWN));
             }
         }
     }

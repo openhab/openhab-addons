@@ -20,30 +20,25 @@
 			<channel id="shownotification" typeId="shownotification" />
 			<channel id="input" typeId="input" />
 			<channel id="inputtext" typeId="inputtext" />
+			<channel id="inputaction" typeId="inputaction" />
 			<channel id="systemcommand" typeId="systemcommand" />
 			<channel id="title" typeId="title" />
 			<channel id="showtitle" typeId="showtitle" />
 			<channel id="album" typeId="album" />
 			<channel id="artist" typeId="artist" />
 			<channel id="mediatype" typeId="mediatype" />
+			<channel id="thumbnail" typeId="thumbnail" />
+			<channel id="fanart" typeId="fanart" />
+			<channel id="playfavorite" typeId="playfavorite" />
 		</channels>
 
 		<properties>
 			<property name="version">unknown</property>
 		</properties>
 
-		<config-description>
-			<parameter name="ipAddress" type="text" required="true">
-				<label>Network Address</label>
-				<description>The IP or host name of the kodi</description>
-				<context>network-address</context>
-			</parameter>
-			<parameter name="port" type="integer" required="true" min="1" max="65335">
-				<label>Web socket service port</label>
-				<description>Port for the web socket service</description>
-				<default>9090</default>
-			</parameter>
-		</config-description>
+		<representation-property>ipAddress</representation-property>
+
+		<config-description-ref uri="thing-type:kodi:kodi" />
 	</thing-type>
 
 	<!-- Kodi Commands -->
@@ -56,8 +51,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Volume of your device</description>
-		<state min="0" max="100" step="1" pattern="%d %%">
-		</state>
+		<state min="0" max="100" step="1" pattern="%d %%" />
 	</channel-type>
 	<channel-type id="control">
 		<item-type>Player</item-type>
@@ -75,17 +69,24 @@
 		<label>Play URI</label>
 		<description>Play the given URI</description>
 	</channel-type>
+	<channel-type id="playfavorite">
+		<item-type>String</item-type>
+		<label>Play a Favorite</label>
+		<description>Play the given favorite by sending a command with the favorite's title</description>
+	</channel-type>
 	<channel-type id="pvr-open-tv" advanced="true">
 		<item-type>String</item-type>
 		<label>Play PVR tv</label>
-		<description>Play the given PVR TV channel</description>
-		<config-description-ref uri="channel-type:kodi:config" />
+		<description>Play the given PVR TV channel by sending a command with the channel's name</description>
+		<state pattern="%s" />
+		<config-description-ref uri="channel-type:kodi:pvr-channel" />
 	</channel-type>
 	<channel-type id="pvr-open-radio" advanced="true">
 		<item-type>String</item-type>
 		<label>Play PVR radio</label>
-		<description>Play the given PVR Radio channel</description>
-		<config-description-ref uri="channel-type:kodi:config" />
+		<description>Play the given PVR Radio channel by sending a command with the channel's name</description>
+		<state pattern="%s" />
+		<config-description-ref uri="channel-type:kodi:pvr-channel" />
 	</channel-type>
 	<channel-type id="shownotification" advanced="true">
 		<item-type>String</item-type>
@@ -95,7 +96,8 @@
 	<channel-type id="input" advanced="true">
 		<item-type>String</item-type>
 		<label>Send a key</label>
-		<description>Sends a key stroke to the Kodi Player to navigate in the UI</description>
+		<description>Sends a key stroke to the Kodi Player to navigate in the UI
+		</description>
 		<state>
 			<options>
 				<option value="Left">Left</option>
@@ -117,10 +119,218 @@
 		<label>Sends text as input</label>
 		<description>Sends a text to the Kodi Player to simulate keyboard text entry</description>
 	</channel-type>
+	<channel-type id="inputaction" advanced="true">
+		<item-type>String</item-type>
+		<label>Execute an action</label>
+		<description>Send a predefined action to the Kodi Player to control the UI and/or perform other tasks</description>
+		<state>
+			<options>
+				<option value="left">left</option>
+				<option value="right">right</option>
+				<option value="up">up</option>
+				<option value="down">down</option>
+				<option value="pageup">pageup</option>
+				<option value="pagedown">pagedown</option>
+				<option value="select">select</option>
+				<option value="highlight">highlight</option>
+				<option value="parentdir">parentdir</option>
+				<option value="parentfolder">parentfolder</option>
+				<option value="back">back</option>
+				<option value="menu">menu</option>
+				<option value="previousmenu">previousmenu</option>
+				<option value="info">info</option>
+				<option value="pause">pause</option>
+				<option value="stop">stop</option>
+				<option value="skipnext">skipnext</option>
+				<option value="skipprevious">skipprevious</option>
+				<option value="fullscreen">fullscreen</option>
+				<option value="aspectratio">aspectratio</option>
+				<option value="stepforward">stepforward</option>
+				<option value="stepback">stepback</option>
+				<option value="bigstepforward">bigstepforward</option>
+				<option value="bigstepback">bigstepback</option>
+				<option value="chapterorbigstepforward">chapterorbigstepforward</option>
+				<option value="chapterorbigstepback">chapterorbigstepback</option>
+				<option value="osd">osd</option>
+				<option value="showsubtitles">showsubtitles</option>
+				<option value="nextsubtitle">nextsubtitle</option>
+				<option value="cyclesubtitle">cyclesubtitle</option>
+				<option value="playerdebug">playerdebug</option>
+				<option value="codecinfo">codecinfo</option>
+				<option value="playerprocessinfo">playerprocessinfo</option>
+				<option value="nextpicture">nextpicture</option>
+				<option value="previouspicture">previouspicture</option>
+				<option value="zoomout">zoomout</option>
+				<option value="zoomin">zoomin</option>
+				<option value="playlist">playlist</option>
+				<option value="queue">queue</option>
+				<option value="zoomnormal">zoomnormal</option>
+				<option value="zoomlevel1">zoomlevel1</option>
+				<option value="zoomlevel2">zoomlevel2</option>
+				<option value="zoomlevel3">zoomlevel3</option>
+				<option value="zoomlevel4">zoomlevel4</option>
+				<option value="zoomlevel5">zoomlevel5</option>
+				<option value="zoomlevel6">zoomlevel6</option>
+				<option value="zoomlevel7">zoomlevel7</option>
+				<option value="zoomlevel8">zoomlevel8</option>
+				<option value="zoomlevel9">zoomlevel9</option>
+				<option value="nextcalibration">nextcalibration</option>
+				<option value="resetcalibration">resetcalibration</option>
+				<option value="analogmove">analogmove</option>
+				<option value="analogmovex">analogmovex</option>
+				<option value="analogmovey">analogmovey</option>
+				<option value="rotate">rotate</option>
+				<option value="rotateccw">rotateccw</option>
+				<option value="close">close</option>
+				<option value="subtitledelayminus">subtitledelayminus</option>
+				<option value="subtitledelay">subtitledelay</option>
+				<option value="subtitledelayplus">subtitledelayplus</option>
+				<option value="audiodelayminus">audiodelayminus</option>
+				<option value="audiodelay">audiodelay</option>
+				<option value="audiodelayplus">audiodelayplus</option>
+				<option value="subtitleshiftup">subtitleshiftup</option>
+				<option value="subtitleshiftdown">subtitleshiftdown</option>
+				<option value="subtitlealign">subtitlealign</option>
+				<option value="audionextlanguage">audionextlanguage</option>
+				<option value="verticalshiftup">verticalshiftup</option>
+				<option value="verticalshiftdown">verticalshiftdown</option>
+				<option value="nextresolution">nextresolution</option>
+				<option value="audiotoggledigital">audiotoggledigital</option>
+				<option value="number0">number0</option>
+				<option value="number1">number1</option>
+				<option value="number2">number2</option>
+				<option value="number3">number3</option>
+				<option value="number4">number4</option>
+				<option value="number5">number5</option>
+				<option value="number6">number6</option>
+				<option value="number7">number7</option>
+				<option value="number8">number8</option>
+				<option value="number9">number9</option>
+				<option value="smallstepback">smallstepback</option>
+				<option value="fastforward">fastforward</option>
+				<option value="rewind">rewind</option>
+				<option value="play">play</option>
+				<option value="playpause">playpause</option>
+				<option value="switchplayer">switchplayer</option>
+				<option value="delete">delete</option>
+				<option value="copy">copy</option>
+				<option value="move">move</option>
+				<option value="screenshot">screenshot</option>
+				<option value="rename">rename</option>
+				<option value="togglewatched">togglewatched</option>
+				<option value="scanitem">scanitem</option>
+				<option value="reloadkeymaps">reloadkeymaps</option>
+				<option value="volumeup">volumeup</option>
+				<option value="volumedown">volumedown</option>
+				<option value="mute">mute</option>
+				<option value="backspace">backspace</option>
+				<option value="scrollup">scrollup</option>
+				<option value="scrolldown">scrolldown</option>
+				<option value="analogfastforward">analogfastforward</option>
+				<option value="analogrewind">analogrewind</option>
+				<option value="moveitemup">moveitemup</option>
+				<option value="moveitemdown">moveitemdown</option>
+				<option value="contextmenu">contextmenu</option>
+				<option value="shift">shift</option>
+				<option value="symbols">symbols</option>
+				<option value="cursorleft">cursorleft</option>
+				<option value="cursorright">cursorright</option>
+				<option value="showtime">showtime</option>
+				<option value="analogseekforward">analogseekforward</option>
+				<option value="analogseekback">analogseekback</option>
+				<option value="showpreset">showpreset</option>
+				<option value="nextpreset">nextpreset</option>
+				<option value="previouspreset">previouspreset</option>
+				<option value="lockpreset">lockpreset</option>
+				<option value="randompreset">randompreset</option>
+				<option value="increasevisrating">increasevisrating</option>
+				<option value="decreasevisrating">decreasevisrating</option>
+				<option value="showvideomenu">showvideomenu</option>
+				<option value="enter">enter</option>
+				<option value="increaserating">increaserating</option>
+				<option value="decreaserating">decreaserating</option>
+				<option value="setrating">setrating</option>
+				<option value="togglefullscreen">togglefullscreen</option>
+				<option value="nextscene">nextscene</option>
+				<option value="previousscene">previousscene</option>
+				<option value="nextletter">nextletter</option>
+				<option value="prevletter">prevletter</option>
+				<option value="jumpsms2">jumpsms2</option>
+				<option value="jumpsms3">jumpsms3</option>
+				<option value="jumpsms4">jumpsms4</option>
+				<option value="jumpsms5">jumpsms5</option>
+				<option value="jumpsms6">jumpsms6</option>
+				<option value="jumpsms7">jumpsms7</option>
+				<option value="jumpsms8">jumpsms8</option>
+				<option value="jumpsms9">jumpsms9</option>
+				<option value="filter">filter</option>
+				<option value="filterclear">filterclear</option>
+				<option value="filtersms2">filtersms2</option>
+				<option value="filtersms3">filtersms3</option>
+				<option value="filtersms4">filtersms4</option>
+				<option value="filtersms5">filtersms5</option>
+				<option value="filtersms6">filtersms6</option>
+				<option value="filtersms7">filtersms7</option>
+				<option value="filtersms8">filtersms8</option>
+				<option value="filtersms9">filtersms9</option>
+				<option value="firstpage">firstpage</option>
+				<option value="lastpage">lastpage</option>
+				<option value="guiprofile">guiprofile</option>
+				<option value="red">red</option>
+				<option value="green">green</option>
+				<option value="yellow">yellow</option>
+				<option value="blue">blue</option>
+				<option value="increasepar">increasepar</option>
+				<option value="decreasepar">decreasepar</option>
+				<option value="volampup">volampup</option>
+				<option value="volampdown">volampdown</option>
+				<option value="volumeamplification">volumeamplification</option>
+				<option value="createbookmark">createbookmark</option>
+				<option value="createepisodebookmark">createepisodebookmark</option>
+				<option value="settingsreset">settingsreset</option>
+				<option value="settingslevelchange">settingslevelchange</option>
+				<option value="stereomode">stereomode</option>
+				<option value="nextstereomode">nextstereomode</option>
+				<option value="previousstereomode">previousstereomode</option>
+				<option value="togglestereomode">togglestereomode</option>
+				<option value="stereomodetomono">stereomodetomono</option>
+				<option value="channelup">channelup</option>
+				<option value="channeldown">channeldown</option>
+				<option value="previouschannelgroup">previouschannelgroup</option>
+				<option value="nextchannelgroup">nextchannelgroup</option>
+				<option value="playpvr">playpvr</option>
+				<option value="playpvrtv">playpvrtv</option>
+				<option value="playpvrradio">playpvrradio</option>
+				<option value="record">record</option>
+				<option value="togglecommskip">togglecommskip</option>
+				<option value="showtimerrule">showtimerrule</option>
+				<option value="leftclick">leftclick</option>
+				<option value="rightclick">rightclick</option>
+				<option value="middleclick">middleclick</option>
+				<option value="doubleclick">doubleclick</option>
+				<option value="longclick">longclick</option>
+				<option value="wheelup">wheelup</option>
+				<option value="wheeldown">wheeldown</option>
+				<option value="mousedrag">mousedrag</option>
+				<option value="mousemove">mousemove</option>
+				<option value="tap">tap</option>
+				<option value="longpress">longpress</option>
+				<option value="pangesture">pangesture</option>
+				<option value="zoomgesture">zoomgesture</option>
+				<option value="rotategesture">rotategesture</option>
+				<option value="swipeleft">swipeleft</option>
+				<option value="swiperight">swiperight</option>
+				<option value="swipeup">swipeup</option>
+				<option value="swipedown">swipedown</option>
+				<option value="error">error</option>
+				<option value="noop">noop</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="systemcommand" advanced="true">
 		<item-type>String</item-type>
 		<label>Send system command</label>
-		<description>Sends a system command to kodi. This allows to shutdown/suspend/hibernate/reboot kodi</description>
+		<description>Sends a system command to Kodi. This allows to shutdown/suspend/hibernate/reboot Kodi</description>
 		<state>
 			<options>
 				<option value="Shutdown">Shutdown</option>
@@ -132,7 +342,7 @@
 	</channel-type>
 
 	<!-- Kodi variables -->
-	<channel-type id="pvr-channel">
+	<channel-type id="pvr-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>PVR channel title</label>
 		<description>Title of the current PVR channel</description>
@@ -167,5 +377,17 @@
 		<label>Media Type</label>
 		<description>Media type of the current file</description>
 		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="thumbnail">
+		<item-type>Image</item-type>
+		<label>Thumbnail</label>
+		<description>The current thumbnail</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="fanart">
+		<item-type>Image</item-type>
+		<label>Fanart</label>
+		<description>The current fanart</description>
+		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

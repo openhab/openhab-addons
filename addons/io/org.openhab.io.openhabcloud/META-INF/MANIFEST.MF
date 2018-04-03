@@ -1,13 +1,23 @@
 Manifest-Version: 1.0
-Private-Package: org.openhab.io.openhabcloud.internal
-Ignore-Package: org.openhab.io.openhabcloud.internal
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: 
+ .,
+ lib/json-20140107.jar,
+ lib/engine.io-client-0.8.2.jar,
+ lib/okhttp-3.4.1.jar,
+ lib/okhttp-ws-3.4.1.jar,
+ lib/okio-1.9.0.jar,
+ lib/socket.io-client-0.8.2.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: openHAB Cloud Connector Bundle
-Bundle-SymbolicName: org.openhab.io.openhabcloud
-Bundle-Version: 2.2.0.qualifier
-Service-Component: OSGI-INF/*.xml
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: javax.net,
+Bundle-SymbolicName: org.openhab.io.openhabcloud
+Bundle-Vendor: openHAB.org
+Bundle-Version: 2.3.0.qualifier
+Export-Package: org.openhab.io.openhabcloud
+Ignore-Package: org.openhab.io.openhabcloud.internal
+Import-Package: 
+ javax.net,
  javax.net.ssl,
  org.apache.commons.io,
  org.apache.commons.lang,
@@ -15,6 +25,7 @@ Import-Package: javax.net,
  org.eclipse.emf.common.util,
  org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.resource,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.client,
  org.eclipse.jetty.client.api,
  org.eclipse.jetty.client.util,
@@ -37,18 +48,10 @@ Import-Package: javax.net,
  org.eclipse.smarthome.model.script.engine.action,
  org.eclipse.smarthome.ui.items,
  org.openhab.core,
+ org.openhab.io.openhabcloud,
  org.osgi.framework,
  org.osgi.service.cm,
  org.osgi.service.event,
- org.slf4j,
- org.openhab.io.openhabcloud
-Export-Package: org.openhab.io.openhabcloud
-Bundle-ClassPath: .,
- lib/json-20140107.jar,
- lib/engine.io-client-0.8.2.jar,
- lib/okhttp-3.4.1.jar,
- lib/okhttp-ws-3.4.1.jar,
- lib/okio-1.9.0.jar,
- lib/socket.io-client-0.8.2.jar
-Bundle-Vendor: openHAB.org
-Bundle-ActivationPolicy: lazy
+ org.slf4j
+Private-Package: org.openhab.io.openhabcloud.internal
+Service-Component: OSGI-INF/*.xml

@@ -1,11 +1,6 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Tellstick Binding
-Bundle-SymbolicName: org.openhab.binding.tellstick;singleton:=true
-Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .,
+Bundle-ClassPath: 
+ .,
  lib/jna-4.0.0.jar,
  lib/javatellstick-1.0.jar,
  lib/async-http-client-2.0.19.jar,
@@ -15,9 +10,19 @@ Bundle-ClassPath: .,
  lib/netty-all-4.0.42.Final.jar,
  lib/netty-resolver-2.0.19.jar,
  lib/netty-resolver-dns-2.0.19.jar
+Bundle-ManifestVersion: 2
+Bundle-Name: Tellstick Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.tellstick;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Export-Package: 
+ org.openhab.binding.tellstick,
+ org.openhab.binding.tellstick.handler
 Import-Package: 
  com.google.common.collect,
  org.apache.commons.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
@@ -26,10 +31,8 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.osgi.framework,
- org.slf4j,
  org.openhab.binding.tellstick,
- org.openhab.binding.tellstick.handler
+ org.openhab.binding.tellstick.handler,
+ org.osgi.framework,
+ org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.tellstick,
- org.openhab.binding.tellstick.handler

@@ -1,10 +1,17 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.openhab.ui.cometvisu.internal.CvActivator
+Bundle-ClassPath: 
+ .,
+ lib/rrd4j-2.2.jar,
+ lib/sqlite-jdbc-3.8.7.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: CometVisu backend
-Bundle-SymbolicName: org.openhab.ui.cometvisu;singleton:=true
-Bundle-Version: 2.2.0.qualifier
-Bundle-Vendor: openHAB
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.ui.cometvisu;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Export-Package: org.openhab.ui.cometvisu.php
 Import-Package: 
  com.google.gson,
  javax.servlet,
@@ -21,6 +28,7 @@ Import-Package:
  org.apache.commons.lang,
  org.eclipse.emf.common.util,
  org.eclipse.emf.ecore,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.events,
@@ -30,6 +38,7 @@ Import-Package:
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.persistence,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
  org.eclipse.smarthome.io.rest,
  org.eclipse.smarthome.model.sitemap,
  org.eclipse.smarthome.ui.icon,
@@ -39,17 +48,11 @@ Import-Package:
  org.glassfish.jersey.media.sse,
  org.glassfish.jersey.server,
  org.glassfish.jersey.servlet.spi,
+ org.openhab.ui.cometvisu.php,
  org.openhab.ui.dashboard,
  org.osgi.framework,
  org.osgi.service.cm,
  org.osgi.service.http,
  org.slf4j,
- org.xml.sax,
- org.openhab.ui.cometvisu.php
+ org.xml.sax
 Service-Component: OSGI-INF/*.xml
-Bundle-ClassPath: .,
- lib/rrd4j-2.2.jar,
- lib/sqlite-jdbc-3.8.7.jar
-Export-Package: org.openhab.ui.cometvisu.php
-Bundle-Activator: org.openhab.ui.cometvisu.internal.CvActivator
-Bundle-ActivationPolicy: lazy

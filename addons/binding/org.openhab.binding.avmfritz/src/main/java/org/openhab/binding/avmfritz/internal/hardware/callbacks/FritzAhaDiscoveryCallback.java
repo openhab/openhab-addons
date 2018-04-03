@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,7 +17,7 @@ import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
 import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
-import org.openhab.binding.avmfritz.util.JAXBtUtils;
+import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
 
     /**
      * Constructor
-     * 
+     *
      * @param webIface Webinterface to FRITZ!Box
      * @param service Discovery service to call with result.
      */
@@ -49,19 +49,16 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
         this.service = service;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void execute(int status, String response) {
         super.execute(status, response);
         logger.trace("Received discovery callback response: {}", response);
         if (isValidRequest()) {
             try {
-                final Unmarshaller jaxbUnmarshaller = JAXBtUtils.JAXBCONTEXT.createUnmarshaller();
-                final DevicelistModel model = (DevicelistModel) jaxbUnmarshaller.unmarshal(new StringReader(response));
+                Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
+                DevicelistModel model = (DevicelistModel) u.unmarshal(new StringReader(response));
                 if (model != null) {
-                    for (final DeviceModel device : model.getDevicelist()) {
+                    for (DeviceModel device : model.getDevicelist()) {
                         service.onDeviceAddedInternal(device);
                     }
                 } else {
@@ -71,7 +68,7 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
                 logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
             }
         } else {
-            logger.info("request is invalid: {}", status);
+            logger.debug("request is invalid: {}", status);
         }
     }
 }

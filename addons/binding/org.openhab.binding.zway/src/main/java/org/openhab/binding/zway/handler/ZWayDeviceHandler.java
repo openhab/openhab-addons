@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -40,7 +40,6 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zway.ZWayBindingConstants;
 import org.openhab.binding.zway.internal.converter.ZWayDeviceStateConverter;
 import org.slf4j.Logger;
@@ -68,9 +67,10 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  * sent to one of the channels.
  *
  * @author Patrick Hecker - Initial contribution
+ * @author Johannes Einig - Now uses the bridge handler cached device list
  */
 public abstract class ZWayDeviceHandler extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private DevicePolling devicePolling;
     private ScheduledFuture<?> pollingJob;
@@ -101,7 +101,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 if (pollingJob == null || pollingJob.isCancelled()) {
                     logger.debug("Starting polling job at intervall {}",
                             zwayBridgeHandler.getZWayBridgeConfiguration().getPollingInterval());
-                    pollingJob = scheduler.scheduleAtFixedRate(devicePolling, 10,
+                    pollingJob = scheduler.scheduleWithFixedDelay(devicePolling, 10,
                             zwayBridgeHandler.getZWayBridgeConfiguration().getPollingInterval(), TimeUnit.SECONDS);
                 } else {
                     // Called when thing or bridge updated ...
@@ -429,7 +429,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         }
 
         // Preconditions are OK, starting registration ...
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("openHabAlias", zwayBridgeHandler.getZWayBridgeConfiguration().getOpenHabAlias());
         params.put("openHabItemName", openHABItem.getName());
         params.put("vDevName", deviceId);
@@ -451,7 +451,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         }
 
         // Preconditions are OK, starting unsubscribing ...
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("openHabAlias", zwayBridgeHandler.getZWayBridgeConfiguration().getOpenHabAlias());
         params.put("openHabItemName", openHABItem.getName());
         DeviceCommand command = new DeviceCommand("OpenHabConnector", "removeOpenHabItem", params);
@@ -462,14 +462,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         } else {
             logger.warn("Device unsubscribing failed");
         }
-    }
-
-    @Override
-    public void handleUpdate(ChannelUID channelUID, State newState) {
-        // Refresh update time
-        logger.debug("Handle update for channel: {} with new state: {}", channelUID.getId(), newState.toString());
-
-        refreshLastUpdate();
     }
 
     @Override
@@ -488,7 +480,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         final String deviceId = channel.getProperties().get("deviceId");
 
         if (deviceId != null) {
-            DeviceList deviceList = zwayBridgeHandler.getZWayApi().getDevices();
+            DeviceList deviceList = zwayBridgeHandler.getDeviceList();
             if (deviceList != null) {
                 Device device = deviceList.getDeviceById(deviceId);
                 if (device == null) {
@@ -589,7 +581,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
 
                                 device.exact(command.toString());
                             }
-
                         } else if (device instanceof SwitchControl) {
                             // possible commands: on(), off(), exact(level), upstart(), upstop(), downstart(),
                             // downstop()
@@ -650,7 +641,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         if (device != null) {
             logger.debug("Add virtual device as channel: {}", device.getMetrics().getTitle());
 
-            HashMap<String, String> properties = new HashMap<String, String>();
+            HashMap<String, String> properties = new HashMap<>();
             properties.put("deviceId", device.getDeviceId());
 
             String id = "";
@@ -880,7 +871,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
 
         if (!channelExists) {
             // Prepare properties (convert modes map)
-            HashMap<String, String> properties = new HashMap<String, String>();
+            HashMap<String, String> properties = new HashMap<>();
 
             // Add node id (for refresh and command handling)
             properties.put("nodeId", nodeId.toString());

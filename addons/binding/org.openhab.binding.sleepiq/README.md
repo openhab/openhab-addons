@@ -4,15 +4,21 @@ This binding integrates with the SleepIQ system from Select Comfort for Sleep Nu
 
 ## Introduction
 
-SleepIQ is a service provided by Select Comfort and sold as an option for Sleep Number beds. The system collects data about the bed (including individual air chamber data for dual chamber beds). This information includes whether or not a sleeper is in bed, the current sleep number setting, the pressure of the air chamber, and it's link status. This data can then be analyzed for any number of purposes, including improving sleep.
+SleepIQ is a service provided by Select Comfort and sold as an option for Sleep Number beds.
+The system collects data about the bed (including individual air chamber data for dual chamber beds).
+This information includes whether or not a sleeper is in bed, the current sleep number setting, the pressure of the air chamber, and it's link status.
+This data can then be analyzed for any number of purposes, including improving sleep.
 
 ## Supported Things
 
-The SleepIQ cloud service acts as the bridge. Each SleepIQ-enabled bed (regardless of the number of air chambers) is a thing. Currently, only dual-chamber beds are supported by this binding.
+The SleepIQ cloud service acts as the bridge.
+Each SleepIQ-enabled bed (regardless of the number of air chambers) is a Thing.
+Currently, only dual-chamber beds are supported by this binding.
 
 ## Discovery
 
-The SleepIQ cloud thing must be added manually with the username and password used to register with the service. After that, beds are discovered automatically by querying the service.
+The SleepIQ cloud thing must be added manually with the username and password used to register with the service.
+After that, beds are discovered automatically by querying the service.
 
 ## Binding Configuration
 
@@ -22,7 +28,8 @@ The binding requires no special configuration.
 
 ### Bridge (Thing ID: "cloud")
 
-The bridge requires a username and a password. Optionally, you can also specify a polling interval.
+The bridge requires a username and a password.
+Optionally, you can also specify a polling interval.
 
 To enable verbose logging of HTTP requests and responses regarding the cloud service, enable DEBUG level logging on ```SleepIQCloudHandler```.
 
@@ -46,7 +53,7 @@ Each bed requires a bed ID as defined by the SleepIQ service.
 Bridge sleepiq:cloud:1 [ username="name@example.com", password="password", pollingInterval=60, logging=false ]
 {
     Thing dualBed master [ bedId="-9999999999999999999" ]
-    Thing dualBed guest [ bedId="-8888888888888888888" ] 
+    Thing dualBed guest [ bedId="-8888888888888888888" ]
 }
 ```
 

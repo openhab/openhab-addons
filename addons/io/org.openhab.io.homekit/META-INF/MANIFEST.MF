@@ -1,11 +1,6 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: HomeKit Integration
-Bundle-SymbolicName: org.openhab.io.homekit;singleton:=true
-Bundle-Vendor: openhab.org
-Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .,
+Bundle-ClassPath: 
+ .,
  lib/com.beowulfe.hap.hap-1.1.3.jar,
  lib/com.nimbusds.srp6a-1.5.2.jar,
  lib/io.netty.netty-all-4.0.32.Final.jar,
@@ -14,10 +9,19 @@ Bundle-ClassPath: .,
  lib/org.bouncycastle.bcprov-jdk15on-1.51.jar,
  lib/org.glassfish.javax.json-1.0.4.jar,
  lib/org.zeromq.curve25519-java-0.1.0.jar
-Import-Package: com.google.common.collect,
+Bundle-ManifestVersion: 2
+Bundle-Name: HomeKit Integration
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.io.homekit;singleton:=true
+Bundle-Vendor: openhab.org
+Bundle-Version: 2.3.0.qualifier
+Export-Package: org.openhab.io.homekit
+Import-Package: 
+ com.google.common.collect,
  javax.jmdns,
  org.apache.commons.io,
  org.apache.commons.lang.builder,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.events,
@@ -32,6 +36,7 @@ Import-Package: com.google.common.collect,
  org.eclipse.smarthome.io.console,
  org.eclipse.smarthome.io.console.extensions,
  org.eclipse.smarthome.model.item,
+ org.openhab.io.homekit,
  org.osgi.framework,
  org.osgi.service.component,
  org.osgi.service.event,

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -37,6 +37,8 @@ import org.openhab.binding.homematic.internal.model.HmResult;
 import org.openhab.binding.homematic.internal.model.TclScript;
 import org.openhab.binding.homematic.internal.model.TclScriptDataList;
 import org.openhab.binding.homematic.internal.model.TclScriptList;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,9 +67,6 @@ public class CcuGateway extends AbstractHomematicGateway {
         xStream.alias("result", HmResult.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void startClients() throws IOException {
         super.startClients();
@@ -83,9 +82,6 @@ public class CcuGateway extends AbstractHomematicGateway {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void stopClients() {
         super.stopClients();
@@ -100,36 +96,24 @@ public class CcuGateway extends AbstractHomematicGateway {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void loadVariables(HmChannel channel) throws IOException {
         TclScriptDataList resultList = sendScriptByName("getAllVariables", TclScriptDataList.class);
         new CcuVariablesAndScriptsParser(channel).parse(resultList);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void loadScripts(HmChannel channel) throws IOException {
         TclScriptDataList resultList = sendScriptByName("getAllPrograms", TclScriptDataList.class);
         new CcuVariablesAndScriptsParser(channel).parse(resultList);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void loadDeviceNames(Collection<HmDevice> devices) throws IOException {
         TclScriptDataList resultList = sendScriptByName("getAllDeviceNames", TclScriptDataList.class);
         new CcuLoadDeviceNamesParser(devices).parse(resultList);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void setChannelDatapointValues(HmChannel channel, HmParamsetType paramsetType) throws IOException {
         try {
@@ -140,7 +124,7 @@ public class CcuGateway extends AbstractHomematicGateway {
                     channel.getDevice().getAddress(), channel.getNumber(), paramsetType);
 
             Collection<String> dpNames = new ArrayList<String>();
-            for (HmDatapoint dp : channel.getDatapoints().values()) {
+            for (HmDatapoint dp : channel.getDatapoints()) {
                 if (!dp.isVirtual() && dp.isReadable() && dp.getParamsetType() == HmParamsetType.VALUES) {
                     dpNames.add(dp.getName());
                 }
@@ -159,9 +143,6 @@ public class CcuGateway extends AbstractHomematicGateway {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChannelDatapoints(HmChannel channel, HmParamsetType paramsetType) throws IOException {
         try {
@@ -178,9 +159,6 @@ public class CcuGateway extends AbstractHomematicGateway {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void setVariable(HmDatapoint dp, Object value) throws IOException {
         String strValue = StringUtils.replace(ObjectUtils.toString(value), "\"", "\\\"");
@@ -194,9 +172,6 @@ public class CcuGateway extends AbstractHomematicGateway {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void executeScript(HmDatapoint dp) throws IOException {
         HmResult result = sendScriptByName("executeProgram", HmResult.class, new String[] { "program_name" },
@@ -260,8 +235,8 @@ public class CcuGateway extends AbstractHomematicGateway {
      * Load predefined scripts from an XML file.
      */
     private Map<String, String> loadTclRegaScripts() throws IOException {
-        InputStream stream = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("homematic/tclrega-scripts.xml");
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        InputStream stream = bundle.getResource("homematic/tclrega-scripts.xml").openStream();
         TclScriptList scriptList = (TclScriptList) xStream.fromXML(stream);
 
         Map<String, String> result = new HashMap<String, String>();

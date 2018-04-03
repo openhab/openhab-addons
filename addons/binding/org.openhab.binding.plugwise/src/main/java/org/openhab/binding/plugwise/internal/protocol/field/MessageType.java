@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -37,6 +37,7 @@ public enum MessageType {
     DEVICE_INFORMATION_RESPONSE(0x0024),
     POWER_CALIBRATION_REQUEST(0x0026),
     POWER_CALIBRATION_RESPONSE(0x0027),
+    REAL_TIME_CLOCK_SET_REQUEST(0x0028),
     REAL_TIME_CLOCK_GET_REQUEST(0x0029),
     REAL_TIME_CLOCK_GET_RESPONSE(0x003A),
     CLOCK_GET_REQUEST(0x003E),

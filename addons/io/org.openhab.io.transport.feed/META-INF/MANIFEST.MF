@@ -1,26 +1,27 @@
 Manifest-Version: 1.0
+Bundle-Classpath: lib/jdom2-2.0.6.jar,lib/rome-1.7.0.jar,lib/rome-utils-
+ 1.7.0.jar,.
 Bundle-ManifestVersion: 2
 Bundle-Name: Feed Transport bundle
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.io.transport.feed
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Classpath: lib/jdom2-2.0.6.jar,
- lib/rome-1.7.0.jar,
- lib/rome-utils-1.7.0.jar,
- .
-Import-Package: com.rometools.rome.feed,
- com.rometools.rome.feed.atom,
- com.rometools.rome.feed.module,
- com.rometools.rome.feed.rss,
- com.rometools.rome.feed.synd,
- com.rometools.rome.io,
- com.rometools.utils,
- org.slf4j
-Export-Package: com.rometools.rome.feed,
+Bundle-Version: 2.3.0.qualifier
+Export-Package: 
+ com.rometools.rome.feed,
  com.rometools.rome.feed.atom,
  com.rometools.rome.feed.module,
  com.rometools.rome.feed.rss,
  com.rometools.rome.feed.synd,
  com.rometools.rome.io,
  com.rometools.utils
+Import-Package: 
+ com.rometools.rome.feed,
+ com.rometools.rome.feed.atom,
+ com.rometools.rome.feed.module,
+ com.rometools.rome.feed.rss,
+ com.rometools.rome.feed.synd,
+ com.rometools.rome.io,
+ com.rometools.utils,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.slf4j

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="knx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="device"
+		extensible="switch, switch-control, dimmer, dimmer-control, rollershutter, rollershutter-control, contact, contact-control, number, number-control, string, string-control, datetime, datetime-control">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ip" />
+			<bridge-type-ref id="serial" />
+		</supported-bridge-type-refs>
+
+		<label>KNX Device</label>
+		<description>An addressable basic KNX device</description>
+
+		<config-description>
+			<parameter name="address" type="text">
+				<label>Address</label>
+				<description>The individual address in x.y.z notation</description>
+			</parameter>
+			<parameter name="fetch" type="boolean">
+				<label>Fetch</label>
+				<description>Read out the device parameters and address/communication object tables</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="pingInterval" type="integer">
+				<label>Interval</label>
+				<description>Interval (in seconds) between attempts to poll the device status</description>
+				<default>600</default>
+			</parameter>
+			<parameter name="readInterval" type="integer">
+				<label>Interval</label>
+				<description>Interval (in seconds) between attempts to read the status group addresses on the bus</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Switch -->
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>A channel to manage a generic Group Addresses with a DPT compatible with Switch Items</description>
+		<config-description-ref uri="channel-type:knx:single" />
+	</channel-type>
+	<channel-type id="switch-control">
+		<item-type>Switch</item-type>
+		<label>Switch Control</label>
+		<description>Control a switch item via KNX (i.e. the status is not owned by KNX)</description>
+		<config-description-ref uri="channel-type:knx:single" />
+	</channel-type>
+
+	<!-- Dimmer -->
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<description>A channel to control a dimmer</description>
+		<config-description-ref uri="channel-type:knx:dimmer" />
+	</channel-type>
+	<channel-type id="dimmer-control">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer Control</label>
+		<description>Control a dimmer item via KNX (i.e. the status is not owned by KNX)</description>
+		<config-description-ref uri="channel-type:knx:dimmer-control" />
+	</channel-type>
+
+	<!-- Rollershutter -->
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter</label>
+		<description>A channel to control a rollershutter</description>
+		<config-description-ref uri="channel-type:knx:rollershutter" />
+	</channel-type>
+	<channel-type id="rollershutter-control">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter Control</label>
+		<description>Control a rollershutter item (i.e. the status is not owned by KNX)</description>
+		<config-description-ref uri="channel-type:knx:rollershutter" />
+	</channel-type>
+
+	<!-- Contact -->
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+		<description>A channel to manage a generic Group Addresses with a DPT compatible with Contact Items</description>
+		<config-description-ref uri="channel-type:knx:single" />
+	</channel-type>
+	<channel-type id="contact-control">
+		<item-type>Contact</item-type>
+		<label>Contact Control</label>
+		<description>Control a contact item (i.e. the status is not owned by KNX)</description>
+		<config-description-ref uri="channel-type:knx:single" />
+	</channel-type>
+
+	<!-- Generic Number -->
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Number</label>
+		<description>A channel to manage a generic Group Addresses with a DPT compatible with Number Items</description>
+		<config-description-ref uri="channel-type:knx:single" />
+	</channel-type>
+	<channel-type id="number-control">
+		<item-type>Number</item-type>
+		<label>Number Control</label>
+		<description>Control a number item (i.e. the status is not owned by KNX)</description>
+		<config-description-ref uri="channel-type:knx:single" />
+	</channel-type>
+
+	<!-- Generic String -->
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>String</label>
+		<description>A channel to manage a generic Group Addresses with a DPT compatible with String Items</description>
+		<config-description-ref uri="channel-type:knx:single" />
+	</channel-type>
+	<channel-type id="string-control">
+		<item-type>String</item-type>
+		<label>String Control</label>
+		<description>Control a string item (i.e. the status is not owned by KNX)</description>
+		<config-description-ref uri="channel-type:knx:single" />
+	</channel-type>
+
+	<!-- Generic Date/Time -->
+	<channel-type id="datetime">
+		<item-type>DateTime</item-type>
+		<label>DateTime</label>
+		<description>A channel to manage a generic Group Addresses with a DPT compatible with DateTime Items</description>
+		<config-description-ref uri="channel-type:knx:single" />
+	</channel-type>
+	<channel-type id="datetime-control">
+		<item-type>DateTime Control</item-type>
+		<label>DateTime</label>
+		<description>Control a date/time item (i.e. the status is not owned by KNX)</description>
+		<config-description-ref uri="channel-type:knx:single" />
+	</channel-type>
+
+
+</thing:thing-descriptions>

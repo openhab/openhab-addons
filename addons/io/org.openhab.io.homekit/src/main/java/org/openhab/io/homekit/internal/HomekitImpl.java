@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -66,10 +66,15 @@ public class HomekitImpl implements Homekit {
 
     protected void deactivate() {
         changeListener.clearAccessories();
-        bridge.stop();
-        homekit.stop();
-        bridge = null;
-        homekit = null;
+        if (bridge != null) {
+            bridge.stop();
+            bridge = null;
+        }
+        if (homekit != null){
+            homekit.stop();
+            homekit = null;
+        }
+
         changeListener.setBridge(null);
         changeListener.stop();
     }

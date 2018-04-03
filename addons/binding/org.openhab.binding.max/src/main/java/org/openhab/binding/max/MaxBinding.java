@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,6 +11,7 @@ package org.openhab.binding.max;
 import java.util.Collection;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.ImmutableSet;
@@ -22,6 +23,7 @@ import com.google.common.collect.Lists;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MaxBinding {
 
     public static final String BINDING_ID = "max";
@@ -50,7 +52,6 @@ public class MaxBinding {
     public static final String CHANNEL_ACTUALTEMP = "actual_temp";
     public static final String CHANNEL_SETTEMP = "set_temp";
     public static final String CHANNEL_LOCKED = "locked";
-    public static final String CHANNEL_SWITCH_STATE = "eco_mode";
     public static final String CHANNEL_CONTACT_STATE = "contact_state";
     public static final String CHANNEL_FREE_MEMORY = "free_mem";
     public static final String CHANNEL_DUTY_CYCLE = "duty_cycle";

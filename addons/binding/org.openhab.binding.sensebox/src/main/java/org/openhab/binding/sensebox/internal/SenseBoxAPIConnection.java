@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,11 +12,11 @@ import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.sensebox.model.SenseBoxData;
-import org.openhab.binding.sensebox.model.SenseBoxDescriptor;
-import org.openhab.binding.sensebox.model.SenseBoxLoc;
-import org.openhab.binding.sensebox.model.SenseBoxLocation;
-import org.openhab.binding.sensebox.model.SenseBoxSensor;
+import org.openhab.binding.sensebox.internal.model.SenseBoxData;
+import org.openhab.binding.sensebox.internal.model.SenseBoxDescriptor;
+import org.openhab.binding.sensebox.internal.model.SenseBoxLoc;
+import org.openhab.binding.sensebox.internal.model.SenseBoxLocation;
+import org.openhab.binding.sensebox.internal.model.SenseBoxSensor;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lametrictime"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="device" listed="true">
+		<label>LaMetric Time</label>
+		<description>Provides control for the LaMetric Time connected clock and its apps</description>
+
+		<channels>
+			<channel id="volume" typeId="volumeType"/>
+			<channel id="app" typeId="appType"/>
+			<channel id="brightness" typeId="brightnessType"/>
+			<channel id="brightnessMode" typeId="brightnessModeType"/>
+			<channel id="bluetooth" typeId="bluetoothActiveType"/>
+			<channel id="info" typeId="simpleNotificationType">
+				<label>Info Notification</label>
+			</channel>
+			<channel id="warning" typeId="simpleNotificationType">
+				<label>Warning Notification</label>
+			</channel>
+			<channel id="alert" typeId="simpleNotificationType">
+				<label>Alert Notification</label>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host</label>
+				<description>Host name or network address of the LaMetric Time</description>
+			</parameter>
+			<parameter name="apiKey" type="text" required="true">
+				<label>API key</label>
+				<description>API key to access LaMetric Time</description>
+				<context>password</context>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<channel-type id="brightnessType">
+		<item-type>Dimmer</item-type>
+		<label>Display Brightness</label>
+		<description>Adjust the brightness of the display</description>
+		<state min="0" max="100" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="brightnessModeType">
+		<item-type>String</item-type>
+		<label>Display Brightness Mode</label>
+		<description>Manual or Auto mode</description>
+		<state>
+			<options>
+				<option value="auto">Automatic</option>
+				<option value="manual">Manual</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="volumeType">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Adjust the volume of the speaker</description>
+		<category>soundvolume</category>
+	</channel-type>
+
+	<channel-type id="bluetoothActiveType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Bluetooth</label>
+		<description>Switch Bluetooth on/off</description>
+	</channel-type>
+
+	<channel-type id="appType">
+		<item-type>String</item-type>
+		<label>Application</label>
+		<description>Active application</description>
+	</channel-type>
+
+	<channel-type id="simpleNotificationType" advanced="true">
+		<item-type>String</item-type>
+		<label>Simple Notification</label>
+		<description>Send a notification to LaMetric Time</description>
+		<category>Text</category>
+	</channel-type>
+
+</thing:thing-descriptions>

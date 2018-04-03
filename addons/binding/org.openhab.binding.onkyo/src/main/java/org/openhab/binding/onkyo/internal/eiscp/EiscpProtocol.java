@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,8 +12,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +81,7 @@ public class EiscpProtocol {
 
         if (logger.isTraceEnabled()) {
             String d = sb.toString();
-            logger.trace("Created eISCP message: {} -> {}", DatatypeConverter.printHexBinary(d.getBytes()),
+            logger.trace("Created eISCP message: {} -> {}", HexUtils.bytesToHex(d.getBytes()),
                     toPrintable(d));
         }
 
@@ -173,7 +172,7 @@ public class EiscpProtocol {
                         // data
                         sb.append(new String(data, "UTF-8"));
                         logger.trace("Received eISCP message, {} -> {}",
-                                DatatypeConverter.printHexBinary(sb.toString().getBytes()), toPrintable(sb.toString()));
+                                HexUtils.bytesToHex(sb.toString().getBytes()), toPrintable(sb.toString()));
                     }
 
                 }

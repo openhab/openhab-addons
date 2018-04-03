@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,7 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.zway.config.ZWayBridgeConfiguration;
+import org.openhab.binding.zway.internal.config.ZWayBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +69,7 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  * - important: the configured devices not changed in openHAB Connector!
  *
  * @author Patrick Hecker - Initial contribution
+ * @author Johannes Einig - Bridge now stores DeviceList
  */
 public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCallbacks {
 
@@ -82,8 +83,10 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
     private ResetInclusionExclusion resetInclusionExclusion;
     private ScheduledFuture<?> resetInclusionExclusionJob;
 
-    private ZWayBridgeConfiguration mConfig = null;
-    private IZWayApi mZWayApi = null;
+    private ZWayBridgeConfiguration mConfig;
+    private IZWayApi mZWayApi;
+
+    private DeviceList deviceList;
 
     /**
      * Initializer authenticate the Z-Way API instance with bridge configuration.
@@ -107,6 +110,8 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                 if (mZWayApi.getLogin() != null) {
                     // Thing status set to online in login callback
                     logger.info("Z-Way bridge successfully authenticated");
+                    // Gets the latest deviceList from zWay during bridge initialization
+                    deviceList = mZWayApi.getDevices();
 
                     // Register openHAB server to Z-Way if observer mechanism is enabled
                     if (mConfig.getObserverMechanismEnabled()) {
@@ -116,7 +121,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                     // Initialize bridge polling
                     if (pollingJob == null || pollingJob.isCancelled()) {
                         logger.debug("Starting polling job at intervall {}", mConfig.getPollingInterval());
-                        pollingJob = scheduler.scheduleAtFixedRate(bridgePolling, 10, mConfig.getPollingInterval(),
+                        pollingJob = scheduler.scheduleWithFixedDelay(bridgePolling, 10, mConfig.getPollingInterval(),
                                 TimeUnit.SECONDS);
                     } else {
                         // Called when thing or bridge updated ...
@@ -324,9 +329,9 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
             logger.debug("Observer mechanism enabled changed from {} to {}", observerMechanismEnabledOld,
                     observerMechanismEnabledNew);
 
-            if (observerMechanismEnabledOld == true && observerMechanismEnabledNew == false) {
+            if (observerMechanismEnabledOld && !observerMechanismEnabledNew) {
                 updateOpenHabConnector(true);
-            } else if (observerMechanismEnabledOld == false && observerMechanismEnabledNew == true) {
+            } else if (!observerMechanismEnabledOld && observerMechanismEnabledNew) {
                 updateOpenHabConnector(false);
             }
         } // if no old configuration available it's not an update
@@ -490,6 +495,32 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
         return mConfig;
     }
 
+    /*******************************
+     ******* DeviceList handling*****
+     ********************************
+     * Updates the deviceList every time a
+     * ChildHandler is initialized or disposed
+     */
+
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        updateDeviceList();
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        updateDeviceList();
+    }
+
+    private void updateDeviceList() {
+        if (mZWayApi != null) {
+            logger.debug("ChildHandler changed. Updating device List");
+            deviceList = mZWayApi.getDevices();
+        } else {
+            logger.debug("Bridge Handler not online. No update of device list performed.");
+        }
+    }
+
     private ZWayBridgeConfiguration loadAndCheckConfiguration() {
         ZWayBridgeConfiguration config = getConfigAs(ZWayBridgeConfiguration.class);
 
@@ -568,6 +599,10 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
      */
     public IZWayApi getZWayApi() {
         return mZWayApi;
+    }
+
+    public DeviceList getDeviceList() {
+        return deviceList;
     }
 
     /********************************

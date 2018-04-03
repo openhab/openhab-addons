@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.zway.config.ZWayZWaveDeviceConfiguration;
+import org.openhab.binding.zway.internal.config.ZWayZWaveDeviceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,9 +39,9 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
 public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
     public static final ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_DEVICE;
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private ZWayZWaveDeviceConfiguration mConfig = null;
+    private ZWayZWaveDeviceConfiguration mConfig;
 
     private class Initializer implements Runnable {
 

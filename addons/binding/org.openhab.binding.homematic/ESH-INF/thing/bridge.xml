@@ -30,11 +30,6 @@
 				<label>Callback Network Address</label>
 				<description>Callback network address of the openHAB server, default is auto-discovery</description>
 			</parameter>
-			<!-- deprecated, use xmlCallbackPort -->
-			<parameter name="callbackPort" type="integer">
-				<label>Callback Port</label>
-				<description>Callback port of the openHAB server. If no value is specified, callbackPort starts with 9125 and counts up for each additional bridge</description>
-			</parameter>
 			<parameter name="xmlCallbackPort" type="integer">
 				<label>XML-RPC Callback Port</label>
 				<description>Callback port of the openHAB XML-RPC server. If no value is specified, xmlCallbackPort starts with 9125 and counts up</description>
@@ -42,19 +37,6 @@
 			<parameter name="binCallbackPort" type="integer">
 				<label>BIN-RPC Callback Port</label>
 				<description>Callback port of the openHAB BIN-RPC server. If no value is specified, xmlCallbackPort starts with 9126 and counts up</description>
-			</parameter>
-			<parameter name="aliveInterval" type="integer">
-				<label>Alive Interval</label>
-				<description>The interval in seconds to check if the communication with the Homematic gateway is still alive. 
-				If no message receives from the Homematic gateway, the RPC server restarts</description>
-				<advanced>true</advanced>
-				<default>300</default>
-			</parameter>
-			<parameter name="reconnectInterval" type="integer">
-				<label>Reconnect Interval</label>
-				<description>The interval in seconds to force a reconnect to the Homematic gateway, disables Alive Interval! (0 = disabled)</description>
-				<advanced>true</advanced>
-				<default>0</default>
 			</parameter>
 			<parameter name="timeout" type="integer">
 				<label>Timeout</label>
@@ -97,6 +79,11 @@
 				<description>The port number of the Group daemon</description>
 				<advanced>true</advanced>
 				<default>9292</default>
+			</parameter>
+			<parameter name="installModeDuration" type="integer" min="10" max="300" unit="s">
+				<label>Install mode duration</label>
+				<description>Time in seconds that the controller will be in install mode when a device discovery is initiated</description>
+				<default>60</default>
 			</parameter>
 
 		</config-description>

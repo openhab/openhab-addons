@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,12 +8,17 @@
  */
 package org.openhab.binding.homematic.handler;
 
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_SERIAL_NUMBER;
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
+
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -23,17 +28,18 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.homematic.discovery.HomematicDeviceDiscoveryService;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.communicator.HomematicGatewayAdapter;
 import org.openhab.binding.homematic.internal.communicator.HomematicGatewayFactory;
+import org.openhab.binding.homematic.internal.discovery.HomematicDeviceDiscoveryService;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDevice;
-import org.openhab.binding.homematic.type.HomematicTypeGenerator;
-import org.openhab.binding.homematic.type.UidUtils;
+import org.openhab.binding.homematic.internal.model.HmGatewayInfo;
+import org.openhab.binding.homematic.internal.type.HomematicTypeGenerator;
+import org.openhab.binding.homematic.internal.type.UidUtils;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,66 +61,75 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     private HomematicDeviceDiscoveryService discoveryService;
     private ServiceRegistration<?> discoveryServiceRegistration;
 
-    public HomematicBridgeHandler(Bridge bridge, HomematicTypeGenerator typeGenerator) {
+    private String ipv4Address;
+
+    public HomematicBridgeHandler(@NonNull Bridge bridge, HomematicTypeGenerator typeGenerator, String ipv4Address) {
         super(bridge);
         this.typeGenerator = typeGenerator;
+        this.ipv4Address = ipv4Address;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         config = createHomematicConfig();
         registerDeviceDiscoveryService();
         final HomematicBridgeHandler instance = this;
-        scheduler.execute(new Runnable() {
+        scheduler.execute(() -> {
+            try {
+                String id = getThing().getUID().getId();
+                gateway = HomematicGatewayFactory.createGateway(id, config, instance);
+                configureThingProperties();
+                gateway.initialize();
 
-            @Override
-            public void run() {
-                try {
-                    String id = getThing().getUID().getId();
-                    gateway = HomematicGatewayFactory.createGateway(id, config, instance);
-                    gateway.initialize();
-
-                    discoveryService.startScan(null);
-                    discoveryService.waitForScanFinishing();
-                    updateStatus(ThingStatus.ONLINE);
-                    if (!config.getGatewayInfo().isHomegear()) {
-                        try {
-                            gateway.loadRssiValues();
-                        } catch (IOException ex) {
-                            logger.warn("Unable to load RSSI values from bridge '{}'", getThing().getUID().getId());
-                            logger.error("{}", ex.getMessage(), ex);
-                        }
+                // scan for already known devices (new devices will not be discovered, 
+                // since installMode==true is only achieved if the bridge is online
+                discoveryService.startScan(null);
+                discoveryService.waitForScanFinishing();
+                
+                updateStatus(ThingStatus.ONLINE);
+                if (!config.getGatewayInfo().isHomegear()) {
+                    try {
+                        gateway.loadRssiValues();
+                    } catch (IOException ex) {
+                        logger.warn("Unable to load RSSI values from bridge '{}'", getThing().getUID().getId());
+                        logger.error("{}", ex.getMessage(), ex);
                     }
-                    gateway.startWatchdogs();
-                } catch (IOException ex) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
-                    dispose();
-                    scheduleReinitialize();
                 }
+                gateway.startWatchdogs();
+            } catch (IOException ex) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                logger.error("Homematic bridge was set to OFFLINE-COMMUNICATION_ERROR due to the following exception: {}",
+                        ex.getMessage(), ex);
+                dispose();
+                scheduleReinitialize();
             }
         });
+    }
 
+    private void configureThingProperties() {
+        final HmGatewayInfo info = config.getGatewayInfo();
+        final Map<String, String> properties = getThing().getProperties();
+
+        if (!properties.containsKey(PROPERTY_FIRMWARE_VERSION)) {
+            getThing().setProperty(PROPERTY_FIRMWARE_VERSION, info.getFirmware());
+        }
+        if (!properties.containsKey(PROPERTY_SERIAL_NUMBER)) {
+            getThing().setProperty(PROPERTY_SERIAL_NUMBER, info.getAddress());
+        }
+        if (!properties.containsKey(PROPERTY_MODEL_ID)) {
+            getThing().setProperty(PROPERTY_MODEL_ID, info.getType());
+        }
     }
 
     /**
      * Schedules a reinitialization, if the Homematic gateway is not reachable at bridge startup.
      */
     private void scheduleReinitialize() {
-        scheduler.schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                initialize();
-            }
+        scheduler.schedule(() -> {
+            initialize();
         }, REINITIALIZE_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         logger.debug("Disposing bridge '{}'", getThing().getUID().getId());
@@ -152,7 +167,9 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         if (discoveryServiceRegistration != null && bundleContext != null) {
             HomematicDeviceDiscoveryService service = (HomematicDeviceDiscoveryService) bundleContext
                     .getService(discoveryServiceRegistration.getReference());
-            service.deactivate();
+            if (service != null) {
+                service.deactivate();
+            }
 
             discoveryServiceRegistration.unregister();
             discoveryServiceRegistration = null;
@@ -181,7 +198,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     private HomematicConfig createHomematicConfig() {
         HomematicConfig homematicConfig = getThing().getConfiguration().as(HomematicConfig.class);
         if (homematicConfig.getCallbackHost() == null) {
-            homematicConfig.setCallbackHost(NetUtil.getLocalIpv4HostAddress());
+            homematicConfig.setCallbackHost(this.ipv4Address);
         }
         if (homematicConfig.getXmlCallbackPort() == 0) {
             homematicConfig.setXmlCallbackPort(portPool.getNextPort());
@@ -197,9 +214,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         return homematicConfig;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
@@ -236,9 +250,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onStateUpdated(HmDatapoint dp) {
         Thing hmThing = getThingByUID(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
@@ -251,9 +262,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public HmDatapointConfig getDatapointConfig(HmDatapoint dp) {
         Thing hmThing = getThingByUID(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
@@ -264,52 +272,29 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         return new HmDatapointConfig();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onNewDevice(HmDevice device) {
         onDeviceLoaded(device);
         updateThing(device);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onDeviceDeleted(HmDevice device) {
         discoveryService.deviceRemoved(device);
         updateThing(device);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onServerRestart() {
-        reloadAllDeviceValues();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onConnectionLost() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onConnectionResumed() {
         updateStatus(ThingStatus.ONLINE);
         reloadAllDeviceValues();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onDeviceLoaded(HmDevice device) {
         typeGenerator.generate(device);
@@ -318,9 +303,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void reloadDeviceValues(HmDevice device) {
         updateThing(device);
@@ -329,9 +311,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void reloadAllDeviceValues() {
         for (Thing hmThing : getThing().getThings()) {

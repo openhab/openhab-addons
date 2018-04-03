@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="jeelink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- JeeLink USB Receiver Bridge Type -->
+	<bridge-type id="jeelinkUsb">
+		<label>@text/bridge-type.jeelinkUsb.label</label>
+		<description>@text/bridge-type.jeelinkUsb.description</description>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<label>@text/parameter.serialport.label</label>
+				<context>serial-port</context>
+				<description>@text/parameter.serialport.description</description>
+			</parameter>
+			<parameter name="baudRate" type="integer" required="false">
+				<label>@text/parameter.baudrate.label</label>
+				<description>@text/parameter.baudrate.description</description>
+				<default>57600</default>
+			</parameter>
+			<parameter name="initCommands" type="text" required="false">
+				<label>@text/parameter.initcommands.label</label>
+				<description>@text/parameter.initcommands.description</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- JeeLink USB Receiver Bridge connected over TCP Type -->
+	<bridge-type id="jeelinkTcp">
+		<label>@text/bridge-type.jeelinkTcp.label</label>
+		<description>@text/bridge-type.jeelinkTcp.description</description>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>@text/parameter.ipaddress.label</label>
+				<description>@text/parameter.ipaddress.description</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>@text/parameter.port.label</label>
+				<description>@text/parameter.port.description</description>
+			</parameter>
+			<parameter name="initCommands" type="text" required="false">
+				<label>@text/parameter.initcommands.label</label>
+				<description>@text/parameter.initcommands.description</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+	<!-- Lacrosse Temperature Sensor Thing Type -->
+	<thing-type id="lacrosse">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="jeelinkTcp" />
+			<bridge-type-ref id="jeelinkUsb" />
+		</supported-bridge-type-refs>
+
+		<label>@text/thing-type.lacrosse.label</label>
+		<description>@text/thing-type.lacrosse.description</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="batteryNew" typeId="battery-new" />
+			<channel id="batteryLow" typeId="system.low-battery" />
+		</channels>
+
+		<config-description>
+			<parameter name="sensorId" type="text" required="true">
+				<label>@text/parameter.sensorid.label</label>
+				<description>@text/parameter.sensorid.description</description>
+			</parameter>
+			<parameter name="updateInterval" type="integer" required="false" min="0" max="3600" unit="s" step="5">
+				<label>@text/parameter.updateinterval.label</label>
+				<description>@text/parameter.updateinterval.description</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="sensorTimeout" type="integer" required="false" min="5" max="3600" unit="s" step="5">
+				<label>@text/parameter.sensortimeout.label</label>
+				<description>@text/parameter.sensortimeout.description</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="bufferSize" type="integer" required="false" min="1" max="100">
+				<label>@text/parameter.buffersize.label</label>
+				<description>@text/parameter.buffersize.description</description>
+				<default>20</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="minTemp" type="decimal" required="false">
+				<label>@text/parameter.mintemp.label</label>
+				<description>@text/parameter.mintemp.description</description>
+				<default>-100</default>
+			</parameter>
+			<parameter name="maxTemp" type="decimal" required="false">
+				<label>@text/parameter.maxtemp.label</label>
+				<description>@text/parameter.maxtemp.description</description>
+				<default>100</default>
+			</parameter>
+			<parameter name="maxDiff" type="decimal" required="true">
+				<label>@text/parameter.maxdiff.label</label>
+				<description>@text/parameter.maxdiff.description</description>
+				<default>2</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- EC3000 Power Monitor Thing Type -->
+	<thing-type id="ec3k">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="jeelinkTcp" />
+			<bridge-type-ref id="jeelinkUsb" />
+		</supported-bridge-type-refs>
+
+		<label>@text/thing-type.ec3k.label</label>
+		<description>@text/thing-type.ec3k.description</description>
+
+		<channels>
+			<channel id="currentWatt" typeId="current-watt" />
+			<channel id="maxWatt" typeId="max-watt" />
+			<channel id="consumptionTotal" typeId="consumption-total" />
+			<channel id="applianceTime" typeId="appliance-time" />
+			<channel id="sensorTime" typeId="sensor-time" />
+			<channel id="resets" typeId="resets" />
+		</channels>
+
+		<config-description>
+			<parameter name="sensorId" type="text" required="true">
+				<label>@text/parameter.sensorid.label</label>
+				<description>@text/parameter.sensorid.description</description>
+			</parameter>
+			<parameter name="updateInterval" type="integer" required="false" min="0" max="3600" unit="s" step="5">
+				<label>@text/parameter.updateinterval.label</label>
+				<description>@text/parameter.updateinterval.description</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="sensorTimeout" type="integer" required="false" min="5" max="3600" unit="s" step="5">
+				<label>@text/parameter.sensortimeout.label</label>
+				<description>@text/parameter.sensortimeout.description</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="bufferSize" type="integer" required="false" min="1" max="100">
+				<label>@text/parameter.buffersize.label</label>
+				<description>@text/parameter.buffersize.description</description>
+				<default>20</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- PCA301 power monitoring wireless socket Thing Type -->
+	<thing-type id="pca301">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="jeelinkTcp" />
+			<bridge-type-ref id="jeelinkUsb" />
+		</supported-bridge-type-refs>
+
+		<label>@text/thing-type.pca301.label</label>
+		<description>@text/thing-type.pca301.description</description>
+
+		<channels>
+			<channel id="switchingState" typeId="switching-state" />
+			<channel id="currentWatt" typeId="current-watt" />
+			<channel id="consumptionTotal" typeId="consumption-total" />
+		</channels>
+
+		<config-description>
+			<parameter name="sensorId" type="text" required="true">
+				<label>@text/parameter.sensorid.label</label>
+				<description>@text/parameter.sensorid.description</description>
+			</parameter>
+			<parameter name="sensorTimeout" type="integer" required="false" min="5" max="3600" unit="s" step="5">
+				<label>@text/parameter.sensortimeout.label</label>
+				<description>@text/parameter.sensortimeout.description</description>
+				<default>600</default>
+			</parameter>
+			<parameter name="sendCount" type="integer" required="false" min="1" max="300">
+				<label>@text/parameter.sendCount.label</label>
+				<description>@text/parameter.sendCount.description</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Current Watt Channel Type -->
+	<channel-type id="current-watt">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.current-watt.label</label>
+		<description>@text/channel-type.current-watt.description</description>
+		<state readOnly="true" pattern="%.1f W" />
+	</channel-type>
+
+	<!-- Max Watt Channel Type -->
+	<channel-type id="max-watt">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.max-watt.label</label>
+		<description>@text/channel-type.max-watt.description</description>
+		<state readOnly="true" pattern="%.1f W" />
+	</channel-type>
+
+	<!-- Total Consumption Channel Type -->
+	<channel-type id="consumption-total">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.consumption-total.label</label>
+		<description>@text/channel-type.consumption-total.description</description>
+		<state readOnly="true" pattern="%d Wh" />
+	</channel-type>
+
+	<!-- Appliance On Time Channel Type -->
+	<channel-type id="appliance-time" advanced="true">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.appliance-time.label</label>
+		<description>@text/channel-type.appliance-time.description</description>
+		<state readOnly="true" pattern="%d h" />
+		
+	</channel-type>
+
+	<!-- Sensor On Time Channel Type -->
+	<channel-type id="sensor-time" advanced="true">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.sensor-time.label</label>
+		<description>@text/channel-type.sensor-time.description</description>
+		<state readOnly="true" pattern="%d h" />
+	</channel-type>
+
+	<!-- Resets Channel Type -->
+	<channel-type id="resets" advanced="true">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.resets.label</label>
+		<description>@text/channel-type.resets.description</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+	<!-- Temperature Channel Type -->
+	<channel-type id="temperature">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.temperature.label</label>
+		<description>@text/channel-type.temperature.description</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C" />
+	</channel-type>
+
+	<!-- Humidity Channel Type -->
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.humidity.label</label>
+		<description>@text/channel-type.humidity.description</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%.1f" />
+	</channel-type>
+
+	<!-- Battery New Channel Type -->
+	<channel-type id="battery-new">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.battery-new.label</label>
+		<description>@text/channel-type.battery-new.description</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- PCA301 Socket On Type -->
+	<channel-type id="switching-state">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.switching-state.label</label>
+		<description>@text/channel-type.switching-state.description</description>
+	</channel-type>
+</thing:thing-descriptions>

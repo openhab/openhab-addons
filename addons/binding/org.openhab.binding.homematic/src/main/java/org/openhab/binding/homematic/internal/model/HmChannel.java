@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,11 +8,15 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.openhab.binding.homematic.internal.misc.HomematicConstants;
 
 /**
  * Object that represents a Homematic channel.
@@ -28,24 +32,23 @@ public class HmChannel {
     public static final Integer CHANNEL_NUMBER_VARIABLE = 1;
     public static final Integer CHANNEL_NUMBER_SCRIPT = 2;
 
-    private Integer number;
-    private String type;
+    private final Integer number;
+    private final String type;
     private HmDevice device;
     private boolean initialized;
+    private Integer lastFunction;
     private Map<HmDatapointInfo, HmDatapoint> datapoints = new HashMap<HmDatapointInfo, HmDatapoint>();
+
+    public HmChannel(String type, Integer number) {
+        this.type = type;
+        this.number = number;
+    }
 
     /**
      * Returns the channel number.
      */
     public Integer getNumber() {
         return number;
-    }
-
-    /**
-     * Sets the channel number.
-     */
-    public void setNumber(Integer number) {
-        this.number = number;
     }
 
     /**
@@ -67,13 +70,6 @@ public class HmChannel {
      */
     public String getType() {
         return type;
-    }
-
-    /**
-     * Returns the type of the channel.
-     */
-    public void setType(String type) {
-        this.type = type;
     }
 
     /**
@@ -109,8 +105,10 @@ public class HmChannel {
     /**
      * Returns all datapoints.
      */
-    public Map<HmDatapointInfo, HmDatapoint> getDatapoints() {
-        return datapoints;
+    public List<HmDatapoint> getDatapoints() {
+        synchronized (datapoints) {
+            return new ArrayList<>(datapoints.values());
+        }
     }
 
     /**
@@ -118,14 +116,32 @@ public class HmChannel {
      */
     public void addDatapoint(HmDatapoint dp) {
         dp.setChannel(this);
-        datapoints.put(new HmDatapointInfo(dp), dp);
+        synchronized (datapoints) {
+            datapoints.put(new HmDatapointInfo(dp), dp);
+        }
+    }
+
+    /**
+     * Removes all datapoints with VALUES param set type from the channel.
+     */
+    public void removeValueDatapoints() {
+        synchronized (datapoints) {
+            Iterator<Map.Entry<HmDatapointInfo, HmDatapoint>> iterator = datapoints.entrySet().iterator();
+            while (iterator.hasNext()) {
+                if (iterator.next().getKey().getParamsetType() == HmParamsetType.VALUES) {
+                    iterator.remove();
+                }
+            }
+        }
     }
 
     /**
      * Returns the HmDatapoint with the given HmDatapointInfo.
      */
     public HmDatapoint getDatapoint(HmDatapointInfo dpInfo) {
-        return datapoints.get(dpInfo);
+        synchronized (datapoints) {
+            return datapoints.get(dpInfo);
+        }
     }
 
     /**
@@ -139,12 +155,61 @@ public class HmChannel {
      * Returns true, if the channel has the given datapoint.
      */
     public boolean hasDatapoint(HmDatapointInfo dpInfo) {
-        return datapoints.get(dpInfo) != null;
+        return getDatapoint(dpInfo) != null;
     }
 
     /**
-     * {@inheritDoc}
+     * Returns true, if the channel's datapoint set contains a
+     * channel function datapoint.
      */
+    public boolean isReconfigurable() {
+        return getDatapoint(HmParamsetType.MASTER, HomematicConstants.DATAPOINT_NAME_CHANNEL_FUNCTION) != null;
+    }
+
+    /**
+     * Returns the numeric value of the function this channel is currently configured to.
+     * Returns null if the channel is not yet initialized or does not support dynamic reconfiguration.
+     */
+    public Integer getCurrentFunction() {
+        HmDatapoint functionDp = getDatapoint(HmParamsetType.MASTER,
+                HomematicConstants.DATAPOINT_NAME_CHANNEL_FUNCTION);
+        return functionDp == null ? null : (Integer) functionDp.getValue();
+    }
+
+    /**
+     * Checks whether the function this channel is configured to changed since this method was last invoked.
+     * Returns false if the channel is not reconfigurable or was not initialized yet.
+     */
+    public synchronized boolean checkForChannelFunctionChange() {
+        Integer currentFunction = getCurrentFunction();
+        if (currentFunction == null) {
+            return false;
+        }
+        if (lastFunction == null) {
+            // We were called from initialization, which was preceded by initial metadata fetch, so everything
+            // should be fine by now
+            lastFunction = currentFunction;
+            return false;
+        }
+        if (lastFunction.equals(currentFunction)) {
+            return false;
+        }
+        lastFunction = currentFunction;
+        return true;
+    }
+
+    /**
+     * Returns true, if the channel has at least one PRESS_ datapoint.
+     */
+    public boolean hasPressDatapoint() {
+        for (HmDatapoint dp : getDatapoints()) {
+            if (dp.isPressDatapoint()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("number", number).append("type", type)

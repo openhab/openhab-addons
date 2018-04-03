@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,12 +8,9 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware;
 
-import static org.openhab.binding.avmfritz.BindingConstants.*;
-
-import java.math.BigDecimal;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
@@ -23,13 +20,11 @@ import java.util.regex.Pattern;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.avmfritz.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.handler.IFritzHandler;
-import org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel;
+import org.openhab.binding.avmfritz.internal.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingTemperatureCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetSwitchCallback;
@@ -39,11 +34,11 @@ import org.slf4j.LoggerFactory;
 /**
  * This class handles requests to a FRITZ!OS web interface for interfacing with
  * AVM home automation devices. It manages authentication and wraps commands.
- * 
+ *
  * @author Robert Bausdorf, Christian Brauers
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
  *         DECT
- * 
+ *
  */
 public class FritzahaWebInterface {
 
@@ -57,13 +52,9 @@ public class FritzahaWebInterface {
      */
     protected String sid;
     /**
-     * HTTP client for asynchronous calls
+     * shared instance of HTTP client for asynchronous calls
      */
     protected HttpClient asyncclient;
-    /**
-     * Maximum number of simultaneous asynchronous connections
-     */
-    protected int asyncmaxconns = 20;
     /**
      * Bridge thing handler for updating thing status
      */
@@ -103,7 +94,7 @@ public class FritzahaWebInterface {
             loginXml = HttpUtil.executeUrl("GET", getURL("login_sid.lua", addSID("")),
                     10 * this.config.getSyncTimeout());
         } catch (IOException e) {
-            logger.debug("Failed to get loginXML {}", e);
+            logger.debug("Failed to get loginXML {}", e.getLocalizedMessage(), e);
         }
         if (loginXml == null) {
             this.fbHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -140,10 +131,11 @@ public class FritzahaWebInterface {
             loginXml = HttpUtil.executeUrl("GET",
                     getURL("login_sid.lua",
                             (this.config.getUser() != null && !"".equals(this.config.getUser())
-                                    ? ("username=" + this.config.getUser() + "&") : "") + "response=" + response),
+                                    ? ("username=" + this.config.getUser() + "&")
+                                    : "") + "response=" + response),
                     10 * this.config.getSyncTimeout());
         } catch (IOException e) {
-            logger.debug("Failed to get loginXML {}", e);
+            logger.debug("Failed to get loginXML {}", e.getLocalizedMessage(), e);
         }
         if (loginXml == null) {
             this.fbHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -225,17 +217,11 @@ public class FritzahaWebInterface {
      *
      * @param config Bridge configuration
      */
-    public FritzahaWebInterface(AvmFritzConfiguration config, IFritzHandler handler) {
+    public FritzahaWebInterface(AvmFritzConfiguration config, IFritzHandler handler, HttpClient httpClient) {
         this.config = config;
         this.fbHandler = handler;
+        this.asyncclient = httpClient;
         sid = null;
-        asyncclient = new HttpClient(new SslContextFactory(true));
-        asyncclient.setMaxConnectionsPerDestination(asyncmaxconns);
-        try {
-            asyncclient.start();
-        } catch (Exception e) {
-            logger.error("Could not start HTTP Client for {}", getURL(""));
-        }
         authenticate();
         logger.debug("Starting with SID {}", sid);
     }
@@ -254,7 +240,7 @@ public class FritzahaWebInterface {
     /**
      * Constructs a URL from the stored information, a specified path and a
      * specified argument string
-     * 
+     *
      * @param path Path to include in URL
      * @param args String of arguments, in standard HTTP format
      *            (arg1=value1&arg2=value2&...)

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="camera">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+
+		<label>Nest Cam</label>
+		<description>A Nest Cam registered with your account</description>
+
+		<channels>
+			<channel id="audio_input_enabled" typeId="AudioInputEnabled" />
+			<channel id="video_history_enabled" typeId="VideoHistoryEnabled" />
+			<channel id="streaming" typeId="Streaming" />
+			<channel id="web_url" typeId="WebUrl" />
+			<channel id="app_url" typeId="AppUrl" />
+			<channel id="public_share_enabled" typeId="PublicShareEnabled" />
+			<channel id="public_share_url" typeId="PublicShareUrl" />
+			<channel id="snapshot_url" typeId="SnapshotUrl" />
+			<channel id="last_online_change" typeId="LastOnlineChange" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Nest</property>
+		</properties>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description-ref uri="thing-type:nest:device" />
+	</thing-type>
+</thing:thing-descriptions>

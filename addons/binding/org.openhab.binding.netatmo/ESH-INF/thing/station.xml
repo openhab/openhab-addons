@@ -1,176 +1,186 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="netatmo"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-      
-    <thing-type id="NAMain">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="netatmoapi" />
-        </supported-bridge-type-refs>
-        
-        <label>Main indoor station</label>
-        <description>This represents the main indoor module capable of reporting temperature,humidity,pressure,air quality and sound level</description>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-        <channels>
-            <channel id="Co2" typeId="co2"/>
-            <channel id="Temperature" typeId="temperature" />
-            <channel id="TempTrend" typeId="temperatureTrend" />            
-            <channel id="Noise" typeId="noise" />
-            <channel id="Pressure" typeId="pressure" />
-            <channel id="PressTrend" typeId="pressureTrend" />
-            <channel id="AbsolutePressure" typeId="absolutePressure" />
-            <channel id="TimeStamp" typeId="timeUtc" />
-            <channel id="Humidity" typeId="humidity" />
-            <channel id="Humidex" typeId="humidex" />
-            <channel id="HeatIndex" typeId="heatIndex" />
-            <channel id="Dewpoint" typeId="dewPoint" />
-            <channel id="DewpointDepression" typeId="dewPointDepression" />
-            <!--  Common to all devices -->
-            <channel id="LastStatusStore" typeId="lastStatusStore" />
-            <channel id="WifiStatus" typeId="system.signal-strength" />
-            <channel id="Location" typeId="location" />     
-            <!--  Global configuration channels -->
-            <channel id="Unit" typeId="unit" />
-            <channel id="WindUnit" typeId="windUnit" />
-            <channel id="PressureUnit" typeId="pressureUnit" />
-        </channels>
-        
-        <properties>
-             <property name="signalLevels">86,71,56</property>
-        </properties>         
-        
-        <config-description-ref uri="thing-type:netatmo:device" />        
-    </thing-type>
-    
-    <thing-type id="NAModule1">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="netatmoapi" />
-        </supported-bridge-type-refs>
-        
-        <label>Outdoor module</label>
-        <description>This represents the outdoor module capable of reporting temperature and humidity</description>
+	<thing-type id="NAMain">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="netatmoapi" />
+		</supported-bridge-type-refs>
 
-        <channels>
-            <channel id="Temperature" typeId="temperature" />
-            <channel id="TempTrend" typeId="temperatureTrend" />
-            <channel id="Humidity" typeId="humidity" />
-            <channel id="TimeStamp" typeId="timeUtc" />      
-            <channel id="Humidex" typeId="humidex" />
-            <channel id="HeatIndex" typeId="heatIndex" />
-            <channel id="Dewpoint" typeId="dewPoint" />
-            <channel id="DewpointDepression" typeId="dewPointDepression" />
-            <!--  Common to all modules -->
-            <channel id="LastMessage" typeId="lastMessage" />
-            <channel id="LowBattery" typeId="system.low-battery" />                    
-            <channel id="BatteryVP" typeId="system.battery-level" />
-            <channel id="RfStatus" typeId="system.signal-strength" />
-        </channels>
-        
-        <properties>
-             <property name="batteryMin">3600</property>
-             <property name="batteryLow">4500</property>
-             <property name="batteryMax">6000</property>
-             <property name="signalLevels">90,80,70,60</property>
-        </properties> 
-       
-        <config-description-ref uri="thing-type:netatmo:module" />
-       
-    </thing-type>
-    
-    <thing-type id="NAModule2">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="netatmoapi" />
-        </supported-bridge-type-refs>
-        
-        <label>Wind gauge module</label>
-        <description>This represents the wind module capable of reporting wind angle and strength</description>
+		<label>Main indoor station</label>
+		<description>This represents the main indoor module capable of reporting temperature,humidity,pressure,air quality and sound level</description>
 
-        <channels>
-            <channel id="WindAngle" typeId="WindAngle" />
-            <channel id="WindStrength" typeId="WindStrength" />
-            <channel id="GustAngle" typeId="GustAngle" />      
-            <channel id="GustStrength" typeId="GustStrength" />
-            <!--  Common to all modules -->
-            <channel id="LastMessage" typeId="lastMessage" />
-            <channel id="LowBattery" typeId="system.low-battery" />                    
-            <channel id="BatteryVP" typeId="system.battery-level" />
-            <channel id="RfStatus" typeId="system.signal-strength" />                   
-        </channels>
-        
-        <properties>
-             <property name="batteryMin">3950</property>
-             <property name="batteryLow">4770</property>
-             <property name="batteryMax">6000</property>
-             <property name="signalLevels">90,80,70,60</property>
-        </properties>         
-       
-        <config-description-ref uri="thing-type:netatmo:module" />
-       
-    </thing-type>    
-    
-     <thing-type id="NAModule3">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="netatmoapi" />
-        </supported-bridge-type-refs>
-        
-        <label>Rain Gauge</label>
-        <description>This represents the Rain Gauge capable of measuring precipitation</description>
+		<channels>
+			<channel id="Co2" typeId="co2"/>
+			<channel id="Temperature" typeId="temperature" />
+			<channel id="TempTrend" typeId="temperatureTrend" />
+			<channel id="Noise" typeId="noise" />
+			<channel id="Pressure" typeId="pressure" />
+			<channel id="PressTrend" typeId="pressureTrend" />
+			<channel id="AbsolutePressure" typeId="absolutePressure" />
+			<channel id="Humidity" typeId="humidity" />
+			<channel id="Humidex" typeId="humidex" />
+			<channel id="HeatIndex" typeId="heatIndex" />
+			<channel id="Dewpoint" typeId="dewPoint" />
+			<channel id="DewpointDepression" typeId="dewPointDepression" />
+			<channel id="MinTemp" typeId="minTemp" />
+			<channel id="MaxTemp" typeId="maxTemp" />
+			<channel id="DateMinTemp" typeId="dateMinTemp" />
+			<channel id="DateMaxTemp" typeId="dateMaxTemp" />
+			<!--  Common to all devices -->
+			<channel id="TimeStamp" typeId="timeUtc" />
+			<channel id="LastStatusStore" typeId="lastStatusStore" />
+			<channel id="WifiStatus" typeId="system.signal-strength" />
+			<channel id="Location" typeId="location" />	 
+			<!--  Global configuration channels -->
+			<channel id="Unit" typeId="unit" />
+			<channel id="WindUnit" typeId="windUnit" />
+			<channel id="PressureUnit" typeId="pressureUnit" />
+		</channels>
 
-        <channels>
-            <channel id="Rain" typeId="rain"/> 
-            <channel id="SumRain1" typeId="rain1"/> 
-            <channel id="SumRain24" typeId="rain24"/> 
-            <!--  Common to all modules -->
-            <channel id="LastMessage" typeId="lastMessage" />
-            <channel id="LowBattery" typeId="system.low-battery" />                    
-            <channel id="BatteryVP" typeId="system.battery-level" />
-            <channel id="RfStatus" typeId="system.signal-strength" />
-        </channels>
-        
-        <properties>
-             <property name="batteryMin">3600</property>
-             <property name="batteryLow">4500</property>
-             <property name="batteryMax">6000</property>
-             <property name="signalLevels">90,80,70,60</property>
-        </properties>           
-        
-        <config-description-ref uri="thing-type:netatmo:module" />
-    </thing-type>
-    
-    <thing-type id="NAModule4">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="netatmoapi" />
-        </supported-bridge-type-refs>
-        
-        <label>Additional module</label>
-        <description>This represents an additional indoor module capable of reporting temperature, humidity and CO2 level</description>
+		<properties>
+			<property name="signalLevels">86,71,56</property>
+			<property name="refreshPeriod">600000</property>
+		</properties>		 
 
-        <channels>
-            <channel id="Temperature" typeId="temperature" />
-            <channel id="TempTrend" typeId="temperatureTrend" />
-            <channel id="TimeStamp" typeId="timeUtc" />          
-            <channel id="Humidity" typeId="humidity" />
-            <channel id="Humidex" typeId="humidex" />
-            <channel id="HeatIndex" typeId="heatIndex" />
-            <channel id="Dewpoint" typeId="dewPoint" />
-            <channel id="DewpointDepression" typeId="dewPointDepression" />
-            <channel id="Co2" typeId="co2"/>
-            <!--  Common to all modules -->
-            <channel id="LastMessage" typeId="lastMessage" />
-            <channel id="LowBattery" typeId="system.low-battery" />                    
-            <channel id="BatteryVP" typeId="system.battery-level" />
-            <channel id="RfStatus" typeId="system.signal-strength" />
-        </channels>
-        
-        <properties>
-             <property name="batteryMin">4200</property>
-             <property name="batteryLow">4920</property>
-             <property name="batteryMax">6000</property>
-             <property name="signalLevels">90,80,70,60</property>
-        </properties>          
-        
-        <config-description-ref uri="thing-type:netatmo:module" />
-    </thing-type>        
+		<representation-property>id</representation-property>
+		<config-description-ref uri="thing-type:netatmo:station" />
+	</thing-type>
+
+	<thing-type id="NAModule1">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="netatmoapi" />
+		</supported-bridge-type-refs>
+
+		<label>Outdoor module</label>
+		<description>This represents the outdoor module capable of reporting temperature and humidity</description>
+
+		<channels>
+			<channel id="Temperature" typeId="temperature" />
+			<channel id="TempTrend" typeId="temperatureTrend" />
+			<channel id="Humidity" typeId="humidity" />
+			<channel id="Humidex" typeId="humidex" />
+			<channel id="HeatIndex" typeId="heatIndex" />
+			<channel id="Dewpoint" typeId="dewPoint" />
+			<channel id="DewpointDepression" typeId="dewPointDepression" />
+			<channel id="MinTemp" typeId="minTemp" />
+			<channel id="MaxTemp" typeId="maxTemp" />
+			<channel id="DateMinTemp" typeId="dateMinTemp" />
+			<channel id="DateMaxTemp" typeId="dateMaxTemp" />
+			<!--  Common to all modules -->
+			<channel id="TimeStamp" typeId="timeUtc" />
+			<channel id="LastMessage" typeId="lastMessage" />
+			<channel id="LowBattery" typeId="system.low-battery" />
+			<channel id="BatteryVP" typeId="system.battery-level" />
+			<channel id="RfStatus" typeId="system.signal-strength" />
+		</channels>
+
+		<properties>
+			<property name="signalLevels">90,80,70,60</property>
+			<property name="batteryLevels">3600,4500,6000</property>
+		</properties> 
+
+		<representation-property>id</representation-property>
+		<config-description-ref uri="thing-type:netatmo:module" />
+	</thing-type>
+
+	<thing-type id="NAModule2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="netatmoapi" />
+		</supported-bridge-type-refs>
+
+		<label>Wind gauge module</label>
+		<description>This represents the wind module capable of reporting wind angle and strength</description>
+
+		<channels>
+			<channel id="WindAngle" typeId="WindAngle" />
+			<channel id="WindStrength" typeId="WindStrength" />
+			<channel id="GustAngle" typeId="GustAngle" />	  
+			<channel id="GustStrength" typeId="GustStrength" />
+			<!--  Common to all modules -->
+			<channel id="TimeStamp" typeId="timeUtc" />
+			<channel id="LastMessage" typeId="lastMessage" />
+			<channel id="LowBattery" typeId="system.low-battery" />
+			<channel id="BatteryVP" typeId="system.battery-level" />
+			<channel id="RfStatus" typeId="system.signal-strength" />
+		</channels>
+
+		<properties>
+			<property name="signalLevels">90,80,70,60</property>
+			<property name="batteryLevels">3950,4770,6000</property>
+		</properties>		 
+
+		<representation-property>id</representation-property>
+		<config-description-ref uri="thing-type:netatmo:module" />
+	</thing-type>
+
+	<thing-type id="NAModule3">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="netatmoapi" />
+		</supported-bridge-type-refs>
+
+		<label>Rain Gauge</label>
+		<description>This represents the Rain Gauge capable of measuring precipitation</description>
+
+		<channels>
+			<channel id="Rain" typeId="rain"/> 
+			<channel id="SumRain1" typeId="rain1"/> 
+			<channel id="SumRain24" typeId="rain24"/> 
+			<!--  Common to all modules -->
+			<channel id="TimeStamp" typeId="timeUtc" />
+			<channel id="LastMessage" typeId="lastMessage" />
+			<channel id="LowBattery" typeId="system.low-battery" />
+			<channel id="BatteryVP" typeId="system.battery-level" />
+			<channel id="RfStatus" typeId="system.signal-strength" />
+		</channels>
+
+		<properties>
+			<property name="signalLevels">90,80,70,60</property>
+			<property name="batteryLevels">3600,4500,6000</property>
+		</properties>		   
+
+		<representation-property>id</representation-property>
+		<config-description-ref uri="thing-type:netatmo:module" />
+	</thing-type>
+
+	<thing-type id="NAModule4">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="netatmoapi" />
+		</supported-bridge-type-refs>
+
+		<label>Additional module</label>
+		<description>This represents an additional indoor module capable of reporting temperature, humidity and CO2 level</description>
+
+		<channels>
+			<channel id="Co2" typeId="co2"/>
+			<channel id="Temperature" typeId="temperature" />
+			<channel id="TempTrend" typeId="temperatureTrend" />
+			<channel id="Humidity" typeId="humidity" />
+			<channel id="Humidex" typeId="humidex" />
+			<channel id="HeatIndex" typeId="heatIndex" />
+			<channel id="Dewpoint" typeId="dewPoint" />
+			<channel id="DewpointDepression" typeId="dewPointDepression" />
+			<channel id="MinTemp" typeId="minTemp" />
+			<channel id="MaxTemp" typeId="maxTemp" />
+			<channel id="DateMinTemp" typeId="dateMinTemp" />
+			<channel id="DateMaxTemp" typeId="dateMaxTemp" />
+			<!--  Common to all modules -->
+			<channel id="TimeStamp" typeId="timeUtc" />
+			<channel id="LastMessage" typeId="lastMessage" />
+			<channel id="LowBattery" typeId="system.low-battery" />
+			<channel id="BatteryVP" typeId="system.battery-level" />
+			<channel id="RfStatus" typeId="system.signal-strength" />
+		</channels>
+
+		<properties>
+			<property name="signalLevels">90,80,70,60</property>
+			<property name="batteryLevels">4200,4920,6000</property>
+		</properties>
+
+		<representation-property>id</representation-property>
+		<config-description-ref uri="thing-type:netatmo:module" />
+	</thing-type>
 
 </thing:thing-descriptions>

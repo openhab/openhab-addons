@@ -1,15 +1,23 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.openhab.binding.orvibo.internal.OrviboActivator
+Bundle-ClassPath: 
+ .,
+ lib/s20-sdk-0.0.6-SNAPSHOT.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: Orvibo Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.orvibo;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .,
-    lib/s20-sdk-0.0.6-SNAPSHOT.jar
-Import-Package: com.google.common.collect,
+Bundle-Version: 2.3.0.qualifier
+Export-Package: 
+ org.openhab.binding.orvibo,
+ org.openhab.binding.orvibo.handler
+Import-Package: 
+ com.google.common.collect,
  javax.xml.bind,
  org.apache.commons.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.items,
@@ -18,12 +26,9 @@ Import-Package: com.google.common.collect,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.types,
+ org.openhab.binding.orvibo,
+ org.openhab.binding.orvibo.handler,
  org.osgi.framework,
  org.osgi.service.component,
- org.slf4j,
- org.openhab.binding.orvibo,
- org.openhab.binding.orvibo.handler
+ org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.orvibo,
- org.openhab.binding.orvibo.handler
-Bundle-Activator: org.openhab.binding.orvibo.internal.OrviboActivator

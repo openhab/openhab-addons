@@ -109,13 +109,13 @@ String vsx921InformationDisplay "Information [%s]"        <none>         (All)  
 ```
 sitemap demo label="Main Menu"
 {
-Frame label="Pioneer AVR" {
-Switch item=vsx921PowerSwitch
-Switch item=vsx921MuteSwitch mappings=[ON="Mute", OFF="Un-Mute"]
-Slider item=vsx921VolumeDimmer
-Setpoint item=vsx921VolumeNumber minValue="-80" maxValue="12" step="0.5"
-Switch item=vsx921InputSourceSet mappings=[04="DVD", 15="DVR/BDR", 25="BD"]
-Text item=vsx921InformationDisplay
-}
+	Frame label="Pioneer AVR" {
+		Switch item=vsx921PowerSwitch
+		Switch item=vsx921MuteSwitch mappings=[ON="Mute", OFF="Un-Mute"]
+		Slider item=vsx921VolumeDimmer
+		Setpoint item=vsx921VolumeNumber minValue="-80" maxValue="12" step="0.5"
+		Switch item=vsx921InputSourceSet mappings=[04="DVD", 15="DVR/BDR", 25="BD"]
+		Text item=vsx921InformationDisplay
+	}
 }
 ```

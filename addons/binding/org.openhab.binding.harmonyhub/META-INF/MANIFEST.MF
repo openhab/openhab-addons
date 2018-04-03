@@ -1,13 +1,8 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: HarmonyHub Binding
-Bundle-SymbolicName: org.openhab.binding.harmonyhub;singleton:=true
-Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .,
- lib/harmony-java-client-1.1.1.jar,
+Bundle-ClassPath: 
+ .,
+ lib/harmony-java-client-1.2.1.jar,
  lib/jackson-annotations-2.8.0.jar,
  lib/jackson-core-2.8.7.jar,
  lib/jackson-databind-2.8.7.jar,
@@ -20,6 +15,15 @@ Bundle-ClassPath: .,
  lib/smack-sasl-javax-4.2.0.jar,
  lib/smack-tcp-4.2.0.jar,
  lib/xpp3-1.1.4c.jar
+Bundle-ManifestVersion: 2
+Bundle-Name: HarmonyHub Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.harmonyhub;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Export-Package: 
+ org.openhab.binding.harmonyhub,
+ org.openhab.binding.harmonyhub.handler
 Import-Package: 
  com.google.common.base,
  com.google.common.collect,
@@ -27,8 +31,10 @@ Import-Package:
  com.google.inject,
  javax.inject,
  org.apache.commons.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.cache,
  org.eclipse.smarthome.core.common,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
@@ -36,10 +42,8 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.osgi.framework,
- org.slf4j,
  org.openhab.binding.harmonyhub,
- org.openhab.binding.harmonyhub.handler
+ org.openhab.binding.harmonyhub.handler,
+ org.osgi.framework,
+ org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.harmonyhub,
- org.openhab.binding.harmonyhub.handler

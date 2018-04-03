@@ -1,23 +1,24 @@
 Manifest-Version: 1.0
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: PHP support for the CometVisu backend
-Bundle-SymbolicName: org.openhab.ui.cometvisu.php;singleton:=true
-Bundle-Version: 2.2.0.qualifier
-Bundle-Vendor: openHAB
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.ui.cometvisu.php;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
 Import-Package: 
  com.caucho.java;version="[4.0,5)",
- com.caucho.quercus;version="[4.0,5)",
  com.caucho.quercus.env;version="[4.0,5)",
  com.caucho.quercus.module;version="4.0.45",
  com.caucho.quercus.page;version="[4.0,5)",
- com.caucho.quercus.servlet;version="4.0.45",
  com.caucho.quercus.servlet.api;version="[4.0,5)",
+ com.caucho.quercus.servlet;version="4.0.45",
+ com.caucho.quercus;version="[4.0,5)",
  com.caucho.util;version="[4.0,5)",
  com.caucho.vfs;version="[4.0,5)",
- javax.servlet;version="[3.1,4)",
  javax.servlet.http;version="[3.1,4)",
+ javax.servlet;version="[3.1,4)",
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.openhab.ui.cometvisu.php,
  org.slf4j;version="[1.7,2)"
 Service-Component: OSGI-INF/*.xml
-Bundle-ClassPath: .

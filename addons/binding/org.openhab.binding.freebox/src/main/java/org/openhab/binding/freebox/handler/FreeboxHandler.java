@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -54,8 +54,8 @@ import org.matmaul.freeboxos.system.SystemConfiguration;
 import org.matmaul.freeboxos.upnpav.UPnPAVConfig;
 import org.matmaul.freeboxos.wifi.WifiGlobalConfig;
 import org.openhab.binding.freebox.FreeboxBindingConstants;
-import org.openhab.binding.freebox.config.FreeboxServerConfiguration;
 import org.openhab.binding.freebox.internal.FreeboxDataListener;
+import org.openhab.binding.freebox.internal.config.FreeboxServerConfiguration;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -215,164 +215,156 @@ public class FreeboxHandler extends BaseBridgeHandler {
         }
     }
 
-    private Runnable authorizeRunnable = new Runnable() {
-        @Override
-        @SuppressWarnings("null")
-        public void run() {
-            logger.debug("Authorize job...");
+    private Runnable globalRunnable = () -> {
+        logger.debug("Polling server state...");
 
-            FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
-            String result = null;
-            boolean httpsRequestOk = false;
-            if (!Boolean.TRUE.equals(configuration.useOnlyHttp)) {
-                try {
-                    result = HttpUtil.executeUrl("GET", "https://" + configuration.fqdn + "/api_version", 5000);
-                    httpsRequestOk = true;
-                } catch (IOException e) {
-                    logger.debug("Can't connect to {} with HTTPS", configuration.fqdn, e);
-                }
-            }
-            if (result == null) {
-                try {
-                    result = HttpUtil.executeUrl("GET", "http://" + configuration.fqdn + "/api_version", 5000);
-                } catch (IOException e) {
-                    logger.debug("Can't connect to {} with HTTP", configuration.fqdn, e);
-                }
-            }
-            String apiBaseUrl = null;
-            String apiVersion = null;
-            String hardwareVersion = null;
-            String apiDomain = null;
-            boolean httpsAvailable = false;
-            String httpsPort = null;
-            boolean useHttps = false;
-            String fqdn = configuration.fqdn;
-            String errorMsg = null;
-            if (result == null) {
-                errorMsg = "Can't connect to " + configuration.fqdn;
-            } else {
-                apiBaseUrl = StringUtils.trim(StringUtils
-                        .replace(StringUtils.substringBetween(result, "\"api_base_url\":\"", "\""), "\\/", "/"));
-                apiVersion = StringUtils.trim(StringUtils.substringBetween(result, "\"api_version\":\"", "\""));
-                hardwareVersion = StringUtils.trim(StringUtils.substringBetween(result, "\"device_type\":\"", "\""));
-                apiDomain = StringUtils.trim(StringUtils.substringBetween(result, "\"api_domain\":\"", "\""));
-                httpsAvailable = StringUtils.containsIgnoreCase(result, "\"https_available\":true");
-                httpsPort = StringUtils.trim(StringUtils.substringBetween(result, "\"https_port\":", ","));
-                if (StringUtils.isEmpty(apiBaseUrl)) {
-                    errorMsg = configuration.fqdn + " does not deliver any API base URL";
-                } else if (StringUtils.isEmpty(apiVersion)) {
-                    errorMsg = configuration.fqdn + " does not deliver any API version";
-                } else if (httpsAvailable && !Boolean.TRUE.equals(configuration.useOnlyHttp)) {
-                    if (StringUtils.isEmpty(httpsPort) || StringUtils.isEmpty(apiDomain)) {
-                        if (httpsRequestOk) {
-                            useHttps = true;
-                        } else {
-                            logger.info("{} does not deliver API domain or HTTPS port; use HTTP API",
-                                    configuration.fqdn);
-                        }
-                    } else {
-                        useHttps = true;
-                        fqdn = apiDomain + ":" + httpsPort;
-                    }
-                }
+        try {
+            fetchSystemConfig();
+            fetchLCDConfig();
+            fetchWifiConfig();
+            fetchxDslStatus();
+            fetchConnectionStatus();
+            fetchFtpConfig();
+            fetchAirMediaConfig();
+            fetchUPnPAVConfig();
+            fetchSambaConfig();
+            LanHostsConfig lanHostsConfiguration = fetchLanHostsConfig();
+            List<AirMediaReceiver> airPlayDevices = fetchAirPlayDevices();
+
+            // Trigger a new discovery of things
+            for (FreeboxDataListener dataListener : dataListeners) {
+                dataListener.onDataFetched(getThing().getUID(), lanHostsConfiguration, airPlayDevices);
             }
 
-            if (errorMsg != null) {
-                logger.debug("Thing {}: bad configuration: {}", getThing().getUID(), errorMsg);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
-            } else if (!authorize(useHttps, fqdn, apiBaseUrl, apiVersion)) {
-                if (StringUtils.isEmpty(configuration.appToken)) {
-                    errorMsg = "App token not set in the thing configuration";
-                } else {
-                    errorMsg = "Check your app token in the thing configuration; opening session with " + fqdn
-                            + " using " + (useHttps ? "HTTPS" : "HTTP") + " API version " + apiVersion + " failed";
-                }
-                logger.debug("Thing {}: {}", getThing().getUID(), errorMsg);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
-            } else {
-                logger.info("Thing {}: session opened with {} using {} API version {}", getThing().getUID(), fqdn,
-                        (useHttps ? "HTTPS" : "HTTP"), apiVersion);
+            if (getThing().getStatus() == ThingStatus.OFFLINE) {
                 updateStatus(ThingStatus.ONLINE);
-
-                if (globalJob == null || globalJob.isCancelled()) {
-                    long pollingInterval = getConfigAs(FreeboxServerConfiguration.class).refreshInterval;
-                    logger.debug("Scheduling server state update every {} seconds...", pollingInterval);
-                    globalJob = scheduler.scheduleAtFixedRate(globalRunnable, 1, pollingInterval, TimeUnit.SECONDS);
-                }
             }
 
-            Map<String, String> properties = editProperties();
-            boolean update = false;
-            if (StringUtils.isNotEmpty(apiBaseUrl)
-                    && !apiBaseUrl.equals(properties.get(FreeboxBindingConstants.API_BASE_URL))) {
-                update = true;
-                properties.put(FreeboxBindingConstants.API_BASE_URL, apiBaseUrl);
+        } catch (Throwable t) {
+            if (t instanceof FreeboxException) {
+                logger.error("Server state job - FreeboxException: {}", ((FreeboxException) t).getMessage());
+            } else if (t instanceof Exception) {
+                logger.error("Server state job - Exception: {}", ((Exception) t).getMessage());
+            } else if (t instanceof Error) {
+                logger.error("Server state job - Error: {}", ((Error) t).getMessage());
+            } else {
+                logger.error("Server state job - Unexpected error");
             }
-            if (StringUtils.isNotEmpty(apiVersion)
-                    && !apiVersion.equals(properties.get(FreeboxBindingConstants.API_VERSION))) {
-                update = true;
-                properties.put(FreeboxBindingConstants.API_VERSION, apiVersion);
+            StringWriter sw = new StringWriter();
+            if ((t instanceof RuntimeException) && (t.getCause() != null)) {
+                t.getCause().printStackTrace(new PrintWriter(sw));
+            } else {
+                t.printStackTrace(new PrintWriter(sw));
             }
-            if (StringUtils.isNotEmpty(hardwareVersion)
-                    && !hardwareVersion.equals(properties.get(Thing.PROPERTY_HARDWARE_VERSION))) {
-                update = true;
-                properties.put(Thing.PROPERTY_HARDWARE_VERSION, hardwareVersion);
-            }
-            if (update) {
-                updateProperties(properties);
+            logger.error("{}", sw);
+            if (getThing().getStatus() == ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }
     };
 
-    private Runnable globalRunnable = new Runnable() {
-        @Override
-        public void run() {
-            logger.debug("Polling server state...");
+    @SuppressWarnings("null")
+    private Runnable authorizeRunnable = () -> {
+        logger.debug("Authorize job...");
 
+        FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
+        String result = null;
+        boolean httpsRequestOk = false;
+        if (!Boolean.TRUE.equals(configuration.useOnlyHttp)) {
             try {
-                fetchSystemConfig();
-                fetchLCDConfig();
-                fetchWifiConfig();
-                fetchxDslStatus();
-                fetchConnectionStatus();
-                fetchFtpConfig();
-                fetchAirMediaConfig();
-                fetchUPnPAVConfig();
-                fetchSambaConfig();
-                LanHostsConfig lanHostsConfiguration = fetchLanHostsConfig();
-                List<AirMediaReceiver> airPlayDevices = fetchAirPlayDevices();
-
-                // Trigger a new discovery of things
-                for (FreeboxDataListener dataListener : dataListeners) {
-                    dataListener.onDataFetched(getThing().getUID(), lanHostsConfiguration, airPlayDevices);
-                }
-
-                if (getThing().getStatus() == ThingStatus.OFFLINE) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
-
-            } catch (Throwable t) {
-                if (t instanceof FreeboxException) {
-                    logger.error("Server state job - FreeboxException: {}", ((FreeboxException) t).getMessage());
-                } else if (t instanceof Exception) {
-                    logger.error("Server state job - Exception: {}", ((Exception) t).getMessage());
-                } else if (t instanceof Error) {
-                    logger.error("Server state job - Error: {}", ((Error) t).getMessage());
+                result = HttpUtil.executeUrl("GET", "https://" + configuration.fqdn + "/api_version", 5000);
+                httpsRequestOk = true;
+            } catch (IOException e) {
+                logger.debug("Can't connect to {} with HTTPS", configuration.fqdn, e);
+            }
+        }
+        if (result == null) {
+            try {
+                result = HttpUtil.executeUrl("GET", "http://" + configuration.fqdn + "/api_version", 5000);
+            } catch (IOException e) {
+                logger.debug("Can't connect to {} with HTTP", configuration.fqdn, e);
+            }
+        }
+        String apiBaseUrl = null;
+        String apiVersion = null;
+        String hardwareVersion = null;
+        String apiDomain = null;
+        boolean httpsAvailable = false;
+        String httpsPort = null;
+        boolean useHttps = false;
+        String fqdn = configuration.fqdn;
+        String errorMsg = null;
+        if (result == null) {
+            errorMsg = "Can't connect to " + configuration.fqdn;
+        } else {
+            apiBaseUrl = StringUtils.trim(
+                    StringUtils.replace(StringUtils.substringBetween(result, "\"api_base_url\":\"", "\""), "\\/", "/"));
+            apiVersion = StringUtils.trim(StringUtils.substringBetween(result, "\"api_version\":\"", "\""));
+            hardwareVersion = StringUtils.trim(StringUtils.substringBetween(result, "\"device_type\":\"", "\""));
+            apiDomain = StringUtils.trim(StringUtils.substringBetween(result, "\"api_domain\":\"", "\""));
+            httpsAvailable = StringUtils.containsIgnoreCase(result, "\"https_available\":true");
+            httpsPort = StringUtils.trim(StringUtils.substringBetween(result, "\"https_port\":", ","));
+            if (StringUtils.isEmpty(apiBaseUrl)) {
+                errorMsg = configuration.fqdn + " does not deliver any API base URL";
+            } else if (StringUtils.isEmpty(apiVersion)) {
+                errorMsg = configuration.fqdn + " does not deliver any API version";
+            } else if (httpsAvailable && !Boolean.TRUE.equals(configuration.useOnlyHttp)) {
+                if (StringUtils.isEmpty(httpsPort) || StringUtils.isEmpty(apiDomain)) {
+                    if (httpsRequestOk) {
+                        useHttps = true;
+                    } else {
+                        logger.info("{} does not deliver API domain or HTTPS port; use HTTP API", configuration.fqdn);
+                    }
                 } else {
-                    logger.error("Server state job - Unexpected error");
-                }
-                StringWriter sw = new StringWriter();
-                if ((t instanceof RuntimeException) && (t.getCause() != null)) {
-                    t.getCause().printStackTrace(new PrintWriter(sw));
-                } else {
-                    t.printStackTrace(new PrintWriter(sw));
-                }
-                logger.error("{}", sw);
-                if (getThing().getStatus() == ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    useHttps = true;
+                    fqdn = apiDomain + ":" + httpsPort;
                 }
             }
+        }
 
+        if (errorMsg != null) {
+            logger.debug("Thing {}: bad configuration: {}", getThing().getUID(), errorMsg);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
+        } else if (!authorize(useHttps, fqdn, apiBaseUrl, apiVersion)) {
+            if (StringUtils.isEmpty(configuration.appToken)) {
+                errorMsg = "App token not set in the thing configuration";
+            } else {
+                errorMsg = "Check your app token in the thing configuration; opening session with " + fqdn + " using "
+                        + (useHttps ? "HTTPS" : "HTTP") + " API version " + apiVersion + " failed";
+            }
+            logger.debug("Thing {}: {}", getThing().getUID(), errorMsg);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
+        } else {
+            logger.info("Thing {}: session opened with {} using {} API version {}", getThing().getUID(), fqdn,
+                    (useHttps ? "HTTPS" : "HTTP"), apiVersion);
+            updateStatus(ThingStatus.ONLINE);
+
+            if (globalJob == null || globalJob.isCancelled()) {
+                long pollingInterval = getConfigAs(FreeboxServerConfiguration.class).refreshInterval;
+                logger.debug("Scheduling server state update every {} seconds...", pollingInterval);
+                globalJob = scheduler.scheduleWithFixedDelay(globalRunnable, 1, pollingInterval, TimeUnit.SECONDS);
+            }
+        }
+
+        Map<String, String> properties = editProperties();
+        boolean update = false;
+        if (StringUtils.isNotEmpty(apiBaseUrl)
+                && !apiBaseUrl.equals(properties.get(FreeboxBindingConstants.API_BASE_URL))) {
+            update = true;
+            properties.put(FreeboxBindingConstants.API_BASE_URL, apiBaseUrl);
+        }
+        if (StringUtils.isNotEmpty(apiVersion)
+                && !apiVersion.equals(properties.get(FreeboxBindingConstants.API_VERSION))) {
+            update = true;
+            properties.put(FreeboxBindingConstants.API_VERSION, apiVersion);
+        }
+        if (StringUtils.isNotEmpty(hardwareVersion)
+                && !hardwareVersion.equals(properties.get(Thing.PROPERTY_HARDWARE_VERSION))) {
+            update = true;
+            properties.put(Thing.PROPERTY_HARDWARE_VERSION, hardwareVersion);
+        }
+        if (update) {
+            updateProperties(properties);
         }
     };
 

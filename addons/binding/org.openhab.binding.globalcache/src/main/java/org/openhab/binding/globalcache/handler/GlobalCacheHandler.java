@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -33,10 +33,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -79,24 +79,27 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
     private LinkedBlockingQueue<RequestMessage> sendQueue = null;
 
+    private String ipv4Address;
+
     // IR transaction counter
     private AtomicInteger irCounter;
 
     // Character set to use for URL encoding & decoding
     private String CHARSET = "ISO-8859-1";
 
-    public GlobalCacheHandler(Thing gcDevice) {
+    public GlobalCacheHandler(@NonNull Thing gcDevice, String ipv4Address) {
         super(gcDevice);
         irCounter = new AtomicInteger(1);
         commandProcessor = new CommandProcessor();
         scheduledFuture = null;
+        this.ipv4Address = ipv4Address;
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing thing {}", thingID());
         try {
-            ifAddress = InetAddress.getByName(NetUtil.getLocalIpv4HostAddress());
+            ifAddress = InetAddress.getByName(ipv4Address);
             logger.debug("Handler using address {} on network interface {}", ifAddress.getHostAddress(),
                     NetworkInterface.getByInetAddress(ifAddress).getName());
         } catch (SocketException e) {
@@ -607,12 +610,9 @@ public class GlobalCacheHandler extends BaseThingHandler {
         private final int CONNECTION_MONITOR_FREQUENCY = 60;
         private final int CONNECTION_MONITOR_START_DELAY = 15;
 
-        private Runnable connectionMonitorRunnable = new Runnable() {
-            @Override
-            public void run() {
-                logger.trace("Performing connection check for thing {} at IP {}", thingID(), commandConnection.getIP());
-                checkConnection();
-            }
+        private Runnable connectionMonitorRunnable = () -> {
+            logger.trace("Performing connection check for thing {} at IP {}", thingID(), commandConnection.getIP());
+            checkConnection();
         };
 
         public ConnectionManager() {
@@ -959,13 +959,6 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
         private byte[] endOfMessage;
 
-        private Runnable serialPortReaderRunnable = new Runnable() {
-            @Override
-            public void run() {
-                serialPortReader();
-            }
-        };
-
         SerialPortReader(CommandType serialPort, BufferedInputStream serialIn, byte[] endOfMessage) {
             if (serialIn == null) {
                 throw new IllegalArgumentException("Serial input stream is not set");
@@ -978,7 +971,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
         }
 
         public void start() {
-            serialPortReaderJob = scheduledExecutorService.schedule(serialPortReaderRunnable, 0, TimeUnit.SECONDS);
+            serialPortReaderJob = scheduledExecutorService.schedule(this::serialPortReader, 0, TimeUnit.SECONDS);
         }
 
         public void stop() {

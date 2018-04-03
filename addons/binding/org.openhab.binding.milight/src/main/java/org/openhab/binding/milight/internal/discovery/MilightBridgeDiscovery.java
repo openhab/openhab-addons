@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -71,7 +71,7 @@ public class MilightBridgeDiscovery extends AbstractDiscoveryService implements 
 
         startDiscoveryService();
 
-        backgroundFuture = scheduler.scheduleAtFixedRate(new DetectTask(), 50, 60000 * 30, TimeUnit.MILLISECONDS);
+        backgroundFuture = scheduler.scheduleWithFixedDelay(new DetectTask(), 50, 60000 * 30, TimeUnit.MILLISECONDS);
     }
 
     @Override

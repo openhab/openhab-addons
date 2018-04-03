@@ -1,16 +1,19 @@
 Manifest-Version: 1.0
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: Kodi Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.kodi;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .
+Bundle-Version: 2.3.0.qualifier
+Export-Package: 
+ org.openhab.binding.kodi,
+ org.openhab.binding.kodi.handler
 Import-Package: 
  com.google.common.base,
- com.google.common.collect,
  com.google.gson,
  org.apache.commons.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.util.component,
  org.eclipse.jetty.websocket.api,
  org.eclipse.jetty.websocket.api.annotations,
@@ -18,7 +21,9 @@ Import-Package:
  org.eclipse.jetty.websocket.common,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.upnp,
  org.eclipse.smarthome.core.audio,
+ org.eclipse.smarthome.core.cache,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.net,
  org.eclipse.smarthome.core.thing,
@@ -26,6 +31,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
  org.jupnp.model.meta,
  org.jupnp.model.types,
  org.openhab.binding.kodi,
@@ -34,6 +40,3 @@ Import-Package:
  org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.kodi,
- org.openhab.binding.kodi.handler
-

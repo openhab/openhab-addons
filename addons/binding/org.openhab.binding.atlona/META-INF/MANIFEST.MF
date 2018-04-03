@@ -1,14 +1,19 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: Atlona Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.atlona;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .
+Bundle-Version: 2.3.0.qualifier
+Export-Package: 
+ org.openhab.binding.atlona,
+ org.openhab.binding.atlona.handler
 Import-Package: 
  com.google.common.collect,
  org.apache.commons.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
@@ -19,7 +24,6 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.atlona,
  org.openhab.binding.atlona.handler,
+ org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.atlona,
- org.openhab.binding.atlona.handler

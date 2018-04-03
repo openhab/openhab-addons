@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,17 +20,13 @@ import org.apache.commons.lang.StringUtils;
  * @author Gerhard Riegler - Initial contribution
  */
 public class DeleteDevicesParser extends CommonRpcParser<Object[], List<String>> {
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<String> parse(Object[] message) throws IOException {
         List<String> adresses = new ArrayList<String>();
         if (message != null && message.length > 1) {
             Object[] data = (Object[]) message[1];
             for (int i = 0; i < message.length; i++) {
-                String address = toString(data[i]);
+                String address = getSanitizedAddress(data[i]);
                 boolean isDevice = !StringUtils.contains(address, ":")
                         && !StringUtils.startsWithIgnoreCase(address, "BidCos");
                 if (isDevice) {

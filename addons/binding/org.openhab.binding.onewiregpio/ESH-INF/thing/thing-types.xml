@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="onewiregpio" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="sensor">
+		<label>Temperature Sensor</label>
+		<description>OneWire GPIO Temperature sensor</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+		</channels>
+		<config-description>
+			<parameter name="gpio_bus_file" type="text" required="true">
+				<label>Device path</label>
+				<description>device id in format: /sys/bus/w1/devices/DEVICE_ID_TO_SET/w1_slave</description>
+			</parameter>
+
+			<parameter name="refresh_time" type="integer">
+				<label>Refresh time interval</label>
+				<description>Refresh time interval in seconds.</description>
+				<default>600</default>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+
+	<channel-type id="temperature">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>Indicates the temperature read from one wire gpio sensor in Celsius</description>
+		<state readOnly="true" pattern="%.3f °C" />
+	</channel-type>
+
+</thing:thing-descriptions>

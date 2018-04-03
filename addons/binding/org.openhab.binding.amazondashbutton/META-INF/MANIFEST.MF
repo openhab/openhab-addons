@@ -1,17 +1,24 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: AmazonDashButton Binding
-Bundle-SymbolicName: org.openhab.binding.amazondashbutton;singleton:=true
-Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .,
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: 
+ .,
  lib/jna-4.2.1.jar,
  lib/pcap4j-core-1.6.6.jar,
  lib/pcap4j-packetfactory-static-1.6.6.jar
+Bundle-ManifestVersion: 2
+Bundle-Name: AmazonDashButton Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.amazondashbutton;singleton:=tru
+ e
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Export-Package: 
+ org.openhab.binding.amazondashbutton,
+ org.openhab.binding.amazondashbutton.handler
 Import-Package: 
  com.google.common.base,
  com.google.common.collect,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.core.i18n,
  org.eclipse.smarthome.config.discovery,
@@ -30,5 +37,3 @@ Import-Package:
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.amazondashbutton,
- org.openhab.binding.amazondashbutton.handler

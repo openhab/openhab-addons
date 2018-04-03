@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,9 +27,6 @@ public class HomegearLoadDeviceNamesParser extends CommonRpcParser<Object[], Voi
         this.devices = devices;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public Void parse(Object[] message) throws IOException {
@@ -44,7 +41,7 @@ public class HomegearLoadDeviceNamesParser extends CommonRpcParser<Object[], Voi
             String id = toString(data.get("ID"));
             String name = toString(data.get("NAME"));
 
-            HmDevice device = devicesById.get(getAddress(id));
+            HmDevice device = devicesById.get(getSanitizedAddress(id));
             if (device != null) {
                 device.setName(name);
             }
