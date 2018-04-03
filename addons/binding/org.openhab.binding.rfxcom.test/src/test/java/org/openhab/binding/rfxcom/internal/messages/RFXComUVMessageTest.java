@@ -10,8 +10,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
@@ -27,7 +26,7 @@ public class RFXComUVMessageTest {
     public void testMessage1() throws RFXComException {
         String hexMessage = "095703123421194731E9";
 
-        byte[] message = DatatypeConverter.parseHexBinary(hexMessage);
+        byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComUVMessage msg = (RFXComUVMessage) RFXComMessageFactory.createMessage(message);
 
         assertEquals("SubType", RFXComUVMessage.SubType.UV3, msg.subType);
@@ -42,14 +41,14 @@ public class RFXComUVMessageTest {
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
     }
 
     @Test
     public void testMessage2() throws RFXComException {
         String hexMessage = "09570312342119C731E9";
 
-        byte[] message = DatatypeConverter.parseHexBinary(hexMessage);
+        byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComUVMessage msg = (RFXComUVMessage) RFXComMessageFactory.createMessage(message);
 
         assertEquals("SubType", RFXComUVMessage.SubType.UV3, msg.subType);
@@ -64,6 +63,6 @@ public class RFXComUVMessageTest {
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
     }
 }

@@ -8,8 +8,7 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -24,7 +23,7 @@ public class RFXComInvalidMessageTypeTest {
 
     @Test(expected = RFXComUnsupportedValueException.class)
     public void testMessage() throws RFXComException {
-        byte[] message = DatatypeConverter.parseHexBinary("07CC01271356ECC0");
+        byte[] message = HexUtils.hexToBytes("07CC01271356ECC0");
         final RFXComMessage msg = RFXComMessageFactory.createMessage(message);
     }
 }

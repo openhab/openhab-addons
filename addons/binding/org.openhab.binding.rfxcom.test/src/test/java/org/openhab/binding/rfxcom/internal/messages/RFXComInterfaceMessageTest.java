@@ -14,8 +14,7 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessag
 import static org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.SubType.START_RECEIVER;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.TransceiverType._433_92MHZ_TRANSCEIVER;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.Commands;
@@ -31,7 +30,7 @@ public class RFXComInterfaceMessageTest {
     private RFXComInterfaceMessage testMessage(String hexMsg, SubType subType, int seqNbr, Commands command,
             boolean skipDecode) throws RFXComException {
         RFXComInterfaceMessage msg = (RFXComInterfaceMessage) RFXComMessageFactory
-                .createMessage(DatatypeConverter.parseHexBinary(hexMsg));
+                .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals("SubType", subType, msg.subType);
         assertEquals("Seq Number", seqNbr, (short) (msg.seqNbr & 0xFF));
         assertEquals("Command", command, msg.command);
