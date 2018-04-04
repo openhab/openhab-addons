@@ -92,7 +92,7 @@ public class HomekitSettings {
     }
 
     public String getName() {
-        logger.debug("Using homekit name '" + name + "'");
+        logger.debug("Using homekit name '{}'", name);
         return name;
     }
 
