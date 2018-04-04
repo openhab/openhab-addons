@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.pioneeravr.protocol;
 
+import org.openhab.binding.pioneeravr.internal.protocol.Response.ResponseType;
+
 /**
  * Represent a response of the AVR.
  *
@@ -22,7 +24,7 @@ public interface AvrResponse {
      * @author Antoine Besnard
      *
      */
-    public interface ResponseType {
+    public interface AvrResponseType {
 
         /**
          * Return the prefix of the command of this type.
