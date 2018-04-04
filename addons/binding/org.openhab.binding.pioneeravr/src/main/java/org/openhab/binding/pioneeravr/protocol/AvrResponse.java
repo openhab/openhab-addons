@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.pioneeravr.protocol;
 
-import org.openhab.binding.pioneeravr.internal.protocol.Response.ResponseType;
-
 /**
  * Represent a response of the AVR.
  *
@@ -24,7 +22,7 @@ public interface AvrResponse {
      * @author Antoine Besnard
      *
      */
-    public interface RepsonseType {
+    public interface ResponseType {
 
         /**
          * Return the prefix of the command of this type.
@@ -90,7 +88,7 @@ public interface AvrResponse {
 
     /**
      * Return the zone number which is concerned by this response.
-     * 
+     *
      * @return
      */
     public Integer getZone();

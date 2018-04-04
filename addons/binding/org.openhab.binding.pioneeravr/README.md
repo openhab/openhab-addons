@@ -80,7 +80,9 @@ Here after are the ID values of the input sources (depending on you AVR input so
 * 33: ADAPTER PORT (BT)
 * 18: XM RADIO
 * 27: SIRIUS
+* 40: SiriusXM
 * 41: PANDORA
+* 45: Favourites
 * 57: Spotify
 * 31: HDMI (cyclic)
 
