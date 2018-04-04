@@ -352,9 +352,9 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                                 temp.makeLogin();
                                 break;
                             } catch (ConnectionException e) {
-                                // Up to 3 retries for login
+                                // Up to 2 retries for login
                                 retry++;
-                                if (retry >= 3) {
+                                if (retry >= 2) {
                                     temp.logout();
                                     throw e;
                                 }

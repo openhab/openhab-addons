@@ -142,11 +142,32 @@ public class LoginServlet extends HttpServlet {
                 this.HandleProxyRequest(resp, "GET", getUrl, null, null);
                 return;
             }
+
+            Connection connection = this.account.findConnection();
+            if (connection != null && connection.verifyLogin()) {
+
+                // handle diagnostic commands
+                if (uri.equals("/devices") || uri.equals("/devices/")) {
+                    returnHtml(resp,
+                            "<html>" + StringEscapeUtils.escapeHtml(connection.getDeviceListJson()) + "</html>");
+                    return;
+                }
+
+                // return hint that everything is ok
+                resp.getWriter().write(
+                        "<html>The Account is already logged in. The account thing should be online.<br><a href='/paperui/index.html#/configuration/things/view/"
+                                + BINDING_ID + ":" + THING_TYPE_ACCOUNT.getId() + ":" + id
+                                + "'>Check Thing in Paper UI</a></html>");
+
+                return;
+            }
+
             if (!uri.equals("/")) {
                 String newUri = req.getServletPath() + "/";
                 resp.sendRedirect(newUri);
                 return;
             }
+
             String html = this.connection.getLoginPage();
             returnHtml(resp, html);
 
@@ -167,7 +188,7 @@ public class LoginServlet extends HttpServlet {
                     if (location.contains("//alexa.")) {
                         if (connection.verifyLogin()) {
                             resp.getWriter().write(
-                                    "<html>Login succeeded. The account thing sould now be online.<br><a href='/paperui/index.html#/configuration/things/view/"
+                                    "<html>Login succeeded. The account thing should now be online.<br><a href='/paperui/index.html#/configuration/things/view/"
                                             + BINDING_ID + ":" + THING_TYPE_ACCOUNT.getId() + ":" + id
                                             + "'>Check Thing in Paper UI</a></html>");
                             account.setConnection(this.connection);

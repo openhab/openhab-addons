@@ -451,7 +451,7 @@ public class Connection {
             m_cookieManager.getCookieStore().removeAll();
             m_sessionId = null;
             m_loginTime = null;
-            logger.info("Login failed:{} ", e);
+            logger.info("Login failed: {}", e.getLocalizedMessage());
             // rethrow
             throw e;
         }
@@ -490,7 +490,6 @@ public class Connection {
         if (!verifyLogin()) {
             return response;
         }
-        m_loginTime = new Date();
         logger.debug("Login succeeded");
         return null;
     }
@@ -498,7 +497,9 @@ public class Connection {
     public boolean verifyLogin() throws IOException, URISyntaxException {
         String response = makeRequestAndReturnString(m_alexaServer + "/api/bootstrap?version=0");
         Boolean result = response.contains("\"authenticated\":true");
-
+        if (result && m_loginTime == null) {
+            m_loginTime = new Date();
+        }
         return result;
     }
 
@@ -523,9 +524,14 @@ public class Connection {
     // commands and states
 
     public Device[] getDeviceList() throws IOException, URISyntaxException {
-        String json = makeRequestAndReturnString(m_alexaServer + "/api/devices-v2/device?cached=false");
+        String json = getDeviceListJson();
         JsonDevices devices = parseJson(json, JsonDevices.class);
         return devices.devices;
+    }
+
+    public String getDeviceListJson() throws IOException, URISyntaxException {
+        String json = makeRequestAndReturnString(m_alexaServer + "/api/devices-v2/device?cached=false");
+        return json;
     }
 
     public JsonPlayerState getPlayer(Device device) throws IOException, URISyntaxException {
