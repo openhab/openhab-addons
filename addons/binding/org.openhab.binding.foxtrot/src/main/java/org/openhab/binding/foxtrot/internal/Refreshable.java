@@ -8,13 +8,15 @@
  */
 package org.openhab.binding.foxtrot.internal;
 
+import org.openhab.binding.foxtrot.internal.plccoms.PlcComSReply;
+
 /**
  * Refreshable.
  *
  * @author Radovan Sninsky
  * @since 2018-02-15 20:23
  */
-public interface RefreshableHandler {
+public interface Refreshable {
 
-    void refreshFromPlc(PlcComSClient client);
+    void refresh(PlcComSReply reply);
 }

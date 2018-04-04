@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.foxtrot.internal.config;
 
+import java.math.BigDecimal;
+
 /**
  * BlindConfiguration.
  *
@@ -37,7 +39,7 @@ public class BlindConfiguration {
     public String stop;
 
     /**
-     * Refresh group. Available groups: Low, Medium, High, Realtime.
+     * Value change delta to receive new state from Plc.
      */
-    public String refreshGroup;
+    public BigDecimal delta;
 }

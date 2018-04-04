@@ -13,12 +13,10 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.foxtrot.internal.*;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.foxtrot.internal.config.SwitchConfiguration;
+import org.openhab.binding.foxtrot.internal.plccoms.PlcComSReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,12 +30,11 @@ import static org.openhab.binding.foxtrot.FoxtrotBindingConstants.CHANNEL_SWITCH
  * @author Radovan Sninsky
  * @since 2018-02-16 23:04
  */
-public class SwitchHandler extends BaseThingHandler implements RefreshableHandler {
+public class SwitchHandler extends FoxtrotBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SwitchHandler.class);
 
     private SwitchConfiguration conf;
-    private RefreshGroup group;
 
     public SwitchHandler(Thing thing) {
         super(thing);
@@ -46,69 +43,49 @@ public class SwitchHandler extends BaseThingHandler implements RefreshableHandle
     @SuppressWarnings("deprecation")
     @Override
     public void initialize() {
+        super.initialize();
+
         logger.debug("Initializing Switch handler ...");
         conf = getConfigAs(SwitchConfiguration.class);
-
         try {
-            group = ((FoxtrotBridgeHandler)getBridge().getHandler()).findByName(conf.refreshGroup);
-
-            logger.debug("Adding Switch handler {} into refresh group {}", this, group.getName());
-            group.addHandler(this);
+            foxtrotBridgeHandler.register(conf.state, this);
 
             updateStatus(ThingStatus.ONLINE);
-        } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unknown refresh group: "+conf.refreshGroup.toUpperCase());
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Enabling variable '" + conf.state + "' failed due error: " + e.getMessage());
         }
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing Switch handler resources ...");
-        if (group != null) {
-            logger.debug("Removing Switch handler {} from refresh group {} ...", this, group.getName());
-            group.removeHandler(this);
-        }
+        foxtrotBridgeHandler.unregister(conf.state);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Handling command: {} for channel: {}", command, channelUID);
 
-        CommandExecutor ce = CommandExecutor.get();
-        if (OnOffType.ON.equals(command)) {
-            ce.execCommand(conf.on, Boolean.TRUE);
+        if (RefreshType.REFRESH.equals(command)) {
+            commandExecutor.execGet(conf.state);
+        } else if (OnOffType.ON.equals(command)) {
+            commandExecutor.execSet(conf.on, Boolean.TRUE);
         } else if (OnOffType.OFF.equals(command)) {
-            ce.execCommand(conf.off, Boolean.TRUE);
+            commandExecutor.execSet(conf.off, Boolean.TRUE);
         }
     }
 
     @Override
-    public void refreshFromPlc(PlcComSClient plcClient) {
-        State newState = UnDefType.UNDEF;
-        try {
-            Boolean newValue = plcClient.getBool(conf.state);
-
-            if (newValue != null) {
-                newState = newValue ? OnOffType.ON : OnOffType.OFF;
-            }
-            logger.trace("Refreshing {} value: {} -> {}", this, newValue, newState);
-        } catch (PlcComSEception e) {
-            logger.warn("PLCComS returned {} while getting variable '{}' value: {}: {}", e.getType(), conf.state, e.getCode(), e.getMessage());
-        } catch (IOException e) {
-            logger.warn("Communication with PLCComS failed while getting variable '{}' value: {}", conf.state, e.getMessage());
-        } finally {
-            updateState(CHANNEL_SWITCH, newState);
+    public void refresh(PlcComSReply reply) {
+        if (reply.getBool() != null) {
+            updateState(CHANNEL_SWITCH, reply.getBool() ? OnOffType.ON : OnOffType.OFF);
         }
     }
 
     @Override
     @SuppressWarnings("StringBufferReplaceableByString")
     public String toString() {
-        final StringBuilder sb = new StringBuilder("SwitchHandler{");
-        sb.append("'").append(conf != null ? conf.state : null).append('\'');
-        sb.append(", ").append(group);
-        sb.append('}');
-        return sb.toString();
+        return new StringBuilder("SwitchHandler{'").append(conf != null ? conf.state : null).append("'}").toString();
     }
 }

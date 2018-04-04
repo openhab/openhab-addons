@@ -20,10 +20,9 @@
 				<label>Number variable</label>
 				<description>Variable name defined in PLC's program PUB file</description>
 			</parameter>
-			<parameter name="refreshGroup" type="text">
-				<label>Refresh group</label>
-				<description>Refresh group define how frequently values will updated, default is LOW</description>
-				<default>LOW</default>
+			<parameter name="delta" type="decimal" required="false">
+				<label>Value change delta</label>
+				<description>Defines how often the state is updated</description>
 			</parameter>
 		</config-description>
 	</thing-type>

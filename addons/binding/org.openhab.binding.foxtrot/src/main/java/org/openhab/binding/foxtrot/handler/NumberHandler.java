@@ -9,7 +9,6 @@
 package org.openhab.binding.foxtrot.handler;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -18,12 +17,10 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.foxtrot.internal.*;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.foxtrot.internal.config.VariableConfiguration;
+import org.openhab.binding.foxtrot.internal.plccoms.PlcComSReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,12 +32,11 @@ import static org.openhab.binding.foxtrot.FoxtrotBindingConstants.CHANNEL_NUMBER
  * @author Radovan Sninsky
  * @since 2018-02-10 23:56
  */
-public class NumberHandler extends BaseThingHandler implements RefreshableHandler {
+public class NumberHandler extends FoxtrotBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(NumberHandler.class);
 
     private String variableName;
-    private RefreshGroup group;
 
     public NumberHandler(Thing thing) {
         super(thing);
@@ -49,71 +45,51 @@ public class NumberHandler extends BaseThingHandler implements RefreshableHandle
     @SuppressWarnings("deprecation")
     @Override
     public void initialize() {
-        logger.debug("Initializing Number handler ...");
+        super.initialize();
+
         VariableConfiguration config = getConfigAs(VariableConfiguration.class);
-
+        variableName = config.var;
         try {
-            variableName = config.var;
-            group = ((FoxtrotBridgeHandler)getBridge().getHandler()).findByName(config.refreshGroup);
-
-            logger.debug("Adding Variable handler {} into refresh group {}", this, group.getName());
-            group.addHandler(this);
+            foxtrotBridgeHandler.register(variableName, this, config.delta);
 
             updateStatus(ThingStatus.ONLINE);
-        } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unknown refresh group: "+config.refreshGroup.toUpperCase());
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Enabling variable '" + variableName + "' failed due error: " + e.getMessage());
         }
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing Variable handler resources ...");
-        if (group != null) {
-            logger.debug("Removing Variable handler {} from refresh group {} ...", this, group.getName());
-            group.removeHandler(this);
-        }
+        foxtrotBridgeHandler.unregister(variableName);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Handling command: {} for channel: {}", command, channelUID);
 
-        CommandExecutor ce = CommandExecutor.get();
-        if (OnOffType.ON.equals(command)) {
-            ce.execCommand(variableName, Boolean.TRUE);
+        if (RefreshType.REFRESH.equals(command)) {
+            commandExecutor.execGet(variableName);
+        } else if (OnOffType.ON.equals(command)) {
+            commandExecutor.execSet(variableName, Boolean.TRUE);
         } else if (OnOffType.OFF.equals(command)) {
-            ce.execCommand(variableName, Boolean.FALSE);
+            commandExecutor.execSet(variableName, Boolean.FALSE);
         } else if (command instanceof DecimalType || command instanceof StringType) {
-            ce.execCommand(variableName, command.toFullString());
+            commandExecutor.execSet(variableName, command.toFullString());
         }
     }
 
     @Override
-    public void refreshFromPlc(PlcComSClient plcClient) {
-        State newState = UnDefType.UNDEF;
-        try {
-            BigDecimal newValue = plcClient.getNumber(variableName);
-
-            if (newValue != null) {
-                newState = new DecimalType(newValue);
-            }
-        } catch (PlcComSEception e) {
-            logger.warn("PLCComS returned {} while getting variable '{}' value: {}: {}", e.getType(), variableName, e.getCode(), e.getMessage());
-        } catch (IOException e) {
-            logger.warn("Communication with PLCComS failed while getting variable '{}' value: {}", variableName, e.getMessage());
-        } finally {
-            updateState(CHANNEL_NUMBER, newState);
+    public void refresh(PlcComSReply reply) {
+        if (reply.getNumber() != null) {
+            updateState(CHANNEL_NUMBER, new DecimalType(reply.getNumber()));
         }
     }
 
     @Override
     @SuppressWarnings("StringBufferReplaceableByString")
     public String toString() {
-        final StringBuilder sb = new StringBuilder("NumberHandler{");
-        sb.append("'").append(variableName).append('\'');
-        sb.append(", ").append(group);
-        sb.append('}');
-        return sb.toString();
+        return new StringBuilder("NumberHandler{'").append(variableName).append("'}").toString();
     }
 }

@@ -25,11 +25,6 @@ public class FoxtrotBindingConstants {
     // List of properties
     public static final String PROPERTY_PLCCOMS_HOST = "plccomsHost";
     public static final String PROPERTY_PLCCOMS_PORT = "plccomsPort";
-    public static final String PROPERTY_PLCCOMS_VERSION = "plccomsVersion";
-    public static final String PROPERTY_PLCCOM_EPSNET_VERSION = "plccomsEpsnetVersion";
-    public static final String PROPERTY_PLCCOM_INI_VERSION = "plccomsIniVersion";
-    public static final String PROPERTY_PLC_VERSION = "plcVersion";
-    public static final String PROPERTY_PLC_IP = "plcIp";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PLC = new ThingTypeUID(BINDING_ID, "plccoms");

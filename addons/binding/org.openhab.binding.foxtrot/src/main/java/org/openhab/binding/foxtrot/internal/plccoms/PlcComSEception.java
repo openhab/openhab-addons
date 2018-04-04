@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.foxtrot.internal;
+package org.openhab.binding.foxtrot.internal.plccoms;
 
 import java.io.IOException;
 

@@ -20,11 +20,6 @@
 				<label>String variable</label>
 				<description>Variable name defined in PLC's program PUB file</description>
 			</parameter>
-			<parameter name="refreshGroup" type="text">
-				<label>Refresh group</label>
-				<description>Refresh group define how frequently values will updated, default is LOW</description>
-				<default>LOW</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 

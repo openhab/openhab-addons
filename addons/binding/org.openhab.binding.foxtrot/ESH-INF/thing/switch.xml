@@ -28,11 +28,6 @@
 				<label>Switch off variable</label>
 				<description>Bool variable that trigger switch off action on rising edge (0 -> 1)</description>
 			</parameter>
-			<parameter name="refreshGroup" type="text">
-				<label>Refresh group</label>
-				<description>Refresh group define how frequently values will updated, default is REALTIME</description>
-				<default>REALTIME</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 

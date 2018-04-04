@@ -29,26 +29,6 @@
 				<description>Communication port of the PLCComS</description>
 				<default>5010</default>
 			</parameter>
-			<parameter name="lowRefreshInterval" type="integer" required="false" min="1">
-				<label>Low refresh interval</label>
-				<description>Refresh interval (in sec) for thing in LOW refresh group, default 5 min</description>
-				<default>300</default>
-			</parameter>
-			<parameter name="mediumRefreshInterval" type="integer" required="false" min="1">
-				<label>Medium refresh interval</label>
-				<description>Refresh interval (in sec) for thing in MEDIUM refresh group, default 1 min</description>
-				<default>60</default>
-			</parameter>
-			<parameter name="highRefreshInterval" type="integer" required="false" min="1">
-				<label>High refresh interval</label>
-				<description>Refresh interval (in sec) for thing in HIGH refresh group, default 15 sec</description>
-				<default>15</default>
-			</parameter>
-			<parameter name="realtimeRefreshInterval" type="integer" required="false" min="1">
-				<label>Realtime refresh interval</label>
-				<description>Refresh interval (in sec) for thing in REALTIME refresh group, default 1 sec</description>
-				<default>1</default>
-			</parameter>
 		</config-description>
 	</bridge-type>
 

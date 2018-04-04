@@ -8,14 +8,17 @@
  */
 package org.openhab.binding.foxtrot.internal;
 
+import org.openhab.binding.foxtrot.internal.plccoms.PlcComSClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.ConnectException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * CommandExecutor.
@@ -23,79 +26,93 @@ import java.util.concurrent.TimeUnit;
  * @author Radovan Sninsky
  * @since 2018-02-16 16:50
  */
-public class CommandExecutor {
-
-    private static CommandExecutor instance;
+public class CommandExecutor implements Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(CommandExecutor.class);
 
     private final PlcComSClient plcClient;
     private final BlockingQueue<CommandEntry> writeQueue = new ArrayBlockingQueue<>(100);
-    private final Thread thread;
+    private final AtomicBoolean running = new AtomicBoolean(false);
 
-    private CommandExecutor(PlcComSClient plcClient) {
+    public CommandExecutor(PlcComSClient plcClient) {
         this.plcClient = plcClient;
+    }
 
-        thread = new Thread(() -> {
-            logger.debug("Starting polling for commands (write requests to Plc) ...");
-            try {
-                while (plcClient.isOpen()) {
-                    CommandEntry ce = writeQueue.poll(1, TimeUnit.SECONDS);
+    public void start() {
+        new Thread(this).start();
+    }
 
-                    if (ce != null && ce.value != null) {
-                        logger.trace("Setting variable {} to {}", ce.commandVariable, ce.value);
-                        if (ce.value instanceof Boolean) {
-                            plcClient.set(ce.commandVariable, (Boolean)ce.value);
-                        } else if (ce.value instanceof Integer) {
-                            plcClient.set(ce.commandVariable, (Integer) ce.value);
-                        } else if (ce.value instanceof BigDecimal) {
-                            plcClient.set(ce.commandVariable, ((BigDecimal) ce.value).doubleValue());
-                        } else {
-                            plcClient.set(ce.commandVariable, ce.value.toString());
+    public void stop() {
+        logger.debug("Canceling command executor ...");
+        running.set(false);
+    }
+
+    @Override
+    public void run() {
+        logger.debug("Starting polling for commands (write requests to Plc) ...");
+        running.set(true);
+        try {
+            while (running.get()) {
+                CommandEntry ce = writeQueue.poll(1, TimeUnit.SECONDS);
+
+                try {
+                    if (ce != null) {
+                        logger.trace("Going to execute operation {} for variable {} w value {}", ce.op, ce.variable, ce.value);
+                        if (CommandEntry.SET.equals(ce.op)) {
+                            if (ce.value instanceof Boolean) {
+                                plcClient.set(ce.variable, (Boolean) ce.value);
+                            } else if (ce.value instanceof Integer) {
+                                plcClient.set(ce.variable, (Integer) ce.value);
+                            } else if (ce.value instanceof BigDecimal) {
+                                plcClient.set(ce.variable, ((BigDecimal) ce.value).doubleValue());
+                            } else {
+                                plcClient.set(ce.variable, ce.value.toString());
+                            }
+                        } else if (CommandEntry.GET.equals(ce.op)) {
+                            plcClient.doGet(ce.variable);
                         }
                     }
+                } catch (ConnectException e) {
+                    logger.error("Connection to PlcComS server is closed!");
+                    break;
+                } catch (IOException e) {
+                    logger.error("Setting new value for '{}' failed w error: {}", ce.variable, e.getMessage());
                 }
-            } catch (IOException e) {
-                logger.error("Sending data to Plc failed w error: {}", e.getMessage());
-            } catch (InterruptedException e) {
-                logger.warn("Polling for command interuped");
             }
-            logger.debug("Polling for commands finished");
-        });
+        } catch (InterruptedException e) {
+            logger.warn("Polling for command interuped");
+        }
+        running.set(false);
+        logger.debug("Polling for commands finished");
     }
 
-    public static CommandExecutor init(PlcComSClient client) throws IOException {
-        instance = new CommandExecutor(client);
-        instance.logger.debug("Initializing command executor ...");
-        instance.plcClient.open();
-        instance.thread.start();
-
-        return instance;
-    }
-
-    public static CommandExecutor get() {
-        return instance;
-    }
-
-    public void dispose() {
-        logger.debug("Canceling command executor ...");
-        if (plcClient != null) {
-            plcClient.close();
+    public void execSet(String commandVariable, Object value) {
+        if (!writeQueue.offer(new CommandEntry(CommandEntry.SET, commandVariable, value))) {
+            logger.warn("Command queue for sending to Plc is full");
         }
     }
 
-    public void execCommand(String commandVariable, Object value) {
-        if (!writeQueue.offer(new CommandEntry(commandVariable, value))) {
+    public void execGet(String commandVariable) {
+        if (!writeQueue.offer(new CommandEntry(CommandEntry.GET, commandVariable))) {
             logger.warn("Command queue for sending to Plc is full");
         }
     }
 
     class CommandEntry {
-        String commandVariable;
+        static final String GET = "get";
+        static final String SET = "set";
+
+        String op;
+        String variable;
         Object value;
 
-        CommandEntry(String commandVariable, Object value) {
-            this.commandVariable = commandVariable;
+        CommandEntry(String op, String commandVariable) {
+            this(op, commandVariable, null);
+        }
+
+        CommandEntry(String op, String commandVariable, Object value) {
+            this.op = op;
+            this.variable = commandVariable;
             this.value = value;
         }
     }

@@ -24,24 +24,4 @@ public class FoxtrotConfiguration {
      * Port of web service of the PLCComS.
      */
     public int port;
-
-    /**
-     * Refresh interval for thing in LOW refresh group.
-     */
-    public int lowRefreshInterval;
-
-    /**
-     * Refresh interval for thing in MEDIUM refresh group.
-     */
-    public int mediumRefreshInterval;
-
-    /**
-     * Refresh interval for thing in HIGH refresh group.
-     */
-    public int highRefreshInterval;
-
-    /**
-     * Refresh interval for thing in REALTIME refresh group.
-     */
-    public int realtimeRefreshInterval;
 }

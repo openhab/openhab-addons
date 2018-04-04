@@ -30,9 +30,4 @@ public class SwitchConfiguration {
      * Off command variable name.
      */
     public String off;
-
-    /**
-     * Refresh group. Available groups: OnceADay, Low, Medium, High.
-     */
-    public String refreshGroup;
 }

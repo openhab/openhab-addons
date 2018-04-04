@@ -13,12 +13,10 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.foxtrot.internal.*;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.foxtrot.internal.config.VariableConfiguration;
+import org.openhab.binding.foxtrot.internal.plccoms.PlcComSReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,12 +30,11 @@ import static org.openhab.binding.foxtrot.FoxtrotBindingConstants.CHANNEL_BOOL;
  * @author Radovan Sninsky
  * @since 2018-03-09 23:32
  */
-public class BoolHandler extends BaseThingHandler implements RefreshableHandler {
+public class BoolHandler extends FoxtrotBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BoolHandler.class);
 
     private String variableName;
-    private RefreshGroup group;
 
     public BoolHandler(Thing thing) {
         super(thing);
@@ -46,68 +43,49 @@ public class BoolHandler extends BaseThingHandler implements RefreshableHandler 
     @SuppressWarnings("deprecation")
     @Override
     public void initialize() {
+        super.initialize();
+
         VariableConfiguration config = getConfigAs(VariableConfiguration.class);
-
+        variableName = config.var;
         try {
-            variableName = config.var;
-            group = ((FoxtrotBridgeHandler)getBridge().getHandler()).findByName(config.refreshGroup);
-
-            logger.debug("Adding Bool handler {} into refresh group {}", this, group.getName());
-            group.addHandler(this);
+            foxtrotBridgeHandler.register(variableName, this);
 
             updateStatus(ThingStatus.ONLINE);
-        } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unknown refresh group: "+config.refreshGroup.toUpperCase());
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Enabling variable '" + variableName + "' failed due error: " + e.getMessage());
         }
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing Bool handler resources ...");
-        if (group != null) {
-            logger.debug("Removing Bool handler {} from refresh group {} ...", this, group.getName());
-            group.removeHandler(this);
-        }
+        foxtrotBridgeHandler.unregister(variableName);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Handling command: {} for channel: {}", command, channelUID);
 
-        CommandExecutor ce = CommandExecutor.get();
-        if (OnOffType.ON.equals(command)) {
-            ce.execCommand(variableName, Boolean.TRUE);
+        if (RefreshType.REFRESH.equals(command)) {
+            commandExecutor.execGet(variableName);
+        } else if (OnOffType.ON.equals(command)) {
+            commandExecutor.execSet(variableName, Boolean.TRUE);
         } else if (OnOffType.OFF.equals(command)) {
-            ce.execCommand(variableName, Boolean.FALSE);
+            commandExecutor.execSet(variableName, Boolean.FALSE);
         }
     }
 
     @Override
-    public void refreshFromPlc(PlcComSClient plcClient) {
-        State newState = UnDefType.UNDEF;
-        try {
-            Boolean newValue = plcClient.getBool(variableName);
-
-            if (newValue != null) {
-                newState = newValue ? OnOffType.ON : OnOffType.OFF;
-            }
-        } catch (PlcComSEception e) {
-            logger.warn("PLCComS returned {} while getting variable '{}' value: {}: {}", e.getType(), variableName, e.getCode(), e.getMessage());
-        } catch (IOException e) {
-            logger.warn("Communication with PLCComS failed while getting variable '{}' value: {}", variableName, e.getMessage());
-        } finally {
-            updateState(CHANNEL_BOOL, newState);
+    public void refresh(PlcComSReply reply) {
+        if (reply.getBool() != null) {
+            updateState(CHANNEL_BOOL, reply.getBool() ? OnOffType.ON : OnOffType.OFF);
         }
     }
 
     @Override
     @SuppressWarnings("StringBufferReplaceableByString")
     public String toString() {
-        final StringBuilder sb = new StringBuilder("BoolHandler{");
-        sb.append("'").append(variableName).append('\'');
-        sb.append(", ").append(group);
-        sb.append('}');
-        return sb.toString();
+        return new StringBuilder("BoolHandler{'").append(variableName).append("'}").toString();
     }
 }

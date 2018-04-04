@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.foxtrot.internal.config;
 
+import java.math.BigDecimal;
+
 /**
  * FoxtrotNumberConfiguration.
  *
@@ -22,7 +24,7 @@ public class VariableConfiguration {
   public String var;
 
   /**
-   * Refresh group. Available groups: OnceADay, Low, Medium, High.
+   * Value change delta to receive new state from Plc.
    */
-  public String refreshGroup;
+  public BigDecimal delta;
 }

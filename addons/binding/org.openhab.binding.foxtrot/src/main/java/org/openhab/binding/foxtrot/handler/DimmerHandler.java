@@ -15,17 +15,14 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.foxtrot.internal.*;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.foxtrot.internal.config.DimmerConfiguration;
+import org.openhab.binding.foxtrot.internal.plccoms.PlcComSReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 
 import static org.openhab.binding.foxtrot.FoxtrotBindingConstants.CHANNEL_DIMMER;
 
@@ -35,12 +32,11 @@ import static org.openhab.binding.foxtrot.FoxtrotBindingConstants.CHANNEL_DIMMER
  * @author Radovan Sninsky
  * @since 2018-03-04 17:39
  */
-public class DimmerHandler extends BaseThingHandler implements RefreshableHandler {
+public class DimmerHandler extends FoxtrotBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DimmerHandler.class);
 
     private DimmerConfiguration conf;
-    private RefreshGroup group;
 
     public DimmerHandler(Thing thing) {
         super(thing);
@@ -49,76 +45,56 @@ public class DimmerHandler extends BaseThingHandler implements RefreshableHandle
     @SuppressWarnings("deprecation")
     @Override
     public void initialize() {
+        super.initialize();
+
         logger.debug("Initializing Dimmer handler ...");
         conf = getConfigAs(DimmerConfiguration.class);
 
         try {
-            group = ((FoxtrotBridgeHandler)getBridge().getHandler()).findByName(conf.refreshGroup);
-
-            logger.debug("Adding Dimmer handler {} into refresh group {}", this, group.getName());
-            group.addHandler(this);
+            foxtrotBridgeHandler.register(conf.state, this, conf.delta);
 
             updateStatus(ThingStatus.ONLINE);
-        } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unknown refresh group: "+conf.refreshGroup.toUpperCase());
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Enabling variable '" + conf.state + "' failed due error: " + e.getMessage());
         }
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing Dimmer handler resources ...");
-        if (group != null) {
-            logger.debug("Removing Dimmer handler {} from refresh group {} ...", this, group.getName());
-            group.removeHandler(this);
-        }
+        foxtrotBridgeHandler.unregister(conf.state);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Handling command: {} for channel: {}", command, channelUID);
 
-        CommandExecutor ce = CommandExecutor.get();
-        if (OnOffType.ON.equals(command) || PercentType.HUNDRED.equals(command)) {
-            ce.execCommand(conf.on, Boolean.TRUE);
+        if (RefreshType.REFRESH.equals(command)) {
+            commandExecutor.execGet(conf.state);
+        } else if (OnOffType.ON.equals(command) || PercentType.HUNDRED.equals(command)) {
+            commandExecutor.execSet(conf.on, Boolean.TRUE);
         } else if (OnOffType.OFF.equals(command) || PercentType.ZERO.equals(command)) {
-            ce.execCommand(conf.off, Boolean.TRUE);
+            commandExecutor.execSet(conf.off, Boolean.TRUE);
         } else if (IncreaseDecreaseType.INCREASE.equals(command)) {
-            ce.execCommand(conf.increase, Boolean.TRUE);
+            commandExecutor.execSet(conf.increase, Boolean.TRUE);
         } else if (IncreaseDecreaseType.DECREASE.equals(command)) {
-            ce.execCommand(conf.decrease, Boolean.TRUE);
+            commandExecutor.execSet(conf.decrease, Boolean.TRUE);
         } else if (command instanceof PercentType) {
-            ce.execCommand(conf.state, ((PercentType)command).toBigDecimal());
+            commandExecutor.execSet(conf.state, ((PercentType)command).toBigDecimal());
         }
     }
 
     @Override
-    public void refreshFromPlc(PlcComSClient plcClient) {
-        State newState = UnDefType.UNDEF;
-        try {
-            BigDecimal newValue = plcClient.getNumber(conf.state);
-
-            if (newValue != null) {
-                newState = new PercentType(newValue);
-            }
-        } catch (PlcComSEception e) {
-            logger.warn("PLCComS returned {} while getting variable '{}' value: {}: {}", e.getType(), conf.state, e.getCode(), e.getMessage());
-        } catch (IOException e) {
-            logger.warn("Communication with PLCComS failed while getting variable '{}' value: {}", conf.state, e.getMessage());
-        } catch (IllegalArgumentException e) {
-            logger.error("Wrong received new value, error: {}", e.getMessage());
-        } finally {
-            updateState(CHANNEL_DIMMER, newState);
+    public void refresh(PlcComSReply reply) {
+        if (reply.getNumber() != null) {
+            updateState(CHANNEL_DIMMER, new PercentType(reply.getNumber()));
         }
     }
 
     @Override
     @SuppressWarnings("StringBufferReplaceableByString")
     public String toString() {
-        final StringBuilder sb = new StringBuilder("DimmerHandler{");
-        sb.append("'").append(conf != null ? conf.state : null).append("'");
-        sb.append(", ").append(group);
-        sb.append('}');
-        return sb.toString();
+        return new StringBuilder("DimmerHandler{'").append(conf != null ? conf.state : null).append("'}").toString();
     }
 }
