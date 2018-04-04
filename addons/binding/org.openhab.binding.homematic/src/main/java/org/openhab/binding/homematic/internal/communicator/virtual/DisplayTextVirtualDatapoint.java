@@ -319,6 +319,9 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
 
             List<String> message = new ArrayList<String>();
             message.add(START);
+            if (isEp) {
+                message.add(LF);
+            }
 
             for (int i = 1; i <= getLineCount(channel.getDevice()); i++) {
                 String line = ObjectUtils.toString(
