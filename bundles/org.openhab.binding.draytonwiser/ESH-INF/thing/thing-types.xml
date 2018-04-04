@@ -74,6 +74,9 @@
             <channel id="hotWaterDemandState" typeId="hotWaterDemandState-channel" />
             <channel id="manualModeState" typeId="manualModeState-channel"/>
             <channel id="hotWaterSetPoint" typeId="hotWaterSetPoint-channel"/>
+            <channel id="hotWaterBoostDuration" typeId="hotWaterBoostDuration-channel"/>
+            <channel id="hotWaterBoosted" typeId="hotWaterBoosted-channel"/>
+            <channel id="hotWaterBoostRemaining" typeId="hotWaterBoostRemaining-channel"/>
         </channels>
     </thing-type>
     
@@ -93,6 +96,9 @@
             <channel id="currentDemand" typeId="demandPercent-channel"/>
             <channel id="heatRequest" typeId="heatRequest-channel"/>
             <channel id="manualModeState" typeId="manualModeState-channel"/>
+            <channel id="roomBoostDuration" typeId="roomBoostDuration-channel"/>
+            <channel id="roomBoosted" typeId="roomBoosted-channel"/>
+            <channel id="roomBoostRemaining" typeId="roomBoostRemaining-channel"/>
         </channels>
         
         <config-description>
@@ -329,5 +335,47 @@
         <label>Set Point</label>
         <description>Hot water heating set point switch</description>
     </channel-type>
-
+    
+    <channel-type id="hotWaterBoostDuration-channel">
+        <item-type>Number</item-type>
+        <label>Boost Duration</label>
+        <description>Duration to boost hot water for</description>
+        <state readOnly="false" pattern="%.1f h" min="0" max="3" step="0.5"></state>
+    </channel-type>
+    
+    <channel-type id="roomBoostDuration-channel">
+        <item-type>Number</item-type>
+        <label>Boost Duration</label>
+        <description>Duration to boost the temperature for</description>
+        <state readOnly="false" pattern="%.1f h" min="0" max="3" step="0.5"></state>
+    </channel-type>
+    
+    <channel-type id="hotWaterBoosted-channel">
+        <item-type>Switch</item-type>
+        <label>Is Boosted</label>
+        <description>Is the hot water currently being boosted</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="roomBoosted-channel">
+        <item-type>Switch</item-type>
+        <label>Is Boosted</label>
+        <description>Is the room temperature currently being boosted</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="hotWaterBoostRemaining-channel">
+        <item-type>Number</item-type>
+        <label>Boost remaining</label>
+        <description>How long until the boost deactivates</description>
+        <state readOnly="true" pattern="%.0f m"></state>
+    </channel-type>
+    
+    <channel-type id="roomBoostRemaining-channel">
+        <item-type>Number</item-type>
+        <label>Boost remaining</label>
+        <description>How long until the boost deactivates</description>
+        <state readOnly="true" pattern="%.0f m"></state>
+    </channel-type>
+    
 </thing:thing-descriptions>

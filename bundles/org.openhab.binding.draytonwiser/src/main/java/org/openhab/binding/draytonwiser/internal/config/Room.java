@@ -67,6 +67,9 @@ public class Room {
     @SerializedName("WindowDetectionActive")
     @Expose
     private Boolean windowDetectionActive;
+    @SerializedName("OverrideTimeoutUnixTime")
+    @Expose
+    private Integer overrideTimeoutUnixTime;
 
     public Integer getId() {
         return id;
@@ -74,6 +77,10 @@ public class Room {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getOverrideTimeoutUnixTime() {
+        return overrideTimeoutUnixTime;
     }
 
     public Integer getOverrideSetpoint() {

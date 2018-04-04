@@ -35,6 +35,9 @@ public class HotWater {
     @SerializedName("HotWaterRelayState")
     @Expose
     private String hotWaterRelayState;
+    @SerializedName("OverrideTimeoutUnixTime")
+    @Expose
+    private Integer overrideTimeoutUnixTime;
 
     public Integer getId() {
         return id;
@@ -58,6 +61,10 @@ public class HotWater {
 
     public String getHotWaterRelayState() {
         return hotWaterRelayState;
+    }
+
+    public Integer getOverrideTimeoutUnixTime() {
+        return overrideTimeoutUnixTime;
     }
 
 }

@@ -356,6 +356,29 @@ public class HeatHubHandler extends BaseBridgeHandler {
         refresh();
     }
 
+    public void setRoomBoostActive(String roomName, Integer setPoint, Integer duration) {
+        Room room = getRoom(roomName);
+        if (room == null) {
+            return;
+        }
+
+        String payload = "{\"RequestOverride\":{\"Type\":\"Manual\",\"Originator\" :\"App\",\"DurationMinutes\":"
+                + duration + ",\"SetPoint\":" + setPoint + "}}";
+        sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + room.getId().toString(), "PATCH", payload);
+        refresh();
+    }
+
+    public void setRoomBoostInactive(String roomName) {
+        Room room = getRoom(roomName);
+        if (room == null) {
+            return;
+        }
+
+        String payload = "{\"RequestOverride\":{\"Type\":\"None\",\"Originator\" :\"App\",\"DurationMinutes\":0,\"SetPoint\":0}}";
+        sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + room.getId().toString(), "PATCH", payload);
+        refresh();
+    }
+
     public void setHotWaterManualMode(Boolean manualMode) {
         String payload = "{\"Mode\":\"" + (manualMode ? "Manual" : "Auto") + "\"}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.HOTWATER_ENDPOINT + "2", "PATCH", payload);
@@ -366,6 +389,19 @@ public class HeatHubHandler extends BaseBridgeHandler {
 
     public void setHotWaterSetPoint(Integer setPoint) {
         String payload = "{\"RequestOverride\":{\"Type\":\"Manual\", \"SetPoint\":" + setPoint + "}}";
+        sendMessageToHeatHub(DraytonWiserBindingConstants.HOTWATER_ENDPOINT + "2", "PATCH", payload);
+        refresh();
+    }
+
+    public void setHotWaterBoostActive(Integer duration) {
+        String payload = "{\"RequestOverride\":{\"Type\":\"Manual\",\"Originator\" :\"App\",\"DurationMinutes\":"
+                + duration + ",\"SetPoint\":1100}}";
+        sendMessageToHeatHub(DraytonWiserBindingConstants.HOTWATER_ENDPOINT + "2", "PATCH", payload);
+        refresh();
+    }
+
+    public void setHotWaterBoostInactive() {
+        String payload = "{\"RequestOverride\":{\"Type\":\"None\",\"Originator\" :\"App\",\"DurationMinutes\":0,\"SetPoint\":0}}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.HOTWATER_ENDPOINT + "2", "PATCH", payload);
         refresh();
     }

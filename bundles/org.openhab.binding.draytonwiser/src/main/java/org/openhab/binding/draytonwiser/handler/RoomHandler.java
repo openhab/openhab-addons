@@ -60,14 +60,11 @@ public class RoomHandler extends DraytonWiserThingHandler {
             boolean manualMode = command.toString().toUpperCase().equals("ON");
             setManualMode(manualMode);
         }
-        // if (channelUID.getId().equals(CHANNEL_1)) {
-        // TODO: handle command
 
-        // Note: if communication with thing fails for some reason,
-        // indicate that by setting the status with detail information
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // "Could not control device at IP address x.x.x.x");
-        // }
+        if (channelUID.getId().equals(DraytonWiserBindingConstants.CHANNEL_ROOM_BOOST_DURATION)) {
+            int boostDuration = Math.round((Float.parseFloat(command.toString()) * 60));
+            setBoostDuration(boostDuration);
+        }
     }
 
     @Override
@@ -89,6 +86,14 @@ public class RoomHandler extends DraytonWiserThingHandler {
                         getHeatRequest());
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_MANUAL_MODE_STATE),
                         getManualModeState());
+                updateState(
+                        new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_ROOM_BOOST_DURATION),
+                        new DecimalType(0));
+                updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_ROOM_BOOSTED),
+                        getBoostedState());
+                updateState(
+                        new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_ROOM_BOOST_REMAINING),
+                        getBoostRemainingState());
             }
         } catch (Exception e) {
             logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
@@ -179,6 +184,37 @@ public class RoomHandler extends DraytonWiserThingHandler {
     private void setManualMode(Boolean manualMode) {
         if (bridgeHandler != null) {
             bridgeHandler.setRoomManualMode(getThing().getConfiguration().get("roomName").toString(), manualMode);
+        }
+    }
+
+    private State getBoostedState() {
+        if (room != null) {
+            if (room.getOverrideTimeoutUnixTime() != null && !room.getOverrideType().toUpperCase().equals("NONE")) {
+                return OnOffType.ON;
+            }
+        }
+
+        return OnOffType.OFF;
+    }
+
+    private State getBoostRemainingState() {
+        if (room != null) {
+            if (room.getOverrideTimeoutUnixTime() != null && !room.getOverrideType().toUpperCase().equals("NONE")) {
+                return new DecimalType(((System.currentTimeMillis() / 1000L) - room.getOverrideTimeoutUnixTime()) / 60);
+            }
+        }
+
+        return new DecimalType(0);
+    }
+
+    private void setBoostDuration(Integer durationMinutes) {
+        if (bridgeHandler != null && room != null) {
+            if (durationMinutes > 0) {
+                bridgeHandler.setRoomBoostActive(getThing().getConfiguration().get("roomName").toString(),
+                        room.getCalculatedTemperature() + 20, durationMinutes);
+            } else {
+                bridgeHandler.setRoomBoostInactive(getThing().getConfiguration().get("roomName").toString());
+            }
         }
     }
 }
