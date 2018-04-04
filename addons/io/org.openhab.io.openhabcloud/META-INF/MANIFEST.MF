@@ -13,7 +13,7 @@ Bundle-Name: openHAB Cloud Connector Bundle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.io.openhabcloud
 Bundle-Vendor: openHAB.org
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Export-Package: org.openhab.io.openhabcloud
 Ignore-Package: org.openhab.io.openhabcloud.internal
 Import-Package: 

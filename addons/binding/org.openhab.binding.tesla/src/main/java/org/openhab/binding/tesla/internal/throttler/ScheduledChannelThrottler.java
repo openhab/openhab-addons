@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,8 +25,7 @@ import java.util.concurrent.TimeUnit;
 public final class ScheduledChannelThrottler extends AbstractChannelThrottler {
 
     public ScheduledChannelThrottler(Rate totalRate) {
-        this(totalRate, Executors.newSingleThreadScheduledExecutor(), new HashMap<Object, Rate>(),
-                TimeProvider.SYSTEM_PROVIDER);
+        this(totalRate, Executors.newSingleThreadScheduledExecutor(), new HashMap<>(), TimeProvider.SYSTEM_PROVIDER);
     }
 
     public ScheduledChannelThrottler(Rate totalRate, Map<Object, Rate> channels) {

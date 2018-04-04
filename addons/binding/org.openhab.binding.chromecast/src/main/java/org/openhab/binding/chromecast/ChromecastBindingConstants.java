@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,6 +11,7 @@ package org.openhab.binding.chromecast;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -20,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Kai Kreuzer - Initial contribution
  * @author Jason Holmes - Additional channels
  */
+@NonNullByDefault
 public class ChromecastBindingConstants {
     public static final String BINDING_ID = "chromecast";
     public static final String MEDIA_PLAYER = "CC1AD845";
@@ -80,24 +82,10 @@ public class ChromecastBindingConstants {
      * These are channels that map directly. Images and location are unique channels that
      * don't fit this description.
      */
-    public static final String[] METADATA_SIMPLE_CHANNELS = {
-            CHANNEL_ALBUM_ARTIST,
-            CHANNEL_ALBUM_NAME,
-            CHANNEL_ARTIST,
-            CHANNEL_BROADCAST_DATE,
-            CHANNEL_COMPOSER,
-            CHANNEL_CREATION_DATE,
-            CHANNEL_DISC_NUMBER,
-            CHANNEL_EPISODE_NUMBER,
-            CHANNEL_LOCATION_NAME,
-            CHANNEL_RELEASE_DATE,
-            CHANNEL_SEASON_NUMBER,
-            CHANNEL_SERIES_TITLE,
-            CHANNEL_STUDIO,
-            CHANNEL_SUBTITLE,
-            CHANNEL_TITLE,
-            CHANNEL_TRACK_NUMBER,
-    };
+    public static final String[] METADATA_SIMPLE_CHANNELS = { CHANNEL_ALBUM_ARTIST, CHANNEL_ALBUM_NAME, CHANNEL_ARTIST,
+            CHANNEL_BROADCAST_DATE, CHANNEL_COMPOSER, CHANNEL_CREATION_DATE, CHANNEL_DISC_NUMBER,
+            CHANNEL_EPISODE_NUMBER, CHANNEL_LOCATION_NAME, CHANNEL_RELEASE_DATE, CHANNEL_SEASON_NUMBER,
+            CHANNEL_SERIES_TITLE, CHANNEL_STUDIO, CHANNEL_SUBTITLE, CHANNEL_TITLE, CHANNEL_TRACK_NUMBER, };
 
     // We don't key these metadata keys directly to a channel, they get linked together
     // into a Location channel.

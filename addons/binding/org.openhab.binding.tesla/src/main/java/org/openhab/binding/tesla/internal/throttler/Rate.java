@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,7 +25,7 @@ public final class Rate {
     private final int numberCalls;
     private final int timeLength;
     private final TimeUnit timeUnit;
-    private final LinkedList<Long> callHistory = new LinkedList<Long>();
+    private final LinkedList<Long> callHistory = new LinkedList<>();
 
     public Rate(int numberCalls, int timeLength, TimeUnit timeUnit) {
         this.numberCalls = numberCalls;

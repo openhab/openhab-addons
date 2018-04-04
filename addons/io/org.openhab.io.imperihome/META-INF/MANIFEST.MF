@@ -6,7 +6,7 @@ Bundle-Name: ImperiHome Integration Service
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.io.imperihome;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Import-Package: 
  com.google.common.base,
  com.google.gson,

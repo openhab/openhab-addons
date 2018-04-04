@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -382,13 +382,10 @@ public class MilightV6SessionManager implements Runnable {
                 break;
         }
 
-        checkHandshakeTimer = scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    reset_registration_process();
-                } catch (InterruptedException ignored) {
-                }
+        checkHandshakeTimer = scheduler.schedule(() -> {
+            try {
+                reset_registration_process();
+            } catch (InterruptedException ignored) {
             }
         }, REG_TIMEOUT_SEC, TimeUnit.SECONDS);
     }

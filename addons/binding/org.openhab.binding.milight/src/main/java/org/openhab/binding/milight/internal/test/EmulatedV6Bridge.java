@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -89,18 +89,8 @@ public class EmulatedV6Bridge {
             FAKE_MAC[3], FAKE_MAC[4], FAKE_MAC[5], 1 };
 
     EmulatedV6Bridge() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                runDiscovery();
-            }
-        }).start();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                runBrigde();
-            }
-        }).start();
+        new Thread(this::runDiscovery).start();
+        new Thread(this::runBrigde).start();
     }
 
     private void replaceWithMac(byte data[], int offset) {
@@ -332,7 +322,7 @@ public class EmulatedV6Bridge {
         try {
             datagramSocket.send(packet);
         } catch (IOException e) {
-            logger.error("Failed to send Message to '{}': ",
+            logger.error("Failed to send Message to '{}', Error message: {}",
                     new Object[] { packet.getAddress().getHostAddress(), e.getMessage() });
         }
     }

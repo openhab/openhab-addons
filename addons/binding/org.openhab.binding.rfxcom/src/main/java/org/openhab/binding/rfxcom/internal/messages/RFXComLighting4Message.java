@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -83,7 +83,10 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
         ON_5(5, true),
         ON_7(7, true),
         ON_9(9, true),
+        ON_10(10, true),
+        ON_11(11, true),
         ON_12(12, true),
+        OFF_14(14, false),
         UNKNOWN(-1, false);
 
         private final int command;

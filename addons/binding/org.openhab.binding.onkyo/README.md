@@ -14,42 +14,45 @@ This binding supports only one thing: The Onkyo AV Receiver.  All supported Onky
 
 This binding can discover the supported Onkyo AV Receivers. At the moment only the following models are supported:
 
-- TX-NR414
-- TX-NR509
-- TX-NR515
-- TX-NR525
-- TX-NR535
-- TX-NR555
-- TX-NR535
-- TX-NR616
-- TX-NR626
-- TX-NR636
-- TX-NR646
-- TX-NR656
-- TX-NR717
-- TX-NR727
-- TX-NR737
-- TX-NR747
-- TX-NR818
-- TX-NR828
-- TX-NR838
+-   TX-NR414
+-   TX-NR509
+-   TX-NR515
+-   TX-NR525
+-   TX-NR535
+-   TX-NR555
+-   TX-NR535
+-   TX-NR616
+-   TX-NR626
+-   TX-NR636
+-   TX-NR646
+-   TX-NR656
+-   TX-NR717
+-   TX-NR727
+-   TX-NR737
+-   TX-NR747
+-   TX-NR818
+-   TX-NR828
+-   TX-NR838
 
 ## Binding Configuration
 
-The binding can auto-discover the Onkyo AVRs present on your local network. The auto-discovery is enabled by default. To disable it, you can create a file in the services directory called onkyo.cfg with the following content:
+The binding can auto-discover the Onkyo AVRs present on your local network.
+The auto-discovery is enabled by default.
+To disable it, you can create a file in the services directory called onkyo.cfg with the following content:
 
 ```text
 org.openhab.onkyo:enableAutoDiscovery=false
 ```
 
-This configuration parameter only controls the Onkyo AVR auto-discovery process, not the openHAB auto-discovery. Moreover, if the openHAB auto-discovery is disabled, the Onkyo AVR auto-discovery is disabled too.
+This configuration parameter only controls the Onkyo AVR auto-discovery process, not the openHAB auto-discovery.
+Moreover, if the openHAB auto-discovery is disabled, the Onkyo AVR auto-discovery is disabled too.
 
 
 The binding has the following configuration options, which can be set for "binding:onkyo":
 
 | Parameter   | Name         | Description                                                              | Required |
 |-------------|--------------|--------------------------------------------------------------------------|----------|
-| callbackUrl | Callback URL | URL to use for playing notification sounds, e.g. http://192.168.0.2:8080 | no       |
+| callbackUrl | Callback URL | URL to use for playing notification sounds, e.g. <http://192.168.0.2:8080> | no       |
 
 ## Thing Configuration
 
@@ -77,7 +80,8 @@ Optionally you can specify the refresh interval by refreshInterval parameter.
 onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128, refreshInterval=30]
 ```
 
-Maximum volume level can also be configured by volumeLimit parameter. This prevent setting receiver volume level too high, which could damage your speakers or receiver.
+Maximum volume level can also be configured by volumeLimit parameter.
+This prevent setting receiver volume level too high, which could damage your speakers or receiver.
 
 ```text
 onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128, volumeLimit=50]
@@ -113,7 +117,7 @@ The Onkyo AVR supports the following channels (some channels are model specific)
 | player#albumArt           | Image     | Image of the current album art of the current song                                                               |
 | player#albumArtUrl        | String    | Url to the current album art of the current song                                                                 |
 | netmenu#title             | String    | Title of the current NET service                                                                                 |
-| netmenu#control           | String    | Control the USB/Net Menu, e.g. Up/Down/Select/Back/PageUp/PageDown/Select[0-9]                                   |
+| netmenu#control           | String    | Control the USB/Net Menu, e.g. Up/Down/Select/Back/PageUp/PageDown/Select&lsqb0-9&rsqb                                   |
 | netmenu#selection         | Number    | The number of the currently selected USB/Net Menu entry (0-9)                                                    |
 | netmenu#item0             | String    | The text of USB/Net Menu entry 0                                                                                 |
 | netmenu#item1             | String    | The text of USB/Net Menu entry 1                                                                                 |
@@ -126,33 +130,32 @@ The Onkyo AVR supports the following channels (some channels are model specific)
 | netmenu#item8             | String    | The text of USB/Net Menu entry 8                                                                                 |
 | netmenu#item9             | String    | The text of USB/Net Menu entry 9                                                                                 |
 
-
 ## Input Source Mapping
 
 Here after are the ID values of the input sources:
 
-- 00: DVR/VCR
-- 01: SATELLITE/CABLE
-- 02: GAME
-- 03: AUX
-- 04: GAME
-- 05: PC
-- 16: BLURAY/DVD
-- 32: TAPE1
-- 33: TAPE2
-- 34: PHONO
-- 35: CD
-- 36: FM
-- 37: AM
-- 38: TUNER
-- 39: MUSICSERVER
-- 40: INTERNETRADIO
-- 41: USB
-- 42: USB_BACK
-- 43: NETWORK
-- 45: AIRPLAY
-- 48: MULTICH
-- 50: SIRIUS
+-   00: DVR/VCR
+-   01: SATELLITE/CABLE
+-   02: GAME
+-   03: AUX
+-   04: GAME
+-   05: PC
+-   16: BLURAY/DVD
+-   32: TAPE1
+-   33: TAPE2
+-   34: PHONO
+-   35: CD
+-   36: FM
+-   37: AM
+-   38: TUNER
+-   39: MUSICSERVER
+-   40: INTERNETRADIO
+-   41: USB
+-   42: USB_BACK
+-   43: NETWORK
+-   45: AIRPLAY
+-   48: MULTICH
+-   50: SIRIUS
 
 ## Item Configuration
 

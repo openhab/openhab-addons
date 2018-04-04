@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,10 +27,13 @@ import org.eclipse.smarthome.core.storage.Storage;
 import org.eclipse.smarthome.core.storage.StorageService;
 import org.eclipse.smarthome.io.console.Console;
 import org.eclipse.smarthome.io.console.extensions.AbstractConsoleCommandExtension;
+import org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.binding.tesla.TeslaBindingConstants;
 import org.openhab.binding.tesla.internal.protocol.TokenRequest;
 import org.openhab.binding.tesla.internal.protocol.TokenRequestPassword;
 import org.openhab.binding.tesla.internal.protocol.TokenResponse;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +44,7 @@ import com.google.gson.Gson;
  *
  * @author Nicolai Grødum
  */
+@Component(service = ConsoleCommandExtension.class, immediate = true)
 public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
 
     private static final String CMD_LOGON = "logon";
@@ -99,6 +103,7 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
                 "Authenticates and stores the access and refresh token. Does not store the username/password."), });
     }
 
+    @Reference
     public void setStorageService(StorageService storageService) {
         this.storageService = storageService;
     }
@@ -118,7 +123,6 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
 
             if (response != null) {
                 if (response.getStatus() == 200 && response.hasEntity()) {
-
                     String responsePayLoad = response.readEntity(String.class);
                     TokenResponse tokenResponse = gson.fromJson(responsePayLoad.trim(), TokenResponse.class);
 

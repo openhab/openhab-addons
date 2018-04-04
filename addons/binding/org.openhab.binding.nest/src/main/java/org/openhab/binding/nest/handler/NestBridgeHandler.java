@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,25 +15,22 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -42,6 +39,7 @@ import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.internal.data.ErrorData;
 import org.openhab.binding.nest.internal.data.NestDevices;
+import org.openhab.binding.nest.internal.data.NestIdentifiable;
 import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.TopLevelData;
 import org.openhab.binding.nest.internal.exceptions.FailedResolvingNestUrlException;
@@ -68,6 +66,8 @@ import com.google.gson.GsonBuilder;
  * @author Wouter Born - Improve exception and URL redirect handling
  */
 public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamingDataListener {
+    private static final int REQUEST_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(30);
+
     private final Logger logger = LoggerFactory.getLogger(NestBridgeHandler.class);
 
     private final List<NestDeviceDataListener> listeners = new CopyOnWriteArrayList<>();
@@ -76,8 +76,9 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
 
     private NestAuthorizer authorizer;
     private NestBridgeConfiguration config;
+    private ScheduledFuture<?> initializeJob;
     private ScheduledFuture<?> transmitJob;
-    private String redirectUrl;
+    private NestRedirectUrlSupplier redirectUrlSupplier;
     private NestStreamingRestClient streamingRestClient;
 
     /**
@@ -98,52 +99,46 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
 
         config = getConfigAs(NestBridgeConfiguration.class);
         authorizer = new NestAuthorizer(config);
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Starting poll query");
 
-        logger.debug("Product ID      {}", config.productId);
-        logger.debug("Product Secret  {}", config.productSecret);
-        logger.debug("Pincode         {}", config.pincode);
-
-        try {
-            logger.debug("Access Token    {}", getExistingOrNewAccessToken());
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Starting poll query");
-        } catch (InvalidAccessTokenException e) {
-            logger.debug("Invalid access token", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Token is invalid and could not be refreshed: " + e.getMessage());
-        }
-
-        restartStreamingUpdates();
+        initializeJob = scheduler.schedule(() -> {
+            try {
+                logger.debug("Product ID      {}", config.productId);
+                logger.debug("Product Secret  {}", config.productSecret);
+                logger.debug("Pincode         {}", config.pincode);
+                logger.debug("Access Token    {}", getExistingOrNewAccessToken());
+                redirectUrlSupplier = new NestRedirectUrlSupplier(getHttpHeaders());
+                restartStreamingUpdates();
+            } catch (InvalidAccessTokenException e) {
+                logger.debug("Invalid access token", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Token is invalid and could not be refreshed: " + e.getMessage());
+            }
+        }, 0, TimeUnit.SECONDS);
 
         logger.debug("Finished initializing Nest bridge handler");
     }
 
     /**
-     * Do something useful when the configuration update happens. Triggers changing
-     * polling intervals as well as re-doing the access token.
+     * Allows the NestRedirectUrlSupplier to be overriden in tests.
+     *
+     * @return the NestRedirectUrlSupplier
      */
-    @Override
-    public void updateConfiguration(Configuration configuration) {
-        logger.debug("Config update");
-        super.updateConfiguration(configuration);
-        restartStreamingUpdates();
+    protected NestRedirectUrlSupplier getRedirectUrlSupplier() {
+        return this.redirectUrlSupplier;
     }
 
     private void startStreamingUpdates() {
         synchronized (this) {
             try {
                 streamingRestClient = new NestStreamingRestClient(getExistingOrNewAccessToken(),
-                        getOrResolveRedirectUrl(), scheduler);
+                        getRedirectUrlSupplier(), scheduler);
                 streamingRestClient.addStreamingDataListener(this);
                 streamingRestClient.start();
             } catch (InvalidAccessTokenException e) {
                 logger.debug("Invalid access token", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Token is invalid and could not be refreshed: " + e.getMessage());
-            } catch (FailedResolvingNestUrlException e) {
-                logger.debug("Unable to resolve redirect URL", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                logger.debug("Reattempting to resolve redirect URL in 5 seconds");
-                scheduler.schedule(this::startStreamingUpdates, 5, SECONDS);
             }
         }
     }
@@ -172,8 +167,20 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
     public void dispose() {
         logger.debug("Nest bridge disposed");
         stopStreamingUpdates();
+
+        if (initializeJob != null && !initializeJob.isCancelled()) {
+            initializeJob.cancel(true);
+            initializeJob = null;
+        }
+
+        if (transmitJob != null && !transmitJob.isCancelled()) {
+            transmitJob.cancel(true);
+            transmitJob = null;
+        }
+
         this.authorizer = null;
-        this.redirectUrl = null;
+        this.redirectUrlSupplier = null;
+        this.streamingRestClient = null;
     }
 
     /**
@@ -280,7 +287,11 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
      */
     void addUpdateRequest(NestUpdateRequest request) {
         nestUpdateRequests.add(request);
-        if (transmitJob == null || transmitJob.isDone()) {
+        scheduleTransmitJobForPendingRequests();
+    }
+
+    private void scheduleTransmitJobForPendingRequests() {
+        if (!nestUpdateRequests.isEmpty() && (transmitJob == null || transmitJob.isDone())) {
             transmitJob = scheduler.schedule(this::transmitQueue, 0, SECONDS);
         }
     }
@@ -306,16 +317,20 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         } catch (FailedResolvingNestUrlException e) {
             logger.debug("Unable to resolve redirect URL", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            scheduler.schedule(this::restartStreamingUpdates, 5, SECONDS);
         } catch (FailedSendingNestDataException e) {
             logger.debug("Error sending data", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            scheduler.schedule(this::restartStreamingUpdates, 5, SECONDS);
+            getRedirectUrlSupplier().resetCache();
         }
     }
 
     private void jsonToPutUrl(NestUpdateRequest request)
             throws FailedSendingNestDataException, InvalidAccessTokenException, FailedResolvingNestUrlException {
         try {
-            String url = request.getUpdateUrl().replaceFirst(NestBindingConstants.NEST_URL, getOrResolveRedirectUrl());
+            String url = request.getUpdateUrl().replaceFirst(NestBindingConstants.NEST_URL,
+                    getRedirectUrlSupplier().getRedirectUrl());
             logger.debug("Putting data to: {}", url);
 
             String jsonContent = gson.toJson(request.getValues());
@@ -323,7 +338,7 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
 
             ByteArrayInputStream inputStream = new ByteArrayInputStream(jsonContent.getBytes(StandardCharsets.UTF_8));
             String jsonResponse = HttpUtil.executeUrl("PUT", url, getHttpHeaders(), inputStream, JSON_CONTENT_TYPE,
-                    5000);
+                    REQUEST_TIMEOUT);
             logger.debug("PUT response: {}", jsonResponse);
 
             ErrorData error = gson.fromJson(jsonResponse, ErrorData.class);
@@ -343,57 +358,6 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         return httpHeaders;
     }
 
-    protected String getOrResolveRedirectUrl() throws FailedResolvingNestUrlException, InvalidAccessTokenException {
-        return redirectUrl != null ? redirectUrl : resolveRedirectUrl();
-    }
-
-    /**
-     * Resolves the redirect URL for calls using the {@link NestBindingConstants#NEST_URL}.
-     *
-     * The Jetty client used by {@link HttpUtil} will not pass the Authorization header after a redirect resulting in
-     * "401 Unauthorized error" issues.
-     *
-     * Note that this workaround currently does not use any configured proxy like {@link HttpUtil} does.
-     *
-     * @see https://developers.nest.com/documentation/cloud/how-to-handle-redirects
-     */
-    private String resolveRedirectUrl() throws FailedResolvingNestUrlException, InvalidAccessTokenException {
-        HttpClient httpClient = new HttpClient(new SslContextFactory());
-        httpClient.setFollowRedirects(false);
-
-        Request request = httpClient.newRequest(NestBindingConstants.NEST_URL).method(HttpMethod.GET).timeout(5,
-                TimeUnit.SECONDS);
-        Properties httpHeaders = getHttpHeaders();
-        for (String httpHeaderKey : httpHeaders.stringPropertyNames()) {
-            request.header(httpHeaderKey, httpHeaders.getProperty(httpHeaderKey));
-        }
-
-        ContentResponse response;
-        try {
-            httpClient.start();
-            response = request.send();
-            httpClient.stop();
-        } catch (Exception e) {
-            throw new FailedResolvingNestUrlException("Failed to resolve redirect URL: " + e.getMessage(), e);
-        }
-
-        int status = response.getStatus();
-        String redirectUrl = response.getHeaders().get(HttpHeader.LOCATION);
-
-        if (status != HttpStatus.TEMPORARY_REDIRECT_307) {
-            logger.debug("Redirect status: {}", status);
-            logger.debug("Redirect response: {}", response.getContentAsString());
-            throw new FailedResolvingNestUrlException("Failed to get redirect URL, expected status "
-                    + HttpStatus.TEMPORARY_REDIRECT_307 + " but was " + status);
-        } else if (StringUtils.isEmpty(redirectUrl)) {
-            throw new FailedResolvingNestUrlException("Redirect URL is empty");
-        }
-
-        redirectUrl = redirectUrl.endsWith("/") ? redirectUrl.substring(0, redirectUrl.length() - 1) : redirectUrl;
-        logger.debug("Redirect URL: {}", redirectUrl);
-        return redirectUrl;
-    }
-
     /**
      * Called to start the discovery scan. Forces a data refresh.
      */
@@ -410,6 +374,7 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
     @Override
     public void onConnected() {
         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Streaming data connection established");
+        scheduleTransmitJobForPendingRequests();
     }
 
     @Override
@@ -430,7 +395,35 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         if (data.getStructures() != null) {
             broadcastStructures(data.getStructures().values());
         }
+
+        setMissingThingsOffline(data);
         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Receiving streaming data");
+    }
+
+    private void setMissingThingsOffline(TopLevelData data) {
+        Set<String> identifiers = new HashSet<>();
+        if (data.getDevices() != null) {
+            if (data.getDevices().getCameras() != null) {
+                identifiers.addAll(data.getDevices().getCameras().keySet());
+            }
+            if (data.getDevices().getSmokeDetectors() != null) {
+                identifiers.addAll(data.getDevices().getSmokeDetectors().keySet());
+            }
+            if (data.getDevices().getThermostats() != null) {
+                identifiers.addAll(data.getDevices().getThermostats().keySet());
+            }
+        }
+        if (data.getStructures() != null) {
+            identifiers.addAll(data.getStructures().keySet());
+        }
+
+        for (Thing thing : getThing().getThings()) {
+            String id = ((NestIdentifiable) thing.getHandler()).getId();
+            if (!identifiers.contains(id)) {
+                thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                        "Missing from streaming updates"));
+            }
+        }
     }
 
 }

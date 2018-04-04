@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
  lib/pi4j-core.jar
@@ -7,7 +8,7 @@ Bundle-Name: OpenSprinkler Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.opensprinkler;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Export-Package: 
  org.openhab.binding.opensprinkler,
  org.openhab.binding.opensprinkler.handler
@@ -25,5 +26,6 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.opensprinkler,
  org.openhab.binding.opensprinkler.handler,
+ org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

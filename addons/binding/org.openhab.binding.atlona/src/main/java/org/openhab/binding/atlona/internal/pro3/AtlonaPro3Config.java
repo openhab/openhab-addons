@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,7 +13,7 @@ import org.openhab.binding.atlona.internal.discovery.AtlonaDiscovery;
 /**
  * Configuration class for the Atlona Pro3 line of switchers
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class AtlonaPro3Config {
 
@@ -21,7 +21,7 @@ public class AtlonaPro3Config {
      * Constant field used in {@link AtlonaDiscovery} to set the config property during discovery. Value of this field
      * needs to match {@link #ipAddress}
      */
-    public static final String IpAddress = "ipAddress";
+    public static final String IP_ADDRESS = "ipAddress";
 
     /**
      * IP Address (or host name) of switch

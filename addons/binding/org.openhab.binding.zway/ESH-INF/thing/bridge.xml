@@ -7,19 +7,19 @@
 	
 		<label>Z-Way Server</label>
 		<description>
-            <![CDATA[
-            The Z-Way server represents a bridge with general settings and communication tasks.
-            ]]>
-        </description>
+			<![CDATA[
+			The Z-Way server represents a bridge with general settings and communication tasks.
+			]]>
+		</description>
 		
-        <channels>
-            <channel id="actions" typeId="actions" />
-            <channel id="secureInclusion" typeId="secureInclusion" />
-            <channel id="inclusion" typeId="inclusion" />
-            <channel id="exclusion" typeId="exclusion" />
-        </channels>
+		<channels>
+			<channel id="actions" typeId="actions" />
+			<channel id="secureInclusion" typeId="secureInclusion" />
+			<channel id="inclusion" typeId="inclusion" />
+			<channel id="exclusion" typeId="exclusion" />
+		</channels>
 
-        <config-description-ref uri="binding:zway:zwayServer" />
+		<config-description-ref uri="binding:zway:zwayServer" />
 
 	</bridge-type>
 </thing:thing-descriptions>

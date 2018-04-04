@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -45,7 +45,7 @@ public class Cm11aBridgeHandler extends BaseBridgeHandler implements ReceivedDat
 
     private Bridge bridge;
 
-    private Logger logger = LoggerFactory.getLogger(Cm11aBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(Cm11aBridgeHandler.class);
 
     public Cm11aBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -184,27 +184,36 @@ public class Cm11aBridgeHandler extends BaseBridgeHandler implements ReceivedDat
      * @param dims
      */
     private void updateX10State(Thing thing, ChannelUID channelUid, X10COMMAND cmd, int dims) {
+        if (thing == null) {
+            logger.debug("Unable to update X10 state: thing is null");
+            return;
+        }
+
+        Cm11aAbstractHandler handler = (Cm11aAbstractHandler) thing.getHandler();
+        if (handler == null) {
+            logger.debug("Unable to update X10 state: handler is null");
+            return;
+        }
+
         // Perform appropriate update based on X10Command received
         // Handle ON/OFF commands
         if (cmd == X10ReceivedData.X10COMMAND.ON) {
             handleUpdate(channelUid, OnOffType.ON);
-            ((Cm11aAbstractHandler) thing.getHandler()).setCurrentState(OnOffType.ON);
+            handler.setCurrentState(OnOffType.ON);
         } else if (cmd == X10ReceivedData.X10COMMAND.OFF) {
             handleUpdate(channelUid, OnOffType.OFF);
-            ((Cm11aAbstractHandler) thing.getHandler()).setCurrentState(OnOffType.OFF);
+            handler.setCurrentState(OnOffType.OFF);
             // Handle DIM/Bright commands
         } else if (cmd == X10ReceivedData.X10COMMAND.DIM) {
-            State newState = ((Cm11aAbstractHandler) thing.getHandler()).addDimsToCurrentState(dims);
+            State newState = handler.addDimsToCurrentState(dims);
             handleUpdate(channelUid, newState);
-            ((Cm11aAbstractHandler) thing.getHandler()).setCurrentState(newState);
-            logger.debug("Current state set to: {}",
-                    ((Cm11aAbstractHandler) thing.getHandler()).getCurrentState().toFullString());
+            handler.setCurrentState(newState);
+            logger.debug("Current state set to: {}", handler.getCurrentState().toFullString());
         } else if (cmd == X10ReceivedData.X10COMMAND.BRIGHT) {
-            State newState = ((Cm11aAbstractHandler) thing.getHandler()).addBrightsToCurrentState(dims);
+            State newState = handler.addBrightsToCurrentState(dims);
             handleUpdate(channelUid, newState);
-            ((Cm11aAbstractHandler) thing.getHandler()).setCurrentState(newState);
-            logger.debug("Current state set to: {}",
-                    ((Cm11aAbstractHandler) thing.getHandler()).getCurrentState().toFullString());
+            handler.setCurrentState(newState);
+            logger.debug("Current state set to: {}", handler.getCurrentState().toFullString());
         } else {
             logger.warn("Received unknown command from cm11a: {}", cmd);
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -43,7 +43,7 @@ public class MultiroomPlusHandler extends BaseThingHandler {
     public static final String PORTS = "ports";
     public static final String POLLING_INTERVAL = "interval";
 
-    private Logger logger = LoggerFactory.getLogger(MultiroomPlusHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(MultiroomPlusHandler.class);
 
     private ScheduledFuture<?> pollingJob;
 
@@ -57,50 +57,44 @@ public class MultiroomPlusHandler extends BaseThingHandler {
         super(thing);
     }
 
-    private Runnable pollingRunnable = new Runnable() {
+    private Runnable pollingRunnable = () -> {
+        try {
+            String host = (String) getConfig().get(IP_ADDRESS);
+            int numberOfPorts = ((BigDecimal) getConfig().get(PORTS)).intValue();
 
-        @Override
-        public void run() {
-            try {
-                String host = (String) getConfig().get(IP_ADDRESS);
-                int numberOfPorts = ((BigDecimal) getConfig().get(PORTS)).intValue();
+            String httpMethod = "GET";
+            String url = "http://" + host + "/status_show.shtml";
 
-                String httpMethod = "GET";
-                String url = "http://" + host + "/status_show.shtml";
+            if (isNotBlank(httpMethod) && isNotBlank(url)) {
+                String response = HttpUtil.executeUrl(httpMethod, url, null, null, null, timeout);
 
-                if (isNotBlank(httpMethod) && isNotBlank(url)) {
-                    String response = HttpUtil.executeUrl(httpMethod, url, null, null, null, timeout);
+                if (response != null) {
+                    updateStatus(ThingStatus.ONLINE);
 
-                    if (response != null) {
-                        updateStatus(ThingStatus.ONLINE);
+                    for (int i = 1; i <= numberOfPorts; i++) {
+                        Pattern p = Pattern.compile("var out" + i + "var = (.*);");
+                        Matcher m = p.matcher(response);
 
-                        for (int i = 1; i <= numberOfPorts; i++) {
-                            Pattern p = Pattern.compile("var out" + i + "var = (.*);");
-                            Matcher m = p.matcher(response);
-
-                            while (m.find()) {
-                                DecimalType decimalType = new DecimalType(m.group(1));
-                                updateState(new ChannelUID(getThing().getUID(), Port.get(i).channelID()), decimalType);
-                            }
+                        while (m.find()) {
+                            DecimalType decimalType = new DecimalType(m.group(1));
+                            updateState(new ChannelUID(getThing().getUID(), Port.get(i).channelID()), decimalType);
                         }
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE);
                     }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE);
                 }
-            } catch (Exception e) {
-                logger.warn("An exception occurred while polling the HDanwywhere matrix: '{}'", e.getMessage());
             }
+        } catch (Exception e) {
+            logger.warn("An exception occurred while polling the HDanwywhere matrix: '{}'", e.getMessage());
         }
     };
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof RefreshType) {
             // Simply schedule a single run of the polling runnable to refresh all channels
             scheduler.schedule(pollingRunnable, 0, TimeUnit.SECONDS);
         } else {
-
             String channelID = channelUID.getId();
 
             String host = (String) getConfig().get(IP_ADDRESS);
@@ -117,7 +111,6 @@ public class MultiroomPlusHandler extends BaseThingHandler {
                 logger.warn("Output port {} goes beyond the physical number of {} ports available on the matrix {}",
                         new Object[] { outputPort, numberOfPorts, host });
             } else {
-
                 String httpMethod = "GET";
                 String url = "http://" + host + "/switch.cgi?command=3&data0=";
 
@@ -155,8 +148,8 @@ public class MultiroomPlusHandler extends BaseThingHandler {
 
     private synchronized void onUpdate() {
         if (pollingJob == null || pollingJob.isCancelled()) {
-            int polling_interval = ((BigDecimal) getConfig().get(POLLING_INTERVAL)).intValue();
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, polling_interval, TimeUnit.SECONDS);
+            int pollingInterval = ((BigDecimal) getConfig().get(POLLING_INTERVAL)).intValue();
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, pollingInterval, TimeUnit.SECONDS);
         }
     }
 }

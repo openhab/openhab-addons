@@ -2,14 +2,14 @@
 <config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
-        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
-    <config-description uri="channel-type:onebusaway:config">
-        <parameter name="offset" type="integer" min="0" max="3600">
-            <label>Offset</label>
-            <description>Moves an event or datetime value backward (in seconds)</description>
-            <default>0</default>
-        </parameter>
-    </config-description>
+	<config-description uri="channel-type:onebusaway:config">
+		<parameter name="offset" type="integer" min="0" max="3600">
+			<label>Offset</label>
+			<description>Moves an event or datetime value backward (in seconds)</description>
+			<default>0</default>
+		</parameter>
+	</config-description>
 
 </config-description:config-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -30,12 +30,12 @@ import org.slf4j.LoggerFactory;
  */
 public class RMEThingHandler extends SerialThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(RMEThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(RMEThingHandler.class);
 
-    private static StringType AUTOMATIC = new StringType("Automatic");
-    private static StringType CITY = new StringType("City");
-    private static StringType MANUAL = new StringType("Manual");
-    private static StringType RAIN = new StringType("Rain");
+    private static final StringType AUTOMATIC = new StringType("Automatic");
+    private static final StringType CITY = new StringType("City");
+    private static final StringType MANUAL = new StringType("Manual");
+    private static final StringType RAIN = new StringType("Rain");
 
     public RMEThingHandler(Thing thing) {
         super(thing);
@@ -73,7 +73,6 @@ public class RMEThingHandler extends SerialThingHandler {
 
     @Override
     public void onDataReceived(String line) {
-
         line = StringUtils.chomp(line);
 
         // little hack to overcome Locale limits of the RME Rain Manager
@@ -82,13 +81,12 @@ public class RMEThingHandler extends SerialThingHandler {
         line = line.replace(",", ".");
         line = line.trim();
 
-        Pattern RESPONSE_PATTERN = Pattern.compile("(.*);(0|1);(0|1);(0|1);(0|1);(0|1);(0|1);(0|1);(0|1);(0|1)");
+        Pattern responsePattern = Pattern.compile("(.*);(0|1);(0|1);(0|1);(0|1);(0|1);(0|1);(0|1);(0|1);(0|1)");
 
         try {
-
             logger.trace("Processing '{}'", line);
 
-            Matcher matcher = RESPONSE_PATTERN.matcher(line);
+            Matcher matcher = responsePattern.matcher(line);
             if (matcher.matches()) {
                 for (int i = 1; i <= matcher.groupCount(); i++) {
                     switch (DataField.get(i)) {

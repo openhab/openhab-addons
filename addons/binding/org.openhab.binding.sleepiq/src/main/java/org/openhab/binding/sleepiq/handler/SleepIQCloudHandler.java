@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -61,13 +61,6 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
     private ExpiringCache<FamilyStatus> statusCache;
 
     private ScheduledFuture<?> pollingJob;
-
-    private Runnable pollingRunnable = new Runnable() {
-        @Override
-        public void run() {
-            refreshBedStatus();
-        }
-    };
 
     private SleepIQ cloud;
 
@@ -138,7 +131,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
     private synchronized void updateListenerManagement() {
         if (!bedStatusListeners.isEmpty() && (pollingJob == null || pollingJob.isCancelled())) {
             int pollingInterval = getPollingInterval();
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, pollingInterval, pollingInterval,
+            pollingJob = scheduler.scheduleWithFixedDelay(this::refreshBedStatus, pollingInterval, pollingInterval,
                     TimeUnit.SECONDS);
         } else if (bedStatusListeners.isEmpty() && pollingJob != null && !pollingJob.isCancelled()) {
             pollingJob.cancel(true);

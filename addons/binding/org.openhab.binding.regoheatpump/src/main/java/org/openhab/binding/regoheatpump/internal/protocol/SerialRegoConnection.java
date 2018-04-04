@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -37,12 +37,11 @@ public class SerialRegoConnection implements RegoConnection {
     public void connect() throws IOException {
         if (isPortNameExist(portName)) {
             serialPort = new NRSerialPort(portName, baudRate);
-            if (serialPort.connect() == false) {
+            if (!serialPort.connect()) {
                 throw new IOException("Failed to connect on port " + portName);
             }
 
             logger.debug("Connected to {}", portName);
-
         } else {
             throw new IOException("Serial port with name " + portName + " does not exist. Available port names: "
                     + NRSerialPort.getAvailableSerialPorts());

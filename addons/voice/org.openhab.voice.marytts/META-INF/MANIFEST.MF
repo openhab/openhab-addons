@@ -26,7 +26,7 @@ Bundle-Name: MaryTTS Voice Service
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.voice.marytts;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Import-Package: 
  javax.sound.sampled,
  org.apache.commons.collections.map,

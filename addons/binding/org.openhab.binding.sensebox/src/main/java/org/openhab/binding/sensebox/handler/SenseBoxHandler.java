@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -54,7 +54,8 @@ public class SenseBoxHandler extends BaseThingHandler {
 
     private static final String CACHE_KEY_DATA = "DATA";
 
-    private final ExpiringCacheMap<String, SenseBoxData> cache = new ExpiringCacheMap<String, SenseBoxData>(CACHE_EXPIRY);
+    private final ExpiringCacheMap<String, SenseBoxData> cache = new ExpiringCacheMap<String, SenseBoxData>(
+            CACHE_EXPIRY);
 
     private final SenseBoxAPIConnection connection = new SenseBoxAPIConnection();
 
@@ -69,8 +70,7 @@ public class SenseBoxHandler extends BaseThingHandler {
         thingConfiguration = getConfigAs(SenseBoxConfiguration.class);
 
         String senseBoxId = thingConfiguration.getSenseBoxId();
-        logger.debug("Thing Configuration {} initialized {}", getThing().getUID().toString(),
-                senseBoxId);
+        logger.debug("Thing Configuration {} initialized {}", getThing().getUID().toString(), senseBoxId);
 
         String offlineReason = "";
         boolean validConfig = true;
@@ -123,39 +123,35 @@ public class SenseBoxHandler extends BaseThingHandler {
     }
 
     private void startAutomaticRefresh() {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                logger.debug("Refreshing data for box {}, scheduled after {} seconds...",
-                        thingConfiguration.getSenseBoxId(), thingConfiguration.getRefreshInterval());
+        Runnable runnable = () -> {
+            logger.debug("Refreshing data for box {}, scheduled after {} seconds...",
+                    thingConfiguration.getSenseBoxId(), thingConfiguration.getRefreshInterval());
 
-                data = fetchData();
-                if (ThingStatus.ONLINE == data.getStatus()) {
+            data = fetchData();
+            if (ThingStatus.ONLINE == data.getStatus()) {
+                publishProperties();
 
-                    publishProperties();
+                publishDataForChannel(CHANNEL_LOCATION);
 
-                    publishDataForChannel(CHANNEL_LOCATION);
+                publishDataForChannel(CHANNEL_UV_INTENSITY);
+                publishDataForChannel(CHANNEL_LUMINANCE);
+                publishDataForChannel(CHANNEL_PRESSURE);
+                publishDataForChannel(CHANNEL_HUMIDITY);
+                publishDataForChannel(CHANNEL_TEMPERATURE);
+                publishDataForChannel(CHANNEL_PARTICULATE_MATTER_2_5);
+                publishDataForChannel(CHANNEL_PARTICULATE_MATTER_10);
 
-                    publishDataForChannel(CHANNEL_UV_INTENSITY);
-                    publishDataForChannel(CHANNEL_LUMINANCE);
-                    publishDataForChannel(CHANNEL_PRESSURE);
-                    publishDataForChannel(CHANNEL_HUMIDITY);
-                    publishDataForChannel(CHANNEL_TEMPERATURE);
-                    publishDataForChannel(CHANNEL_PARTICULATE_MATTER_2_5);
-                    publishDataForChannel(CHANNEL_PARTICULATE_MATTER_10);
+                publishDataForChannel(CHANNEL_UV_INTENSITY_LR);
+                publishDataForChannel(CHANNEL_LUMINANCE_LR);
+                publishDataForChannel(CHANNEL_PRESSURE_LR);
+                publishDataForChannel(CHANNEL_HUMIDITY_LR);
+                publishDataForChannel(CHANNEL_TEMPERATURE_LR);
+                publishDataForChannel(CHANNEL_PARTICULATE_MATTER_2_5_LR);
+                publishDataForChannel(CHANNEL_PARTICULATE_MATTER_10_LR);
 
-                    publishDataForChannel(CHANNEL_UV_INTENSITY_LR);
-                    publishDataForChannel(CHANNEL_LUMINANCE_LR);
-                    publishDataForChannel(CHANNEL_PRESSURE_LR);
-                    publishDataForChannel(CHANNEL_HUMIDITY_LR);
-                    publishDataForChannel(CHANNEL_TEMPERATURE_LR);
-                    publishDataForChannel(CHANNEL_PARTICULATE_MATTER_2_5_LR);
-                    publishDataForChannel(CHANNEL_PARTICULATE_MATTER_10_LR);
-
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                }
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         };
 
@@ -164,7 +160,7 @@ public class SenseBoxHandler extends BaseThingHandler {
     }
 
     private SenseBoxData fetchData() {
-       return cache.get(CACHE_KEY_DATA);
+        return cache.get(CACHE_KEY_DATA);
     }
 
     private void publishProperties() {

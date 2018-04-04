@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,6 +11,7 @@ package org.openhab.binding.squeezebox.internal.discovery;
 import static org.openhab.binding.squeezebox.SqueezeBoxBindingConstants.SQUEEZEBOXPLAYER_THING_TYPE;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +24,7 @@ import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayer;
 import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayerEventListener;
 import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayerHandler;
 import org.openhab.binding.squeezebox.handler.SqueezeBoxServerHandler;
+import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Dan Cunningham
  * @author Mark Hilbush - added method to cancel request player job, and to set thing properties
  * @author Mark Hilbush - Added duration channel
+ * @author Mark Hilbush - Added event to update favorites list
  *
  */
 public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryService
@@ -107,15 +110,10 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
      * Tells the bridge to request a list of players
      */
     private void setupRequestPlayerJob() {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                squeezeBoxServerHandler.requestPlayers();
-            }
-        };
-
-        logger.debug("request player job scheduled to run every {} seconds", TTL);
-        requestPlayerJob = scheduler.scheduleWithFixedDelay(runnable, 10, TTL, TimeUnit.SECONDS);
+        logger.debug("Request player job scheduled to run every {} seconds", TTL);
+        requestPlayerJob = scheduler.scheduleWithFixedDelay(() -> {
+            squeezeBoxServerHandler.requestPlayers();
+        }, 10, TTL, TimeUnit.SECONDS);
     }
 
     // we can ignore the other events
@@ -128,7 +126,11 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
     }
 
     @Override
-    public void volumeChangeEvent(String mac, int volume) {
+    public void absoluteVolumeChangeEvent(String mac, int volume) {
+    }
+
+    @Override
+    public void relativeVolumeChangeEvent(String mac, int volumeChange) {
     }
 
     @Override
@@ -189,5 +191,9 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
 
     @Override
     public void irCodeChangeEvent(String mac, String ircode) {
+    }
+
+    @Override
+    public void updateFavoritesListEvent(List<Favorite> favorites) {
     }
 }

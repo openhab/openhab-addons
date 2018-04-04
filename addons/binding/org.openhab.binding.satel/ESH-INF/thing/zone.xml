@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="satel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="zone">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ethm-1" />
+			<bridge-type-ref id="int-rs" />
+		</supported-bridge-type-refs>
+
+		<label>Zone</label>
+		<description><![CDATA[A separated part of the protected area that can supervised by a detector connected to the alarm system.<br>The system supports the following zones:<ul>
+<li>hardwired - on the control panel electronics board, in keypads and expanders. The number of available hardwired zones is determined by the control panel during identification procedure.</li>
+<li>wireless - in the INTEGRA 128-WRL control panel and/or when the ACU-120, ACU-270, ACU-100 or ACU-250 controller is connected. The number of available wireless zones depends on the number of wireless devices registered in the system and is determined during the procedure of adding the devices.</li>
+<li>virtual - zones which physically do not exist, but have been programmed as FOLLOW OUTPUT or are controlled by means of a keyfob.</li></ul>]]></description>
+
+		<channels>
+			<channel typeId="violation" id="violation" />
+			<channel typeId="tamper" id="tamper" />
+			<channel typeId="alarm" id="alarm" />
+			<channel typeId="tamper_alarm" id="tamper_alarm" />
+			<channel typeId="alarm_memory" id="alarm_memory" />
+			<channel typeId="tamper_alarm_memory" id="tamper_alarm_memory" />
+			<channel typeId="bypass" id="bypass" />
+			<channel typeId="no_violation_trouble" id="no_violation_trouble" />
+			<channel typeId="long_violation_trouble" id="long_violation_trouble" />
+			<channel typeId="isolate" id="isolate" />
+			<channel typeId="masked" id="masked" />
+			<channel typeId="masked_memory" id="masked_memory" />
+		</channels>
+
+		<config-description>
+			<parameter name="id" type="integer" min="1" max="256" required="true">
+				<label>Zone number</label>
+				<description>Number that identifies the zone in the alarm system</description>
+			</parameter>
+			<parameter name="invertState" type="boolean" required="false">
+				<label>Invert state</label>
+				<description>Changes active (ON) state to 0</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="violation">
+		<item-type>Switch</item-type>
+		<label>Violation</label>
+		<description>Active when violation is detected in the zone</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="tamper">
+		<item-type>Switch</item-type>
+		<label>Tamper</label>
+		<description>Active when detector in the zone is tampered</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="alarm">
+		<item-type>Switch</item-type>
+		<label>Alarm</label>
+		<description>Active when violation is detected in the zone and zone is armed</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="tamper_alarm">
+		<item-type>Switch</item-type>
+		<label>Tamper alarm</label>
+		<description>Active when detector in the zone is tampered and zone is armed</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="alarm_memory">
+		<item-type>Switch</item-type>
+		<label>Alarm memory</label>
+		<description>Memorized alarm state for the zone</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="tamper_alarm_memory">
+		<item-type>Switch</item-type>
+		<label>Tamper alarm memory</label>
+		<description>Memorized tamper alarm state for the zone</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="bypass">
+		<item-type>Switch</item-type>
+		<label>Bypass</label>
+		<description>Active when zone is bypassed</description>
+	</channel-type>
+
+	<channel-type id="no_violation_trouble" advanced="true">
+		<item-type>Switch</item-type>
+		<label>No violation trouble</label>
+		<description>Active when no violation has been detected in the zone for configured time</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="long_violation_trouble" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Long violation trouble</label>
+		<description>Active when violation in the zone lasts longer than configured time</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="isolate" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Isolate</label>
+		<description>Active when zone is isolated</description>
+	</channel-type>
+
+	<channel-type id="masked" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Masked</label>
+		<description>Active when zone is masked</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="masked_memory" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Masked memory</label>
+		<description>Memorized masked state for the zone</description>
+		<state readOnly="true" />
+	</channel-type>
+
+</thing:thing-descriptions>

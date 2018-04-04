@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,11 +18,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Abstract class for Things that are managed through an HD Power View Hub
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 abstract class AbstractHubbedThingHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(AbstractHubbedThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractHubbedThingHandler.class);
 
     public AbstractHubbedThingHandler(Thing thing) {
         super(thing);

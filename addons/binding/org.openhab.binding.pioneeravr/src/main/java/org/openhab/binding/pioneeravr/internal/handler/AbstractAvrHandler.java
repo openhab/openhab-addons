@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -77,20 +77,17 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
         updateStatus(ThingStatus.ONLINE);
 
         // Start the status checker
-        Runnable statusChecker = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    logger.debug("Checking status of AVR @{}", connection.getConnectionName());
-                    checkStatus();
-                } catch (LinkageError e) {
-                    logger.warn(
-                            "Failed to check the status for AVR @{}. If a Serial link is used to connect to the AVR, please check that the Bundle org.openhab.io.transport.serial is available. Cause: {}",
-                            connection.getConnectionName(), e.getMessage());
-                    // Stop to check the status of this AVR.
-                    if (statusCheckerFuture != null) {
-                        statusCheckerFuture.cancel(false);
-                    }
+        Runnable statusChecker = () -> {
+            try {
+                logger.debug("Checking status of AVR @{}", connection.getConnectionName());
+                checkStatus();
+            } catch (LinkageError e) {
+                logger.warn(
+                        "Failed to check the status for AVR @{}. If a Serial link is used to connect to the AVR, please check that the Bundle org.openhab.io.transport.serial is available. Cause: {}",
+                        connection.getConnectionName(), e.getMessage());
+                // Stop to check the status of this AVR.
+                if (statusCheckerFuture != null) {
+                    statusCheckerFuture.cancel(false);
                 }
             }
         };

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -60,6 +60,7 @@ public abstract class Cm11aAbstractHandler extends BaseThingHandler {
      */
     static final int X10_DIM_INCREMENTS = 22;
     static final String HOUSE_UNIT_CODE = "houseUnitCode";
+    static final String NO_BRIDGE_ERROR = "No bridge found using house unit code ";
 
     private final Logger logger = LoggerFactory.getLogger(Cm11aAbstractHandler.class);
 
@@ -75,13 +76,15 @@ public abstract class Cm11aAbstractHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         Configuration config = thing.getConfiguration();
-        if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            return;
-        }
 
         houseUnitCode = (String) config.get(HOUSE_UNIT_CODE);
         Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.warn("{}", NO_BRIDGE_ERROR + houseUnitCode);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, NO_BRIDGE_ERROR + houseUnitCode);
+            return;
+        }
+
         if (ThingStatus.ONLINE.equals(bridge.getStatus())) {
             updateStatus(ThingStatus.ONLINE);
         } else {
@@ -100,7 +103,7 @@ public abstract class Cm11aAbstractHandler extends BaseThingHandler {
 
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            logger.debug("CM11A is not online.", bridgeStatusInfo.getStatus());
+            logger.debug("CM11A is not online. Bridge status: {}", bridgeStatusInfo.getStatus());
             return;
         }
 

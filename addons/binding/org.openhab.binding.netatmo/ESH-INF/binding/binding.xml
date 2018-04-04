@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <binding:binding id="netatmo"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-    <name>Netatmo Binding</name>
-    <description>The Netatmo binding integrates the Weather Station with companion modules, the Healthy Home Coach as well as Thermostat Plug.</description>
-    <author>Gaël L'hopital</author>
+	<name>Netatmo Binding</name>
+	<description>The Netatmo binding integrates Weather Station with companion modules, Healthy Home Coach, Thermostat Plug and Welcome Camera.</description>
+	<author>Gaël L'hopital and Ing. Peter Weiss</author>
 
 </binding:binding>

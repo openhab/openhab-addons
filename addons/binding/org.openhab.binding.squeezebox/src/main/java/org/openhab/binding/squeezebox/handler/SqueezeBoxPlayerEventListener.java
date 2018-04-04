@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,11 +8,16 @@
  */
 package org.openhab.binding.squeezebox.handler;
 
+import java.util.List;
+
+import org.openhab.binding.squeezebox.internal.model.Favorite;
+
 /**
  * @author Markus Wolters
  * @author Ben Jones
  * @author Dan Cunningham (OH2 Port)
  * @author Mark Hilbush added durationEvent
+ * @author Mark Hilbush - Added event to update favorites list
  */
 public interface SqueezeBoxPlayerEventListener {
 
@@ -22,7 +27,21 @@ public interface SqueezeBoxPlayerEventListener {
 
     void modeChangeEvent(String mac, String mode);
 
-    void volumeChangeEvent(String mac, int volume);
+    /**
+     * Reports a new absolute volume for a given player.
+     *
+     * @param mac
+     * @param volume
+     */
+    void absoluteVolumeChangeEvent(String mac, int volume);
+
+    /**
+     * Reports a relative volume change for a given player.
+     *
+     * @param mac
+     * @param volumeChange
+     */
+    void relativeVolumeChangeEvent(String mac, int volumeChange);
 
     void muteChangeEvent(String mac, boolean mute);
 
@@ -53,4 +72,6 @@ public interface SqueezeBoxPlayerEventListener {
     void remoteTitleChangeEvent(String mac, String title);
 
     void irCodeChangeEvent(String mac, String ircode);
+
+    void updateFavoritesListEvent(List<Favorite> favorites);
 }

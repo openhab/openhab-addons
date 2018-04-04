@@ -1,6 +1,8 @@
 # Miele@home Binding
 
-This binding integrates Miele@home appliances. Miele@home is a Zigbee based network to interconnect and control Miele appliances that are equipped with special modules. See [www.miele.de](http://www.miele.de) for the list of available appliances.
+This binding integrates Miele@home appliances.
+Miele@home is a Zigbee based network to interconnect and control Miele appliances that are equipped with special modules.
+See [www.miele.de](http://www.miele.de) for the list of available appliances.
 
 
 ## Supported Things
@@ -17,14 +19,16 @@ Washingmachine
 
 ## Discovery
 
-The binding is able to auto-discover the Miele XGW3000 gateway. When an XGW3000 gateway is discovered, all appliances can be subsequently discovered
+The binding is able to auto-discover the Miele XGW3000 gateway.
+When an XGW3000 gateway is discovered, all appliances can be subsequently discovered.
 
 
 ## Thing Configuration
 
-Each appliances needs the device Zigbee UID as configuration parameter. The Zigbee UID is nowhere to be found on the appliances, but since  the discovery works quite reliable, a manual configuration is not needed.
+Each appliances needs the device Zigbee UID as a configuration parameter.
+The Zigbee UID is nowhere to be found on the appliances, but since the discovery works quite reilably, a manual configuration is not needed.
 
-However, in the thing file, a manual configuration looks e.g. like
+However, in the thing file, a manual configuration looks like this:
 
 ```
 Bridge miele:xgw3000:dilbeek [ipAddress="192.168.0.18", interface="192.168.0.5"] {
@@ -45,8 +49,7 @@ Thing washingmachine washingmachine [uid="001d63fffe020505#210"]
 
 The definition of the channels in use can best be checked in the [source repository](https://github.com/openhab/openhab2-addons/tree/master/addons/binding/org.openhab.binding.miele/ESH-INF/thing).
 
-
-## Full Example
+## Example
 
 demo.items:
 
@@ -58,4 +61,3 @@ Number MieleFridgeTarget (gMiele,gMieleFridge) {channel="miele:fridge:dilbeek:fr
 Contact MieleFridgeDoor (gMiele,gMieleFridge) {channel="miele:fridge:dilbeek:fridge:door"}
 Switch MieleFridgeStart (gMiele,gMieleFridge) {channel="miele:fridge:dilbeek:fridge:start"}
 ```
-

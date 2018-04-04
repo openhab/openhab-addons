@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -63,7 +63,6 @@ public class ToonPlugHandler extends AbstractToonHandler {
             BigDecimal d = new BigDecimal(info.getCurrentUsage()).setScale(1, BigDecimal.ROUND_HALF_UP);
             updateChannel(CHANNEL_POWER_CONSUMPTION, new DecimalType(d));
         }
-
     }
 
     @Override
@@ -71,12 +70,12 @@ public class ToonPlugHandler extends AbstractToonHandler {
         logger.debug("Updating channels");
 
         // bridge has collect new data samples
-        String UUID = getThing().getProperties().get(PROPERTY_DEV_UUID);
+        String uuid = getThing().getProperties().get(PROPERTY_DEV_UUID);
 
         // process results
         if (state.getDeviceStatusInfo() != null && state.getDeviceStatusInfo().getDevice() != null) {
             for (DeviceConfig config : state.getDeviceStatusInfo().getDevice()) {
-                if (UUID.equals(config.getDevUUID())) {
+                if (uuid.equals(config.getDevUUID())) {
                     updateDevice(config);
                     break;
                 }

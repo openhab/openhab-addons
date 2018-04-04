@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,11 +12,21 @@ import static org.openhab.binding.jeelink.JeeLinkBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.ReadingPublisher;
 import org.openhab.binding.jeelink.internal.RollingAveragePublisher;
@@ -38,26 +48,92 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
     }
 
     @Override
-    public String getSketchName() {
-        return "LaCrosseITPlusReader";
+    public Class<LaCrosseTemperatureReading> getReadingClass() {
+        return LaCrosseTemperatureReading.class;
     }
 
     @Override
     public ReadingPublisher<LaCrosseTemperatureReading> createPublisher() {
+        return new ReadingPublisher<LaCrosseTemperatureReading>() {
+            private final Map<Integer, ReadingPublisher<LaCrosseTemperatureReading>> channelPublishers = new HashMap<>();
+
+            @Override
+            public void publish(LaCrosseTemperatureReading reading) {
+                if (reading != null) {
+                    int channelNo = reading.getChannel();
+
+                    ReadingPublisher<LaCrosseTemperatureReading> publisher;
+                    synchronized (channelPublishers) {
+                        publisher = channelPublishers.get(channelNo);
+                        if (publisher == null) {
+                            publisher = createPublisherForChannel(channelNo);
+                            channelPublishers.put(channelNo, publisher);
+
+                            createMissingChannels(reading.getChannel());
+                        }
+                    }
+
+                    publisher.publish(reading);
+                }
+            }
+
+            private void createMissingChannels(int channelNo) {
+                List<Channel> missingChannels = new ArrayList<>();
+
+                String idSuffix = channelNo > 1 ? String.valueOf(channelNo) : "";
+                String labelSuffix = channelNo > 1 ? " " + channelNo : "";
+                for (String channelName : new String[] { TEMPERATURE_CHANNEL, HUMIDITY_CHANNEL }) {
+                    if (getThing().getChannel(channelName + idSuffix) == null) {
+                        missingChannels.add(ChannelBuilder
+                                .create(new ChannelUID(getThing().getUID(), channelName + idSuffix), "Number")
+                                .withType(new ChannelTypeUID(getThing().getThingTypeUID().getBindingId(), channelName))
+                                .withLabel(StringUtils.capitalize(channelName + labelSuffix)).build());
+                    }
+                }
+                missingChannels.addAll(getThing().getChannels());
+
+                if (!missingChannels.isEmpty()) {
+                    ThingBuilder thingBuilder = editThing();
+                    thingBuilder.withChannels(missingChannels);
+                    updateThing(thingBuilder.build());
+                }
+            }
+
+            @Override
+            public void dispose() {
+                synchronized (channelPublishers) {
+                    for (ReadingPublisher<LaCrosseTemperatureReading> p : channelPublishers.values()) {
+                        p.dispose();
+                    }
+                    channelPublishers.clear();
+                }
+            }
+        };
+    }
+
+    public ReadingPublisher<LaCrosseTemperatureReading> createPublisherForChannel(int channelNo) {
         ReadingPublisher<LaCrosseTemperatureReading> publisher = new ReadingPublisher<LaCrosseTemperatureReading>() {
             @Override
             public void publish(LaCrosseTemperatureReading reading) {
                 if (reading != null && getThing().getStatus() == ThingStatus.ONLINE) {
                     BigDecimal temp = new BigDecimal(reading.getTemperature()).setScale(1, RoundingMode.HALF_UP);
 
-                    logger.debug(
-                            "updating states for thing {} ({}): temp={} ({}), humidity={}, batteryNew={}, batteryLow={}",
-                            getThing().getLabel(), getThing().getUID().getId(), temp, reading.getTemperature(),
-                            reading.getHumidity(), reading.isBatteryNew(), reading.isBatteryLow());
-                    updateState(TEMPERATURE_CHANNEL, new DecimalType(temp));
-                    updateState(HUMIDITY_CHANNEL, new DecimalType(reading.getHumidity()));
-                    updateState(BATTERY_NEW_CHANNEL, reading.isBatteryNew() ? OnOffType.ON : OnOffType.OFF);
-                    updateState(BATTERY_LOW_CHANNEL, reading.isBatteryLow() ? OnOffType.ON : OnOffType.OFF);
+                    if (channelNo == 1) {
+                        logger.debug(
+                                "updating states for thing {} ({}): temp={} ({}), humidity={}, batteryNew={}, batteryLow={}",
+                                getThing().getLabel(), getThing().getUID().getId(), temp, reading.getTemperature(),
+                                reading.getHumidity(), reading.isBatteryNew(), reading.isBatteryLow());
+                        updateState(TEMPERATURE_CHANNEL, new DecimalType(temp));
+                        updateState(HUMIDITY_CHANNEL, new DecimalType(reading.getHumidity()));
+                        updateState(BATTERY_NEW_CHANNEL, reading.isBatteryNew() ? OnOffType.ON : OnOffType.OFF);
+                        updateState(BATTERY_LOW_CHANNEL, reading.isBatteryLow() ? OnOffType.ON : OnOffType.OFF);
+                    } else {
+                        logger.debug("updating states for channel {} of thing {} ({}): temp={} ({}), humidity={}",
+                                reading.getChannel(), getThing().getLabel(), getThing().getUID().getId(), temp,
+                                reading.getTemperature(), reading.getHumidity());
+                        updateState(TEMPERATURE_CHANNEL + reading.getChannel(), new DecimalType(temp));
+                        updateState(HUMIDITY_CHANNEL + reading.getChannel(), new DecimalType(reading.getHumidity()));
+                    }
                 }
             }
 

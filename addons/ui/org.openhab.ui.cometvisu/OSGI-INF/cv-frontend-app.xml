@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2010-2017 by the respective copyright holders.
+	Copyright (c) 2010-2018 by the respective copyright holders.
 
-    All rights reserved. This program and the accompanying materials
-    are made available under the terms of the Eclipse Public License v1.0
-    which accompanies this distribution, and is available at
-    http://www.eclipse.org/legal/epl-v10.html
+	All rights reserved. This program and the accompanying materials
+	are made available under the terms of the Eclipse Public License v1.0
+	which accompanies this distribution, and is available at
+	http://www.eclipse.org/legal/epl-v10.html
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" configuration-policy="optional" immediate="true" name="org.openhab.cometvisu">
-   <implementation class="org.openhab.ui.cometvisu.internal.servlet.CometVisuApp"/>
-   <service>
-      <provide interface="org.openhab.ui.cometvisu.internal.servlet.CometVisuApp"/>
-   </service>
-   <reference bind="setHttpService" cardinality="1..1" interface="org.osgi.service.http.HttpService" name="HttpService" policy="static" unbind="unsetHttpService"/>
-   <reference bind="setItemUIRegistry" cardinality="1..1" interface="org.eclipse.smarthome.ui.items.ItemUIRegistry" name="ItemUIRegistry" policy="static" unbind="unsetItemUIRegistry"/>
-   <reference bind="setItemRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.items.ItemRegistry" name="ItemRegistry" policy="static" unbind="unsetItemRegistry"/>
-   <reference bind="addSitemapProvider" cardinality="0..n" interface="org.eclipse.smarthome.model.sitemap.SitemapProvider" name="SitemapProvider" policy="dynamic" unbind="removeSitemapProvider"/>
-   <reference bind="addIconProvider" cardinality="1..n" interface="org.eclipse.smarthome.ui.icon.IconProvider" name="IconProvider" policy="dynamic" unbind="removeIconProvider"/>
-   <reference bind="addPersistenceService" cardinality="0..n" interface="org.eclipse.smarthome.core.persistence.PersistenceService" name="PersistenceService" policy="dynamic" unbind="removePersistenceService"/>
-   <reference bind="setEventPublisher" cardinality="1..1" interface="org.eclipse.smarthome.core.events.EventPublisher" name="EventPublisher" policy="static" unbind="unsetEventPublisher"/>
-   <reference bind="setPHProvider" cardinality="0..1" interface="org.openhab.ui.cometvisu.php.PHProvider" name="PHProvider" policy="dynamic" policyOption="greedy" unbind="unsetPHProvider"/>
-   <property name="service.pid" type="String" value="org.openhab.cometvisu"/>
-   <property name="service.config.description.uri" type="String" value="ui:cometvisu"/>
-   <property name="service.config.label" type="String" value="CometVisu"/>
-   <property name="service.config.category" type="String" value="ui"/>
+	<implementation class="org.openhab.ui.cometvisu.internal.servlet.CometVisuApp"/>
+	<service>
+		<provide interface="org.openhab.ui.cometvisu.internal.servlet.CometVisuApp"/>
+	</service>
+	<reference bind="setHttpService" cardinality="1..1" interface="org.osgi.service.http.HttpService" name="HttpService" policy="static" unbind="unsetHttpService"/>
+	<reference bind="setItemUIRegistry" cardinality="1..1" interface="org.eclipse.smarthome.ui.items.ItemUIRegistry" name="ItemUIRegistry" policy="static" unbind="unsetItemUIRegistry"/>
+	<reference bind="setItemRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.items.ItemRegistry" name="ItemRegistry" policy="static" unbind="unsetItemRegistry"/>
+	<reference bind="addSitemapProvider" cardinality="0..n" interface="org.eclipse.smarthome.model.sitemap.SitemapProvider" name="SitemapProvider" policy="dynamic" unbind="removeSitemapProvider"/>
+	<reference bind="addIconProvider" cardinality="1..n" interface="org.eclipse.smarthome.ui.icon.IconProvider" name="IconProvider" policy="dynamic" unbind="removeIconProvider"/>
+	<reference bind="addPersistenceService" cardinality="0..n" interface="org.eclipse.smarthome.core.persistence.PersistenceService" name="PersistenceService" policy="dynamic" unbind="removePersistenceService"/>
+	<reference bind="setEventPublisher" cardinality="1..1" interface="org.eclipse.smarthome.core.events.EventPublisher" name="EventPublisher" policy="static" unbind="unsetEventPublisher"/>
+	<reference bind="setPHProvider" cardinality="0..1" interface="org.openhab.ui.cometvisu.php.PHProvider" name="PHProvider" policy="dynamic" policyOption="greedy" unbind="unsetPHProvider"/>
+	<property name="service.pid" type="String" value="org.openhab.cometvisu"/>
+	<property name="service.config.description.uri" type="String" value="ui:cometvisu"/>
+	<property name="service.config.label" type="String" value="CometVisu"/>
+	<property name="service.config.category" type="String" value="ui"/>
 </scr:component>

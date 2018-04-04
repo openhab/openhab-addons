@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,6 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.homematic.internal.communicator.client;
+
+import static org.openhab.binding.homematic.HomematicBindingConstants.INSTALL_MODE_NORMAL;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -79,6 +81,9 @@ public abstract class RpcClient<T> {
         RpcRequest<T> request = createRpcRequest("init");
         request.addArg(getRpcCallbackUrl());
         request.addArg(clientId);
+        if (config.getGatewayInfo().isHomegear()) {
+            request.addArg(new Integer(0x22));
+        }
         sendMessage(config.getRpcPort(hmInterface), request);
     }
 
@@ -198,7 +203,7 @@ public abstract class RpcClient<T> {
      * exception.
      */
     private void setChannelDatapointValues(HmChannel channel) throws IOException {
-        for (HmDatapoint dp : channel.getDatapoints().values()) {
+        for (HmDatapoint dp : channel.getDatapoints()) {
             if (dp.isReadable() && !dp.isVirtual() && dp.getParamsetType() == HmParamsetType.VALUES) {
                 RpcRequest<T> request = createRpcRequest("getValue");
                 request.addArg(getRpcAddress(channel.getDevice().getAddress()) + ":" + channel.getNumber());
@@ -314,13 +319,42 @@ public abstract class RpcClient<T> {
 
     /**
      * Enables/disables the install mode for given seconds.
+     * 
+     * @param hmInterface specifies the interface to enable / disable install mode on
+     * @param enable if <i>true</i> it will be enabled, otherwise disabled
+     * @param seconds desired duration of install mode
+     * @throws IOException if RpcClient fails to propagate command
      */
     public void setInstallMode(HmInterface hmInterface, boolean enable, int seconds) throws IOException {
         RpcRequest<T> request = createRpcRequest("setInstallMode");
         request.addArg(enable);
         request.addArg(seconds);
-        request.addArg(1);
+        request.addArg(INSTALL_MODE_NORMAL);
+        logger.debug("Submitting setInstallMode(on={}, time={}, mode={}) ", enable, seconds, INSTALL_MODE_NORMAL);
         sendMessage(config.getRpcPort(hmInterface), request);
+    }
+    
+    /**
+     * Returns the remaining time of <i>install_mode==true</i>
+     * 
+     * @param hmInterface specifies the interface on which install mode status is requested
+     * @return current duration in seconds that the controller will remain in install mode,
+     *         value of 0 means that the install mode is disabled
+     * @throws IOException if RpcClient fails to propagate command
+     */
+    public int getInstallMode(HmInterface hmInterface) throws IOException {
+        RpcRequest<T> request = createRpcRequest("getInstallMode");
+        Object[] result = sendMessage(config.getRpcPort(hmInterface), request);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Checking InstallMode: getInstallMode() request returned {} (remaining seconds in InstallMode=true)", result);
+        }
+        try {
+            return (int) result[0];
+        } catch (Exception cause) {
+            IOException wrappedException = new IOException("Failed to request install mode from interface " + hmInterface);
+            wrappedException.initCause(cause);
+            throw wrappedException;
+        }
     }
 
     /**

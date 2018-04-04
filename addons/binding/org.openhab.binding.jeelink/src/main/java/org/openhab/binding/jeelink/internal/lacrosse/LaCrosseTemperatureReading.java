@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,20 +18,22 @@ import org.openhab.binding.jeelink.internal.Reading;
 public class LaCrosseTemperatureReading implements Reading {
     private String sensorId;
     private int sensorType;
+    private int channel;
     private float temp;
     private int humidity;
     private boolean batteryNew;
     private boolean batteryLow;
 
-    public LaCrosseTemperatureReading(int sensorId, int sensorType, float temp, int humidity, boolean batteryNew,
-            boolean batteryLow) {
-        this(String.valueOf(sensorId), sensorType, temp, humidity, batteryNew, batteryLow);
+    public LaCrosseTemperatureReading(int sensorId, int sensorType, int channel, float temp, int humidity,
+            boolean batteryNew, boolean batteryLow) {
+        this(String.valueOf(sensorId), sensorType, channel, temp, humidity, batteryNew, batteryLow);
     }
 
-    public LaCrosseTemperatureReading(String sensorId, int sensorType, float temp, int humidity, boolean batteryNew,
-            boolean batteryLow) {
+    public LaCrosseTemperatureReading(String sensorId, int sensorType, int channel, float temp, int humidity,
+            boolean batteryNew, boolean batteryLow) {
         this.sensorId = sensorId;
         this.sensorType = sensorType;
+        this.channel = channel;
         this.temp = temp;
         this.humidity = humidity;
         this.batteryNew = batteryNew;
@@ -61,11 +63,15 @@ public class LaCrosseTemperatureReading implements Reading {
 
     @Override
     public String toString() {
-        return "sensorId=" + sensorId + ": temp=" + temp + ", hum=" + humidity + ", batLow=" + batteryLow + ", batNew="
-                + batteryNew;
+        return "sensorId=" + sensorId + ": channel=" + channel + ", temp=" + temp + ", hum=" + humidity + ", batLow="
+                + batteryLow + ", batNew=" + batteryNew;
     }
 
     public boolean isBatteryNew() {
         return batteryNew;
+    }
+
+    public int getChannel() {
+        return channel;
     }
 }

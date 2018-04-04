@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -370,7 +370,6 @@ public class GardenaSmartImpl implements GardenaSmart {
      */
     private synchronized <T> T executeRequest(HttpMethod method, String url, Object contentObject, Class<T> result)
             throws GardenaException {
-
         try {
             if (logger.isTraceEnabled()) {
                 logger.trace("{} request:  {}", method, url);
@@ -450,7 +449,7 @@ public class GardenaSmartImpl implements GardenaSmart {
         public void run() {
             try {
                 logger.debug("Refreshing gardena device data");
-                Map<String, Device> newDevicesById = new HashMap<String, Device>();
+                Map<String, Device> newDevicesById = new HashMap<>();
 
                 for (Location location : allLocations) {
                     Devices devices = loadDevices(location);

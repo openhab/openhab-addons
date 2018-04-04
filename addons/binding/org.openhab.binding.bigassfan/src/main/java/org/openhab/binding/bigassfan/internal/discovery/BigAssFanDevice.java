@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,22 +14,34 @@ package org.openhab.binding.bigassfan.internal.discovery;
  * @author Mark Hilbush - Initial contribution
  */
 public class BigAssFanDevice {
-    // Name of device (e.g. Master Bedroom Fan)
+    /**
+     * Name of device (e.g. Master Bedroom Fan)
+     */
     private String label;
 
-    // IP address of the device extracted from UDP packet
+    /**
+     * IP address of the device extracted from UDP packet
+     */
     private String ipAddress;
 
-    // MAC address of the device extracted from discovery message
+    /**
+     * MAC address of the device extracted from discovery message
+     */
     private String macAddress;
 
-    // Type of device extracted from discovery message (e.g. FAN or SWITCH)
+    /**
+     * Type of device extracted from discovery message (e.g. FAN or SWITCH)
+     */
     private String type;
 
-    // Model of device extracted from discovery message (e.g. HSERIES)
+    /**
+     * Model of device extracted from discovery message (e.g. HSERIES)
+     */
     private String model;
 
-    // The raw discovery message
+    /**
+     * The raw discovery message
+     */
     private String discoveryMessage;
 
     public String getLabel() {
@@ -86,6 +98,10 @@ public class BigAssFanDevice {
 
     public boolean isSwitch() {
         return type.toUpperCase().contains("SWITCH") ? true : false;
+    }
+
+    public boolean isLight() {
+        return type.toUpperCase().contains("LIGHT") ? true : false;
     }
 
     public void reset() {

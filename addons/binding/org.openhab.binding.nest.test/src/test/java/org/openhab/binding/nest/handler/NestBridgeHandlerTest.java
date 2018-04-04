@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,8 +25,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
-import org.openhab.binding.nest.internal.exceptions.FailedResolvingNestUrlException;
-import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
 
 /**
  * Tests cases for {@link NestBridgeHandler}.
@@ -46,15 +44,18 @@ public class NestBridgeHandlerTest {
     @Mock
     private Configuration configuration;
 
+    @Mock
+    private NestRedirectUrlSupplier redirectUrlSupplier;
+
     @Before
     public void setUp() {
         initMocks(this);
+
         handler = new NestBridgeHandler(bridge) {
             @Override
-            protected String getOrResolveRedirectUrl()
-                    throws FailedResolvingNestUrlException, InvalidAccessTokenException {
+            protected NestRedirectUrlSupplier getRedirectUrlSupplier() {
                 // we don't want to put extra load on real Nest servers when running unit tests
-                return "https://localhost";
+                return redirectUrlSupplier;
             }
         };
         handler.setCallback(callback);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -175,9 +175,6 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     public void onAppliancePropertyChanged(String UID, DeviceProperty dp) {
         String myUID = "hdm:ZigBee:" + (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 
-        String dpValue = StringUtils.strip(dp.Value);
-        dpValue = StringUtils.trim(dpValue);
-
         if (myUID.equals(UID)) {
             try {
                 DeviceMetaData dmd = null;
@@ -210,20 +207,20 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                     logger.trace("{} is not a valid channel for a {}", dp.Name, modelID);
                 }
 
-                if (selector != null && !selector.isProperty()) {
-                    ChannelUID theChannelUID = new ChannelUID(getThing().getUID(), selector.getChannelID());
-                    logger.trace("Update state of {} with '{}'",
-                            new Object[] { theChannelUID.toString(), dpValue });
+                String dpValue = StringUtils.trim(StringUtils.strip(dp.Value));
 
-                    if (dp.Value != null) {
-                        logger.trace("Update state of {} with getState '{}'",
-                                new Object[] { theChannelUID.toString(), selector.getState(dpValue, dmd) });
-                        updateState(theChannelUID, selector.getState(dpValue, dmd));
-                    } else {
-                        updateState(theChannelUID, UnDefType.UNDEF);
-                    }
-                } else {
-                    if (selector != null && dpValue != null) {
+                if (selector != null) {
+                    if (!selector.isProperty()) {
+                        ChannelUID theChannelUID = new ChannelUID(getThing().getUID(), selector.getChannelID());
+
+                        if (dp.Value != null) {
+                            logger.trace("Update state of {} with getState '{}'",
+                                    new Object[] { theChannelUID.toString(), selector.getState(dpValue, dmd) });
+                            updateState(theChannelUID, selector.getState(dpValue, dmd));
+                        } else {
+                            updateState(theChannelUID, UnDefType.UNDEF);
+                        }
+                    } else if (dpValue != null) {
                         logger.debug("Updating the property '{}' of '{}' to '{}'",
                                 new Object[] { selector.getChannelID(), getThing().getUID(),
                                         selector.getState(dpValue, dmd).toString() });

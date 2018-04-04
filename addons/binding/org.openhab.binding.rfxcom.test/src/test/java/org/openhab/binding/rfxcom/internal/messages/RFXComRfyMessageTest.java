@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,8 +11,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.junit.Assert.assertArrayEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.RFY;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComRfyMessage.Commands;
@@ -44,7 +43,7 @@ public class RFXComRfyMessageTest {
 	message.command = command;
         message.setDeviceId(deviceId);
 
-        assertArrayEquals(DatatypeConverter.parseHexBinary(data), message.decodeMessage());
+        assertArrayEquals(HexUtils.hexToBytes(data), message.decodeMessage());
     }
 
     @Test

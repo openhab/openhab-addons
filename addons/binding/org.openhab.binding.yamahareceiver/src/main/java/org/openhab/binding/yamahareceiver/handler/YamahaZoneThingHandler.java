@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -259,6 +259,9 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements ZoneCont
                 case YamahaReceiverBindingConstants.CHANNEL_MUTE:
                     zoneControl.setMute(((OnOffType) command) == OnOffType.ON);
                     break;
+                case YamahaReceiverBindingConstants.CHANNEL_DIALOGUE_LEVEL:
+                    zoneControl.setDialogueLevel(((DecimalType) command).intValue());
+                    break;
 
                 case YamahaReceiverBindingConstants.CHANNEL_NAVIGATION_MENU:
                     if (inputWithNavigationControl == null) {
@@ -443,6 +446,8 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements ZoneCont
             updateState(channelUID, new PercentType((int) zoneState.volume));
         } else if (id.equals(grpZone(YamahaReceiverBindingConstants.CHANNEL_MUTE))) {
             updateState(channelUID, zoneState.mute ? OnOffType.ON : OnOffType.OFF);
+        } else if (id.equals(grpZone(YamahaReceiverBindingConstants.CHANNEL_DIALOGUE_LEVEL))) {
+            updateState(channelUID, new DecimalType(zoneState.dialogueLevel));
 
         } else if (id.equals(grpPlayback(YamahaReceiverBindingConstants.CHANNEL_PLAYBACK))) {
             updateState(channelUID, new StringType(playInfoState.playbackMode));
@@ -494,6 +499,8 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements ZoneCont
         updateState(grpZone(YamahaReceiverBindingConstants.CHANNEL_VOLUME), new PercentType((int) zoneState.volume));
         updateState(grpZone(YamahaReceiverBindingConstants.CHANNEL_MUTE),
                 zoneState.mute ? OnOffType.ON : OnOffType.OFF);
+        updateState(grpZone(YamahaReceiverBindingConstants.CHANNEL_DIALOGUE_LEVEL),
+                new DecimalType(zoneState.dialogueLevel));
 
         // If the input changed
         if (inputChanged) {

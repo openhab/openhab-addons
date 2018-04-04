@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -64,12 +64,6 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
 
     private ScheduledFuture<?> pollingJob;
     private ScheduledFuture<?> immediateRefreshJob;
-    private Runnable pollingRunnable = new Runnable() {
-        @Override
-        public void run() {
-            refreshDeviceList();
-        }
-    };
 
     @Override
     public void dispose() {
@@ -101,7 +95,8 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
         if (pollingJob != null && !pollingJob.isCancelled()) {
             pollingJob.cancel(true);
         }
-        pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval, TimeUnit.MILLISECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::refreshDeviceList, 0, refreshInterval,
+                TimeUnit.MILLISECONDS);
     }
 
     private void scheduleImmediateRefresh() {
@@ -109,7 +104,7 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
         logger.debug("Current remaining delay {}", pollingJob.getDelay(TimeUnit.SECONDS));
         if (pollingJob.getDelay(TimeUnit.SECONDS) > REFRESH_DELAY) {
             if (immediateRefreshJob == null || immediateRefreshJob.isDone()) {
-                immediateRefreshJob = scheduler.schedule(pollingRunnable, REFRESH_DELAY, TimeUnit.SECONDS);
+                immediateRefreshJob = scheduler.schedule(this::refreshDeviceList, REFRESH_DELAY, TimeUnit.SECONDS);
             }
         }
     }

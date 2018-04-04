@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="mihome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="sensor_magnet_aq2">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge" />
-        </supported-bridge-type-refs>
-        <label>Xiaomi Aqara Door/Window Sensor</label>
-        <description>Contact sensor mounted on doors or windows. Detects states: open and closed.</description>
-        <channels>
-            <channel id="isOpen" typeId="isOpen" />
-            <channel id="lastOpened" typeId="lastOpened" />
-            <channel id="isOpenAlarmTimer" typeId="isOpenAlarmTimer" />
-            <channel id="isOpenAlarm" typeId="isOpenAlarm" />
-            <channel id="batteryLevel" typeId="system.battery-level" />
-            <channel id="lowBattery" typeId="system.low-battery" />
-        </channels>
-        <config-description-ref uri="thing-type:mihome:device" />
-    </thing-type>
+	<thing-type id="sensor_magnet_aq2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Xiaomi Aqara Door/Window Sensor</label>
+		<description>Contact sensor mounted on doors or windows. Detects states: open and closed.</description>
+		<channels>
+			<channel id="isOpen" typeId="isOpen" />
+			<channel id="lastOpened" typeId="lastOpened" />
+			<channel id="isOpenAlarmTimer" typeId="isOpenAlarmTimer" />
+			<channel id="isOpenAlarm" typeId="isOpenAlarm" />
+			<channel id="batteryLevel" typeId="system.battery-level" />
+			<channel id="lowBattery" typeId="system.low-battery" />
+		</channels>
+		<config-description-ref uri="thing-type:mihome:device" />
+	</thing-type>
 </thing:thing-descriptions>

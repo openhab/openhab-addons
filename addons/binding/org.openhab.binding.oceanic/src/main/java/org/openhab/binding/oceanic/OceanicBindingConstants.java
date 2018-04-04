@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,14 +13,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Type;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OceanicBinding} class defines common constants, which are used
@@ -28,12 +27,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class OceanicBindingConstants {
 
     public static final String BINDING_ID = "oceanic";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SOFTENER = new ThingTypeUID(BINDING_ID, "softener");
+    public static final ThingTypeUID THING_TYPE_SERIAL = new ThingTypeUID(BINDING_ID, "serial");
+    public static final ThingTypeUID THING_TYPE_NETWORK = new ThingTypeUID(BINDING_ID, "network");
 
     // List of all Channel ids
     public enum OceanicChannelSelector {
@@ -214,21 +215,15 @@ public class OceanicBindingConstants {
         getLAR("lastgeneration", DateTimeType.class, ValueSelectorType.GET, false) {
             @Override
             public String convertValue(String value) {
-
                 final SimpleDateFormat inDateFormatter = new SimpleDateFormat("dd.MM.yy HH:mm:ss");
                 final SimpleDateFormat outDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
-                Date date = null;
-                String convertedValue = null;
-
                 try {
-                    date = inDateFormatter.parse(value);
-                    convertedValue = outDateFormatter.format(date);
+                    Date date = inDateFormatter.parse(value);
+                    return outDateFormatter.format(date);
                 } catch (ParseException fpe) {
                     throw new IllegalArgumentException(value + " is not in a valid format.", fpe);
                 }
-
-                return convertedValue;
             }
         },
         getNOR("normalregenerations", DecimalType.class, ValueSelectorType.GET, false),
@@ -269,15 +264,12 @@ public class OceanicBindingConstants {
         /**
          * Procedure to convert selector string to value selector class.
          *
-         * @param valueSelectorText
-         *            selector string e.g. RawData, Command, Temperature
+         * @param valueSelectorText selector string e.g. RawData, Command, Temperature
          * @return corresponding selector value.
-         * @throws InvalidClassException
-         *             Not valid class for value selector.
+         * @throws InvalidClassException Not valid class for value selector.
          */
         public static OceanicChannelSelector getValueSelector(String valueSelectorText,
                 ValueSelectorType valueSelectorType) throws IllegalArgumentException {
-
             for (OceanicChannelSelector c : OceanicChannelSelector.values()) {
                 if (c.text.equals(valueSelectorText) && c.typeValue == valueSelectorType) {
                     return c;
@@ -288,7 +280,6 @@ public class OceanicBindingConstants {
         }
 
         public static ValueSelectorType getValueSelectorType(String valueSelectorText) throws IllegalArgumentException {
-
             for (OceanicChannelSelector c : OceanicChannelSelector.values()) {
                 if (c.text.equals(valueSelectorText)) {
                     return c.typeValue;

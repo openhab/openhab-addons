@@ -34,6 +34,7 @@
 			<channel id="locked_max_set_point" typeId="LockedMaxSetPoint" />
 			<channel id="locked_min_set_point" typeId="LockedMinSetPoint" />
 			<channel id="time_to_target_mins" typeId="TimeToTarget" />
+			<channel id="last_connection" typeId="LastConnection" />
 		</channels>
 
 		<properties>

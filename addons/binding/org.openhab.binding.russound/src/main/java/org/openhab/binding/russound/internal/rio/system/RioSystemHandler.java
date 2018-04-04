@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -48,7 +48,7 @@ import com.google.gson.Gson;
  * The bridge handler for a Russound System. This is the entry point into the whole russound system and is generally
  * points to the main controller. This implementation must be attached to a {@link RioSystemHandler} bridge.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
     // Logger
@@ -165,7 +165,6 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof RefreshType) {
             handleRefresh(channelUID.getId());
             return;
@@ -227,9 +226,8 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
         } else if (id.equals(RioConstants.CHANNEL_SYSSOURCES)) {
             refreshNamedHandler(gson, RioSourceHandler.class, RioConstants.CHANNEL_SYSSOURCES);
 
-        } else {
-            // Can't refresh any others...
         }
+        // Can't refresh any others...
     }
 
     /**
@@ -254,19 +252,13 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
 
         sessionLock.lock();
         try {
-            session = new SocketChannelSession(rioConfig.getIpAddress(), RioConstants.RioPort);
+            session = new SocketChannelSession(rioConfig.getIpAddress(), RioConstants.RIO_PORT);
         } finally {
             sessionLock.unlock();
         }
 
         // Try initial connection in a scheduled task
-        this.scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                connect();
-            }
-
-        }, 1, TimeUnit.SECONDS);
+        this.scheduler.schedule(this::connect, 1, TimeUnit.SECONDS);
     }
 
     /**
@@ -314,19 +306,16 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
             if (response == null) {
                 final RioSystemConfig rioConfig = getRioConfig();
                 if (rioConfig != null) {
-                    ping = this.scheduler.scheduleWithFixedDelay(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                final ThingStatus status = getThing().getStatus();
-                                if (status == ThingStatus.ONLINE) {
-                                    if (session.isConnected()) {
-                                        getProtocolHandler().ping();
-                                    }
+                    ping = this.scheduler.scheduleWithFixedDelay(() -> {
+                        try {
+                            final ThingStatus status = getThing().getStatus();
+                            if (status == ThingStatus.ONLINE) {
+                                if (session.isConnected()) {
+                                    getProtocolHandler().ping();
                                 }
-                            } catch (Exception e) {
-                                logger.error("Exception while pinging: {}", e.getMessage(), e);
                             }
+                        } catch (Exception e) {
+                            logger.error("Exception while pinging: {}", e.getMessage(), e);
                         }
                     }, rioConfig.getPing(), rioConfig.getPing(), TimeUnit.SECONDS);
 
@@ -367,21 +356,16 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
             if (retryConnection == null) {
                 final RioSystemConfig rioConfig = getRioConfig();
                 if (rioConfig != null) {
-
                     logger.info("Will try to reconnect in {} seconds", rioConfig.getRetryPolling());
-                    retryConnection = this.scheduler.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            retryConnection = null;
-                            try {
-                                if (getThing().getStatus() != ThingStatus.ONLINE) {
-                                    connect();
-                                }
-                            } catch (Exception e) {
-                                logger.error("Exception connecting: {}", e.getMessage(), e);
+                    retryConnection = this.scheduler.schedule(() -> {
+                        retryConnection = null;
+                        try {
+                            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                                connect();
                             }
+                        } catch (Exception e) {
+                            logger.error("Exception connecting: {}", e.getMessage(), e);
                         }
-
                     }, rioConfig.getRetryPolling(), TimeUnit.SECONDS);
                 }
             } else {
@@ -468,12 +452,9 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
         final RioSystemDeviceDiscoveryService service = discoveryService.get();
         if (service != null) {
             if (sysConfig != null && sysConfig.isScanDevice()) {
-                this.scheduler.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        logger.info("Starting device discovery");
-                        service.scanDevice();
-                    }
+                this.scheduler.execute(() -> {
+                    logger.info("Starting device discovery");
+                    service.scanDevice();
                 });
             }
         }
@@ -508,7 +489,7 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
             throw new IllegalArgumentException("childHandler cannot be null");
         }
         if (childHandler instanceof RioSourceHandler) {
-            final RioHandlerCallback callback = ((RioSourceHandler) childHandler).getCallback();
+            final RioHandlerCallback callback = ((RioSourceHandler) childHandler).getRioHandlerCallback();
             if (callback != null) {
                 if (added) {
                     callback.addListener(RioConstants.CHANNEL_SOURCENAME, handlerCallbackListener);

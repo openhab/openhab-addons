@@ -5,13 +5,17 @@
 
 	<bridge-type id="squeezeboxserver">
 		<label>SqueezeBox Server</label>
-		<description>This is a SqueezeBox Server instance.
-        </description>
+		<description>This is a SqueezeBox Server instance.</description>
+
+		<channels>
+			<channel id="favoritesList" typeId="favoritesList" />
+		</channels>
+
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>IP or Host Name</label>
 				<description>The IP or host name of the SqueezeServer
-                </description>
+				</description>
 			</parameter>
 			<parameter name="webport" type="integer" required="true" min="1" max="65335">
 				<label>SqueezeServer Web Port</label>
@@ -44,8 +48,10 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="squeezeboxserver" />
 		</supported-bridge-type-refs>
+
 		<label>SqueezeBox Player</label>
 		<description>This is a SqueezeBox Player instance</description>
+
 		<channels>
 			<channel id="power" typeId="power" />
 			<channel id="mute" typeId="mute" />
@@ -72,8 +78,9 @@
 			<channel id="coverartdata" typeId="coverartdata" />
 			<channel id="ircode" typeId="ircode" />
 			<channel id="numberPlaylistTracks" typeId="numberPlaylistTracks" />
-			<channel id="notificationSoundVolume" typeId="notificationVolume" />
+			<channel id="playFavorite" typeId="playFavorite" />
 		</channels>
+
 		<properties>
 			<property name="vendor">Logitech</property>
 			<property name="modelId"></property>
@@ -81,13 +88,44 @@
 			<property name="uid"></property>
 			<property name="ip"></property>
 		</properties>
+
 		<config-description>
 			<parameter name="mac" type="text" required="true">
 				<label>MAC Address</label>
 				<description>SqueezeBox Players are identified by their MAC address</description>
 			</parameter>
+			<parameter name="notificationTimeout" type="integer" unit="s">
+				<label>Notification Timeout</label>
+				<description>Maximum amount of time in seconds for which the notification will be played</description>
+				<default>20</default>
+			</parameter>
+			<parameter name="notificationVolume" type="integer" min="0" max="100" step="1" unit="%">
+				<label>Notification Sound Volume</label>
+				<description>Volume used for notifications. Leaving blank uses current player volume.</description>
+			</parameter>
 		</config-description>
 	</thing-type>
+
+	<!-- Favorites -->
+	<channel-type id="favoritesList">
+		<item-type>String</item-type>
+		<label>Favorites List</label>
+		<description>Comma-separated list of favorites of form favoriteId=favoriteName</description>
+		<state readOnly="true" pattern="%s"></state>
+		<config-description>
+			<parameter name="quoteList" type="boolean" required="true">
+				<label>Quote Favorites</label>
+				<description>Wrap the right hand side of the favorites in quotes</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="playFavorite">
+		<item-type>String</item-type>
+		<label>Play a Favorite</label>
+		<description>Play favorite by sending command with favoriteId</description>
+		<state pattern="%s"></state>
+	</channel-type>
 
 	<!-- Commands -->
 	<channel-type id="power" advanced="true">
@@ -247,12 +285,5 @@
 		<label>Number of Playlist Tracks</label>
 		<description>Number of playlist tracks</description>
 		<state readOnly="true" pattern="%d"></state>
-	</channel-type>
-	<channel-type id="notificationVolume">
-		<item-type>Dimmer</item-type>
-		<label>Notification Volume</label>
-		<description>Volume of notifications</description>
-		<state min="0" max="100" step="1" pattern="%d %%">
-		</state>
 	</channel-type>
 </thing:thing-descriptions>

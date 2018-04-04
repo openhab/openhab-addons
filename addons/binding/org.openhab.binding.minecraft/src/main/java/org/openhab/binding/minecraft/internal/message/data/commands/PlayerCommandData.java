@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,19 +11,19 @@ package org.openhab.binding.minecraft.internal.message.data.commands;
 /**
  * Object representing Minecraft server.
  *
- * @author Mattias Markehed
+ * @author Mattias Markehed - Initial contribution
  */
 public class PlayerCommandData {
 
-    public static String COMMAND_PLAYER_HEALTH = "PLAYER_HEALTH";
-    public static String COMMAND_PLAYER_LEVEL = "PLAYER_LEVEL";
-    public static String COMMAND_PLAYER_WALK_SPEED = "PLAYER_WALK_SPEED";
-    public static String COMMAND_PLAYER_GAME_MODE = "PLAYER_GAME_MODE";
-    public static String COMMAND_PLAYER_LOCATION = "PLAYER_LOCATION";
+    public static final String COMMAND_PLAYER_HEALTH = "PLAYER_HEALTH";
+    public static final String COMMAND_PLAYER_LEVEL = "PLAYER_LEVEL";
+    public static final String COMMAND_PLAYER_WALK_SPEED = "PLAYER_WALK_SPEED";
+    public static final String COMMAND_PLAYER_GAME_MODE = "PLAYER_GAME_MODE";
+    public static final String COMMAND_PLAYER_LOCATION = "PLAYER_LOCATION";
 
-    String type;
-    String playerName;
-    String value;
+    private String type;
+    private String playerName;
+    private String value;
 
     public PlayerCommandData() {
     }

@@ -14,20 +14,22 @@ The ImperiHome integration service can be installed through the Paper UI. Naviga
 ### openHAB Add-on
 
 To configure the ImperiHome integration add-on in openHAB, create a _imperihome.cfg_ file in the _conf/services_ directory. The following configuration options can be used:
- 
+
 **System ID**
 
-The ImperiHome integration service identifies itself to ImperiHome using a system ID. By default the unique identifier of your openHAB installation is used. To override the ID, use the _system.id_ configuration option. 
+The ImperiHome integration service identifies itself to ImperiHome using a system ID. By default the unique identifier of your openHAB installation is used. To override the ID, use the _system.id_ configuration option.
 
 ```
 system.id=my-openhab-123
 ```
 
-*Warning*: the system ID can not contain the underscore character (_). 
+_Warning_: the system ID can not contain the underscore character (&lowbar;).
 
 **Root URL**
 
-Root URL of your openHAB installation. Should point to the openHAB welcome page. This option is currently only required when using the custom icon tag. 
+Root URL of your openHAB installation.
+Should point to the openHAB welcome page
+ This option is currently only required when using the custom icon tag.
 
 ```
 openhab.rootUrl=http://myserver.example.org:7070/
@@ -37,17 +39,22 @@ openhab.rootUrl=http://myserver.example.org:7070/
 
 ImperiHome must be configured to connect to your openHAB instance.
 
-Start ImperiHome, open the menu and go to My Systems. Add a new system (+) and choose 'ImperiHome Standard System' as the object type. Now enter the URL to your openHAB instance
- as Local URL, followed by _/imperihome/iss_. For example, if your openHAB instance is running at _http://192.168.1.10:8080/_, the Local URL would be _http://192.168.1.10:8080/imperihome/iss_. 
+Start ImperiHome, open the menu and go to My Systems.
+Add a new system (+) and choose 'ImperiHome Standard System' as the object type.
+Now enter the URL to your openHAB instance as Local URL, followed by _/imperihome/iss_.
+For example, if your openHAB instance is running at _<http://192.168.1.10:8080/>_, the Local URL would be _<http://192.168.1.10:8080/imperihome/iss>_.
 
-If you have port forwarding or similar set up to access your openHAB from the internet, you can also fill the Remote URL in the same way. For example: 
-_http://my-openhab-url.dyndns.org:8080/imperihome/iss_. <b>Warning</b>: this service provides no authentication mechanism, so anyone could use the API to control your system when accessible from the internet. Add a secure proxy or use the openHAB Cloud proxy to protect your system ([more information](http://docs.openhab.org/installation/security.html)).  
+If you have port forwarding or similar set up to access your openHAB from the internet, you can also fill the Remote URL in the same way. For example: _<http://my-openhab-url.dyndns.org:8080/imperihome/iss>_.
+_Warning_: this service provides no authentication mechanism, so anyone could use the API to control your system when accessible from the internet.
+Add a secure proxy or use the openHAB Cloud proxy to protect your system ([more information](http://docs.openhab.org/installation/security.html)).  
 
-Click Next to let ImperiHome validate the URL. After validation succeeded the system is added and you can continue to configure your Items for use in ImperiHome.
+Click Next to let ImperiHome validate the URL.
+After validation succeeded the system is added and you can continue to configure your Items for use in ImperiHome.
 
 ## Device Tagging
 
-This service uses Item tags to determine how to expose your Items to ImperiHome. All tags are formatted like this:
+This service uses Item tags to determine how to expose your Items to ImperiHome.
+All tags are formatted like this:
 
 ```
 iss:<tagtype>:<value>
@@ -59,18 +66,19 @@ For example:
 iss:room:Kitchen
 ```
 
-If you've defined your Items in _.items_ files, tags can be added using the 
+If you've defined your Items in _.items_ files, tags can be added using:
 
 ```
 [ "mytag" ]
-``` 
+```
 
-syntax (after the _(Groups)_ and before the _{channel}_). 
-If you created your items another way, e.g. using the Paper UI, [HABmin](https://github.com/openhab/org.openhab.ui.habmin) allows you to modify the tags. 
+syntax (after the _(Groups)_ and before the _{channel}_).
+If you created your items another way, e.g. using the Paper UI, [HABmin](https://github.com/openhab/org.openhab.ui.habmin) allows you to modify the tags.
 
 ### Tag: _type_
 
-Specifies the device type to expose to ImperiHome. Take a look at [Device types](#deviceTypes) below for the supported device types and how to configure them.
+Specifies the device type to expose to ImperiHome.
+Take a look at [Device types](#deviceTypes) below for the supported device types and how to configure them.
 If no type is specified, this service will try to auto-detect the type from the Item, based on supported value types (OnOff for a switch, HSB for color light) and Item name.
 
 _Required_: no<br>
@@ -87,7 +95,7 @@ Specifies the room the device will show up in in ImperiHome.
 
 _Required_: no<br>
 _Default_: 'No Room'<br>
-_Example_: 
+_Example_:
 
 ```
 iss:room:Kitchen
@@ -95,11 +103,13 @@ iss:room:Kitchen
 
 ### Tag: _label_
 
-Sets the device label in ImperiHome. If no label is specified, the Item label is used if available. Otherwise the Item name will be used.
+Sets the device label in ImperiHome.
+If no label is specified, the Item label is used if available.
+Otherwise the Item name will be used.
 
 _Required_: no<br>
 _Default_:  Item label or name<br>
-_Example_: 
+_Example_:
 
 ```
 iss:label:Kitchen light
@@ -107,13 +117,13 @@ iss:label:Kitchen light
 
 ### Tag: _mapping_
 
-Sets the mapping for a ImperiHome MultiSwitch device, just like an openHAB sitemap mapping does. 
-In the example below, 'All off', 'Relax' and 'Reading' will be visible in ImperiHome. Clicking one of the options will send
-a 0, 1 or 2 value command to the openHAB item.
+Sets the mapping for a ImperiHome MultiSwitch device, just like an openHAB sitemap mapping does.
+In the example below, 'All off', 'Relax' and 'Reading' will be visible in ImperiHome.
+Clicking one of the options will send a 0, 1 or 2 value command to the openHAB item.
 
 _Required_: only for MultiSwitch device<br>
 _Default_: none<br>
-_Example_: 
+_Example_:
 
 ```
 iss:mapping:0=All off,1=Relax,2=Reading
@@ -126,7 +136,7 @@ See [Device links](#deviceLinks) for details.
 
 _Required_: no<br>
 _Default_: none<br>
-_Example_: 
+_Example_:
 
 ```
 iss:link:energy:Kitchen_Current_Consumption
@@ -139,7 +149,7 @@ The unit is only used to tell ImperiHome what to display; no conversion is perfo
 
 _Required_: no<br>
 _Default_: none<br>
-_Example_: 
+_Example_:
 
 ```
 iss:unit:°C
@@ -151,7 +161,7 @@ Inverts the state of on/off devices such as switches and dimmers.
 
 _Required_: no<br>
 _Default_: false<br>
-_Example_: 
+_Example_:
 
 ```
 iss:invert:true
@@ -159,23 +169,25 @@ iss:invert:true
 
 ### Tag: _icon_
 
-Sets a custom icon to be shown in ImperiHome. You can use all icon names that are also available for use in your sitemaps, including custom icons.
+Sets a custom icon to be shown in ImperiHome.
+You can use all icon names that are also available for use in your sitemaps, including custom icons.
 To use this tag you must set the openHAB root URL in your [configuration](#configuration).
 
 _Required_: no<br>
 _Default_: none<br>
-_Example_: 
+_Example_:
 
 ```
 iss:icon:sofa
 ```
 
-<a name="deviceTypes"></a> 
+<a name="deviceTypes"></a>
 
 ## Device types
 
-The following table lists the ImperiHome API device types that you can use in a _iss:type_ tag. Not all device types are currently supported. For those that are supported, 
-the Item types you can use them on are listed.
+The following table lists the ImperiHome API device types that you can use in a _iss:type_ tag.
+Not all device types are currently supported.
+For those that are supported, the Item types you can use them on are listed.
 
 <table>
     <tr>
@@ -384,16 +396,18 @@ the Item types you can use them on are listed.
 </table>
 
 <sup>(1)</sup> When using a String Item for trippable devices, any non-empty value other than 'ok' will set the device to tripped. This makes it compatible with the Nest Protect binding.
-  
+
 <sup>(2)</sup> Thermostat devices require additional tags. See [Thermostat](#thermostat) for details.
 
-<a name="deviceLinks"></a> 
+<a name="deviceLinks"></a>
 
 ## Device links
 
-Some devices can be linked to another device. This allows you to create combined devices reporting multiple values, or reporting the energy consumption with a switch device.
+Some devices can be linked to another device.
+This allows you to create combined devices reporting multiple values, or reporting the energy consumption with a switch device.
 
-The _link_ tag refers to the name of the Item it should link to. The item must be an ImperiHome device itself, so it must have at least one _iss_ tag.
+The _link_ tag refers to the name of the Item it should link to.
+The item must be an ImperiHome device itself, so it must have at least one _iss_ tag.
 
 ### Switch energy consumption
 
@@ -407,7 +421,8 @@ Number  MyLightEnergy  "My Light Usage [%.1f W]"   ["iss:type:DevElectricity"]  
 
 ### Total energy consumption
 
-The _DevElectricity_ devices main value is the current consumption in Watts. To add the total consumption in KWh, link your electricity device to a generic sensor device containing the total energy consumption value:
+The _DevElectricity_ devices main value is the current consumption in Watts.
+To add the total consumption in KWh, link your electricity device to a generic sensor device containing the total energy consumption value:
 
 ```
 Number  MyLight_Energy        "My Light Usage [%.1f W]"          ["iss:type:DevElectricity", "iss:link:kwh:MyLight_Total_Energy"]  { channel="zwave:device:1:node14:meter_watts1" }
@@ -416,7 +431,8 @@ Number  MyLight_Total_Energy  "My Light Total usage [%.1f KWh]"  ["iss:type:DevG
 
 ### TempHygro
 
-ImperiHome recognizes the special _DevTempHygro_ device, combining a temperature and hydrometry sensor. You can create such a device by linking either from a temperature Item to a hygro Item:
+ImperiHome recognizes the special _DevTempHygro_ device, combining a temperature and hydrometry sensor.
+You can create such a device by linking either from a temperature Item to a hygro Item:
 
 ```
 Number  MyTemp  "Temperature [%.1f °C]" ["iss:type:DevTempHygro", "iss:link:hygro:MyHum"]  { channel="zwave:device:1:node8:sensor_temperature" }
@@ -432,7 +448,8 @@ Number  MyHum   "Humidity [%d%%]"       ["iss:type:DevTempHygro", "iss:link:temp
 
 ### Rain accumulation
 
-The _DevRain_ devices main value is the current instant rain value (default in mm per hour). To add the total rain accumulation value, link your rain device to a generic sensor device:
+The _DevRain_ devices main value is the current instant rain value (default in mm per hour).
+To add the total rain accumulation value, link your rain device to a generic sensor device:
 
 ```
 Number  RainCurrent       "Rain current [%.1f mm/h]"     ["iss:type:DevRain", "iss:link:accum:RainAccumulation"]  { channel="..." }
@@ -441,37 +458,43 @@ Number  RainAccumulation  "Rain accumulation [%.1f mm]"  ["iss:type:DevGenericSe
 
 ### Wind direction
 
-The _DevWind_ devices main value is the current wind speed (default in km per hour). To add the wind direction value (default in degrees), link your wind device to a generic sensor device:
+The _DevWind_ devices main value is the current wind speed (default in km per hour).
+To add the wind direction value (default in degrees), link your wind device to a generic sensor device:
 
 ```
 Number  WindSpeed      "Wind speed [%.1f km/h]"   ["iss:type:DevWind", "iss:link:direction:WindDirection"]  { channel="..." }
 Number  WindDirection  "Wind direction [%d deg]"  ["iss:type:DevGenericSensor", "iss:unit:deg"]             { channel="..." }
 ```
 
-<a name="thermostat"></a> 
+<a name="thermostat"></a>
 
 ### Thermostat
 
-The _DevThermostat_ combines a setpoint, current temperature and mode in one ImperiHome device. To accomplish this using openHAB items, it uses a _curtemp_ and _curmode_ link and a few additional tags. 
- 
+The _DevThermostat_ combines a setpoint, current temperature and mode in one ImperiHome device.
+To accomplish this using openHAB items, it uses a _curtemp_ and _curmode_ link and a few additional tags.
+
 ```
 Number Thermos_Setpoint   "Thermostat"      ["iss:room:Test", "iss:type:DevThermostat", "iss:step:0.5", "iss:minVal:15", "iss:maxVal:24", "iss:modes:Home,Away,Comfort,Sleeping", "iss:link:curmode:Thermos_Mode", "iss:link:curtemp:Thermos_Temp"] { channel="..." }
 Number Thermos_Temp       "Thermos temp"    ["iss:room:Test", "iss:type:DevTemperature", "iss:unit:K"]  { channel="..." }
 String Thermos_Mode       "Thermos mode"    ["iss:room:Test", "iss:type:DevGenericSensor"]              { channel="..." }
 ```
- 
-The main _DevThermostat_ device must be the Item holding the setpoint. Using tags, this device specifies the minimum and maximum setpoint value, the setpoint step and the available modes. The two links specify what Items contain the current temperature and current mode. If you want to use a custom unit, set the _unit_ tag on the current temperature device.
+
+The main _DevThermostat_ device must be the Item holding the setpoint.
+Using tags, this device specifies the minimum and maximum setpoint value, the setpoint step and the available modes.
+The two links specify what Items contain the current temperature and current mode.
+If you want to use a custom unit, set the _unit_ tag on the current temperature device.
 
 ### Shutter stopper
 
-The _DevShutter_ device of ImperiHome support a 'stop' action. To use this, link a Switch item to your shutter item, like so:
+The _DevShutter_ device of ImperiHome support a 'stop' action.
+To use this, link a Switch item to your shutter item, like so:
 
 ```
 Dimmer MyShutter     "Shutter"      ["iss:room:Test", "iss:type:DevShutter", "iss:link:stopper:MyShutterStop"] { channel="..." }
 Switch MyShutterStop "Stop shutter" ["iss:room:Test", "iss:type:DevSwitch"]  { channel="..." }
 ```
 
-Implement a Rule listening for the ON command on the switch to handle the stop action yourself. 
+Implement a Rule listening for the ON command on the switch to handle the stop action yourself.
 
 ## Items example
 
@@ -486,4 +509,3 @@ Number  ENT_Temperature      "Entrance temperature [%.1f °C]" (Temperature)  ["
 Number  ENT_Luminance        "Entrance light [%d lm]"         (Luminance)    ["iss:room:Entrance", "iss:type:DevLuminosity", "iss:unit:lux"]               { channel="zwave:device:1:node8:sensor_luminance" }
 Number  ENT_Humidity         "Entrance humidity [%d%%]"       (Humidity)     ["iss:room:Entrance", "iss:type:DevHygrometry"]                               { channel="zwave:device:1:node8:sensor_relhumidity" }
 ```
-

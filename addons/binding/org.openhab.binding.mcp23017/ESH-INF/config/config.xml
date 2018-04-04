@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="channel-type:input_pin:config">
+		<parameter name="pull_mode" type="text" required="true">
+			<label>PullResistor mode</label>
+			<description>mcp2317 input pull resistor mode</description>
+			<options>
+				<option value="OFF">OFF</option>
+				<option value="PULL_UP">Internal PULL_UP</option>
+			</options>
+			<default>OFF</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:output_pin:config">
+		<parameter name="default_state" type="text" required="true">
+			<label>Default state</label>
+			<description>mcp2317 pin default state (LOW, HIGH)</description>
+			<options>
+				<option value="LOW">LOW</option>
+				<option value="HIGH">HIGH</option>
+			</options>
+			<default>LOW</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
