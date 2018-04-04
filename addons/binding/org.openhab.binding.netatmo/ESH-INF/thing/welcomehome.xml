@@ -68,16 +68,16 @@
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
-	 <channel-type id="type">
+	<channel-type id="type">
 		<item-type>String</item-type>
 		<label>Type</label>
-		<description>Type of events. Go to the Welcome page for further details.</description>
+		<description>Type of event. Go to the Welcome page for further details.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="time">
 		<item-type>DateTime</item-type>
 		<label>Time</label>
-		<description>Time of occurence of event</description>
+		<description>Time of occurrence of event</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="camera_id">
@@ -109,7 +109,7 @@
 	<channel-type id="video_url" advanced="true">
 		<item-type>String</item-type>
 		<label>Video URL</label>
-		<description>URL of the event videos</description>
+		<description>URL of the event video</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="video_status">
@@ -133,31 +133,7 @@
 	<channel-type id="sub_type" advanced="true">
 		<item-type>String</item-type>
 		<label>Sub Type</label>
-		<description>Subtypes of SD and Alim events. Go to Welcome page for further details.</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="event_video_poor_url" advanced="true">
-		<item-type>String</item-type>
-		<label>Video from the event poor quality</label>
-		<description>Url of the video from this event bandwith:64000 Size:640x360 (need scope access_camera)</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="event_video_low_url" advanced="true">
-		<item-type>String</item-type>
-		<label>Video from the event low quality</label>
-		<description>Url of the video from this event bandwith:500000 Size:640x360 (need scope access_camera)</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="event_video_medium_url" advanced="true">
-		<item-type>String</item-type>
-		<label>Video from the event medium quality</label>
-		<description>Url of the video from this event bandwith:1000000 Size:1280x720(need scope access_camera)</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="event_video_high_url" advanced="true">
-		<item-type>String</item-type>
-		<label>Video from the event high quality</label>
-		<description>Url of the video from this event bandwith:3000000 Size:1920x1080 (need scope access_camera)</description>
+		<description>Sub-type of SD and Alim events. Go to Welcome page for further details.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -278,7 +278,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
      * Returns the number of lines of the display.
      */
     private int getLineCount(HmDevice device) {
-        return (DEVICE_TYPE_STATUS_DISPLAY.equals(device.getType()) ? 5 : 3);
+        return (DEVICE_TYPE_STATUS_DISPLAY.equals(device.getType()) ? 6 : 3);
     }
 
     /**
@@ -319,7 +319,6 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
 
             List<String> message = new ArrayList<String>();
             message.add(START);
-            message.add(LF);
 
             for (int i = 1; i <= getLineCount(channel.getDevice()); i++) {
                 String line = ObjectUtils.toString(

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -40,26 +40,29 @@ public class PressVirtualDatapointHandler extends AbstractVirtualDatapointHandle
             if (channel.hasPressDatapoint()) {
                 HmDatapoint dp = addDatapoint(device, channel.getNumber(), getName(), HmValueType.STRING, null, false);
                 dp.setTrigger(true);
-                dp.setOptions(new String[] { "SHORT", "LONG", "LONG_RELEASE" });
+                dp.setOptions(new String[] { "SHORT", "LONG", "LONG_RELEASE", "CONT" });
             }
         }
     }
 
     @Override
     public boolean canHandleEvent(HmDatapoint dp) {
-        return dp.isPressDatapoint() && MiscUtils.isTrueValue(dp.getValue());
+        return dp.isPressDatapoint();
     }
 
     @Override
     public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
         HmDatapoint vdp = getVirtualDatapoint(dp.getChannel());
-        String value = StringUtils.substringAfter(dp.getName(), "_");
-        if (ArrayUtils.contains(vdp.getOptions(), value)) {
-            vdp.setValue(value);
+        if (MiscUtils.isTrueValue(dp.getValue())) {
+            String value = StringUtils.substringAfter(dp.getName(), "_");
+            if (ArrayUtils.contains(vdp.getOptions(), value)) {
+                vdp.setValue(value);
+            } else {
+                logger.warn("Unknown value '{}' for PRESS virtual datapoint, only {} allowed", value,
+                        StringUtils.join(vdp.getOptions(), ","));
+            }
         } else {
-            logger.warn("Unknown value '{}' for PRESS virtual datapoint, only {} allowed", value,
-                    StringUtils.join(vdp.getOptions(), ","));
+            vdp.setValue(null);
         }
     }
-
 }

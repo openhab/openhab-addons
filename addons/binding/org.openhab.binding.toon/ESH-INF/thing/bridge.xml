@@ -1,44 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="toon"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="toon" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Toon API Bridge -->
-    <bridge-type id="toonapi">
-        <label>Toon Webaccount</label>
-        <description>
-            The Toon Webaccount is used to connect to your Toon via the Eneco Service Center and
-            uses your 'My Eneco' Username and password.  
-        </description>
+	<!-- Toon API Bridge -->
+	<bridge-type id="toonapi">
+		<label>Toon Webaccount</label>
+		<description>
+			The Toon Webaccount is used to connect to your Toon via the Eneco Service Center and
+			uses your 'My Eneco' Username and password.  
+		</description>
 
-        <config-description>
-            <parameter-group name="auth">
-                <context>communication</context>
-                <label>Authentication</label>
-                <description></description>
-            </parameter-group>
+		<config-description>
+			<parameter-group name="auth">
+				<context>communication</context>
+				<label>Authentication</label>
+				<description></description>
+			</parameter-group>
 
-            <parameter name="username" type="text" required="true"
-                groupName="auth">
-                <label>Username</label>
-                <description>Your Toon Username</description>
-                <default></default>
-            </parameter>
-            <parameter name="password" type="text" required="true"
-                groupName="auth">
-                <label>Password</label>
-                <description>Your Toon Password</description>
-                <default></default>
-            </parameter>
-            
-            <parameter name="refreshInterval" type="integer" required="false">
-                <label>Refresh Interval</label>
-                <description>The refresh interval to poll Toon (in ms).</description>
-                <default>30000</default>
-                <advanced>true</advanced>
-            </parameter>            
-        </config-description>
-    </bridge-type>
+			<parameter name="username" type="text" required="true" groupName="auth">
+				<label>Username</label>
+				<description>Your Toon Username</description>
+				<default></default>
+			</parameter>
+			<parameter name="password" type="text" required="true" groupName="auth">
+				<label>Password</label>
+				<description>Your Toon Password</description>
+				<default></default>
+			</parameter>
+
+			<parameter name="refreshInterval" type="integer" required="false">
+				<label>Refresh Interval</label>
+				<description>The refresh interval to poll Toon (in ms).</description>
+				<default>30000</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
 
 </thing:thing-descriptions>

@@ -298,7 +298,7 @@
 	<channel-type id="WindAngle">
 		<item-type>Number</item-type>
 		<label>Wind Angle</label>
-		<description>Current 5 min average wind direction</description>
+		<description>Current 5 minutes average wind direction</description>
 		<category>Wind</category>
 		<state min="0" max="360" step="1" readOnly="true" pattern="%d °" />
 	</channel-type>
@@ -306,7 +306,7 @@
 	<channel-type id="WindStrength">
 		<item-type>Number</item-type>
 		<label>Wind Strength</label>
-		<description>Current 5 min average wind speed</description>
+		<description>Current 5 minutes average wind speed</description>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%.1f km/h" />
 	</channel-type>
@@ -314,7 +314,7 @@
 	<channel-type id="GustAngle">
 		<item-type>Number</item-type>
 		<label>Gust Angle</label>
-		<description>Direction of the last 5 min highest gust wind</description>
+		<description>Direction of the last 5 minutes highest gust wind</description>
 		<category>Wind</category>
 		<state min="0" max="360" step="1" readOnly="true" pattern="%d °" />
 	</channel-type>
@@ -322,7 +322,7 @@
 	<channel-type id="GustStrength">
 		<item-type>Number</item-type>
 		<label>Gust Strength</label>
-		<description>Speed of the last 5 min highest gust wind</description>
+		<description>Speed of the last 5 minutes highest gust wind</description>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%.1f km/h" />
 	</channel-type>
@@ -330,7 +330,7 @@
 	<channel-type id="unit">
 		<item-type>Number</item-type>
 		<label>Unit system</label>
-		<description>Describes unit system of privided values (metric or imperial)</description>
+		<description>Unit system used to provide values (metric or imperial)</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Metric</option>
@@ -368,32 +368,32 @@
 	</channel-type>
 	
 	<channel-type id="homeEvent">
-        <kind>trigger</kind>
-        <label>Home event</label>
-        <description>Home event</description>
-        <event>
-            <options>
-                <option value="PERSON">person</option>
-                <option value="PERSON_AWAY">person_away</option>
-                <option value="MOVEMENT">movement</option>
-                <option value="CONNECTION">connection</option>
-                <option value="DISCONNECTION">disconnection</option>
-                <option value="ON">on</option>
-                <option value="OFF">off</option>
-                <option value="BOOT">boot</option>
-                <option value="SD">sd</option>
-                <option value="ALIM">alim</option>
-                <option value="NEW_MODULE">new_module</option>
-                <option value="MODULE_CONNECT">module_connect</option>
-                <option value="MODULE_DISCONNECT">module_disconnect</option>
-                <option value="MODULE_LOW_BATTERY">module_low_battery</option>
-                <option value="MODULE_END_UPDATE">module_end_update</option>
-                <option value="TAG_BIG_MOVE">tag_big_move</option>
-                <option value="TAG_SMALL_MOVE">tag_small_move</option>
-                <option value="TAG_UNINSTALLED">tag_uninstalled</option>
-                <option value="TAG_OPEN">tag_open</option>
-            </options>
-        </event>
-    </channel-type>
+		<kind>trigger</kind>
+		<label>Home event</label>
+		<description>Home event</description>
+		<event>
+			<options>
+				<option value="PERSON">person</option>
+				<option value="PERSON_AWAY">person_away</option>
+				<option value="MOVEMENT">movement</option>
+				<option value="CONNECTION">connection</option>
+				<option value="DISCONNECTION">disconnection</option>
+				<option value="ON">on</option>
+				<option value="OFF">off</option>
+				<option value="BOOT">boot</option>
+				<option value="SD">sd</option>
+				<option value="ALIM">alim</option>
+				<option value="NEW_MODULE">new_module</option>
+				<option value="MODULE_CONNECT">module_connect</option>
+				<option value="MODULE_DISCONNECT">module_disconnect</option>
+				<option value="MODULE_LOW_BATTERY">module_low_battery</option>
+				<option value="MODULE_END_UPDATE">module_end_update</option>
+				<option value="TAG_BIG_MOVE">tag_big_move</option>
+				<option value="TAG_SMALL_MOVE">tag_small_move</option>
+				<option value="TAG_UNINSTALLED">tag_uninstalled</option>
+				<option value="TAG_OPEN">tag_open</option>
+			</options>
+		</event>
+	</channel-type>
 
 </thing:thing-descriptions>

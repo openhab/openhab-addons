@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
 package org.openhab.binding.netatmo.internal;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.Scanner;
 
 import javax.servlet.ServletException;
@@ -17,13 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
+import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -38,10 +31,9 @@ import io.swagger.client.model.NAWebhookCameraEvent;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
 public class WelcomeWebHookServlet extends HttpServlet {
     private static final long serialVersionUID = 1288539782077957954L;
-    public static final String PATH = "/netatmo/camera";
+    private static final String PATH = "/netatmo/%s/camera";
     private static final String APPLICATION_JSON = "application/json";
     private static final String CHARSET = "utf-8";
     private final Gson gson = new Gson();
@@ -49,18 +41,24 @@ public class WelcomeWebHookServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(WelcomeWebHookServlet.class);
 
     private HttpService httpService;
-    private NetatmoHandlerFactory netatmoHandlerFactory;
+    private NetatmoBridgeHandler bridgeHandler;
+    private String path;
+
+    public WelcomeWebHookServlet(HttpService httpService, String id) {
+        this.httpService = httpService;
+        this.path = String.format(PATH, id);
+    }
 
     /**
      * OSGi activation callback.
      *
      * @param config Service config.
      */
-    @Activate
-    protected void activate(Map<String, Object> config) {
+    public void activate(NetatmoBridgeHandler bridgeHandler) {
+        this.bridgeHandler = bridgeHandler;
         try {
-            httpService.registerServlet(PATH, this, null, httpService.createDefaultHttpContext());
-            logger.info("Started Netatmo Webhook servlet at {}", PATH);
+            httpService.registerServlet(path, this, null, httpService.createDefaultHttpContext());
+            logger.info("Started Netatmo Webhook servlet at {}", path);
         } catch (ServletException | NamespaceException e) {
             logger.error("Could not start Netatmo Webhook servlet: {}", e.getMessage(), e);
         }
@@ -69,18 +67,19 @@ public class WelcomeWebHookServlet extends HttpServlet {
     /**
      * OSGi deactivation callback.
      */
-    @Deactivate
-    protected void deactivate() {
-        httpService.unregister(PATH);
+    public void deactivate() {
+        httpService.unregister(path);
         logger.info("Netatmo webhook servlet stopped");
+        this.bridgeHandler = null;
     }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String data = inputStreamToString(req);
-        if (data != null && netatmoHandlerFactory != null) {
+        if (data != null && bridgeHandler != null) {
             NAWebhookCameraEvent event = gson.fromJson(data, NAWebhookCameraEvent.class);
-            netatmoHandlerFactory.webHookEvent(event);
+            logger.debug("Event transmitted from restService");
+            bridgeHandler.webHookEvent(event);
         }
 
         setHeaders(resp);
@@ -89,8 +88,7 @@ public class WelcomeWebHookServlet extends HttpServlet {
 
     private String inputStreamToString(HttpServletRequest req) throws IOException {
         Scanner scanner = new Scanner(req.getInputStream()).useDelimiter("\\A");
-        String result = scanner.hasNext() ? scanner.next() : "";
-        return result;
+        return scanner.hasNext() ? scanner.next() : "";
     }
 
     private void setHeaders(HttpServletResponse response) {
@@ -102,22 +100,8 @@ public class WelcomeWebHookServlet extends HttpServlet {
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     }
 
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
-    public void setNetatmoHandlerFactory(NetatmoHandlerFactory netatmoHandlerFactory) {
-        this.netatmoHandlerFactory = netatmoHandlerFactory;
-    }
-
-    public void unsetNetatmoHandlerFactory(NetatmoHandlerFactory netatmoHandlerFactory) {
-        this.netatmoHandlerFactory = null;
-    }
-
-    @Reference
-    public void setHttpService(HttpService httpService) {
-        this.httpService = httpService;
-    }
-
-    public void unsetHttpService(HttpService httpService) {
-        this.httpService = null;
+    public String getPath() {
+        return path;
     }
 
 }

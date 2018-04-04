@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -83,9 +83,11 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
         getThing().getChannels().stream().filter(channel -> channel.getKind() != ChannelKind.TRIGGER)
                 .forEach(channel -> {
                     String channelId = channel.getUID().getId();
-                    State state = getNAThingProperty(channelId);
-                    if (state != null) {
-                        updateState(channel.getUID(), state);
+                    if (isLinked(channelId)) {
+                        State state = getNAThingProperty(channelId);
+                        if (state != null) {
+                            updateState(channel.getUID(), state);
+                        }
                     }
                 });
     }
@@ -121,7 +123,7 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     }
 
     public boolean matchesId(String searchedId) {
-        return searchedId != null ? searchedId.equalsIgnoreCase(getId()) : false;
+        return searchedId != null && searchedId.equalsIgnoreCase(getId());
     }
 
     protected String getId() {

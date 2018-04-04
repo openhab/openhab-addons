@@ -10,14 +10,14 @@
 		<label>Xiaomi Aqara 1 Channel Smart Light Control</label>
 		<description>Battery powered Aqara Switch with 1 Channel</description>
 		<channels>
-            <channel id="ch1" typeId="system.button">
-                <label>Button</label>
-                <description>The pushbutton on the switch</description>
-            </channel>
+			<channel id="ch1" typeId="system.button">
+				<label>Button</label>
+				<description>The pushbutton on the switch</description>
+			</channel>
 			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="lowBattery" typeId="system.low-battery" />
 		</channels>
 		<config-description-ref uri="thing-type:mihome:device" />
 	</thing-type>
-	
+
 </thing:thing-descriptions>

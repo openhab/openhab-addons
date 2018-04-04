@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -80,7 +80,7 @@ public class SysteminfoHandler extends BaseThingHandler {
      * Wait time for the creation of Item-Channel links in seconds. This delay is needed, because the Item-Channel
      * links have to be created before the thing state is updated, otherwise item state will not be updated.
      */
-    private static final int WAIT_TIME_CHANNEL_ITEM_LINK_INIT = 1;
+    public static final int WAIT_TIME_CHANNEL_ITEM_LINK_INIT = 1;
 
     private SysteminfoInterface systeminfo;
 
@@ -217,27 +217,18 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     private void scheduleUpdates() {
         logger.debug("Schedule high priority tasks at fixed rate {} s.", refreshIntervalHighPriority);
-        highPriorityTasks = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                publishData(highPriorityChannels);
-            }
+        highPriorityTasks = scheduler.scheduleWithFixedDelay(() -> {
+            publishData(highPriorityChannels);
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalHighPriority.intValue(), TimeUnit.SECONDS);
 
         logger.debug("Schedule medium priority tasks at fixed rate {} s.", refreshIntervalMediumPriority);
-        mediumPriorityTasks = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                publishData(mediumPriorityChannels);
-            }
+        mediumPriorityTasks = scheduler.scheduleWithFixedDelay(() -> {
+            publishData(mediumPriorityChannels);
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalMediumPriority.intValue(), TimeUnit.SECONDS);
 
         logger.debug("Schedule one time update for low priority tasks.");
-        scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                publishData(lowPriorityChannels);
-            }
+        scheduler.schedule(() -> {
+            publishData(lowPriorityChannels);
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, TimeUnit.SECONDS);
 
     }
@@ -265,12 +256,24 @@ public class SysteminfoHandler extends BaseThingHandler {
         }
     }
 
+    public Set<ChannelUID> getHighPriorityChannels() {
+        return highPriorityChannels;
+    }
+
+    public Set<ChannelUID> getMediumPriorityChannels() {
+        return mediumPriorityChannels;
+    }
+
+    public Set<ChannelUID> getLowPriorityChannels() {
+        return lowPriorityChannels;
+    }
+
     /**
      * This method gets the information for specific channel through the {@link SysteminfoInterface}. It uses the
      * channel ID to call the correct method from the {@link SysteminfoInterface} with deviceIndex parameter (in case of
      * multiple devices, for reference see {@link #getDeviceIndex(String)}})
      *
-     * @param channelUID - the UID of the channel
+     * @param channelUID the UID of the channel
      * @return State object or null, if there is no information for the device with this index
      */
     private State getInfoForChannel(ChannelUID channelUID) {
@@ -454,7 +457,7 @@ public class SysteminfoHandler extends BaseThingHandler {
      * first will have deviceIndex=0, the second deviceIndex=1 ant etc).
      * When no device index is specified, default value of 0 (first device in the list) is returned.
      *
-     * @param channelID - the ID of the channel
+     * @param channelID the ID of the channel
      * @return natural number (number >=0)
      */
     private int getDeviceIndex(ChannelUID channelUID) {
@@ -479,7 +482,7 @@ public class SysteminfoHandler extends BaseThingHandler {
     /**
      * This method gets the process identifier (PID) for specific process
      *
-     * @param channelUID - channel unique identifier
+     * @param channelUID channel unique identifier
      * @return natural number
      */
     private int getPID(ChannelUID channelUID) {

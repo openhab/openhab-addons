@@ -8,229 +8,235 @@
 		<label>Button Switch</label>
 	</channel-type>
 
-    <channel-type id="curtainControl">
-        <item-type>Rollershutter</item-type>
-        <label>Curtain</label>
-        <category>Blinds</category>
-        <state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
-    </channel-type>
+	<channel-type id="curtainControl">
+		<item-type>Rollershutter</item-type>
+		<label>Curtain</label>
+		<category>Blinds</category>
+		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
+	</channel-type>
 
-    <channel-type id="brightness">
-        <item-type>Dimmer</item-type>
-        <label>Brightness</label>
-        <description>The brightness channel allows to control the brightness of a light. It is also possible to switch the light on and off.</description>
-        <category>DimmableLight</category>
-        <tags>
-            <tag>Lighting</tag>
-        </tags>
-        <state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
-    </channel-type>
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>The brightness channel allows to control the brightness of a light. It is also possible to switch the
+			light on and off.</description>
+		<category>DimmableLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
+	</channel-type>
 
-    <channel-type id="illumination">
-        <item-type>Number</item-type>
-        <label>Illumination</label>
-        <description>
-            This channel shows the brightness of the environment of the device.
-        </description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="illumination">
+		<item-type>Number</item-type>
+		<label>Illumination</label>
+		<description>
+			This channel shows the brightness of the environment of the device.
+		</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="color">
-        <item-type>Color</item-type>
-        <label>Color</label>
-        <description>Control the color of light.</description>
-        <category>ColorLight</category>
-        <tags>
-            <tag>Lighting</tag>
-        </tags>
-    </channel-type>
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Control the color of light.</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
 
-    <channel-type id="colorTemperature">
-        <item-type>Dimmer</item-type>
-        <label>Color Temperature</label>
-        <description>Allows to control the color temperature of light.</description>
-        <tags>
-            <tag>ColorTemperature</tag>
-        </tags>
-        <state pattern="%d K" />
-    </channel-type>
+	<channel-type id="colorTemperature">
+		<item-type>Dimmer</item-type>
+		<label>Color Temperature</label>
+		<description>Allows to control the color temperature of light.</description>
+		<tags>
+			<tag>ColorTemperature</tag>
+		</tags>
+		<state pattern="%d K" />
+	</channel-type>
 
-    <channel-type id="sound">
-        <item-type>Number</item-type>
-        <label>Sound Selector</label>
-    </channel-type>
+	<channel-type id="sound">
+		<item-type>Number</item-type>
+		<label>Sound Selector</label>
+	</channel-type>
 
-    <channel-type id="volume">
-        <item-type>Dimmer</item-type>
-        <label>Sound Volume</label>
-        <description>This channel controls the volume of the gateway for playing sounds</description>
-        <category>SoundVolume</category>
-        <state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
-    </channel-type>
+	<channel-type id="volume">
+		<item-type>Dimmer</item-type>
+		<label>Sound Volume</label>
+		<description>This channel controls the volume of the gateway for playing sounds</description>
+		<category>SoundVolume</category>
+		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
+	</channel-type>
 
-    <channel-type id="enableSound">
-        <item-type>Switch</item-type>
-        <label>Switch to turn sound off when playing</label>
-    </channel-type>
+	<channel-type id="joinPermission">
+		<item-type>Switch</item-type>
+		<label>Enable Device Inclusion</label>
+	</channel-type>
 
-    <channel-type id="rotationAngle">
-        <item-type>Number</item-type>
-        <label>Cube rotation angle in degrees</label>
-        <state readOnly="true" step="1" pattern="%d°"></state>
-    </channel-type>
+	<channel-type id="enableSound">
+		<item-type>Switch</item-type>
+		<label>Switch to turn sound off when playing</label>
+	</channel-type>
 
-    <channel-type id="rotationTime">
-        <item-type>Number</item-type>
-        <label>Cube rotation time in milliseconds</label>
-        <state readOnly="false" step="1" pattern="%d ms"></state>
-    </channel-type>
+	<channel-type id="rotationAngle">
+		<item-type>Number</item-type>
+		<label>Cube rotation angle in degrees</label>
+		<state readOnly="true" step="1" pattern="%d°"></state>
+	</channel-type>
 
-    <channel-type id="gas_alarm">
-        <item-type>Switch</item-type>
-        <label>Gas detected</label>
-        <category>Gas</category>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="rotationTime">
+		<item-type>Number</item-type>
+		<label>Cube rotation time in milliseconds</label>
+		<state readOnly="false" step="1" pattern="%d ms"></state>
+	</channel-type>
 
-    <channel-type id="leak">
-        <item-type>Switch</item-type>
-        <label>Leak detected</label>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="gas_alarm">
+		<item-type>Switch</item-type>
+		<label>Gas detected</label>
+		<category>Gas</category>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="status">
-        <item-type>String</item-type>
-        <label>Status</label>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="leak">
+		<item-type>Switch</item-type>
+		<label>Leak detected</label>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="temperature">
-        <item-type>Number</item-type>
-        <label>Temperature</label>
-        <category>Temperature</category>
-        <state min="-50" max="60" step="0.1" pattern="%.1f °C" readOnly="true">
-        </state>
-    </channel-type>
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="humidity">
-        <item-type>Number</item-type>
-        <label>Humidity</label>
-        <category>Humidity</category>
-        <state min="0" max="100" step="0.1" pattern="%.1f %%" readOnly="true">
-        </state>
-    </channel-type>
-    
-    <channel-type id="pressure">
-        <item-type>Number</item-type>
-        <label>Pressure</label>
-        <category>Pressure</category>
-        <state pattern="%.1f kPa" readOnly="true">
-        </state>
-    </channel-type>
+	<channel-type id="temperature">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<state min="-50" max="60" step="0.1" pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
 
-    <channel-type id="isOpen">
-        <item-type>Contact</item-type>
-        <label>Open Status</label>
-        <category>Contact</category>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<category>Humidity</category>
+		<state min="0" max="100" step="0.1" pattern="%.1f %%" readOnly="true">
+		</state>
+	</channel-type>
 
-    <channel-type id="isOpenAlarm">
-        <kind>trigger</kind>
-        <label>Opened window alarm</label>
-        <description>Triggers ALARM event, when window sensor is not getting "closed" for configured amount of time</description>
-        <event>
-            <options>
-                <option value="ALARM">alarm</option>
-            </options>
-        </event>
-    </channel-type>
+	<channel-type id="pressure">
+		<item-type>Number</item-type>
+		<label>Pressure</label>
+		<category>Pressure</category>
+		<state pattern="%.1f kPa" readOnly="true">
+		</state>
+	</channel-type>
 
-    <channel-type id="isOpenAlarmTimer">
-        <item-type>Number</item-type>
-        <label>Alarm Timer</label>
-        <description>Time in seconds, after which ALARM event is triggered, when window is open (Default 300 sec, Min 30 sec)</description>
-        <state readOnly="false" min="30" pattern="%d s" step="1"></state>
-    </channel-type>
+	<channel-type id="isOpen">
+		<item-type>Contact</item-type>
+		<label>Open Status</label>
+		<category>Contact</category>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="lastOpened">
-        <item-type>DateTime</item-type>
-        <label>Last Time Opened (Date/Time)</label>
-        <description>Date/time when window was last opened</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="isOpenAlarm">
+		<kind>trigger</kind>
+		<label>Opened window alarm</label>
+		<description>Triggers ALARM event, when window sensor is not getting "closed" for configured amount of time</description>
+		<event>
+			<options>
+				<option value="ALARM">alarm</option>
+			</options>
+		</event>
+	</channel-type>
 
-    <channel-type id="motion">
-        <item-type>Switch</item-type>
-        <label>Motion Status</label>
-        <category>Motion</category>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="isOpenAlarmTimer">
+		<item-type>Number</item-type>
+		<label>Alarm Timer</label>
+		<description>Time in seconds, after which ALARM event is triggered, when window is open (Default 300 sec, Min 30 sec)</description>
+		<state readOnly="false" min="30" pattern="%d s" step="1"></state>
+	</channel-type>
 
-    <channel-type id="motionOffTimer">
-        <item-type>Number</item-type>
-        <label>Motion Off Timer</label>
-        <description>Time in seconds, after which the Motion Switch is set to "OFF" (Default 120 sec, Min 5 sec)</description>
-        <category>Motion</category>
-        <state readOnly="false" min="5" pattern="%d s" step="1"></state>
-    </channel-type>
+	<channel-type id="lastOpened">
+		<item-type>DateTime</item-type>
+		<label>Last Time Opened (Date/Time)</label>
+		<description>Date/time when window was last opened</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="lastMotion">
-        <item-type>DateTime</item-type>
-        <label>Last Activity (Date/Time)</label>
-        <description>Date/time when last motion was detected</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="motion">
+		<item-type>Switch</item-type>
+		<label>Motion Status</label>
+		<category>Motion</category>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="power">
-        <item-type>Switch</item-type>
-        <label>Power</label>
-        <category>PowerOutlet</category>
-    </channel-type>
-    
-    <channel-type id="inUse">
-        <item-type>Switch</item-type>
-        <label>In Use</label>
-        <state readOnly="true"></state>
-    </channel-type>
-    
-    <channel-type id="loadPower">
-        <item-type>Number</item-type>
-        <label>Provided Power</label>
-        <state pattern="%.1f W" readOnly="true"></state>
-    </channel-type>
+	<channel-type id="motionOffTimer">
+		<item-type>Number</item-type>
+		<label>Motion Off Timer</label>
+		<description>Time in seconds, after which the Motion Switch is set to "OFF" (Default 120 sec, Min 5 sec)</description>
+		<category>Motion</category>
+		<state readOnly="false" min="5" pattern="%d s" step="1"></state>
+	</channel-type>
 
-    <channel-type id="powerConsumed">
-        <item-type>Number</item-type>
-        <label>Power Consumed</label>
-        <state pattern="%.3f kWh" readOnly="true"></state>
-    </channel-type>
+	<channel-type id="lastMotion">
+		<item-type>DateTime</item-type>
+		<label>Last Activity (Date/Time)</label>
+		<description>Date/time when last motion was detected</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="density">
-        <item-type>Number</item-type>
-        <label>Particle Density</label>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<category>PowerOutlet</category>
+	</channel-type>
 
-    <channel-type id="smoke_alarm">
-        <item-type>Switch</item-type>
-        <label>Smoke detected</label>
-        <category>Smoke</category>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="inUse">
+		<item-type>Switch</item-type>
+		<label>In Use</label>
+		<state readOnly="true"></state>
+	</channel-type>
 
-    <channel-type id="button">
-        <kind>trigger</kind>
-        <label>Button Event</label>
-        <description>Fires when the button is pressed, double pressed or pressed for a long time (press/release)</description>
-        <event>
-            <options>
-                <option value="SHORT_PRESSED">click</option>
-                <option value="DOUBLE_PRESSED">double click</option>
-                <option value="LONG_PRESSED">long click press</option>
-                <option value="LONG_RELEASED">long click release</option>
-            </options>
-        </event>
-    </channel-type>
+	<channel-type id="loadPower">
+		<item-type>Number</item-type>
+		<label>Provided Power</label>
+		<state pattern="%.1f W" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="powerConsumed">
+		<item-type>Number</item-type>
+		<label>Power Consumed</label>
+		<state pattern="%.3f kWh" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="density">
+		<item-type>Number</item-type>
+		<label>Particle Density</label>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="smoke_alarm">
+		<item-type>Switch</item-type>
+		<label>Smoke detected</label>
+		<category>Smoke</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="button">
+		<kind>trigger</kind>
+		<label>Button Event</label>
+		<description>Fires when the button is pressed, double pressed or pressed for a long time (press/release)</description>
+		<event>
+			<options>
+				<option value="SHORT_PRESSED">click</option>
+				<option value="DOUBLE_PRESSED">double click</option>
+				<option value="LONG_PRESSED">long click press</option>
+				<option value="LONG_RELEASED">long click release</option>
+			</options>
+		</event>
+	</channel-type>
 
 </thing:thing-descriptions>

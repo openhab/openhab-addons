@@ -67,6 +67,7 @@ The binding support several channel group. Each channel group, contains one or m
 In the list below, you can find, how are channel group and channels id`s related.
 
 **thing** `computer`
+
 *   **group** `memory`
      **channel** `available, total, used, availablePercent, usedPercent`
 *   **group** `swap`

@@ -1,145 +1,145 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="synopanalyzer"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="synopanalyzer">
-        <label>Synop Message</label>
-        <description>The Synop Analyzer binding decodes Synop messages</description>
-       
-        <channels>
-            <channel id="temperature" typeId="temperature" />
-            <channel id="pressure" typeId="pressure" />
-            <channel id="wind-angle" typeId="wind-angle" />
-            <channel id="wind-direction" typeId="wind-direction" />
-            <channel id="wind-speed-ms" typeId="wind-speed-ms" />
-            <channel id="wind-speed-knots" typeId="wind-speed-knots" />
-            <channel id="wind-speed-beaufort" typeId="wind-speed-beaufort" />
-            <channel id="overcast" typeId="overcast" />
-            <channel id="octa" typeId="octa" />
-            <channel id="attenuation-factor" typeId="attenuation-factor" />
-            <channel id="horizontal-visibility" typeId="horizontal-visibility" />
-            <channel id="time-utc" typeId="time-utc" />
-        </channels>
-        
-        <config-description>
-            <parameter name="refreshInterval" type="integer" required="true">
-                <label>Refresh Interval</label>
-                <description>The refresh interval to poll Synop messages (in minutes).</description>
-                <default>60</default>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="stationId" type="text">
-                <label>Synop Station Number</label>
-                <required>true</required>
-            </parameter>
-        </config-description>
-        
-    </thing-type>
-    
-    <channel-type id="temperature">
-        <item-type>Number</item-type>
-        <label>Temperature</label>
-        <description>Current temperature in degrees celsius</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C">
-        </state>
-    </channel-type>
+	<thing-type id="synopanalyzer">
+		<label>Synop Message</label>
+		<description>The Synop Analyzer binding decodes Synop messages</description>
 
-    <channel-type id="pressure">
-        <item-type>Number</item-type>
-        <label>Pressure</label>
-        <description>Current pressure in millibar</description>
-        <category>Pressure</category>
-        <state readOnly="true" pattern="%.1f mb">
-        </state>
-    </channel-type>
-    
-    <channel-type id="wind-angle">
-        <item-type>Number</item-type>
-        <label>Wind Angle</label>
-        <description>Wind angle</description>
-        <category>Wind</category>
-        <state readOnly="true" pattern="%.0f °">
-        </state>
-    </channel-type>
-    
-    <channel-type id="wind-direction">
-        <item-type>String</item-type>
-        <label>Wind Direction</label>
-        <description>Wind direction</description>
-        <category>Wind</category>
-        <state readOnly="true" pattern="%s">
-        </state>
-    </channel-type>
-    
-     <channel-type id="octa">
-        <item-type>Number</item-type>
-        <label>Octa</label>
-        <description>Octa</description>
-        <state readOnly="true" pattern="%d/8">
-        </state>
-    </channel-type>
-    
-     <channel-type id="attenuation-factor">
-        <item-type>Number</item-type>
-        <label>Mitigation factor</label>
-        <description>Cloud layer mitigation factor</description>
-        <state readOnly="true" pattern="%.1f">
-        </state>
-    </channel-type>
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="pressure" typeId="pressure" />
+			<channel id="wind-angle" typeId="wind-angle" />
+			<channel id="wind-direction" typeId="wind-direction" />
+			<channel id="wind-speed-ms" typeId="wind-speed-ms" />
+			<channel id="wind-speed-knots" typeId="wind-speed-knots" />
+			<channel id="wind-speed-beaufort" typeId="wind-speed-beaufort" />
+			<channel id="overcast" typeId="overcast" />
+			<channel id="octa" typeId="octa" />
+			<channel id="attenuation-factor" typeId="attenuation-factor" />
+			<channel id="horizontal-visibility" typeId="horizontal-visibility" />
+			<channel id="time-utc" typeId="time-utc" />
+		</channels>
 
-    <channel-type id="wind-speed-ms">
-        <item-type>Number</item-type>
-        <label>Wind Speed</label>
-        <description>Wind speed</description>
-        <category>Wind</category>
-        <state readOnly="true" pattern="%d m/s">
-        </state>
-    </channel-type>
+		<config-description>
+			<parameter name="refreshInterval" type="integer" required="true">
+				<label>Refresh Interval</label>
+				<description>The refresh interval to poll Synop messages (in minutes).</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="stationId" type="text">
+				<label>Synop Station Number</label>
+				<required>true</required>
+			</parameter>
+		</config-description>
 
-    <channel-type id="wind-speed-knots" advanced="true">
-        <item-type>Number</item-type>
-        <label>Wind Speed</label>
-        <description>Wind speed</description>
-        <category>Wind</category>
-        <state readOnly="true" pattern="%d knots">
-        </state>
-    </channel-type>
-    
-    <channel-type id="wind-speed-beaufort">
-        <item-type>Number</item-type>
-        <label>Beaufort</label>
-        <description>Wind speed in Beaufort Scale</description>
-        <category>Wind</category>
-        <state readOnly="true" pattern="%d">
-        </state>
-    </channel-type>
-        
-     <channel-type id="overcast" advanced="true">
-        <item-type>String</item-type>
-        <label>Overcast</label>
-        <description>Overcast</description>
-        <category>Wind</category>
-        <state readOnly="true" pattern="%s">
-        </state>
-    </channel-type>
-    
-      <channel-type id="horizontal-visibility" advanced="true">
-        <item-type>String</item-type>
-        <label>Horizontal-visibility</label>
-        <description>Horizontal-visibility</description>
-        <category>Wind</category>
-        <state readOnly="true" pattern="%s km">
-        </state>
-    </channel-type>
-    
-    <channel-type id="time-utc" advanced="true">
-        <item-type>DateTime</item-type>
-        <label>Observation Time</label>
-        <description>Timestamp when data was observed</description>
-        <state readOnly="true"/>
-    </channel-type>  
+	</thing-type>
+
+	<channel-type id="temperature">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>Current temperature in degrees celsius</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C">
+		</state>
+	</channel-type>
+
+	<channel-type id="pressure">
+		<item-type>Number</item-type>
+		<label>Pressure</label>
+		<description>Current pressure in millibar</description>
+		<category>Pressure</category>
+		<state readOnly="true" pattern="%.1f mb">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-angle">
+		<item-type>Number</item-type>
+		<label>Wind Angle</label>
+		<description>Wind angle</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.0f °">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-direction">
+		<item-type>String</item-type>
+		<label>Wind Direction</label>
+		<description>Wind direction</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+
+	<channel-type id="octa">
+		<item-type>Number</item-type>
+		<label>Octa</label>
+		<description>Octa</description>
+		<state readOnly="true" pattern="%d/8">
+		</state>
+	</channel-type>
+
+	<channel-type id="attenuation-factor">
+		<item-type>Number</item-type>
+		<label>Mitigation factor</label>
+		<description>Cloud layer mitigation factor</description>
+		<state readOnly="true" pattern="%.1f">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-speed-ms">
+		<item-type>Number</item-type>
+		<label>Wind Speed</label>
+		<description>Wind speed</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%d m/s">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-speed-knots" advanced="true">
+		<item-type>Number</item-type>
+		<label>Wind Speed</label>
+		<description>Wind speed</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%d knots">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-speed-beaufort">
+		<item-type>Number</item-type>
+		<label>Beaufort</label>
+		<description>Wind speed in Beaufort Scale</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%d">
+		</state>
+	</channel-type>
+
+	<channel-type id="overcast" advanced="true">
+		<item-type>String</item-type>
+		<label>Overcast</label>
+		<description>Overcast</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+
+	<channel-type id="horizontal-visibility" advanced="true">
+		<item-type>String</item-type>
+		<label>Horizontal-visibility</label>
+		<description>Horizontal-visibility</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%s km">
+		</state>
+	</channel-type>
+
+	<channel-type id="time-utc" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Observation Time</label>
+		<description>Timestamp when data was observed</description>
+		<state readOnly="true"/>
+	</channel-type>
 
 </thing:thing-descriptions>

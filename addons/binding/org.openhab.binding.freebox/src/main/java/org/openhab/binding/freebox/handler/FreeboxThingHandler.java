@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -161,77 +161,69 @@ public class FreeboxThingHandler extends BaseThingHandler {
         }
     }
 
-    private Runnable phoneRunnable = new Runnable() {
-        @Override
-        public void run() {
-            logger.debug("Polling phone state...");
+    private Runnable phoneRunnable = () -> {
+        logger.debug("Polling phone state...");
 
-            try {
-                fetchPhone();
+        try {
+            fetchPhone();
 
-                if (getThing().getStatus() == ThingStatus.OFFLINE) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
-
-            } catch (Throwable t) {
-                if (t instanceof FreeboxException) {
-                    logger.error("Phone state job - FreeboxException: {}", ((FreeboxException) t).getMessage());
-                } else if (t instanceof Exception) {
-                    logger.error("Phone state job - Exception: {}", ((Exception) t).getMessage());
-                } else if (t instanceof Error) {
-                    logger.error("Phone state job - Error: {}", ((Error) t).getMessage());
-                } else {
-                    logger.error("Phone state job - Unexpected error");
-                }
-                StringWriter sw = new StringWriter();
-                if ((t instanceof RuntimeException) && (t.getCause() != null)) {
-                    t.getCause().printStackTrace(new PrintWriter(sw));
-                } else {
-                    t.printStackTrace(new PrintWriter(sw));
-                }
-                logger.error("{}", sw);
-                if (getThing().getStatus() == ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                }
+            if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                updateStatus(ThingStatus.ONLINE);
             }
 
+        } catch (Throwable t) {
+            if (t instanceof FreeboxException) {
+                logger.error("Phone state job - FreeboxException: {}", ((FreeboxException) t).getMessage());
+            } else if (t instanceof Exception) {
+                logger.error("Phone state job - Exception: {}", ((Exception) t).getMessage());
+            } else if (t instanceof Error) {
+                logger.error("Phone state job - Error: {}", ((Error) t).getMessage());
+            } else {
+                logger.error("Phone state job - Unexpected error");
+            }
+            StringWriter sw = new StringWriter();
+            if ((t instanceof RuntimeException) && (t.getCause() != null)) {
+                t.getCause().printStackTrace(new PrintWriter(sw));
+            } else {
+                t.printStackTrace(new PrintWriter(sw));
+            }
+            logger.error("{}", sw);
+            if (getThing().getStatus() == ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
         }
     };
 
-    private Runnable callsRunnable = new Runnable() {
-        @Override
-        public void run() {
-            logger.debug("Polling phone calls...");
+    private Runnable callsRunnable = () -> {
+        logger.debug("Polling phone calls...");
 
-            try {
-                fetchNewCalls();
+        try {
+            fetchNewCalls();
 
-                if (getThing().getStatus() == ThingStatus.OFFLINE) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
-
-            } catch (Throwable t) {
-                if (t instanceof FreeboxException) {
-                    logger.error("Phone calls job - FreeboxException: {}", ((FreeboxException) t).getMessage());
-                } else if (t instanceof Exception) {
-                    logger.error("Phone calls job - Exception: {}", ((Exception) t).getMessage());
-                } else if (t instanceof Error) {
-                    logger.error("Phone calls job - Error: {}", ((Error) t).getMessage());
-                } else {
-                    logger.error("Phone calls job - Unexpected error");
-                }
-                StringWriter sw = new StringWriter();
-                if ((t instanceof RuntimeException) && (t.getCause() != null)) {
-                    t.getCause().printStackTrace(new PrintWriter(sw));
-                } else {
-                    t.printStackTrace(new PrintWriter(sw));
-                }
-                logger.error("{}", sw);
-                if (getThing().getStatus() == ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                }
+            if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                updateStatus(ThingStatus.ONLINE);
             }
 
+        } catch (Throwable t) {
+            if (t instanceof FreeboxException) {
+                logger.error("Phone calls job - FreeboxException: {}", ((FreeboxException) t).getMessage());
+            } else if (t instanceof Exception) {
+                logger.error("Phone calls job - Exception: {}", ((Exception) t).getMessage());
+            } else if (t instanceof Error) {
+                logger.error("Phone calls job - Error: {}", ((Error) t).getMessage());
+            } else {
+                logger.error("Phone calls job - Unexpected error");
+            }
+            StringWriter sw = new StringWriter();
+            if ((t instanceof RuntimeException) && (t.getCause() != null)) {
+                t.getCause().printStackTrace(new PrintWriter(sw));
+            } else {
+                t.printStackTrace(new PrintWriter(sw));
+            }
+            logger.error("{}", sw);
+            if (getThing().getStatus() == ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
         }
     };
 

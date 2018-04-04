@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,31 +16,42 @@ package org.openhab.binding.tplinksmarthome.internal.model;
  */
 public class Realtime extends ErrorResponse {
 
+    private static final int MILLIWATT_TO_WATT = 1000;
+    private static final int MILLIAMP_TO_AMP = 1000;
+    private static final int WATTHOUR_TO_KILOWATTHOUR = 1000;
+    private static final int MILLIVOLT_TO_VOLT = 1000;
+
     private double current;
     private double power;
     private double total;
     private double voltage;
 
+    // JSON names used for v2 hardware
+    private double currentMa;
+    private double powerMw;
+    private double totalWh;
+    private double voltageMv;
+
     public double getCurrent() {
-        return current;
+        return currentMa > 0.0 ? currentMa / MILLIAMP_TO_AMP : current;
     }
 
     public double getPower() {
-        return power;
+        return powerMw > 0.0 ? powerMw / MILLIWATT_TO_WATT : power;
     }
 
     public double getTotal() {
-        return total;
+        return totalWh > 0.0 ? totalWh / WATTHOUR_TO_KILOWATTHOUR : total;
     }
 
     public double getVoltage() {
-        return voltage;
+        return voltageMv > 0.0 ? voltageMv / MILLIVOLT_TO_VOLT : voltage;
     }
 
     @Override
     public String toString() {
-        return "current:" + current + ", power:" + power + ", total:" + total + ", voltage:" + voltage
-                + super.toString();
+        return "current:" + getCurrent() + ", power:" + getPower() + ", total:" + getTotal() + ", voltage:"
+                + getVoltage() + super.toString();
     }
 
 }

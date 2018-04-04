@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,13 +11,13 @@ package org.openhab.binding.russound.internal.rio.source;
 /**
  * Configuration class for the {@link RioSourceHandler}
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class RioSourceConfig {
     /**
      * Constant defined for the "source" configuration field
      */
-    public static final String Source = "source";
+    public static final String SOURCE = "source";
 
     /**
      * ID of the source

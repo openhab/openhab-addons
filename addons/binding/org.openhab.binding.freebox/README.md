@@ -16,7 +16,8 @@ This binding supports the following thing types:
 
 ## Discovery
 
-The Freebox Revolution server is discovered automatically through mDNS in the local network. After a Freebox Revolution is discovered and available to openHAB, the binding will automatically discover phone, network devices / interfaces and AirPlay devices with video capability in the local network.
+The Freebox Revolution server is discovered automatically through mDNS in the local network.
+After a Freebox Revolution is discovered and available to openHAB, the binding will automatically discover phone, network devices / interfaces and AirPlay devices with video capability in the local network.
 Note that the discovered thing will be setup to use only HTTP API (and not HTTPS) because only an IP can be automatically determined while a domain name is required to use HTTPS with a valid certificate.
 
 ## Binding configuration
@@ -31,7 +32,7 @@ The binding has the following configuration options, which can be set for "bindi
 
 ### Server
 
-The _server_ bridge thing requires the following configuration parameters:
+The *server* bridge thing requires the following configuration parameters:
 
 | Parameter Label         | Parameter ID    | Description                                                                 | Required | Default              |
 |-------------------------|-----------------|-----------------------------------------------------------------------------|----------|----------------------|
@@ -40,41 +41,37 @@ The _server_ bridge thing requires the following configuration parameters:
 | Refresh Interval        | refreshInterval | The refresh interval in seconds which is used to poll given Freebox Server. | false    | 30                   |
 | Use only HTTP API       | useOnlyHttp     | Use HTTP API even if HTTPS is available.                                    | false    | false                |
 
-
-If the parameter _ipAddress_ is not set, the binding will use the default address used by Free to access your Freebox Server (mafreebox.freebox.fr).
-The bridge thing will initialize only if a valid application token (parameter _appToken_) is filled.
+If the parameter *ipAddress* is not set, the binding will use the default address used by Free to access your Freebox Server (mafreebox.freebox.fr).
+The bridge thing will initialize only if a valid application token (parameter *appToken*) is filled.
 
 ### Phone
 
-The _phone_ thing requires the following configuration parameters:
+The *phone* thing requires the following configuration parameters:
 
 | Parameter Label              | Parameter ID              | Description                                                                                 | Required | Default |
 |------------------------------|---------------------------|---------------------------------------------------------------------------------------------|----------|---------|
 | Phone State Refresh Interval | refreshPhoneInterval      | The refresh interval in seconds which is used to poll given Freebox Server for phone state. | false    | 2       |
 | Phone Calls Refresh Interval | refreshPhoneCallsInterval | The refresh interval in seconds which is used to poll given Freebox Server for phone calls. | false    | 60      |
 
-
 ### Network device
 
-The _net_device_ thing requires the following configuration parameters:
+The *net_device* thing requires the following configuration parameters:
 
 | Parameter Label | Parameter ID | Description                            | Required |
 |-----------------|--------------|----------------------------------------|----------|
 | MAC Address     | macAddress   | The MAC address of the network device. | true     |
 
-
 ### Network interface
 
-The _net_interface_ thing requires the following configuration parameters:
+The *net_interface* thing requires the following configuration parameters:
 
 | Parameter Label | Parameter ID | Description                                         | Required |
 |-----------------|--------------|-----------------------------------------------------|----------|
 | IP Address      | ipAddress    | The IP address (v4 or v6) of the network interface. | true     |
 
-
 ### AirPlay device
 
-The _airplay_ thing requires the following configuration parameters:
+The *airplay* thing requires the following configuration parameters:
 
 | Parameter Label | Parameter ID | Description                 | Required |
 |-----------------|--------------|-----------------------------|----------|
@@ -88,7 +85,7 @@ Each Freebox server is now automatically assigned a random domain name (in addit
 This certificate is also valid for the domain name mafreebox.freebox.fr too.
 You must validate the certificate chain, by using the following Freebox ECC Root CA and Freebox RSA Root CA:
 
-```
+```text
 -----BEGIN CERTIFICATE-----
 MIICWTCCAd+gAwIBAgIJAMaRcLnIgyukMAoGCCqGSM49BAMCMGExCzAJBgNVBAYT
 AkZSMQ8wDQYDVQQIDAZGcmFuY2UxDjAMBgNVBAcMBVBhcmlzMRMwEQYDVQQKDApG
@@ -106,7 +103,7 @@ vxo6c0dSSNrr7dDN+m2/dRvgoIpGL2GauOGqDFY=
 -----END CERTIFICATE-----
 ```
 
-```
+```text
 -----BEGIN CERTIFICATE-----
 MIIFmjCCA4KgAwIBAgIJAKLyz15lYOrYMA0GCSqGSIb3DQEBCwUAMFoxCzAJBgNV
 BAYTAkZSMQ8wDQYDVQQIDAZGcmFuY2UxDjAMBgNVBAcMBVBhcmlzMRAwDgYDVQQK
@@ -150,13 +147,14 @@ sudo keytool -import -trustcacerts -file /freeboxECC.crt -alias Freebox -keystor
 sudo keytool -import -trustcacerts -file /freeboxRSA.crt -alias Freebox -keystore $JAVA_HOME/jre/lib/security/cacerts
 sudo rm /freeboxECC.crt /freeboxRSA.crt
 ```
+
 ## Authentication
 
 You'll have to authorize openHAB to connect to your Freebox. Here is the process described :
 
 **Step 1** At binding startup, if no token is recorded in the Freebox Server (bridge) configuration, the following message will be displayed in the OSGi console :
 
-```
+```text
             ####################################################################
             # Please accept activation request directly on your freebox        #
             # Once done, record Apptoken in the Freebox Item configuration     #
@@ -226,14 +224,14 @@ The following channels are supported:
 | airplay       | playurl                  | String    | W           | Play an audio or video media from the given URL                                 |
 | airplay       | stop                     | Switch    | W           | Stop the media playback                                                         |
 
-**Example**
+## Example
 
 ### Things
 
 Here is an example with minimal configuration parameters (using default values).
 It will first connect to mafreebox.freebox.fr using HTTPS (and will failback to HTTP if HTTPS access is not available).
 
-```
+```java
 Bridge freebox:server:fb "Freebox Revolution" [ appToken="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" ] {
     Thing phone Phone "Phone"
     Thing net_device tv1 "TV living room" [ macAddress="XX:XX:XX:XX:XX:XX" ]
@@ -244,7 +242,7 @@ Bridge freebox:server:fb "Freebox Revolution" [ appToken="xxxxxxxxxxxxxxxxxxxxxx
 
 Here is another example overwritting default configuration parameters:
 
-```
+```java
 Bridge freebox:server:fb "Freebox Revolution" [ fqdn="abcdefgh.fbxos.fr", appToken="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", refreshInterval=20, useOnlyHttp=false ] {
     Thing phone Phone "Phone" [ refreshPhoneInterval=10, refreshPhoneCallsInterval=120 ]
     Thing net_device tv1 "TV living room" [ macAddress="XX:XX:XX:XX:XX:XX" ]
@@ -255,7 +253,7 @@ Bridge freebox:server:fb "Freebox Revolution" [ fqdn="abcdefgh.fbxos.fr", appTok
 
 ### Items
 
-```
+```java
 String Freebox_xdsl_status "Freebox state [%s]" {channel="freebox:server:fb:xdsl_status"}
 String Freebox_cs_state "State [%s]" {channel="freebox:server:fb:line_status"}
 String Freebox_cs_ipv4 "ipV4 [%s]" {channel="freebox:server:fb:ipv4"}

@@ -1,12 +1,11 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.openhab.binding.pentair.handler;
 
 import static org.openhab.binding.pentair.PentairBindingConstants.*;
@@ -40,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PentairEasyTouchHandler extends PentairBaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(PentairEasyTouchHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PentairEasyTouchHandler.class);
 
     /**
      * current/last status packet recieved, used to compare new packet values to determine if status needs to be updated
@@ -143,7 +142,7 @@ public class PentairEasyTouchHandler extends PentairBaseThingHandler {
     /**
      * Method to turn on/off a circuit in response to a command from the framework
      *
-     * @param circuit - circuit number
+     * @param circuit circuit number
      * @param state
      */
     public void circuitSwitch(int circuit, boolean state) {
@@ -188,7 +187,7 @@ public class PentairEasyTouchHandler extends PentairBaseThingHandler {
                 break;
             case 2:
                 if (p.getLength() != 29) {
-                    logger.debug("Expected length of 29: ", p);
+                    logger.debug("Expected length of 29: {}", p);
                     return;
                 }
 
@@ -240,7 +239,7 @@ public class PentairEasyTouchHandler extends PentairBaseThingHandler {
                 break;
             case 8: // A5 01 0F 10 08 0D 4B 4B 4D 55 5E 07 00 00 58 00 00 00 
                 if (p.getLength() != 0x0D) {
-                    logger.debug("Expected length of 13: ", p);
+                    logger.debug("Expected length of 13: {}", p);
                     return;
                 }
 

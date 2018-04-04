@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -76,18 +76,16 @@ public class LoxoneMiniserverDiscoveryParticipant implements UpnpDiscoveryPartic
 
     @Override
     public ThingUID getThingUID(RemoteDevice device) {
-        if (device != null) {
-            String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
-            if (manufacturer != null && manufacturer.toLowerCase().contains("loxone")) {
-                String model = device.getDetails().getModelDetails().getModelName();
-                if (model != null && model.toLowerCase().contentEquals("loxone miniserver")) {
-                    String serial = device.getDetails().getSerialNumber();
-                    if (serial == null) {
-                        serial = device.getIdentity().getUdn().getIdentifierString();
-                    }
-                    if (serial != null) {
-                        return new ThingUID(LoxoneBindingConstants.THING_TYPE_MINISERVER, serial);
-                    }
+        String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
+        if (manufacturer != null && manufacturer.toLowerCase().contains("loxone")) {
+            String model = device.getDetails().getModelDetails().getModelName();
+            if (model != null && model.toLowerCase().contentEquals("loxone miniserver")) {
+                String serial = device.getDetails().getSerialNumber();
+                if (serial == null) {
+                    serial = device.getIdentity().getUdn().getIdentifierString();
+                }
+                if (serial != null) {
+                    return new ThingUID(LoxoneBindingConstants.THING_TYPE_MINISERVER, serial);
                 }
             }
         }

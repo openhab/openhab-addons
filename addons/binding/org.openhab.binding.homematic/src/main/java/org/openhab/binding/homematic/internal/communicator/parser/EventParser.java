@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -35,7 +35,7 @@ public class EventParser extends CommonRpcParser<Object[], HmDatapointInfo> {
             channel = HmChannel.CHANNEL_NUMBER_VARIABLE;
         } else {
             String[] configParts = StringUtils.trimToEmpty(addressWithChannel).split(":");
-            address = getAddress(configParts[0]);
+            address = getSanitizedAddress(configParts[0]);
             if (configParts.length > 1) {
                 channel = NumberUtils.createInteger(configParts[1]);
             }

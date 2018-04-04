@@ -37,7 +37,7 @@ To manually configure a Harmony Hub thing you may specify its host name  ("host"
 
 In the thing file, this looks e.g. like
 
-```
+```java
 Bridge harmonyhub:hub:GreatRoom [ host="192.168.1.100"]
 ```
 
@@ -46,7 +46,7 @@ Note that this is prefixed by the hub the device is controlled from.
 
 In the thing file, this looks e.g. like
 
-```
+```java
 Bridge harmonyhub:hub:great [ name="Great Room"] {
     device denon [ name="Denon AV Receiver"]
 }
@@ -54,7 +54,7 @@ Bridge harmonyhub:hub:great [ name="Great Room"] {
 
 or
 
-```
+```java
 Bridge harmonyhub:hub:great [ name="Great Room"] {
     device denon [ id=176254]
 }
@@ -66,13 +66,13 @@ Hubs can report and change the current activity:
 
 items:
 
-```
+```java
 String HarmonyGreatRoomActivity              "Current Activity [%s]"  (gMain) { channel="harmonyhub:hub:GreatRoom:currentActivity" }
 ```
 
 Devices can send button presses
 
-```
+```java
 String HarmonyGreatRoomDenon            "Denon Button Press" (gMain) { channel="harmonyhub:device:GreatRoom:29529817:buttonPress" }
 ```
 
@@ -82,7 +82,7 @@ The name of the event is equal to the activity name, with all non-alphanumeric c
 
 rules:
 
-```
+```javascript
 rule "Starting TV"
 when
     Channel "harmonyhub:hub:GreatRoom:activityStarting" triggered Watch_TV
@@ -117,7 +117,7 @@ end
 Using the above things channels and items
 Sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu" {
         Frame  {
                 Switch item=HarmonyGreatRoomActivity mappings=[PowerOff="PowerOff", TIVO="TIVO", Music="Music","APPLE TV"="APPLE TV", NETFLIX="NETFLIX"]

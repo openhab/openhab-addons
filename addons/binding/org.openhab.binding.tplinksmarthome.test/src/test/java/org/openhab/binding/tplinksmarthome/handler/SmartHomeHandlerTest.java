@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,6 +16,7 @@ import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstant
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -45,7 +46,6 @@ import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-@SuppressWarnings("null")
 public class SmartHomeHandlerTest {
 
     private static final String CHANNEL_PREFIX = "binding:tplinksmarthome:1234:";
@@ -61,6 +61,7 @@ public class SmartHomeHandlerTest {
     @Mock
     private SmartHomeDevice smartHomeDevice;
 
+    @NonNull
     private final Configuration configuration = new Configuration();
 
     @Before

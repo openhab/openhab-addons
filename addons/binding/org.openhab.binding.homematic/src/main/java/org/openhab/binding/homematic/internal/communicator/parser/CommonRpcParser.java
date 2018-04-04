@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,6 +14,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
 import org.openhab.binding.homematic.internal.model.HmValueType;
@@ -107,10 +108,11 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     }
 
     /**
-     * Returns the address of a device, replacing group address identifier.
+     * Returns the address of a device, replacing group address identifier and illegal characters.
      */
-    protected String getAddress(Object object) {
-        return StringUtils.replaceOnce(toString(object), "*", "T-");
+    protected String getSanitizedAddress(Object object) {
+        String address = StringUtils.trimToNull(StringUtils.replaceOnce(toString(object), "*", "T-"));
+        return MiscUtils.validateCharacters(address, "Address", "_");
     }
 
     /**

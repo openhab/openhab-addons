@@ -85,21 +85,6 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:netatmo:device">
-		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})">
-			<label>Equipment ID</label>
-			<description>Id of the Device (mac address)</description>
-			<required>true</required>
-		</parameter>
-
-		<parameter name="refreshInterval" type="integer" required="false">
-			<label>Refresh Interval</label>
-			<description>The refresh interval to poll Netatmo API (in ms).</description>
-			<default>600000</default>
-			<advanced>true</advanced>
-		</parameter>
-	</config-description>
-
 	<config-description uri="thing-type:netatmo:module">
 		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})">
 			<label>Module ID</label>

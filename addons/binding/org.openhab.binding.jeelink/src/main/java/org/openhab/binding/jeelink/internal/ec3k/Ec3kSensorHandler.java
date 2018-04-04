@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -37,8 +37,8 @@ public class Ec3kSensorHandler extends JeeLinkSensorHandler<Ec3kReading> {
     }
 
     @Override
-    public String getSketchName() {
-        return "ec3kSerial";
+    public Class<Ec3kReading> getReadingClass() {
+        return Ec3kReading.class;
     }
 
     @Override

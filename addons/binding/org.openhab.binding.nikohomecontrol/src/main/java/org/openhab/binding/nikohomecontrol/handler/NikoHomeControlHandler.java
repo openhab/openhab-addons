@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -68,23 +68,19 @@ public class NikoHomeControlHandler extends BaseThingHandler {
             // We lost connection but the connection object is there, so was correctly started.
             // Try to restart communication.
             // This can be expensive, therefore do it in a job.
-            scheduler.submit(new Runnable() {
-
-                @Override
-                public void run() {
-                    nhcComm.restartCommunication();
-                    // If still not active, take thing offline and return.
-                    if (!nhcComm.communicationActive()) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Niko Home Control: communication socket error");
-                        return;
-                    }
-                    // Also put the bridge back online
-                    nhcBridgeHandler.bridgeOnline();
-
-                    // And finally handle the command
-                    handleCommandSelection(nhcAction, channelUID, command);
+            scheduler.submit(() -> {
+                nhcComm.restartCommunication();
+                // If still not active, take thing offline and return.
+                if (!nhcComm.communicationActive()) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Niko Home Control: communication socket error");
+                    return;
                 }
+                // Also put the bridge back online
+                nhcBridgeHandler.bridgeOnline();
+
+                // And finally handle the command
+                handleCommandSelection(nhcAction, channelUID, command);
             });
         }
     }

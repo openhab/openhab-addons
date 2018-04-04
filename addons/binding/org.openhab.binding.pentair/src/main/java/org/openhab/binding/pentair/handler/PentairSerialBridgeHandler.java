@@ -1,12 +1,11 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.openhab.binding.pentair.handler;
 
 import java.io.BufferedInputStream;
@@ -34,7 +33,7 @@ import gnu.io.UnsupportedCommOperationException;
  *
  */
 public class PentairSerialBridgeHandler extends PentairBaseBridgeHandler {
-    private Logger logger = LoggerFactory.getLogger(PentairSerialBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PentairSerialBridgeHandler.class);
 
     /** SerialPort object representing the port where the RS485 adapter is connected */
     SerialPort port;

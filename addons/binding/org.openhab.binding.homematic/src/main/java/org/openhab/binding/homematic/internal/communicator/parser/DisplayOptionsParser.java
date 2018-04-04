@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -138,7 +138,7 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
      */
     private String[] getAvailableSymbols(HmChannel channel) {
         List<String> symbols = new ArrayList<String>();
-        for (HmDatapoint datapoint : channel.getDatapoints().values()) {
+        for (HmDatapoint datapoint : channel.getDatapoints()) {
             if (!datapoint.isReadOnly() && datapoint.isBooleanType()
                     && datapoint.getParamsetType() == HmParamsetType.VALUES
                     && !DATAPOINT_NAME_SUBMIT.equals(datapoint.getName())

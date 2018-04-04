@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2010-2017 by the respective copyright holders.
+	Copyright (c) 2010-2018 by the respective copyright holders.
 
-    All rights reserved. This program and the accompanying materials
-    are made available under the terms of the Eclipse Public License v1.0
-    which accompanies this distribution, and is available at
-    http://www.eclipse.org/legal/epl-v10.html
+	All rights reserved. This program and the accompanying materials
+	are made available under the terms of the Eclipse Public License v1.0
+	which accompanies this distribution, and is available at
+	http://www.eclipse.org/legal/epl-v10.html
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" enabled="true" immediate="true" name="org.openhab.ui.cometvisu.backend.ChartResource">
-   <implementation class="org.openhab.ui.cometvisu.internal.backend.ChartResource"/>
-   <service>
-      <provide interface="org.openhab.ui.cometvisu.internal.backend.ChartResource"/>
-      <provide interface="org.eclipse.smarthome.io.rest.RESTResource"/>
-   </service>
-   <reference bind="setItemRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.items.ItemRegistry" name="ItemRegistry" policy="static" unbind="unsetItemRegistry"/>
-   <reference bind="addPersistenceService" cardinality="0..n" interface="org.eclipse.smarthome.core.persistence.PersistenceService" name="PersistenceService" policy="dynamic" unbind="removePersistenceService"/>
+	<implementation class="org.openhab.ui.cometvisu.internal.backend.ChartResource"/>
+	<service>
+		<provide interface="org.openhab.ui.cometvisu.internal.backend.ChartResource"/>
+		<provide interface="org.eclipse.smarthome.io.rest.RESTResource"/>
+	</service>
+	<reference bind="setItemRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.items.ItemRegistry" name="ItemRegistry" policy="static" unbind="unsetItemRegistry"/>
+	<reference bind="addPersistenceService" cardinality="0..n" interface="org.eclipse.smarthome.core.persistence.PersistenceService" name="PersistenceService" policy="dynamic" unbind="removePersistenceService"/>
 </scr:component>

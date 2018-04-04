@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -29,6 +29,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
         "nextchange" })
 public class HeatingModel {
     public static final BigDecimal TEMP_FACTOR = new BigDecimal("0.5");
+    public static final BigDecimal BIG_DECIMAL_TWO = new BigDecimal("2.0");
     public static final BigDecimal TEMP_CELSIUS_MIN = new BigDecimal("8.0");
     public static final BigDecimal TEMP_CELSIUS_MAX = new BigDecimal("28.0");
     public static final BigDecimal TEMP_FRITZ_MIN = new BigDecimal("16.0");
@@ -162,16 +163,16 @@ public class HeatingModel {
         } else if (TEMP_CELSIUS_MAX.compareTo(celsiusValue) == -1) {
             return TEMP_FRITZ_MAX;
         }
-        return celsiusValue.divide(TEMP_FACTOR);
+        return BIG_DECIMAL_TWO.multiply(celsiusValue);
     }
 
     public static BigDecimal toCelsius(BigDecimal fritzValue) {
         if (fritzValue == null) {
             return BigDecimal.ZERO;
         } else if (TEMP_FRITZ_ON.compareTo(fritzValue) == 0) {
-            return TEMP_CELSIUS_MAX.add(new BigDecimal("2.0"));
+            return TEMP_CELSIUS_MAX.add(BIG_DECIMAL_TWO);
         } else if (TEMP_FRITZ_OFF.compareTo(fritzValue) == 0) {
-            return TEMP_CELSIUS_MIN.subtract(new BigDecimal("2.0"));
+            return TEMP_CELSIUS_MIN.subtract(BIG_DECIMAL_TWO);
         }
         return TEMP_FACTOR.multiply(fritzValue);
     }

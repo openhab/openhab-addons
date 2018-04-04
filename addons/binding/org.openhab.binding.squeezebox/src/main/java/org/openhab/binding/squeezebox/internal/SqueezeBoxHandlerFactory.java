@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -65,6 +65,8 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
+    private SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -83,7 +85,8 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(SQUEEZEBOXPLAYER_THING_TYPE)) {
             logger.trace("creating handler for player thing {}", thing);
-            SqueezeBoxPlayerHandler playerHandler = new SqueezeBoxPlayerHandler(thing, createCallbackUrl());
+            SqueezeBoxPlayerHandler playerHandler = new SqueezeBoxPlayerHandler(thing, createCallbackUrl(),
+                    stateDescriptionProvider);
 
             // Register the player as an audio sink
             logger.trace("Registering an audio sink for player thing {}", thing.getUID());
@@ -197,5 +200,14 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
 
     protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
         this.networkAddressService = null;
+    }
+
+    @Reference
+    protected void setDynamicStateDescriptionProvider(SqueezeBoxStateDescriptionOptionsProvider provider) {
+        this.stateDescriptionProvider = provider;
+    }
+
+    protected void unsetDynamicStateDescriptionProvider(SqueezeBoxStateDescriptionOptionsProvider provider) {
+        this.stateDescriptionProvider = null;
     }
 }

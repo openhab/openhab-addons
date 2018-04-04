@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PentairIntelliFloHandler extends PentairBaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(PentairIntelliFloHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PentairIntelliFloHandler.class);
     protected PentairPacketPumpStatus ppscur = new PentairPacketPumpStatus();
 
     public PentairIntelliFloHandler(Thing thing) {
@@ -81,7 +81,7 @@ public class PentairIntelliFloHandler extends PentairBaseThingHandler {
                 break;
             case 7: // Pump status (after a request)
                 if (p.getLength() != 15) {
-                    logger.debug("Expected length of 15: ", p);
+                    logger.debug("Expected length of 15: {}", p);
                     return;
                 }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -39,9 +39,10 @@ public class Sysinfo extends ErrorResponse {
     }
 
     /**
-     * Alternative light state for different devices.
+     * With default light state state. The default light state is set when the device is off. If the device is on the
+     * state is in the parent fields.
      */
-    public static class ExtendedLightState extends LightState {
+    public static class WithDefaultLightState extends LightState {
         private LightState dftOnState;
 
         public LightState getLightState() {
@@ -93,7 +94,7 @@ public class Sysinfo extends ErrorResponse {
     private boolean isFactory;
     private String discoVer;
     private CtrlProtocols ctrlProtocols;
-    private ExtendedLightState lightState = new ExtendedLightState();
+    private WithDefaultLightState lightState = new WithDefaultLightState();
 
     public String getSwVer() {
         return swVer;

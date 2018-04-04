@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,7 +16,6 @@ import java.util.Map;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.vitotronic.VitotronicBindingConstants;
 import org.slf4j.Logger;
@@ -64,7 +63,7 @@ public class VitotronicBridgeDiscovery extends AbstractDiscoveryService {
                 byte[] sendData = broadcastMsg.getBytes();
 
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length,
-                        InetAddress.getByName(NetUtil.getBroadcastAddress()), adapterPort);
+                        InetAddress.getByName("255.255.255.255"), adapterPort);
                 localSocket.send(sendPacket);
 
                 byte[] receiveBuffer = new byte[255];

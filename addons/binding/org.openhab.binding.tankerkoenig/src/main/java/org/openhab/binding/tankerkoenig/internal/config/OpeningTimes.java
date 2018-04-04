@@ -1,12 +1,11 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.openhab.binding.tankerkoenig.internal.config;
 
 /**
@@ -14,10 +13,8 @@ package org.openhab.binding.tankerkoenig.internal.config;
  * of settings like "Montag" "09:00" "18:00")
  * plus the boolean WholeDay (open).
  *
- * @author Jürgen Baginski
- *
+ * @author Jürgen Baginski - Initial contribution
  */
-
 public class OpeningTimes {
 
     private Boolean wholeDay;

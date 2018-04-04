@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,13 +10,18 @@ package org.openhab.binding.netatmo.internal;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
+
+import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
@@ -35,10 +40,10 @@ import org.openhab.binding.netatmo.internal.welcome.NAWelcomeHomeHandler;
 import org.openhab.binding.netatmo.internal.welcome.NAWelcomePersonHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.swagger.client.model.NAWebhookCameraEvent;
 
 /**
  * The {@link NetatmoHandlerFactory} is responsible for creating things and
@@ -51,8 +56,9 @@ import io.swagger.client.model.NAWebhookCameraEvent;
         NetatmoHandlerFactory.class }, immediate = true, configurationPid = "binding.netatmo")
 public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
-    private ServiceRegistration<?> discoveryServiceReg;
-    private NetatmoBridgeHandler bridgeHandler;
+    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
+    private HttpService httpService;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -63,7 +69,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(APIBRIDGE_THING_TYPE)) {
-            bridgeHandler = new NetatmoBridgeHandler((Bridge) thing);
+            WelcomeWebHookServlet servlet = registerWebHookServlet(thing.getUID());
+            NetatmoBridgeHandler bridgeHandler = new NetatmoBridgeHandler((Bridge) thing, servlet);
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (thingTypeUID.equals(MODULE1_THING_TYPE)) {
@@ -94,28 +101,57 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private void registerDeviceDiscoveryService(@NonNull NetatmoBridgeHandler netatmoBridgeHandler) {
-        NetatmoModuleDiscoveryService discoveryService = new NetatmoModuleDiscoveryService(netatmoBridgeHandler);
-        if (bundleContext != null) {
-            discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                    new Hashtable<String, Object>());
-        }
-    }
-
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        if (discoveryServiceReg != null && APIBRIDGE_THING_TYPE.equals(thingHandler.getThing().getThingTypeUID())) {
-            discoveryServiceReg.unregister();
-            discoveryServiceReg = null;
+        if (thingHandler instanceof NetatmoBridgeHandler) {
+            ThingUID thingUID = thingHandler.getThing().getUID();
+            unregisterDeviceDiscoveryService(thingUID);
+            unregisterWebHookServlet(thingUID);
         }
         super.removeHandler(thingHandler);
     }
 
-    public void webHookEvent(NAWebhookCameraEvent event) {
-        logger.debug("Event transmitted from restService");
-        if (bridgeHandler != null) {
-            bridgeHandler.webHookEvent(event);
+    private void registerDeviceDiscoveryService(@NonNull NetatmoBridgeHandler netatmoBridgeHandler) {
+        if (bundleContext != null) {
+            NetatmoModuleDiscoveryService discoveryService = new NetatmoModuleDiscoveryService(netatmoBridgeHandler);
+            discoveryServiceRegs.put(netatmoBridgeHandler.getThing().getUID(), bundleContext.registerService(
+                    DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
         }
+    }
+
+    private void unregisterDeviceDiscoveryService(ThingUID thingUID) {
+        ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(thingUID);
+        if (serviceReg != null) {
+            serviceReg.unregister();
+            discoveryServiceRegs.remove(thingUID);
+        }
+    }
+
+    private WelcomeWebHookServlet registerWebHookServlet(ThingUID thingUID) {
+        WelcomeWebHookServlet servlet = null;
+        if (bundleContext != null) {
+            servlet = new WelcomeWebHookServlet(httpService, thingUID.getId());
+            webHookServiceRegs.put(thingUID, bundleContext.registerService(HttpServlet.class.getName(), servlet,
+                    new Hashtable<String, Object>()));
+        }
+        return servlet;
+    }
+
+    private void unregisterWebHookServlet(ThingUID thingUID) {
+        ServiceRegistration<?> serviceReg = webHookServiceRegs.get(thingUID);
+        if (serviceReg != null) {
+            serviceReg.unregister();
+            webHookServiceRegs.remove(thingUID);
+        }
+    }
+
+    @Reference
+    public void setHttpService(HttpService httpService) {
+        this.httpService = httpService;
+    }
+
+    public void unsetHttpService(HttpService httpService) {
+        this.httpService = null;
     }
 
 }

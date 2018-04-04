@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.amazondashbutton.internal.capturing;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -94,33 +93,29 @@ public class PacketCapturingService {
             return false;
         }
         ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.submit(new Callable<Void>() {
+        executorService.submit(() -> {
+            try {
+                pcapHandle.loop(-1, new PacketListener() {
 
-            @Override
-            public Void call() throws Exception {
-                try {
-                    pcapHandle.loop(-1, new PacketListener() {
-
-                        @Override
-                        public void gotPacket(Packet packet) {
-                            if (!packet.contains(EthernetPacket.class)) {
-                                return;
-                            }
-                            final EthernetPacket ethernetPacket = packet.get(EthernetPacket.class);
-                            final MacAddress sourceMacAddress = ethernetPacket.getHeader().getSrcAddr();
-                            if (shouldCapture(packet)) {
-                                packetCapturingHandler.packetCaptured(sourceMacAddress);
-                            }
+                    @Override
+                    public void gotPacket(Packet packet) {
+                        if (!packet.contains(EthernetPacket.class)) {
+                            return;
                         }
-                    });
-                } finally {
-                    if (pcapHandle != null && pcapHandle.isOpen()) {
-                        pcapHandle.close();
-                        pcapHandle = null;
+                        final EthernetPacket ethernetPacket = packet.get(EthernetPacket.class);
+                        final MacAddress sourceMacAddress = ethernetPacket.getHeader().getSrcAddr();
+                        if (shouldCapture(packet)) {
+                            packetCapturingHandler.packetCaptured(sourceMacAddress);
+                        }
                     }
+                });
+            } finally {
+                if (pcapHandle != null && pcapHandle.isOpen()) {
+                    pcapHandle.close();
+                    pcapHandle = null;
                 }
-                return null;
             }
+            return null;
         });
         if (macAddress == null) {
             logger.debug("Started capturing ARP and BOOTP requests for network device {}.",

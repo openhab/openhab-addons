@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -48,10 +48,10 @@ public class Mhub4K431Handler extends BaseThingHandler {
     // public static final String PORTS = "ports";
     public static final String POLLING_INTERVAL = "interval";
 
-    private Logger logger = LoggerFactory.getLogger(Mhub4K431Handler.class);
+    private final Logger logger = LoggerFactory.getLogger(Mhub4K431Handler.class);
 
     private ScheduledFuture<?> pollingJob;
-    protected Gson gson = new Gson();
+    protected final Gson gson = new Gson();
 
     private final int timeout = 5000;
     private final int numberOfPorts = 4;
@@ -65,8 +65,8 @@ public class Mhub4K431Handler extends BaseThingHandler {
         logger.debug("Initializing HDanywhere MHUB 4K (4×3+1) matrix handler.");
 
         if (pollingJob == null || pollingJob.isCancelled()) {
-            int polling_interval = ((BigDecimal) getConfig().get(POLLING_INTERVAL)).intValue();
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, polling_interval, TimeUnit.SECONDS);
+            int pollingInterval = ((BigDecimal) getConfig().get(POLLING_INTERVAL)).intValue();
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, pollingInterval, TimeUnit.SECONDS);
         }
         updateStatus(ThingStatus.UNKNOWN);
     }
@@ -80,55 +80,49 @@ public class Mhub4K431Handler extends BaseThingHandler {
         }
     }
 
-    private Runnable pollingRunnable = new Runnable() {
+    private Runnable pollingRunnable = () -> {
+        try {
+            String host = (String) getConfig().get(IP_ADDRESS);
 
-        @Override
-        public void run() {
-            try {
-                String host = (String) getConfig().get(IP_ADDRESS);
+            String httpMethod = "POST";
+            String url = "http://" + host + "/cgi-bin/MUH44TP_getsetparams.cgi";
+            String content = "{tag:ptn}";
+            InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
 
-                String httpMethod = "POST";
-                String url = "http://" + host + "/cgi-bin/MUH44TP_getsetparams.cgi";
-                String content = "{tag:ptn}";
-                InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+            if (isNotBlank(httpMethod) && isNotBlank(url)) {
+                String response = HttpUtil.executeUrl(httpMethod, url, null, stream, null, timeout);
+                response = response.trim();
+                response = response.substring(1, response.length() - 1);
 
-                if (isNotBlank(httpMethod) && isNotBlank(url)) {
-                    String response = HttpUtil.executeUrl(httpMethod, url, null, stream, null, timeout);
-                    response = response.trim();
-                    response = response.substring(1, response.length() - 1);
+                if (response != null) {
+                    updateStatus(ThingStatus.ONLINE);
 
-                    if (response != null) {
-                        updateStatus(ThingStatus.ONLINE);
+                    java.lang.reflect.Type type = new TypeToken<Map<String, String>>() {
+                    }.getType();
+                    Map<String, String> map = gson.fromJson(response, type);
 
-                        java.lang.reflect.Type type = new TypeToken<Map<String, String>>() {
-                        }.getType();
-                        Map<String, String> map = gson.fromJson(response, type);
+                    String inputChannel = map.get("Inputchannel");
 
-                        String inputChannel = map.get("Inputchannel");
-
-                        for (int i = 0; i < numberOfPorts; i++) {
-                            DecimalType decimalType = new DecimalType(String.valueOf(inputChannel.charAt(i)));
-                            updateState(new ChannelUID(getThing().getUID(), Port.get(i + 1).channelID()), decimalType);
-                        }
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE);
+                    for (int i = 0; i < numberOfPorts; i++) {
+                        DecimalType decimalType = new DecimalType(String.valueOf(inputChannel.charAt(i)));
+                        updateState(new ChannelUID(getThing().getUID(), Port.get(i + 1).channelID()), decimalType);
                     }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE);
                 }
-            } catch (Exception e) {
-                logger.debug("An exception occurred while polling the HDanwywhere matrix: '{}'", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE);
             }
+        } catch (Exception e) {
+            logger.debug("An exception occurred while polling the HDanwywhere matrix: '{}'", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE);
         }
     };
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof RefreshType) {
             // Simply schedule a single run of the polling runnable to refresh all channels
             scheduler.schedule(pollingRunnable, 0, TimeUnit.SECONDS);
         } else {
-
             String channelID = channelUID.getId();
 
             String host = (String) getConfig().get(IP_ADDRESS);
@@ -144,7 +138,6 @@ public class Mhub4K431Handler extends BaseThingHandler {
                 logger.warn("Output port {} goes beyond the physical number of {} ports available on the matrix {}",
                         new Object[] { outputPort, numberOfPorts, host });
             } else {
-
                 String httpMethod = "POST";
                 String url = "http://" + host + "/cgi-bin/MMX32_Keyvalue.cgi";
 

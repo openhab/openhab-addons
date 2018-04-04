@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -38,11 +38,11 @@ import org.slf4j.LoggerFactory;
  * {@link PulseaudioBridgeHandler} is the handler for a Pulseaudio server and
  * connects it to the framework.
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  *
  */
 public class PulseaudioBridgeHandler extends BaseBridgeHandler {
-    private Logger logger = LoggerFactory.getLogger(PulseaudioBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PulseaudioBridgeHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(PulseaudioBindingConstants.BRIDGE_THING_TYPE);
@@ -54,38 +54,34 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler {
 
     private PulseaudioClient client;
 
-    private HashSet<String> lastActiveDevices = new HashSet<String>();
+    private List<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
+    private HashSet<String> lastActiveDevices = new HashSet<>();
 
     private ScheduledFuture<?> pollingJob;
-    private Runnable pollingRunnable = new Runnable() {
-        @Override
-        public void run() {
-            client.update();
-            for (AbstractAudioDeviceConfig device : client.getItems()) {
-                if (lastActiveDevices != null && lastActiveDevices.contains(device.getPaName())) {
-                    for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
-                        try {
-                            deviceStatusListener.onDeviceStateChanged(getThing().getUID(), device);
-                        } catch (Exception e) {
-                            logger.error("An exception occurred while calling the DeviceStatusListener", e);
-                        }
+    private Runnable pollingRunnable = () -> {
+        client.update();
+        for (AbstractAudioDeviceConfig device : client.getItems()) {
+            if (lastActiveDevices != null && lastActiveDevices.contains(device.getPaName())) {
+                for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
+                    try {
+                        deviceStatusListener.onDeviceStateChanged(getThing().getUID(), device);
+                    } catch (Exception e) {
+                        logger.error("An exception occurred while calling the DeviceStatusListener", e);
                     }
-                } else {
-                    for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
-                        try {
-                            deviceStatusListener.onDeviceAdded(getThing(), device);
-                            deviceStatusListener.onDeviceStateChanged(getThing().getUID(), device);
-                        } catch (Exception e) {
-                            logger.error("An exception occurred while calling the DeviceStatusListener", e);
-                        }
-                        lastActiveDevices.add(device.getPaName());
+                }
+            } else {
+                for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
+                    try {
+                        deviceStatusListener.onDeviceAdded(getThing(), device);
+                        deviceStatusListener.onDeviceStateChanged(getThing().getUID(), device);
+                    } catch (Exception e) {
+                        logger.error("An exception occurred while calling the DeviceStatusListener", e);
                     }
+                    lastActiveDevices.add(device.getPaName());
                 }
             }
         }
     };
-
-    private List<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
 
     public PulseaudioBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -130,21 +126,18 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler {
         }
 
         if (host != null && !host.isEmpty()) {
-            Runnable connectRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        client = new PulseaudioClient(host, port);
-                        if (client.isConnected()) {
-                            updateStatus(ThingStatus.ONLINE);
-                            logger.info("Established connection to Pulseaudio server on Host '{}':'{}'.", host, port);
-                            startAutomaticRefresh();
-                        }
-                    } catch (IOException e) {
-                        logger.error("Couldn't connect to Pulsaudio server [Host '{}':'{}']: {}", host, port,
-                                e.getLocalizedMessage());
-                        updateStatus(ThingStatus.OFFLINE);
+            Runnable connectRunnable = () -> {
+                try {
+                    client = new PulseaudioClient(host, port);
+                    if (client.isConnected()) {
+                        updateStatus(ThingStatus.ONLINE);
+                        logger.info("Established connection to Pulseaudio server on Host '{}':'{}'.", host, port);
+                        startAutomaticRefresh();
                     }
+                } catch (IOException e) {
+                    logger.error("Couldn't connect to Pulsaudio server [Host '{}':'{}']: {}", host, port,
+                            e.getLocalizedMessage());
+                    updateStatus(ThingStatus.OFFLINE);
                 }
             };
             scheduler.schedule(connectRunnable, 0, TimeUnit.SECONDS);

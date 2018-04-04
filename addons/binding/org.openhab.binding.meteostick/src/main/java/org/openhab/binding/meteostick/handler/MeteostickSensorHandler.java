@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -43,13 +43,13 @@ import org.slf4j.LoggerFactory;
 public class MeteostickSensorHandler extends BaseThingHandler implements MeteostickEventListener {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DAVIS);
 
-    private Logger logger = LoggerFactory.getLogger(MeteostickSensorHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(MeteostickSensorHandler.class);
 
     private int channel = 0;
     private MeteostickBridgeHandler bridgeHandler;
     private SlidingTimeWindow rainHourlyWindow = new SlidingTimeWindow(60000);
-    private ScheduledFuture<?> rainHourlyJob = null;
-    private ScheduledFuture<?> offlineTimerJob = null;
+    private ScheduledFuture<?> rainHourlyJob;
+    private ScheduledFuture<?> offlineTimerJob;
 
     private Date lastData;
 
@@ -64,13 +64,10 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         channel = ((BigDecimal) getConfig().get(PARAMETER_CHANNEL)).intValue();
         logger.debug("Initializing MeteoStick handler - Channel {}.", channel);
 
-        Runnable pollingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                BigDecimal rainfall = new BigDecimal((rainHourlyWindow.getTotal() * 0.254));
-                rainfall.setScale(1, RoundingMode.DOWN);
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_LASTHOUR), new DecimalType(rainfall));
-            }
+        Runnable pollingRunnable = () -> {
+            BigDecimal rainfall = new BigDecimal((rainHourlyWindow.getTotal() * 0.254));
+            rainfall.setScale(1, RoundingMode.DOWN);
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_LASTHOUR), new DecimalType(rainfall));
         };
 
         // Scheduling a job on each hour to update the last hour rainfall
@@ -202,7 +199,7 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
 
     class SlidingTimeWindow {
         int period = 0;
-        private final Map<Long, Integer> storage = new TreeMap<Long, Integer>();
+        private final Map<Long, Integer> storage = new TreeMap<>();
 
         /**
          *
@@ -247,17 +244,14 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
     }
 
     private synchronized void startTimeoutCheck() {
-        Runnable pollingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                String detail;
-                if (lastData == null) {
-                    detail = "No data received";
-                } else {
-                    detail = "No data received since " + lastData.toString();
-                }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
+        Runnable pollingRunnable = () -> {
+            String detail;
+            if (lastData == null) {
+                detail = "No data received";
+            } else {
+                detail = "No data received since " + lastData.toString();
             }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
         };
 
         if (offlineTimerJob != null) {

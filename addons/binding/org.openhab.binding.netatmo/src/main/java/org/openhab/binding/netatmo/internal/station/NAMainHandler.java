@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,7 +13,6 @@ import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
@@ -44,7 +43,7 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
             userAdministrative = stationDataBody.getUser().getAdministrative();
 
             result = stationDataBody.getDevices().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
-                    .findFirst().get();
+                    .findFirst().orElse(null);
             if (result != null) {
                 result.getModules().forEach(child -> childs.put(child.getId(), child));
             }
@@ -93,13 +92,13 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
                     return toDecimalType(
                             WeatherUtils.getDewPoint(dashboardData.getTemperature(), dashboardData.getHumidity()));
                 case CHANNEL_DEWPOINTDEP:
-                    Double dewpoint = WeatherUtils.getDewPoint(dashboardData.getTemperature(),
+                    Double dewPoint = WeatherUtils.getDewPoint(dashboardData.getTemperature(),
                             dashboardData.getHumidity());
-                    return toDecimalType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewpoint));
+                    return toDecimalType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewPoint));
                 case CHANNEL_WIND_UNIT:
-                    return new DecimalType(userAdministrative.getWindunit());
+                    return toDecimalType(userAdministrative.getWindunit());
                 case CHANNEL_PRESSURE_UNIT:
-                    return new DecimalType(userAdministrative.getPressureunit());
+                    return toDecimalType(userAdministrative.getPressureunit());
             }
         }
         return super.getNAThingProperty(channelId);

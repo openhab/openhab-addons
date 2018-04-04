@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -578,18 +578,11 @@ public class AllPlayHandler extends BaseThingHandler
      * Schedules a reconnection job.
      */
     private void scheduleReconnectionJob(final Speaker speaker) {
-
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                discoverSpeaker();
-            }
-        };
         logger.debug("Scheduling job to rediscover to speaker {}", speaker);
         // TODO: Check if it makes sense to repeat the discovery every x minutes or if the AllJoyn library is able to
         // handle re-discovery in _all_ cases.
         cancelReconnectionJob();
-        reconnectionJob = scheduler.scheduleWithFixedDelay(runnable, 5, 600, TimeUnit.SECONDS);
+        reconnectionJob = scheduler.scheduleWithFixedDelay(this::discoverSpeaker, 5, 600, TimeUnit.SECONDS);
     }
 
     /**

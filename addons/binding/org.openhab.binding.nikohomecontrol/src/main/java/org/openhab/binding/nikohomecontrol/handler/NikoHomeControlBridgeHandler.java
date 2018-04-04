@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -84,38 +84,33 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
     private void createCommunicationObject(InetAddress addr, int port) {
         Configuration config = this.getConfig();
 
-        scheduler.submit(new Runnable() {
+        scheduler.submit(() -> {
+            nhcComm = new NikoHomeControlCommunication();
 
-            @Override
-            public void run() {
-                nhcComm = new NikoHomeControlCommunication();
+            // Set callback from NikoHomeControlCommunication object to this bridge to be able to take bridge
+            // offline when non-resolvable communication error occurs.
+            setBridgeCallBack();
 
-                // Set callback from NikoHomeControlCommunication object to this bridge to be able to take bridge
-                // offline when non-resolvable communication error occurs.
-                setBridgeCallBack();
+            nhcComm.startCommunication();
+            if (!nhcComm.communicationActive()) {
+                nhcComm = null;
+                bridgeOffline();
+                return;
+            }
 
-                nhcComm.startCommunication();
-                if (!nhcComm.communicationActive()) {
-                    nhcComm = null;
-                    bridgeOffline();
-                    return;
-                }
+            updateProperties();
 
-                updateProperties();
+            updateStatus(ThingStatus.ONLINE);
 
-                updateStatus(ThingStatus.ONLINE);
+            Integer refreshInterval = ((Number) config.get(CONFIG_REFRESH)).intValue();
+            setupRefreshTimer(refreshInterval);
 
-                Integer refreshInterval = ((Number) config.get(CONFIG_REFRESH)).intValue();
-                setupRefreshTimer(refreshInterval);
-
-                if (nhcDiscovery != null) {
-                    nhcDiscovery.discoverDevices();
-                } else {
-                    logger.debug("Niko Home Control: cannot discover actions, discovery service not started");
-                }
+            if (nhcDiscovery != null) {
+                nhcDiscovery.discoverDevices();
+            } else {
+                logger.debug("Niko Home Control: cannot discover actions, discovery service not started");
             }
         });
-
     }
 
     private void setBridgeCallBack() {
@@ -139,22 +134,19 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
 
         // This timer will restart the bridge connection periodically
         logger.debug("Niko Home Control: restart bridge connection every {} min", refreshInterval);
-        this.refreshTimer = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                logger.debug("Niko Home Control: restart communication at scheduled time");
+        this.refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
+            logger.debug("Niko Home Control: restart communication at scheduled time");
 
-                nhcComm.restartCommunication();
-                if (!nhcComm.communicationActive()) {
-                    logger.debug("Niko Home Control: communication socket error");
-                    bridgeOffline();
-                    return;
-                }
-
-                updateProperties();
-
-                updateStatus(ThingStatus.ONLINE);
+            nhcComm.restartCommunication();
+            if (!nhcComm.communicationActive()) {
+                logger.debug("Niko Home Control: communication socket error");
+                bridgeOffline();
+                return;
             }
+
+            updateProperties();
+
+            updateStatus(ThingStatus.ONLINE);
         }, refreshInterval, refreshInterval, TimeUnit.MINUTES);
 
     }
@@ -219,24 +211,19 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
         }
         updateConfiguration(configuration);
 
-        scheduler.submit(new Runnable() {
-
-            @Override
-            public void run() {
-                nhcComm.restartCommunication();
-                if (!nhcComm.communicationActive()) {
-                    bridgeOffline();
-                    return;
-                }
-
-                updateProperties();
-
-                updateStatus(ThingStatus.ONLINE);
-
-                Integer refreshInterval = ((Number) configuration.get(CONFIG_REFRESH)).intValue();
-                setupRefreshTimer(refreshInterval);
-
+        scheduler.submit(() -> {
+            nhcComm.restartCommunication();
+            if (!nhcComm.communicationActive()) {
+                bridgeOffline();
+                return;
             }
+
+            updateProperties();
+
+            updateStatus(ThingStatus.ONLINE);
+
+            Integer refreshInterval = ((Number) configuration.get(CONFIG_REFRESH)).intValue();
+            setupRefreshTimer(refreshInterval);
         });
     }
 

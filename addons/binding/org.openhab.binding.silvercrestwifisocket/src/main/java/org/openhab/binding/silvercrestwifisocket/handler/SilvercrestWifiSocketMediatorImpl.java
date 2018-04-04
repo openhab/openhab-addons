@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,6 +19,7 @@ import org.openhab.binding.silvercrestwifisocket.internal.discovery.SilvercrestW
 import org.openhab.binding.silvercrestwifisocket.internal.entities.SilvercrestWifiSocketResponse;
 import org.openhab.binding.silvercrestwifisocket.internal.runnable.SilvercrestWifiSocketUpdateReceiverRunnable;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jaime Vaz - Initial contribution
  */
+@Component(service = SilvercrestWifiSocketMediator.class, immediate = true)
 public class SilvercrestWifiSocketMediatorImpl implements SilvercrestWifiSocketMediator {
 
     private final Logger logger = LoggerFactory.getLogger(SilvercrestWifiSocketMediatorImpl.class);
@@ -108,7 +110,6 @@ public class SilvercrestWifiSocketMediatorImpl implements SilvercrestWifiSocketM
         if (handler != null) {
             this.handlersRegistredByThing.remove(thing);
         }
-
     }
 
     /**
@@ -162,6 +163,5 @@ public class SilvercrestWifiSocketMediatorImpl implements SilvercrestWifiSocketM
     @Override
     public void setDiscoveryService(final SilvercrestWifiSocketDiscoveryService discoveryService) {
         this.silvercrestDiscoveryService = discoveryService;
-
     }
 }

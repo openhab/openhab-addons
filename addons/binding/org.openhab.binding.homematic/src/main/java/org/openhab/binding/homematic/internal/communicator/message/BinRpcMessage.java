@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +81,19 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
             throw new EOFException("Only " + length + " bytes received reading message length");
         }
         int datasize = (new BigInteger(ArrayUtils.subarray(sig, 4, 8))).intValue();
-        byte[] message = ArrayUtils.addAll(sig, IOUtils.toByteArray(is, datasize));
+        byte payload[] = new byte[datasize];
+        int offset = 0;
+        int currentLength;
+
+        while (offset < datasize && (currentLength = is.read(payload, offset, datasize - offset)) != -1) {
+            offset += currentLength;
+        }
+        if (offset != datasize) {
+            throw new EOFException(
+                    "Only " + offset + " bytes received while reading message payload, expected " + datasize
+                            + " bytes");
+        }
+        byte[] message = ArrayUtils.addAll(sig, payload);
         decodeMessage(message, methodHeader);
     }
 

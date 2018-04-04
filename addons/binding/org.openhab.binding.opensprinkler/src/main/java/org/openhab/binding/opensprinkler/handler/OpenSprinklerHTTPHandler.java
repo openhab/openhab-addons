@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -110,38 +110,34 @@ public class OpenSprinklerHTTPHandler extends OpenSprinklerHandler {
     /**
      * Threaded scheduled job that periodically syncs the state of the OpenSprinkler device.
      */
-    private Runnable refreshService = new Runnable() {
-        @Override
-        public void run() {
-            if (openSprinklerDevice != null) {
-                if (openSprinklerDevice.isConnected()) {
-                    logger.debug("Refreshing state with the OpenSprinkler device.");
+    private Runnable refreshService = () -> {
+        if (openSprinklerDevice != null) {
+            if (openSprinklerDevice.isConnected()) {
+                logger.debug("Refreshing state with the OpenSprinkler device.");
 
-                    try {
-                        if (openSprinklerDevice.isRainDetected()) {
-                            updateState(new ChannelUID(getThing().getUID(), SENSOR_RAIN), OnOffType.ON);
-                        } else {
-                            updateState(new ChannelUID(getThing().getUID(), SENSOR_RAIN), OnOffType.OFF);
-                        }
-
-                        for (int i = 0; i < openSprinklerDevice.getNumberOfStations(); i++) {
-                            ChannelUID channel = new ChannelUID(getThing().getUID(), Station.get(i).channelID());
-                            State command = getStationState(i);
-                            updateState(channel, command);
-                        }
-
-                        updateStatus(ThingStatus.ONLINE);
-                    } catch (Exception exp) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                "Could not refresh current state from the OpenSprinkler.");
-                        logger.debug(
-                                "Could not refresh current state of the OpenSprinkler device. Exception received: {}",
-                                exp.toString());
+                try {
+                    if (openSprinklerDevice.isRainDetected()) {
+                        updateState(new ChannelUID(getThing().getUID(), SENSOR_RAIN), OnOffType.ON);
+                    } else {
+                        updateState(new ChannelUID(getThing().getUID(), SENSOR_RAIN), OnOffType.OFF);
                     }
-                } else {
+
+                    for (int i = 0; i < openSprinklerDevice.getNumberOfStations(); i++) {
+                        ChannelUID channel = new ChannelUID(getThing().getUID(), Station.get(i).channelID());
+                        State command = getStationState(i);
+                        updateState(channel, command);
+                    }
+
+                    updateStatus(ThingStatus.ONLINE);
+                } catch (Exception exp) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                            "Could not sync status with the OpenSprinkler.");
+                            "Could not refresh current state from the OpenSprinkler.");
+                    logger.debug("Could not refresh current state of the OpenSprinkler device. Exception received: {}",
+                            exp.toString());
                 }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        "Could not sync status with the OpenSprinkler.");
             }
         }
     };

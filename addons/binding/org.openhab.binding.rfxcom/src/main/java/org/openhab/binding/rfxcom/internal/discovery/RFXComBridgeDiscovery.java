@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -43,14 +43,6 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
 
     private ScheduledFuture<?> discoveryJob;
 
-    private Runnable discoverRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            discoverRfxcom();
-        }
-    };
-
     public RFXComBridgeDiscovery() {
         super(RFXComBindingConstants.DISCOVERABLE_BRIDGE_THING_TYPES_UIDS, 10, false);
     }
@@ -69,7 +61,7 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start background discovery for RFXCOM transceivers");
-        discoveryJob = scheduler.scheduleWithFixedDelay(discoverRunnable, 0, REFRESH_INTERVAL_IN_SECONDS,
+        discoveryJob = scheduler.scheduleWithFixedDelay(this::discoverRfxcom, 0, REFRESH_INTERVAL_IN_SECONDS,
                 TimeUnit.SECONDS);
     }
 

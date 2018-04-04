@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -290,12 +290,9 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
     protected void startBackgroundDiscovery() {
         logger.debug("Starting Plugwise device background discovery");
 
-        Runnable discoveryRunnable = new Runnable() {
-            @Override
-            public void run() {
-                logger.debug("Discover nodes (background discovery)");
-                discoverNodes();
-            }
+        Runnable discoveryRunnable = () -> {
+            logger.debug("Discover nodes (background discovery)");
+            discoverNodes();
         };
 
         if (discoveryJob == null || discoveryJob.isCancelled()) {
@@ -306,41 +303,38 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
     private void startDiscoveryWatchJob() {
         logger.debug("Starting Plugwise discovery watch job");
 
-        Runnable watchRunnable = new Runnable() {
-            @Override
-            public void run() {
-                if (currentRoleCall.isRoleCalling) {
-                    if ((System.currentTimeMillis() - currentRoleCall.lastRequestMillis) > (MESSAGE_TIMEOUT * 1000)
-                            && currentRoleCall.attempts < MESSAGE_RETRY_ATTEMPTS) {
-                        logger.debug("Resending timed out role call message for node with ID {} on Circle+ ({})",
-                                currentRoleCall.currentNodeID, getCirclePlusMAC());
-                        roleCall(currentRoleCall.currentNodeID);
-                    } else if (currentRoleCall.attempts >= MESSAGE_RETRY_ATTEMPTS) {
-                        logger.debug("Giving up on role call for node with ID {} on Circle+ ({})",
-                                currentRoleCall.currentNodeID, getCirclePlusMAC());
-                        currentRoleCall.isRoleCalling = false;
-                    }
+        Runnable watchRunnable = () -> {
+            if (currentRoleCall.isRoleCalling) {
+                if ((System.currentTimeMillis() - currentRoleCall.lastRequestMillis) > (MESSAGE_TIMEOUT * 1000)
+                        && currentRoleCall.attempts < MESSAGE_RETRY_ATTEMPTS) {
+                    logger.debug("Resending timed out role call message for node with ID {} on Circle+ ({})",
+                            currentRoleCall.currentNodeID, getCirclePlusMAC());
+                    roleCall(currentRoleCall.currentNodeID);
+                } else if (currentRoleCall.attempts >= MESSAGE_RETRY_ATTEMPTS) {
+                    logger.debug("Giving up on role call for node with ID {} on Circle+ ({})",
+                            currentRoleCall.currentNodeID, getCirclePlusMAC());
+                    currentRoleCall.isRoleCalling = false;
                 }
+            }
 
-                Iterator<Entry<MACAddress, DiscoveredNode>> it = discoveredNodes.entrySet().iterator();
-                while (it.hasNext()) {
-                    Entry<MACAddress, DiscoveredNode> entry = it.next();
-                    DiscoveredNode node = entry.getValue();
-                    if ((System.currentTimeMillis() - node.lastRequestMillis) > (MESSAGE_TIMEOUT * 1000)
-                            && node.attempts < MESSAGE_RETRY_ATTEMPTS) {
-                        logger.debug("Resending timed out information request message to node ({})", node.macAddress);
-                        updateInformation(node.macAddress);
-                        node.attempts++;
-                    } else if (node.attempts >= MESSAGE_RETRY_ATTEMPTS) {
-                        logger.debug("Giving up on information request for node ({})", node.macAddress);
-                        it.remove();
-                    }
+            Iterator<Entry<MACAddress, DiscoveredNode>> it = discoveredNodes.entrySet().iterator();
+            while (it.hasNext()) {
+                Entry<MACAddress, DiscoveredNode> entry = it.next();
+                DiscoveredNode node = entry.getValue();
+                if ((System.currentTimeMillis() - node.lastRequestMillis) > (MESSAGE_TIMEOUT * 1000)
+                        && node.attempts < MESSAGE_RETRY_ATTEMPTS) {
+                    logger.debug("Resending timed out information request message to node ({})", node.macAddress);
+                    updateInformation(node.macAddress);
+                    node.attempts++;
+                } else if (node.attempts >= MESSAGE_RETRY_ATTEMPTS) {
+                    logger.debug("Giving up on information request for node ({})", node.macAddress);
+                    it.remove();
                 }
+            }
 
-                if (!currentRoleCall.isRoleCalling && discoveredNodes.isEmpty()) {
-                    logger.debug("Discovery no longer needs to be watched");
-                    stopDiscoveryWatchJob();
-                }
+            if (!currentRoleCall.isRoleCalling && discoveredNodes.isEmpty()) {
+                logger.debug("Discovery no longer needs to be watched");
+                stopDiscoveryWatchJob();
             }
         };
 

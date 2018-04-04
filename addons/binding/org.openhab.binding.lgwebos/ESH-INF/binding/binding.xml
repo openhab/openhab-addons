@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<binding:binding id="lgwebos" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+<binding:binding id="lgwebos" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>LG webOS Binding</name>
 	<description>Binding to connect LG's WebOS based smart TVs based on Connect SDK</description>
 	<author>Sebastian Prehn</author>
+
+	<config-description>
+		<parameter name="localIP" type="text">
+			<label>Local IP</label>
+			<description>Local IP of server network interface to bind to. This is optional. If not set, the binding will use openHAB's primary IP address, which may be configured under network settings.
+			</description>
+			<required>false</required>
+			<context>network-address</context>
+		</parameter>
+	</config-description>
 
 </binding:binding>

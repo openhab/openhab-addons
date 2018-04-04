@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,13 +35,14 @@ import oshi.util.EdidUtil;
  * This implementation of {@link SysteminfoInterface} is using the open source library OSHI to provide system
  * information. OSHI is a free JNA-based (native) Operating System and Hardware Information library for Java.
  *
- * @author Svilen Valkanov
+ * @author Svilen Valkanov - Initial contribution
  * @author Lyubomir Papazov - Move the initialization logic that could potentially take long time to the
  *         initializeSysteminfo method
  *
  * @see <a href="https://github.com/oshi/oshi">OSHI github repository</a>
  *
  */
+@Component(service = SysteminfoInterface.class)
 public class OshiSysteminfo implements SysteminfoInterface {
 
     HardwareAbstractionLayer hal;
@@ -60,7 +62,7 @@ public class OshiSysteminfo implements SysteminfoInterface {
     private PowerSource[] powerSources;
     private HWDiskStore[] drives;
 
-    public static final int PRECISION_AFTER_DECIMAl_SIGN = 1;
+    public static final int PRECISION_AFTER_DECIMAL_SIGN = 1;
 
     /**
      * Some of the methods used in this constructor execute native code and require execute permissions
@@ -91,7 +93,6 @@ public class OshiSysteminfo implements SysteminfoInterface {
         fileStores = operatingSystem.getFileSystem().getFileStores();
         powerSources = hal.getPowerSources();
         drives = hal.getDiskStores();
-
     }
 
     @SuppressWarnings("null")
@@ -326,14 +327,14 @@ public class OshiSysteminfo implements SysteminfoInterface {
     @Override
     public DecimalType getSensorsCpuTemperature() {
         BigDecimal cpuTemp = new BigDecimal(sensors.getCpuTemperature());
-        cpuTemp = cpuTemp.setScale(PRECISION_AFTER_DECIMAl_SIGN, BigDecimal.ROUND_HALF_UP);
+        cpuTemp = cpuTemp.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
         return cpuTemp.signum() == 1 ? new DecimalType(cpuTemp) : null;
     }
 
     @Override
     public DecimalType getSensorsCpuVoltage() {
         BigDecimal cpuVoltage = new BigDecimal(sensors.getCpuVoltage());
-        cpuVoltage = cpuVoltage.setScale(PRECISION_AFTER_DECIMAl_SIGN, BigDecimal.ROUND_HALF_UP);
+        cpuVoltage = cpuVoltage.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
         return cpuVoltage.signum() == 1 ? new DecimalType(cpuVoltage) : null;
     }
 
@@ -478,13 +479,13 @@ public class OshiSysteminfo implements SysteminfoInterface {
 
     private BigDecimal getPercentsValue(double decimalFraction) {
         BigDecimal result = new BigDecimal(decimalFraction * 100);
-        result = result.setScale(PRECISION_AFTER_DECIMAl_SIGN, BigDecimal.ROUND_HALF_UP);
+        result = result.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
         return result;
     }
 
     private BigDecimal getTimeInMinutes(double timeInSeconds) {
         BigDecimal timeInMinutes = new BigDecimal(timeInSeconds / 60);
-        timeInMinutes = timeInMinutes.setScale(PRECISION_AFTER_DECIMAl_SIGN, BigDecimal.ROUND_UP);
+        timeInMinutes = timeInMinutes.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_UP);
         return timeInMinutes;
     }
 
@@ -539,7 +540,7 @@ public class OshiSysteminfo implements SysteminfoInterface {
         }
         double processorLoads[] = cpu.getSystemLoadAverage(index + 1);
         BigDecimal result = new BigDecimal(processorLoads[index]);
-        result = result.setScale(PRECISION_AFTER_DECIMAl_SIGN, BigDecimal.ROUND_HALF_UP);
+        result = result.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
         return result;
     }
 

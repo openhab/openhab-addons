@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(PartitionThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PartitionThingHandler.class);
 
     /**
      * Constructor.
@@ -92,7 +92,6 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         logger.debug("handleCommand(): Command Received - {} {}.", channelUID, command);
 
         if (command instanceof RefreshType) {
@@ -100,7 +99,6 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
         }
 
         if (dscAlarmBridgeHandler != null && dscAlarmBridgeHandler.isConnected()) {
-
             switch (channelUID.getId()) {
                 case PARTITION_ARM_MODE:
                     int partitionNumber = getPartitionNumber();
@@ -184,7 +182,6 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
 
     @Override
     public void dscAlarmEventReceived(EventObject event, Thing thing) {
-
         if (thing != null) {
             if (getThing() == thing) {
                 DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,46 +12,36 @@ import static org.junit.Assert.*;
 import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants.*;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
 
 /**
  * Test class for {@link BulbDevice} class.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-@RunWith(value = Parameterized.class)
 public class BulbDeviceTest extends DeviceTestBase {
+
+    private static final String DEVICE_OFF = "bulb_get_sysinfo_response_off";
 
     private final BulbDevice device = new BulbDevice(new ThingTypeUID(BINDING_ID, "lb130"), COLOR_TEMPERATURE_LB130_MIN,
             COLOR_TEMPERATURE_LB130_MAX);
 
-    private static final List<Object[]> TESTS = Arrays
-            .asList(new Object[][] { { "bulb_get_sysinfo_response" }, { "bulb_get_sysinfo_response_lb130" } });
-
-    public BulbDeviceTest(String responseFilename) throws IOException {
-        super(responseFilename);
+    public BulbDeviceTest() throws IOException {
+        super("bulb_get_sysinfo_response_on");
     }
 
     @Override
     public void setUp() throws IOException {
         super.setUp();
         setSocketReturnAssert("bulb_transition_light_state_response");
-    }
-
-    @Parameters(name = "{0}")
-    public static List<Object[]> data() {
-        return TESTS;
     }
 
     @Test
@@ -109,22 +99,49 @@ public class BulbDeviceTest extends DeviceTestBase {
     }
 
     @Test
-    public void testUpdateChannelBrightness() {
-        assertEquals("Switch should be on", new PercentType(92), device.updateChannel(CHANNEL_BRIGHTNESS, deviceState));
+    public void testUpdateChannelBrightnessOn() {
+        assertEquals("Brightness should be on", new PercentType(92),
+                device.updateChannel(CHANNEL_BRIGHTNESS, deviceState));
     }
 
     @Test
-    public void testUpdateChannelColor() {
-        assertEquals("Switch should be on", new HSBType("7,44,92"), device.updateChannel(CHANNEL_COLOR, deviceState));
+    public void testUpdateChannelBrightnessOff() throws IOException {
+        deviceState = new DeviceState(ModelTestUtil.readJson(DEVICE_OFF));
+        assertEquals("Brightness should be off", PercentType.ZERO,
+                device.updateChannel(CHANNEL_BRIGHTNESS, deviceState));
     }
 
     @Test
-    public void testUpdateChannelSwitch() {
+    public void testUpdateChannelColorOn() {
+        assertEquals("Color should be on", new HSBType("7,44,92"), device.updateChannel(CHANNEL_COLOR, deviceState));
+    }
+
+    @Test
+    public void testUpdateChannelColorOff() throws IOException {
+        deviceState = new DeviceState(ModelTestUtil.readJson(DEVICE_OFF));
+        assertEquals("Color should be off", new HSBType("7,44,0"), device.updateChannel(CHANNEL_COLOR, deviceState));
+    }
+
+    @Test
+    public void testUpdateChannelSwitchOn() {
         assertSame("Switch should be on", OnOffType.ON, device.updateChannel(CHANNEL_SWITCH, deviceState));
+    }
+
+    @Test
+    public void testUpdateChannelSwitchOff() throws IOException {
+        deviceState = new DeviceState(ModelTestUtil.readJson(DEVICE_OFF));
+        assertSame("Switch should be off", OnOffType.OFF, device.updateChannel(CHANNEL_SWITCH, deviceState));
     }
 
     @Test
     public void testUpdateChannelOther() {
         assertSame("Unknown channel should return UNDEF", UnDefType.UNDEF, device.updateChannel("OTHER", deviceState));
     }
+
+    @Test
+    public void testUpdateChannelPower() {
+        assertEquals("Power values should be set", new DecimalType(10.8),
+                device.updateChannel(CHANNEL_ENERGY_POWER, deviceState));
+    }
+
 }

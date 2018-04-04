@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: Oceanic Binding
@@ -23,5 +24,6 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.oceanic,
  org.openhab.binding.oceanic.handler,
+ org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

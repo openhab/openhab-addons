@@ -27,6 +27,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.core.util,
  org.openhab.binding.rfxcom,
  org.openhab.binding.rfxcom.handler,
  org.osgi.framework,

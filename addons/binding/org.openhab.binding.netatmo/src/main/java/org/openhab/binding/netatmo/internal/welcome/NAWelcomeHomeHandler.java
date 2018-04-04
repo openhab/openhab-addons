@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -59,9 +59,9 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
         if (homeDataBody != null) {
             // data time stamp is updated to now as WelcomeDataBody does not provide any information according to this
             // need
-            dataTimeStamp = (int) Calendar.getInstance().getTimeInMillis() / 1000;
+            dataTimeStamp = (int) (Calendar.getInstance().getTimeInMillis() / 1000);
             result = homeDataBody.getHomes().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
-                    .findFirst().get();
+                    .findFirst().orElse(null);
             if (result != null) {
                 result.getCameras().forEach(camera -> childs.put(camera.getId(), camera));
 

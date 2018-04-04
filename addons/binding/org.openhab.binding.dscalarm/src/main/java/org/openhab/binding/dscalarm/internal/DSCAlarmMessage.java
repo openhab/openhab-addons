@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -92,14 +92,13 @@ public class DSCAlarmMessage {
                     data = message.substring(3);
                 }
             } catch (Exception e) {
-                logger.error("processDSCAlarmMessage(): Error processing message ({}) - {}", message, e);
+                logger.error("processDSCAlarmMessage(): Error processing message: ({}) ", message, e);
                 return;
             }
 
             dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(codeReceived);
 
             if (dscAlarmCode != null) {
-
                 name = dscAlarmCode.getName();
                 description = dscAlarmCode.getDescription();
 
@@ -122,7 +121,6 @@ public class DSCAlarmMessage {
                     }
 
                     messageType = messageParms.getType();
-
                 }
 
                 switch (dscAlarmCode) {
@@ -277,7 +275,6 @@ public class DSCAlarmMessage {
      * @return String
      */
     public String getMessageInfo(DSCAlarmMessageInfoType dscAlarmMessageInfoType) {
-
         String info = "";
 
         switch (dscAlarmMessageInfoType) {

@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: Pulseaudio Binding
@@ -16,11 +17,11 @@ Import-Package:
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.mdns,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
- org.eclipse.smarthome.io.transport.mdns.discovery,
  org.jupnp,
  org.jupnp.model,
  org.jupnp.model.meta,

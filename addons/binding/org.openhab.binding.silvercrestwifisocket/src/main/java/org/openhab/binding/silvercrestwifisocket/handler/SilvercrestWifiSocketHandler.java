@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -82,10 +82,8 @@ public class SilvercrestWifiSocketHandler extends BaseThingHandler {
 
             if (command == OnOffType.ON) {
                 this.sendCommand(SilvercrestWifiSocketRequestType.ON);
-
             } else if (command == OnOffType.OFF) {
                 this.sendCommand(SilvercrestWifiSocketRequestType.OFF);
-
             } else if (command == RefreshType.REFRESH) {
                 this.sendCommand(SilvercrestWifiSocketRequestType.GPIO_STATUS);
             }
@@ -107,44 +105,40 @@ public class SilvercrestWifiSocketHandler extends BaseThingHandler {
             this.keepAliveJob.cancel(true);
         }
         // try with handler port if is null
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                logger.debug(
-                        "Begin of Socket keep alive thread routine. Current configuration update interval: {} seconds.",
-                        SilvercrestWifiSocketHandler.this.updateInterval);
+        Runnable runnable = () -> {
+            logger.debug(
+                    "Begin of Socket keep alive thread routine. Current configuration update interval: {} seconds.",
+                    SilvercrestWifiSocketHandler.this.updateInterval);
 
-                long now = System.currentTimeMillis();
-                long timePassedFromLastUpdateInSeconds = (now - SilvercrestWifiSocketHandler.this.latestUpdate) / 1000;
+            long now = System.currentTimeMillis();
+            long timePassedFromLastUpdateInSeconds = (now - SilvercrestWifiSocketHandler.this.latestUpdate) / 1000;
 
-                logger.trace("Latest Update: {} Now: {} Delta: {} seconds",
-                        SilvercrestWifiSocketHandler.this.latestUpdate, now, timePassedFromLastUpdateInSeconds);
+            logger.trace("Latest Update: {} Now: {} Delta: {} seconds", SilvercrestWifiSocketHandler.this.latestUpdate,
+                    now, timePassedFromLastUpdateInSeconds);
 
-                logger.debug("It has been passed {} seconds since the last update on socket with mac address {}.",
-                        timePassedFromLastUpdateInSeconds, SilvercrestWifiSocketHandler.this.macAddress);
+            logger.debug("It has been passed {} seconds since the last update on socket with mac address {}.",
+                    timePassedFromLastUpdateInSeconds, SilvercrestWifiSocketHandler.this.macAddress);
 
-                boolean mustUpdateHostAddress = timePassedFromLastUpdateInSeconds > (SilvercrestWifiSocketHandler.this.updateInterval
-                        * 2);
+            boolean mustUpdateHostAddress = timePassedFromLastUpdateInSeconds > (SilvercrestWifiSocketHandler.this.updateInterval
+                    * 2);
 
-                if (mustUpdateHostAddress) {
-                    logger.debug(
-                            "No updates have been received for a long time, search the mac address {} in network...",
-                            SilvercrestWifiSocketHandler.this.getMacAddress());
-                    SilvercrestWifiSocketHandler.this.lookupForSocketHostAddress();
-                }
-
-                boolean considerThingOffline = (SilvercrestWifiSocketHandler.this.latestUpdate < 0)
-                        || (timePassedFromLastUpdateInSeconds > (SilvercrestWifiSocketHandler.this.updateInterval * 4));
-                if (considerThingOffline) {
-                    logger.debug(
-                            "No updates have been received for a long long time will put the thing with mac address {} OFFLINE.",
-                            SilvercrestWifiSocketHandler.this.getMacAddress());
-                    SilvercrestWifiSocketHandler.this.updateStatus(ThingStatus.OFFLINE);
-                }
-
-                // request gpio status
-                SilvercrestWifiSocketHandler.this.sendCommand(SilvercrestWifiSocketRequestType.GPIO_STATUS);
+            if (mustUpdateHostAddress) {
+                logger.debug("No updates have been received for a long time, search the mac address {} in network...",
+                        SilvercrestWifiSocketHandler.this.getMacAddress());
+                SilvercrestWifiSocketHandler.this.lookupForSocketHostAddress();
             }
+
+            boolean considerThingOffline = (SilvercrestWifiSocketHandler.this.latestUpdate < 0)
+                    || (timePassedFromLastUpdateInSeconds > (SilvercrestWifiSocketHandler.this.updateInterval * 4));
+            if (considerThingOffline) {
+                logger.debug(
+                        "No updates have been received for a long long time will put the thing with mac address {} OFFLINE.",
+                        SilvercrestWifiSocketHandler.this.getMacAddress());
+                SilvercrestWifiSocketHandler.this.updateStatus(ThingStatus.OFFLINE);
+            }
+
+            // request gpio status
+            SilvercrestWifiSocketHandler.this.sendCommand(SilvercrestWifiSocketRequestType.GPIO_STATUS);
         };
         this.keepAliveJob = this.scheduler.scheduleWithFixedDelay(runnable, 1,
                 SilvercrestWifiSocketHandler.this.updateInterval, TimeUnit.SECONDS);

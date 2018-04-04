@@ -10,24 +10,10 @@ By using a Scene to control multiple shades at once, the shades will all begin m
 
 ## Supported Things
 
-<table>
- <tr>
-  <td><b>Thing</b></td>
-  <td><b>Thing Type</b></td>
-  <td><b>Description</b></td>
- </tr>
- <tr>
-  <td>PowerView Hub</td>
-  <td>Bridge</td>
-  <td>The PowerView Hub provides the interface between your network and the shade's radio network.
-  It also contains channels used to interact with scenes.</td>
- </tr>
- <tr>
-  <td>PowerView Shade</td>
-  <td>Thing</td>
-  <td>A single motorized shade</td>
- </tr>
-</table>
+| Thing           | Thing Type | Description                                                                                                                                          |
+|-----------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| PowerView Hub   | Bridge     | The PowerView Hub provides the interface between your network and the shade's radio network. It also contains channels used to interact with scenes. |
+| PowerView Shade | Thing      | A single motorized shade                                                                                                                             |
 
 ## Discovery
 
@@ -68,42 +54,16 @@ However, the configuration parameters are described below:
 
 ### PowerView Shade
 
-<table>
- <tr>
-  <td><b>Channel</b></td>
-  <td><b>Item Type</b></td>
-  <td><b>Description</b></td>
- </tr>
- <tr>
-  <td>position</td>
-  <td>Rollershutter</td>
-  <td>The vertical position of the shade. Up/Down commands will move the shade to its completely up or completely down position. Move/Stop commands are ignored.</td>
- </tr>
- <tr>
-  <td>vane</td>
-  <td>Dimmer</td>
-  <td>The amount the slats on the shade are open. Setting this value will completely close the shade first, as the slats can only be controlled in that position.</td>
- </tr>
- <tr>
-  <td>batteryLow</td>
-  <td>Switch</td>
-  <td>Indicates ON when the battery level of the shade is low, as determined by the Hub's internal rules</td>
- </tr>
-</table>
+| Channel    | Item Type     | Description                                                                                                                                                 |
+|------------|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| position   | Rollershutter | The vertical position of the shade. Up/Down commands will move the shade to its completely up or completely down position. Move/Stop commands are ignored.  |
+| vane       | Dimmer        | The amount the slats on the shade are open. Setting this value will completely close the shade first, as the slats can only be controlled in that position. |
+| batteryLow | Switch        | Indicates ON when the battery level of the shade is low, as determined by the Hub's internal rules                                                          |
 
 ### PowerView Scene
 
 Scenes channels are added to the Hub as they are discovered.
 
-<table>
- <tr>
-  <td><b>Channel</b></td>
-  <td><b>Item Type</b></td>
-  <td><b>Description</b></td>
- </tr>
- <tr>
-  <td>activate</td>
-  <td>Switch</td>
-  <td>Turning this to ON will activate the scene. Scenes are stateless in the PowerView hub - they have no on/off state. Include { autoupdate="false" } on your item configuration to avoid needing to toggle off and on.</td>
- </tr>
-</table>
+| Channel  | Item Type | Description                                                                                                                                                                                                         |
+|----------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| activate | Switch    | Turning this to ON will activate the scene. Scenes are stateless in the PowerView hub - they have no on/off state. Include { autoupdate="false" } on your item configuration to avoid needing to toggle off and on. |

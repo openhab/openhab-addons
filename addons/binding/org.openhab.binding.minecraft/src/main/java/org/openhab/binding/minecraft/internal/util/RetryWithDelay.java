@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,7 +16,7 @@ import rx.functions.Func1;
 /**
  * RX operator subscribing to observable with a delay after it has finished.
  *
- * @author Mattias Markehed
+ * @author Mattias Markehed - Initial contribution
  */
 public class RetryWithDelay implements Func1<Observable<? extends Throwable>, Observable<?>> {
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,17 +22,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Allows certain actions to configure the CometVisu backend trough the REST api.
+ * Allows certain actions to configure the CometVisu backend through the REST api.
  *
  * @author Tobias Bräutigam
  * @since 2.2.0
  */
-@Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_CONFIG_ALIAS + "/{actionName}")
+@Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_CONFIG_ALIAS)
 public class ConfigResource implements RESTResource {
 
     private final Logger logger = LoggerFactory.getLogger(ConfigResource.class);
 
     @GET
+    @Path("/{actionName}")
     @Produces({ MediaType.TEXT_PLAIN })
     public Response getValue(@PathParam("actionName") String actionName) {
 

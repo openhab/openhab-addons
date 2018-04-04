@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import io.swagger.client.model.NAPlace;
 import io.swagger.client.model.NAUserAdministrative;
+import retrofit.RetrofitError;
 
 /**
  * {@link NetatmoDeviceHandler} is the handler for a given
@@ -79,19 +80,24 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     }
 
     private void scheduleRefreshJob() {
-        logger.debug("Scheduling update channel thread in {} s", refreshStrategy.nextRunDelayInS());
+        long delay = refreshStrategy.nextRunDelayInS();
+        logger.debug("Scheduling update channel thread in {} s", delay);
         refreshJob = scheduler.schedule(() -> {
             updateChannels();
-            refreshJob.cancel(false);
-            refreshJob = null;
+            if (refreshJob != null && !refreshJob.isCancelled()) {
+                logger.debug("cancel refresh job");
+                refreshJob.cancel(false);
+                refreshJob = null;
+            }
             scheduleRefreshJob();
-        }, refreshStrategy.nextRunDelayInS(), TimeUnit.SECONDS);
+        }, delay, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
         logger.debug("Running dispose()");
         if (refreshJob != null && !refreshJob.isCancelled()) {
+            logger.debug("cancel refresh job");
             refreshJob.cancel(true);
             refreshJob = null;
         }
@@ -107,16 +113,30 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                 logger.debug("Trying to update channels on device {}", getId());
                 childs.clear();
 
-                DEVICE newDeviceReading = updateReadings();
+                DEVICE newDeviceReading = null;
+                try {
+                    newDeviceReading = updateReadings();
+                } catch (RetrofitError e) {
+                    if (logger.isDebugEnabled()) {
+                        // we also attach the stack trace
+                        logger.error("Unable to connect Netatmo API : {}", e.getMessage(), e);
+                    } else {
+                        logger.error("Unable to connect Netatmo API : {}", e.getMessage());
+                    }
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Unable to connect Netatmo API : " + e.getLocalizedMessage());
+                }
                 if (newDeviceReading != null) {
                     updateStatus(ThingStatus.ONLINE);
-                    logger.debug("Successfully updated device readings! Now updating channels");
+                    logger.debug("Successfully updated device {} readings! Now updating channels", getId());
                     this.device = newDeviceReading;
                     Integer dataTimeStamp = getDataTimestamp();
                     if (dataTimeStamp != null) {
                         refreshStrategy.setDataTimeStamp(dataTimeStamp);
                     }
                     radioHelper.ifPresent(helper -> helper.setModule(device));
+                } else {
+                    logger.debug("Failed to update device {} readings! Skip updating channels", getId());
                 }
             } else {
                 logger.debug("Data still valid for device {}", getId());
@@ -155,7 +175,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                     return new DecimalType(userAdministrative.getUnit());
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            logger.error("The device has no method to access {} property ", channelId.toString());
+            logger.debug("The device has no method to access {} property ", channelId);
             return UnDefType.NULL;
         }
 
@@ -174,7 +194,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     }
 
     /*
-     * Sets the refresh rate of the device depending wether it's a property
+     * Sets the refresh rate of the device depending whether it's a property
      * of the thing or if it's defined by configuration
      */
     private void defineRefreshInterval() {

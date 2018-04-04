@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,7 +15,7 @@ package org.openhab.binding.regoheatpump.internal.rego6xx;
  * @author Boris Krivonog - Initial contribution
  */
 public class CommandFactory {
-    private static final byte DeviceAddress = (byte) 0x81;
+    private static final byte DEVICE_ADDRESS = (byte) 0x81;
 
     public static byte[] createReadRegoVersionCommand() {
         return createReadCommand((byte) 0x7f, (short) 0, (short) 0);
@@ -40,7 +40,7 @@ public class CommandFactory {
     private static byte[] createReadCommand(byte source, short address, short data) {
         byte[] addressBytes = ValueConverter.shortToSevenBitFormat(address);
         byte[] dataBytes = ValueConverter.shortToSevenBitFormat(data);
-        return new byte[] { DeviceAddress, source, addressBytes[0], addressBytes[1], addressBytes[2], dataBytes[0],
+        return new byte[] { DEVICE_ADDRESS, source, addressBytes[0], addressBytes[1], addressBytes[2], dataBytes[0],
                 dataBytes[1], dataBytes[2], Checksum.calculate(addressBytes, dataBytes) };
     }
 }

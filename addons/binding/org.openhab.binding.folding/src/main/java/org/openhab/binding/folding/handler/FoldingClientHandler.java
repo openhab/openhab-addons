@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -42,7 +42,7 @@ import com.google.gson.stream.JsonReader;
  * and controls it. The Client handler can also act as a bridge for the
  * {@link SlotHandler}.
  *
- * @author Marius Bjørnstad
+ * @author Marius Bjørnstad - Initial contribution
  */
 public class FoldingClientHandler extends BaseBridgeHandler {
 
@@ -58,7 +58,7 @@ public class FoldingClientHandler extends BaseBridgeHandler {
 
     private volatile int idRefresh = 0;
 
-    private Map<String, SlotUpdateListener> slotUpdateListeners = new HashMap<String, SlotUpdateListener>();
+    private Map<String, SlotUpdateListener> slotUpdateListeners = new HashMap<>();
 
     public FoldingClientHandler(Bridge thing) {
         super(thing);
@@ -97,12 +97,7 @@ public class FoldingClientHandler extends BaseBridgeHandler {
     public void initialize() {
         BigDecimal period = (BigDecimal) getThing().getConfiguration().get("polling");
         if (period != null && period.longValue() != 0) {
-            refreshJob = scheduler.scheduleWithFixedDelay(new Runnable() {
-                @Override
-                public void run() {
-                    refresh();
-                }
-            }, 5, period.longValue(), TimeUnit.SECONDS);
+            refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 5, period.longValue(), TimeUnit.SECONDS);
         } else {
             refresh();
         }
@@ -152,16 +147,12 @@ public class FoldingClientHandler extends BaseBridgeHandler {
     }
 
     public void delayedRefresh() {
-        final int i_refresh = ++idRefresh;
-        refreshJob = scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                if (i_refresh == idRefresh) { // Make a best effort to not run multiple deferred refresh
-                    refresh();
-                }
+        final int iRefresh = ++idRefresh;
+        refreshJob = scheduler.schedule(() -> {
+            if (iRefresh == idRefresh) { // Make a best effort to not run multiple deferred refresh
+                refresh();
             }
         }, 5, TimeUnit.SECONDS);
-
     }
 
     void closeSocket() {

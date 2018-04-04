@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,8 +16,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -26,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.openhab.binding.rfxcom.internal.connector.RFXComConnectorInterface;
@@ -144,14 +143,10 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         configuration = getConfigAs(RFXComBridgeConfiguration.class);
 
         if (connectorTask == null || connectorTask.isCancelled()) {
-            connectorTask = scheduler.scheduleWithFixedDelay(new Runnable() {
-
-                @Override
-                public void run() {
-                    logger.debug("Checking RFXCOM transceiver connection, thing status = {}", thing.getStatus());
-                    if (thing.getStatus() != ThingStatus.ONLINE) {
-                        connect();
-                    }
+            connectorTask = scheduler.scheduleWithFixedDelay(() -> {
+                logger.debug("Checking RFXCOM transceiver connection, thing status = {}", thing.getStatus());
+                if (thing.getStatus() != ThingStatus.ONLINE) {
+                    connect();
                 }
             }, 0, 60, TimeUnit.SECONDS);
         }
@@ -235,8 +230,10 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                     if (msg.subType == SubType.RESPONSE) {
                         if (msg.command == Commands.GET_STATUS) {
                             logger.info("RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
-                                msg.transceiverType, msg.hardwareVersion1, msg.hardwareVersion2, msg.firmwareVersion);
-                            thing.setProperty(Thing.PROPERTY_HARDWARE_VERSION, msg.hardwareVersion1 + "." + msg.hardwareVersion2);
+                                    msg.transceiverType, msg.hardwareVersion1, msg.hardwareVersion2,
+                                    msg.firmwareVersion);
+                            thing.setProperty(Thing.PROPERTY_HARDWARE_VERSION,
+                                    msg.hardwareVersion1 + "." + msg.hardwareVersion2);
                             thing.setProperty(Thing.PROPERTY_FIRMWARE_VERSION, Integer.toString(msg.firmwareVersion));
 
                             if (configuration.ignoreConfig) {
@@ -246,7 +243,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
                                 if (configuration.setMode != null && !configuration.setMode.isEmpty()) {
                                     try {
-                                        setMode = DatatypeConverter.parseHexBinary(configuration.setMode);
+                                        setMode = HexUtils.hexToBytes(configuration.setMode);
                                         if (setMode.length != 14) {
                                             logger.warn("Invalid RFXCOM transceiver mode configuration");
                                             setMode = null;
@@ -261,8 +258,9 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                                 }
 
                                 if (setMode != null) {
-                                    logger.debug("Setting RFXCOM mode using: {}",
-                                            DatatypeConverter.printHexBinary(setMode));
+                                    if (logger.isDebugEnabled()) {
+                                        logger.debug("Setting RFXCOM mode using: {}", HexUtils.bytesToHex(setMode));
+                                    }
                                     connector.sendMessage(setMode);
                                 }
                             }
@@ -302,10 +300,9 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                             + "issue at the relevant tracker. Received message: {}", message);
                 }
             } catch (RFXComMessageNotImplementedException e) {
-                logger.debug("Message not supported, data: {}", DatatypeConverter.printHexBinary(packet));
+                logger.debug("Message not supported, data: {}", HexUtils.bytesToHex(packet));
             } catch (RFXComException e) {
-                logger.error("Error occurred during packet receiving, data: {}",
-                        DatatypeConverter.printHexBinary(packet), e);
+                logger.error("Error occurred during packet receiving, data: {}", HexUtils.bytesToHex(packet), e);
             } catch (IOException e) {
                 errorOccurred("I/O error");
             }

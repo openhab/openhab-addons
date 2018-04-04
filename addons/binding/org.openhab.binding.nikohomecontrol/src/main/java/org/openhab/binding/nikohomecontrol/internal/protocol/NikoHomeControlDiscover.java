@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,7 +13,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-import org.eclipse.smarthome.core.net.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,9 +34,9 @@ public final class NikoHomeControlDiscover {
     private InetAddress addr;
     private String nhcBridgeId;
 
-    public NikoHomeControlDiscover() throws IOException {
+    public NikoHomeControlDiscover(String broadcast) throws IOException {
         final byte[] discoverBuffer = { (byte) 0x44 };
-        final InetAddress broadcastAddr = InetAddress.getByName(NetUtil.getBroadcastAddress());
+        final InetAddress broadcastAddr = InetAddress.getByName(broadcast);
         final int broadcastPort = 10000;
 
         DatagramPacket discoveryPacket = new DatagramPacket(discoverBuffer, discoverBuffer.length, broadcastAddr,

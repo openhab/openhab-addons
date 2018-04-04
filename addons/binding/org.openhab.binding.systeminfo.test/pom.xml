@@ -18,11 +18,10 @@
 	<packaging>eclipse-test-plugin</packaging>
 
 	<build>
-		<plugins>			
+		<plugins>
 			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
+				<groupId>${tycho-groupid}</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
-				<version>${tycho-version}</version>
 				<configuration>
 					<providerHint>junit47</providerHint>
 					<dependencies>

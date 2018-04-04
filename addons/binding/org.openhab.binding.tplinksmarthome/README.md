@@ -6,10 +6,37 @@ This binding adds support to control TP-Link Smart Home Devices from your local 
 
 The following TP-Link Smart Devices are supported:
 
+
+### KB100 Kasa Smart Light Bulb
+
+* Switch On/Off
+* Adjust the brightness
+* Actual power usage
+* Wi-Fi signal strength (rssi)
+
+Switching and Brightness is done using the `brightness` channel.
+
+### KB130 Kasa Multi-color Smart Light Bulb
+
+* Switch On/Off
+* Fine-tune colors
+* Adjust light appearance from soft white (2500k) to daylight (9000k)
+* Adjust the brightness
+* Actual power usage
+* Wi-Fi signal strength (rssi)
+
+Switching, Brightness and Color is done using the `color` channel.
+
+### KP100 Kasa Wi-Fi Smart Plug - Slim Edition
+
+* Switch On/Off
+* Wi-Fi signal strength (rssi)
+
 ### LB100 Smart Wi-Fi LED Bulb with Dimmable Light
 
 * Switch On/Off
 * Adjust the brightness
+* Actual power usage
 * Wi-Fi signal strength (rssi)
 
 Switching and Brightness is done using the `brightness` channel.
@@ -18,6 +45,7 @@ Switching and Brightness is done using the `brightness` channel.
 
 * Switch On/Off
 * Adjust the brightness
+* Actual power usage
 * Wi-Fi signal strength (rssi)
 
 Switching and Brightness is done using the `brightness` channel.
@@ -27,6 +55,7 @@ Switching and Brightness is done using the `brightness` channel.
 * Switch On/Off
 * Adjust light appearance from soft white (2700k) to daylight (6500k)
 * Adjust the brightness
+* Actual power usage
 * Wi-Fi signal strength (rssi)
 
 Switching and Brightness is done using the `brightness` channel.
@@ -37,11 +66,38 @@ Switching and Brightness is done using the `brightness` channel.
 * Fine-tune colors
 * Adjust light appearance from soft white (2500k) to daylight (9000k)
 * Adjust the brightness
+* Actual power usage
 * Wi-Fi signal strength (rssi)
 
 Switching, Brightness and Color is done using the `color` channel.
 
-### HS105 and HS100 Smart Wi-Fi Plug
+### LB200 Smart Wi-Fi LED Bulb with Dimmable Light
+
+* Switch On/Off
+* Adjust the brightness
+* Actual power usage
+* Wi-Fi signal strength (rssi)
+
+Switching and Brightness is done using the `brightness` channel.
+
+### LB230 Smart Wi-Fi LED Bulb with Color Changing Hue
+
+* Switch On/Off
+* Fine-tune colors
+* Adjust light appearance from soft white (2500k) to daylight (9000k)
+* Adjust the brightness
+* Actual power usage
+* Wi-Fi signal strength (rssi)
+
+Switching, Brightness and Color is done using the `color` channel.
+
+
+### HS100 Smart Wi-Fi Plug
+
+* Switch On/Off
+* Wi-Fi signal strength (rssi)
+
+### HS105 Smart Wi-Fi Plug
 
 * Switch On/Off
 * Wi-Fi signal strength (rssi)
@@ -97,17 +153,17 @@ The thing has a few configuration parameters:
 
 All devices support some of the following channels:
 
-| Channel Type ID  | Item Type | Description                                    | Thing types supporting this channel                             |
-|------------------|-----------|------------------------------------------------|-----------------------------------------------------------------|
-| switch           | Switch    | Switch the Smart Home device on or off.        | HS100, HS105, HS110, RE270K, RE370K                             |
-| brightness       | Dimmer    | Set the brightness of Smart Home light.        | LB100, LB110, LB120                                             |
-| colorTemperature | Dimmer    | Set the color temperature of Smart Home light. | LB120, LB130                                                    |
-| color            | Color     | Set the color of the Smart Home light.         | LB130                                                           |
-| power            | Number    | Actual energy usage in Watt.                   | HS110                                                           |
-| eneryUsage       | Number    | Energy Usage in kWh.                           | HS110                                                           |
-| current          | Number    | Actual current usage in Ampere.                | HS110                                                           |
-| voltage          | Number    | Actual voltage usage in Volt.                  | HS110                                                           |
-| rssi             | Number    | Wi-Fi signal strength indicator in dBm.        | HS100, HS105, HS110, LB100, LB110, LB120, LB130, RE270K, RE370K |
+| Channel Type ID  | Item Type | Description                                    | Thing types supporting this channel               |
+|------------------|-----------|------------------------------------------------|---------------------------------------------------|
+| switch           | Switch    | Switch the Smart Home device on or off.        | KP100, HS100, HS105, HS110, HS200, RE270K, RE370K |
+| brightness       | Dimmer    | Set the brightness of Smart Home light.        | KB100, LB100, LB110, LB120, LB200                 |
+| colorTemperature | Dimmer    | Set the color temperature of Smart Home light. | KB130, LB120, LB130, LB230                        |
+| color            | Color     | Set the color of the Smart Home light.         | KB130, LB130, LB230                               |
+| power            | Number    | Actual energy usage in Watt.                   | HS110, LBxxx                                      |
+| eneryUsage       | Number    | Energy Usage in kWh.                           | HS110                                             |
+| current          | Number    | Actual current usage in Ampere.                | HS110                                             |
+| voltage          | Number    | Actual voltage usage in Volt.                  | HS110                                             |
+| rssi             | Number    | Wi-Fi signal strength indicator in dBm.        | All                                               |
 
 ## Full Example
 

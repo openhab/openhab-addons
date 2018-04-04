@@ -23,12 +23,11 @@ running openHAB, it is necessary to configure the Folding client to accept comma
 from a non-localhost address.
 Here is how to do it in the FAHControl application:
 
-*   Open FAHControl on the client to be added
-*   Click on Configure, then the Remote Access tab
-*   Enter a password twice (invent one)
-*   Locate the Allow box under IP Address Restrictions
-*   Append a space and the IP address of the machine running openHAB to the text  
-    in that box, so it reads something like `127.0.0.1 192.168.1.2`
+- Open FAHControl on the client to be added
+- Click on Configure, then the Remote Access tab
+- Enter a password twice (invent one)
+- Locate the Allow box under IP Address Restrictions
+- Append a space and the IP address of the machine running openHAB to the text in that box, so it reads something like `127.0.0.1 192.168.1.2`
 
 You should now have access to the client, configure it using the password and
 IP address in the manual thing configuration interface.

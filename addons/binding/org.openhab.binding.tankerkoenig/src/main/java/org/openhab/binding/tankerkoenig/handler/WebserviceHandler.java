@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -41,9 +41,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link WebserviceHandler} is responsible for handling the things (stations)
  *
- *
- * @author Dennis Dollinger
- * @author Jürgen Baginski
+ * @author Dennis Dollinger - Initial contribution
+ * @author Jürgen Baginski - Initial contribution
  */
 public class WebserviceHandler extends BaseBridgeHandler {
 
@@ -63,7 +62,7 @@ public class WebserviceHandler extends BaseBridgeHandler {
 
     public WebserviceHandler(Bridge bridge) {
         super(bridge);
-        stationMap = new HashMap<String, LittleStation>();
+        stationMap = new HashMap<>();
     }
 
     @Override
@@ -92,18 +91,14 @@ public class WebserviceHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         int pollingPeriod = this.getRefreshInterval();
-        pollingJob = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                logger.debug("Try to refresh data");
-                try {
-                    updateStationData();
-                    updateStationThings();
-                } catch (RuntimeException r) {
-                    logger.debug("Caught exception in ScheduledExecutorService of BridgeHandler. RuntimeException: ",
-                            r);
-                    updateStatus(ThingStatus.OFFLINE);
-                }
+        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+            logger.debug("Try to refresh data");
+            try {
+                updateStationData();
+                updateStationThings();
+            } catch (RuntimeException r) {
+                logger.debug("Caught exception in ScheduledExecutorService of BridgeHandler. RuntimeException: ", r);
+                updateStatus(ThingStatus.OFFLINE);
             }
         }, pollingPeriod, pollingPeriod, TimeUnit.MINUTES);
         logger.debug("Refresh job scheduled to run every {} min. for '{}'", pollingPeriod, getThing().getUID());

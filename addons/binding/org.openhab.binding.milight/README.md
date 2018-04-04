@@ -125,13 +125,13 @@ Limitations:
 	# You have to link the items to the channels of your prefered group e.g. in paperui after you've saved
 	# your items file.
 
-    # The command types nightMode and whiteMode should be configured as pushbuttons as they only support a trigger action:
-    Switch Light_GroundfloorN   {channel="milight:whiteLed:ACCF23A6C0B4:0:nightMode"} # Activate the NightMode for all bulbs
+    # The command types nightMode and whiteMode are stateless and should be configured as pushbuttons as they only support a trigger action:
+    Switch Light_GroundfloorN   {channel="milight:whiteLed:ACCF23A6C0B4:0:lednightmode", autoupdate="false"} # Activate the NightMode for all bulbs
 
-	# The command types animation_mode_relative and animation_speed should be configured as pushbuttons as they only support INCREASE and DECREASE commands:
+	# The command types animation_mode_relative and animation_speed are stateless and should be configured as pushbuttons as they only support INCREASE and DECREASE commands:
 
-    Dimmer AnimationMode		{channel="milight:rgbLed:ACCF23A6C0B4:5:animation_mode_relative"}
-    Dimmer AnimationSpeed	{channel="milight:rgbLed:ACCF23A6C0B4:5:animation_speed"}
+    Dimmer AnimationMode		{channel="milight:rgbLed:ACCF23A6C0B4:5:animation_mode_relative", autoupdate="false"}
+    Dimmer AnimationSpeed	{channel="milight:rgbLed:ACCF23A6C0B4:5:animation_speed", autoupdate="false"}
 
     # Animation Mode for RGBWW bulbs is different, it allows to pick a mode directly.
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.avmfritz.BindingConstants;
 import org.openhab.binding.avmfritz.handler.BoxHandler;
@@ -74,6 +75,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
         this.activate(null);
     }
 
+    @Override
     public void deactivate() {
         super.deactivate();
     }
@@ -105,9 +107,14 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
      * @param device Device model received from a FRITZ!Box
      */
     public void onDeviceAddedInternal(DeviceModel device) {
-        ThingUID thingUID = bridgeHandler.getThingUID(device);
-        if (thingUID != null) {
+        ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID,
+                device.getProductName().replaceAll("[^a-zA-Z0-9_]", "_"));
+
+        if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID,
+                    device.getIdentifier().replaceAll("[^a-zA-Z0-9_]", "_"));
+
             Map<String, Object> properties = new HashMap<>();
             properties.put(THING_AIN, device.getIdentifier());
             properties.put(PROPERTY_VENDOR, device.getManufacturer());
@@ -120,7 +127,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
 
             thingDiscovered(discoveryResult);
         } else {
-            logger.debug("discovered unsupported device with id {}", device.getIdentifier());
+            logger.debug("discovered unsupported device: {}", device);
         }
     }
 
@@ -131,7 +138,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
     protected void startBackgroundDiscovery() {
         if (scanningJob == null || scanningJob.isCancelled()) {
             logger.debug("start background scanning job at intervall {}s", SCAN_INTERVAL);
-            scanningJob = AbstractDiscoveryService.scheduler.scheduleWithFixedDelay(() -> {
+            scanningJob = scheduler.scheduleWithFixedDelay(() -> {
                 if (bridgeHandler.getWebInterface() != null) {
                     logger.debug("start background scan on bridge {}", bridgeHandler.getThing().getUID());
                     FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(bridgeHandler.getWebInterface(),

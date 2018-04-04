@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,8 +15,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -25,8 +27,10 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -35,6 +39,7 @@ import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.internal.data.ErrorData;
 import org.openhab.binding.nest.internal.data.NestDevices;
+import org.openhab.binding.nest.internal.data.NestIdentifiable;
 import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.TopLevelData;
 import org.openhab.binding.nest.internal.exceptions.FailedResolvingNestUrlException;
@@ -390,7 +395,35 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         if (data.getStructures() != null) {
             broadcastStructures(data.getStructures().values());
         }
+
+        setMissingThingsOffline(data);
         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Receiving streaming data");
+    }
+
+    private void setMissingThingsOffline(TopLevelData data) {
+        Set<String> identifiers = new HashSet<>();
+        if (data.getDevices() != null) {
+            if (data.getDevices().getCameras() != null) {
+                identifiers.addAll(data.getDevices().getCameras().keySet());
+            }
+            if (data.getDevices().getSmokeDetectors() != null) {
+                identifiers.addAll(data.getDevices().getSmokeDetectors().keySet());
+            }
+            if (data.getDevices().getThermostats() != null) {
+                identifiers.addAll(data.getDevices().getThermostats().keySet());
+            }
+        }
+        if (data.getStructures() != null) {
+            identifiers.addAll(data.getStructures().keySet());
+        }
+
+        for (Thing thing : getThing().getThings()) {
+            String id = ((NestIdentifiable) thing.getHandler()).getId();
+            if (!identifiers.contains(id)) {
+                thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                        "Missing from streaming updates"));
+            }
+        }
     }
 
 }
