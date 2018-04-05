@@ -52,7 +52,7 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
     private NetworkAddressService networkAddressService;
 
     // url (scheme+server+port) to use for playing notification sounds
-    private String callbackUrl = null;
+    private String callbackUrl;
 
     @Override
     protected void activate(ComponentContext componentContext) {
@@ -68,7 +68,6 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
@@ -77,7 +76,7 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
             if (callbackUrl != null) {
                 @SuppressWarnings("unchecked")
                 ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                        .registerService(AudioSink.class.getName(), handler, new Hashtable<String, Object>());
+                        .registerService(AudioSink.class.getName(), handler, new Hashtable<>());
                 audioSinkRegistrations.put(thing.getUID().toString(), reg);
             }
             return handler;
