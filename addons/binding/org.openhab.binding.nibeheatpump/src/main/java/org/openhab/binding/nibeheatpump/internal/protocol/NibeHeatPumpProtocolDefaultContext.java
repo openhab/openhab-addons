@@ -60,12 +60,4 @@ public class NibeHeatPumpProtocolDefaultContext implements NibeHeatPumpProtocolC
     @Override
     public void sendReadMsg() {
     }
-
-    @Override
-    public void log(String format) {
-    }
-
-    @Override
-    public void log(String format, Object... arg) {
-    }
 }

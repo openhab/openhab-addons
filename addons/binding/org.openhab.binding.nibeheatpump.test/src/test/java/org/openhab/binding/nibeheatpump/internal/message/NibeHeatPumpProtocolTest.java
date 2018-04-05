@@ -55,15 +55,6 @@ public class NibeHeatPumpProtocolTest {
         public void sendReadMsg() {
             sendReadMsgCount++;
         }
-
-        @Override
-        public void log(String format) {
-        }
-
-        @Override
-        public void log(String format, Object... arg) {
-        }
-
     };
 
     @Before

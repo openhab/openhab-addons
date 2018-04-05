@@ -224,22 +224,6 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
                         sendErrorToListeners(e.getMessage());
                     }
                 }
-
-                @Override
-                public void log(String format) {
-                    if (logger.isTraceEnabled()) {
-                        // This cause build to fail (Code Analysis error)
-                        // logger.trace(format);
-                    }
-                }
-
-                @Override
-                public void log(String format, Object... arg) {
-                    if (logger.isTraceEnabled()) {
-                        // This cause build to fail (Code Analysis error)
-                        // logger.trace(format, arg);
-                    }
-                }
             };
 
             while (!interrupted) {
