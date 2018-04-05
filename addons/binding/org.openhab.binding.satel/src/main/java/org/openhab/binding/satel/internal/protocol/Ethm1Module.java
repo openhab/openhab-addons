@@ -19,6 +19,7 @@ import java.net.SocketTimeoutException;
 import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,8 +115,8 @@ public class Ethm1Module extends SatelModule {
 
         private EncryptionHelper aesHelper;
         private Random rand;
-        private byte id_s;
-        private byte id_r;
+        private byte idS;
+        private byte idR;
         private int rollingCounter;
         private InputStream inputStream;
         private OutputStream outputStream;
@@ -129,8 +130,8 @@ public class Ethm1Module extends SatelModule {
                 throw new IOException("General encryption failure", e);
             }
             this.rand = new Random();
-            this.id_s = 0;
-            this.id_r = 0;
+            this.idS = 0;
+            this.idR = 0;
             this.rollingCounter = 0;
 
             this.inputStream = new InputStream() {
@@ -190,17 +191,24 @@ public class Ethm1Module extends SatelModule {
                         String.format("Too few bytes read. Read: %d, expected: %d", bytesRead, bytesCount));
             }
             // decrypt data
-            logger.trace("Decrypting data: {}", bytesToHex(data));
+            if (logger.isTraceEnabled()) {
+                logger.trace("Decrypting data: {}", HexUtils.bytesToHex(data));
+            }
+
             try {
                 this.aesHelper.decrypt(data);
             } catch (Exception e) {
                 throw new IOException("Decryption exception", e);
             }
-            logger.debug("Decrypted data: {}", bytesToHex(data));
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Decrypted data: {}", HexUtils.bytesToHex(data));
+            }
+
             // validate message
-            this.id_r = data[4];
-            if (this.id_s != data[5]) {
-                throw new IOException(String.format("Invalid 'id_s' value. Got: %d, expected: %d", data[5], this.id_s));
+            this.idR = data[4];
+            if (this.idS != data[5]) {
+                throw new IOException(String.format("Invalid 'idS' value. Got: %d, expected: %d", data[5], this.idS));
             }
 
             return data;
@@ -218,19 +226,25 @@ public class Ethm1Module extends SatelModule {
             data[1] = (byte) (randomValue & 0xff);
             data[2] = (byte) (this.rollingCounter >> 8);
             data[3] = (byte) (this.rollingCounter & 0xff);
-            data[4] = this.id_s = (byte) this.rand.nextInt();
-            data[5] = this.id_r;
+            data[4] = this.idS = (byte) this.rand.nextInt();
+            data[5] = this.idR;
             ++this.rollingCounter;
             System.arraycopy(message, 0, data, 6, message.length);
 
             // encrypt data
-            logger.debug("Encrypting data: {}", bytesToHex(data));
+            if (logger.isDebugEnabled()) {
+                logger.debug("Encrypting data: {}", HexUtils.bytesToHex(data));
+            }
+
             try {
                 this.aesHelper.encrypt(data);
             } catch (Exception e) {
                 throw new IOException("Encryption exception", e);
             }
-            logger.trace("Encrypted data: {}", bytesToHex(data));
+
+            if (logger.isTraceEnabled()) {
+                logger.trace("Encrypted data: {}", HexUtils.bytesToHex(data));
+            }
 
             // write encrypted data to output stream
             os.write(bytesCount);
@@ -239,14 +253,4 @@ public class Ethm1Module extends SatelModule {
         }
     }
 
-    private static String bytesToHex(byte[] bytes) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < bytes.length; ++i) {
-            if (i > 0) {
-                result.append(" ");
-            }
-            result.append(String.format("%02X", bytes[i]));
-        }
-        return result.toString();
-    }
 }

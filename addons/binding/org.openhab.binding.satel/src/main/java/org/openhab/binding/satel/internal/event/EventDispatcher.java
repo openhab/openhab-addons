@@ -25,7 +25,7 @@ public class EventDispatcher {
 
     private final Logger logger = LoggerFactory.getLogger(EventDispatcher.class);
 
-    private final Set<SatelEventListener> eventListeners = new CopyOnWriteArraySet<SatelEventListener>();
+    private final Set<SatelEventListener> eventListeners = new CopyOnWriteArraySet<>();
 
     /**
      * Add a listener for Satel events.

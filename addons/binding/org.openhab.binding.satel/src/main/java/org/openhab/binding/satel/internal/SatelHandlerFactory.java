@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.satel.handler.Ethm1BridgeHandler;
 import org.openhab.binding.satel.handler.IntRSBridgeHandler;
 import org.openhab.binding.satel.handler.SatelBridgeHandler;
@@ -36,6 +37,8 @@ import org.openhab.binding.satel.handler.SatelZoneHandler;
 import org.openhab.binding.satel.internal.config.SatelThingConfig;
 import org.openhab.binding.satel.internal.discovery.SatelDeviceDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link SatelHandlerFactory} is responsible for creating things and thing
@@ -43,6 +46,7 @@ import org.osgi.framework.ServiceRegistration;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.satel", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class SatelHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream

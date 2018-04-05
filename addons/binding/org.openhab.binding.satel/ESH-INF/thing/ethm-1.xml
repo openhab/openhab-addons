@@ -28,7 +28,7 @@
 				<label>Refresh interval</label>
 				<description>Polling interval in milliseconds.</description>
 				<default>5000</default>
-                		<unitLabel>Milliseconds</unitLabel>
+				<unitLabel>Milliseconds</unitLabel>
 			</parameter>
 			<parameter name="userCode" type="text" pattern="[0-9]{4,8}">
 				<label>User code</label>
