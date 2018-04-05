@@ -25,8 +25,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
+import org.openhab.binding.avmfritz.handler.AVMFritzBaseBridgeHandler;
 import org.openhab.binding.avmfritz.handler.BoxHandler;
 import org.openhab.binding.avmfritz.handler.DeviceHandler;
+import org.openhab.binding.avmfritz.handler.GroupHandler;
+import org.openhab.binding.avmfritz.handler.Powerline546EHandler;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
@@ -36,14 +39,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link AVMFritzHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author Robert Bausdorf - Initial contribution
- *
  */
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.avmfritz", configurationPolicy = ConfigurationPolicy.OPTIONAL)
-public class HandlerFactory extends BaseThingHandlerFactory {
+public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Logger
      */
@@ -71,15 +72,18 @@ public class HandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (thingTypeUID.equals(BRIDGE_THING_TYPE)) {
+        if (BRIDGE_THING_TYPE.equals(thingTypeUID)) {
             BoxHandler handler = new BoxHandler((Bridge) thing, httpClient);
             registerDeviceDiscoveryService(handler);
             return handler;
-        } else if (thingTypeUID.equals(PL546E_STANDALONE_THING_TYPE)) {
-            DeviceHandler handler = new DeviceHandler(thing, httpClient);
+        } else if (PL546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
+            Powerline546EHandler handler = new Powerline546EHandler((Bridge) thing, httpClient);
+            registerDeviceDiscoveryService(handler);
             return handler;
-        } else if (supportsThingType(thing.getThingTypeUID())) {
-            return new DeviceHandler(thing, httpClient);
+        } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
+            return new DeviceHandler(thing);
+        } else if (SUPPORTED_GROUP_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            return new GroupHandler(thing);
         } else {
             logger.warn("ThingHandler not found for {}", thing.getThingTypeUID());
         }
@@ -92,7 +96,7 @@ public class HandlerFactory extends BaseThingHandlerFactory {
      */
     @Override
     protected synchronized void removeHandler(@NonNull ThingHandler thingHandler) {
-        if (thingHandler instanceof BoxHandler) {
+        if (thingHandler instanceof AVMFritzBaseBridgeHandler) {
             ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 // remove discovery service, if bridge handler is removed
@@ -110,7 +114,7 @@ public class HandlerFactory extends BaseThingHandlerFactory {
      *
      * @param handler
      */
-    private void registerDeviceDiscoveryService(BoxHandler handler) {
+    private void registerDeviceDiscoveryService(AVMFritzBaseBridgeHandler handler) {
         AVMFritzDiscoveryService discoveryService = new AVMFritzDiscoveryService(handler);
         discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
