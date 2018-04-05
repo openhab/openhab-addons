@@ -105,6 +105,7 @@ Thing examples:
 ```
 nibeheatpump:f1x45-udp:myPump [hostName="192.168.1.50", port=9999]
 ```
+
 ```
 nibeheatpump:f1x45-udp:myPump [hostName="192.168.1.50", port=9999, readCommandsPort=10000, writeCommandsPort=10001, refreshInterval=30, enableReadCommands=true, enableWriteCommands=true, enableRegistersForWriteCommands="44266, 47004"]
 ```

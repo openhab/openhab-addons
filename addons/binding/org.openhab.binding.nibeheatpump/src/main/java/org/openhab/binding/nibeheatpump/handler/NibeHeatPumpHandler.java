@@ -217,9 +217,6 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         logger.debug("Initialized Nibe Heat Pump device handler for {}", getThing().getUID());
