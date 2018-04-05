@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * @since 1.7.0
  */
 public class SatelMessage {
-    private static final Logger logger = LoggerFactory.getLogger(SatelMessage.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SatelMessage.class);
 
     private byte command;
     private byte[] payload;
@@ -65,7 +65,7 @@ public class SatelMessage {
     public static SatelMessage fromBytes(byte[] buffer) {
         // we need at least command and checksum
         if (buffer.length < 3) {
-            logger.error("Invalid message length: {}", buffer.length);
+            LOGGER.error("Invalid message length: {}", buffer.length);
             return null;
         }
 
@@ -73,7 +73,7 @@ public class SatelMessage {
         int receivedCrc = 0xffff & ((buffer[buffer.length - 2] << 8) | (buffer[buffer.length - 1] & 0xff));
         int expectedCrc = calculateChecksum(buffer, buffer.length - 2);
         if (receivedCrc != expectedCrc) {
-            logger.error("Invalid message checksum: received = {}, expected = {}", receivedCrc, expectedCrc);
+            LOGGER.error("Invalid message checksum: received = {}, expected = {}", receivedCrc, expectedCrc);
             return null;
         }
 
@@ -146,7 +146,7 @@ public class SatelMessage {
             checkSum += ((checkSum >> 8) & 0xff) + (buffer[i] & 0xff);
         }
         checkSum &= 0xffff;
-        logger.trace("Calculated checksum = {}", String.format("%04X", checkSum));
+        LOGGER.trace("Calculated checksum = {}", String.format("%04X", checkSum));
         return checkSum;
     }
 
