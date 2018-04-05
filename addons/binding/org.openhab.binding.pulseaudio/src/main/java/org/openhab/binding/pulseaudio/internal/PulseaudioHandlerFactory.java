@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -29,6 +29,7 @@ import org.openhab.binding.pulseaudio.handler.PulseaudioBridgeHandler;
 import org.openhab.binding.pulseaudio.handler.PulseaudioHandler;
 import org.openhab.binding.pulseaudio.internal.discovery.PulseaudioDeviceDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.slf4j.Logger;
@@ -72,8 +73,8 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
     private void registerDeviceDiscoveryService(PulseaudioBridgeHandler paBridgeHandler) {
         PulseaudioDeviceDiscoveryService discoveryService = new PulseaudioDeviceDiscoveryService(paBridgeHandler);
         discoveryService.activate();
-        this.discoveryServiceReg.put(paBridgeHandler, 
-		bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceReg.put(paBridgeHandler, bundleContext.registerService(DiscoveryService.class.getName(),
+                discoveryService, new Hashtable<String, Object>()));
     }
 
     private ThingUID getPulseaudioDeviceUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
