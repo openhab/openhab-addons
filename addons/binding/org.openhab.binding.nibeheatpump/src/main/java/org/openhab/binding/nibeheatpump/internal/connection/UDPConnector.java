@@ -71,7 +71,7 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
     }
 
     @Override
-    public void disconnect() throws NibeHeatPumpException {
+    public void disconnect()  {
         if (readerThread != null) {
             logger.debug("Interrupt message listener");
             readerThread.interrupt();

@@ -130,7 +130,7 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
         }
     };
 
-    private static enum msgStatus {
+    private enum msgStatus {
         VALID,
         VALID_BUT_NOT_READY,
         INVALID
