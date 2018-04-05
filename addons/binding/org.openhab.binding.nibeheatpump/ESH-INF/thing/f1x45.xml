@@ -39,12 +39,14 @@
 			</parameter>
 			<parameter name="enableReadCommands" type="boolean">
 				<label>Enable read commands</label>
-				<description>Enable read commands to read additional variable from heat pump which are not included to data readout messages. This is experimental feature, use it at your own risk!</description>
+				<description>Enable read commands to read additional variable from heat pump which are not included to data readout
+					messages. This is experimental feature, use it at your own risk!</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableWriteCommands" type="boolean">
 				<label>Enable write commands</label>
-				<description>Enable write commands to change heat pump settings. This is experimental feature, use it at your own risk!</description>
+				<description>Enable write commands to change heat pump settings. This is experimental feature, use it at your own
+					risk!</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableWriteCommandsToRegisters" type="text">
@@ -77,12 +79,14 @@
 			</parameter>
 			<parameter name="enableReadCommands" type="boolean">
 				<label>Enable read commands</label>
-				<description>Enable read commands to read additional variable from heat pump which are not included to data readout messages. This is experimental feature, use it at your own risk!</description>
+				<description>Enable read commands to read additional variable from heat pump which are not included to data readout
+					messages. This is experimental feature, use it at your own risk!</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableWriteCommands" type="boolean">
 				<label>Enable write commands</label>
-				<description>Enable write commands to change heat pump settings. This is experimental feature, use it at your own risk!</description>
+				<description>Enable write commands to change heat pump settings. This is experimental feature, use it at your own
+					risk!</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableWriteCommandsToRegisters" type="text">
@@ -125,12 +129,14 @@
 			</parameter>
 			<parameter name="enableReadCommands" type="boolean">
 				<label>Enable read commands</label>
-				<description>Enable read commands to read additional variable from heat pump which are not included to data readout messages. This is experimental feature, use it at your own risk!</description>
+				<description>Enable read commands to read additional variable from heat pump which are not included to data readout
+					messages. This is experimental feature, use it at your own risk!</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableWriteCommands" type="boolean">
 				<label>Enable write commands</label>
-				<description>Enable write commands to change heat pump settings. This is experimental feature, use it at your own risk!</description>
+				<description>Enable write commands to change heat pump settings. This is experimental feature, use it at your own
+					risk!</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableWriteCommandsToRegisters" type="text">

@@ -13,6 +13,8 @@ import java.nio.ByteBuffer;
 import javax.xml.bind.DatatypeConverter;
 
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NibeHeatPumpProtocolStates} implements Nibe heat pump protocol state machine states.
@@ -26,9 +28,13 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
         public boolean process(NibeHeatPumpProtocolContext context) {
             if (context.buffer().hasRemaining()) {
                 byte b = context.buffer().get();
-                context.log("Received byte: {}", String.format("%02X", b));
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Received byte: {}", String.format("%02X", b));
+                }
                 if (b == NibeHeatPumpProtocol.FRAME_START_CHAR_FROM_NIBE) {
-                    context.log("Frame start found");
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Frame start found");
+                    }
                     context.msg().clear();
                     context.msg().put(b);
                     context.state(WAIT_DATA);
@@ -43,11 +49,15 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
         public boolean process(NibeHeatPumpProtocolContext context) {
             if (context.buffer().hasRemaining()) {
                 if (context.msg().position() >= 100) {
-                    context.log("Too long message received, rewait start char");
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Too long message received, rewait start char");
+                    }
                     context.state(WAIT_START);
                 } else {
                     byte b = context.buffer().get();
-                    context.log("Received byte: {}", String.format("%02X", b));
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Received byte: {}", String.format("%02X", b));
+                    }
                     context.msg().put(b);
 
                     try {
@@ -63,7 +73,9 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
                                 break;
                         }
                     } catch (NibeHeatPumpException e) {
-                        context.log(e.getMessage());
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("Error occured during parsing message: {}", e.getMessage());
+                        }
                         context.state(CHECKSUM_FAILURE);
                     }
                 }
@@ -79,7 +91,9 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
             context.msg().flip();
             byte[] data = new byte[context.msg().remaining()];
             context.msg().get(data, 0, data.length);
-            context.log("Received data (len={}): {}", data.length, DatatypeConverter.printHexBinary(data));
+            if (logger.isTraceEnabled()) {
+                logger.trace("Received data (len={}): {}", data.length, DatatypeConverter.printHexBinary(data));
+            }
             if (NibeHeatPumpProtocol.isModbus40ReadTokenPdu(data)) {
                 context.state(READ_TOKEN_RECEIVED);
             } else if (NibeHeatPumpProtocol.isModbus40WriteTokenPdu(data)) {
@@ -96,7 +110,9 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
     WRITE_TOKEN_RECEIVED {
         @Override
         public boolean process(NibeHeatPumpProtocolContext context) {
-            context.log("Write token received");
+            if (logger.isTraceEnabled()) {
+                logger.trace("Write token received");
+            }
             context.sendWriteMsg();
             context.state(WAIT_START);
             return true;
@@ -106,7 +122,9 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
     READ_TOKEN_RECEIVED {
         @Override
         public boolean process(NibeHeatPumpProtocolContext context) {
-            context.log("Read token received");
+            if (logger.isTraceEnabled()) {
+                logger.trace("Read token received");
+            }
             context.sendReadMsg();
             context.state(WAIT_START);
             return true;
@@ -116,7 +134,9 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
     CHECKSUM_FAILURE {
         @Override
         public boolean process(NibeHeatPumpProtocolContext context) {
-            context.log("CRC failure");
+            if (logger.isTraceEnabled()) {
+                logger.trace("CRC failure");
+            }
             context.sendNak();
             context.state(WAIT_START);
             return true;
@@ -179,4 +199,6 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
 
         return msgStatus.VALID_BUT_NOT_READY;
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(NibeHeatPumpProtocolStates.class);
 };

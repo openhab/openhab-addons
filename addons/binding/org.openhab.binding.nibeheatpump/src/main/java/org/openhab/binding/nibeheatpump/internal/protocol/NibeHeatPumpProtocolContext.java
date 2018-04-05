@@ -17,10 +17,6 @@ import java.nio.ByteBuffer;
  * @author Pauli Anttila - Initial contribution
  */
 public interface NibeHeatPumpProtocolContext {
-    void log(String format);
-
-    void log(String format, Object... arg);
-
     ByteBuffer buffer();
 
     ByteBuffer msg();
