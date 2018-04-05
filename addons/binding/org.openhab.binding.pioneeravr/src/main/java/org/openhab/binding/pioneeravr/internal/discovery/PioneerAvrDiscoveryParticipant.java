@@ -25,11 +25,12 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
 /**
  * An UpnpDiscoveryParticipant which allows to discover Pioneer AVRs.
- * 
+ *
  * @author Antoine Besnard
  *
  */
@@ -47,7 +48,7 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
 
     /**
      * Called at the service activation.
-     * 
+     *
      * @param componentContext
      */
     protected void activate(ComponentContext componentContext) {
@@ -101,9 +102,21 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
                             PioneerAvrBindingConstants.UPNP_DEVICE_TYPE, device.getType().getType());
 
                     String deviceModel = device.getDetails().getModelDetails() != null
-                            ? device.getDetails().getModelDetails().getModelName() : null;
+                            ? device.getDetails().getModelDetails().getModelName()
+                            : null;
+
                     ThingTypeUID thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE;
-                    if (!isSupportedDeviceModel(deviceModel)) {
+
+                    if (isSupportedDeviceModel(deviceModel, PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2016)) {
+                        thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE2016;
+                    } else if (isSupportedDeviceModel(deviceModel,
+                            PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2015)) {
+                        thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE2015;
+                    } else if (isSupportedDeviceModel(deviceModel,
+                            PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2014)) {
+                        thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE2014;
+                    } else if (!isSupportedDeviceModel(deviceModel,
+                            PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS)) {
                         logger.debug("Device model {} not supported. Odd behaviors may happen.", deviceModel);
                         thingTypeUID = PioneerAvrBindingConstants.IP_AVR_UNSUPPORTED_THING_TYPE;
                     }
@@ -118,18 +131,17 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
 
     /**
      * Return true only if the given device model is supported.
-     * 
+     *
      * @param deviceModel
      * @return
      */
-    private boolean isSupportedDeviceModel(final String deviceModel) {
+    private boolean isSupportedDeviceModel(String deviceModel, Set<String> supportedDeviceModels) {
         return StringUtils.isNotBlank(deviceModel)
-                && !Collections2.filter(PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS,
-                        new com.google.common.base.Predicate<String>() {
-                            public boolean apply(String input) {
-                                return StringUtils.startsWithIgnoreCase(deviceModel, input);
-                            }
-                        }).isEmpty();
+                && !Collections2.filter(supportedDeviceModels, new Predicate<String>() {
+                    @Override
+                    public boolean apply(String input) {
+                        return StringUtils.startsWithIgnoreCase(deviceModel, input);
+                    }
+                }).isEmpty();
     }
-
 }

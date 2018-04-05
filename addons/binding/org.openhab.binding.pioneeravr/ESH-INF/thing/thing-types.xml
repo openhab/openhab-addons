@@ -5,14 +5,121 @@
 
 	<!-- AVR control over IP -->
 	<thing-type id="ipAvr">
-		<label>Pioneer AVR over IP</label>
-		<description>Control a Pioneer AVR over IP </description>
+		<label>Pioneer Classic AVR over IP</label>
+		<description>Control a classic Pioneer AVR (SC-57, SC-LX85, SC-55, SC-1526, SC-LX75, VSX-53, VSX-1326, VSX-LX55, VSX-2021, VSA-LX55, VSX-52, VSX-1126, VSX-1121, VSX-51, VSX-1021, VSX-1026, VSA-1021, VSX-50, VSX-926, VSX-921, VSA-921) over IP </description>
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation" />
-			<channel-group typeId="zone1Controls" id="zone1" />
-			<channel-group typeId="zone2Controls" id="zone2" />
-			<channel-group typeId="zone3Controls" id="zone3" />
+			<channel-group typeId="zoneControls" id="zone1">
+				<label>Zone 1</label>
+			</channel-group>
+			<channel-group typeId="zoneControls" id="zone2">
+				<label>Zone 2</label>
+			</channel-group>
+			<channel-group typeId="zoneControls" id="zone3">
+				<label>Zone 3</label>
+			</channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<context>network-address</context>
+				<label>Address</label>
+				<description>The address of the Pioneer AVR to control.</description>
+			</parameter>
+			<parameter name="tcpPort" type="integer" max="65535" min="1" required="true">
+				<default>8102</default>
+				<label>TCP Port</label>
+				<description>The TCP port number used to connect to the AVR.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="ipAvr2014">
+		<label>Pioneer AVR over IP 2014</label>
+		<description>Control a 2014 Pioneer AVR (SC-LX87, SC-LX77, SC-LX57, SC-2023, SC-1223, VSX-1123, VSX-923) over IP </description>
+		<channel-groups>
+			<channel-group typeId="displayInformationGroup" id="displayInformation" />
+			<channel-group typeId="controls2014" id="zone1">
+				<label>Zone 1</label>
+			</channel-group>
+			<channel-group typeId="zoneControls2014" id="zone2">
+				<label>Zone 2</label>
+			</channel-group>
+			<channel-group typeId="zoneControls2014" id="zone3">
+				<label>Zone 3</label>
+			</channel-group>
+			<channel-group typeId="hdZoneControls2014" id="zone4">
+				<label>HD Zone</label>
+			</channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<context>network-address</context>
+				<label>Address</label>
+				<description>The address of the Pioneer AVR to control.</description>
+			</parameter>
+			<parameter name="tcpPort" type="integer" max="65535" min="1" required="true">
+				<default>8102</default>
+				<label>TCP Port</label>
+				<description>The TCP port number used to connect to the AVR.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="ipAvr2015">
+		<label>Pioneer AVR over IP 2015</label>
+		<description>Control a 2015 Pioneer AVR (SC-89, SC-LX88, SC-87, SC-LX78, SC-85, SC-LX58, SC-82, SC-2024, SC-81, VSX-80) over IP </description>
+
+		<channel-groups>
+			<channel-group typeId="displayInformationGroup" id="displayInformation" />
+			<channel-group typeId="controls2015" id="zone1">
+				<label>Zone 1</label>
+			</channel-group>
+			<channel-group typeId="zoneControls2015" id="zone2">
+				<label>Zone 2</label>
+			</channel-group>
+			<channel-group typeId="zoneControls2015" id="zone3">
+				<label>Zone 3</label>
+			</channel-group>
+			<channel-group typeId="hdZoneControls2015" id="zone4">
+				<label>HD Zone</label>
+			</channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<context>network-address</context>
+				<label>Address</label>
+				<description>The address of the Pioneer AVR to control.</description>
+			</parameter>
+			<parameter name="tcpPort" type="integer" max="65535" min="1" required="true">
+				<default>8102</default>
+				<label>TCP Port</label>
+				<description>The TCP port number used to connect to the AVR.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="ipAvr2016">
+		<label>Pioneer AVR over IP 2016</label>
+		<description>Control a 2016 Pioneer AVR (SC-99, SC-LX89, SC-97, SC-LX79, SC-95, SC-LX59, SC-92, SC-91, VSX-90, VSX-45) over IP </description>
+
+		<channel-groups>
+			<channel-group typeId="displayInformationGroup" id="displayInformation" />
+			<channel-group typeId="controls2016" id="zone1">
+				<label>Zone 1</label>
+			</channel-group>
+			<channel-group typeId="zoneControls2016" id="zone2">
+				<label>Zone 2</label>
+			</channel-group>
+			<channel-group typeId="zoneControls2016" id="zone3">
+				<label>Zone 3</label>
+			</channel-group>
+			<channel-group typeId="hdZoneControls2016" id="zone4">
+				<label>HD Zone</label>
+			</channel-group>
 		</channel-groups>
 
 		<config-description>
@@ -36,9 +143,9 @@
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation" />
-			<channel-group typeId="zone1Controls" id="zone1" />
-			<channel-group typeId="zone2Controls" id="zone2" />
-			<channel-group typeId="zone3Controls" id="zone3" />
+			<channel-group typeId="zoneControls" id="zone1" />
+			<channel-group typeId="zoneControls" id="zone2" />
+			<channel-group typeId="zoneControls" id="zone3" />
 		</channel-groups>
 
 		<config-description>
@@ -83,8 +190,8 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="zone1Controls">
-		<label>Zone 1</label>
+	<channel-group-type id="zoneControls">
+		<label>Controls</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
@@ -94,25 +201,102 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="zone2Controls">
-		<label>Zone 2</label>
+	<channel-group-type id="controls2014">
+		<label>zoneControls2014</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
 			<channel id="volumeDb" typeId="volumeChannelDb" />
 			<channel id="mute" typeId="muteChannel" />
-			<channel id="setInputSource" typeId="setInputSourceChannel" />
+			<channel id="setInputSource" typeId="setInputSourceChannel2014" />
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="zone3Controls">
-		<label>Zone 3</label>
+	<channel-group-type id="zoneControls2014">
+		<label>zoneControls2014</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
 			<channel id="volumeDb" typeId="volumeChannelDb" />
 			<channel id="mute" typeId="muteChannel" />
-			<channel id="setInputSource" typeId="setInputSourceChannel" />
+			<channel id="setInputSource" typeId="setInputSourceZoneChannel2014" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="hdZoneControls2014">
+		<label>zoneControls2014</label>
+		<channels>
+			<channel id="power" typeId="powerChannel" />
+			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
+			<channel id="volumeDb" typeId="volumeChannelDb" />
+			<channel id="mute" typeId="muteChannel" />
+			<channel id="setInputSource" typeId="setInputSourceHDZoneChannel2014" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="controls2015">
+		<label>zoneControls2015</label>
+		<channels>
+			<channel id="power" typeId="powerChannel" />
+			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
+			<channel id="volumeDb" typeId="volumeChannelDb" />
+			<channel id="mute" typeId="muteChannel" />
+			<channel id="setInputSource" typeId="setInputSourceChannel2015" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zoneControls2015">
+		<label>zoneControls2015</label>
+		<channels>
+			<channel id="power" typeId="powerChannel" />
+			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
+			<channel id="volumeDb" typeId="volumeChannelDb" />
+			<channel id="mute" typeId="muteChannel" />
+			<channel id="setInputSource" typeId="setInputSourceZoneChannel2014" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="hdZoneControls2015">
+		<label>zoneControls2015</label>
+		<channels>
+			<channel id="power" typeId="powerChannel" />
+			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
+			<channel id="volumeDb" typeId="volumeChannelDb" />
+			<channel id="mute" typeId="muteChannel" />
+			<channel id="setInputSource" typeId="setInputSourceHDZoneChannel2015" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="controls2016">
+		<label>controls2016</label>
+		<channels>
+			<channel id="power" typeId="powerChannel" />
+			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
+			<channel id="volumeDb" typeId="volumeChannelDb" />
+			<channel id="mute" typeId="muteChannel" />
+			<channel id="setInputSource" typeId="setInputSourceChannel2016" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zoneControls2016">
+		<label>zoneControls2016</label>
+		<channels>
+			<channel id="power" typeId="powerChannel" />
+			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
+			<channel id="volumeDb" typeId="volumeChannelDb" />
+			<channel id="mute" typeId="muteChannel" />
+			<channel id="setInputSource" typeId="setInputSourceZoneChannel2016" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="hdZoneControls2016">
+		<label>hdZoneControls2016</label>
+		<channels>
+			<channel id="power" typeId="powerChannel" />
+			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
+			<channel id="volumeDb" typeId="volumeChannelDb" />
+			<channel id="mute" typeId="muteChannel" />
+			<channel id="setInputSource" typeId="setInputSourceHDZoneChannel2016" />
 		</channels>
 	</channel-group-type>
 
@@ -171,6 +355,266 @@
 				<option value="12">MULTI CH IN</option>
 				<option value="33">ADAPTER PORT</option>
 				<option value="27">SIRIUS</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setInputSourceChannel2014">
+		<item-type>String</item-type>
+		<label>Input source</label>
+		<description>Select the input source of the AVR</description>
+		<state>
+			<options>
+				<option value="25">BD</option>
+				<option value="04">DVD</option>
+				<option value="06">SAT/CBL</option>
+				<option value="15">DVR/BDR</option>
+				<option value="10">VIDEO 1</option>
+				<option value="19">HDMI 1</option>
+				<option value="20">HDMI 2</option>
+				<option value="21">HDMI 3</option>
+				<option value="22">HDMI 4</option>
+				<option value="23">HDMI 5</option>
+				<option value="24">HDMI 6</option>
+				<option value="34">HDMI 7</option>
+				<option value="35">HDMI 8</option>
+				<option value="38">Internet Radio</option>
+				<option value="41">PANDORA</option>
+				<option value="44">Media Server</option>
+				<option value="45">Favourites</option>
+				<option value="17">iPod/USB</option>
+				<option value="05">TV</option>
+				<option value="01">CD</option>
+				<option value="13">USB-DAC</option>
+				<option value="02">TUNER</option>
+				<option value="00">PHONO</option>
+				<option value="12">MULTI CH IN</option>
+				<option value="33">ADAPTER PORT</option>
+				<option value="48">MHL</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setInputSourceChannel2015">
+		<item-type>String</item-type>
+		<label>Input source</label>
+		<description>Select the input source of the AVR</description>
+		<state>
+			<options>
+				<option value="25">BD</option>
+				<option value="04">DVD</option>
+				<option value="06">SAT/CBL</option>
+				<option value="15">DVR/BDR</option>
+				<option value="19">HDMI 1</option>
+				<option value="20">HDMI 2</option>
+				<option value="21">HDMI 3</option>
+				<option value="22">HDMI 4</option>
+				<option value="23">HDMI 5</option>
+				<option value="24">HDMI 6</option>
+				<option value="34">HDMI 7</option>
+				<option value="38">Internet Radio</option>
+				<option value="41">PANDORA</option>
+				<option value="57">Spotify</option>
+				<option value="44">Media Server</option>
+				<option value="45">Favourites</option>
+				<option value="17">iPod/USB</option>
+				<option value="05">TV</option>
+				<option value="01">CD</option>
+				<option value="13">USB-DAC</option>
+				<option value="02">TUNER</option>
+				<option value="00">PHONO</option>
+				<option value="12">MULTI CH IN</option>
+				<option value="33">ADAPTER PORT/BT Audio</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setInputSourceChannel2016">
+		<item-type>String</item-type>
+		<label>Input source</label>
+		<description>Select the input source of the AVR</description>
+		<state>
+			<options>
+				<option value="25">BD</option>
+				<option value="04">DVD</option>
+				<option value="06">SAT/CBL</option>
+				<option value="15">DVR/BDR</option>
+				<option value="19">HDMI 1</option>
+				<option value="20">HDMI 2</option>
+				<option value="21">HDMI 3</option>
+				<option value="22">HDMI 4</option>
+				<option value="23">HDMI 5</option>
+				<option value="24">HDMI 6</option>
+				<option value="34">HDMI 7</option>
+				<option value="40">SiriusXM</option>
+				<option value="41">PANDORA</option>
+				<option value="57">Spotify</option>
+				<option value="44">Media Server</option>
+				<option value="45">Favourites</option>
+				<option value="17">iPod/USB</option>
+				<option value="05">TV</option>
+				<option value="01">CD</option>
+				<option value="13">USB-DAC</option>
+				<option value="02">TUNER</option>
+				<option value="00">PHONO</option>
+				<option value="12">MULTI CH IN</option>
+				<option value="33">ADAPTER PORT/BT Audio</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setInputSourceZoneChannel2014">
+		<item-type>String</item-type>
+		<label>Input source</label>
+		<description>Select the input source of the AVR</description>
+		<state>
+			<options>
+				<option value="04">DVD</option>
+				<option value="06">SAT/CBL</option>
+				<option value="15">DVR/BDR</option>
+				<option value="10">VIDEO 1</option>
+				<option value="38">Internet Radio</option>
+				<option value="40">SiriusXM</option>
+				<option value="41">PANDORA</option>
+				<option value="44">Media Server</option>
+				<option value="45">Favourites</option>
+				<option value="17">iPod/USB</option>
+				<option value="13">USB-DAC</option>
+				<option value="05">TV</option>
+				<option value="01">CD</option>
+				<option value="02">TUNER</option>
+				<option value="33">ADAPTER PORT</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setInputSourceZoneChannel2015">
+		<item-type>String</item-type>
+		<label>Input source</label>
+		<description>Select the input source of the AVR</description>
+		<state>
+			<options>
+				<option value="04">DVD</option>
+				<option value="06">SAT/CBL</option>
+				<option value="15">DVR/BDR</option>
+				<option value="38">Internet Radio</option>
+				<option value="40">SiriusXM</option>
+				<option value="41">PANDORA</option>
+				<option value="57">Spotify</option>
+				<option value="44">Media Server</option>
+				<option value="45">Favourites</option>
+				<option value="17">iPod/USB</option>
+				<option value="13">USB-DAC</option>
+				<option value="05">TV</option>
+				<option value="01">CD</option>
+				<option value="02">TUNER</option>
+				<option value="33">ADAPTER PORT</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setInputSourceZoneChannel2016">
+		<item-type>String</item-type>
+		<label>Input source</label>
+		<description>Select the input source of the AVR</description>
+		<state>
+			<options>
+				<option value="04">DVD</option>
+				<option value="06">SAT/CBL</option>
+				<option value="15">DVR/BDR</option>
+				<option value="26">HOME MEDIA GALLERY</option>
+				<option value="38">Internet Radio</option>
+				<option value="40">SiriusXM</option>
+				<option value="41">PANDORA</option>
+				<option value="57">Spotify</option>
+				<option value="44">Media Server</option>
+				<option value="45">Favourites</option>
+				<option value="17">iPod/USB</option>
+				<option value="13">USB-DAC</option>
+				<option value="05">TV</option>
+				<option value="01">CD</option>
+				<option value="02">TUNER</option>
+				<option value="33">ADAPTER PORT</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setInputSourceHDZoneChannel2014">
+		<item-type>String</item-type>
+		<label>Input source</label>
+		<description>Select the input source of the AVR</description>
+		<state>
+			<options>
+				<option value="25">BD</option>
+				<option value="04">DVD</option>
+				<option value="06">SAT/CBL</option>
+				<option value="15">DVR/BDR</option>
+				<option value="19">HDMI 1</option>
+				<option value="20">HDMI 2</option>
+				<option value="21">HDMI 3</option>
+				<option value="22">HDMI 4</option>
+				<option value="23">HDMI 5</option>
+				<option value="24">HDMI 6</option>
+				<option value="34">HDMI 7</option>
+				<option value="35">HDMI 8</option>
+				<option value="48">MHL</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setInputSourceHDZoneChannel2015">
+		<item-type>String</item-type>
+		<label>Input source</label>
+		<description>Select the input source of the AVR</description>
+		<state>
+			<options>
+				<option value="25">BD</option>
+				<option value="04">DVD</option>
+				<option value="06">SAT/CBL</option>
+				<option value="15">DVR/BDR</option>
+				<option value="19">HDMI 1</option>
+				<option value="20">HDMI 2</option>
+				<option value="21">HDMI 3</option>
+				<option value="22">HDMI 4</option>
+				<option value="23">HDMI 5</option>
+				<option value="24">HDMI 6</option>
+				<option value="34">HDMI 7</option>
+				<option value="38">Internet Radio</option>
+				<option value="40">SiriusXM</option>
+				<option value="41">PANDORA</option>
+				<option value="44">Media Server</option>
+				<option value="45">Favourites</option>
+				<option value="17">iPod/USB</option>
+				<option value="13">USB-DAC</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setInputSourceHDZoneChannel2016">
+		<item-type>String</item-type>
+		<label>Input source</label>
+		<description>Select the input source of the AVR</description>
+		<state>
+			<options>
+				<option value="25">BD</option>
+				<option value="04">DVD</option>
+				<option value="06">SAT/CBL</option>
+				<option value="15">DVR/BDR</option>
+				<option value="19">HDMI 1</option>
+				<option value="20">HDMI 2</option>
+				<option value="21">HDMI 3</option>
+				<option value="22">HDMI 4</option>
+				<option value="23">HDMI 5</option>
+				<option value="24">HDMI 6</option>
+				<option value="34">HDMI 7</option>
+				<option value="38">Internet Radio</option>
+				<option value="40">SiriusXM</option>
+				<option value="41">PANDORA</option>
+				<option value="57">Spotify</option>
+				<option value="44">Media Server</option>
+				<option value="45">Favourites</option>
+				<option value="17">iPod/USB</option>
+				<option value="13">USB-DAC</option>
 			</options>
 		</state>
 	</channel-type>

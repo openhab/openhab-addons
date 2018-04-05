@@ -28,8 +28,9 @@ import com.google.common.collect.Sets;
 public class AvrHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(
-            PioneerAvrBindingConstants.IP_AVR_THING_TYPE, PioneerAvrBindingConstants.IP_AVR_UNSUPPORTED_THING_TYPE,
-            PioneerAvrBindingConstants.SERIAL_AVR_THING_TYPE);
+            PioneerAvrBindingConstants.IP_AVR_THING_TYPE, PioneerAvrBindingConstants.IP_AVR_THING_TYPE2014,
+            PioneerAvrBindingConstants.IP_AVR_THING_TYPE2015, PioneerAvrBindingConstants.IP_AVR_THING_TYPE2016,
+            PioneerAvrBindingConstants.IP_AVR_UNSUPPORTED_THING_TYPE, PioneerAvrBindingConstants.SERIAL_AVR_THING_TYPE);
 
     protected void activate(ComponentContext componentContext, Map<String, Object> configProps) {
         super.activate(componentContext);
@@ -47,6 +48,9 @@ public class AvrHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_THING_TYPE)
+                || thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_THING_TYPE2014)
+                || thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_THING_TYPE2015)
+                || thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_THING_TYPE2016)
                 || thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_UNSUPPORTED_THING_TYPE)) {
             return new IpAvrHandler(thing);
         } else if (thingTypeUID.equals(PioneerAvrBindingConstants.SERIAL_AVR_THING_TYPE)) {

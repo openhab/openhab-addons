@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>PioneerAvr Binding</name>
-	<description>A binding for Pioneer AVRs. Compatible models: SC-57, SC-LX85, SC-55, SC-1526, SC-LX75, VSX-53, VSX-1326, VSX-LX55, VSX-2021, VSA-LX55, VSX-52, VSX-1126, VSX-1121, VSX-51, VSX-1021, VSX-1026, VSA-1021, VSX-50, VSX-926, VSX-921, VSA-921. Other models may work with some odd behaviors.</description>
+	<description>A binding for Pioneer AVRs.</description>
 	<author>Antoine Besnard</author>
 
 </binding:binding>
