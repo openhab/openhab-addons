@@ -31,7 +31,7 @@ Once discovered, the HeatHub `AUTHTOKEN` needs to be configured. There are a few
 
 The `REFRESH` interval defines in seconds, how often the binding will poll the controller for updates.
 
-The `AWAY MODE SET POINT` defines the temperature in degrees celcius that will be sent to the heathub when away mode is activated.
+The `AWAY MODE SET POINT` defines the temperature in degrees Celsius that will be sent to the heathub when away mode is activated.
 
 ### Manual configuration with .things files
 
@@ -72,6 +72,8 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 |---------------------------|----------------------------------------------------------|-------------|
 | `hotWaterOverride`        | State of the hot water override button on the controller | Yes         |
 | `hotWaterDemandState`     | Is hot water calling the boiler for heat                 | Yes         |
+| `hotWaterBoosted`         | Is hot water currently being boosted                     | Yes         |
+| `hotWaterBoostRemaining`  | How long until the boost deactivates in minutes          | Yes         |
 
 #### Room
 
@@ -81,6 +83,8 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 | `currentHumidity`    | Currently reported humidity (if there is a room stat configured in this room | Yes         |
 | `currentDemand`      | Current heat demand percentage of the room                                   | Yes         |
 | `heatRequest`        | Is the room actively requesting heat from the controller                     | Yes         |
+| `roomBoosted`        | Is the room currently being boosted                                          | Yes         |
+| `roomBoostRemaining` | How long until the boost deactivates in minutes                              | Yes         |
 
 #### Room Stat
 
@@ -108,7 +112,7 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 | `currentSignalRSSI`     | Relative Signal Strength Indicator        | Yes         |
 | `currentSignalLQI`      | Link Quality Indicator                    | Yes         |
 | `currentSignalStrength` | Human readable signal strength            | Yes         |
-| `zigbeeConnected`       | Is the TRV joined to network              | Yes          |
+| `zigbeeConnected`       | Is the TRV joined to network              | Yes         |
 
 ### Writeable Channels
 
@@ -121,29 +125,46 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 
 #### Hot Water
 
-| Channel            | Description                                | Implemented |
-|--------------------|--------------------------------------------|-------------|
-| `manualModeState`  | Has manual mode been enabled               | Yes         |
-| `hotWaterSetPoint`  | The current hot water setpoint (on or off) | Yes         |
-| Hot Water Boosting | Boost the hot water for a set interval     | No          |
-| Schedules          | The time and hot water state schedule      | No          |
+| Channel                 | Description                                | Implemented |
+|-------------------------|--------------------------------------------|-------------|
+| `manualModeState`       | Has manual mode been enabled               | Yes         |
+| `hotWaterSetPoint`      | The current hot water setpoint (on or off) | Yes         |
+| `hotWaterBoostDuration` | Period in hours to boost the hot water     | Yes         |
+| Schedules               | The time and hot water state schedule      | No          |
 
 #### Room
 
-| Channel           | Description                                    | Implemented |
-|-------------------|------------------------------------------------|-------------|
-| `currentSetPoint` | The current set point temperature for the room | Yes         |
-| `manualModeState` | Has manual mode been enabled                   | Yes         |
-| Room Boosting     | Boost the room temperature for a set interval  | No          |
-| Schedules         | The Time and Set Point schedule                | No          |
+| Channel             | Description                                    | Implemented |
+|---------------------|------------------------------------------------|-------------|
+| `currentSetPoint`   | The current set point temperature for the room | Yes         |
+| `manualModeState`   | Has manual mode been enabled                   | Yes         |
+| `roomBoostDuration` | Period in hours to boost the room temperature  | Yes         |
+| Schedules           | The Time and Set Point schedule                | No          |
 
 #### Known string responses for specific channels:
 
-| Channel                 | Known responses                          |
-|-------------------------|------------------------------------------|
-| `currentSignalStrength` | `{ "VeryGood", "Good", "Medium", "Poor", "NoSignal" }` |
-| `currentBatteryLevel`   | `{ "Full", "Normal", "TwoThirds", "OneThird", "Low", "Critical" }`              |
+| Channel                 | Known responses                                                    |
+|-------------------------|--------------------------------------------------------------------|
+| `currentSignalStrength` | `{ "VeryGood", "Good", "Medium", "Poor", "NoSignal" }`             |
+| `currentBatteryLevel`   | `{ "Full", "Normal", "TwoThirds", "OneThird", "Low", "Critical" }` |
 
 ## Full Example
 
-TODO
+Example sitemap snippet where items and things have been configured in PaperUI.
+
+```
+Text item=draytonwiser_room_WiserHeatXXXXXX_livingroom_heatRequest label="Heating" icon="fire" {
+            Text item=draytonwiser_room_WiserHeatXXXXXX_livingroom_currentTemperature label="Temperature [%.1f °C]" icon="temperature"
+            Setpoint item=draytonwiser_room_WiserHeatXXXXXX_livingroom_currentSetPoint label="Target Temperature [%.1f °C]" icon="temperature" step=0.5 minValue=16 maxValue=25
+            Text item=draytonwiser_room_WiserHeatXXXXXX_livingroom_currentHumidity label="Humidity [%.0f %%]" icon="humidity"
+            Text item=draytonwiser_room_WiserHeatXXXXX_livingroom_currentDemand label="Heating Power [%.0f %%]" icon="heating"
+            Switch item=draytonwiser_room_WiserHeatXXXXXX_livingroom_manualModeState label="Manual Mode" icon="switch"
+			Switch item=draytonwiser_room_WiserHeatXXXXXX_livingroom_roomBoostDuration label="Boost heating[]" mappings=[0="Off", 0.5="0.5 h", 1="1 h", 2="2 h", 3="3 h"] icon="radiator"
+			Text item=draytonwiser_room_WiserHeatXXXXXX_livingroom_roomBoosted label="Heating Boosted" icon="fire"
+            Text item=draytonwiser_room_WiserHeatXXXXXX_livingroom_roomBoostRemaining label="Boost Remaining [%.0f minutes]" icon="time"
+            Text item=draytonwiser_roomstat_WiserHeatXXXXXX_000XXXXXXXXXXXXXX_currentBatteryLevel label="Thermostat Battery" icon="batterylevel"
+            Text item=draytonwiser_roomstat_WiserHeatXXXXXX_000XXXXXXXXXXXXX_currentSignalStrength label="Thermostat Signal Strength" icon="network"
+            Text item=draytonwiser_itrv_WiserHeatXXXXXX_000XXXXXXXXXXXXX_currentBatteryLevel label="Radiator Battery" icon="batterylevel"
+            Text item=draytonwiser_itrv_WiserHeatXXXXXX_000XXXXXXXXXXXXX_currentSignalStrength label="Radiator Signal Strength" icon="network"
+        }
+```
