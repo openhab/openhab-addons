@@ -5,21 +5,21 @@
         http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="binding:pulseaudio">
-	   <parameter name="sink" type="boolean">
-            <label>Import sinks</label>
-            <description>Activate the import of sink elements.</description>
-            <default>true</default>
-        </parameter>
-        <parameter name="sinkInput" type="boolean">
-            <label>Import sink inputs</label>
-            <description>Activate the import of sink-input elements.</description>
-            <default>false</default>
-        </parameter>
-        <parameter name="source" type="boolean">
-            <label>Import sources</label>
-            <description>Activate the import of source elements.</description>
-            <default>false</default>
-        </parameter>
+		<parameter name="sink" type="boolean">
+			<label>Import sinks</label>
+			<description>Activate the import of sink elements.</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="sinkInput" type="boolean">
+			<label>Import sink inputs</label>
+			<description>Activate the import of sink-input elements.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="source" type="boolean">
+			<label>Import sources</label>
+			<description>Activate the import of source elements.</description>
+			<default>false</default>
+		</parameter>
 		<parameter name="sourceOutput" type="boolean">
 			<label>Import source outputs</label>
 			<description>Activate the import of source-output elements.</description>
