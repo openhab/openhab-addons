@@ -90,8 +90,6 @@ public class HotWaterHandler extends DraytonWiserThingHandler {
                 updateState(
                         new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_HOT_WATER_SETPOINT),
                         getSetPointState());
-                updateState(new ChannelUID(getThing().getUID(),
-                        DraytonWiserBindingConstants.CHANNEL_HOT_WATER_BOOST_DURATION), new DecimalType(0));
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_HOT_WATER_BOOSTED),
                         getBoostedState());
                 updateState(
@@ -189,6 +187,9 @@ public class HotWaterHandler extends DraytonWiserThingHandler {
             }
         }
 
+        updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_HOT_WATER_BOOST_DURATION),
+                new DecimalType(0));
+
         return OnOffType.OFF;
     }
 
@@ -197,7 +198,7 @@ public class HotWaterHandler extends DraytonWiserThingHandler {
             if (hotWaterChannels.get(0).getOverrideTimeoutUnixTime() != null
                     && !hotWaterChannels.get(0).getOverrideType().toUpperCase().equals("NONE")) {
                 return new DecimalType(
-                        ((System.currentTimeMillis() / 1000L) - hotWaterChannels.get(0).getOverrideTimeoutUnixTime())
+                        ((hotWaterChannels.get(0).getOverrideTimeoutUnixTime() - System.currentTimeMillis() / 1000L))
                                 / 60);
             }
         }

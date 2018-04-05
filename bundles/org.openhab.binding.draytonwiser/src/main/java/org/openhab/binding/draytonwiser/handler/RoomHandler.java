@@ -86,9 +86,6 @@ public class RoomHandler extends DraytonWiserThingHandler {
                         getHeatRequest());
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_MANUAL_MODE_STATE),
                         getManualModeState());
-                updateState(
-                        new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_ROOM_BOOST_DURATION),
-                        new DecimalType(0));
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_ROOM_BOOSTED),
                         getBoostedState());
                 updateState(
@@ -193,6 +190,8 @@ public class RoomHandler extends DraytonWiserThingHandler {
                 return OnOffType.ON;
             }
         }
+        updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_ROOM_BOOST_DURATION),
+                new DecimalType(0));
 
         return OnOffType.OFF;
     }
@@ -200,7 +199,7 @@ public class RoomHandler extends DraytonWiserThingHandler {
     private State getBoostRemainingState() {
         if (room != null) {
             if (room.getOverrideTimeoutUnixTime() != null && !room.getOverrideType().toUpperCase().equals("NONE")) {
-                return new DecimalType(((System.currentTimeMillis() / 1000L) - room.getOverrideTimeoutUnixTime()) / 60);
+                return new DecimalType((room.getOverrideTimeoutUnixTime() - (System.currentTimeMillis() / 1000L)) / 60);
             }
         }
 
