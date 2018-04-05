@@ -15,8 +15,11 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.pioneeravr.PioneerAvrBindingConstants;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 import com.google.common.collect.Sets;
 
@@ -25,6 +28,7 @@ import com.google.common.collect.Sets;
  *
  * @author Antoine Besnard - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.pioneeravr", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class AvrHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(
@@ -34,7 +38,6 @@ public class AvrHandlerFactory extends BaseThingHandlerFactory {
 
     protected void activate(ComponentContext componentContext, Map<String, Object> configProps) {
         super.activate(componentContext);
-
     }
 
     @Override
@@ -44,7 +47,6 @@ public class AvrHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_THING_TYPE)
