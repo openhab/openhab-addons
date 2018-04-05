@@ -44,8 +44,7 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
 
     private static final Random RANDOM = new Random();
 
-    @SuppressWarnings("serial")
-    final ArrayList<ModbusValue> dataReadoutValues = new ArrayList<ModbusValue>() {
+    private final ArrayList<ModbusValue> dataReadoutValues = new ArrayList<ModbusValue>() {
         {
             add(new ModbusValue(43009, 287));
             add(new ModbusValue(43008, 100));
@@ -70,9 +69,9 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
         }
     };
 
-    private final Map<Integer, Integer> cache = Collections.synchronizedMap(new HashMap<Integer, Integer>());
+    private final Map<Integer, Integer> cache = Collections.synchronizedMap(new HashMap<>());
 
-    public SimulatorConnector() {
+    SimulatorConnector() {
         logger.debug("Nibe heatpump Test message listener created");
     }
 
@@ -253,7 +252,7 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
         }
     }
 
-    public static double random(double min, double max) {
+    private static double random(double min, double max) {
         return min + (RANDOM.nextDouble() * (max - min));
     }
 }

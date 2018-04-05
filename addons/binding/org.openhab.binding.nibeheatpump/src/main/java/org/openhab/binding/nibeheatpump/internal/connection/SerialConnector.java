@@ -58,7 +58,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
     private final List<byte[]> readQueue = new ArrayList<>();
     private final List<byte[]> writeQueue = new ArrayList<>();
 
-    public SerialConnector() {
+    SerialConnector() {
         logger.debug("Nibe heatpump Serial Port message listener created");
     }
 
@@ -150,7 +150,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
         boolean interrupted = false;
         final InputStream in;
 
-        public SerialReader(InputStream in) {
+        SerialReader(InputStream in) {
             this.in = in;
         }
 
