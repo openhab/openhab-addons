@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 
-import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
+import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ public class FritzAhaSetSwitchCallback extends FritzAhaReauthCallback {
      * @param ain AIN of the device that should be switched
      * @param switchOn true - switch on, false - switch off
      */
-    public FritzAhaSetSwitchCallback(FritzahaWebInterface webIface, String ain, boolean switchOn) {
+    public FritzAhaSetSwitchCallback(FritzAhaWebInterface webIface, String ain, boolean switchOn) {
         super(WEBSERVICE_PATH, "ain=" + ain + "&switchcmd=" + (switchOn ? "setswitchon" : "setswitchoff"), webIface,
                 Method.GET, 1);
         itemName = ain;

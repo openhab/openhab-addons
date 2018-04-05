@@ -12,11 +12,19 @@
 		<config-description-ref uri="bridge-type:avmfritz:fritzbox" />
 	</bridge-type>
 
-	<bridge-type id="fritzpowerline">
-		<label>FRITZ!Powerline</label>
-		<description>This bridge represents a FRITZ!Powerline.</description>
+	<bridge-type id="FRITZ_Powerline_546E_Solo">
+		<label>FRITZ!Powerline 546E</label>
+		<description>FRITZ!Powerline 546E with switchable outlet in stand-alone mode.</description>
+
+		<channels>
+			<channel id="mode" typeId="mode" />
+			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
+			<channel id="energy" typeId="energy" />
+			<channel id="power" typeId="power" />
+			<channel id="outlet" typeId="outlet" />
+		</channels>
 
 		<config-description-ref uri="bridge-type:avmfritz:fritzpowerline" />
 	</bridge-type>
-
 </thing:thing-descriptions>

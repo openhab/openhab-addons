@@ -19,10 +19,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * See {@link DevicelistModel}.
- * 
+ *
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
  *         DECT
- * 
  */
 @XmlRootElement(name = "hkr")
 @XmlType(propOrder = { "tist", "tsoll", "absenk", "komfort", "lock", "devicelock", "errorcode", "batterylow",
@@ -148,6 +147,7 @@ public class HeatingModel {
         this.nextchange = nextchange;
     }
 
+    @Override
     public String toString() {
         return new ToStringBuilder(this).append("tist", getTist()).append("tsoll", getTsoll())
                 .append("absenk", getAbsenk()).append("komfort", getKomfort()).append("lock", getLock())
@@ -177,7 +177,7 @@ public class HeatingModel {
         return TEMP_FACTOR.multiply(fritzValue);
     }
 
-    @XmlType(name = "", propOrder = { "endperiod", "tchange" })
+    @XmlType(propOrder = { "endperiod", "tchange" })
     public static class Nextchange {
 
         private int endperiod;
@@ -199,10 +199,10 @@ public class HeatingModel {
             this.tchange = tchange;
         }
 
+        @Override
         public String toString() {
             return new ToStringBuilder(this).append("endperiod", getEndperiod()).append("tchange", getTchange())
                     .toString();
         }
-
     }
 }

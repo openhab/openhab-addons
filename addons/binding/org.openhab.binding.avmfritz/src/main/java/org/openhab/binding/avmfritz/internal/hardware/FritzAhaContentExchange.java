@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author Robert Bausdorf
  *
  */
-public class FritzahaContentExchange extends BufferingResponseListener
+public class FritzAhaContentExchange extends BufferingResponseListener
         implements SuccessListener, FailureListener, ContentListener, CompleteListener {
     /**
      * logger
@@ -42,7 +42,7 @@ public class FritzahaContentExchange extends BufferingResponseListener
      *
      * @param callback Callback which execute method has to be called.
      */
-    public FritzahaContentExchange(FritzAhaCallback callback) {
+    public FritzAhaContentExchange(FritzAhaCallback callback) {
         this.callback = callback;
     }
 

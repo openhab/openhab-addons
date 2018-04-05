@@ -12,21 +12,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 
 /**
- * Handler for a FRITZ! device. Handles commands, which are sent to one of the channels.
+ * Handler for a FRITZ! group. Handles commands, which are sent to one of the channels.
  *
- * @author Robert Bausdorf - Initial contribution
- * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
- * @author Christoph Weitkamp - Added support for groups
+ * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-public class DeviceHandler extends AVMFritzBaseThingHandler {
+public class GroupHandler extends AVMFritzBaseThingHandler {
 
     /**
      * Constructor
      *
-     * @param thing Thing object representing a FRITZ! device
+     * @param thing Thing object representing a FRITZ! group
      */
-    public DeviceHandler(Thing thing) {
+    public GroupHandler(Thing thing) {
         super(thing);
     }
 }

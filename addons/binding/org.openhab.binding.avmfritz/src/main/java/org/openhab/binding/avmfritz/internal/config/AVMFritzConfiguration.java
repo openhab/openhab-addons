@@ -16,7 +16,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author Robert Bausdorf
  *
  */
-public class AvmFritzConfiguration {
+public class AVMFritzConfiguration {
 
     private String ipAddress;
     private Integer port;
