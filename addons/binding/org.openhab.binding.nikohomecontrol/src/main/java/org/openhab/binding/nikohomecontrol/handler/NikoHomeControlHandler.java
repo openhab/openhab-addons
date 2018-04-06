@@ -202,23 +202,29 @@ public class NikoHomeControlHandler extends BaseThingHandler {
     private void handleRollershutterCommand(NhcAction nhcAction, Command command) {
         Configuration config = this.getConfig();
         boolean invert = (boolean) config.get(CONFIG_INVERT);
-        logger.trace("handleRollerShutterCommand: rollershutter {} command {}", config.get(CONFIG_ACTION_ID), command);
-        logger.trace("handleRollerShutterCommand: rollershutter {} invert flag {}", config.get(CONFIG_ACTION_ID),
-                invert);
-        logger.trace("handleRollerShutterCommand: rollershutter {}, current position {}", config.get(CONFIG_ACTION_ID),
-                nhcAction.getState());
+        if (logger.isTraceEnabled()) {
+            String actionId = (String) config.get(CONFIG_ACTION_ID);
+            logger.trace("handleRollerShutterCommand: rollershutter {} command {}", actionId, command);
+            logger.trace("handleRollerShutterCommand: rollershutter {} invert flag {}", actionId, invert);
+            logger.trace("handleRollerShutterCommand: rollershutter {}, current position {}", actionId,
+                    nhcAction.getState());
+        }
 
         // first stop all current movement of rollershutter and wait until exact position is known
         if (this.rollershutterMoving) {
-            logger.trace("handleRollerShutterCommand: rollershutter {} moving, therefore stop",
-                    config.get(CONFIG_ACTION_ID));
+            if (logger.isTraceEnabled()) {
+                logger.trace("handleRollerShutterCommand: rollershutter {} moving, therefore stop",
+                        config.get(CONFIG_ACTION_ID));
+            }
             rollershutterPositionStop(nhcAction);
         }
 
         // task to be executed once exact position received from Niko Home Control
         this.rollershutterTask = () -> {
-            logger.trace("handleRollerShutterCommand: rollershutter {} task running",
-                    this.getConfig().get(CONFIG_ACTION_ID));
+            if (logger.isTraceEnabled()) {
+                logger.trace("handleRollerShutterCommand: rollershutter {} task running",
+                        this.getConfig().get(CONFIG_ACTION_ID));
+            }
 
             int currentValue = nhcAction.getState();
 
@@ -234,9 +240,11 @@ public class NikoHomeControlHandler extends BaseThingHandler {
             } else if (command instanceof PercentType) {
                 int commandValue = ((PercentType) command).intValue();
                 int newValue = invert ? invertRollershutter(commandValue) : commandValue;
-                logger.trace(
-                        "handleRollerShutterCommand: rollershutter {} percent command, current {}, command {}, invert {}, new {}",
-                        config.get(CONFIG_ACTION_ID), currentValue, commandValue, invert, newValue);
+                if (logger.isTraceEnabled()) {
+                    logger.trace(
+                            "handleRollerShutterCommand: rollershutter {} percent command, current {}, command {}, invert {}, new {}",
+                            config.get(CONFIG_ACTION_ID), currentValue, commandValue, invert, newValue);
+                }
                 if (currentValue == newValue) {
                     return;
                 }
@@ -253,8 +261,10 @@ public class NikoHomeControlHandler extends BaseThingHandler {
 
         // execute immediately if not waiting for exact position
         if (!this.waitForEvent) {
-            logger.trace("handleRollerShutterCommand: rollershutter {} task executing immediately",
-                    this.getConfig().get(CONFIG_ACTION_ID));
+            if (logger.isTraceEnabled()) {
+                logger.trace("handleRollerShutterCommand: rollershutter {} task executing immediately",
+                        this.getConfig().get(CONFIG_ACTION_ID));
+            }
             executeRollershutterTask();
         }
     }
@@ -267,7 +277,10 @@ public class NikoHomeControlHandler extends BaseThingHandler {
      *
      */
     private void rollershutterPositionStop(NhcAction nhcAction) {
-        logger.trace("rollershutterPositionStop: rollershutter {} executing", this.getConfig().get(CONFIG_ACTION_ID));
+        if (logger.isTraceEnabled()) {
+            logger.trace("rollershutterPositionStop: rollershutter {} executing",
+                    this.getConfig().get(CONFIG_ACTION_ID));
+        }
         cancelRollershutterStop();
         this.rollershutterTask = null;
         this.filterEvent = false;
@@ -276,8 +289,10 @@ public class NikoHomeControlHandler extends BaseThingHandler {
     }
 
     private void executeRollershutterTask() {
-        logger.trace("executeRollershutterTask: rollershutter {} task triggered",
-                this.getConfig().get(CONFIG_ACTION_ID));
+        if (logger.isTraceEnabled()) {
+            logger.trace("executeRollershutterTask: rollershutter {} task triggered",
+                    this.getConfig().get(CONFIG_ACTION_ID));
+        }
         this.waitForEvent = false;
 
         if (this.rollershutterTask != null) {
@@ -303,8 +318,10 @@ public class NikoHomeControlHandler extends BaseThingHandler {
         long duration = rollershutterMoveTime(nhcAction, currentValue, newValue);
         setRollershutterMovingTrue(nhcAction, duration);
 
-        logger.trace("scheduleRollershutterStop: schedule rollershutter {} stop in {}ms",
-                this.getConfig().get(CONFIG_ACTION_ID), duration);
+        if (logger.isTraceEnabled()) {
+            logger.trace("scheduleRollershutterStop: schedule rollershutter {} stop in {}ms",
+                    this.getConfig().get(CONFIG_ACTION_ID), duration);
+        }
         this.rollershutterStopTask = scheduler.schedule(() -> {
             logger.trace("scheduleRollershutterStop: run rollershutter {} stop",
                     this.getConfig().get(CONFIG_ACTION_ID));
@@ -315,8 +332,10 @@ public class NikoHomeControlHandler extends BaseThingHandler {
     private void cancelRollershutterStop() {
         ScheduledFuture<?> stopTask = this.rollershutterStopTask;
         if (stopTask != null) {
-            logger.trace("cancelRollershutterStop: cancel rollershutter {} stop",
-                    this.getConfig().get(CONFIG_ACTION_ID));
+            if (logger.isTraceEnabled()) {
+                logger.trace("cancelRollershutterStop: cancel rollershutter {} stop",
+                        this.getConfig().get(CONFIG_ACTION_ID));
+            }
             stopTask.cancel(true);
         }
         this.rollershutterStopTask = null;
@@ -325,18 +344,24 @@ public class NikoHomeControlHandler extends BaseThingHandler {
     }
 
     private void setRollershutterMovingTrue(NhcAction nhcAction, long duration) {
-        logger.trace("setRollershutterMovingTrue: rollershutter {} moving", this.getConfig().get(CONFIG_ACTION_ID));
+        if (logger.isTraceEnabled()) {
+            logger.trace("setRollershutterMovingTrue: rollershutter {} moving", this.getConfig().get(CONFIG_ACTION_ID));
+        }
         this.rollershutterMoving = true;
         this.rollershutterMovingFlagTask = scheduler.schedule(() -> {
-            logger.trace("setRollershutterMovingTrue: rollershutter {} stopped moving",
-                    this.getConfig().get(CONFIG_ACTION_ID));
+            if (logger.isTraceEnabled()) {
+                logger.trace("setRollershutterMovingTrue: rollershutter {} stopped moving",
+                        this.getConfig().get(CONFIG_ACTION_ID));
+            }
             this.rollershutterMoving = false;
         }, duration, TimeUnit.MILLISECONDS);
     }
 
     private void setRollershutterMovingFalse() {
-        logger.trace("setRollershutterMovingFalse: rollershutter {} not moving",
-                this.getConfig().get(CONFIG_ACTION_ID));
+        if (logger.isTraceEnabled()) {
+            logger.trace("setRollershutterMovingFalse: rollershutter {} not moving",
+                    this.getConfig().get(CONFIG_ACTION_ID));
+        }
         this.rollershutterMoving = false;
         if (this.rollershutterMovingFlagTask != null) {
             this.rollershutterMovingFlagTask.cancel(true);
@@ -347,8 +372,10 @@ public class NikoHomeControlHandler extends BaseThingHandler {
     private long rollershutterMoveTime(NhcAction nhcAction, int currentValue, int newValue) {
         int totalTime = (newValue > currentValue) ? nhcAction.getCloseTime() : nhcAction.getOpenTime();
         long duration = Math.abs(newValue - currentValue) * totalTime * 10;
-        logger.trace("rollershutterMoveTime: rollershutter {} move time {}", this.getConfig().get(CONFIG_ACTION_ID),
-                duration);
+        if (logger.isTraceEnabled()) {
+            logger.trace("rollershutterMoveTime: rollershutter {} move time {}", this.getConfig().get(CONFIG_ACTION_ID),
+                    duration);
+        }
         return duration;
     }
 
