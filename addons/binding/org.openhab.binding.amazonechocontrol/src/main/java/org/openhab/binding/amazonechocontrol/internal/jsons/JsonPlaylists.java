@@ -10,18 +10,22 @@ package org.openhab.binding.amazonechocontrol.internal.jsons;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link JsonPlayerState} encapsulate the GSON data of playlist query
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class JsonPlaylists {
 
-    public Map<String, PlayList[]> playlists;
+    public @Nullable Map<String, @Nullable PlayList @Nullable []> playlists;
 
     public class PlayList {
-        public String playlistId;
-        public String title;
+        public @Nullable String playlistId;
+        public @Nullable String title;
         public int trackCount;
         public int version;
     }

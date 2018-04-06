@@ -8,12 +8,16 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link JsonNetworkDetails} encapsulate the GSON data of a network query
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class JsonNetworkDetails {
-    public String networkDetail;
+    public @Nullable String networkDetail;
 
 }

@@ -10,30 +10,34 @@ package org.openhab.binding.amazonechocontrol.internal.jsons;
 
 import java.util.TreeMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link JsonAutomation} encapsulate the GSON data of automation query
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class JsonAutomation {
-    public String automationId;
-    public String name;
-    public Trigger[] triggers;
-    public TreeMap<String, Object> sequence;
-    public String status;
+    public @Nullable String automationId;
+    public @Nullable String name;
+    public @Nullable Trigger @Nullable [] triggers;
+    public @Nullable TreeMap<String, @Nullable Object> sequence;
+    public @Nullable String status;
     public long creationTimeEpochMillis;
     public long lastUpdatedTimeEpochMillis;
 
     public class Trigger {
-        public Payload payload;
-        public String id;
-        public String type;
+        public @Nullable Payload payload;
+        public @Nullable String id;
+        public @Nullable String type;
     }
 
     public class Payload {
-        public String customerId;
-        public String utterance;
-        public String locale;
-        public String marketplaceId;
+        public @Nullable String customerId;
+        public @Nullable String utterance;
+        public @Nullable String locale;
+        public @Nullable String marketplaceId;
     }
 }

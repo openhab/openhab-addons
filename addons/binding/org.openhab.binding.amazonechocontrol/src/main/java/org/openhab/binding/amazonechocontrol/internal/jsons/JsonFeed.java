@@ -8,14 +8,18 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link JsonFeed} encapsulate the GSON data of feed
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class JsonFeed {
-    public Object feedId;
-    public String name;
-    public String skillId;
-    public String imageUrl;
+    public @Nullable Object feedId;
+    public @Nullable String name;
+    public @Nullable String skillId;
+    public @Nullable String imageUrl;
 }

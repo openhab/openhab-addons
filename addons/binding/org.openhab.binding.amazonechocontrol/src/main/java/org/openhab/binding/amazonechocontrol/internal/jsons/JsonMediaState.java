@@ -8,69 +8,73 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link JsonMediaState} encapsulate the GSON data of the current media state
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class JsonMediaState {
 
-    public String clientId;
-    public String contentId;
-    public String contentType;
-    public String currentState;
-    public String imageURL;
+    public @Nullable String clientId;
+    public @Nullable String contentId;
+    public @Nullable String contentType;
+    public @Nullable String currentState;
+    public @Nullable String imageURL;
     public boolean isDisliked;
     public boolean isLiked;
     public boolean looping;
-    public String mediaOwnerCustomerId;
+    public @Nullable String mediaOwnerCustomerId;
     public boolean muted;
-    public String programId;
+    public @Nullable String programId;
     public int progressSeconds;
-    public String providerId;
-    public QueueEntry[] queue;
-    public String queueId;
-    public Integer queueSize;
-    public String radioStationId;
+    public @Nullable String providerId;
+    public @Nullable QueueEntry @Nullable [] queue;
+    public @Nullable String queueId;
+    public @Nullable Integer queueSize;
+    public @Nullable String radioStationId;
     public int radioVariety;
-    public String referenceId;
-    public String service;
+    public @Nullable String referenceId;
+    public @Nullable String service;
     public boolean shuffling;
     // public long timeLastShuffled; parsing fails with some values, so do not use it
     public int volume;
 
     public class QueueEntry {
 
-        public String album;
-        public String albumAsin;
-        public String artist;
-        public String asin;
-        public String cardImageURL;
-        public String contentId;
-        public String contentType;
+        public @Nullable String album;
+        public @Nullable String albumAsin;
+        public @Nullable String artist;
+        public @Nullable String asin;
+        public @Nullable String cardImageURL;
+        public @Nullable String contentId;
+        public @Nullable String contentType;
         public int durationSeconds;
         public boolean feedbackDisabled;
-        public String historicalId;
-        public String imageURL;
+        public @Nullable String historicalId;
+        public @Nullable String imageURL;
         public int index;
         public boolean isAd;
         public boolean isDisliked;
         public boolean isFreeWithPrime;
         public boolean isLiked;
-        public String programId;
-        public String programName;
-        public String providerId;
-        public String queueId;
-        public String radioStationCallSign;
-        public String radioStationId;
-        public String radioStationLocation;
-        public String radioStationSlogan;
-        public String referenceId;
-        public String service;
-        public String startTime;
-        public String title;
-        public String trackId;
-        public String trackStatus;
+        public @Nullable String programId;
+        public @Nullable String programName;
+        public @Nullable String providerId;
+        public @Nullable String queueId;
+        public @Nullable String radioStationCallSign;
+        public @Nullable String radioStationId;
+        public @Nullable String radioStationLocation;
+        public @Nullable String radioStationSlogan;
+        public @Nullable String referenceId;
+        public @Nullable String service;
+        public @Nullable String startTime;
+        public @Nullable String title;
+        public @Nullable String trackId;
+        public @Nullable String trackStatus;
 
     }
 }

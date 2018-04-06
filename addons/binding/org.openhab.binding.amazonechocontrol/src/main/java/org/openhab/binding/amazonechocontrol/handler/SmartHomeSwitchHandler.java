@@ -13,6 +13,7 @@ import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingCons
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -23,6 +24,7 @@ import org.openhab.binding.amazonechocontrol.internal.Connection;
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class SmartHomeSwitchHandler extends SmartHomeBaseHandler {
 
     public SmartHomeSwitchHandler(Thing thing) {

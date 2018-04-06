@@ -8,15 +8,19 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link JsonNotificationSound} encapsulate the GSON data for a notification sound
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class JsonNotificationSound {
-    public String displayName;
-    public String folder;
-    public String id = "system_alerts_melodic_01";
-    public String providerId = "ECHO";
-    public String sampleUrl;
+    public @Nullable String displayName;
+    public @Nullable String folder;
+    public @Nullable String id = "system_alerts_melodic_01";
+    public @Nullable String providerId = "ECHO";
+    public @Nullable String sampleUrl;
 }

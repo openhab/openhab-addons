@@ -8,13 +8,17 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link JsonStartRoutineRequest} encapsulate the GSON for starting a routine
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class JsonStartRoutineRequest {
-    public String behaviorId;
-    public String sequenceJson;
-    public String status = "ENABLED";
+    public @Nullable String behaviorId;
+    public @Nullable String sequenceJson;
+    public @Nullable String status = "ENABLED";
 }

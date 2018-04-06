@@ -8,26 +8,30 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link JsonNotificationRequest} encapsulate the GSON data for a notification request
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class JsonNotificationRequest {
-    public String type = "Reminder"; // "Reminder", "Alarm"
-    public String status = "ON";
+    public @Nullable String type = "Reminder"; // "Reminder", "Alarm"
+    public @Nullable String status = "ON";
     public long alarmTime;
-    public String originalTime;
-    public String originalDate;
-    public String timeZoneId;
-    public String reminderIndex;
-    public JsonNotificationSound sound;
-    public String deviceSerialNumber;
-    public String deviceType;
-    public String recurringPattern;
-    public String reminderLabel;
+    public @Nullable String originalTime;
+    public @Nullable String originalDate;
+    public @Nullable String timeZoneId;
+    public @Nullable String reminderIndex;
+    public @Nullable JsonNotificationSound sound;
+    public @Nullable String deviceSerialNumber;
+    public @Nullable String deviceType;
+    public @Nullable String recurringPattern;
+    public @Nullable String reminderLabel;
     public boolean isSaveInFlight = true;
-    public String id = "createReminder";
+    public @Nullable String id = "createReminder";
     public boolean isRecurring = false;
     public long createdDate;
 

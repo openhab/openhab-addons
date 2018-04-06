@@ -8,25 +8,29 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link JsonDevices} encapsulate the GSON data of device list
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class JsonDevices {
 
     public class Device {
-        public String accountName;
-        public String serialNumber;
-        public String deviceOwnerCustomerId;
-        public String deviceAccountId;
-        public String deviceFamily;
-        public String deviceType;
-        public String softwareVersion;
+        public @Nullable String accountName;
+        public @Nullable String serialNumber;
+        public @Nullable String deviceOwnerCustomerId;
+        public @Nullable String deviceAccountId;
+        public @Nullable String deviceFamily;
+        public @Nullable String deviceType;
+        public @Nullable String softwareVersion;
         public boolean online;
-        public String[] capabilities;
+        public @Nullable String @Nullable [] capabilities;
 
     }
 
-    public Device[] devices;
+    public @Nullable Device @Nullable [] devices;
 }

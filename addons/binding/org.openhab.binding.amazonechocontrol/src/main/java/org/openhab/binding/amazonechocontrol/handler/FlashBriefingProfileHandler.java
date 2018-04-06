@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -27,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.StateStorage;
 import org.openhab.binding.amazonechocontrol.internal.discovery.AmazonEchoDiscovery;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
@@ -38,12 +40,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class FlashBriefingProfileHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FlashBriefingProfileHandler.class);
     private static HashMap<ThingUID, FlashBriefingProfileHandler> instances = new HashMap<ThingUID, FlashBriefingProfileHandler>();
 
-    AccountHandler handler;
+    @Nullable
+    AccountHandler accountHandler;
     StateStorage stateStorage;
     boolean updatePlayOnDevice = true;
     String currentConfigurationJson = "";
@@ -54,8 +58,8 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
         stateStorage = new StateStorage(thing);
     }
 
-    public AccountHandler findAccountHandler() {
-        return this.handler;
+    public @Nullable AccountHandler findAccountHandler() {
+        return this.accountHandler;
     }
 
     public static @Nullable FlashBriefingProfileHandler find(ThingUID uid) {
@@ -82,7 +86,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
         synchronized (instances) {
             instances.put(this.getThing().getUID(), this);
         }
-        if (this.currentConfigurationJson != null && !this.currentConfigurationJson.isEmpty()) {
+        if (!this.currentConfigurationJson.isEmpty()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.UNKNOWN);
@@ -112,8 +116,8 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        AccountHandler temp = this.handler;
-        if (temp == null) {
+        AccountHandler accountHandler = this.accountHandler;
+        if (accountHandler == null) {
             return;
         }
         int waitForUpdate = -1;
@@ -132,15 +136,15 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
 
             if (channelId.equals(CHANNEL_SAVE)) {
                 if (command.equals(OnOffType.ON)) {
-                    saveCurrentProfile(temp);
+                    saveCurrentProfile(accountHandler);
                     waitForUpdate = 500;
                 }
             }
             if (channelId.equals(CHANNEL_ACTIVE)) {
                 if (command.equals(OnOffType.ON)) {
                     String currentConfigurationJson = this.currentConfigurationJson;
-                    if (currentConfigurationJson != null && !currentConfigurationJson.isEmpty()) {
-                        temp.setEnabledFlashBriefingsJson(currentConfigurationJson);
+                    if (!currentConfigurationJson.isEmpty()) {
+                        accountHandler.setEnabledFlashBriefingsJson(currentConfigurationJson);
 
                         updateState(CHANNEL_ACTIVE, OnOffType.ON);
                         waitForUpdate = 500;
@@ -151,21 +155,28 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
                 if (command instanceof StringType) {
                     String deviceSerialOrName = ((StringType) command).toFullString();
                     String currentConfigurationJson = this.currentConfigurationJson;
-                    if (currentConfigurationJson != null && !currentConfigurationJson.isEmpty()) {
+                    if (!currentConfigurationJson.isEmpty()) {
 
-                        String old = temp.getEnabledFlashBriefingsJson();
-                        temp.setEnabledFlashBriefingsJson(currentConfigurationJson);
+                        String old = accountHandler.getEnabledFlashBriefingsJson();
+                        accountHandler.setEnabledFlashBriefingsJson(currentConfigurationJson);
 
-                        Device device = temp.findDeviceJsonBySerialOrName(deviceSerialOrName);
+                        Device device = accountHandler.findDeviceJsonBySerialOrName(deviceSerialOrName);
                         if (device == null) {
                             logger.warn("Device '{}' not found", deviceSerialOrName);
                         } else {
-                            temp.findConnection().executeSequenceCommand(device, "Alexa.FlashBriefing.Play");
+                            @Nullable
+                            Connection connection = accountHandler.findConnection();
+                            if (connection == null) {
+                                logger.warn("Connection for '{}' not found",
+                                        accountHandler.getThing().getUID().getId());
+                            } else {
+                                connection.executeSequenceCommand(device, "Alexa.FlashBriefing.Play");
 
-                            scheduler.schedule(() -> temp.setEnabledFlashBriefingsJson(old), 1000,
-                                    TimeUnit.MILLISECONDS);
+                                scheduler.schedule(() -> accountHandler.setEnabledFlashBriefingsJson(old), 1000,
+                                        TimeUnit.MILLISECONDS);
 
-                            updateState(CHANNEL_ACTIVE, OnOffType.ON);
+                                updateState(CHANNEL_ACTIVE, OnOffType.ON);
+                            }
                         }
                         updatePlayOnDevice = true;
                         waitForUpdate = 1000;
@@ -177,7 +188,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
             logger.warn("Handle command failed {}", e);
         }
         if (waitForUpdate >= 0) {
-            this.updateStateJob = scheduler.schedule(() -> temp.updateFlashBriefingHandlers(), waitForUpdate,
+            this.updateStateJob = scheduler.schedule(() -> accountHandler.updateFlashBriefingHandlers(), waitForUpdate,
                     TimeUnit.MILLISECONDS);
         }
     }
@@ -188,9 +199,9 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
         if (updatePlayOnDevice) {
             updateState(CHANNEL_PLAY_ON_DEVICE, new StringType(""));
         }
-        if (this.handler != handler) {
+        if (this.accountHandler != handler) {
 
-            this.handler = handler;
+            this.accountHandler = handler;
             String configurationJson = this.stateStorage.findState("configurationJson");
             if (configurationJson == null || configurationJson.isEmpty()) {
                 this.currentConfigurationJson = saveCurrentProfile(handler);
@@ -199,7 +210,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
                 removeFromDiscovery();
                 this.currentConfigurationJson = configurationJson;
             }
-            if (this.currentConfigurationJson != null && !this.currentConfigurationJson.isEmpty()) {
+            if (!this.currentConfigurationJson.isEmpty()) {
                 updateStatus(ThingStatus.ONLINE);
 
             } else {

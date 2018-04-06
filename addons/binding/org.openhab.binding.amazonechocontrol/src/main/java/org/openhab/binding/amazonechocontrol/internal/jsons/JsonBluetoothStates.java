@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 
 /**
@@ -15,43 +17,45 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class JsonBluetoothStates {
 
-    public BluetoothState findStateByDevice(Device device) {
+    public @Nullable BluetoothState findStateByDevice(@Nullable Device device) {
         if (device == null) {
             return null;
         }
+        @Nullable
+        BluetoothState @Nullable [] bluetoothStates = this.bluetoothStates;
         if (bluetoothStates == null) {
             return null;
         }
         for (BluetoothState state : bluetoothStates) {
-            if (state.deviceSerialNumber != null && state.deviceSerialNumber.equals(device.serialNumber)) {
+            if (state != null && state.deviceSerialNumber != null
+                    && state.deviceSerialNumber.equals(device.serialNumber)) {
                 return state;
             }
         }
         return null;
     }
 
-    public BluetoothState[] bluetoothStates;
+    public @Nullable BluetoothState @Nullable [] bluetoothStates;
 
     public class PairedDevice {
-        public String address;
+        public @Nullable String address;
         public boolean connected;
-        public String deviceClass;
-        public String friendlyName;
-        // "profiles":[
-        // "AVRCP",
-        // "A2DP-SINK"
-        // ]
+        public @Nullable String deviceClass;
+        public @Nullable String friendlyName;
+        public @Nullable String @Nullable [] profiles;
+
     }
 
     public class BluetoothState {
-        public String deviceSerialNumber;
-        public String deviceType;
-        public String friendlyName;
+        public @Nullable String deviceSerialNumber;
+        public @Nullable String deviceType;
+        public @Nullable String friendlyName;
         public boolean gadgetPaired;
         public boolean online;
-        public PairedDevice[] pairedDeviceList;
+        public @Nullable PairedDevice @Nullable [] pairedDeviceList;
 
     }
 }

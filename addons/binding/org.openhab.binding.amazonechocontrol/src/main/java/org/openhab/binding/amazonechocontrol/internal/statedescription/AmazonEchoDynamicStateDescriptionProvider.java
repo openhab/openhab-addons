@@ -70,13 +70,17 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 return originalStateDescription;
             }
 
-            if (bluetoothState.pairedDeviceList == null) {
+            PairedDevice[] pairedDeviceList = bluetoothState.pairedDeviceList;
+            if (pairedDeviceList == null) {
                 return originalStateDescription;
             }
 
             ArrayList<StateOption> options = new ArrayList<StateOption>();
             options.add(new StateOption("", ""));
-            for (PairedDevice device : bluetoothState.pairedDeviceList) {
+            for (PairedDevice device : pairedDeviceList) {
+                if (device == null) {
+                    continue;
+                }
                 if (device.address != null && device.friendlyName != null) {
                     options.add(new StateOption(device.address, device.friendlyName));
                 }
@@ -111,7 +115,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             options.add(new StateOption("", ""));
             if (playLists.playlists != null) {
                 for (PlayList[] innerLists : playLists.playlists.values()) {
-                    if (innerLists.length > 0) {
+                    if (innerLists != null && innerLists.length > 0) {
                         PlayList playList = innerLists[0];
                         if (playList.playlistId != null && playList.title != null) {
                             options.add(new StateOption(playList.playlistId,
@@ -148,18 +152,18 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             }
             ArrayList<StateOption> options = new ArrayList<StateOption>();
             options.add(new StateOption("", ""));
-            if (notificationSounds != null) {
-                for (JsonNotificationSound notificationSound : notificationSounds) {
 
-                    if (notificationSound.folder == null && notificationSound.providerId != null
-                            && notificationSound.id != null && notificationSound.displayName != null) {
-                        String providerSoundId = notificationSound.providerId + ":" + notificationSound.id;
-                        options.add(new StateOption(providerSoundId,
-                                String.format("%s [%s]", notificationSound.displayName, providerSoundId)));
+            for (JsonNotificationSound notificationSound : notificationSounds) {
 
-                    }
+                if (notificationSound.folder == null && notificationSound.providerId != null
+                        && notificationSound.id != null && notificationSound.displayName != null) {
+                    String providerSoundId = notificationSound.providerId + ":" + notificationSound.id;
+                    options.add(new StateOption(providerSoundId,
+                            String.format("%s [%s]", notificationSound.displayName, providerSoundId)));
+
                 }
             }
+
             StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
                     originalStateDescription.getMaximum(), originalStateDescription.getStep(),
                     originalStateDescription.getPattern(), originalStateDescription.isReadOnly(), options);

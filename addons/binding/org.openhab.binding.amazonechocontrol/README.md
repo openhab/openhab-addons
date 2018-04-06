@@ -1,6 +1,6 @@
 # Amazon Echo Control Binding
 
-This binding let control openHAB Amazon Echo devices (Alexa).
+This binding can control Amazon Echo devices (Alexa) from openhab.
 
 The idea for writing this binding came from this blog: http://blog.loetzimmer.de/2017/10/amazon-alexa-hort-auf-die-shell-echo.html (German). Thank you Alex!
 

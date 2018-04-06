@@ -8,11 +8,15 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link JsonNotificationSounds} encapsulate the GSON data for a notification sounds
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class JsonNotificationSounds {
-    public JsonNotificationSound[] notificationSounds;
+    public @Nullable JsonNotificationSound @Nullable [] notificationSounds;
 }

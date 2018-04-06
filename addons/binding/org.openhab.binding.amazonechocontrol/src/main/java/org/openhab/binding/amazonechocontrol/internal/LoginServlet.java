@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.handler.AccountHandler;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Geramb - Initial Contribution
  */
+@NonNullByDefault
 public class LoginServlet extends HttpServlet {
 
     private static final long serialVersionUID = -1453738923337413163L;
@@ -44,10 +47,10 @@ public class LoginServlet extends HttpServlet {
     HttpService httpService;
     String servletUrlWithoutRoot;
     String servletUrl;
-    Connection connection;
     AccountHandler account;
     AccountConfiguration configuration;
     String id;
+    Connection connection;
 
     public LoginServlet(HttpService httpService, String id, AccountHandler account,
             AccountConfiguration configuration) {
@@ -55,7 +58,7 @@ public class LoginServlet extends HttpServlet {
         this.account = account;
         this.id = id;
         this.configuration = configuration;
-        reCreateConnection();
+        this.connection = reCreateConnection();
         servletUrlWithoutRoot = "amazonechocontrol/" + id;
         servletUrl = "/" + servletUrlWithoutRoot;
         try {
@@ -69,9 +72,8 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    private void reCreateConnection() {
-        this.connection = new Connection(configuration.email, configuration.password, configuration.amazonSite,
-                this.id);
+    private Connection reCreateConnection() {
+        return new Connection(configuration.email, configuration.password, configuration.amazonSite, this.id);
     }
 
     public void dispose() {
@@ -80,7 +82,14 @@ public class LoginServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
+            throws ServletException, IOException {
+        if (req == null) {
+            return;
+        }
+        if (resp == null) {
+            return;
+        }
         resp.addHeader("content-type", "text/html;charset=UTF-8");
 
         Map<String, String[]> map = req.getParameterMap();
@@ -126,7 +135,14 @@ public class LoginServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
+            throws ServletException, IOException {
+        if (req == null) {
+            return;
+        }
+        if (resp == null) {
+            return;
+        }
         String uri = req.getRequestURI().substring(servletUrl.length());
         String queryString = req.getQueryString();
         if (queryString != null && queryString.length() > 0) {
@@ -176,8 +192,8 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    void HandleProxyRequest(HttpServletResponse resp, String verb, String url, String referer, String postData)
-            throws IOException {
+    void HandleProxyRequest(HttpServletResponse resp, String verb, String url, @Nullable String referer,
+            @Nullable String postData) throws IOException {
 
         HttpsURLConnection urlConnection;
         try {
@@ -192,7 +208,7 @@ public class LoginServlet extends HttpServlet {
                                             + BINDING_ID + ":" + THING_TYPE_ACCOUNT.getId() + ":" + id
                                             + "'>Check Thing in Paper UI</a></html>");
                             account.setConnection(this.connection);
-                            reCreateConnection();
+                            this.connection = reCreateConnection();
                             return;
                         }
                     }

@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.amazonechocontrol.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link HttpException} is used for http error codes
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class HttpException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

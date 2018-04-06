@@ -9,6 +9,7 @@
 
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -16,31 +17,32 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class JsonPlayerState {
-    public PlayerInfo playerInfo;
+    public @Nullable PlayerInfo playerInfo;
 
     public class PlayerInfo {
-        public String state;
+        public @Nullable String state;
         public @Nullable InfoText infoText;
         public @Nullable InfoText miniInfoText;
         public @Nullable Provider provider;
         public @Nullable Volume volume;
         public @Nullable MainArt mainArt;
 
-        public String queueId;
-        public String mediaId;
+        public @Nullable String queueId;
+        public @Nullable String mediaId;
 
         public class InfoText {
             public boolean multiLineMode;
-            public String subText1;
-            public String subText2;
-            public String title;
+            public @Nullable String subText1;
+            public @Nullable String subText2;
+            public @Nullable String title;
 
         }
 
         public class Provider {
-            public String providerDisplayName;
-            public String providerName;
+            public @Nullable String providerDisplayName;
+            public @Nullable String providerName;
         }
 
         public class Volume {
@@ -49,10 +51,10 @@ public class JsonPlayerState {
         }
 
         public class MainArt {
-            public String altText;
-            public String artType;
-            public String contentType;
-            public String url;
+            public @Nullable String altText;
+            public @Nullable String artType;
+            public @Nullable String contentType;
+            public @Nullable String url;
         }
 
     }

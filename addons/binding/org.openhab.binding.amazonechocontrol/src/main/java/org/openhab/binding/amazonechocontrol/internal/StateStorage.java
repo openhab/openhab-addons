@@ -14,6 +14,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants;
@@ -25,12 +28,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Geramb - Initial Contribution
  */
+@NonNullByDefault
 public class StateStorage {
 
     private final Logger logger = LoggerFactory.getLogger(StateStorage.class);
 
     File propertyFile;
     Thing thing;
+    @Nullable
     Properties properties;
 
     public StateStorage(Thing thing) {
@@ -40,13 +45,13 @@ public class StateStorage {
                         + File.separator + thing.getUID().getAsString().replace(':', '_') + ".properties");
     }
 
-    public void storeState(String key, String value) {
+    public void storeState(@Nullable String key, @Nullable String value) {
         synchronized (this) {
             if (key == null) {
                 return;
             }
-            initProperties();
-            if (value == null || value.isEmpty()) {
+            Properties properties = initProperties();
+            if (StringUtils.isEmpty(value)) {
                 properties.remove(key);
             } else {
                 properties.setProperty(key, value);
@@ -57,15 +62,14 @@ public class StateStorage {
         }
     }
 
-    @SuppressWarnings("null")
-    public String findState(String key) {
+    public @Nullable String findState(String key) {
         synchronized (this) {
-            initProperties();
+            Properties properties = initProperties();
             Object value = properties.get(key);
             if (value == null) {
                 // upgrade from BETA 9 configuration
                 String oldValue = thing.getProperties().get(key);
-                if (oldValue != null && !oldValue.isEmpty()) {
+                if (StringUtils.isNotEmpty(oldValue)) {
                     value = oldValue;
                     storeState(key, oldValue);
                 }
@@ -80,6 +84,7 @@ public class StateStorage {
     private void saveProperties() {
 
         try {
+            Properties properties = initProperties();
             logger.debug("Create file {}.", propertyFile);
             String directoryName = propertyFile.getParent();
             File directory = new File(directoryName);
@@ -96,20 +101,24 @@ public class StateStorage {
 
     }
 
-    private void initProperties() {
-        if (properties == null) {
-            Properties p = new Properties();
-
-            if (propertyFile.exists()) {
-                try {
-                    FileReader fileReader = new FileReader(propertyFile);
-                    p.load(fileReader);
-                    fileReader.close();
-                } catch (IOException e) {
-                    logger.error("Error occured on writing the property file.", e);
-                }
-            }
-            properties = p;
+    private Properties initProperties() {
+        if (properties != null) {
+            return properties;
         }
+
+        Properties p = new Properties();
+
+        if (propertyFile.exists()) {
+            try {
+                FileReader fileReader = new FileReader(propertyFile);
+                p.load(fileReader);
+                fileReader.close();
+            } catch (IOException e) {
+                logger.error("Error occured on writing the property file.", e);
+            }
+        }
+        properties = p;
+        return p;
+
     }
 }

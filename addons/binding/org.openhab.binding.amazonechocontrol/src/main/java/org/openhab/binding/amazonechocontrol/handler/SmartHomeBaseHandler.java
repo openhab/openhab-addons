@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -32,14 +32,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public abstract class SmartHomeBaseHandler extends BaseThingHandler {
 
-    private static HashMap<ThingUID, SmartHomeBaseHandler> instances = new HashMap<ThingUID, SmartHomeBaseHandler>();
+    private final static HashMap<ThingUID, SmartHomeBaseHandler> instances = new HashMap<ThingUID, SmartHomeBaseHandler>();
     private final Logger logger = LoggerFactory.getLogger(SmartHomeBaseHandler.class);
 
-    private Connection connection;
+    private @Nullable Connection connection;
 
-    protected Connection findConnection() {
+    protected @Nullable Connection findConnection() {
         return this.connection;
     }
 
@@ -68,7 +69,7 @@ public abstract class SmartHomeBaseHandler extends BaseThingHandler {
         }
     }
 
-    public void initialize(@NonNull Connection connection) {
+    public void initialize(Connection connection) {
         this.connection = connection;
         updateStatus(ThingStatus.ONLINE);
     }

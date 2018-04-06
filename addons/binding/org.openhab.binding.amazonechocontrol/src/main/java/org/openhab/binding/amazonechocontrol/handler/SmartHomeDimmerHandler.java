@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Locale;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -27,13 +28,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class SmartHomeDimmerHandler extends SmartHomeBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SmartHomeDimmerHandler.class);
 
     public SmartHomeDimmerHandler(Thing thing) {
         super(thing);
-
     }
 
     @Override

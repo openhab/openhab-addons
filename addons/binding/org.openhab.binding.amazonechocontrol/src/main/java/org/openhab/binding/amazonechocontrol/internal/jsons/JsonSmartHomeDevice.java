@@ -8,14 +8,18 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link JsonSmartHomeDevice} encapsulate the GSON-part data of a network query
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class JsonSmartHomeDevice {
-    public String entityId;
-    public String friendlyName;
-    public String[] actions;
-    public String manufacturerName;
+    public @Nullable String entityId;
+    public @Nullable String friendlyName;
+    public @Nullable String @Nullable [] actions;
+    public @Nullable String manufacturerName;
 }
