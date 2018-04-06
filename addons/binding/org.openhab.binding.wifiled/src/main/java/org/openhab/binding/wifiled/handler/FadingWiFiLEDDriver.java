@@ -45,7 +45,7 @@ public class FadingWiFiLEDDriver extends AbstractWiFiLEDDriver {
     private static final InternalLedState BLACK_STATE = new InternalLedState();
 
     private boolean power = false;
-    private InternalLedState currentState = new InternalLedState(); // USe to not update the controller with the same
+    private InternalLedState currentState = new InternalLedState(); // Use to not update the controller with the same
                                                                     // value
     private InternalLedState currentFaderState = new InternalLedState();
     private InternalLedState targetState = new InternalLedState();
