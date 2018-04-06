@@ -13,16 +13,12 @@ import org.openhab.binding.pioneeravr.protocol.AvrCommand;
 /**
  * A simple command without parameters.
  *
- * @author Antoine Besnard
- *
+ * @author Antoine Besnard - Initial contribution
  */
 public class SimpleCommand implements AvrCommand {
 
     /**
      * List of the simple command types.
-     *
-     * @author Antoine Besnard
-     *
      */
     public enum SimpleCommandType implements AvrCommand.CommandType {
 

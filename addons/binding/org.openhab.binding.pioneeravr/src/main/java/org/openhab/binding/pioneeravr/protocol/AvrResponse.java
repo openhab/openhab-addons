@@ -13,16 +13,12 @@ import org.openhab.binding.pioneeravr.internal.protocol.Response.ResponseType;
 /**
  * Represent a response of the AVR.
  *
- * @author Antoine Besnard
- *
+ * @author Antoine Besnard - Initial contribution
  */
 public interface AvrResponse {
 
     /**
      * Represent the type of a response.
-     *
-     * @author Antoine Besnard
-     *
      */
     public interface AvrResponseType {
 
