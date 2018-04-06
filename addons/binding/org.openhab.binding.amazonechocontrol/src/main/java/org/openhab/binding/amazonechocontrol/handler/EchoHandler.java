@@ -437,18 +437,18 @@ public class EchoHandler extends BaseThingHandler {
     }
 
     private void stopCurrentNotification() {
-        ScheduledFuture<?> tempCurrentNotifcationUpdateTimer = currentNotifcationUpdateTimer;
-        if (tempCurrentNotifcationUpdateTimer != null) {
-            currentNotifcationUpdateTimer = null;
-            tempCurrentNotifcationUpdateTimer.cancel(true);
+        ScheduledFuture<?> currentNotifcationUpdateTimer = this.currentNotifcationUpdateTimer;
+        if (currentNotifcationUpdateTimer != null) {
+            this.currentNotifcationUpdateTimer = null;
+            currentNotifcationUpdateTimer.cancel(true);
         }
-        JsonNotificationResponse tempCurrentNotification = currentNotification;
-        if (tempCurrentNotification != null) {
-            currentNotification = null;
-            Connection tempConnection = this.connection;
-            if (tempConnection != null) {
+        JsonNotificationResponse currentNotification = this.currentNotification;
+        if (currentNotification != null) {
+            this.currentNotification = null;
+            Connection currentConnection = this.connection;
+            if (currentConnection != null) {
                 try {
-                    tempConnection.stopNotification(tempCurrentNotification);
+                    currentConnection.stopNotification(currentNotification);
                 } catch (IOException | URISyntaxException e) {
                     logger.warn("Stop notification failed: {}", e);
                 }
@@ -458,12 +458,12 @@ public class EchoHandler extends BaseThingHandler {
 
     private void updateNotificationTimerState() {
         boolean stopCurrentNotifcation = true;
-        JsonNotificationResponse tempCurrentNotification = currentNotification;
+        JsonNotificationResponse currentNotification = this.currentNotification;
         try {
-            if (tempCurrentNotification != null) {
-                Connection tempConnection = connection;
-                if (tempConnection != null) {
-                    JsonNotificationResponse newState = tempConnection.getNotificationState(tempCurrentNotification);
+            if (currentNotification != null) {
+                Connection currentConnection = connection;
+                if (currentConnection != null) {
+                    JsonNotificationResponse newState = currentConnection.getNotificationState(currentNotification);
                     if (newState.status != null && newState.status.equals("ON")) {
                         stopCurrentNotifcation = false;
                     }
@@ -474,8 +474,8 @@ public class EchoHandler extends BaseThingHandler {
         }
         if (stopCurrentNotifcation) {
 
-            if (tempCurrentNotification != null) {
-                String type = tempCurrentNotification.type;
+            if (currentNotification != null) {
+                String type = currentNotification.type;
                 if (type != null) {
                     if (type.equals("Reminder")) {
                         updateState(CHANNEL_REMIND, new StringType(""));

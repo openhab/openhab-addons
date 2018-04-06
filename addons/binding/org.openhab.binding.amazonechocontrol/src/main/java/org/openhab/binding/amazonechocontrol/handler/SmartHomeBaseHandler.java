@@ -92,8 +92,8 @@ public abstract class SmartHomeBaseHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        Connection temp = findConnection();
-        if (temp == null) {
+        Connection connection = findConnection();
+        if (connection == null) {
             return;
         }
         String entityId = findEntityId();
@@ -102,7 +102,7 @@ public abstract class SmartHomeBaseHandler extends BaseThingHandler {
         }
         String channelId = channelUID.getId();
         try {
-            handleCommand(temp, entityId, channelId, command);
+            handleCommand(connection, entityId, channelId, command);
         } catch (IOException | URISyntaxException e) {
             logger.warn("handle command {} for {} failed", command, channelUID, e);
         }
