@@ -15,9 +15,8 @@ import org.openhab.binding.pioneeravr.protocol.AvrConnection;
 
 /**
  * An handler of an AVR connected through a serial port.
- * 
- * @author Antoine Besnard
  *
+ * @author Antoine Besnard - Initial contribution
  */
 public class SerialAvrHandler extends AbstractAvrHandler {
 

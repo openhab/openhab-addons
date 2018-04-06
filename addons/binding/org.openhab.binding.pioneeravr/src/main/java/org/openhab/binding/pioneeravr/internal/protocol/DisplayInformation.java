@@ -15,17 +15,15 @@ import org.slf4j.LoggerFactory;
  * Represents the display status message send by the Pioneer AV receiver
  * (response to "?FL" request)
  *
- * @author Rainer Ostendorf
- *
+ * @author Rainer Ostendorf - Initial contribution
  */
-
 public class DisplayInformation {
 
-    Boolean volumeDisplay; // 1-light, 0-OFF
-    Boolean guidIcon; // 1-light, 0-OFF
-    String infoText = ""; // the actual display text
-
     private final Logger logger = LoggerFactory.getLogger(DisplayInformation.class);
+
+    private Boolean volumeDisplay; // 1-light, 0-OFF
+    private Boolean guidIcon; // 1-light, 0-OFF
+    private String infoText = ""; // the actual display text
 
     /**
      * parse the display status text send from the receiver
@@ -35,7 +33,6 @@ public class DisplayInformation {
      * @return
      */
     public DisplayInformation(String responsePayload) {
-
         volumeDisplay = false;
         guidIcon = false;
         infoText = "";

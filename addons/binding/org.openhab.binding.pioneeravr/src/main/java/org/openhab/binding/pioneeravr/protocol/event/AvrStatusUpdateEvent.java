@@ -12,8 +12,8 @@ import org.openhab.binding.pioneeravr.protocol.AvrConnection;
 
 /**
  * The event fired when a status is received from the AVR.
- * 
- * @author Antoine Besnard
+ *
+ * @author Antoine Besnard - Initial contribution
  */
 public class AvrStatusUpdateEvent {
 

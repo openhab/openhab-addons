@@ -15,9 +15,8 @@ import org.openhab.binding.pioneeravr.protocol.AvrConnection;
 
 /**
  * An handler of an AVR connected through an IP connection.
- * 
- * @author Antoine Besnard
  *
+ * @author Antoine Besnard - Initial contribution
  */
 public class IpAvrHandler extends AbstractAvrHandler {
 

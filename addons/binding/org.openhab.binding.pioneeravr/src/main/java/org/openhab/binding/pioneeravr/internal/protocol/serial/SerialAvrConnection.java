@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.pioneeravr.internal.protocol.serial;
 
-import gnu.io.NRSerialPort;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,11 +16,12 @@ import org.openhab.binding.pioneeravr.internal.protocol.StreamAvrConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gnu.io.NRSerialPort;
+
 /**
- * 
  * A class that wraps the communication to a Pioneer AVR devices through a serial port
- * 
- * @author Antoine Besnard
+ *
+ * @author Antoine Besnard - Initial contribution
  */
 public class SerialAvrConnection extends StreamAvrConnection {
 
@@ -41,7 +40,6 @@ public class SerialAvrConnection extends StreamAvrConnection {
     @Override
     protected void openConnection() throws IOException {
         if (isPortNameExist(portName)) {
-
             serialPort = new NRSerialPort(portName, LINK_SPEED);
 
             boolean isConnected = serialPort.connect();
@@ -59,7 +57,7 @@ public class SerialAvrConnection extends StreamAvrConnection {
 
     /**
      * Check if the Serial with the given name exist.
-     * 
+     *
      * @param portName
      * @return
      */

@@ -15,8 +15,7 @@ import org.openhab.binding.pioneeravr.protocol.event.AvrUpdateListener;
 /**
  * Represent a connection to a remote Pioneer AVR.
  *
- * @author Antoine Besnard
- *
+ * @author Antoine Besnard - Initial contribution
  */
 public interface AvrConnection {
 

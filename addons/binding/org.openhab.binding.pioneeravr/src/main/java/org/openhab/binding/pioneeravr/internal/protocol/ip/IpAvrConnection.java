@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  *
  * A class that wraps the communication to a Pioneer AVR devices using an IP connection.
  *
- * @author Antoine Besnard
+ * @author Antoine Besnard - Initial contribution
  */
 public class IpAvrConnection extends StreamAvrConnection {
 

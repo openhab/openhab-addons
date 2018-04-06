@@ -16,12 +16,14 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant;
+import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.pioneeravr.PioneerAvrBindingConstants;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,12 +33,12 @@ import com.google.common.collect.Collections2;
 /**
  * An UpnpDiscoveryParticipant which allows to discover Pioneer AVRs.
  *
- * @author Antoine Besnard
- *
+ * @author Antoine Besnard - Initial contribution
  */
+@Component(immediate = true)
 public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
-    private Logger logger = LoggerFactory.getLogger(PioneerAvrDiscoveryParticipant.class);
+    private final Logger logger = LoggerFactory.getLogger(PioneerAvrDiscoveryParticipant.class);
 
     private boolean isAutoDiscoveryEnabled;
     private Set<ThingTypeUID> supportedThingTypes;
@@ -51,6 +53,7 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
      *
      * @param componentContext
      */
+    @Activate
     protected void activate(ComponentContext componentContext) {
         if (componentContext.getProperties() != null) {
             String autoDiscoveryPropertyValue = (String) componentContext.getProperties().get("enableAutoDiscovery");
@@ -59,7 +62,7 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
             }
         }
         supportedThingTypes = isAutoDiscoveryEnabled ? PioneerAvrBindingConstants.SUPPORTED_THING_TYPES_UIDS
-                : new HashSet<ThingTypeUID>();
+                : new HashSet<>();
     }
 
     @Override
@@ -72,7 +75,6 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
         DiscoveryResult result = null;
         ThingUID thingUid = getThingUID(device);
         if (thingUid != null) {
-
             String label = StringUtils.isEmpty(device.getDetails().getFriendlyName()) ? device.getDisplayString()
                     : device.getDetails().getFriendlyName();
             Map<String, Object> properties = new HashMap<>(2, 1);
@@ -90,7 +92,6 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
     public ThingUID getThingUID(RemoteDevice device) {
         ThingUID result = null;
         if (isAutoDiscoveryEnabled) {
-
             if (StringUtils.containsIgnoreCase(device.getDetails().getManufacturerDetails().getManufacturer(),
                     PioneerAvrBindingConstants.MANUFACTURER)) {
                 logger.debug("Manufacturer matched: search: {}, device value: {}.",

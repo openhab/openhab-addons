@@ -10,8 +10,8 @@ package org.openhab.binding.pioneeravr.protocol;
 
 /**
  * Thrown when a command type is not supported by the channel
- * 
- * @author Antoine Besnard
+ *
+ * @author Antoine Besnard - Initial contribution
  */
 public class CommandTypeNotSupportedException extends Exception {
 

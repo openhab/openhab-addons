@@ -18,16 +18,12 @@ import org.openhab.binding.pioneeravr.protocol.AvrResponse;
 /**
  * Represent an AVR response.
  *
- * @author Antoine Besnard
- *
+ * @author Antoine Besnard - Initial contribution
  */
 public class Response implements AvrResponse {
 
     /**
      * List of all supported responses coming from AVR.
-     *
-     * @author Antoine Besnard
-     *
      */
     public enum ResponseType implements AvrResponse.AvrResponseType {
         POWER_STATE("[0-2]", "PWR", "APR", "BPR", "ZEP"),
