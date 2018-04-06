@@ -287,6 +287,10 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
             logger.warn("No key set in the gateway settings. Edit it in the configuration.");
             return "";
         }
+        if (gatewayToken == null) {
+            logger.warn("No token received from the gateway yet. Unable to encrypt the access key.");
+            return "";
+        }
         key = CRYPTER.encrypt(gatewayToken, key);
         return key;
     }
