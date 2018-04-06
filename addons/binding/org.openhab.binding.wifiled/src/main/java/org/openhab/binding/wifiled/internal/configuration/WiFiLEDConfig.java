@@ -12,7 +12,7 @@ package org.openhab.binding.wifiled.internal.configuration;
  * The {@link WiFiLEDConfig} class holds the configuration properties of the thing.
  *
  * @author Osman Basha - Initial contribution
- * @author Stefan Endrullis
+ * @author Stefan Endrullis - Initial contribution
  */
 public class WiFiLEDConfig {
 

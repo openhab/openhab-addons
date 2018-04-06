@@ -8,15 +8,7 @@
  */
 package org.openhab.binding.wifiled.internal.discovery;
 
-import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
-import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.wifiled.handler.AbstractWiFiLEDDriver;
-import org.openhab.binding.wifiled.handler.ClassicWiFiLEDDriver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.openhab.binding.wifiled.WiFiLEDBindingConstants.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -28,8 +20,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static org.openhab.binding.wifiled.WiFiLEDBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-import static org.openhab.binding.wifiled.WiFiLEDBindingConstants.THING_TYPE_WIFILED;
+import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryResult;
+import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.wifiled.handler.AbstractWiFiLEDDriver;
+import org.openhab.binding.wifiled.handler.ClassicWiFiLEDDriver;
+import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link WiFiLEDDiscoveryService} class implements a service
@@ -37,6 +38,7 @@ import static org.openhab.binding.wifiled.WiFiLEDBindingConstants.THING_TYPE_WIF
  *
  * @author Osman Basha - Initial contribution
  */
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.wifiled")
 public class WiFiLEDDiscoveryService extends AbstractDiscoveryService {
 
     private static final int DEFAULT_BROADCAST_PORT = 48899;
@@ -106,9 +108,7 @@ public class WiFiLEDDiscoveryService extends AbstractDiscoveryService {
                 properties.put("protocol", AbstractWiFiLEDDriver.Protocol.LD382A);
                 ThingUID uid = new ThingUID(THING_TYPE_WIFILED, mac);
 
-                DiscoveryResult result = DiscoveryResultBuilder.create(uid)
-                        .withProperties(properties)
-                        .withLabel(name)
+                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(name)
                         .build();
                 thingDiscovered(result);
                 logger.debug("Thing discovered '{}'", result);

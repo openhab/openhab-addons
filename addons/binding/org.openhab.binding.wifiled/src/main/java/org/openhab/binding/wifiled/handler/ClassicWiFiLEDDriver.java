@@ -8,18 +8,16 @@
  */
 package org.openhab.binding.wifiled.handler;
 
-import org.eclipse.smarthome.core.library.types.HSBType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.StringType;
-
 import java.io.IOException;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
 
 /**
  * The {@link ClassicWiFiLEDDriver} class is responsible for the communication with the WiFi LED controller.
@@ -44,7 +42,6 @@ public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
 
     @Override
     public void shutdown() {
-
     }
 
     @Override
@@ -164,19 +161,18 @@ public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
         int program = Integer.valueOf(ledState.getProgram().toString());
         if (program == 0x61) {
             // "normal" program: set color etc.
-            byte r = (byte) (ledState.getRGB()>>16 & 0xFF);
-            byte g = (byte) (ledState.getRGB()>>8 & 0xFF);
+            byte r = (byte) (ledState.getRGB() >> 16 & 0xFF);
+            byte g = (byte) (ledState.getRGB() >> 8 & 0xFF);
             byte b = (byte) (ledState.getRGB() & 0xFF);
             byte w = (byte) (((int) (ledState.getWhite().doubleValue() * 255 / 100)) & 0xFF);
             byte w2 = (byte) (((int) (ledState.getWhite2().doubleValue() * 255 / 100)) & 0xFF);
 
             bytes = getBytesForColor(r, g, b, w, w2);
-
         } else {
             // program selected
             byte p = (byte) (program & 0xFF);
             byte s = (byte) (((100 - ledState.getProgramSpeed().intValue()) * 0x1F / 100) & 0xFF);
-            bytes = new byte[]{ 0x61, p, s };
+            bytes = new byte[] { 0x61, p, s };
         }
 
         ledUpdateFuture = updateScheduler.submit(() -> {

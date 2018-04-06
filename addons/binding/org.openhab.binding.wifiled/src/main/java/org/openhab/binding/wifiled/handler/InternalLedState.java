@@ -8,15 +8,15 @@
  */
 package org.openhab.binding.wifiled.handler;
 
+import static java.lang.Math.max;
+
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.PercentType;
-
-import static java.lang.Math.max;
 
 /**
  * Internal LED state.
  *
- * @author Stefan Endrullis
+ * @author Stefan Endrullis - Initial contribution
  */
 public class InternalLedState {
 
@@ -42,6 +42,7 @@ public class InternalLedState {
     }
 
     public InternalLedState withColor(HSBType color) {
+        //@formatter:off
         return new InternalLedState(
             color.getRed().doubleValue()   / 100,
             color.getGreen().doubleValue() / 100,
@@ -49,36 +50,19 @@ public class InternalLedState {
             w,
             w2
         );
+        //@formatter:on
     }
 
     public InternalLedState withBrightness(double brightness) {
-        return new InternalLedState(
-            r * brightness,
-            g * brightness,
-            b * brightness,
-            w,
-            w2
-        );
+        return new InternalLedState(r * brightness, g * brightness, b * brightness, w, w2);
     }
 
     public InternalLedState withWhite(double w) {
-        return new InternalLedState(
-            r,
-            g,
-            b,
-            w,
-            w2
-        );
+        return new InternalLedState(r, g, b, w, w2);
     }
 
     public InternalLedState withWhite2(double w2) {
-        return new InternalLedState(
-            r,
-            g,
-            b,
-            w,
-            w2
-        );
+        return new InternalLedState(r, g, b, w, w2);
     }
 
     public PercentType toHSBType() {
@@ -96,6 +80,7 @@ public class InternalLedState {
     public InternalLedState fade(InternalLedState that, double progress) {
         double invProgress = 1 - progress;
 
+        //@formatter:off
         return new InternalLedState(
             this.r * invProgress + that.r * progress,
             this.g * invProgress + that.g * progress,
@@ -103,6 +88,7 @@ public class InternalLedState {
             this.w * invProgress + that.w * progress,
             this.w2 * invProgress + that.w2 * progress
         );
+        //@formatter:on
     }
 
     /**
@@ -187,15 +173,21 @@ public class InternalLedState {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         InternalLedState that = (InternalLedState) o;
 
+        //@formatter:off
         return Double.compare(that.r, r) == 0
             && Double.compare(that.g, g) == 0
             && Double.compare(that.b, b) == 0
             && Double.compare(that.w, w) == 0;
+        //@formatter:on
     }
 
     @Override
@@ -215,12 +207,7 @@ public class InternalLedState {
 
     @Override
     public String toString() {
-        return "InternalLedState{" +
-            "r=" + r +
-            ", g=" + g +
-            ", b=" + b +
-            ", w=" + w +
-            '}';
+        return "InternalLedState{" + "r=" + r + ", g=" + g + ", b=" + b + ", w=" + w + '}';
     }
 
 }

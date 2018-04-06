@@ -8,19 +8,19 @@
  */
 package org.openhab.binding.wifiled.handler;
 
-import org.eclipse.smarthome.core.library.types.HSBType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.openhab.binding.wifiled.handler.ClassicWiFiLEDDriver.bytesToHex;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import static org.openhab.binding.wifiled.handler.ClassicWiFiLEDDriver.bytesToHex;
+import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract WiFi LED driver.
@@ -199,13 +199,13 @@ public abstract class AbstractWiFiLEDDriver {
         } else if (protocol == Protocol.LD686) {
             bytes = new byte[] { 0x31, r, g, b, w, w2, 0x00 };
         } else {
-            throw new RuntimeException("Protocol " + protocol + " not yet implemented");
+            throw new UnsupportedOperationException("Protocol " + protocol + " not yet implemented");
         }
         return bytes;
     }
 
     protected byte[] getBytesForPower(boolean on) {
-        return new byte[]{ 0x71, on ? (byte) 0x23 : 0x24 };
+        return new byte[] { 0x71, on ? (byte) 0x23 : 0x24 };
     }
 
 }
