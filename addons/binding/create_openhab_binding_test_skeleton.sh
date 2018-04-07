@@ -26,7 +26,7 @@ mvn -s ../archetype-settings.xml archetype:generate -N \
   -Dnamespace=org.openhab \
   -Dauthor="$author"
 
-directory=`echo "org.openhab.binding."$id".test"/`
+directory="org.openhab.binding.$id.test/"
 
 cp ../../src/etc/about.html "$directory"
 
