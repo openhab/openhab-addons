@@ -10,7 +10,6 @@ package org.openhab.binding.amazonechocontrol.internal.discovery;
 
 import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,6 +20,7 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -52,7 +52,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
     static boolean discoverAccount = true;
 
     public @Nullable static AmazonEchoDiscovery instance;
-    private final static List<IAmazonEchoDiscovery> discoveryServices = new ArrayList<>();
+    private final static Set<IAmazonEchoDiscovery> discoveryServices = new HashSet<>();
 
     private final Logger logger = LoggerFactory.getLogger(AmazonEchoDiscovery.class);
     private final Map<String, ThingUID> lastDeviceInformations = new HashMap<>();
@@ -64,11 +64,8 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
 
     public static void addDiscoveryHandler(IAmazonEchoDiscovery discoveryService) {
         synchronized (discoveryServices) {
-            if (!discoveryServices.contains(discoveryService)) {
-                discoveryServices.add(discoveryService);
-            }
+            discoveryServices.add(discoveryService);
         }
-
     }
 
     public static void removeDiscoveryHandler(IAmazonEchoDiscovery discoveryService) {
@@ -165,7 +162,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
             List<JsonSmartHomeDevice> deviceInformations) {
         Set<String> toRemove = new HashSet<String>(lastSmartHomeDeviceInformations.keySet());
         for (JsonSmartHomeDevice deviceInformation : deviceInformations) {
-            if (deviceInformation.manufacturerName != null && deviceInformation.manufacturerName.equals("openHAB")) {
+            if (StringUtils.equalsIgnoreCase(deviceInformation.manufacturerName, "openHAB")) {
                 // Ignore devices provided by the openHAB skill
                 continue;
             }

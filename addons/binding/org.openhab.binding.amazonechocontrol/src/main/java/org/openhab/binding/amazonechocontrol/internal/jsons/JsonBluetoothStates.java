@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
@@ -30,8 +31,7 @@ public class JsonBluetoothStates {
             return null;
         }
         for (BluetoothState state : bluetoothStates) {
-            if (state != null && state.deviceSerialNumber != null
-                    && state.deviceSerialNumber.equals(device.serialNumber)) {
+            if (state != null && StringUtils.equals(state.deviceSerialNumber, device.serialNumber)) {
                 return state;
             }
         }

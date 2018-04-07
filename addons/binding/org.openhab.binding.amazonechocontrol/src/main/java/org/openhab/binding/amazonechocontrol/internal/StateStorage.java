@@ -98,27 +98,23 @@ public class StateStorage {
         } catch (IOException e) {
             logger.error("Saving properties failed {}", e);
         }
-
     }
 
     private Properties initProperties() {
-        if (properties != null) {
-            return properties;
-        }
-
-        Properties p = new Properties();
-
-        if (propertyFile.exists()) {
-            try {
-                FileReader fileReader = new FileReader(propertyFile);
-                p.load(fileReader);
-                fileReader.close();
-            } catch (IOException e) {
-                logger.error("Error occured on writing the property file.", e);
+        Properties result = properties;
+        if (result == null) {
+            result = new Properties();
+            if (propertyFile.exists()) {
+                try {
+                    FileReader fileReader = new FileReader(propertyFile);
+                    result.load(fileReader);
+                    fileReader.close();
+                } catch (IOException e) {
+                    logger.error("Error occured on writing the property file.", e);
+                }
             }
+            properties = result;
         }
-        properties = p;
-        return p;
-
+        return result;
     }
 }

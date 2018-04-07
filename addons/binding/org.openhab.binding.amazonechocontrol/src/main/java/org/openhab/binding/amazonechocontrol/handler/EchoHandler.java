@@ -249,9 +249,10 @@ public class EchoHandler extends BaseThingHandler {
                     waitForUpdate = 4000;
                     String bluetoothId = lastKnownBluetoothId;
                     BluetoothState state = bluetoothState;
-                    if (state != null && (bluetoothId == null || bluetoothId.isEmpty())) {
-                        if (state.pairedDeviceList != null) {
-                            for (PairedDevice paired : state.pairedDeviceList) {
+                    if (state != null && (StringUtils.isEmpty(bluetoothId))) {
+                        PairedDevice[] pairedDeviceList = state.pairedDeviceList;
+                        if (pairedDeviceList != null) {
+                            for (PairedDevice paired : pairedDeviceList) {
                                 if (paired == null) {
                                     continue;
                                 }
@@ -277,7 +278,7 @@ public class EchoHandler extends BaseThingHandler {
                 if (command instanceof StringType) {
 
                     String trackId = ((StringType) command).toFullString();
-                    if (trackId != null && !trackId.isEmpty()) {
+                    if (StringUtils.isNotEmpty(trackId)) {
                         waitForUpdate = 3000;
                     }
                     connection.playAmazonMusicTrack(device, trackId);
@@ -288,7 +289,7 @@ public class EchoHandler extends BaseThingHandler {
                 if (command instanceof StringType) {
 
                     String playListId = ((StringType) command).toFullString();
-                    if (playListId != null && !playListId.isEmpty()) {
+                    if (StringUtils.isNotEmpty(playListId)) {
                         waitForUpdate = 3000;
                         updateState(CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID_LAST_USED, new StringType(playListId));
                     }
@@ -300,31 +301,29 @@ public class EchoHandler extends BaseThingHandler {
 
                 if (command == OnOffType.ON) {
                     String lastKnownAmazonMusicId = this.lastKnownAmazonMusicId;
-                    if (lastKnownAmazonMusicId != null && !lastKnownAmazonMusicId.isEmpty()) {
+                    if (StringUtils.isNotEmpty(lastKnownAmazonMusicId)) {
                         waitForUpdate = 3000;
                     }
                     connection.playAmazonMusicTrack(device, lastKnownAmazonMusicId);
                 } else if (command == OnOffType.OFF) {
                     connection.playAmazonMusicTrack(device, "");
                 }
-
             }
 
             // radio commands
             if (channelId.equals(CHANNEL_RADIO_STATION_ID)) {
                 if (command instanceof StringType) {
                     String stationId = ((StringType) command).toFullString();
-                    if (stationId != null && !stationId.isEmpty()) {
+                    if (StringUtils.isNotEmpty(stationId)) {
                         waitForUpdate = 3000;
                     }
                     connection.playRadio(device, stationId);
                 }
             }
             if (channelId.equals(CHANNEL_RADIO)) {
-
                 if (command == OnOffType.ON) {
                     String lastKnownRadioStationId = this.lastKnownRadioStationId;
-                    if (lastKnownRadioStationId != null && !lastKnownRadioStationId.isEmpty()) {
+                    if (StringUtils.isNotEmpty(lastKnownRadioStationId)) {
                         waitForUpdate = 3000;
                     }
                     connection.playRadio(device, lastKnownRadioStationId);
@@ -335,10 +334,9 @@ public class EchoHandler extends BaseThingHandler {
             // notification
             if (channelId.equals(CHANNEL_REMIND)) {
                 if (command instanceof StringType) {
-
                     stopCurrentNotification();
                     String reminder = ((StringType) command).toFullString();
-                    if (reminder != null && !reminder.isEmpty()) {
+                    if (StringUtils.isNotEmpty(reminder)) {
                         waitForUpdate = 3000;
                         updateRemind = true;
                         currentNotification = connection.notification(device, "Reminder", reminder, null);
@@ -350,10 +348,9 @@ public class EchoHandler extends BaseThingHandler {
             }
             if (channelId.equals(CHANNEL_PLAY_ALARM_SOUND)) {
                 if (command instanceof StringType) {
-
                     stopCurrentNotification();
                     String alarmSound = ((StringType) command).toFullString();
-                    if (alarmSound != null && !alarmSound.isEmpty()) {
+                    if (StringUtils.isNotEmpty(alarmSound)) {
                         waitForUpdate = 3000;
                         updateAlarm = true;
                         String[] parts = alarmSound.split(":", 2);
@@ -400,7 +397,7 @@ public class EchoHandler extends BaseThingHandler {
             if (channelId.equals(CHANNEL_START_ROUTINE)) {
                 if (command instanceof StringType) {
                     String utterance = ((StringType) command).toFullString();
-                    if (utterance != null && !utterance.isEmpty()) {
+                    if (StringUtils.isNotEmpty(utterance)) {
                         waitForUpdate = 1000;
                         updateRoutine = true;
                         connection.startRoutine(device, utterance);
@@ -464,7 +461,7 @@ public class EchoHandler extends BaseThingHandler {
                 Connection currentConnection = connection;
                 if (currentConnection != null) {
                     JsonNotificationResponse newState = currentConnection.getNotificationState(currentNotification);
-                    if (newState.status != null && newState.status.equals("ON")) {
+                    if (StringUtils.equals(newState.status, "ON")) {
                         stopCurrentNotifcation = false;
                     }
                 }
@@ -551,20 +548,18 @@ public class EchoHandler extends BaseThingHandler {
         }
 
         // check playing
-        boolean playing = playerInfo != null && playerInfo.state != null && playerInfo.state.equals("PLAYING");
+        boolean playing = playerInfo != null && StringUtils.equals(playerInfo.state, "PLAYING");
 
         // handle amazon music
         String amazonMusicTrackId = "";
         String amazonMusicPlayListId = "";
         boolean amazonMusic = false;
-        if (mediaState != null && mediaState.currentState != null && mediaState.currentState.equals("PLAYING")
-                && mediaState.providerId != null && mediaState.providerId.equals("CLOUD_PLAYER")
-                && mediaState.contentId != null && !mediaState.contentId.isEmpty()) {
-
+        if (mediaState != null && StringUtils.equals(mediaState.currentState, "PLAYING")
+                && StringUtils.equals(mediaState.providerId, "CLOUD_PLAYER")
+                && StringUtils.isNotEmpty(mediaState.contentId)) {
             amazonMusicTrackId = mediaState.contentId;
             lastKnownAmazonMusicId = amazonMusicTrackId;
             amazonMusic = true;
-
         }
 
         // handle bluetooth
@@ -573,8 +568,9 @@ public class EchoHandler extends BaseThingHandler {
         boolean bluetoothIsConnected = false;
         if (bluetoothState != null) {
             this.bluetoothState = bluetoothState;
-            if (bluetoothState.pairedDeviceList != null) {
-                for (PairedDevice paired : bluetoothState.pairedDeviceList) {
+            PairedDevice[] pairedDeviceList = bluetoothState.pairedDeviceList;
+            if (pairedDeviceList != null) {
+                for (PairedDevice paired : pairedDeviceList) {
                     if (paired == null) {
                         continue;
                     }
@@ -582,7 +578,7 @@ public class EchoHandler extends BaseThingHandler {
                         bluetoothIsConnected = true;
                         bluetoothId = paired.address;
                         bluetoothDeviceName = paired.friendlyName;
-                        if (bluetoothDeviceName == null || bluetoothDeviceName.isEmpty()) {
+                        if (StringUtils.isEmpty(bluetoothDeviceName)) {
                             bluetoothDeviceName = paired.address;
                         }
                         break;
@@ -590,20 +586,20 @@ public class EchoHandler extends BaseThingHandler {
                 }
             }
         }
-        if (bluetoothId != null && !bluetoothId.isEmpty()) {
+        if (StringUtils.isNotEmpty(bluetoothId)) {
             lastKnownBluetoothId = bluetoothId;
         }
         // handle radio
         boolean isRadio = false;
-        if (mediaState != null && mediaState.radioStationId != null && !mediaState.radioStationId.isEmpty()) {
+        if (mediaState != null && StringUtils.isNotEmpty(mediaState.radioStationId)) {
             lastKnownRadioStationId = mediaState.radioStationId;
             if (provider != null && StringUtils.equalsIgnoreCase(provider.providerName, "TuneIn Live-Radio")) {
                 isRadio = true;
             }
         }
         String radioStationId = "";
-        if (isRadio && mediaState != null && mediaState.currentState != null
-                && mediaState.currentState.equals("PLAYING") && mediaState.radioStationId != null) {
+        if (isRadio && mediaState != null && StringUtils.equals(mediaState.currentState, "PLAYING")
+                && mediaState.radioStationId != null) {
             radioStationId = mediaState.radioStationId;
         }
         // handle title, subtitle, imageUrl
@@ -635,13 +631,13 @@ public class EchoHandler extends BaseThingHandler {
                 if (entry != null) {
 
                     if (isRadio) {
-                        if (imageUrl.isEmpty() && entry.imageURL != null) {
+                        if (StringUtils.isEmpty(imageUrl) && entry.imageURL != null) {
                             imageUrl = entry.imageURL;
                         }
-                        if (subTitle1.isEmpty() && entry.radioStationSlogan != null) {
+                        if (StringUtils.isEmpty(subTitle1) && entry.radioStationSlogan != null) {
                             subTitle1 = entry.radioStationSlogan;
                         }
-                        if (subTitle2.isEmpty() && entry.radioStationLocation != null) {
+                        if (StringUtils.isEmpty(subTitle2) && entry.radioStationLocation != null) {
                             subTitle2 = entry.radioStationLocation;
                         }
                     }
@@ -654,10 +650,8 @@ public class EchoHandler extends BaseThingHandler {
             if (provider.providerDisplayName != null) {
                 providerDisplayName = provider.providerDisplayName;
             }
-            if (provider.providerName != null) {
-                if (providerDisplayName.isEmpty()) {
-                    providerDisplayName = provider.providerName;
-                }
+            if (StringUtils.isNotEmpty(provider.providerName) && StringUtils.isEmpty(providerDisplayName)) {
+                providerDisplayName = provider.providerName;
             }
         }
         // handle volume

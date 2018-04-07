@@ -13,7 +13,9 @@ import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingCons
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -113,8 +115,10 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             }
             ArrayList<StateOption> options = new ArrayList<StateOption>();
             options.add(new StateOption("", ""));
-            if (playLists.playlists != null) {
-                for (PlayList[] innerLists : playLists.playlists.values()) {
+            @Nullable
+            Map<@NonNull String, @Nullable PlayList @Nullable []> playlistMap = playLists.playlists;
+            if (playlistMap != null) {
+                for (PlayList[] innerLists : playlistMap.values()) {
                     if (innerLists != null && innerLists.length > 0) {
                         PlayList playList = innerLists[0];
                         if (playList.playlistId != null && playList.title != null) {

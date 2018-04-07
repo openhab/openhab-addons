@@ -188,7 +188,7 @@ public class LoginServlet extends HttpServlet {
             returnHtml(resp, html);
 
         } catch (URISyntaxException e) {
-            logger.error("get failed with uri syntax error {}", e);
+            logger.warn("get failed with uri syntax error {}", e);
         }
     }
 
@@ -249,7 +249,7 @@ public class LoginServlet extends HttpServlet {
         try {
             resp.getWriter().write(resultHtml);
         } catch (IOException e) {
-            logger.error("return html failed with uri syntax error {}", e);
+            logger.warn("return html failed with uri syntax error {}", e);
         }
     }
 

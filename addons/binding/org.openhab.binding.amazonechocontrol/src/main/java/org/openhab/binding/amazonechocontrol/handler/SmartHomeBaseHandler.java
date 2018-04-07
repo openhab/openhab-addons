@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -101,6 +102,9 @@ public abstract class SmartHomeBaseHandler extends BaseThingHandler {
             return;
         }
         String channelId = channelUID.getId();
+        if (StringUtils.isEmpty(channelId)) {
+            return;
+        }
         try {
             handleCommand(connection, entityId, channelId, command);
         } catch (IOException | URISyntaxException e) {

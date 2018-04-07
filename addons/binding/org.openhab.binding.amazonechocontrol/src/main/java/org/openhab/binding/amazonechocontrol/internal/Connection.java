@@ -37,6 +37,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Payload;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Trigger;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
@@ -238,7 +239,7 @@ public class Connection {
         } catch (IOException e) {
             logger.info("verify login fails with io exception: {}", e);
         } catch (URISyntaxException e) {
-            logger.error("verify login fails with uri syntax exception: {}", e);
+            logger.warn("verify login fails with uri syntax exception: {}", e);
         }
         // anything goes wrong, remove session data
         cookieStore.removeAll();
@@ -251,10 +252,13 @@ public class Connection {
     public String convertStream(InputStream input) throws IOException {
         Scanner inputScanner = new Scanner(input);
         Scanner scannerWithoutDelimiter = inputScanner.useDelimiter("\\A");
-        String result = scannerWithoutDelimiter.hasNext() ? scannerWithoutDelimiter.next() : "";
+        String result = scannerWithoutDelimiter.hasNext() ? scannerWithoutDelimiter.next() : null;
         inputScanner.close();
         scannerWithoutDelimiter.close();
         input.close();
+        if (result == null) {
+            result = "";
+        }
         return result;
     }
 
@@ -657,8 +661,9 @@ public class Connection {
         JsonAutomation found = null;
         String deviceLocale = "";
         for (JsonAutomation routine : getRoutines()) {
-            if (routine.triggers != null && routine.sequence != null) {
-                for (JsonAutomation.Trigger trigger : routine.triggers) {
+            Trigger[] triggers = routine.triggers;
+            if (triggers != null && routine.sequence != null) {
+                for (JsonAutomation.Trigger trigger : triggers) {
                     if (trigger == null) {
                         continue;
                     }
@@ -727,8 +732,9 @@ public class Connection {
         String json = makeRequestAndReturnString("GET", alexaServer + "/api/content-skills/enabled-feeds", null, null,
                 true);
         JsonEnabledFeeds result = parseJson(json, JsonEnabledFeeds.class);
-        if (result.enabledFeeds != null) {
-            return result.enabledFeeds;
+        JsonFeed[] enabledFeeds = result.enabledFeeds;
+        if (enabledFeeds != null) {
+            return enabledFeeds;
         }
         return new JsonFeed[0];
     }
@@ -749,8 +755,9 @@ public class Connection {
                         + "&deviceType=" + device.deviceType + "&softwareVersion=" + device.softwareVersion,
                 null, null, true);
         JsonNotificationSounds result = parseJson(json, JsonNotificationSounds.class);
-        if (result.notificationSounds != null) {
-            return result.notificationSounds;
+        JsonNotificationSound[] notificationSounds = result.notificationSounds;
+        if (notificationSounds != null) {
+            return notificationSounds;
         }
         return new JsonNotificationSound[0];
     }
@@ -813,13 +820,13 @@ public class Connection {
             searchSmartHomeDevicesRecursive(gson, jsonObject, result);
             return result;
         } catch (Exception e) {
-            logger.error("getSmartHomeDevices fails: {}", e.getMessage());
+            logger.warn("getSmartHomeDevices fails: {}", e.getMessage());
             throw e;
         }
     }
 
-    private void searchSmartHomeDevicesRecursive(Gson gson, Object jsonNode, List<JsonSmartHomeDevice> result) {
-
+    private void searchSmartHomeDevicesRecursive(Gson gson, @Nullable Object jsonNode,
+            List<JsonSmartHomeDevice> result) {
         if (jsonNode instanceof Map) {
             @SuppressWarnings("rawtypes")
             Map map = (Map) jsonNode;

@@ -11,16 +11,16 @@ package org.openhab.binding.amazonechocontrol.handler;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -61,9 +61,9 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private StateStorage stateStorage;
     private @Nullable Connection connection;
-    private final List<EchoHandler> echoHandlers = new ArrayList<>();
-    private final List<SmartHomeBaseHandler> smartHomeHandlers = new ArrayList<>();
-    private final List<FlashBriefingProfileHandler> flashBriefingProfileHandlers = new ArrayList<>();
+    private final Set<EchoHandler> echoHandlers = new HashSet<>();
+    private final Set<SmartHomeBaseHandler> smartHomeHandlers = new HashSet<>();
+    private final Set<FlashBriefingProfileHandler> flashBriefingProfileHandlers = new HashSet<>();
     private final Object synchronizeConnection = new Object();
     private Map<String, Device> jsonSerialNumberDeviceMapping = new HashMap<>();
     private @Nullable ScheduledFuture<?> refreshJob;
@@ -105,9 +105,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
 
     public void addEchoHandler(EchoHandler echoHandler) {
         synchronized (echoHandlers) {
-            if (!echoHandlers.contains(echoHandler)) {
-                echoHandlers.add(echoHandler);
-            }
+            echoHandlers.add(echoHandler);
         }
         Connection connection = this.connection;
         if (connection != null) {
@@ -117,9 +115,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
 
     public void addFlashBriefingProfileHandler(FlashBriefingProfileHandler flashBriefingProfileHandler) {
         synchronized (flashBriefingProfileHandlers) {
-            if (!flashBriefingProfileHandlers.contains(flashBriefingProfileHandler)) {
-                flashBriefingProfileHandlers.add(flashBriefingProfileHandler);
-            }
+            flashBriefingProfileHandlers.add(flashBriefingProfileHandler);
         }
         Connection connection = this.connection;
         if (connection != null) {
@@ -133,9 +129,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
 
     public void addSmartHomeHandler(SmartHomeBaseHandler smartHomeHandler) {
         synchronized (smartHomeHandlers) {
-            if (!smartHomeHandlers.contains(smartHomeHandler)) {
-                smartHomeHandlers.add(smartHomeHandler);
-            }
+            smartHomeHandlers.add(smartHomeHandler);
         }
         Connection connection = this.connection;
         if (connection != null) {
@@ -162,7 +156,6 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
     }
 
     private void intializeChildDevice(Connection connection, EchoHandler child) {
-
         Device deviceJson = this.findDeviceJson(child);
         if (deviceJson != null) {
             child.intialize(connection, deviceJson);
@@ -171,13 +164,12 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
 
     @Override
     public void handleRemoval() {
-
         cleanup();
         super.handleRemoval();
     }
 
     @Override
-    public void childHandlerDisposed(@NonNull ThingHandler childHandler, @NonNull Thing childThing) {
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
 
         // echo handler?
         if (childHandler instanceof EchoHandler) {
@@ -225,17 +217,22 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
     }
 
     private void cleanup() {
+        @Nullable
+        ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
-            refreshJob = null;
+            this.refreshJob = null;
         }
+        @Nullable
+        ScheduledFuture<?> refreshLogin = this.refreshLogin;
         if (refreshLogin != null) {
             refreshLogin.cancel(true);
-            refreshLogin = null;
+            this.refreshLogin = null;
         }
+        Connection connection = this.connection;
         if (connection != null) {
             connection.logout();
-            connection = null;
+            this.connection = null;
         }
     }
 
@@ -267,7 +264,8 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             cleanup();
             return;
         }
-        if (config.discoverSmartHomeDevices != null && config.discoverSmartHomeDevices) {
+        Boolean discoverSmartHomeDevices = config.discoverSmartHomeDevices;
+        if (discoverSmartHomeDevices != null && discoverSmartHomeDevices) {
             if (!smartHodeDeviceListEnabled) {
                 updateSmartHomeDeviceList = true;
             }
@@ -460,7 +458,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
         return findDeviceJson(serialNumber);
     }
 
-    public @Nullable Device findDeviceJson(String serialNumber) {
+    public @Nullable Device findDeviceJson(@Nullable String serialNumber) {
         Device result = null;
         if (StringUtils.isNotEmpty(serialNumber)) {
             Map<String, Device> jsonSerialNumberDeviceMapping = this.jsonSerialNumberDeviceMapping;
@@ -469,17 +467,16 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
         return result;
     }
 
-    public @Nullable Device findDeviceJsonBySerialOrName(String serialOrName) {
+    public @Nullable Device findDeviceJsonBySerialOrName(@Nullable String serialOrName) {
         if (StringUtils.isNotEmpty(serialOrName)) {
-            String serialOrNameLowerCase = serialOrName.toLowerCase();
             Map<String, Device> currentJsonSerialNumberDeviceMapping = this.jsonSerialNumberDeviceMapping;
             for (Device device : currentJsonSerialNumberDeviceMapping.values()) {
-                if (device.serialNumber != null && device.serialNumber.toLowerCase().equals(serialOrNameLowerCase)) {
+                if (StringUtils.equalsIgnoreCase(device.serialNumber, serialOrName)) {
                     return device;
                 }
             }
             for (Device device : currentJsonSerialNumberDeviceMapping.values()) {
-                if (device.accountName != null && device.accountName.toLowerCase().equals(serialOrNameLowerCase)) {
+                if (StringUtils.equalsIgnoreCase(device.accountName, serialOrName)) {
                     return device;
                 }
             }
@@ -511,8 +508,9 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
         if (devices != null) {
             Map<String, Device> newJsonSerialDeviceMapping = new HashMap<>();
             for (Device device : devices) {
-                if (device.serialNumber != null) {
-                    newJsonSerialDeviceMapping.put(device.serialNumber, device);
+                String serialNumber = device.serialNumber;
+                if (serialNumber != null) {
+                    newJsonSerialDeviceMapping.put(serialNumber, device);
                 }
             }
             jsonSerialNumberDeviceMapping = newJsonSerialDeviceMapping;
