@@ -34,7 +34,6 @@ public class SmartHomeSwitchHandler extends SmartHomeBaseHandler {
     @Override
     public void handleCommand(Connection connection, String entityId, String channelId, Command command)
             throws IOException, URISyntaxException {
-
         if (channelId.equals(CHANNEL_SWITCH)) {
             if (command == OnOffType.ON) {
                 connection.sendSmartHomeDeviceCommand(entityId, "turnOn", null, null);
@@ -46,5 +45,4 @@ public class SmartHomeSwitchHandler extends SmartHomeBaseHandler {
             }
         }
     }
-
 }

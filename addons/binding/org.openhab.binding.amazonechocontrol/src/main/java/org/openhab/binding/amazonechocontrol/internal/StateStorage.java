@@ -82,7 +82,6 @@ public class StateStorage {
     }
 
     private void saveProperties() {
-
         try {
             Properties properties = initProperties();
             logger.debug("Create file {}.", propertyFile);

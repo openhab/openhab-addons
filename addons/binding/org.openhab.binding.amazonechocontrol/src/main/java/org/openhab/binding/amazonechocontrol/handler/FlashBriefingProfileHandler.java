@@ -127,13 +127,11 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
         if (updateStateJob != null) {
             updateStateJob.cancel(false);
         }
-
         try {
             String channelId = channelUID.getId();
             if (command instanceof RefreshType) {
                 waitForUpdate = 0;
             }
-
             if (channelId.equals(CHANNEL_SAVE)) {
                 if (command.equals(OnOffType.ON)) {
                     saveCurrentProfile(accountHandler);
@@ -145,7 +143,6 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
                     String currentConfigurationJson = this.currentConfigurationJson;
                     if (!currentConfigurationJson.isEmpty()) {
                         accountHandler.setEnabledFlashBriefingsJson(currentConfigurationJson);
-
                         updateState(CHANNEL_ACTIVE, OnOffType.ON);
                         waitForUpdate = 500;
                     }
@@ -156,10 +153,8 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
                     String deviceSerialOrName = ((StringType) command).toFullString();
                     String currentConfigurationJson = this.currentConfigurationJson;
                     if (!currentConfigurationJson.isEmpty()) {
-
                         String old = accountHandler.getEnabledFlashBriefingsJson();
                         accountHandler.setEnabledFlashBriefingsJson(currentConfigurationJson);
-
                         Device device = accountHandler.findDeviceJsonBySerialOrName(deviceSerialOrName);
                         if (device == null) {
                             logger.warn("Device '{}' not found", deviceSerialOrName);
@@ -180,7 +175,6 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
                         }
                         updatePlayOnDevice = true;
                         waitForUpdate = 1000;
-
                     }
                 }
             }
@@ -194,18 +188,15 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
     }
 
     public void initialize(AccountHandler handler, String currentConfigurationJson) {
-
         updateState(CHANNEL_SAVE, OnOffType.OFF);
         if (updatePlayOnDevice) {
             updateState(CHANNEL_PLAY_ON_DEVICE, new StringType(""));
         }
         if (this.accountHandler != handler) {
-
             this.accountHandler = handler;
             String configurationJson = this.stateStorage.findState("configurationJson");
             if (configurationJson == null || configurationJson.isEmpty()) {
                 this.currentConfigurationJson = saveCurrentProfile(handler);
-
             } else {
                 removeFromDiscovery();
                 this.currentConfigurationJson = configurationJson;
@@ -222,7 +213,6 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
         } else {
             updateState(CHANNEL_ACTIVE, OnOffType.OFF);
         }
-
     }
 
     private String saveCurrentProfile(AccountHandler connection) {
@@ -230,7 +220,6 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
         configurationJson = connection.getEnabledFlashBriefingsJson();
         removeFromDiscovery();
         this.currentConfigurationJson = configurationJson;
-
         if (!configurationJson.isEmpty()) {
             this.stateStorage.storeState("configurationJson", configurationJson);
         }

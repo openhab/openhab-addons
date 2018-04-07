@@ -64,10 +64,8 @@ public class LoginServlet extends HttpServlet {
         try {
             httpService.registerServlet(servletUrl, this, null, httpService.createDefaultHttpContext());
         } catch (ServletException e) {
-
             logger.warn("Register servlet fails {}", e);
         } catch (NamespaceException e) {
-
             logger.warn("Register servlet fails {}", e);
         }
     }
@@ -78,7 +76,6 @@ public class LoginServlet extends HttpServlet {
 
     public void dispose() {
         httpService.unregister(servletUrl);
-
     }
 
     @Override
@@ -95,7 +92,6 @@ public class LoginServlet extends HttpServlet {
         Map<String, String[]> map = req.getParameterMap();
         StringBuilder postDataBuilder = new StringBuilder();
         for (String name : map.keySet()) {
-
             if (postDataBuilder.length() > 0) {
                 postDataBuilder.append('&');
             }
@@ -131,7 +127,6 @@ public class LoginServlet extends HttpServlet {
         String referer = "https://www." + connection.getAmazonSite();
         String postData = postDataBuilder.toString();
         HandleProxyRequest(resp, "POST", postUrl, referer, postData);
-
     }
 
     @Override
@@ -174,7 +169,6 @@ public class LoginServlet extends HttpServlet {
                         "<html>The Account is already logged in. The account thing should be online.<br><a href='/paperui/index.html#/configuration/things/view/"
                                 + BINDING_ID + ":" + THING_TYPE_ACCOUNT.getId() + ":" + id
                                 + "'>Check Thing in Paper UI</a></html>");
-
                 return;
             }
 
@@ -186,7 +180,6 @@ public class LoginServlet extends HttpServlet {
 
             String html = this.connection.getLoginPage();
             returnHtml(resp, html);
-
         } catch (URISyntaxException e) {
             logger.warn("get failed with uri syntax error {}", e);
         }
@@ -194,7 +187,6 @@ public class LoginServlet extends HttpServlet {
 
     void HandleProxyRequest(HttpServletResponse resp, String verb, String url, @Nullable String referer,
             @Nullable String postData) throws IOException {
-
         HttpsURLConnection urlConnection;
         try {
             urlConnection = connection.makeRequest(verb, url, referer, postData, false, false);
@@ -232,9 +224,7 @@ public class LoginServlet extends HttpServlet {
                     return;
                 }
             }
-
         } catch (URISyntaxException e) {
-
             returnError(resp, e.getLocalizedMessage());
             return;
         }
@@ -255,7 +245,6 @@ public class LoginServlet extends HttpServlet {
 
     void returnError(HttpServletResponse resp, String errorMessage) {
         try {
-
             resp.getWriter().write("<html>" + StringEscapeUtils.escapeHtml(errorMessage) + "<br><a href='" + servletUrl
                     + "'>Try again</a></html>");
         } catch (IOException e) {

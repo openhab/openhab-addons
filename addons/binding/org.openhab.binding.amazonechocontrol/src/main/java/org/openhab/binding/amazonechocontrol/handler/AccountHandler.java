@@ -80,7 +80,6 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
         this.httpService = httpService;
         stateStorage = new StateStorage(bridge);
         AmazonEchoDiscovery.setHandlerExist();
-
     }
 
     @Override
@@ -91,7 +90,6 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Command '{}' received for channel '{}'", command, channelUID);
-
         if (command instanceof RefreshType) {
             refreshData();
         }
@@ -122,7 +120,6 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             if (currentFlashBriefingJson.isEmpty()) {
                 updateFlashBriefingProfiles(connection);
             }
-
             flashBriefingProfileHandler.initialize(this, currentFlashBriefingJson);
         }
     }
@@ -142,13 +139,13 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
 
         @Nullable
         Device device = findDeviceJson(echoHandler);
-        BluetoothState state = null;
 
         JsonBluetoothStates states = null;
         if (connection.getIsLoggedIn()) {
             states = connection.getBluetoothConnectionStates();
         }
 
+        BluetoothState state = null;
         if (states != null) {
             state = states.findStateByDevice(device);
         }
@@ -170,32 +167,29 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-
-        // echo handler?
+        // check for echo handler
         if (childHandler instanceof EchoHandler) {
             synchronized (echoHandlers) {
                 echoHandlers.remove(childHandler);
             }
-
             AmazonEchoDiscovery instance = AmazonEchoDiscovery.instance;
             if (instance != null) {
                 instance.removeExistingEchoHandler(childThing.getUID());
             }
         }
 
-        // flash briefing profile handler?
+        // check for flash briefing profile handler
         if (childHandler instanceof FlashBriefingProfileHandler) {
             synchronized (flashBriefingProfileHandlers) {
                 flashBriefingProfileHandlers.remove(childHandler);
             }
         }
 
-        // smart home handler?
+        // check for smart home handler
         if (childHandler instanceof SmartHomeBaseHandler) {
             synchronized (smartHomeHandlers) {
                 smartHomeHandlers.remove(childHandler);
             }
-
             AmazonEchoDiscovery instance = AmazonEchoDiscovery.instance;
             if (instance != null) {
                 instance.removeExistingSmartHomeHandler(childThing.getUID());
@@ -241,7 +235,8 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
 
         AccountConfiguration config = getConfigAs(AccountConfiguration.class);
 
-        if (StringUtils.isEmpty(config.amazonSite)) {
+        String amazonSite = config.amazonSite;
+        if (StringUtils.isEmpty(amazonSite)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Amazon site not configured");
             cleanup();
             return;
@@ -282,11 +277,9 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
         }
         synchronized (synchronizeConnection) {
             Connection connection = this.connection;
-            if (connection == null || !connection.getEmail().equals(config.email)
-                    || !connection.getPassword().equals(config.password)
-                    || !connection.getAmazonSite().equals(config.amazonSite)) {
-                this.connection = new Connection(config.email, config.password, config.amazonSite,
-                        this.getThing().getUID().getId());
+            if (connection == null || !connection.getEmail().equals(email) || !connection.getPassword().equals(password)
+                    || !connection.getAmazonSite().equals(amazonSite)) {
+                this.connection = new Connection(email, password, amazonSite, this.getThing().getUID().getId());
             }
         }
         if (this.loginServlet == null) {
@@ -295,25 +288,24 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
 
-        if (refreshLogin != null) {
-            refreshLogin.cancel(false);
+        @Nullable
+        ScheduledFuture<?> oldRefreshLogin = refreshLogin;
+        if (oldRefreshLogin != null) {
+            oldRefreshLogin.cancel(false);
         }
-        refreshLogin = scheduler.scheduleWithFixedDelay(() -> {
-            checkLogin();
-        }, 0, 60, TimeUnit.SECONDS);
+        refreshLogin = scheduler.scheduleWithFixedDelay(this::checkLogin, 0, 60, TimeUnit.SECONDS);
 
-        if (refreshJob != null) {
-            refreshJob.cancel(false);
+        @Nullable
+        ScheduledFuture<?> oldRefreshJob = refreshJob;
+        if (oldRefreshJob != null) {
+            oldRefreshJob.cancel(false);
         }
-        refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-            refreshData();
-        }, 4, pollingIntervalInSeconds, TimeUnit.SECONDS);
+        refreshJob = scheduler.scheduleWithFixedDelay(this::refreshData, 4, pollingIntervalInSeconds, TimeUnit.SECONDS);
 
         logger.debug("amazon account bridge handler started.");
     }
 
     private void checkLogin() {
-
         synchronized (synchronizeConnection) {
             Connection currentConnection = this.connection;
             if (currentConnection == null) {
@@ -397,10 +389,8 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
     }
 
     private void handleValidLogin() {
-
         updateDeviceList(false);
         updateStatus(ThingStatus.ONLINE);
-
         AmazonEchoDiscovery.addDiscoveryHandler(this);
     }
 

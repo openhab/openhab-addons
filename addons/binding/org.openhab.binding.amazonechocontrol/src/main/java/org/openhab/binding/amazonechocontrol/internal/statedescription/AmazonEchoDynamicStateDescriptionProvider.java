@@ -49,19 +49,13 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
 
     private final Logger logger = LoggerFactory.getLogger(AmazonEchoDynamicStateDescriptionProvider.class);
 
-    public AmazonEchoDynamicStateDescriptionProvider() {
-
-    }
-
     @Override
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
-
         if (originalStateDescription == null) {
             return null;
         }
         if (CHANNEL_TYPE_BLUETHOOTH_ID_SELECTION.equals(channel.getChannelTypeUID())) {
-
             EchoHandler handler = EchoHandler.find(channel.getUID().getThingUID());
             if (handler == null) {
                 return originalStateDescription;
@@ -133,7 +127,6 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                     originalStateDescription.getPattern(), originalStateDescription.isReadOnly(), options);
             return result;
         } else if (CHANNEL_TYPE_PLAY_ALARM_SOUND.equals(channel.getChannelTypeUID())) {
-
             EchoHandler handler = EchoHandler.find(channel.getUID().getThingUID());
             if (handler == null) {
                 return originalStateDescription;
@@ -198,7 +191,6 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                     originalStateDescription.getMaximum(), originalStateDescription.getStep(),
                     originalStateDescription.getPattern(), originalStateDescription.isReadOnly(), options);
             return result;
-
         }
         return originalStateDescription;
     }

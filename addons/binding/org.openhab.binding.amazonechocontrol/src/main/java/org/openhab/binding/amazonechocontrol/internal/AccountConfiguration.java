@@ -33,5 +33,4 @@ public class AccountConfiguration {
     // there seems to be different smarthome skill versions
     @Nullable
     public Boolean discoverSmartHomeDevices;
-
 }

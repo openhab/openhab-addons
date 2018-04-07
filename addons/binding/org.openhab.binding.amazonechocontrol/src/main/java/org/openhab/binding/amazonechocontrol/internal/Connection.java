@@ -103,7 +103,6 @@ public class Connection {
         }
         this.amazonSite = correctedAmazonSite;
         alexaServer = "https://alexa." + this.amazonSite;
-
     }
 
     public @Nullable Date tryGetLoginTime() {
@@ -141,7 +140,6 @@ public class Connection {
         builder.append(cookies.size());
         builder.append("\n");
         for (HttpCookie cookie : cookies) {
-
             writeValue(builder, cookie.getName());
             writeValue(builder, cookie.getValue());
             writeValue(builder, cookie.getComment());
@@ -153,7 +151,6 @@ public class Connection {
             writeValue(builder, cookie.getVersion());
             writeValue(builder, cookie.getSecure());
             writeValue(builder, cookie.getDiscard());
-
         }
         return builder.toString();
     }
@@ -182,7 +179,6 @@ public class Connection {
         if (StringUtils.isEmpty(data)) {
             return false;
         }
-
         Scanner scanner = new Scanner(data);
         String version = scanner.nextLine();
         if (!version.equals("4")) {
@@ -196,7 +192,6 @@ public class Connection {
             scanner.close();
             return false;
         }
-
         int passwordHash = Integer.parseInt(scanner.nextLine());
         if (passwordHash != this.password.hashCode()) {
             scanner.close();
@@ -206,9 +201,7 @@ public class Connection {
         // Recreate session and cookies
         sessionId = scanner.nextLine();
         Date loginTime = new Date(Long.parseLong(scanner.nextLine()));
-
         CookieStore cookieStore = cookieManager.getCookieStore();
-
         cookieStore.removeAll();
 
         Integer numberOfCookies = Integer.parseInt(scanner.nextLine());
@@ -246,7 +239,6 @@ public class Connection {
         this.sessionId = null;
         this.loginTime = null;
         return false;
-
     }
 
     public String convertStream(InputStream input) throws IOException {
@@ -281,7 +273,6 @@ public class Connection {
             int code;
             HttpsURLConnection connection;
             try {
-
                 logger.debug("Make request to {}", url);
                 connection = (HttpsURLConnection) new URL(currentUrl).openConnection();
                 connection.setRequestMethod(verb);
@@ -372,7 +363,6 @@ public class Connection {
                 }
                 if (code == 302 && location != null) {
                     logger.debug("Redirected to {}", location);
-
                     currentUrl = location;
                     if (autoredirect) {
                         continue;
@@ -395,7 +385,6 @@ public class Connection {
     }
 
     public String getLoginPage() throws IOException, URISyntaxException {
-
         // clear session data
         cookieManager.getCookieStore().removeAll();
         sessionId = null;
@@ -423,7 +412,6 @@ public class Connection {
 
     public void makeLogin() throws IOException, URISyntaxException {
         try {
-
             String loginFormHtml = getLoginPage();
             // read hidden form inputs, the will be used later in the url and for posting
             Pattern inputPattern = Pattern
@@ -440,7 +428,6 @@ public class Connection {
             }
 
             String queryParameters = postDataBuilder.toString() + "session-id=" + URLEncoder.encode(sessionId, "UTF-8");
-
             logger.debug("Login query String: {}", queryParameters);
 
             postDataBuilder.append("email");
@@ -472,7 +459,6 @@ public class Connection {
 
     public @Nullable String postLoginData(@Nullable String optionalQueryParameters, String postData)
             throws IOException, URISyntaxException {
-
         // build query parameters
         @Nullable
         String queryParameters = optionalQueryParameters;
@@ -603,7 +589,6 @@ public class Connection {
             makeRequest("POST",
                     alexaServer + "/api/bluetooth/pair-sink/" + device.deviceType + "/" + device.serialNumber, null,
                     "{\"bluetoothDeviceAddress\":\"" + address + "\"}", true, true);
-
         }
     }
 
@@ -764,7 +749,6 @@ public class Connection {
 
     public JsonNotificationResponse notification(Device device, String type, @Nullable String label,
             @Nullable JsonNotificationSound sound) throws IOException, URISyntaxException {
-
         Date date = new Date(new Date().getTime());
         long createdDate = date.getTime();
         Date alarm = new Date(createdDate + 5000); // add 5 seconds, because amazon does not except calls for times in
@@ -793,7 +777,6 @@ public class Connection {
                 data, true);
         JsonNotificationResponse result = parseJson(response, JsonNotificationResponse.class);
         return result;
-
     }
 
     public void stopNotification(JsonNotificationResponse notification) throws IOException, URISyntaxException {
@@ -846,7 +829,6 @@ public class Connection {
 
     public void sendSmartHomeDeviceCommand(String entityId, String action, @Nullable String parameterName,
             @Nullable String parameter) throws IOException, URISyntaxException {
-
         String command = "{" + "\"controlRequests\": [{" + "\"entityId\": \"" + entityId + "\", "
                 + "\"entityType\": \"APPLIANCE\", " + "\"parameters\": {" + "\"action\": \"" + action + "\""
                 + (parameterName != null ? ", \"" + parameterName + "\": \"" + parameter + "\"" : "") + "   }" + "}]"

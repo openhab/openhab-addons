@@ -102,9 +102,7 @@ public class EchoHandler extends BaseThingHandler {
                     account.addEchoHandler(this);
                 }
             }
-
         }
-
     }
 
     public void intialize(Connection connection, @Nullable Device deviceJson) {
@@ -156,7 +154,6 @@ public class EchoHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-
             int waitForUpdate = 1000;
             boolean needBluetoothRefresh = false;
             String lastKnownBluetoothId = this.lastKnownBluetoothId;
@@ -331,6 +328,7 @@ public class EchoHandler extends BaseThingHandler {
                     connection.playRadio(device, "");
                 }
             }
+
             // notification
             if (channelId.equals(CHANNEL_REMIND)) {
                 if (command instanceof StringType) {
@@ -393,7 +391,6 @@ public class EchoHandler extends BaseThingHandler {
                     connection.executeSequenceCommand(device, "Alexa.Weather.Play");
                 }
             }
-
             if (channelId.equals(CHANNEL_START_ROUTINE)) {
                 if (command instanceof StringType) {
                     String utterance = ((StringType) command).toFullString();
@@ -427,7 +424,6 @@ public class EchoHandler extends BaseThingHandler {
             } else {
                 this.updateStateJob = scheduler.schedule(doRefresh, waitForUpdate, TimeUnit.MILLISECONDS);
             }
-
         } catch (IOException | URISyntaxException e) {
             logger.info("handleCommand fails: {}", e);
         }
@@ -470,7 +466,6 @@ public class EchoHandler extends BaseThingHandler {
             logger.warn("update notification state fails: {}", e);
         }
         if (stopCurrentNotifcation) {
-
             if (currentNotification != null) {
                 String type = currentNotification.type;
                 if (type != null) {
@@ -589,6 +584,7 @@ public class EchoHandler extends BaseThingHandler {
         if (StringUtils.isNotEmpty(bluetoothId)) {
             lastKnownBluetoothId = bluetoothId;
         }
+
         // handle radio
         boolean isRadio = false;
         if (mediaState != null && StringUtils.isNotEmpty(mediaState.radioStationId)) {
@@ -602,6 +598,7 @@ public class EchoHandler extends BaseThingHandler {
                 && mediaState.radioStationId != null) {
             radioStationId = mediaState.radioStationId;
         }
+
         // handle title, subtitle, imageUrl
         String title = "";
         String subTitle1 = "";
@@ -644,6 +641,7 @@ public class EchoHandler extends BaseThingHandler {
                 }
             }
         }
+
         // handle provider
         String providerDisplayName = "";
         if (provider != null) {
@@ -654,6 +652,7 @@ public class EchoHandler extends BaseThingHandler {
                 providerDisplayName = provider.providerName;
             }
         }
+
         // handle volume
         Integer volume = null;
         if (mediaState != null) {
@@ -665,7 +664,6 @@ public class EchoHandler extends BaseThingHandler {
                 volume = volumnInfo.volume;
             }
         }
-
         if (volume != null && volume > 0) {
             lastKnownVolume = volume;
         }
@@ -698,14 +696,11 @@ public class EchoHandler extends BaseThingHandler {
         updateState(CHANNEL_TITLE, new StringType(title));
         updateState(CHANNEL_SUBTITLE1, new StringType(subTitle1));
         updateState(CHANNEL_SUBTITLE2, new StringType(subTitle2));
-
         if (bluetoothState != null) {
             updateState(CHANNEL_BLUETOOTH, bluetoothIsConnected ? OnOffType.ON : OnOffType.OFF);
             updateState(CHANNEL_BLUETOOTH_ID, new StringType(bluetoothId));
             updateState(CHANNEL_BLUETOOTH_ID_SELECTION, new StringType(bluetoothId));
             updateState(CHANNEL_BLUETOOTH_DEVICE_NAME, new StringType(bluetoothDeviceName));
         }
-
     }
-
 }

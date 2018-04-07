@@ -49,10 +49,9 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.amazonechocontrol")
 public class AmazonEchoDiscovery extends AbstractDiscoveryService {
 
-    static boolean discoverAccount = true;
-
-    public @Nullable static AmazonEchoDiscovery instance;
+    private static boolean discoverAccount = true;
     private final static Set<IAmazonEchoDiscovery> discoveryServices = new HashSet<>();
+    public @Nullable static AmazonEchoDiscovery instance;
 
     private final Logger logger = LoggerFactory.getLogger(AmazonEchoDiscovery.class);
     private final Map<String, ThingUID> lastDeviceInformations = new HashMap<>();
@@ -92,8 +91,11 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
         startScan(true);
     }
 
-    protected void startScan(boolean manual) {
+    protected void startAutomaticScan() {
+        startScan(false);
+    }
 
+    void startScan(boolean manual) {
         if (startScanStateJob != null) {
             startScanStateJob.cancel(false);
             startScanStateJob = null;
@@ -105,14 +107,11 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
             ThingUID thingUID = new ThingUID(THING_TYPE_ACCOUNT, "account1");
 
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel("Amazon Account").build();
-
             logger.debug("Device [Amazon Account] found.");
-
             thingDiscovered(result);
         }
 
         IAmazonEchoDiscovery[] accounts;
-
         synchronized (discoveryServices) {
             accounts = new IAmazonEchoDiscovery[discoveryServices.size()];
             accounts = discoveryServices.toArray(accounts);
@@ -121,7 +120,6 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
         for (IAmazonEchoDiscovery discovery : accounts) {
             discovery.updateDeviceList(manual);
         }
-
     }
 
     @Override
@@ -131,12 +129,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
             startScanStateJob.cancel(false);
             startScanStateJob = null;
         }
-
-        startScanStateJob = scheduler.schedule(() -> {
-
-            startScan(false);
-        }, 3000, TimeUnit.MILLISECONDS);
-
+        startScanStateJob = scheduler.schedule(this::startAutomaticScan, 3000, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -146,7 +139,6 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
             startScanStateJob.cancel(false);
             startScanStateJob = null;
         }
-
     }
 
     @Override
@@ -199,14 +191,12 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
                             lastSmartHomeDeviceInformations.put(entityId, thingUID);
                         }
                     }
-
                 }
             }
         }
     }
 
     public synchronized void setDevices(ThingUID brigdeThingUID, Device[] deviceInformations) {
-
         Set<String> toRemove = new HashSet<String>(lastDeviceInformations.keySet());
         for (Device deviceInformation : deviceInformations) {
             String serialNumber = deviceInformation.serialNumber;
@@ -296,5 +286,4 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
             discoverdFlashBriefings.remove(currentFlashBriefingJson);
         }
     }
-
 }

@@ -28,6 +28,5 @@ public class HttpException extends RuntimeException {
     public HttpException(int code, String message) {
         super(message);
         this.code = code;
-
     }
 }

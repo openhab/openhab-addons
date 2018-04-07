@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
 public abstract class SmartHomeBaseHandler extends BaseThingHandler {
 
     private final static HashMap<ThingUID, SmartHomeBaseHandler> instances = new HashMap<ThingUID, SmartHomeBaseHandler>();
-    private final Logger logger = LoggerFactory.getLogger(SmartHomeBaseHandler.class);
 
+    private final Logger logger = LoggerFactory.getLogger(SmartHomeBaseHandler.class);
     private @Nullable Connection connection;
 
     protected @Nullable Connection findConnection() {
@@ -91,6 +91,12 @@ public abstract class SmartHomeBaseHandler extends BaseThingHandler {
         return id;
     }
 
+    public static @Nullable SmartHomeBaseHandler find(ThingUID uid) {
+        synchronized (instances) {
+            return instances.get(uid);
+        }
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         Connection connection = findConnection();
@@ -114,11 +120,4 @@ public abstract class SmartHomeBaseHandler extends BaseThingHandler {
 
     protected abstract void handleCommand(Connection connection, String entityId, String channelId, Command command)
             throws IOException, URISyntaxException;
-
-    public static @Nullable SmartHomeBaseHandler find(ThingUID uid) {
-        synchronized (instances) {
-            return instances.get(uid);
-        }
-    }
-
 }
