@@ -108,14 +108,14 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         String webHookURI = getWebHookURI();
         if (webHookURI != null) {
             webHookServlet.activate(this);
-            logger.info("Setting up Netatmo Welcome WebHook to {}", webHookURI);
+            logger.debug("Setting up Netatmo Welcome WebHook");
             getWelcomeApi().addwebhook(webHookURI, WEBHOOK_APP);
         }
     }
 
     private void scheduleTokenInitAndRefresh() {
         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-            logger.info("Initializing API Connection and scheduling token refresh every {}s",
+            logger.debug("Initializing API Connection and scheduling token refresh every {}s",
                     configuration.reconnectInterval);
             try {
                 initializeApiClient();
@@ -206,7 +206,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.warn("Netatmo Bridge is read-only and does not handle commands");
+        logger.debug("Netatmo Bridge is read-only and does not handle commands");
     }
 
     public PartnerApi getPartnerApi() {
@@ -234,7 +234,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         logger.debug("Running dispose()");
 
         if (getWebHookURI() != null) {
-            logger.info("Releasing Netatmo Welcome WebHook");
+            logger.debug("Releasing Netatmo Welcome WebHook");
             webHookServlet.deactivate();
             getWelcomeApi().dropwebhook(WEBHOOK_APP);
         }
