@@ -32,10 +32,14 @@ public class AutomationStatusChanged extends Response {
         int where;
         int state;
         String[] segments = message.split("[\\*#]");
+        try {
+            state = Integer.parseInt(segments[2]);
 
-        state = Integer.parseInt(segments[2]);
-
-        where = Integer.parseInt(segments[3]);
+            where = Integer.parseInt(segments[3]);
+        } catch (NumberFormatException e2) {
+            logger.warn("Automation Status Changed conversion problem ({})", message);
+            return;
+        }
 
         logger.debug("Automation @ {} = {}", where, state);
         e.onAutomation(where, state);

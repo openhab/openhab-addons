@@ -26,7 +26,7 @@ public class ProductInformation extends Response {
 
     @Override
     public boolean check(String message) {
-        return message.matches("\\*#13\\*[0-9]+#9\\*66\\*[0-9]+\\*[0-9]+##");
+        return message.matches("\\*#13\\*[0-9]+#9\\*66\\*[0-9]+(\\*[0-9]+)?##");
     }
 
     @Override
@@ -37,24 +37,26 @@ public class ProductInformation extends Response {
         try {
             where = Integer.parseInt(message.split("[\\*#]")[3]);
         } catch (NumberFormatException e2) {
-            // open network with negative value
             logger.warn("Product information for source that cannot be parsed ({})", message);
             return;
         }
         try {
             index = Integer.parseInt(message.split("[\\*#]")[6]);
         } catch (NumberFormatException e2) {
-            // open network with negative value
             logger.warn("Product information for an index that cannot be parsed ({})", message);
             return;
         }
         try {
             value = Integer.parseInt(message.split("[\\*#]")[7]);
         } catch (NumberFormatException e2) {
-            // open network with negative value
-            logger.warn("Product information type cannot be parsed ({})", message);
+            logger.warn("Product information type cannot be parsed ({})", message, e2);
+            return;
+        } catch (ArrayIndexOutOfBoundsException e3) {
+            // The definition of the product cannot be get
+            logger.warn("Product information type not available ({})", message);
             return;
         }
+        logger.debug("Product information index={} where={} value={}", index, where, value);
         e.onProductInformation(where, index, value);
     }
 }

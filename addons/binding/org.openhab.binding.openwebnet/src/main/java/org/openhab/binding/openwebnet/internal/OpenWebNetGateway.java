@@ -366,7 +366,7 @@ public class OpenWebNetGateway implements ResponseListener, AutoCloseable {
             @Override
             public void run() {
                 try {
-                    logger.debug("Notify begining of Task");
+                    logger.debug("Notify beginning of Task");
                     synchronized (this) {
                         this.notifyAll();
                     }
@@ -525,6 +525,7 @@ public class OpenWebNetGateway implements ResponseListener, AutoCloseable {
     public void onProductInformation(int where, int index, int value) {
         @Nullable
         ResponseListener internal = internalListener;
+        logger.debug("In onProductInformation at @gateway");
         if (internal != null) {
             // call the internal Listener
             internal.onProductInformation(where, index, value);

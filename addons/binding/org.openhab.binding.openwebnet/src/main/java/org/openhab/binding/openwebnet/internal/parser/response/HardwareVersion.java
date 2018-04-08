@@ -10,6 +10,8 @@ package org.openhab.binding.openwebnet.internal.parser.response;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.openwebnet.internal.listener.ResponseListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -18,7 +20,8 @@ import org.openhab.binding.openwebnet.internal.listener.ResponseListener;
  */
 public class HardwareVersion extends Response {
 
-    // @SuppressWarnings("null") private final Logger logger = LoggerFactory.getLogger(HardwareVersion.class);
+    @SuppressWarnings("null")
+    private final Logger logger = LoggerFactory.getLogger(HardwareVersion.class);
 
     @Override
     protected boolean check(@NonNull String message) {
@@ -29,13 +32,16 @@ public class HardwareVersion extends Response {
     public void process(@NonNull String message, @NonNull ResponseListener e) {
         int where;
         String[] segments = message.split("\\*");
-
-        if ("".equals(segments[2])) {
-            where = 0;
-        } else {
-            where = Integer.parseInt(segments[2].split("#")[0]);
+        try {
+            if ("".equals(segments[2])) {
+                where = 0;
+            } else {
+                where = Integer.parseInt(segments[2].split("#")[0]);
+            }
+        } catch (NumberFormatException e2) {
+            logger.warn("Hardware Version conversion problem ({})", message);
+            return;
         }
-
         String version = segments[4] + "." + segments[5] + "." + segments[6].split("#")[0];
         e.onHardwareVersion(where, version);
     }

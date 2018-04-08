@@ -61,6 +61,7 @@ public class Parser {
     public void parse(ByteBuffer newData) {
         buffer.append(StandardCharsets.US_ASCII.decode(newData));
         int position;
+        logger.debug("Input buffer (<{}>, length={})", buffer.toString(), buffer.length());
         while ((position = buffer.indexOf(Parser.OPENWEBNET_SEPARATOR)) >= 0) {
             position += Parser.OPENWEBNET_SEPARATOR.length();
             @Nullable
@@ -76,7 +77,9 @@ public class Parser {
                     answer.process(message, listener);
                 }
             }
+            logger.debug("Input buffer deleted {} -> (<{}>, length={})", position, buffer.toString(), buffer.length());
         }
+        logger.debug("No more message to parse (<{}>, length={})", buffer.toString(), buffer.length());
     }
 
     /**

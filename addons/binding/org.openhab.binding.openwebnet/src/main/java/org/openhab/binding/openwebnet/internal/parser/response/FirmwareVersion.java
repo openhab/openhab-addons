@@ -31,13 +31,16 @@ public class FirmwareVersion extends Response {
     public void process(@NonNull String message, @NonNull ResponseListener e) {
         int where;
         String[] segments = message.split("\\*");
-
-        if ("".equals(segments[2])) {
-            where = 0;
-        } else {
-            where = Integer.parseInt(segments[2].split("#")[0]);
+        try {
+            if ("".equals(segments[2])) {
+                where = 0;
+            } else {
+                where = Integer.parseInt(segments[2].split("#")[0]);
+            }
+        } catch (NumberFormatException e2) {
+            logger.warn("Firmware Version conversion problem ({})", message);
+            return;
         }
-
         String version = segments[4] + "." + segments[5] + "." + segments[6].split("#")[0];
         logger.debug("FirmwareVersion of {} = {}", where, version);
         e.onFirmwareVersion(where, version);

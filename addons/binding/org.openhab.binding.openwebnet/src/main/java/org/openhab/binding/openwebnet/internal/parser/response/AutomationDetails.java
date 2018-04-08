@@ -33,12 +33,16 @@ public class AutomationDetails extends Response {
         int status;
         int level;
         String[] segments = message.split("[\\*#]");
+        try {
+            where = Integer.parseInt(segments[3]);
 
-        where = Integer.parseInt(segments[3]);
+            status = Integer.parseInt(segments[6]);
 
-        status = Integer.parseInt(segments[6]);
-
-        level = Integer.parseInt(segments[7]);
+            level = Integer.parseInt(segments[7]);
+        } catch (NumberFormatException e2) {
+            logger.warn("Automation Details conversion problem ({})", message);
+            return;
+        }
 
         logger.debug("Automation Details @ {} => status={}, level={}", where, status, level);
         e.onAutomationDetails(where, status, level);
