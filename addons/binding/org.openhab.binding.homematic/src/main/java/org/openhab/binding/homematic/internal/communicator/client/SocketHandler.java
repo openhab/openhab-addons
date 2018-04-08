@@ -42,6 +42,7 @@ public class SocketHandler {
             logger.trace("Creating new socket for port {}", port);
             Socket socket = new Socket();
             socket.setSoTimeout(config.getTimeout() * 1000);
+            socket.setReuseAddress(true);
             socket.connect(new InetSocketAddress(config.getGatewayAddress(), port), socket.getSoTimeout());
             socketInfo = new SocketInfo(socket);
             socketsPerPort.put(port, socketInfo);
