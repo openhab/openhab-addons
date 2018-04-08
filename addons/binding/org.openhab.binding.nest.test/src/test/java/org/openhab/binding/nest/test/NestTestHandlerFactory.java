@@ -31,7 +31,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  *
  * @author Wouter Born - Increase test coverage
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, name = "binding.nest.test", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class NestTestHandlerFactory extends BaseThingHandlerFactory {
 
     private String redirectUrl = "http://localhost";
