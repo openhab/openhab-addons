@@ -241,7 +241,10 @@ public class Connection {
         return false;
     }
 
-    public String convertStream(InputStream input) throws IOException {
+    public String convertStream(@Nullable InputStream input) throws IOException {
+        if (input == null) {
+            return "";
+        }
         Scanner inputScanner = new Scanner(input);
         Scanner scannerWithoutDelimiter = inputScanner.useDelimiter("\\A");
         String result = scannerWithoutDelimiter.hasNext() ? scannerWithoutDelimiter.next() : null;
@@ -457,7 +460,7 @@ public class Connection {
         }
     }
 
-    public @Nullable String postLoginData(@Nullable String optionalQueryParameters, String postData)
+    public @Nullable String postLoginData(@Nullable String optionalQueryParameters, @Nullable String postData)
             throws IOException, URISyntaxException {
         // build query parameters
         @Nullable
@@ -656,7 +659,7 @@ public class Connection {
                     if (payload == null) {
                         continue;
                     }
-                    if (payload.utterance != null && payload.utterance.equalsIgnoreCase(utterance)) {
+                    if (StringUtils.equalsIgnoreCase(payload.utterance, utterance)) {
                         found = routine;
                         deviceLocale = payload.locale;
                         break;

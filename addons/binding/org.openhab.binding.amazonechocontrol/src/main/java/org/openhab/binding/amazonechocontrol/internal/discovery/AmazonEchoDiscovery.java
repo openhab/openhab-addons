@@ -96,10 +96,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
     }
 
     void startScan(boolean manual) {
-        if (startScanStateJob != null) {
-            startScanStateJob.cancel(false);
-            startScanStateJob = null;
-        }
+        stopScanJob();
         if (discoverAccount) {
 
             discoverAccount = false;
@@ -125,18 +122,21 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         AmazonEchoDiscovery.instance = this;
-        if (startScanStateJob != null) {
-            startScanStateJob.cancel(false);
-            startScanStateJob = null;
-        }
+        stopScanJob();
         startScanStateJob = scheduler.schedule(this::startAutomaticScan, 3000, TimeUnit.MILLISECONDS);
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
         AmazonEchoDiscovery.instance = null;
-        if (startScanStateJob != null) {
-            startScanStateJob.cancel(false);
+        stopScanJob();
+    }
+
+    void stopScanJob() {
+        @Nullable
+        ScheduledFuture<?> currentStartScanStateJob = startScanStateJob;
+        if (currentStartScanStateJob != null) {
+            currentStartScanStateJob.cancel(false);
             startScanStateJob = null;
         }
     }
