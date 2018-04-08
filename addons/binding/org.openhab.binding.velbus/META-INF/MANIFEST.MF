@@ -11,13 +11,14 @@ Export-Package:
  org.openhab.binding.velbus,
  org.openhab.binding.velbus.handler
 Import-Package: 
- com.google.common.collect,
  gnu.io,
+ javax.measure.quantity,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.core.status,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.binding.builder,
@@ -26,6 +27,5 @@ Import-Package:
  org.openhab.binding.velbus,
  org.openhab.binding.velbus.handler,
  org.osgi.framework,
- org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

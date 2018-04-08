@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config-description:config-descriptions
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
-        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
-    <config-description uri="io:hueemulation">
-        <parameter name="pairingEnabled" type="text">
-            <label>Enable Device Pairing</label>
-            <description>Pairing must be enabled to connect a new device. Once a device has been added, pairing should be disabled.</description>
-            <options>
-                <option value="true">Pairing Enabled</option>
-                <option value="false">Pairing Disabled</option>
-            </options>
-            <default>false</default>
-        </parameter>
-        <parameter name="discoveryIp" type="text" required="false">
-            <label>Optional discovery address</label>
-            <description>If your host has multiple IP addresses you may specify the IP you would like to advertise in the UPNP discovery process. You may safely leave this empty on most systems.</description>
-        </parameter>
-        <parameter name="discoveryHttpPort" type="integer" required="false">
-            <label>Optional discovery web port</label>
-            <description>Some Hue applications require a different port (80) then what openHAB runs on by default (8080).  This option will only advertise a different port then what we are listening on.  Useful if you have an iptables rule redirect traffic from this port to the openHAB port. </description>
-            <advanced>true</advanced>
-        </parameter>
-    </config-description>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	<config-description uri="io:hueemulation">
+		<parameter name="pairingEnabled" type="text">
+			<label>Enable Device Pairing</label>
+			<description>Pairing must be enabled to connect a new device. Once a device has been added, pairing should be disabled.</description>
+			<options>
+				<option value="true">Pairing Enabled</option>
+				<option value="false">Pairing Disabled</option>
+			</options>
+			<default>false</default>
+		</parameter>
+		<parameter name="discoveryIp" type="text" required="false">
+			<label>Optional discovery address</label>
+			<description>If your host has multiple IP addresses you may specify the IP you would like to advertise in the UPNP discovery process. You may safely leave this empty on most systems.</description>
+		</parameter>
+		<parameter name="discoveryHttpPort" type="integer" required="false">
+			<label>Optional discovery web port</label>
+			<description>Some Hue applications require a different port (80) then what openHAB runs on by default (8080).  This option will only advertise a different port then what we are listening on.  Useful if you have an iptables rule redirect traffic from this port to the openHAB port. </description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
 </config-description:config-descriptions>

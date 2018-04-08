@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="innogysmarthome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="WSD2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Wall mounted Smoke Detector (WSD2)</label>
+		<description>A battery powered smoke detector sensor with integrated alarm (2nd version with long-life battery).</description>
+
+		<channels>
+			<channel id="smoke" typeId="SmokeDetectorSensor" />
+			<channel id="alarm" typeId="AlarmActuator" />
+			<channel id="battery_low" typeId="system.low-battery" />
+		</channels>
+
+		<config-description-ref uri="thing-type:innogysmarthome:config" />
+	</thing-type>
+</thing:thing-descriptions>

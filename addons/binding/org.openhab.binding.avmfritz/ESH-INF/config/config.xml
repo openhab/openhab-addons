@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config-description:config-descriptions
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="bridge-type:avmfritz:fritzbox">
@@ -22,15 +23,13 @@
 			<description>The local IP address or hostname of the FRITZ!Box.</description>
 			<default>fritz.box</default>
 		</parameter>
-		<parameter name="port" type="integer" required="false" min="0" max="65335"
-			groupName="network">
+		<parameter name="port" type="integer" required="false" min="0" max="65335" groupName="network">
 			<label>Port</label>
 			<description>Port of the FRITZ!Box.</description>
 		</parameter>
 		<parameter name="protocol" type="text" required="false" groupName="network">
 			<label>Protocol</label>
-			<description>Protocol to connect to the FRITZ!Box (http or https).
-			</description>
+			<description>Protocol to connect to the FRITZ!Box (http or https).</description>
 			<default>http</default>
 			<options>
 				<option value="http">HTTP</option>
@@ -39,32 +38,29 @@
 		</parameter>
 		<parameter name="user" type="text" required="false" groupName="authentication">
 			<label>Username</label>
-			<description>User name which has HomeAuto permissions on the given FRITZ!Box.
-			</description>
+			<description>User name which has HomeAuto permissions on the given FRITZ!Box.</description>
 		</parameter>
 		<parameter name="password" type="text" required="true" groupName="authentication">
 			<context>password</context>
 			<label>Password</label>
 			<description>Password to access the FRITZ!Box.</description>
 		</parameter>
-		<parameter name="pollingInterval" type="integer" required="false"
-			min="5" max="60" unit="s" groupName="connection">
+		<parameter name="pollingInterval" type="integer" required="false" min="5" max="60" unit="s"
+			groupName="connection">
 			<label>Polling Interval</label>
 			<description>Interval polling the FRITZ!Box (in seconds).</description>
 			<default>15</default>
 		</parameter>
-		<parameter name="asyncTimeout" type="integer" required="false" min="1000"
-			max="60000" unit="ms" groupName="connection">
+		<parameter name="asyncTimeout" type="integer" required="false" min="1000" max="60000" unit="ms"
+			groupName="connection">
 			<label>Async Timeout</label>
-			<description>Timeout for asynchronous connections (in milliseconds).
-			</description>
+			<description>Timeout for asynchronous connections (in milliseconds).</description>
 			<default>10000</default>
 		</parameter>
-		<parameter name="syncTimeout" type="integer" required="false" min="500"
-			max="15000" unit="ms" groupName="connection">
+		<parameter name="syncTimeout" type="integer" required="false" min="500" max="15000" unit="ms"
+			groupName="connection">
 			<label>Timeout</label>
-			<description>Timeout for synchronous connections (in milliseconds).
-			</description>
+			<description>Timeout for synchronous connections (in milliseconds).</description>
 			<default>2000</default>
 		</parameter>
 	</config-description>
@@ -85,19 +81,16 @@
 		<parameter name="ipAddress" type="text" required="true" groupName="network">
 			<context>network-address</context>
 			<label>IP address</label>
-			<description>The localIP address or hostname of the FRITZ!Powerline.
-			</description>
+			<description>The localIP address or hostname of the FRITZ!Powerline.</description>
 			<default>fritz.powerline</default>
 		</parameter>
-		<parameter name="port" type="integer" required="false" min="0" max="65335"
-			groupName="network">
+		<parameter name="port" type="integer" required="false" min="0" max="65335" groupName="network">
 			<label>Port</label>
 			<description>Port of the FRITZ!Powerline.</description>
 		</parameter>
 		<parameter name="protocol" type="text" required="false" groupName="network">
 			<label>Protocol</label>
-			<description>Protocol to connect to the FRITZ!Powerline (http or https).
-			</description>
+			<description>Protocol to connect to the FRITZ!Powerline (http or https).</description>
 			<default>http</default>
 			<options>
 				<option value="http">HTTP</option>
@@ -109,38 +102,37 @@
 			<label>Password</label>
 			<description>Password to access the FRITZ!Powerline.</description>
 		</parameter>
-		<parameter name="pollingInterval" type="integer" required="false"
-			min="5" max="60" unit="s" groupName="connection">
+		<parameter name="pollingInterval" type="integer" required="false" min="5" max="60" unit="s"
+			groupName="connection">
 			<label>Polling Interval</label>
 			<description>Interval polling the FRITZ!Powerline (in seconds).</description>
 			<default>15</default>
 		</parameter>
-		<parameter name="asyncTimeout" type="integer" required="false" min="1000"
-			max="60000" unit="ms" groupName="connection">
+		<parameter name="asyncTimeout" type="integer" required="false" min="1000" max="60000" unit="ms"
+			groupName="connection">
 			<label>Async Timeout</label>
-			<description>Timeout for asynchronous connections (in milliseconds).
-			</description>
+			<description>Timeout for asynchronous connections (in milliseconds).</description>
 			<default>10000</default>
 		</parameter>
-		<parameter name="syncTimeout" type="integer" required="false" min="500"
-			max="15000" unit="ms" groupName="connection">
+		<parameter name="syncTimeout" type="integer" required="false" min="500" max="15000" unit="ms"
+			groupName="connection">
 			<label>Timeout</label>
-			<description>Timeout for synchronous connections (in milliseconds).
-			</description>
+			<description>Timeout for synchronous connections (in milliseconds).</description>
 			<default>2000</default>
 		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:avmfritz:fritzdevice">
-		<parameter-group name="device">
-			<label>Device</label>
-			<description>Device specific settings.</description>
-		</parameter-group>
-		<parameter name="ain" type="text" required="true" groupName="device">
+		<parameter name="ain" type="text" required="true">
 			<label>AIN</label>
-			<description>The AHA id (AIN) that identifies one specific FRITZ! device.
-			</description>
+			<description>The AHA id (AIN) that identifies one specific FRITZ! device.</description>
 		</parameter>
 	</config-description>
 
+	<config-description uri="thing-type:avmfritz:fritzgroup">
+		<parameter name="ain" type="text" required="true">
+			<label>AIN</label>
+			<description>The AHA id (AIN) that identifies one specific FRITZ! group.</description>
+		</parameter>
+	</config-description>
 </config-description:config-descriptions>

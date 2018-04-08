@@ -11,6 +11,7 @@ package org.openhab.binding.rfxcom;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 
@@ -23,6 +24,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class RFXComBindingConstants {
 
     public static final String BINDING_ID = "rfxcom";

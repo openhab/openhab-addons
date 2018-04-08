@@ -198,11 +198,8 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
             if (deviceType == DeviceType.CIRCLE_PLUS) {
                 // The Circle+ real-time clock needs to be updated first to prevent clock sync issues
                 sendCommandMessage(new RealTimeClockSetRequestMessage(macAddress, LocalDateTime.now()));
-                scheduler.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        sendCommandMessage(new ClockSetRequestMessage(macAddress, LocalDateTime.now()));
-                    }
+                scheduler.schedule(() -> {
+                    sendCommandMessage(new ClockSetRequestMessage(macAddress, LocalDateTime.now()));
                 }, 5, TimeUnit.SECONDS);
             } else {
                 sendCommandMessage(new ClockSetRequestMessage(macAddress, LocalDateTime.now()));

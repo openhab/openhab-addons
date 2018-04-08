@@ -10,6 +10,7 @@ package org.openhab.binding.mcp23017;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.Lists;
@@ -18,8 +19,9 @@ import com.google.common.collect.Lists;
  * The {@link Mcp23017BindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Anatol Ogorek
+ * @author Anatol Ogorek - Initial contribution
  */
+@NonNullByDefault
 public class Mcp23017BindingConstants {
 
     public static final String BINDING_ID = "mcp23017";

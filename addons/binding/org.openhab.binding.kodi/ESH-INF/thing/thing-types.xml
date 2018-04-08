@@ -29,11 +29,14 @@
 			<channel id="mediatype" typeId="mediatype" />
 			<channel id="thumbnail" typeId="thumbnail" />
 			<channel id="fanart" typeId="fanart" />
+			<channel id="playfavorite" typeId="playfavorite" />
 		</channels>
 
 		<properties>
 			<property name="version">unknown</property>
 		</properties>
+
+		<representation-property>ipAddress</representation-property>
 
 		<config-description-ref uri="thing-type:kodi:kodi" />
 	</thing-type>
@@ -66,16 +69,23 @@
 		<label>Play URI</label>
 		<description>Play the given URI</description>
 	</channel-type>
+	<channel-type id="playfavorite">
+		<item-type>String</item-type>
+		<label>Play a Favorite</label>
+		<description>Play the given favorite by sending a command with the favorite's title</description>
+	</channel-type>
 	<channel-type id="pvr-open-tv" advanced="true">
 		<item-type>String</item-type>
 		<label>Play PVR tv</label>
-		<description>Play the given PVR TV channel</description>
+		<description>Play the given PVR TV channel by sending a command with the channel's name</description>
+		<state pattern="%s" />
 		<config-description-ref uri="channel-type:kodi:pvr-channel" />
 	</channel-type>
 	<channel-type id="pvr-open-radio" advanced="true">
 		<item-type>String</item-type>
 		<label>Play PVR radio</label>
-		<description>Play the given PVR Radio channel</description>
+		<description>Play the given PVR Radio channel by sending a command with the channel's name</description>
+		<state pattern="%s" />
 		<config-description-ref uri="channel-type:kodi:pvr-channel" />
 	</channel-type>
 	<channel-type id="shownotification" advanced="true">
@@ -87,7 +97,7 @@
 		<item-type>String</item-type>
 		<label>Send a key</label>
 		<description>Sends a key stroke to the Kodi Player to navigate in the UI
-        </description>
+		</description>
 		<state>
 			<options>
 				<option value="Left">Left</option>

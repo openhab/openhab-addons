@@ -8,7 +8,8 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 		<label>Xiaomi Aqara Intelligent Curtain Motor</label>
-		<description>Smart curtain controller for drawing back and forth fabric curtains. It has manual and remote operation modes.</description>
+		<description>Smart curtain controller for drawing back and forth fabric curtains. It has manual and remote operation
+			modes.</description>
 		<channels>
 			<channel id="curtainControl" typeId="curtainControl" />
 		</channels>

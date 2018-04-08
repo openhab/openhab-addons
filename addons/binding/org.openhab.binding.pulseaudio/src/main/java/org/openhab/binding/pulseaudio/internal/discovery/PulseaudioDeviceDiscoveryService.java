@@ -66,7 +66,7 @@ public class PulseaudioDeviceDiscoveryService extends AbstractDiscoveryService i
         String uidName = device.getPaName();
         logger.debug("device {} found", device);
         ThingTypeUID thingType = null;
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         // All devices need this parameter
         properties.put(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME, uidName);
         if (device instanceof Sink) {

@@ -38,8 +38,8 @@ import org.slf4j.LoggerFactory;
  * The {@link StationHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Dennis Dollinger
- * @author Jürgen Baginski
+ * @author Dennis Dollinger - Initial contribution
+ * @author Jürgen Baginski - Initial contribution
  */
 public class StationHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(StationHandler.class);
@@ -86,19 +86,15 @@ public class StationHandler extends BaseThingHandler {
         }
         updateStatus(ThingStatus.UNKNOWN);
 
-        pollingJob = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    logger.debug("Try to refresh detail data");
-                    updateDetailData();
-                } catch (RuntimeException r) {
-                    logger.debug(
-                            "Caught exception in ScheduledExecutorService of TankerkoenigHandler. RuntimeExcetion: {}",
-                            r);
-                    // no status change, since in case of error in here,
-                    // the old values for opening time will be continue to be used
-                }
+        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                logger.debug("Try to refresh detail data");
+                updateDetailData();
+            } catch (RuntimeException r) {
+                logger.debug("Caught exception in ScheduledExecutorService of TankerkoenigHandler. RuntimeExcetion: {}",
+                        r);
+                // no status change, since in case of error in here,
+                // the old values for opening time will be continue to be used
             }
         }, 15, 86400, TimeUnit.SECONDS);// 24*60*60 = 86400, a whole day in seconds!
         logger.debug("Refresh job scheduled to run every 24 hours for '{}'", getThing().getUID());

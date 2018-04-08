@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -13,14 +15,6 @@
 	<name>Feed Binding Tests</name>
 	<packaging>eclipse-test-plugin</packaging>
 
-	<repositories>
-		<repository>
-			<id>jetty-eclipse</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/eclipse/updates/4.5</url>
-		</repository>
-	</repositories>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.openhab.io</groupId>
@@ -32,17 +26,13 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
+				<groupId>${tycho-groupid}</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
-				<version>${tycho-version}</version>
 				<configuration>
 					<providerHint>junit47</providerHint>
 					<providerProperties>
-						<excludegroups>org.openhab.binding.feed.test.SlowTests</excludegroups>
+						<excludedGroups>org.openhab.binding.feed.test.SlowTests</excludedGroups>
 					</providerProperties>
-					<excludes>
-						<exclude>**/*.groovy</exclude>
-					</excludes>
 					<defaultStartLevel>
 						<level>4</level>
 						<autoStart>true</autoStart>
@@ -105,7 +95,7 @@
 						<dependency>
 							<type>eclipse-plugin</type>
 							<artifactId>org.eclipse.smarthome.core.thing</artifactId>
-							<version>0.8.0.20160302</version>
+							<version>0.0.0</version>
 						</dependency>
 						<dependency>
 							<type>eclipse-plugin</type>

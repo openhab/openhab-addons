@@ -23,7 +23,7 @@ abstract class AbstractChannelThrottler implements ChannelThrottler {
     protected final Rate totalRate;
     protected final TimeProvider timeProvider;
     protected final ScheduledExecutorService scheduler;
-    protected final Map<Object, Rate> channels = new HashMap<Object, Rate>();
+    protected final Map<Object, Rate> channels = new HashMap<>();
 
     protected AbstractChannelThrottler(Rate totalRate, ScheduledExecutorService scheduler, Map<Object, Rate> channels,
             TimeProvider timeProvider) {

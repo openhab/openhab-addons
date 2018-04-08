@@ -22,7 +22,6 @@ Import-Package: com.google.gson;resolution:=optional,
  org.openhab.binding.icloud,
  org.openhab.binding.icloud.handler,
  org.osgi.framework,
- org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.icloud,

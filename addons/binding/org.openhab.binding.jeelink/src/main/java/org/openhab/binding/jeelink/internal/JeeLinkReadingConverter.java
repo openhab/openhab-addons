@@ -15,6 +15,4 @@ package org.openhab.binding.jeelink.internal;
  */
 public interface JeeLinkReadingConverter<R extends Reading> {
     public R createReading(String inputLine);
-
-    public String getSketchName();
 }

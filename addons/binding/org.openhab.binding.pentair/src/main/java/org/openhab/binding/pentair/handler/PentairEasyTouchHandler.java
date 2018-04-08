@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PentairEasyTouchHandler extends PentairBaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(PentairEasyTouchHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PentairEasyTouchHandler.class);
 
     /**
      * current/last status packet recieved, used to compare new packet values to determine if status needs to be updated
@@ -142,7 +142,7 @@ public class PentairEasyTouchHandler extends PentairBaseThingHandler {
     /**
      * Method to turn on/off a circuit in response to a command from the framework
      *
-     * @param circuit - circuit number
+     * @param circuit circuit number
      * @param state
      */
     public void circuitSwitch(int circuit, boolean state) {

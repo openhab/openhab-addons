@@ -8,12 +8,16 @@
  */
 package org.openhab.binding.velbus.handler;
 
-import static org.openhab.binding.velbus.VelbusBindingConstants.COMMAND_SENSOR_TEMPERATURE;
+import static org.openhab.binding.velbus.VelbusBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import javax.measure.quantity.Temperature;
+
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -30,13 +34,11 @@ import org.openhab.binding.velbus.internal.packets.VelbusSensorTemperatureReques
  * @author Cedric Boon - Initial contribution
  */
 public abstract class VelbusTemperatureSensorHandler extends VelbusSensorHandler {
-    ScheduledFuture<?> refreshJob;
+    private ScheduledFuture<?> refreshJob;
+    private ChannelUID temperatureChannel;
 
-    ChannelUID temperatureChannel;
-
-    public VelbusTemperatureSensorHandler(Thing thing, int numberOfChannels, int numberOfSubAddresses,
-            ChannelUID temperatureChannel) {
-        super(thing, numberOfChannels, numberOfSubAddresses);
+    public VelbusTemperatureSensorHandler(Thing thing, int numberOfSubAddresses, ChannelUID temperatureChannel) {
+        super(thing, numberOfSubAddresses);
 
         this.temperatureChannel = temperatureChannel;
     }
@@ -45,7 +47,18 @@ public abstract class VelbusTemperatureSensorHandler extends VelbusSensorHandler
     public void initialize() {
         super.initialize();
 
-        startAutomaticRefresh();
+        initializeAutomaticRefresh();
+    }
+
+    private void initializeAutomaticRefresh() {
+        Object refreshIntervalObject = getConfig().get(REFRESH_INTERVAL);
+        if (refreshIntervalObject != null) {
+            int refreshInterval = ((BigDecimal) refreshIntervalObject).intValue();
+
+            if (refreshInterval > 0) {
+                startAutomaticRefresh(refreshInterval);
+            }
+        }
     }
 
     @Override
@@ -53,40 +66,34 @@ public abstract class VelbusTemperatureSensorHandler extends VelbusSensorHandler
         refreshJob.cancel(true);
     }
 
-    @SuppressWarnings("null")
-    private void startAutomaticRefresh() {
+    private void startAutomaticRefresh(int refreshInterval) {
+        VelbusBridgeHandler velbusBridgeHandler = getVelbusBridgeHandler();
+        if (velbusBridgeHandler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            return;
+        }
+
         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-            try {
-                sendSensorTemperatureRequest();
-            } catch (Exception e) {
-                logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-            }
-        }, 0, 300, TimeUnit.SECONDS);
+            sendSensorTemperatureRequest(velbusBridgeHandler);
+        }, 0, refreshInterval, TimeUnit.SECONDS);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         VelbusBridgeHandler velbusBridgeHandler = getVelbusBridgeHandler();
         if (velbusBridgeHandler == null) {
-            logger.warn("Velbus bridge handler not found. Cannot handle command without bridge.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
         if (command instanceof RefreshType) {
             if (channelUID.equals(temperatureChannel)) {
-                sendSensorTemperatureRequest();
-            }
+                sendSensorTemperatureRequest(velbusBridgeHandler);
         }
     }
-
-    protected void sendSensorTemperatureRequest() {
-        VelbusBridgeHandler velbusBridgeHandler = getVelbusBridgeHandler();
-        if (velbusBridgeHandler == null) {
-            logger.warn("Velbus bridge handler not found. Cannot send request without bridge.");
-            return;
         }
 
+    protected void sendSensorTemperatureRequest(VelbusBridgeHandler velbusBridgeHandler) {
         VelbusSensorTemperatureRequestPacket packet = new VelbusSensorTemperatureRequestPacket(
                 getModuleAddress().getAddress());
 
@@ -94,7 +101,6 @@ public abstract class VelbusTemperatureSensorHandler extends VelbusSensorHandler
         velbusBridgeHandler.sendPacket(packetBytes);
     }
 
-    @SuppressWarnings("null")
     @Override
     public void onPacketReceived(byte[] packet) {
         super.onPacketReceived(packet);
@@ -110,7 +116,8 @@ public abstract class VelbusTemperatureSensorHandler extends VelbusSensorHandler
 
                 double temperature = ((highByteCurrentSensorTemperature << 3) + (lowByteCurrentSensorTemperature >> 5))
                         * 0.0625 * ((lowByteCurrentSensorTemperature & 0x1F) == 0x1F ? -1 : 1);
-                updateState(temperatureChannel, new DecimalType(temperature));
+                QuantityType<Temperature> state = new QuantityType<>(temperature, SIUnits.CELSIUS);
+                updateState(temperatureChannel, state);
             }
         }
     }

@@ -29,6 +29,6 @@ public class VelbusVMBGPOHandler extends VelbusTemperatureSensorHandler {
             Arrays.asList(THING_TYPE_VMBGPO, THING_TYPE_VMBGPOD));
 
     public VelbusVMBGPOHandler(Thing thing) {
-        super(thing, 33, 4, new ChannelUID(thing.getUID(), "CH33"));
+        super(thing, 4, new ChannelUID(thing.getUID(), "CH33"));
     }
 }

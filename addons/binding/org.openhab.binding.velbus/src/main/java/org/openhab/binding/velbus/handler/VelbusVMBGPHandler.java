@@ -29,6 +29,6 @@ public class VelbusVMBGPHandler extends VelbusTemperatureSensorHandler {
             THING_TYPE_VMBGP2, THING_TYPE_VMBGP4, THING_TYPE_VMBGP4, THING_TYPE_VMBGP4PIR));
 
     public VelbusVMBGPHandler(Thing thing) {
-        super(thing, 9, 4, new ChannelUID(thing.getUID(), "CH9"));
+        super(thing, 4, new ChannelUID(thing.getUID(), "CH9"));
     }
 }

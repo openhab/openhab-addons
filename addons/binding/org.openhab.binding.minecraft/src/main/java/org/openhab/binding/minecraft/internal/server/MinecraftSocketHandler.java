@@ -11,7 +11,6 @@ package org.openhab.binding.minecraft.internal.server;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openhab.binding.minecraft.handler.MinecraftServerHandler;
 import org.openhab.binding.minecraft.internal.message.OHMessage;
 import org.openhab.binding.minecraft.internal.message.data.PlayerData;
 import org.openhab.binding.minecraft.internal.message.data.ServerData;
@@ -32,15 +31,15 @@ import rx.subjects.BehaviorSubject;
 /**
  * Handles sending and receiving messages from Minecraft server.
  *
- * @author Mattias Markehed
+ * @author Mattias Markehed - Initial contribution
  */
 public class MinecraftSocketHandler implements WebSocketEventHandler {
 
     private Logger logger = LoggerFactory.getLogger(MinecraftSocketHandler.class);
 
     private BehaviorSubject<ServerData> serverRx = BehaviorSubject.create();
-    private BehaviorSubject<List<SignData>> signsRx = BehaviorSubject.<List<SignData>>create();
-    private BehaviorSubject<List<PlayerData>> playersRx = BehaviorSubject.<List<PlayerData>>create();
+    private BehaviorSubject<List<SignData>> signsRx = BehaviorSubject.<List<SignData>> create();
+    private BehaviorSubject<List<PlayerData>> playersRx = BehaviorSubject.<List<PlayerData>> create();
 
     private Gson gson = new GsonBuilder().create();
 
@@ -52,7 +51,6 @@ public class MinecraftSocketHandler implements WebSocketEventHandler {
     @Override
     public void onError(WebSocketException e) {
         logger.error("Server error {}", e.getMessage(), e);
-
     }
 
     @Override

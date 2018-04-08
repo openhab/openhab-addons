@@ -22,8 +22,12 @@ public class VelbusModuleAddress {
     private byte[] subAddresses;
 
     public VelbusModuleAddress(byte address, int numberOfSubAddresses) {
+        this(address, getInitialSubAddresses(numberOfSubAddresses));
+    }
+
+    public VelbusModuleAddress(byte address, byte[] subAddresses) {
         this.address = address;
-        this.subAddresses = getInitialSubAddresses(numberOfSubAddresses);
+        this.subAddresses = subAddresses;
     }
 
     public byte getAddress() {
@@ -99,7 +103,7 @@ public class VelbusModuleAddress {
         return new VelbusChannelIdentifier(address, channel);
     }
 
-    protected byte[] getInitialSubAddresses(int numberOfSubAddresses) {
+    private static byte[] getInitialSubAddresses(int numberOfSubAddresses) {
         byte[] subAddresses = new byte[numberOfSubAddresses];
 
         for (int i = 0; i < numberOfSubAddresses; i++) {

@@ -11,6 +11,7 @@ package org.openhab.binding.yamahareceiver;
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.Sets;
@@ -22,6 +23,7 @@ import com.google.common.collect.Sets;
  * @author David Graeff <david.graeff@web.de>
  * @author Tomasz Maruszak - DAB support, Spotify support, refactoring
  */
+@NonNullByDefault
 public class YamahaReceiverBindingConstants {
     public static final String BINDING_ID = "yamahareceiver";
 
@@ -39,6 +41,7 @@ public class YamahaReceiverBindingConstants {
     public static final String CHANNEL_SURROUND = "surroundProgram";
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_VOLUME_DB = "volumeDB";
+    public static final String CHANNEL_DIALOGUE_LEVEL = "dialogueLevel";
     public static final String CHANNEL_MUTE = "mute";
 
     // List of channel IDs for navigation control: Read/Write

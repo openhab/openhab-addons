@@ -11,6 +11,6 @@
 		<properties>
 			<property name="vendor">Xiaomi</property>
 		</properties>
-        <config-description-ref uri="bridge-type:mihome:bridge"/>
+		<config-description-ref uri="bridge-type:mihome:bridge"/>
 	</bridge-type>
 </thing:thing-descriptions>

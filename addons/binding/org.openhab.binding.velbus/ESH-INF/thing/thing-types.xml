@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="velbus" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="velbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -8,6 +9,7 @@
 		<description>This bridge represents a Velbus Serial-interface</description>
 		<config-description>
 			<parameter name="port" type="text">
+				<context>serial-port</context>
 				<label>Serial port</label>
 				<description>Select serial port (COM1, /dev/ttyS0, ...)</description>
 				<required>true</required>
@@ -15,13 +17,113 @@
 		</config-description>
 	</bridge-type>
 
-	<thing-type id="vmb4ryld">
+	<thing-type id="vmb1bls">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>VMB4RYLD</label>
-		<description>4 channel relay module with direct load connections for VELBUS system</description>
+		<label>VMB1BLS</label>
+		<description>1-channel blind control module for universal mounting</description>
+		<channels>
+			<channel id="CH1" typeId="rollershutter" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmb1dm">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB1DM</label>
+		<description>Dimmer module for inductive/resistive and capacitive load</description>
+		<channels>
+			<channel id="CH1" typeId="brightness" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmb1led">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB1LED</label>
+		<description>1-channel 0-10V controlled PWM dimmer for led strips</description>
+		<channels>
+			<channel id="CH1" typeId="brightness" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmb1ry">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB1RY</label>
+		<description>1-channel relay module</description>
+		<channels>
+			<channel id="CH1" typeId="switch" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmb1ryno">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB1RYNO</label>
+		<description>1-channel relay module with potential-free changeover contact</description>
 		<channels>
 			<channel id="CH1" typeId="switch" />
 			<channel id="CH2" typeId="switch" />
@@ -34,7 +136,195 @@
 			<parameter name="address" type="text" required="true">
 				<label>Address</label>
 				<description>The velbus address of the device</description>
-				<default>0x00</default>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmb1rynos">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB1RYNOS</label>
+		<description>1-channel relay module with potential-free changeover contact</description>
+		<channels>
+			<channel id="CH1" typeId="switch" />
+			<channel id="CH2" typeId="switch" />
+			<channel id="CH3" typeId="switch" />
+			<channel id="CH4" typeId="switch" />
+			<channel id="CH5" typeId="switch" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmb2ble">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB2BLE</label>
+		<description>2-channel blind control module with extended possibilities</description>
+		<channels>
+			<channel id="CH1" typeId="rollershutter" />
+			<channel id="CH2" typeId="rollershutter" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmb2pbn">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB2PBN</label>
+		<description>Push-button interface for Niko 1- or 2-fold push-buttons</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH6" type="text" required="false">
+				<label>CH6 name</label>
+				<description>The name of CH6.</description>
+				<default>CH6</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH7" type="text" required="false">
+				<label>CH7 name</label>
+				<description>The name of CH7.</description>
+				<default>CH7</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH8" type="text" required="false">
+				<label>CH8 name</label>
+				<description>The name of CH8.</description>
+				<default>CH8</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -45,7 +335,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMB4DC</label>
-		<description>0/1 to 10V dimmer controller module for VELBUS system</description>
+		<description>4-channel 0/1-10V dimmer controller</description>
 		<channels>
 			<channel id="CH1" typeId="brightness" />
 			<channel id="CH2" typeId="brightness" />
@@ -57,199 +347,193 @@
 			<parameter name="address" type="text" required="true">
 				<label>Address</label>
 				<description>The velbus address of the device</description>
-				<default>0x00</default>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<thing-type id="vmb2ble">
+	<thing-type id="vmb4ry">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>VMB2BLE</label>
-		<description>2 channel blind module for VELBUS system</description>
+		<label>VMB4RY</label>
+		<description>4-channel relay module</description>
 		<channels>
-			<channel id="CH1" typeId="rollershutter" />
-			<channel id="CH2" typeId="rollershutter" />
+			<channel id="CH1" typeId="switch" />
+			<channel id="CH2" typeId="switch" />
+			<channel id="CH3" typeId="switch" />
+			<channel id="CH4" typeId="switch" />
 		</channels>
 
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<label>Address</label>
 				<description>The velbus address of the device</description>
-				<default>0x00</default>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<thing-type id="vmbgpo">
+	<thing-type id="vmb4ryld">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>VMBGPO</label>
-		<description>Touch panel with Oled display for VELBUS system</description>
+		<label>VMB4RYLD</label>
+		<description>4-channel relay module with voltage outputs</description>
 		<channels>
-			<channel id="CH1" typeId="trigger-channel" />
-			<channel id="CH2" typeId="trigger-channel" />
-			<channel id="CH3" typeId="trigger-channel" />
-			<channel id="CH4" typeId="trigger-channel" />
-			<channel id="CH5" typeId="trigger-channel" />
-			<channel id="CH6" typeId="trigger-channel" />
-			<channel id="CH7" typeId="trigger-channel" />
-			<channel id="CH8" typeId="trigger-channel" />
-			<channel id="CH9" typeId="trigger-channel" />
-			<channel id="CH10" typeId="trigger-channel" />
-			<channel id="CH11" typeId="trigger-channel" />
-			<channel id="CH12" typeId="trigger-channel" />
-			<channel id="CH13" typeId="trigger-channel" />
-			<channel id="CH14" typeId="trigger-channel" />
-			<channel id="CH15" typeId="trigger-channel" />
-			<channel id="CH16" typeId="trigger-channel" />
-			<channel id="CH17" typeId="trigger-channel" />
-			<channel id="CH18" typeId="trigger-channel" />
-			<channel id="CH19" typeId="trigger-channel" />
-			<channel id="CH20" typeId="trigger-channel" />
-			<channel id="CH21" typeId="trigger-channel" />
-			<channel id="CH22" typeId="trigger-channel" />
-			<channel id="CH23" typeId="trigger-channel" />
-			<channel id="CH24" typeId="trigger-channel" />
-			<channel id="CH25" typeId="trigger-channel" />
-			<channel id="CH26" typeId="trigger-channel" />
-			<channel id="CH27" typeId="trigger-channel" />
-			<channel id="CH28" typeId="trigger-channel" />
-			<channel id="CH29" typeId="trigger-channel" />
-			<channel id="CH30" typeId="trigger-channel" />
-			<channel id="CH31" typeId="trigger-channel" />
-			<channel id="CH32" typeId="trigger-channel" />
-			<channel id="CH33" typeId="temperature" />
+			<channel id="CH1" typeId="switch" />
+			<channel id="CH2" typeId="switch" />
+			<channel id="CH3" typeId="switch" />
+			<channel id="CH4" typeId="switch" />
+			<channel id="CH5" typeId="switch" />
 		</channels>
 
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<label>Address</label>
 				<description>The velbus address of the device</description>
-				<default>0x00</default>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<thing-type id="vmbgpod">
+	<thing-type id="vmb4ryno">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>VMBGPOD</label>
-		<description>Touch panel with Oled display for VELBUS system</description>
+		<label>VMB4RYNO</label>
+		<description>4-channel relay module with potential-free contacts</description>
 		<channels>
-			<channel id="CH1" typeId="trigger-channel" />
-			<channel id="CH2" typeId="trigger-channel" />
-			<channel id="CH3" typeId="trigger-channel" />
-			<channel id="CH4" typeId="trigger-channel" />
-			<channel id="CH5" typeId="trigger-channel" />
-			<channel id="CH6" typeId="trigger-channel" />
-			<channel id="CH7" typeId="trigger-channel" />
-			<channel id="CH8" typeId="trigger-channel" />
-			<channel id="CH9" typeId="trigger-channel" />
-			<channel id="CH10" typeId="trigger-channel" />
-			<channel id="CH11" typeId="trigger-channel" />
-			<channel id="CH12" typeId="trigger-channel" />
-			<channel id="CH13" typeId="trigger-channel" />
-			<channel id="CH14" typeId="trigger-channel" />
-			<channel id="CH15" typeId="trigger-channel" />
-			<channel id="CH16" typeId="trigger-channel" />
-			<channel id="CH17" typeId="trigger-channel" />
-			<channel id="CH18" typeId="trigger-channel" />
-			<channel id="CH19" typeId="trigger-channel" />
-			<channel id="CH20" typeId="trigger-channel" />
-			<channel id="CH21" typeId="trigger-channel" />
-			<channel id="CH22" typeId="trigger-channel" />
-			<channel id="CH23" typeId="trigger-channel" />
-			<channel id="CH24" typeId="trigger-channel" />
-			<channel id="CH25" typeId="trigger-channel" />
-			<channel id="CH26" typeId="trigger-channel" />
-			<channel id="CH27" typeId="trigger-channel" />
-			<channel id="CH28" typeId="trigger-channel" />
-			<channel id="CH29" typeId="trigger-channel" />
-			<channel id="CH30" typeId="trigger-channel" />
-			<channel id="CH31" typeId="trigger-channel" />
-			<channel id="CH32" typeId="trigger-channel" />
-			<channel id="CH33" typeId="temperature" />
+			<channel id="CH1" typeId="switch" />
+			<channel id="CH2" typeId="switch" />
+			<channel id="CH3" typeId="switch" />
+			<channel id="CH4" typeId="switch" />
+			<channel id="CH5" typeId="switch" />
 		</channels>
 
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<label>Address</label>
 				<description>The velbus address of the device</description>
-				<default>0x00</default>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<thing-type id="vmbgp1">
+	<thing-type id="vmb6in">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>VMBGP1</label>
-		<description>One touch buttons module for VELBUS system</description>
-		<channels>
-			<channel id="CH1" typeId="trigger-channel" />
-			<channel id="CH2" typeId="trigger-channel" />
-			<channel id="CH3" typeId="trigger-channel" />
-			<channel id="CH4" typeId="trigger-channel" />
-			<channel id="CH5" typeId="trigger-channel" />
-			<channel id="CH6" typeId="trigger-channel" />
-			<channel id="CH7" typeId="trigger-channel" />
-			<channel id="CH8" typeId="trigger-channel" />
-			<channel id="CH9" typeId="temperature" />
-		</channels>
-
-		<config-description>
-			<parameter name="address" type="text" required="true">
-				<label>Address</label>
-				<description>The velbus address of the device</description>
-				<default>0x00</default>
-			</parameter>
-		</config-description>
-	</thing-type>
-
-	<thing-type id="vmbgp2">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
-		</supported-bridge-type-refs>
-
-		<label>VMBGP2</label>
-		<description>Two touch buttons module for VELBUS system</description>
-		<channels>
-			<channel id="CH1" typeId="trigger-channel" />
-			<channel id="CH2" typeId="trigger-channel" />
-			<channel id="CH3" typeId="trigger-channel" />
-			<channel id="CH4" typeId="trigger-channel" />
-			<channel id="CH5" typeId="trigger-channel" />
-			<channel id="CH6" typeId="trigger-channel" />
-			<channel id="CH7" typeId="trigger-channel" />
-			<channel id="CH8" typeId="trigger-channel" />
-			<channel id="CH9" typeId="temperature" />
-		</channels>
-
-		<config-description>
-			<parameter name="address" type="text" required="true">
-				<label>Address</label>
-				<description>The velbus address of the device</description>
-				<default>0x00</default>
-			</parameter>
-		</config-description>
-	</thing-type>
-
-	<thing-type id="vmbgp4">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
-		</supported-bridge-type-refs>
-
-		<label>VMBGP4</label>
-		<description>Four touch buttons module for VELBUS system</description>
+		<label>VMB6IN</label>
+		<description>6-channel input module</description>
 		<channels>
 			<channel id="CH1" typeId="trigger-channel" />
 			<channel id="CH2" typeId="trigger-channel" />
@@ -257,71 +541,48 @@
 			<channel id="CH4" typeId="trigger-channel" />
 			<channel id="CH5" typeId="trigger-channel" />
 			<channel id="CH6" typeId="trigger-channel" />
-			<channel id="CH7" typeId="trigger-channel" />
-			<channel id="CH8" typeId="trigger-channel" />
-			<channel id="CH9" typeId="temperature" />
 		</channels>
 
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<label>Address</label>
 				<description>The velbus address of the device</description>
-				<default>0x00</default>
 			</parameter>
-		</config-description>
-	</thing-type>
-
-	<thing-type id="vmbgp4pir">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
-		</supported-bridge-type-refs>
-
-		<label>VMBGP4PIR</label>
-		<description>Four touch buttons with PIR detector module for VELBUS system</description>
-		<channels>
-			<channel id="CH1" typeId="trigger-channel" />
-			<channel id="CH2" typeId="trigger-channel" />
-			<channel id="CH3" typeId="trigger-channel" />
-			<channel id="CH4" typeId="trigger-channel" />
-			<channel id="CH5" typeId="trigger-channel" />
-			<channel id="CH6" typeId="trigger-channel" />
-			<channel id="CH7" typeId="trigger-channel" />
-			<channel id="CH8" typeId="trigger-channel" />
-			<channel id="CH9" typeId="temperature" />
-		</channels>
-
-		<config-description>
-			<parameter name="address" type="text" required="true">
-				<label>Address</label>
-				<description>The velbus address of the device</description>
-				<default>0x00</default>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
 			</parameter>
-		</config-description>
-	</thing-type>
-
-	<thing-type id="vmb2pbn">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
-		</supported-bridge-type-refs>
-
-		<label>VMB2PBN</label>
-		<description>Push button module for 1 or 2 NIKO push buttons</description>
-		<channels>
-			<channel id="CH1" typeId="trigger-channel" />
-			<channel id="CH2" typeId="trigger-channel" />
-			<channel id="CH3" typeId="trigger-channel" />
-			<channel id="CH4" typeId="trigger-channel" />
-			<channel id="CH5" typeId="trigger-channel" />
-			<channel id="CH6" typeId="trigger-channel" />
-			<channel id="CH7" typeId="trigger-channel" />
-			<channel id="CH8" typeId="trigger-channel" />
-		</channels>
-
-		<config-description>
-			<parameter name="address" type="text" required="true">
-				<label>Address</label>
-				<description>The velbus address of the device</description>
-				<default>0x00</default>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH6" type="text" required="false">
+				<label>CH6 name</label>
+				<description>The name of CH6.</description>
+				<default>CH6</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -332,7 +593,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMB6PBN</label>
-		<description>Push button interface module for 4 or 6 NIKO push buttons</description>
+		<description>Push-button interface module for Niko 4- or 6-fold push-button</description>
 		<channels>
 			<channel id="CH1" typeId="trigger-channel" />
 			<channel id="CH2" typeId="trigger-channel" />
@@ -348,34 +609,54 @@
 			<parameter name="address" type="text" required="true">
 				<label>Address</label>
 				<description>The velbus address of the device</description>
-				<default>0x00</default>
 			</parameter>
-		</config-description>
-	</thing-type>
-
-	<thing-type id="vmb8pbu">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
-		</supported-bridge-type-refs>
-
-		<label>VMB8PBU</label>
-		<description>Push button interface module for VELBUS system</description>
-		<channels>
-			<channel id="CH1" typeId="trigger-channel" />
-			<channel id="CH2" typeId="trigger-channel" />
-			<channel id="CH3" typeId="trigger-channel" />
-			<channel id="CH4" typeId="trigger-channel" />
-			<channel id="CH5" typeId="trigger-channel" />
-			<channel id="CH6" typeId="trigger-channel" />
-			<channel id="CH7" typeId="trigger-channel" />
-			<channel id="CH8" typeId="trigger-channel" />
-		</channels>
-
-		<config-description>
-			<parameter name="address" type="text" required="true">
-				<label>Address</label>
-				<description>The velbus address of the device</description>
-				<default>0x00</default>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH6" type="text" required="false">
+				<label>CH6 name</label>
+				<description>The name of CH6.</description>
+				<default>CH6</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH7" type="text" required="false">
+				<label>CH7 name</label>
+				<description>The name of CH7.</description>
+				<default>CH7</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH8" type="text" required="false">
+				<label>CH8 name</label>
+				<description>The name of CH8.</description>
+				<default>CH8</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -386,7 +667,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMB7IN</label>
-		<description>7 channel input module for VELBUS system</description>
+		<description>7-channel input module (potentialfree + pulse)</description>
 		<channels>
 			<channel id="CH1" typeId="trigger-channel" />
 			<channel id="CH2" typeId="trigger-channel" />
@@ -402,18 +683,362 @@
 			<parameter name="address" type="text" required="true">
 				<label>Address</label>
 				<description>The velbus address of the device</description>
-				<default>0x00</default>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH6" type="text" required="false">
+				<label>CH6 name</label>
+				<description>The name of CH6.</description>
+				<default>CH6</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH7" type="text" required="false">
+				<label>CH7 name</label>
+				<description>The name of CH7.</description>
+				<default>CH7</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH8" type="text" required="false">
+				<label>CH8 name</label>
+				<description>The name of CH8.</description>
+				<default>CH8</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<thing-type id="vmbpiro">
+    <thing-type id="vmb8ir">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+
+        <label>VMB8IR</label>
+        <description>Infrared remote control receiver module</description>
+        <channels>
+            <channel id="CH1" typeId="trigger-channel" />
+            <channel id="CH2" typeId="trigger-channel" />
+            <channel id="CH3" typeId="trigger-channel" />
+            <channel id="CH4" typeId="trigger-channel" />
+            <channel id="CH5" typeId="trigger-channel" />
+            <channel id="CH6" typeId="trigger-channel" />
+            <channel id="CH7" typeId="trigger-channel" />
+            <channel id="CH8" typeId="trigger-channel" />
+        </channels>
+
+        <config-description>
+            <parameter name="address" type="text" required="true">
+                <label>Address</label>
+                <description>The velbus address of the device</description>
+            </parameter>
+            <parameter name="CH1" type="text" required="false">
+                <label>CH1 name</label>
+                <description>The name of CH1.</description>
+                <default>CH1</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="CH2" type="text" required="false">
+                <label>CH2 name</label>
+                <description>The name of CH2.</description>
+                <default>CH2</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="CH3" type="text" required="false">
+                <label>CH3 name</label>
+                <description>The name of CH3.</description>
+                <default>CH3</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="CH4" type="text" required="false">
+                <label>CH4 name</label>
+                <description>The name of CH4.</description>
+                <default>CH4</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="CH5" type="text" required="false">
+                <label>CH5 name</label>
+                <description>The name of CH5.</description>
+                <default>CH5</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="CH6" type="text" required="false">
+                <label>CH6 name</label>
+                <description>The name of CH6.</description>
+                <default>CH6</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="CH7" type="text" required="false">
+                <label>CH7 name</label>
+                <description>The name of CH7.</description>
+                <default>CH7</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="CH8" type="text" required="false">
+                <label>CH8 name</label>
+                <description>The name of CH8.</description>
+                <default>CH8</default>
+                <advanced>true</advanced>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+        <thing-type id="vmb8pb">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>VMBPIRO</label>
-		<description>Outdoor PIR detector module for VELBUS system</description>
+        <label>VMB8PB</label>
+        <description>8-Channel Push Button module</description>
+		<channels>
+            <channel id="CH1" typeId="trigger-channel" />
+            <channel id="CH2" typeId="trigger-channel" />
+            <channel id="CH3" typeId="trigger-channel" />
+            <channel id="CH4" typeId="trigger-channel" />
+            <channel id="CH5" typeId="trigger-channel" />
+            <channel id="CH6" typeId="trigger-channel" />
+            <channel id="CH7" typeId="trigger-channel" />
+            <channel id="CH8" typeId="trigger-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+            </parameter>
+            <parameter name="CH1" type="text" required="false">
+                <label>CH1 name</label>
+                <description>The name of CH1.</description>
+                <default>CH1</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="CH2" type="text" required="false">
+                <label>CH2 name</label>
+                <description>The name of CH2.</description>
+                <default>CH2</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="CH3" type="text" required="false">
+                <label>CH3 name</label>
+                <description>The name of CH3.</description>
+                <default>CH3</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="CH4" type="text" required="false">
+                <label>CH4 name</label>
+                <description>The name of CH4.</description>
+                <default>CH4</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="CH5" type="text" required="false">
+                <label>CH5 name</label>
+                <description>The name of CH5.</description>
+                <default>CH5</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="CH6" type="text" required="false">
+                <label>CH6 name</label>
+                <description>The name of CH6.</description>
+                <default>CH6</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="CH7" type="text" required="false">
+                <label>CH7 name</label>
+                <description>The name of CH7.</description>
+                <default>CH7</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="CH8" type="text" required="false">
+                <label>CH8 name</label>
+                <description>The name of CH8.</description>
+                <default>CH8</default>
+                <advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmb8pbu">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB8PBU</label>
+		<description>Push-button interface with 8 channels for universal mounting</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH6" type="text" required="false">
+				<label>CH6 name</label>
+				<description>The name of CH6.</description>
+				<default>CH6</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH7" type="text" required="false">
+				<label>CH7 name</label>
+				<description>The name of CH7.</description>
+				<default>CH7</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH8" type="text" required="false">
+				<label>CH8 name</label>
+				<description>The name of CH8.</description>
+				<default>CH8</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmbdme">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBDME</label>
+		<description>Dimmer for electronic/resistive load</description>
+		<channels>
+			<channel id="CH1" typeId="brightness" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmbdmi">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBDMI</label>
+		<description>Single channel triac dimmer for resistive and inductive loads</description>
+		<channels>
+			<channel id="CH1" typeId="brightness" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmbdmir">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBDMI-R</label>
+		<description>Single channel triac dimmer for resistive and inductive loads</description>
+		<channels>
+			<channel id="CH1" typeId="brightness" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmbgp1">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBGP1</label>
+		<description>Glass control module with 1 touch key</description>
 		<channels>
 			<channel id="CH1" typeId="trigger-channel" />
 			<channel id="CH2" typeId="trigger-channel" />
@@ -430,7 +1055,1058 @@
 			<parameter name="address" type="text" required="true">
 				<label>Address</label>
 				<description>The velbus address of the device</description>
-				<default>0x00</default>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<label>Refresh interval</label>
+				<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH6" type="text" required="false">
+				<label>CH6 name</label>
+				<description>The name of CH6.</description>
+				<default>CH6</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH7" type="text" required="false">
+				<label>CH7 name</label>
+				<description>The name of CH7.</description>
+				<default>CH7</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH8" type="text" required="false">
+				<label>CH8 name</label>
+				<description>The name of CH8.</description>
+				<default>CH8</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH9" type="text" required="false">
+				<label>CH9 name</label>
+				<description>The name of CH9 (temperature sensor channel).</description>
+				<default>Temperature</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmbgp2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBGP2</label>
+		<description>Glass control module with 2 touch keys</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+			<channel id="CH9" typeId="temperature" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<label>Refresh interval</label>
+				<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH6" type="text" required="false">
+				<label>CH6 name</label>
+				<description>The name of CH6.</description>
+				<default>CH6</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH7" type="text" required="false">
+				<label>CH7 name</label>
+				<description>The name of CH7.</description>
+				<default>CH7</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH8" type="text" required="false">
+				<label>CH8 name</label>
+				<description>The name of CH8.</description>
+				<default>CH8</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH9" type="text" required="false">
+				<label>CH9 name</label>
+				<description>The name of CH9 (temperature sensor channel).</description>
+				<default>Temperature</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmbgp4">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBGP4</label>
+		<description>Glass control module with 4 touch keys</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+			<channel id="CH9" typeId="temperature" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<label>Refresh interval</label>
+				<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH6" type="text" required="false">
+				<label>CH6 name</label>
+				<description>The name of CH6.</description>
+				<default>CH6</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH7" type="text" required="false">
+				<label>CH7 name</label>
+				<description>The name of CH7.</description>
+				<default>CH7</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH8" type="text" required="false">
+				<label>CH8 name</label>
+				<description>The name of CH8.</description>
+				<default>CH8</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH9" type="text" required="false">
+				<label>CH9 name</label>
+				<description>The name of CH9 (temperature sensor channel).</description>
+				<default>Temperature</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmbgp4pir">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBGP4PIR</label>
+		<description>Glass control module with 4 touch keys and built-in motion and twilight sensor</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+			<channel id="CH9" typeId="temperature" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<label>Refresh interval</label>
+				<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH6" type="text" required="false">
+				<label>CH6 name</label>
+				<description>The name of CH6.</description>
+				<default>CH6</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH7" type="text" required="false">
+				<label>CH7 name</label>
+				<description>The name of CH7.</description>
+				<default>CH7</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH8" type="text" required="false">
+				<label>CH8 name</label>
+				<description>The name of CH8.</description>
+				<default>CH8</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH9" type="text" required="false">
+				<label>CH9 name</label>
+				<description>The name of CH9 (temperature sensor channel).</description>
+				<default>Temperature</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmbgpo">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBGPO</label>
+		<description>Glass control module with oled display</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+			<channel id="CH9" typeId="trigger-channel" />
+			<channel id="CH10" typeId="trigger-channel" />
+			<channel id="CH11" typeId="trigger-channel" />
+			<channel id="CH12" typeId="trigger-channel" />
+			<channel id="CH13" typeId="trigger-channel" />
+			<channel id="CH14" typeId="trigger-channel" />
+			<channel id="CH15" typeId="trigger-channel" />
+			<channel id="CH16" typeId="trigger-channel" />
+			<channel id="CH17" typeId="trigger-channel" />
+			<channel id="CH18" typeId="trigger-channel" />
+			<channel id="CH19" typeId="trigger-channel" />
+			<channel id="CH20" typeId="trigger-channel" />
+			<channel id="CH21" typeId="trigger-channel" />
+			<channel id="CH22" typeId="trigger-channel" />
+			<channel id="CH23" typeId="trigger-channel" />
+			<channel id="CH24" typeId="trigger-channel" />
+			<channel id="CH25" typeId="trigger-channel" />
+			<channel id="CH26" typeId="trigger-channel" />
+			<channel id="CH27" typeId="trigger-channel" />
+			<channel id="CH28" typeId="trigger-channel" />
+			<channel id="CH29" typeId="trigger-channel" />
+			<channel id="CH30" typeId="trigger-channel" />
+			<channel id="CH31" typeId="trigger-channel" />
+			<channel id="CH32" typeId="trigger-channel" />
+			<channel id="CH33" typeId="temperature" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<label>Refresh interval</label>
+				<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH6" type="text" required="false">
+				<label>CH6 name</label>
+				<description>The name of CH6.</description>
+				<default>CH6</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH7" type="text" required="false">
+				<label>CH7 name</label>
+				<description>The name of CH7.</description>
+				<default>CH7</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH8" type="text" required="false">
+				<label>CH8 name</label>
+				<description>The name of CH8.</description>
+				<default>CH8</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH9" type="text" required="false">
+				<label>CH9 name</label>
+				<description>The name of CH9.</description>
+				<default>CH9</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH10" type="text" required="false">
+				<label>CH10 name</label>
+				<description>The name of CH10.</description>
+				<default>CH10</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH11" type="text" required="false">
+				<label>CH11 name</label>
+				<description>The name of CH11.</description>
+				<default>CH11</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH12" type="text" required="false">
+				<label>CH12 name</label>
+				<description>The name of CH12.</description>
+				<default>CH12</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH13" type="text" required="false">
+				<label>CH13 name</label>
+				<description>The name of CH13.</description>
+				<default>CH13</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH14" type="text" required="false">
+				<label>CH14 name</label>
+				<description>The name of CH14.</description>
+				<default>CH14</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH15" type="text" required="false">
+				<label>CH15 name</label>
+				<description>The name of CH15.</description>
+				<default>CH15</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH16" type="text" required="false">
+				<label>CH16 name</label>
+				<description>The name of CH16.</description>
+				<default>CH16</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH17" type="text" required="false">
+				<label>CH17 name</label>
+				<description>The name of CH17.</description>
+				<default>CH17</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH18" type="text" required="false">
+				<label>CH18 name</label>
+				<description>The name of CH18.</description>
+				<default>CH18</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH19" type="text" required="false">
+				<label>CH19 name</label>
+				<description>The name of CH19.</description>
+				<default>CH19</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH20" type="text" required="false">
+				<label>CH20 name</label>
+				<description>The name of CH20.</description>
+				<default>CH20</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH21" type="text" required="false">
+				<label>CH21 name</label>
+				<description>The name of CH21.</description>
+				<default>CH21</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH22" type="text" required="false">
+				<label>CH22 name</label>
+				<description>The name of CH22.</description>
+				<default>CH22</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH23" type="text" required="false">
+				<label>CH23 name</label>
+				<description>The name of CH23.</description>
+				<default>CH23</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH24" type="text" required="false">
+				<label>CH24 name</label>
+				<description>The name of CH24.</description>
+				<default>CH24</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH25" type="text" required="false">
+				<label>CH25 name</label>
+				<description>The name of CH25.</description>
+				<default>CH25</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH26" type="text" required="false">
+				<label>CH26 name</label>
+				<description>The name of CH26.</description>
+				<default>CH26</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH27" type="text" required="false">
+				<label>CH27 name</label>
+				<description>The name of CH27.</description>
+				<default>CH27</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH28" type="text" required="false">
+				<label>CH28 name</label>
+				<description>The name of CH28.</description>
+				<default>CH28</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH29" type="text" required="false">
+				<label>CH29 name</label>
+				<description>The name of CH29.</description>
+				<default>CH29</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH30" type="text" required="false">
+				<label>CH30 name</label>
+				<description>The name of CH30.</description>
+				<default>CH30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH31" type="text" required="false">
+				<label>CH31 name</label>
+				<description>The name of CH31.</description>
+				<default>CH31</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH32" type="text" required="false">
+				<label>CH32 name</label>
+				<description>The name of CH32.</description>
+				<default>CH32</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH33" type="text" required="false">
+				<label>CH33 name</label>
+				<description>The name of CH33 (temperature sensor channel).</description>
+				<default>Temperature</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmbgpod">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBGPOD</label>
+		<description>Glass control module with oled display and temperature controller</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+			<channel id="CH9" typeId="trigger-channel" />
+			<channel id="CH10" typeId="trigger-channel" />
+			<channel id="CH11" typeId="trigger-channel" />
+			<channel id="CH12" typeId="trigger-channel" />
+			<channel id="CH13" typeId="trigger-channel" />
+			<channel id="CH14" typeId="trigger-channel" />
+			<channel id="CH15" typeId="trigger-channel" />
+			<channel id="CH16" typeId="trigger-channel" />
+			<channel id="CH17" typeId="trigger-channel" />
+			<channel id="CH18" typeId="trigger-channel" />
+			<channel id="CH19" typeId="trigger-channel" />
+			<channel id="CH20" typeId="trigger-channel" />
+			<channel id="CH21" typeId="trigger-channel" />
+			<channel id="CH22" typeId="trigger-channel" />
+			<channel id="CH23" typeId="trigger-channel" />
+			<channel id="CH24" typeId="trigger-channel" />
+			<channel id="CH25" typeId="trigger-channel" />
+			<channel id="CH26" typeId="trigger-channel" />
+			<channel id="CH27" typeId="trigger-channel" />
+			<channel id="CH28" typeId="trigger-channel" />
+			<channel id="CH29" typeId="trigger-channel" />
+			<channel id="CH30" typeId="trigger-channel" />
+			<channel id="CH31" typeId="trigger-channel" />
+			<channel id="CH32" typeId="trigger-channel" />
+			<channel id="CH33" typeId="temperature" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<label>Refresh interval</label>
+				<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH6" type="text" required="false">
+				<label>CH6 name</label>
+				<description>The name of CH6.</description>
+				<default>CH6</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH7" type="text" required="false">
+				<label>CH7 name</label>
+				<description>The name of CH7.</description>
+				<default>CH7</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH8" type="text" required="false">
+				<label>CH8 name</label>
+				<description>The name of CH8.</description>
+				<default>CH8</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH9" type="text" required="false">
+				<label>CH9 name</label>
+				<description>The name of CH9.</description>
+				<default>CH9</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH10" type="text" required="false">
+				<label>CH10 name</label>
+				<description>The name of CH10.</description>
+				<default>CH10</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH11" type="text" required="false">
+				<label>CH11 name</label>
+				<description>The name of CH11.</description>
+				<default>CH11</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH12" type="text" required="false">
+				<label>CH12 name</label>
+				<description>The name of CH12.</description>
+				<default>CH12</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH13" type="text" required="false">
+				<label>CH13 name</label>
+				<description>The name of CH13.</description>
+				<default>CH13</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH14" type="text" required="false">
+				<label>CH14 name</label>
+				<description>The name of CH14.</description>
+				<default>CH14</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH15" type="text" required="false">
+				<label>CH15 name</label>
+				<description>The name of CH15.</description>
+				<default>CH15</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH16" type="text" required="false">
+				<label>CH16 name</label>
+				<description>The name of CH16.</description>
+				<default>CH16</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH17" type="text" required="false">
+				<label>CH17 name</label>
+				<description>The name of CH17.</description>
+				<default>CH17</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH18" type="text" required="false">
+				<label>CH18 name</label>
+				<description>The name of CH18.</description>
+				<default>CH18</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH19" type="text" required="false">
+				<label>CH19 name</label>
+				<description>The name of CH19.</description>
+				<default>CH19</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH20" type="text" required="false">
+				<label>CH20 name</label>
+				<description>The name of CH20.</description>
+				<default>CH20</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH21" type="text" required="false">
+				<label>CH21 name</label>
+				<description>The name of CH21.</description>
+				<default>CH21</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH22" type="text" required="false">
+				<label>CH22 name</label>
+				<description>The name of CH22.</description>
+				<default>CH22</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH23" type="text" required="false">
+				<label>CH23 name</label>
+				<description>The name of CH23.</description>
+				<default>CH23</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH24" type="text" required="false">
+				<label>CH24 name</label>
+				<description>The name of CH24.</description>
+				<default>CH24</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH25" type="text" required="false">
+				<label>CH25 name</label>
+				<description>The name of CH25.</description>
+				<default>CH25</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH26" type="text" required="false">
+				<label>CH26 name</label>
+				<description>The name of CH26.</description>
+				<default>CH26</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH27" type="text" required="false">
+				<label>CH27 name</label>
+				<description>The name of CH27.</description>
+				<default>CH27</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH28" type="text" required="false">
+				<label>CH28 name</label>
+				<description>The name of CH28.</description>
+				<default>CH28</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH29" type="text" required="false">
+				<label>CH29 name</label>
+				<description>The name of CH29.</description>
+				<default>CH29</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH30" type="text" required="false">
+				<label>CH30 name</label>
+				<description>The name of CH30.</description>
+				<default>CH30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH31" type="text" required="false">
+				<label>CH31 name</label>
+				<description>The name of CH31.</description>
+				<default>CH31</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH32" type="text" required="false">
+				<label>CH32 name</label>
+				<description>The name of CH32.</description>
+				<default>CH32</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH33" type="text" required="false">
+				<label>CH33 name</label>
+				<description>The name of CH33 (temperature sensor channel).</description>
+				<default>Temperature</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmbpirc">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBPIRC</label>
+		<description>Motion and twilight sensor for ceiling mounting</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH6" type="text" required="false">
+				<label>CH6 name</label>
+				<description>The name of CH6.</description>
+				<default>CH6</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH7" type="text" required="false">
+				<label>CH7 name</label>
+				<description>The name of CH7.</description>
+				<default>CH7</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmbpirm">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBPIRM</label>
+		<description>Mini motion and twilight sensor for recessed or surface mounting</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH6" type="text" required="false">
+				<label>CH6 name</label>
+				<description>The name of CH6.</description>
+				<default>CH6</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH7" type="text" required="false">
+				<label>CH7 name</label>
+				<description>The name of CH7.</description>
+				<default>CH7</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vmbpiro">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBPIRO</label>
+		<description>Outdoor motion, twilight and temperature sensor, Theben</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+			<channel id="CH9" typeId="temperature" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The velbus address of the device</description>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<label>Refresh interval</label>
+				<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH1" type="text" required="false">
+				<label>CH1 name</label>
+				<description>The name of CH1.</description>
+				<default>CH1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH2" type="text" required="false">
+				<label>CH2 name</label>
+				<description>The name of CH2.</description>
+				<default>CH2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH3" type="text" required="false">
+				<label>CH3 name</label>
+				<description>The name of CH3.</description>
+				<default>CH3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH4" type="text" required="false">
+				<label>CH4 name</label>
+				<description>The name of CH4.</description>
+				<default>CH4</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH5" type="text" required="false">
+				<label>CH5 name</label>
+				<description>The name of CH5.</description>
+				<default>CH5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH6" type="text" required="false">
+				<label>CH6 name</label>
+				<description>The name of CH6.</description>
+				<default>CH6</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH7" type="text" required="false">
+				<label>CH7 name</label>
+				<description>The name of CH7.</description>
+				<default>CH7</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH8" type="text" required="false">
+				<label>CH8 name</label>
+				<description>The name of CH8.</description>
+				<default>CH8</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="CH9" type="text" required="false">
+				<label>CH9 name</label>
+				<description>The name of CH9 (temperature sensor channel).</description>
+				<default>Temperature</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -454,7 +2130,7 @@
 		<category>Blinds</category>
 	</channel-type>
 	<channel-type id="temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature in degrees celsius</description>
 		<category>Temperature</category>

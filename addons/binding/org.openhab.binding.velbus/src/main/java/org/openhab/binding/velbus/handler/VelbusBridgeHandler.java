@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TooManyListenersException;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -63,11 +64,12 @@ public class VelbusBridgeHandler extends BaseBridgeHandler implements SerialPort
     public void initialize() {
         logger.debug("Initializing velbus bridge handler.");
 
-        if (getConfig().get(PORT) != null) {
-            serialPort = new NRSerialPort((String) getConfig().get(PORT), BAUD);
+        String port = (String) getConfig().get(PORT);
+        if (port != null) {
+            serialPort = new NRSerialPort(port, BAUD);
             if (serialPort.connect()) {
                 updateStatus(ThingStatus.ONLINE);
-                logger.debug("Bridge online on serial port {}", getConfig().get(PORT));
+                logger.debug("Bridge online on serial port {}", port);
 
                 outputStream = serialPort.getOutputStream();
                 inputStream = new VelbusPacketInputStream(serialPort.getInputStream());
@@ -77,13 +79,13 @@ public class VelbusBridgeHandler extends BaseBridgeHandler implements SerialPort
                     serialPort.notifyOnDataAvailable(true);
                 } catch (TooManyListenersException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Failed to register event listener on serial port " + getConfig().get(PORT));
-                    logger.debug("Failed to register event listener on serial port {}", getConfig().get(PORT));
+                            "Failed to register event listener on serial port " + port);
+                    logger.debug("Failed to register event listener on serial port {}", port);
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Failed to connect to serial port " + getConfig().get(PORT));
-                logger.debug("Failed to connect to serial port {}", getConfig().get(PORT));
+                        "Failed to connect to serial port " + port);
+                logger.debug("Failed to connect to serial port {}", port);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port name not configured");
@@ -92,7 +94,19 @@ public class VelbusBridgeHandler extends BaseBridgeHandler implements SerialPort
     }
 
     public synchronized void sendPacket(byte[] packet) {
-        delaySendPacket();
+        long currentTimeMillis = System.currentTimeMillis();
+        long timeSinceLastPacket = currentTimeMillis - lastPacketTimeMillis;
+
+        if (timeSinceLastPacket < 60) {
+            // When sending you need a delay of 60ms between each packet (to prevent flooding the VMB1USB).
+            long timeToDelay = 60 - timeSinceLastPacket;
+
+            scheduler.schedule(() -> {
+                sendPacket(packet);
+            }, timeToDelay, TimeUnit.MILLISECONDS);
+
+            return;
+        }
 
         try {
             outputStream.write(packet);
@@ -102,25 +116,6 @@ public class VelbusBridgeHandler extends BaseBridgeHandler implements SerialPort
         }
 
         lastPacketTimeMillis = System.currentTimeMillis();
-    }
-
-    /*
-     * When sending you need a delay of 60ms between each packet
-     * (to prevent flooding the VMB1USB).
-     */
-    protected void delaySendPacket() {
-        long currentTimeMillis = System.currentTimeMillis();
-        long timeSinceLastPacket = currentTimeMillis - lastPacketTimeMillis;
-
-        if (timeSinceLastPacket < 60) {
-            long timeToSleep = 60 - timeSinceLastPacket;
-
-            try {
-                Thread.sleep(timeToSleep);
-            } catch (InterruptedException e) {
-                logger.error("The packet delay was interrupted.", e);
-            }
-        }
     }
 
     public void setDefaultPacketListener(VelbusPacketListener velbusPacketListener) {
@@ -148,10 +143,10 @@ public class VelbusBridgeHandler extends BaseBridgeHandler implements SerialPort
     }
 
     @Override
-    public void serialEvent(SerialPortEvent arg0) {
+    public void serialEvent(SerialPortEvent event) {
         logger.debug("Serial port event triggered");
 
-        if (arg0.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+        if (event.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
             try {
                 byte[] packet;
                 while ((packet = inputStream.readPacket()) != null) {

@@ -28,6 +28,6 @@ public class VelbusVMBPIROHandler extends VelbusTemperatureSensorHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMBPIRO));
 
     public VelbusVMBPIROHandler(Thing thing) {
-        super(thing, 9, 0, new ChannelUID(thing.getUID(), "CH9"));
+        super(thing, 0, new ChannelUID(thing.getUID(), "CH9"));
     }
 }

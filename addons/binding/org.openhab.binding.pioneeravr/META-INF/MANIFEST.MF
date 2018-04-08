@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: PioneerAvr Binding
@@ -20,11 +21,13 @@ Import-Package:
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.upnp,
  org.eclipse.smarthome.core.items,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.core.util,
  org.jupnp.model.meta,
  org.jupnp.model.types,
  org.openhab.binding.pioneeravr,
@@ -32,6 +35,7 @@ Import-Package:
  org.openhab.binding.pioneeravr.protocol.event,
  org.openhab.binding.pioneeravr.protocol.states,
  org.openhab.binding.pioneeravr.protocol.utils,
+ org.osgi.framework,
  org.osgi.service.cm,
  org.osgi.service.component,
  org.slf4j

@@ -42,7 +42,7 @@ public class SOAPActionHandler implements SOAPHandler<SOAPMessageContext> {
 
     @Override
     public Set<QName> getHeaders() {
-        Set<QName> set = new HashSet<QName>();
+        Set<QName> set = new HashSet<>();
         // Make sure the '[{http://www.w3.org/2005/08/addressing}]Action' header
         // is handled in case the device set the 'MustUnderstand' attribute to
         // '1'

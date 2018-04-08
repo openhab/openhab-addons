@@ -15,16 +15,12 @@ import org.openhab.binding.pioneeravr.protocol.AvrConnectionException;
 /**
  * A command which accept a parameter.
  *
- * @author Antoine Besnard
- *
+ * @author Antoine Besnard - Initial contribution
  */
 public class ParameterizedCommand extends SimpleCommand {
 
     /**
      * List of the commands with a parameter.
-     *
-     * @author Antoine Besnard
-     *
      */
     public enum ParameterizedCommandType implements AvrCommand.CommandType {
 

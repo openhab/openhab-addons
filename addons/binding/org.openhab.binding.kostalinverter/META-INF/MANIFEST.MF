@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
  lib/jsoup-1.8.3.jar
@@ -8,7 +9,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.kostalinverter;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.3.0.qualifier
-Export-package: org.openhab.binding.kostal.inverter
+Export-Package: 
+ org.openhab.binding.kostal.inverter
 Import-Package: 
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
@@ -18,6 +20,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.util,
  org.eclipse.smarthome.core.types,
+ org.openhab.binding.kostal.inverter,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

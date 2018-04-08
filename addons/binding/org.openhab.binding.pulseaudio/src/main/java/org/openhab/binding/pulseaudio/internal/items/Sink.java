@@ -16,7 +16,7 @@ import java.util.List;
  * (playback devices) it can be a single item or a group of other Sinks that are
  * combined to one playback device
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  * @since 1.2.0
  */
 public class Sink extends AbstractAudioDeviceConfig {
@@ -26,8 +26,8 @@ public class Sink extends AbstractAudioDeviceConfig {
 
     public Sink(int id, String name, Module module) {
         super(id, name, module);
-        combinedSinkNames = new ArrayList<String>();
-        combinedSinks = new ArrayList<Sink>();
+        combinedSinkNames = new ArrayList<>();
+        combinedSinks = new ArrayList<>();
     }
 
     public void addCombinedSinkName(String name) {

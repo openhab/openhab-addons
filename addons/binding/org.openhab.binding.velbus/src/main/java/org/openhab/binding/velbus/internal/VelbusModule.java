@@ -13,7 +13,6 @@ import static org.openhab.binding.velbus.VelbusBindingConstants.*;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.velbus.handler.VelbusBridgeHandler;
@@ -117,7 +116,6 @@ public class VelbusModule {
         }
     }
 
-    @NonNull
     public Map<String, Object> getProperties() {
         Map<String, Object> properties = new TreeMap<String, Object>();
 

@@ -22,8 +22,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -37,6 +35,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.regoheatpump.internal.protocol.RegoConnection;
 import org.openhab.binding.regoheatpump.internal.rego6xx.CommandFactory;
 import org.openhab.binding.regoheatpump.internal.rego6xx.ErrorLine;
@@ -88,7 +87,7 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        mapper = RegoRegisterMapper.rego600;
+        mapper = RegoRegisterMapper.REGO600;
         refreshInterval = ((Number) getConfig().get(REFRESH_INTERVAL)).intValue();
 
         connection = createConnection();
@@ -186,21 +185,21 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
 
     private void readAndUpdateLastError(String channelIID, Function<ErrorLine, State> converter) {
         executeCommandAndUpdateState(channelIID, CommandFactory.createReadLastErrorCommand(),
-                ResponseParserFactory.ErrorLine, e -> {
+                ResponseParserFactory.ERROR_LINE, e -> {
                     return e == null ? UnDefType.NULL : converter.apply(e);
                 });
     }
 
     private void readAndUpdateFrontPanel(String channelIID, short address) {
         byte[] command = CommandFactory.createReadFromFrontPanelCommand(address);
-        executeCommandAndUpdateState(channelIID, command, ResponseParserFactory.Short, DecimalType::new);
+        executeCommandAndUpdateState(channelIID, command, ResponseParserFactory.SHORT, DecimalType::new);
     }
 
     private void readAndUpdateSystemRegister(String channelIID) {
         RegoRegisterMapper.Channel channel = mapper.map(channelIID);
         if (channel != null) {
             byte[] command = CommandFactory.createReadFromSystemRegisterCommand(channel.address());
-            executeCommandAndUpdateState(channelIID, command, ResponseParserFactory.Short, channel::convert);
+            executeCommandAndUpdateState(channelIID, command, ResponseParserFactory.SHORT, channel::convert);
         } else {
             logger.debug("Unsupported channel {}", channelIID);
         }
@@ -208,17 +207,13 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
 
     private synchronized <T> void executeCommandAndUpdateState(String channelIID, byte[] command,
             ResponseParser<T> parser, Function<T, State> converter) {
-
         logger.debug("Reading value for channel '{}' ...", channelIID);
 
         try {
-
             T result = executeCommandWithRetry(channelIID, command, parser, 5);
             logger.debug("Got value for '{}' = {}", channelIID, result);
             updateState(channelIID, converter.apply(result));
-
         } catch (IOException e) {
-
             logger.warn("Accessing value for channel '{}' failed.", channelIID, e);
 
             synchronized (channelDescriptors) {
@@ -226,14 +221,10 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
             }
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-
         } catch (Rego6xxProtocolException e) {
-
             logger.warn("Accessing value for channel '{}' failed.", channelIID, e);
             updateState(channelIID, UnDefType.UNDEF);
-
         } catch (InterruptedException e) {
-
             logger.debug("Execution interrupted when accessing value for channel '{}'.", channelIID, e);
             Thread.currentThread().interrupt();
         }
@@ -241,13 +232,10 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
 
     private <T> T executeCommandWithRetry(String channelIID, byte[] command, ResponseParser<T> parser, int retry)
             throws Rego6xxProtocolException, IOException, InterruptedException {
-
         try {
             checkRegoDevice();
             return executeCommand(channelIID, command, parser);
-
         } catch (IOException | Rego6xxProtocolException e) {
-
             if (retry > 0) {
                 logger.debug("Accessing value for channel '{}' failed, retry {}.", channelIID, retry, e);
                 Thread.sleep(200);
@@ -262,7 +250,7 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
         if (thing.getStatus() != ThingStatus.ONLINE) {
             logger.debug("Reading Rego device version...");
             Short regoVersion = executeCommand(null, CommandFactory.createReadRegoVersionCommand(),
-                    ResponseParserFactory.Short);
+                    ResponseParserFactory.SHORT);
 
             if (regoVersion != 600) {
                 throw new IOException("Invalid rego version received " + regoVersion.toString());
@@ -286,12 +274,9 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
 
     private <T> T executeCommand(String channelIID, byte[] command, ResponseParser<T> parser)
             throws Rego6xxProtocolException, IOException, InterruptedException {
-
         try {
             return executeCommandInternal(channelIID, command, parser);
-
         } catch (IOException e) {
-
             if (connection != null) {
                 connection.close();
             }
@@ -302,7 +287,6 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
 
     private <T> T executeCommandInternal(String channelIID, byte[] command, ResponseParser<T> parser)
             throws Rego6xxProtocolException, IOException, InterruptedException {
-
         // CHANNEL_LAST_ERROR_CODE and CHANNEL_LAST_ERROR_TIMESTAMP are read from same
         // register. To prevent accessing same register twice when both channels are linked,
         // use same name for both so only a single fetch will be triggered.
@@ -320,7 +304,7 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
         }
 
         // Send command to device and wait for response.
-        if (connection.isConnected() == false) {
+        if (!connection.isConnected()) {
             connection.connect();
         }
 
@@ -340,7 +324,7 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Sending {}", DatatypeConverter.printHexBinary(command));
+            logger.debug("Sending {}", HexUtils.bytesToHex(command));
         }
 
         // Send command
@@ -372,7 +356,7 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Received {}", DatatypeConverter.printHexBinary(response));
+            logger.debug("Received {}", HexUtils.bytesToHex(response));
         }
 
         T result = parser.parse(response);

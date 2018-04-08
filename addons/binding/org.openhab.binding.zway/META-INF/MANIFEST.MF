@@ -3,7 +3,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
  lib/commons-lang3-3.4.jar,
- lib/zway-lib-0.2.7-SNAPSHOT.jar
+ lib/zway-lib-0.2.9-SNAPSHOT.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: ZWay Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

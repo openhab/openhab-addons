@@ -10,6 +10,7 @@ package org.openhab.binding.dscalarm;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.ImmutableSet;
@@ -19,6 +20,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Russell Stephens - Initial contribution
  */
+@NonNullByDefault
 public class DSCAlarmBindingConstants {
 
     // Binding ID

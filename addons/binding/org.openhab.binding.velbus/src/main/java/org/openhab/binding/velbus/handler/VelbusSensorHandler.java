@@ -8,12 +8,16 @@
  */
 package org.openhab.binding.velbus.handler;
 
-import static org.openhab.binding.velbus.VelbusBindingConstants.COMMAND_PUSH_BUTTON_STATUS;
+import static org.openhab.binding.velbus.VelbusBindingConstants.*;
 
-import org.eclipse.jdt.annotation.NonNull;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
 import org.openhab.binding.velbus.internal.packets.VelbusPacket;
@@ -24,16 +28,23 @@ import org.openhab.binding.velbus.internal.packets.VelbusPacket;
  *
  * @author Cedric Boon - Initial contribution
  */
-public abstract class VelbusSensorHandler extends VelbusThingHandler {
-    public VelbusSensorHandler(Thing thing, int numberOfChannels, int numberOfSubAddresses) {
-        super(thing, numberOfChannels, numberOfSubAddresses, null);
+public class VelbusSensorHandler extends VelbusThingHandler {
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
+            Arrays.asList(THING_TYPE_VMB2PBN, THING_TYPE_VMB6IN, THING_TYPE_VMB6PBN, THING_TYPE_VMB7IN,
+                    THING_TYPE_VMB8IR, THING_TYPE_VMB8PB, THING_TYPE_VMB8PBU, THING_TYPE_VMBPIRC, THING_TYPE_VMBPIRM));
+
+    public VelbusSensorHandler(Thing thing) {
+        this(thing, 0);
+    }
+
+    public VelbusSensorHandler(Thing thing, int numberOfSubAddresses) {
+        super(thing, numberOfSubAddresses, null);
     }
 
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    @SuppressWarnings("null")
     @Override
     public void onPacketReceived(byte[] packet) {
         logger.trace("onPacketReceived() was called");

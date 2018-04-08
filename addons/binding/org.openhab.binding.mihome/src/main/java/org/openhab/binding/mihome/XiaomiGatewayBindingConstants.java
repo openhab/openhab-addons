@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.mihome;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -19,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Daniel Walters - Added Aqara Door/Window sensor and Aqara temperature, humidity and pressure sensor
  * @author Kuba Wolanin - Added Water Leak sensor
  */
+@NonNullByDefault
 public class XiaomiGatewayBindingConstants {
 
     public static final String BINDING_ID = "mihome";
@@ -77,6 +79,8 @@ public class XiaomiGatewayBindingConstants {
     public static final String CHANNEL_CUBE_ACTION = "action";
     public static final String CHANNEL_CUBE_ROTATION_ANGLE = "rotationAngle";
     public static final String CHANNEL_CUBE_ROTATION_TIME = "rotationTime";
+    // gateway general
+    public static final String CHANNEL_GATEWAY_JOIN_PERMISSION = "joinPermission";
     // gateway sound
     public static final String CHANNEL_GATEWAY_SOUND_SWITCH = "enableSound";
     public static final String CHANNEL_GATEWAY_SOUND = "sound";

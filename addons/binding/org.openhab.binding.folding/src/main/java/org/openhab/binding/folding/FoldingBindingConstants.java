@@ -8,14 +8,16 @@
  */
 package org.openhab.binding.folding;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
  * The {@link FoldingBinding} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Marius Bjoernstad
+ * @author Marius Bjoernstad - Initial contribution
  */
+@NonNullByDefault
 public class FoldingBindingConstants {
 
     public static final String BINDING_ID = "folding";

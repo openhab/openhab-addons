@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: CoolMasterNet Binding
@@ -10,7 +11,6 @@ Export-Package:
  org.openhab.binding.coolmasternet,
  org.openhab.binding.coolmasternet.handler
 Import-Package: 
- com.google.common.collect,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
@@ -21,5 +21,6 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.coolmasternet,
  org.openhab.binding.coolmasternet.handler,
+ org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

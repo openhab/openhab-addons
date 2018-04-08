@@ -11,6 +11,7 @@ package org.openhab.binding.velbus.handler;
 import static org.openhab.binding.velbus.VelbusBindingConstants.*;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,14 +45,12 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
 
     private VelbusBridgeHandler velbusBridgeHandler;
     private VelbusModuleAddress velbusModuleAddress;
-    private int numberOfChannels;
     private String acceptedItemType;
 
-    public VelbusThingHandler(Thing thing, int numberOfChannels, int numberOfSubAddresses, String acceptedItemType) {
+    public VelbusThingHandler(Thing thing, int numberOfSubAddresses, String acceptedItemType) {
         super(thing);
 
         this.velbusModuleAddress = createVelbusModuleAddress(thing, numberOfSubAddresses);
-        this.numberOfChannels = numberOfChannels;
         this.acceptedItemType = acceptedItemType;
     }
 
@@ -69,7 +68,7 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
             }
         }
 
-        return new VelbusModuleAddress(address, numberOfSubAddresses);
+        return new VelbusModuleAddress(address, subAddresses);
     }
 
     @Override
@@ -85,7 +84,6 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
         return velbusModuleAddress;
     }
 
-    @SuppressWarnings("null")
     protected void updateChannelLabel(ChannelUID channelUID, String channelName, String acceptedItemType) {
         if (channelUID != null && channelName != null) {
             Channel existingChannel = thing.getChannel(channelUID.getId());
@@ -121,17 +119,18 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
     private void initializeChannelNames() {
-        for (int i = 1; i <= numberOfChannels; i++) {
-            String propertyKey = CHANNEL + i;
-            if (getThing().getProperties().containsKey(propertyKey)) {
-                String channelName = getThing().getProperties().get(propertyKey);
-                Channel channel = thing.getChannel("CH" + i);
-                if (channel != null && !channelName.equals(channel.getLabel())) {
+        List<Channel> channels = this.getThing().getChannels();
+        for (int i = 0; i < channels.size(); i++) {
+            Channel channel = channels.get(i);
+            String channelUID = channel.getUID().getId();
+            if (getConfig().containsKey(channelUID)) {
+                String channelName = getConfig().get(channelUID).toString();
+                if (!channelName.equals(channel.getLabel())) {
                     updateChannelLabel(channel.getUID(), channelName, acceptedItemType);
                 }
             }

@@ -8,104 +8,120 @@
  */
 package org.openhab.binding.wifiled.handler;
 
-import org.eclipse.smarthome.core.library.types.*;
+import static java.lang.Math.*;
 
-import java.awt.*;
+import java.awt.Color;
 import java.math.BigDecimal;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
 
 /**
  * The {@link LEDStateDTO} class holds the data and the settings for a LED device (i.e. the selected colors, the running
  * program, etc.).
  *
  * @author Osman Basha - Initial contribution
- * @author Stefan Endrullis
+ * @author Stefan Endrullis - Initial contribution
+ * @author Ries van Twisk - Prevent flashes during classic driver color + white updates
  */
-public class LEDStateDTO extends HSBType {
+public class LEDStateDTO {
+    private HSBType hsbType;
+    private OnOffType power;
+    private PercentType white;
+    private PercentType white2;
+    private StringType program;
+    private PercentType programSpeed;
 
-    private static final long serialVersionUID = 1L;
-
-    protected OnOffType  power;
-    protected BigDecimal white;
-    protected BigDecimal white2;
-    protected StringType program;
-    protected BigDecimal programSpeed;
-
-    public LEDStateDTO(OnOffType power, DecimalType hue, PercentType saturation, PercentType brightness, PercentType white,
-                       PercentType white2, StringType program, PercentType programSpeed) {
-        super(hue, saturation, brightness);
+    public LEDStateDTO(OnOffType power, DecimalType hue, PercentType saturation, PercentType brightness,
+            PercentType white, PercentType white2, StringType program, PercentType programSpeed) {
+        this.hsbType = new HSBType(hue, saturation, brightness);
         this.power = power;
-        this.white = white.toBigDecimal();
-        this.white2 = white2.toBigDecimal();
+        this.white = white;
+        this.white2 = white2;
         this.program = program;
-        this.programSpeed = programSpeed.toBigDecimal();
+        this.programSpeed = programSpeed;
+    }
+
+    public LEDStateDTO(OnOffType power, HSBType hsb, PercentType white, PercentType white2, StringType program,
+            PercentType programSpeed) {
+        this.hsbType = hsb;
+        this.power = power;
+        this.white = white;
+        this.white2 = white2;
+        this.program = program;
+        this.programSpeed = programSpeed;
     }
 
     public PercentType getWhite() {
-        return new PercentType(white);
+        return white;
     }
 
     public PercentType getWhite2() {
-        return new PercentType(white2);
+        return white2;
     }
 
     public StringType getProgram() {
-        return new StringType(program.toString());
+        return program;
     }
 
     public PercentType getProgramSpeed() {
-        return new PercentType(programSpeed);
+        return programSpeed;
     }
 
     @Override
     public String toString() {
-        return power + "," + getHue() + "," + getSaturation() + "," + getBrightness() + "," + getWhite() + "," + getWhite2() + " [" + getProgram() + ","
-                + getProgramSpeed() + "]";
+        return power + "," + hsbType.getHue() + "," + hsbType.getSaturation() + "," + hsbType.getBrightness() + ","
+                + getWhite() + "," + getWhite2() + " [" + getProgram() + "," + getProgramSpeed() + "]";
     }
 
-    public static LEDStateDTO valueOf(int state, int program, int programSpeed, int red, int green, int blue, int white, int white2) {
-
+    public static LEDStateDTO valueOf(int state, int program, int programSpeed, int red, int green, int blue, int white,
+            int white2) {
         OnOffType power = (state & 0x01) != 0 ? OnOffType.ON : OnOffType.OFF;
+
         float[] hsv = new float[3];
         Color.RGBtoHSB(red, green, blue, hsv);
-        long hue = (long) (hsv[0] * 360);
-        int saturation = (int) (hsv[1] * 100);
-        int brightness = (int) (hsv[2] * 100);
-        DecimalType h = new DecimalType(hue);
-        PercentType s = new PercentType(saturation);
-        // set Brightness to 0 if state is OFF
-        PercentType b = new PercentType(brightness);
-        PercentType w = new PercentType(white / 255 * 100);
-        PercentType w2 = new PercentType(white2 / 255 * 100);
+        DecimalType h = new DecimalType(new BigDecimal(hsv[0]).multiply(new BigDecimal(360.0)));
+        PercentType s = new PercentType(new BigDecimal(hsv[1]).multiply(new BigDecimal(100.0)));
+        PercentType b = new PercentType(new BigDecimal(hsv[2]).multiply(new BigDecimal(100.0)));
+        HSBType hsbType = new HSBType(h, s, b);
+
+        PercentType w = new PercentType(new BigDecimal(white).divide(new BigDecimal(255.0), 3, BigDecimal.ROUND_HALF_UP)
+                .multiply(new BigDecimal(100.0)));
+        PercentType w2 = new PercentType(new BigDecimal(white2)
+                .divide(new BigDecimal(255.0), 3, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100.0)));
+
+        // Range: 0x00 .. 0x1F. Speed is inversed
+        BigDecimal ps = new BigDecimal(programSpeed).divide(new BigDecimal(0x1f), 2, BigDecimal.ROUND_HALF_UP)
+                .multiply(new BigDecimal(100.0));
+        PercentType e = new PercentType(new BigDecimal(100.0).subtract(ps));
 
         StringType p = new StringType(Integer.toString(program));
-        PercentType e = new PercentType(100 - (programSpeed / 0x1F * 100)); // Range: 0x00 .. 0x1F. Speed is inversed
 
-        return new LEDStateDTO(power, h, s, b, w, w2, p, e);
+        return new LEDStateDTO(power, hsbType, w, w2, p, e);
     }
 
     public LEDStateDTO withColor(HSBType color) {
-        return new LEDStateDTO(power, color.getHue(), color.getSaturation(), color.getBrightness(), this.getWhite(),
-            this.getWhite2(), this.getProgram(), this.getProgramSpeed());
+        return new LEDStateDTO(power, color, this.getWhite(), this.getWhite2(), this.getProgram(),
+                this.getProgramSpeed());
     }
 
     public LEDStateDTO withBrightness(PercentType brightness) {
-        return new LEDStateDTO(power, this.getHue(), this.getSaturation(), brightness, this.getWhite(), this.getWhite2(),
-            this.getProgram(), this.getProgramSpeed());
+        return new LEDStateDTO(power, hsbType.getHue(), hsbType.getSaturation(), brightness, this.getWhite(),
+                this.getWhite2(), this.getProgram(), this.getProgramSpeed());
     }
 
     public LEDStateDTO withIncrementedBrightness(int step) {
-        int brightness = this.getBrightness().intValue();
+        int brightness = hsbType.getBrightness().intValue();
         brightness = max(min(brightness + step, 0), 100);
 
         return withBrightness(new PercentType(brightness));
     }
 
     public LEDStateDTO withWhite(PercentType white) {
-        return new LEDStateDTO(power, this.getHue(), this.getSaturation(), this.getBrightness(), white, this.getWhite2(),
-            this.getProgram(), this.getProgramSpeed());
+        return new LEDStateDTO(power, hsbType, white, this.getWhite2(), this.getProgram(), this.getProgramSpeed());
     }
 
     public LEDStateDTO withIncrementedWhite(int step) {
@@ -116,8 +132,7 @@ public class LEDStateDTO extends HSBType {
     }
 
     public LEDStateDTO withWhite2(PercentType white2) {
-        return new LEDStateDTO(power, this.getHue(), this.getSaturation(), this.getBrightness(), this.getWhite(), white2,
-            this.getProgram(), this.getProgramSpeed());
+        return new LEDStateDTO(power, hsbType, this.getWhite(), white2, this.getProgram(), this.getProgramSpeed());
     }
 
     public LEDStateDTO withIncrementedWhite2(int step) {
@@ -128,8 +143,7 @@ public class LEDStateDTO extends HSBType {
     }
 
     public LEDStateDTO withProgram(StringType program) {
-        return new LEDStateDTO(power, this.getHue(), this.getSaturation(), this.getBrightness(), this.getWhite(), this.getWhite2(),
-            program, this.getProgramSpeed());
+        return new LEDStateDTO(power, hsbType, this.getWhite(), this.getWhite2(), program, this.getProgramSpeed());
     }
 
     public LEDStateDTO withoutProgram() {
@@ -137,8 +151,7 @@ public class LEDStateDTO extends HSBType {
     }
 
     public LEDStateDTO withProgramSpeed(PercentType programSpeed) {
-        return new LEDStateDTO(power, this.getHue(), this.getSaturation(), this.getBrightness(), this.getWhite(), this.getWhite2(),
-            this.getProgram(), programSpeed);
+        return new LEDStateDTO(power, hsbType, this.getWhite(), this.getWhite2(), this.getProgram(), programSpeed);
     }
 
     public LEDStateDTO withIncrementedProgramSpeed(int step) {
@@ -148,20 +161,19 @@ public class LEDStateDTO extends HSBType {
         return withProgramSpeed(new PercentType(programSpeed));
     }
 
-    public Color getColor() {
-        float hue = (float) this.getHue().intValue() / 360;
-        float saturation = (float) this.getSaturation().doubleValue() / 100;
-        float brightness = (float) this.getBrightness().intValue() / 100;
-        return new Color(Color.HSBtoRGB(hue, saturation, brightness));
+    public LEDStateDTO withPower(OnOffType power) {
+        return new LEDStateDTO(power, hsbType, this.getWhite(), this.getWhite2(), this.getProgram(), getProgramSpeed());
+    }
+
+    public int getRGB() {
+        return hsbType.getRGB();
+    }
+
+    public HSBType getHSB() {
+        return hsbType;
     }
 
     public OnOffType getPower() {
         return power;
     }
-
-    public LEDStateDTO withPower(OnOffType power) {
-        return new LEDStateDTO(power, this.getHue(), this.getSaturation(), this.getBrightness(), this.getWhite(), this.getWhite2(),
-            this.getProgram(), getProgramSpeed());
-    }
-
 }

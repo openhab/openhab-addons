@@ -21,9 +21,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.commons.io.IOUtils;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpCommand;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpException;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpMessage;
@@ -122,7 +121,7 @@ public class OnkyoConnection {
         try {
             sendCommand(new EiscpMessage.MessageBuilder().command(cmd).value(value).build());
         } catch (Exception e) {
-            logger.error("Could not send command to device on {}:{}: ", ip, port, e);
+            logger.warn("Could not send command to device on {}:{}: ", ip, port, e);
         }
 
     }
@@ -146,20 +145,20 @@ public class OnkyoConnection {
                 String data = EiscpProtocol.createEiscpPdu(msg);
                 if (logger.isTraceEnabled()) {
                     logger.trace("Sending {} bytes: {}", data.length(),
-                            DatatypeConverter.printHexBinary(data.toString().getBytes()));
+                            HexUtils.bytesToHex(data.getBytes()));
                 }
 
                 outStream.writeBytes(data);
                 outStream.flush();
             } catch (IOException ioException) {
-                logger.error("Error occurred when sending command: {}", ioException.getMessage());
+                logger.warn("Error occurred when sending command: {}", ioException.getMessage());
 
                 if (retry > 0) {
                     logger.debug("Retry {}...", retry);
                     closeSocket();
-                    sendCommand(msg, retry--);
+                    sendCommand(msg, retry - 1);
                 } else {
-                    sendConnectionErrorEvent();
+                    sendConnectionErrorEvent(ioException.getMessage());
                 }
             }
         }
@@ -200,9 +199,11 @@ public class OnkyoConnection {
                 }
 
             } catch (UnknownHostException unknownHost) {
-                logger.error("You are trying to connect to an unknown host: {}", unknownHost.getMessage());
+                logger.debug("You are trying to connect to an unknown host: {}", unknownHost.getMessage());
+                sendConnectionErrorEvent(unknownHost.getMessage());
             } catch (IOException ioException) {
-                logger.error("Can't connect: {}", ioException.getMessage());
+                logger.debug("Can't connect: {}", ioException.getMessage());
+                sendConnectionErrorEvent(ioException.getMessage());
             }
         }
 
@@ -243,7 +244,7 @@ public class OnkyoConnection {
             }
             connected = false;
         } catch (Exception e) {
-            logger.error("Closing connection throws an exception, {}", e.getMessage());
+            logger.debug("Closing connection throws an exception, {}", e.getMessage());
         }
 
         return connected;
@@ -299,11 +300,11 @@ public class OnkyoConnection {
                     connectionAttempts = 0;
                 } catch (EiscpException e) {
 
-                    logger.error("Error occurred during message waiting: {}", e.getMessage());
+                    logger.debug("Error occurred during message waiting: {}", e.getMessage());
 
                 } catch (SocketTimeoutException e) {
 
-                    logger.error("No data received during supervision interval ({} ms)!", SOCKET_TIMEOUT);
+                    logger.debug("No data received during supervision interval ({} ms)!", SOCKET_TIMEOUT);
 
                     restartConnection = true;
 
@@ -311,7 +312,6 @@ public class OnkyoConnection {
 
                     if (!interrupted && !this.isInterrupted()) {
                         logger.debug("Error occurred during message waiting: {}", e.getMessage());
-                        sendConnectionErrorEvent();
                         restartConnection = true;
 
                         // sleep a while, to prevent fast looping if error situation is permanent
@@ -320,7 +320,7 @@ public class OnkyoConnection {
                         } else {
                             // slow down after few faster attempts
                             if (connectionAttempts == FAST_CONNECTION_RETRY_COUNT) {
-                                logger.info(
+                                logger.debug(
                                         "Connection failed {} times to {}:{}, slowing down automatic connection to {} seconds.",
                                         FAST_CONNECTION_RETRY_COUNT, ip, port, SLOW_CONNECTION_RETRY_DELAY / 1000);
                             }
@@ -343,7 +343,8 @@ public class OnkyoConnection {
                                 .value(EiscpCommand.POWER_QUERY.getValue()).build());
 
                     } catch (Exception ex) {
-                        logger.error("Reconnection invoking error: {}", ex.getMessage());
+                        logger.debug("Reconnection invoking error: {}", ex.getMessage());
+                        sendConnectionErrorEvent(ex.getMessage());
                     }
                 }
             }
@@ -384,13 +385,13 @@ public class OnkyoConnection {
         }
     }
 
-    private void sendConnectionErrorEvent() {
+    private void sendConnectionErrorEvent(String errorMsg) {
         // send message to event listeners
         try {
             Iterator<OnkyoEventListener> iterator = listeners.iterator();
 
             while (iterator.hasNext()) {
-                iterator.next().connectionError(ip);
+                iterator.next().connectionError(ip, errorMsg);
             }
 
         } catch (Exception ex) {
@@ -408,7 +409,7 @@ public class OnkyoConnection {
             }
 
         } catch (Exception e) {
-            logger.error("Event listener invoking error: {}", e.getMessage());
+            logger.debug("Event listener invoking error: {}", e.getMessage());
         }
     }
 }

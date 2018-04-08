@@ -23,13 +23,12 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.velbus.handler.VelbusBridgeHandler;
-import org.openhab.binding.velbus.handler.VelbusVMB2BLEHandler;
-import org.openhab.binding.velbus.handler.VelbusVMB4DCHandler;
-import org.openhab.binding.velbus.handler.VelbusVMB4RYLDHandler;
-import org.openhab.binding.velbus.handler.VelbusVMB7INHandler;
+import org.openhab.binding.velbus.handler.VelbusSensorHandler;
+import org.openhab.binding.velbus.handler.VelbusBlindsHandler;
+import org.openhab.binding.velbus.handler.VelbusDimmerHandler;
+import org.openhab.binding.velbus.handler.VelbusRelayHandler;
 import org.openhab.binding.velbus.handler.VelbusVMBGPHandler;
 import org.openhab.binding.velbus.handler.VelbusVMBGPOHandler;
-import org.openhab.binding.velbus.handler.VelbusVMBPBHandler;
 import org.openhab.binding.velbus.handler.VelbusVMBPIROHandler;
 import org.openhab.binding.velbus.internal.discovery.VelbusThingDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
@@ -59,24 +58,20 @@ public class VelbusHandlerFactory extends BaseThingHandlerFactory {
             VelbusBridgeHandler velbusBridgeHandler = new VelbusBridgeHandler((Bridge) thing);
             registerDiscoveryService(velbusBridgeHandler);
             thingHandler = velbusBridgeHandler;
-        } else if (VelbusVMB4RYLDHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            thingHandler = new VelbusVMB4RYLDHandler(thing);
-        } else if (VelbusVMB4DCHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            thingHandler = new VelbusVMB4DCHandler(thing);
-        } else if (VelbusVMB2BLEHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            thingHandler = new VelbusVMB2BLEHandler(thing);
-        } else if (VelbusVMBPBHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            thingHandler = new VelbusVMBPBHandler(thing);
-        } else if (VelbusVMBPBHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            thingHandler = new VelbusVMBPBHandler(thing);
+        } else if (VelbusRelayHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusRelayHandler(thing);
+        } else if (VelbusDimmerHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusDimmerHandler(thing);
+        } else if (VelbusBlindsHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusBlindsHandler(thing);
+        } else if (VelbusSensorHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusSensorHandler(thing);
         } else if (VelbusVMBGPHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             thingHandler = new VelbusVMBGPHandler(thing);
         } else if (VelbusVMBGPOHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             thingHandler = new VelbusVMBGPOHandler(thing);
         } else if (VelbusVMBPIROHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             thingHandler = new VelbusVMBPIROHandler(thing);
-        } else if (VelbusVMB7INHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            thingHandler = new VelbusVMB7INHandler(thing);
         }
 
         return thingHandler;

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="satel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>Satel Binding</name>
+	<description>This is the binding for Satel INTEGRA alarm systems using either ETHM-1 or INT-RS communication module</description>
+	<author>Krzysztof Goworek</author>
+
+</binding:binding>

@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * A list of Scenes, as returned by the HD Power View Hub
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public class Scenes {
 

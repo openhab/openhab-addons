@@ -17,12 +17,11 @@ import org.eclipse.smarthome.core.types.State;
  * Abstract implementation of {@link RioHandlerCallback} that will provide listener services (adding/removing and firing
  * of state)
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 public abstract class AbstractRioHandlerCallback implements RioHandlerCallback {
     /** Listener array */
-    private final CopyOnWriteArrayList<ListenerState> listeners = new CopyOnWriteArrayList<ListenerState>();
+    private final CopyOnWriteArrayList<ListenerState> listeners = new CopyOnWriteArrayList<>();
 
     /**
      * Adds a listener to {@link #listeners} wrapping the listener in a {@link ListenerState}
@@ -79,7 +78,7 @@ public abstract class AbstractRioHandlerCallback implements RioHandlerCallback {
 
         /**
          * Create the listener state from the channelID and listener
-         * 
+         *
          * @param channelId the channelID
          * @param listener the listener
          */

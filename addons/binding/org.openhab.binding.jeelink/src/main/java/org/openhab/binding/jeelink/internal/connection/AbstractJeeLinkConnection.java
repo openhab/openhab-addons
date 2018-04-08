@@ -68,14 +68,13 @@ public abstract class AbstractJeeLinkConnection implements JeeLinkConnection {
     }
 
     @Override
-    public void sendInitCommands(String commands) {
+    public void sendCommands(String commands) {
         try {
             if (commands != null && !commands.trim().isEmpty()) {
                 initCommands = commands.split(";");
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Initializing device on port {} with commands {} ", port,
-                            Arrays.toString(initCommands));
+                    logger.debug("Writing to device on port {}: {} ", port, Arrays.toString(initCommands));
                 }
 
                 OutputStream initStream = getInitStream();

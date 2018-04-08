@@ -11,8 +11,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.junit.Assert.assertEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComSecurity1Message.SubType.*;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -30,7 +29,7 @@ public class RFXComSecurity1MessageTest {
     private void testSomeMessages(String hexMessage, RFXComSecurity1Message.SubType subType, int sequenceNumber,
             String deviceId, int batteryLevel, Contact contact, Motion motion, Status status, int signalLevel)
             throws RFXComException {
-        byte[] message = DatatypeConverter.parseHexBinary(hexMessage);
+        byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComSecurity1Message msg = (RFXComSecurity1Message) RFXComMessageFactory.createMessage(message);
         assertEquals("SubType", subType, msg.subType);
         assertEquals("Seq Number", sequenceNumber, (short) (msg.seqNbr & 0xFF));
@@ -43,7 +42,7 @@ public class RFXComSecurity1MessageTest {
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
     }
 
     @Test

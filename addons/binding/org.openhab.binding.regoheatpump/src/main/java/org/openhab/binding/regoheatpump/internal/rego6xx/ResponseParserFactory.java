@@ -15,7 +15,7 @@ package org.openhab.binding.regoheatpump.internal.rego6xx;
  * @author Boris Krivonog - Initial contribution
  */
 public class ResponseParserFactory {
-    public static final ResponseParser<Short> Short = new ShortResponseParser();
-    public static final ResponseParser<String> String = new StringResponseParser();
-    public static final ResponseParser<ErrorLine> ErrorLine = new ErrorLineResponseParser();
+    public static final ResponseParser<Short> SHORT = new ShortResponseParser();
+    public static final ResponseParser<String> STRING = new StringResponseParser();
+    public static final ResponseParser<ErrorLine> ERROR_LINE = new ErrorLineResponseParser();
 }
