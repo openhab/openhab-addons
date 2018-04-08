@@ -15,7 +15,7 @@ Export-Package:
  .smarthome.test"
 Fragment-Host: org.openhab.binding.nest
 Import-Package: 
- com.google.gson.reflect;version="2.7.0",
+ com.google.gson.reflect,
  javax.measure,
  javax.measure.quantity,
  javax.servlet,
