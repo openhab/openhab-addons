@@ -2,9 +2,7 @@
 
 This binding can control Amazon Echo devices (Alexa) from openhab.
 
-The idea for writing this binding came from this blog: http://blog.loetzimmer.de/2017/10/amazon-alexa-hort-auf-die-shell-echo.html (German). Thank you Alex!
-
-The binding provide features to control and view the current state of echo dot devices:
+It provide features to control and view the current state of echo dot devices:
 
 - volume
 - pause/continue/next track/previous track
@@ -19,7 +17,7 @@ The binding provide features to control and view the current state of echo dot d
 - start daily briefing
 - start weather report
 - start automation routine
-- have multiple configurations of flash briefings
+- activate multiple configurations of flash briefings
 
 Some ideas what you can do in your home by using rules and other openHAB controlled devices:
 
@@ -230,7 +228,9 @@ To get instead of the id fields an selection box, use the Selection element and 
 ```
         Selection item=Echo_Living_Room_RadioStationId mappings=[ ''='Off', 's1139'='Antenne Steiermark', 's8007'='Hitradio Ö3', 's16793'='Radio 10', 's8235'='FM4' ]
 ```
+## Credits
 
+The idea for writing this binding came from this blog: http://blog.loetzimmer.de/2017/10/amazon-alexa-hort-auf-die-shell-echo.html (German). Thank you Alex!
 
 ## Trademark Disclaimer
 
