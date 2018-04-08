@@ -168,13 +168,15 @@ public class Connection {
 
     private String readValue(Scanner scanner) {
         if (scanner.nextLine().equals("1")) {
-            return scanner.nextLine();
+            String result = scanner.nextLine();
+            if (result != null) {
+                return result;
+            }
         }
         return "";
     }
 
     public boolean tryRestoreLogin(@Nullable String data) {
-
         // verify store data
         if (StringUtils.isEmpty(data)) {
             return false;
