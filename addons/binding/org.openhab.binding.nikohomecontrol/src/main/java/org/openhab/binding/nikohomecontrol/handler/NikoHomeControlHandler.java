@@ -68,7 +68,7 @@ public class NikoHomeControlHandler extends BaseThingHandler {
     private volatile boolean waitForEvent; // flag to wait for position update rollershutter before doing next
                                            // move
 
-    private int prevActionState;
+    private volatile int prevActionState;
 
     public NikoHomeControlHandler(Thing thing) {
         super(thing);
@@ -201,7 +201,8 @@ public class NikoHomeControlHandler extends BaseThingHandler {
 
     private void handleRollershutterCommand(NhcAction nhcAction, Command command) {
         Configuration config = this.getConfig();
-        boolean invert = (boolean) config.get(CONFIG_INVERT);
+        boolean invert = (boolean) config.get(CONFIG_INVERT); // parameter if NHC does not correctly map to openHAB 0%
+                                                              // UP and 100% DOWN
         if (logger.isTraceEnabled()) {
             String actionId = (String) config.get(CONFIG_ACTION_ID);
             logger.trace("handleRollerShutterCommand: rollershutter {} command {}", actionId, command);

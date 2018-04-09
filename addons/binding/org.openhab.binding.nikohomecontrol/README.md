@@ -99,7 +99,7 @@ The `step` parameter is only available for dimmers.
 It sets a step value for dimmer increase/decrease actions. The parameter is optional and set to 10 by default.
 
 The `invert` parameter is only available for rollershutters.
-It will invert the up/down direction of the rollerhutter and remap the position to the opposite position. The parameter is optional and false by default.
+It will invert the up/down direction of the rollerhutter and remap the position to the opposite position. This can be used if Niko Home Control does not map correctly to openHAB 0% UP and 100% DOWN. The parameter is optional and false by default.
 
 ## Channels
 
@@ -143,7 +143,7 @@ Bridge nikohomecontrol:bridge:nhc1 [ addr="192.168.0.70", port=8000, refresh=300
 Bridge nikohomecontrol:bridge:nhc2 [ addr="192.168.0.110" ] {
     onOff 11 @ "Upstairs"[ actionId=11 ]
     dimmer 12 [ actionId=12, step=5 ]
-    blind 13 [ actionId=13, invert=true ]
+    blind 13 [ actionId=13 ]
 }
 ```
 
