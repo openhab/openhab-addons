@@ -196,14 +196,14 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
         }
     }
 
-    public synchronized void setDevices(ThingUID brigdeThingUID, Device[] deviceInformations) {
+    public synchronized void setDevices(ThingUID brigdeThingUID, List<Device> deviceList) {
         Set<String> toRemove = new HashSet<String>(lastDeviceInformations.keySet());
-        for (Device deviceInformation : deviceInformations) {
-            String serialNumber = deviceInformation.serialNumber;
+        for (Device device : deviceList) {
+            String serialNumber = device.serialNumber;
             if (serialNumber != null) {
                 boolean alreadyfound = toRemove.remove(serialNumber);
                 // new
-                String deviceFamily = deviceInformation.deviceFamily;
+                String deviceFamily = device.deviceFamily;
                 if (!alreadyfound && deviceFamily != null) {
                     ThingTypeUID thingTypeId;
                     if (deviceFamily.equals("ECHO")) {
@@ -223,14 +223,13 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
                     // Check if already created
                     if (EchoHandler.find(thingUID) == null) {
 
-                        DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                                .withLabel(deviceInformation.accountName)
+                        DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel(device.accountName)
                                 .withProperty(DEVICE_PROPERTY_SERIAL_NUMBER, serialNumber)
                                 .withProperty(DEVICE_PROPERTY_FAMILY, deviceFamily)
                                 .withRepresentationProperty(DEVICE_PROPERTY_SERIAL_NUMBER).withBridge(brigdeThingUID)
                                 .build();
 
-                        logger.debug("Device [{}: {}] found. Mapped to thing type {}", deviceInformation.deviceFamily,
+                        logger.debug("Device [{}: {}] found. Mapped to thing type {}", device.deviceFamily,
                                 serialNumber, thingTypeId.getAsString());
 
                         thingDiscovered(result);

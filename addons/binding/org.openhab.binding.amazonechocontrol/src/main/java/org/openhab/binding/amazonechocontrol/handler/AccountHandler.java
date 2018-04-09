@@ -11,6 +11,7 @@ package org.openhab.binding.amazonechocontrol.handler;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -70,7 +71,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
     private @Nullable ScheduledFuture<?> refreshLogin;
     private boolean updateSmartHomeDeviceList;
     private boolean discoverFlashProfiles;
-    private boolean smartHodeDeviceListEnabled;
+    private boolean smartHomeDeviceListEnabled;
     private String currentFlashBriefingJson = "";
     private final HttpService httpService;
     private @Nullable LoginServlet loginServlet;
@@ -84,7 +85,62 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
 
     @Override
     public void initialize() {
-        start();
+        logger.debug("amazon account bridge starting handler ...");
+
+        AccountConfiguration config = getConfigAs(AccountConfiguration.class);
+
+        String amazonSite = config.amazonSite;
+        if (StringUtils.isEmpty(amazonSite)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Amazon site not configured");
+            return;
+        }
+        String email = config.email;
+        if (StringUtils.isEmpty(email)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Account email not configured");
+            return;
+        }
+        String password = config.password;
+        if (StringUtils.isEmpty(password)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Account password not configured");
+            return;
+        }
+        Integer pollingIntervalInSeconds = config.pollingIntervalInSeconds;
+        if (pollingIntervalInSeconds == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Polling interval not configured");
+            return;
+        }
+        Boolean discoverSmartHomeDevices = config.discoverSmartHomeDevices;
+        if (discoverSmartHomeDevices != null && discoverSmartHomeDevices) {
+            if (!smartHomeDeviceListEnabled) {
+                updateSmartHomeDeviceList = true;
+            }
+            smartHomeDeviceListEnabled = true;
+        } else {
+            smartHomeDeviceListEnabled = false;
+        }
+
+        if (pollingIntervalInSeconds < 10) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Polling interval less than 10 seconds not allowed");
+            return;
+        }
+        synchronized (synchronizeConnection) {
+            Connection connection = this.connection;
+            if (connection == null || !connection.getEmail().equals(email) || !connection.getPassword().equals(password)
+                    || !connection.getAmazonSite().equals(amazonSite)) {
+                this.connection = new Connection(email, password, amazonSite, this.getThing().getUID().getId());
+            }
+        }
+        if (this.loginServlet == null) {
+            this.loginServlet = new LoginServlet(httpService, this.getThing().getUID().getId(), this, config);
+        }
+
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
+
+        refreshLogin = scheduler.scheduleWithFixedDelay(this::checkLogin, 0, 60, TimeUnit.SECONDS);
+        refreshJob = scheduler.scheduleWithFixedDelay(this::refreshData, 4, pollingIntervalInSeconds, TimeUnit.SECONDS);
+
+        logger.debug("amazon account bridge handler started.");
     }
 
     @Override
@@ -95,10 +151,8 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
         }
     }
 
-    public Device[] getLastKnownDevices() {
-        Device[] devices = new Device[jsonSerialNumberDeviceMapping.size()];
-        jsonSerialNumberDeviceMapping.values().toArray(devices);
-        return devices;
+    public List<Device> getLastKnownDevices() {
+        return new ArrayList<>(jsonSerialNumberDeviceMapping.values());
     }
 
     public void addEchoHandler(EchoHandler echoHandler) {
@@ -228,81 +282,6 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             connection.logout();
             this.connection = null;
         }
-    }
-
-    private void start() {
-        logger.debug("amazon account bridge starting handler ...");
-
-        AccountConfiguration config = getConfigAs(AccountConfiguration.class);
-
-        String amazonSite = config.amazonSite;
-        if (StringUtils.isEmpty(amazonSite)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Amazon site not configured");
-            cleanup();
-            return;
-        }
-        String email = config.email;
-        if (StringUtils.isEmpty(email)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Account email not configured");
-            cleanup();
-            return;
-        }
-        String password = config.password;
-        if (StringUtils.isEmpty(password)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Account password not configured");
-            cleanup();
-            return;
-        }
-        Integer pollingIntervalInSeconds = config.pollingIntervalInSeconds;
-        if (pollingIntervalInSeconds == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Polling interval not configured");
-            cleanup();
-            return;
-        }
-        Boolean discoverSmartHomeDevices = config.discoverSmartHomeDevices;
-        if (discoverSmartHomeDevices != null && discoverSmartHomeDevices) {
-            if (!smartHodeDeviceListEnabled) {
-                updateSmartHomeDeviceList = true;
-            }
-            smartHodeDeviceListEnabled = true;
-        } else {
-            smartHodeDeviceListEnabled = false;
-        }
-
-        if (pollingIntervalInSeconds < 10) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Polling interval less than 10 seconds not allowed");
-            cleanup();
-            return;
-        }
-        synchronized (synchronizeConnection) {
-            Connection connection = this.connection;
-            if (connection == null || !connection.getEmail().equals(email) || !connection.getPassword().equals(password)
-                    || !connection.getAmazonSite().equals(amazonSite)) {
-                this.connection = new Connection(email, password, amazonSite, this.getThing().getUID().getId());
-            }
-        }
-        if (this.loginServlet == null) {
-            this.loginServlet = new LoginServlet(httpService, this.getThing().getUID().getId(), this, config);
-        }
-
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
-
-        @Nullable
-        ScheduledFuture<?> oldRefreshLogin = refreshLogin;
-        if (oldRefreshLogin != null) {
-            oldRefreshLogin.cancel(false);
-        }
-        refreshLogin = scheduler.scheduleWithFixedDelay(this::checkLogin, 0, 60, TimeUnit.SECONDS);
-
-        @Nullable
-        ScheduledFuture<?> oldRefreshJob = refreshJob;
-        if (oldRefreshJob != null) {
-            oldRefreshJob.cancel(false);
-        }
-        refreshJob = scheduler.scheduleWithFixedDelay(this::refreshData, 4, pollingIntervalInSeconds, TimeUnit.SECONDS);
-
-        logger.debug("amazon account bridge handler started.");
     }
 
     private void checkLogin() {
@@ -487,7 +466,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
         }
         AmazonEchoDiscovery discoveryService = AmazonEchoDiscovery.instance;
 
-        Device[] devices = null;
+        List<Device> devices = null;
         try {
             if (currentConnection.getIsLoggedIn()) {
                 devices = currentConnection.getDeviceList();
@@ -521,7 +500,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
         }
         updateFlashBriefingHandlers(currentConnection);
 
-        if (discoveryService != null && updateSmartHomeDeviceList && smartHodeDeviceListEnabled) {
+        if (discoveryService != null && updateSmartHomeDeviceList && smartHomeDeviceListEnabled) {
             updateSmartHomeDeviceList = false;
             List<JsonSmartHomeDevice> smartHomeDevices = null;
             try {

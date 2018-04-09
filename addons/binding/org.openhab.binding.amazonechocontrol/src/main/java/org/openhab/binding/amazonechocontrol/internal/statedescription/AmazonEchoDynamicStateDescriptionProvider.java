@@ -12,6 +12,7 @@ import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingCons
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -175,8 +176,9 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             if (accountHandler == null) {
                 return originalStateDescription;
             }
-            Device[] devices = accountHandler.getLastKnownDevices();
-            if (devices.length == 0) {
+            @NonNull
+            List<@NonNull Device> devices = accountHandler.getLastKnownDevices();
+            if (devices.size() == 0) {
                 return originalStateDescription;
             }
 

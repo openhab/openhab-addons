@@ -23,6 +23,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -528,14 +529,14 @@ public class Connection {
 
     // commands and states
 
-    public Device[] getDeviceList() throws IOException, URISyntaxException {
+    public List<Device> getDeviceList() throws IOException, URISyntaxException {
         String json = getDeviceListJson();
         JsonDevices devices = parseJson(json, JsonDevices.class);
         Device[] result = devices.devices;
         if (result == null) {
-            result = new Device[0];
+            return new ArrayList<>();
         }
-        return result;
+        return new ArrayList<Device>(Arrays.asList(result));
     }
 
     public String getDeviceListJson() throws IOException, URISyntaxException {
