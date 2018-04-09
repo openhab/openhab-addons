@@ -98,31 +98,31 @@ The account Thing Type does not have any channels.
 
 ### Thermostat Channels
 
-| Channel Type ID             | Item Type | Description                                                                                 | Read Write |
-|-----------------------------|-----------|---------------------------------------------------------------------------------------------|:----------:|
-| can_cool                    | Switch    | If the thermostat can actually turn on cooling                                              |      R     |
-| can_heat                    | Switch    | If the thermostat can actually turn on heating                                              |      R     |
-| fan_timer_active            | Switch    | If the fan timer is engaged                                                                 |     R/W    |
-| fan_timer_duration          | Number    | Length of time (in minutes) that the fan is set to run (15, 30, 45, 60, 120, 240, 480, 960) |     R/W    |
-| fan_timer_timeout           | DateTime  | Timestamp when the fan stops running                                                        |      R     |
-| has_fan                     | Switch    | If the thermostat can control the fan                                                       |      R     |
-| has_leaf                    | Switch    | If the thermostat is currently in a leaf mode                                               |      R     |
-| humidity                    | Number    | Indicates the current relative humidity                                                     |      R     |
-| last_connection             | DateTime  | Timestamp of the last successful interaction with Nest                                      |      R     |
-| locked                      | Switch    | If the thermostat has the temperature locked to only be within a set range                  |      R     |
-| locked_max_set_point        | Number    | The locked range max set point in degrees Celsius                                           |     R/W    |
-| locked_min_set_point        | Number    | The locked range min set point in degrees Celsius                                           |     R/W    |
-| max_set_point               | Number    | The max set point in degrees Celsius                                                        |     R/W    |
-| min_set_point               | Number    | The min set point in degrees Celsius                                                        |     R/W    |
-| mode                        | String    | Current mode of the Nest thermostat (HEAT, COOL, HEAT_COOL, ECO, OFF)                       |     R/W    |
-| previous_mode               | String    | The previous mode of the Nest thermostat (HEAT, COOL, HEAT_COOL, ECO, OFF)                  |      R     |
-| state                       | String    | The active state of the Nest thermostat (HEATING, COOLING, OFF)                             |      R     |
-| temperature                 | Number    | Current temperature in degrees Celsius                                                      |      R     |
-| time_to_target_mins         | Number    | Time left to the target temperature (mins) approximately                                    |      R     |
-| set_point                   | Number    | The set point in degrees Celsius                                                            |     R/W    |
-| sunlight_correction_active  | Switch    | If sunlight correction is active                                                            |      R     |
-| sunlight_correction_enabled | Switch    | If sunlight correction is enabled                                                           |      R     |
-| using_emergency_heat        | Switch    | If the system is currently using emergency heat                                             |      R     |
+| Channel Type ID             | Item Type          | Description                                                                                 | Read Write |
+|-----------------------------|--------------------|---------------------------------------------------------------------------------------------|:----------:|
+| can_cool                    | Switch             | If the thermostat can actually turn on cooling                                              |      R     |
+| can_heat                    | Switch             | If the thermostat can actually turn on heating                                              |      R     |
+| fan_timer_active            | Switch             | If the fan timer is engaged                                                                 |     R/W    |
+| fan_timer_duration          | Number             | Length of time (in minutes) that the fan is set to run (15, 30, 45, 60, 120, 240, 480, 960) |     R/W    |
+| fan_timer_timeout           | DateTime           | Timestamp when the fan stops running                                                        |      R     |
+| has_fan                     | Switch             | If the thermostat can control the fan                                                       |      R     |
+| has_leaf                    | Switch             | If the thermostat is currently in a leaf mode                                               |      R     |
+| humidity                    | Number             | Indicates the current relative humidity                                                     |      R     |
+| last_connection             | DateTime           | Timestamp of the last successful interaction with Nest                                      |      R     |
+| locked                      | Switch             | If the thermostat has the temperature locked to only be within a set range                  |      R     |
+| locked_max_set_point        | Number:Temperature | The locked range max set point temperature                                                  |     R/W    |
+| locked_min_set_point        | Number:Temperature | The locked range min set point temperature                                                  |     R/W    |
+| max_set_point               | Number:Temperature | The max set point temperature                                                               |     R/W    |
+| min_set_point               | Number:Temperature | The min set point temperature                                                               |     R/W    |
+| mode                        | String             | Current mode of the Nest thermostat (HEAT, COOL, HEAT_COOL, ECO, OFF)                       |     R/W    |
+| previous_mode               | String             | The previous mode of the Nest thermostat (HEAT, COOL, HEAT_COOL, ECO, OFF)                  |      R     |
+| state                       | String             | The active state of the Nest thermostat (HEATING, COOLING, OFF)                             |      R     |
+| temperature                 | Number:Temperature | Current temperature                                                                         |      R     |
+| time_to_target_mins         | Number             | Time left to the target temperature (mins) approximately                                    |      R     |
+| set_point                   | Number:Temperature | The set point temperature                                                                   |     R/W    |
+| sunlight_correction_active  | Switch             | If sunlight correction is active                                                            |      R     |
+| sunlight_correction_enabled | Switch             | If sunlight correction is enabled                                                           |      R     |
+| using_emergency_heat        | Switch             | If the system is currently using emergency heat                                             |      R     |
 
 Note that the Nest API rounds Thermostat values so they will differ from what shows up in the Nest App.
 The Nest API applies the following rounding:
@@ -184,17 +184,17 @@ Switch   Thermostat_Has_Leaf       "Has Leaf"                                   
 Number   Thermostat_Humidity       "Humidity [%.1f %%]"                                       { channel="nest:thermostat:demo_account:living_thermostat:humidity" }
 DateTime Thermostat_Last_Conn      "Last Connection [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"    { channel="nest:thermostat:demo_account:living_thermostat:last_connection" }
 Switch   Thermostat_Locked         "Locked"                                                   { channel="nest:thermostat:demo_account:living_thermostat:locked" }
-Number   Thermostat_LMaxSP         "Locked Max Set Point [%.1f °C]"                           { channel="nest:thermostat:demo_account:living_thermostat:locked_max_set_point" }
-Number   Thermostat_LMinSP         "Locked Min Set Point [%.1f °C]"                           { channel="nest:thermostat:demo_account:living_thermostat:locked_min_set_point" }
-Number   Thermostat_Max_SP         "Max Set Point [%.1f °C]"                                  { channel="nest:thermostat:demo_account:living_thermostat:max_set_point" }
-Number   Thermostat_Min_SP         "Min Set Point [%.1f °C]"                                  { channel="nest:thermostat:demo_account:living_thermostat:min_set_point" }
+Number:Temperature Therm_LMaxSP    "Locked Max Set Point [%.1f %unit%]"                       { channel="nest:thermostat:demo_account:living_thermostat:locked_max_set_point" }
+Number:Temperature Therm_LMinSP    "Locked Min Set Point [%.1f %unit%]"                       { channel="nest:thermostat:demo_account:living_thermostat:locked_min_set_point" }
+Number:Temperature Therm_Max_SP    "Max Set Point [%.1f %unit%]"                              { channel="nest:thermostat:demo_account:living_thermostat:max_set_point" }
+Number:Temperature Therm_Min_SP    "Min Set Point [%.1f %unit%]"                              { channel="nest:thermostat:demo_account:living_thermostat:min_set_point" }
 String   Thermostat_Mode           "Mode [%s]"                                                { channel="nest:thermostat:demo_account:living_thermostat:mode" }
 String   Thermostat_Previous_Mode  "Previous Mode [%s]"                                       { channel="nest:thermostat:demo_account:living_thermostat:previous_mode" }
 String   Thermostat_State          "State [%s]"                                               { channel="nest:thermostat:demo_account:living_thermostat:state" }
-Number   Thermostat_Set_Point      "Set Point [%.1f °C]"                                      { channel="nest:thermostat:demo_account:living_thermostat:set_point" }
+Number:Temperature Thermostat_SP   "Set Point [%.1f %unit%]"                                  { channel="nest:thermostat:demo_account:living_thermostat:set_point" }
 Switch   Thermostat_Sunlight_CA    "Sunlight Correction Active"                               { channel="nest:thermostat:demo_account:living_thermostat:sunlight_correction_active" }
 Switch   Thermostat_Sunlight_CE    "Sunlight Correction Enabled"                              { channel="nest:thermostat:demo_account:living_thermostat:sunlight_correction_enabled" }
-Number   Thermostat_Temperature    "Temperature [%.1f °C]"                                    { channel="nest:thermostat:demo_account:living_thermostat:temperature" }
+Number:Temperature Therm_Temp      "Temperature [%.1f %unit%]"                                { channel="nest:thermostat:demo_account:living_thermostat:temperature" }
 Number   Thermostat_Time_To_Target "Time To Target [%s]"                                      { channel="nest:thermostat:demo_account:living_thermostat:time_to_target_mins" }
 Switch   Thermostat_Using_Em_Heat  "Using Emergency Heat"                                     { channel="nest:thermostat:demo_account:living_thermostat:using_emergency_heat" }
 
@@ -210,10 +210,6 @@ Switch   Home_Rush_Hour_Rewards    "Rush Hour Rewards"                          
 String   Home_Smoke_Alarm_State    "Smoke Alarm State [%s]"                                   { channel="nest:structure:demo_account:home:smoke_alarm_state" }
 String   Home_Time_Zone            "Time Zone [%s]"                                           { channel="nest:structure:demo_account:home:time_zone" }
 ```
-
-## Known Issues
-
-*   The binding uses Celsius as unit for all Themostat temperature channels.
 
 ## Attribution
 

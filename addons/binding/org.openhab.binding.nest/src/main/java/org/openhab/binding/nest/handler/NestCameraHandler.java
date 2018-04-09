@@ -43,19 +43,19 @@ public class NestCameraHandler extends NestBaseHandler<Camera> {
             case CHANNEL_APP_URL:
                 return getAsStringTypeOrNull(camera.getAppUrl());
             case CHANNEL_AUDIO_INPUT_ENABLED:
-                return getAsOnOffType(camera.isAudioInputEnabled());
+                return getAsOnOffTypeOrNull(camera.isAudioInputEnabled());
             case CHANNEL_LAST_ONLINE_CHANGE:
                 return getAsDateTimeTypeOrNull(camera.getLastIsOnlineChange());
             case CHANNEL_PUBLIC_SHARE_ENABLED:
-                return getAsOnOffType(camera.isPublicShareEnabled());
+                return getAsOnOffTypeOrNull(camera.isPublicShareEnabled());
             case CHANNEL_PUBLIC_SHARE_URL:
                 return getAsStringTypeOrNull(camera.getPublicShareUrl());
             case CHANNEL_SNAPSHOT_URL:
                 return getAsStringTypeOrNull(camera.getSnapshotUrl());
             case CHANNEL_STREAMING:
-                return getAsOnOffType(camera.isStreaming());
+                return getAsOnOffTypeOrNull(camera.isStreaming());
             case CHANNEL_VIDEO_HISTORY_ENABLED:
-                return getAsOnOffType(camera.isVideoHistoryEnabled());
+                return getAsOnOffTypeOrNull(camera.isVideoHistoryEnabled());
             case CHANNEL_WEB_URL:
                 return getAsStringTypeOrNull(camera.getWebUrl());
             default:
@@ -90,11 +90,12 @@ public class NestCameraHandler extends NestBaseHandler<Camera> {
 
         setLastUpdate(camera);
         updateChannels(camera);
-        updateStatus(camera.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+        updateStatus(camera.isOnline() == null ? ThingStatus.UNKNOWN
+                : camera.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
         updateProperty(PROPERTY_FIRMWARE_VERSION, camera.getSoftwareVersion());
     }
 
     private void addUpdateRequest(String field, Object value) {
-        addUpdateRequest(NEST_CAMERA_UPDATE_URL, field, value);
+        addUpdateRequest(NEST_CAMERA_UPDATE_PATH, field, value);
     }
 }
