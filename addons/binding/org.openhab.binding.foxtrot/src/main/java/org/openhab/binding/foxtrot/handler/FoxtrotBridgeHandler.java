@@ -12,9 +12,12 @@ import static org.openhab.binding.foxtrot.FoxtrotBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -37,9 +40,15 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FoxtrotBridgeHandler.class);
 
+    @Nullable
     private PlcComSClient client;
+    @Nullable
     private ValuesReceiver receiver;
+    @Nullable
     private CommandExecutor executor;
+
+    private FoxtrotConfiguration conf;
+    private ScheduledFuture watchDogJob;
 
     public FoxtrotBridgeHandler(@NonNull Bridge bridge) {
         super(bridge);
@@ -49,22 +58,26 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Foxtrot bridge handler ...");
-        FoxtrotConfiguration conf = getConfigAs(FoxtrotConfiguration.class);
+        conf = getConfigAs(FoxtrotConfiguration.class);
         updateProperty(PROPERTY_PLCCOMS_HOST, conf.hostname);
         updateProperty(PROPERTY_PLCCOMS_PORT, String.valueOf(conf.port));
 
         logger.debug("Opening connections to PLCComS server at {}:{} ...", conf.hostname, conf.port);
         try {
-            client = new PlcComSClient(conf.hostname, conf.port);
-            client.open();
-            updateProperties(client.getInfos());
-            logger.debug("Properties succesfully updated!");
+            internalInit();
 
-            receiver = new ValuesReceiver(client);
-            receiver.start();
-
-            executor = new CommandExecutor(client);
-            executor.start();
+            watchDogJob = scheduler.scheduleWithFixedDelay(() -> {
+                logger.trace("Foxtrot PlcComS client liveness check ...");
+                if (!client.isOpen() || !receiver.isRunning() || !executor.isRunning()) {
+                    try {
+                        internalDispose();
+                        sleep(10000);
+                        internalInit();
+                    }  catch (IOException e) {
+                        logger.error("Attempt to initialize PlcComS client failed!", e);
+                    }
+                }
+            }, 1, 1, TimeUnit.MINUTES);
 
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
@@ -72,20 +85,38 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    // todo pravidelny check connectu na PlcComS server, ak chyba tak recovery
-
     @Override
     public void dispose() {
         logger.debug("Disposing Foxtrot PLC bridge handler connections to PLCComS server ...");
+        if (watchDogJob != null && !watchDogJob.isCancelled()) {
+            watchDogJob.cancel(true);
+        }
 
+        // sleep for a while to give time other things to unregister properly
+        sleep(3000);
+
+        internalDispose();
+    }
+
+    private void internalInit() throws IOException {
+        client = new PlcComSClient(conf.hostname, conf.port);
+        client.open();
+        updateProperties(client.getInfos());
+
+        receiver = new ValuesReceiver(client);
+        receiver.start();
+
+        executor = new CommandExecutor(client);
+        executor.start();
+    }
+
+    private void internalDispose() {
         if (executor != null) {
             executor.stop();
         }
-
         if (receiver != null) {
             receiver.stop();
         }
-
         if (client != null) {
             client.close();
         }
@@ -100,7 +131,7 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
         register(var, handler, null);
     }
 
-    void register(String var, Refreshable handler, BigDecimal delta) throws IOException {
+    void register(String var, Refreshable handler, @Nullable BigDecimal delta) throws IOException {
         receiver.register(var, handler, delta);
     }
 
@@ -110,5 +141,9 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
 
     CommandExecutor getCommandExecutor() {
         return executor;
+    }
+
+    private void sleep(long milis) {
+        try { Thread.sleep(milis); } catch (InterruptedException ignored) { }
     }
 }

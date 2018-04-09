@@ -35,7 +35,7 @@
 			<parameter name="delta" type="decimal" required="false">
 				<label>Value change delta</label>
 				<description>Defines how often the state is updated, default is 1%</description>
-				<default>1</default>
+				<default>10</default>
 			</parameter>
 		</config-description>
 	</thing-type>

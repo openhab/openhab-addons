@@ -53,7 +53,7 @@ public class NumberHandler extends FoxtrotBaseHandler {
             foxtrotBridgeHandler.register(variableName, this, config.delta);
 
             updateStatus(ThingStatus.ONLINE);
-        } catch (IOException e) {
+        } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Enabling variable '" + variableName + "' failed due error: " + e.getMessage());
         }

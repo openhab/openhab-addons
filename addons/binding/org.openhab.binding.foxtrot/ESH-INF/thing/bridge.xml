@@ -10,13 +10,17 @@
 
 		<properties>
 			<property name="vendor">Tecomat, a.s.</property>
-			<property name="plccomsHost">unknown</property>
-			<property name="plccomsPort">unknown</property>
-			<property name="plccomsVersion">unknown</property>
-			<property name="plccomsEpsnetVersion">unknown</property>
-			<property name="plccomsIniVersion">unknown</property>
-			<property name="plcVersion">unknown</property>
-			<property name="plcIp">unknown</property>
+			<property name="host">unknown</property>
+			<property name="port">unknown</property>
+			<property name="version">unknown</property>
+			<property name="version_epsnet">unknown</property>
+			<property name="version_ini">unknown</property>
+			<property name="version_plc">unknown</property>
+			<property name="ipaddr_plc">unknown</property>
+			<property name="pubfile">unknown</property>
+			<property name="network">unknown</property>
+			<property name="epsport">unknown</property>
+			<property name="epsaddr">unknown</property>
 		</properties>
 
 		<config-description>

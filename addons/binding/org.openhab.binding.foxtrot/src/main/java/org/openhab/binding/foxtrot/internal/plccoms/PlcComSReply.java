@@ -36,9 +36,9 @@ public class PlcComSReply {
         return name;
     }
 
-    // fixme string je zapisany ako "string", treba odstranit ""
     public String getString() {
-        return value;
+        return value != null && value.startsWith("\"") && value.endsWith("\"") ?
+                value.substring(1, value.length()-1) : value;
     }
 
     public BigDecimal getNumber() {

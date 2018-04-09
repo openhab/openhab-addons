@@ -89,7 +89,7 @@ public final class ValuesReceiver implements Runnable {
                     }
                 }
             } catch (ConnectException e) {
-                logger.warn("Connection to PlcComS server is closed! New values are no more received.");
+                logger.info("Connection to PlcComS server is closed! New values are no more received.");
                 running.set(false);
             } catch (PlcComSEception e) {
                 logger.error("PlcComS returns error: {} {}: {}", e.getType(), e.getCode(), e.getMessage());

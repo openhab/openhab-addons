@@ -31,7 +31,9 @@ public abstract class FoxtrotBaseHandler extends BaseThingHandler implements Ref
     @SuppressWarnings("deprecation")
     @Override
     public void initialize() {
-        foxtrotBridgeHandler = ((FoxtrotBridgeHandler)getBridge().getHandler());
-        commandExecutor = foxtrotBridgeHandler.getCommandExecutor();
+        if (getBridge() != null) {
+            foxtrotBridgeHandler = (FoxtrotBridgeHandler) getBridge().getHandler();
+            commandExecutor = foxtrotBridgeHandler.getCommandExecutor();
+        }
     }
 }

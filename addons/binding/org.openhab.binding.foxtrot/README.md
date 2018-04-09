@@ -20,7 +20,7 @@ Tecomat Foxtrot is a compact modular control and regulation system with powerful
 
 ## Overview
 
-Foxtrot system consists from central bacis module, both wired and wireless extension modules (DIN rail circuit
+Foxtrot system consists of central bacis module and both wired and wireless extension modules (DIN rail circuit
 breakers, wall switches, actors for the installation into electroinstallation boxes, sensors, etc.), see 
 [poster1](https://www.tecomat.com/modules/DownloadManager/download.php?alias=poster-foxtrot_1) and 
 [poster2](https://www.tecomat.com/modules/DownloadManager/download.php?alias=poster-foxtrot_2).
@@ -34,22 +34,20 @@ Foxtrot PLC provides standard ethernet conectivity (RJ45 socket on base module).
 memory registers external software/device must use specific EPSNET protocol over standard TCP/IP.
 
 To simplify accessing internal registers by external systems company provides communication server software
-called [PLCComS](https://www.tecomat.com/download/software-and-firmware/plccoms/). PLCComS provide TCP/IP connection
+called [PLCComS](https://www.tecomat.com/download/software-and-firmware/plccoms/). PLCComS provides TCP/IP connection
 with client device/software and a PLC. Communication of server with client is created by simple text oriented
 protocol - question/answer. Server communicates with PLC optimalized by EPSNET protocol. PLCComS can runs on PC
 with Linux (32bit/64bit) or Windows operating system or on ARM based devices like Raspberry-Pi with
 Linux (eabi, eabihf).
 
-The Foxtrot binding uses PLCComS communication server to gets values from and sets values to user program public
+The Foxtrot binding uses PLCComS communication server to gets values from and sets values to user program's public
 variables. The binding represents a "PLCComS" as a bridge thing type and all other things are connected to the bridge.
-
-`obrazok`
 
 ## Supported Things
 
-Each thing consist one or more Foxtrot PLC's user program public variable. There are three basic thing represents three
-types of variables: string, number (real and integer) and boolean. Other things are logical structure of variables
-that represents real-life device (switch, rollershutter, etc.) that is provided and controlled by user program algorithms.
+Each thing consists of one or more Foxtrot PLC's user program public variable. There are three basic thing represents three
+types of variables: string, number (real or integer) and boolean. Other things are logical structure of variables
+that represents real-life devices (switch, rollershutter, etc.) that is provided and controlled by user program algorithms.
 
 | Things             | Description                                                                       | Thing Type |
 |--------------------|-----------------------------------------------------------------------------------|------------|
@@ -71,8 +69,15 @@ The binding requires no special configuration.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should
-be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+Changes of the variable values are permanently monitored and almost immediately propagated into OH as change of the
+channel state. By default PlcComS server monitors all enabled variables every 100 ms. This is very precise and
+desirable for switch or dimmer values but not for numeric values (ie. temperatures, electricity consumptions and
+other sensors). Therefore there is a delta parameter which tells PlcComS how big change of the value have to happend
+to further propagate new value to client (in our case Foxtrot Binding).
+
+For example if delta = 0.2 and numeric value changes from 24.245 to 24.378, value change is less then defined delta
+and new value is not sent to binding. If numeric value changes from 24.245 to 24.563, change is bigger then defined
+delta and new value is  sent to binding and invoke the channel change.
 
 ### PLCComS Bridge Thing
 
@@ -80,18 +85,11 @@ be mainly about its mandatory and optional configuration parameters. A short exa
 |-------------------------|----------|---------------------|
 | hostname                | text     | yes                 |
 | port                    | integer  | no (default: 5010)  |
-| lowRefreshInterval      | integer  | no (default: 300)   |
-| mediumRefreshInterval   | integer  | no (default: 60)    |
-| highRefreshInterval     | integer  | no (default: 15)    |
-| realtimeRefreshInterval | integer  | no (default: 1)     |
-
-There are four refresh groups: LOW, MEDIUM, HIGH and REALTIME. Each thing connected to bridge which needs to update
-state have to decide one of four refresh group. The refresh interval of group is specified in seconds.
 
 A possible entry in your thing file could be:
 
 ```
-Bridge foxtrot:plccoms:cp1000 [ hostname="192.168.0.20", highRefreshInterval=20 ]
+Bridge foxtrot:plccoms:cp1000 [ hostname="192.168.0.20" ]
 ```
  
 ### String variable Thing
@@ -101,27 +99,26 @@ The String thing must be connected through PLCComS bridge and has following para
 | parameter               | datatype | required            | description                 |
 |-------------------------|----------|---------------------|-----------------------------|
 | var                     | text     | yes                 | Variable name from PUB file |
-| refreshGroup            | text     | no (default: LOW)   | How often will be refreshed |
 
 A possible entry in your thing file could be:
 
 ```
-Thing string WindDirection [ var="Meteo.WindDirection", refreshGroup="MEDIUM" ]
+Thing string WindDirection [ var="Meteo.WindDirection" ]
 ```
 
 ### Number variable Thing
 
 The Number thing must be connected through PLCComS bridge and has following parameters:
 
-| parameter               | datatype | required            | description                 |
-|-------------------------|----------|---------------------|-----------------------------|
-| var                     | text     | yes                 | Variable name from PUB file |
-| refreshGroup            | text     | no (default: LOW)   | How often will be refreshed |
+| parameter               | datatype | required | description                 |
+|-------------------------|----------|----------|-----------------------------|
+| var                     | text     | yes      | Variable name from PUB file |
+| delta                   | decimal  | no       | Defines the value change of the variable  |
 
 A possible entry in your thing file could be:
 
 ```
-Thing number OfficeTemp [ var="OfficeRoom.Temp", refreshGroup="HIGH" ]
+Thing number OfficeTemp [ var="OfficeRoom.Temp", delta=0.2 ]
 ```
 
 ### Bool variable Thing
@@ -131,7 +128,6 @@ The Bool thing must be connected through PLCComS bridge and has following parame
 | parameter               | datatype | required            | description                 |
 |-------------------------|----------|---------------------|-----------------------------|
 | var                     | text     | yes                 | Variable name from PUB file |
-| refreshGroup            | text     | no (default: LOW)   | How often will be refreshed |
 
 A possible entry in your thing file could be:
 
@@ -166,7 +162,6 @@ The Switch thing must be connected through PLCComS bridge and has following para
 | state                   | text     | yes                 | Variable name that holds switch state (0 or 1) |
 | on                      | text     | yes                 | Bool variable that trigger switch on action on rising edge (0 -> 1) |
 | off                     | text     | yes                 | Bool variable that trigger switch off action on rising edge (0 -> 1) |
-| refreshGroup            | text     | no (default: LOW)   | How often will be refreshed |
 
 A possible entry in your thing file could be:
 
@@ -198,14 +193,14 @@ END_VAR
 
 The Dimmer thing must be connected through PLCComS bridge and has following parameters:
 
-| parameter               | datatype | required            | description                 |
-|-------------------------|----------|---------------------|-----------------------------|
-| state                   | text     | yes                 | Variable name that holds switch state (0 or 1) |
-| on                      | text     | yes                 | Bool variable that trigger switch on action on rising edge (0 -> 1) |
-| off                     | text     | yes                 | Bool variable that trigger switch off action on rising edge (0 -> 1) |
-| increase                | text     | yes                 | Bool variable that trigger increase action on rising edge (0 -> 1) |
-| decrease                | text     | yes                 | Bool variable that trigger decrease action on rising edge (0 -> 1) |
-| refreshGroup            | text     | no (default: LOW)   | How often will be refreshed |
+| parameter               | datatype | required   | description                 |
+|-------------------------|----------|------------|-----------------------------|
+| state                   | text     | yes        | Variable name that holds switch state (0 or 1) |
+| on                      | text     | yes        | Bool variable that trigger switch on action on rising edge (0 -> 1) |
+| off                     | text     | yes        | Bool variable that trigger switch off action on rising edge (0 -> 1) |
+| increase                | text     | yes        | Bool variable that trigger increase action on rising edge (0 -> 1) |
+| decrease                | text     | yes        | Bool variable that trigger decrease action on rising edge (0 -> 1) |
+| delta                   | decimal  | yes        | Defines the value change of the variable |
 
 A possible entry in your thing file could be:
 
@@ -238,13 +233,13 @@ END_VAR
 
 The Blind thing must be connected through PLCComS bridge and has following parameters:
 
-| parameter               | datatype | required            | description                 |
-|-------------------------|----------|---------------------|-----------------------------|
-| state                   | text     | yes                 | Variable name that holds switch state (0 or 1) |
-| up                      | text     | yes                 | Bool variable that trigger switch on action on rising edge (0 -> 1) |
-| down                    | text     | yes                 | Bool variable that trigger switch off action on rising edge (0 -> 1) |
-| stop                    | text     | yes                 | Bool variable that trigger increase action on rising edge (0 -> 1) |
-| refreshGroup            | text     | no (default: LOW)   | How often will be refreshed |
+| parameter               | datatype | required   | description                 |
+|-------------------------|----------|------------|-----------------------------|
+| state                   | text     | yes        | Variable name that holds switch state (0 or 1) |
+| up                      | text     | yes        | Bool variable that trigger switch on action on rising edge (0 -> 1) |
+| down                    | text     | yes        | Bool variable that trigger switch off action on rising edge (0 -> 1) |
+| stop                    | text     | yes        | Bool variable that trigger increase action on rising edge (0 -> 1) |
+| delta                   | decimal  | yes        | Defines the value change of the variable |
 
 A possible entry in your thing file could be:
 
@@ -265,27 +260,21 @@ Thing blind OfficeWindowBlind [ state="OfficeWindowBlind.Position", on="OfficeWi
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
-
 foxtrot.things:
 
 ```
-Bridge foxtrot:plc:cp1000 [ hostname="192.168.0.20",
-                            lowRefreshInterval=300,
-                            mediumRefreshInterval=60,
-                            highRefreshInterval=15,
-                            realtimeRefreshInterval=1 ] {
+Bridge foxtrot:plc:cp1000 [ hostname="192.168.0.20" ] {
 
     // Measurement things
     // Hot-water boiler electric metter
-    Thing number  BoilerConsump    [ var="BoilerConsumpData.Consump", refreshGroup="MEDIUM" ]
-    Thing number  BoilerDayUsage   [ var="BoilerConsumpData.DayUsage", refreshGroup="LOW" ]
+    Thing number  BoilerConsump    [ var="BoilerConsumpData.Consump", delta=0.5 ]
+    Thing number  BoilerDayUsage   [ var="BoilerConsumpData.DayUsage", delta=0.1 ]
     // Outer circuits electric meter
-    Thing number  OcConsump        [ var="OcConsumpData.Consump", refreshGroup="MEDIUM" ]
-    Thing number  OcDayUsage       [ var="OcConsumpData.DayUsage", refreshGroup="LOW" ]
+    Thing number  OcConsump        [ var="OcConsumpData.Consump", delta=0.01 ]
+    Thing number  OcDayUsage       [ var="OcConsumpData.DayUsage", delta=0.1 ]
 
     // Security
-    Thing bool Armed               [ var="IsArmed", refreshGroup="MEDIUM" ]
+    Thing bool Armed               [ var="IsArmed" ]
 
     // Lights
     Thing switch GarageLight       [ state="GarageLight.IsOn", on="GarageLight.OnCmd", off="GarageLight.OffCmd" ]

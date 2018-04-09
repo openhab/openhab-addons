@@ -47,6 +47,10 @@ public class CommandExecutor implements Runnable {
         running.set(false);
     }
 
+    public boolean isRunning() {
+        return running.get();
+    }
+
     @Override
     public void run() {
         logger.debug("Starting polling for commands (write requests to Plc) ...");

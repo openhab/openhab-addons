@@ -23,8 +23,8 @@ public class FoxtrotBindingConstants {
     private static final String BINDING_ID = "foxtrot";
 
     // List of properties
-    public static final String PROPERTY_PLCCOMS_HOST = "plccomsHost";
-    public static final String PROPERTY_PLCCOMS_PORT = "plccomsPort";
+    public static final String PROPERTY_PLCCOMS_HOST = "host";
+    public static final String PROPERTY_PLCCOMS_PORT = "port";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PLC = new ThingTypeUID(BINDING_ID, "plccoms");

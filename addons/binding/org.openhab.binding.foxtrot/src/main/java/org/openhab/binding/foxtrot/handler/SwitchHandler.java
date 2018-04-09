@@ -51,7 +51,7 @@ public class SwitchHandler extends FoxtrotBaseHandler {
             foxtrotBridgeHandler.register(conf.state, this);
 
             updateStatus(ThingStatus.ONLINE);
-        } catch (IOException e) {
+        } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Enabling variable '" + conf.state + "' failed due error: " + e.getMessage());
         }

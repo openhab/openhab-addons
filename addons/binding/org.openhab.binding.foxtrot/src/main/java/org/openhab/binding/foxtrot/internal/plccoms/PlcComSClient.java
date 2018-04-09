@@ -36,7 +36,7 @@ public class PlcComSClient {
     private final Pattern ERROR_PATTERN = Pattern.compile("(ERROR|WARNING):(\\d+) (.+)");
     /** {@link Pattern} for matching value reply (diff, get) messages: <op>:<variable>,<value> */
     private final Pattern REPLY_PATTERN = Pattern.compile("(\\w+):([\\w.]+),(.+)");
-    /** {@link Pattern} for matching get info messages: GETINFO:<code> <message> */
+    /** {@link Pattern} for matching get info messages: GETINFO:<info_key>,<value> */
     private final Pattern GI_PATTERN = Pattern.compile("(\\w+),(.+)");
 
     private String host;
@@ -76,7 +76,7 @@ public class PlcComSClient {
     private void readPlcComSInfo() throws IOException {
         send("getinfo:\n");
 
-        sleep(100);
+        sleep(300);
 
         while (socketReader.ready()) {
             String line = socketReader.readLine();
