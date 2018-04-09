@@ -43,7 +43,7 @@
 	"target_temperature_high_f": 75,
 	"target_temperature_low_c": 20.0,
 	"target_temperature_low_f": 68,
-	"temperature_scale": "F",
+	"temperature_scale": "C",
 	"time_to_target": "~0",
 	"time_to_target_training": "ready",
 	"where_id": "z8fK075vJJPPWnXxLx1m3GskRSZQ64iQydB59k-UPsKQrCrjN0yXiw",

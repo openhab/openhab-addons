@@ -17,16 +17,16 @@ import java.util.Map;
  * @author David Bennett - Initial Contribution
  */
 public class NestUpdateRequest {
-    private final String updateUrl;
+    private final String updatePath;
     private final Map<String, Object> values;
 
     private NestUpdateRequest(Builder builder) {
-        this.updateUrl = builder.baseUrl + builder.identifier;
+        this.updatePath = builder.basePath + builder.identifier;
         this.values = builder.values;
     }
 
-    public String getUpdateUrl() {
-        return updateUrl;
+    public String getUpdatePath() {
+        return updatePath;
     }
 
     public Map<String, Object> getValues() {
@@ -34,12 +34,12 @@ public class NestUpdateRequest {
     }
 
     public static class Builder {
-        private String baseUrl;
+        private String basePath;
         private String identifier;
         private Map<String, Object> values = new HashMap<>();
 
-        public Builder withBaseUrl(String baseUrl) {
-            this.baseUrl = baseUrl;
+        public Builder withBasePath(String basePath) {
+            this.basePath = basePath;
             return this;
         }
 

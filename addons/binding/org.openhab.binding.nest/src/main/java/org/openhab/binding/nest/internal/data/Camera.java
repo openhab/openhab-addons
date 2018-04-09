@@ -20,19 +20,19 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Camera extends BaseNestDevice {
     @SerializedName("is_streaming")
-    private boolean isStreaming;
+    private Boolean isStreaming;
     @SerializedName("is_audio_input_enabled")
-    private boolean isAudioInputEnabled;
+    private Boolean isAudioInputEnabled;
     @SerializedName("last_is_online_change")
     private Date lastIsOnlineChange;
     @SerializedName("is_video_history_enabled")
-    private boolean isVideoHistoryEnabled;
+    private Boolean isVideoHistoryEnabled;
     @SerializedName("web_url")
     private String webUrl;
     @SerializedName("app_url")
     private String appUrl;
     @SerializedName("is_public_share_enabled")
-    private boolean isPublicShareEnabled;
+    private Boolean isPublicShareEnabled;
     @SerializedName("activity_zones")
     private List<ActivityZone> activityZones;
     @SerializedName("public_share_url")
@@ -42,15 +42,11 @@ public class Camera extends BaseNestDevice {
     @SerializedName("last_event")
     private Event lastEvent;
 
-    public boolean isStreaming() {
+    public Boolean isStreaming() {
         return isStreaming;
     }
 
-    public void setStreaming(boolean isStreaming) {
-        this.isStreaming = isStreaming;
-    }
-
-    public boolean isAudioInputEnabled() {
+    public Boolean isAudioInputEnabled() {
         return isAudioInputEnabled;
     }
 
@@ -58,7 +54,7 @@ public class Camera extends BaseNestDevice {
         return lastIsOnlineChange;
     }
 
-    public boolean isVideoHistoryEnabled() {
+    public Boolean isVideoHistoryEnabled() {
         return isVideoHistoryEnabled;
     }
 
@@ -70,7 +66,7 @@ public class Camera extends BaseNestDevice {
         return appUrl;
     }
 
-    public boolean isPublicShareEnabled() {
+    public Boolean isPublicShareEnabled() {
         return isPublicShareEnabled;
     }
 
@@ -108,11 +104,11 @@ public class Camera extends BaseNestDevice {
     /** Internal class to handle the camera event data. */
     public static class Event {
         @SerializedName("has_sound")
-        private boolean hasSound;
+        private Boolean hasSound;
         @SerializedName("has_motion")
-        private boolean hasMotion;
+        private Boolean hasMotion;
         @SerializedName("has_person")
-        private boolean hasPerson;
+        private Boolean hasPerson;
         @SerializedName("start_time")
         private Date startTime;
         @SerializedName("end_time")
@@ -130,15 +126,15 @@ public class Camera extends BaseNestDevice {
         @SerializedName("activity_zone_ids")
         private List<String> activityZones;
 
-        public boolean isHasSound() {
+        public Boolean isHasSound() {
             return hasSound;
         }
 
-        public boolean isHasMotion() {
+        public Boolean isHasMotion() {
             return hasMotion;
         }
 
-        public boolean isHasPerson() {
+        public Boolean isHasPerson() {
             return hasPerson;
         }
 

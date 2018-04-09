@@ -1,26 +1,44 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
-Bundle-Name:  Nest Binding Tests
+Bundle-Name: Nest Binding Tests
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.nest.test;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.3.0.qualifier
-Export-Package: org.openhab.binding.nest;uses:="org.eclipse.smarthome.te
- st"
+Export-Package: 
+ org.openhab.binding.nest;uses:="org.eclipse
+ .smarthome.test"
 Fragment-Host: org.openhab.binding.nest
 Import-Package: 
+ com.google.gson.reflect,
+ javax.measure,
+ javax.measure.quantity,
+ javax.servlet,
+ javax.servlet.http,
  org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.jetty.server;version="[9.3.15,9.4.0)",
+ org.eclipse.jetty.server.handler;version="[9.3.15,9.4.0)",
+ org.eclipse.jetty.servlet;version="[9.3.15,9.4.0)",
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.events,
+ org.eclipse.smarthome.core.items,
+ org.eclipse.smarthome.core.items.events,
+ org.eclipse.smarthome.core.library,
+ org.eclipse.smarthome.core.library.unit,
+ org.eclipse.smarthome.core.thing.link,
  org.eclipse.smarthome.core.thing.util,
+ org.eclipse.smarthome.test,
  org.eclipse.smarthome.test.java,
  org.eclipse.smarthome.test.storage,
  org.hamcrest;core=split,
- org.junit,
+ org.hamcrest.core,
+ org.junit;version="4.0.0",
  org.mockito,
  org.mockito.stubbing,
  org.openhab.binding.nest,
- org.openhab.binding.nest.handler,
  org.osgi.framework,
+ org.osgi.service.component,
  org.osgi.service.device,
  org.slf4j
+Service-Component: OSGI-INF/*.xml

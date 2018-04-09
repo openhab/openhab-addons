@@ -13,6 +13,8 @@ Export-Package:
 Import-Package: 
  com.google.gson,
  com.google.gson.annotations,
+ javax.measure,
+ javax.measure.quantity,
  javax.ws.rs.client,
  javax.ws.rs.core,
  org.apache.commons.lang,
@@ -27,6 +29,7 @@ Import-Package:
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.binding.builder,

@@ -47,7 +47,7 @@ public class Structure implements NestIdentifiable {
     @SerializedName("smoke_alarm_state")
     private SmokeDetector.AlarmState smokeAlarmState;
     @SerializedName("rhr_enrollment")
-    private boolean rushHourRewardsEnrollement;
+    private Boolean rushHourRewardsEnrollement;
     @SerializedName("wheres")
     private Map<String, Where> whereIds;
     @SerializedName("away")
@@ -118,7 +118,7 @@ public class Structure implements NestIdentifiable {
         return smokeAlarmState;
     }
 
-    public boolean isRushHourRewardsEnrollement() {
+    public Boolean isRushHourRewardsEnrollement() {
         return rushHourRewardsEnrollement;
     }
 

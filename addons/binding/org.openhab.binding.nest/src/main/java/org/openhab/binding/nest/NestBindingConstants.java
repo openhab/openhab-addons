@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.nest;
 
+import java.time.Duration;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -28,20 +30,23 @@ public class NestBindingConstants {
     /** The URL to get the access token when talking to Nest. */
     public static final String NEST_ACCESS_TOKEN_URL = "https://api.home.nest.com/oauth2/access_token";
 
-    /** The URL to get set values on the thermostat when talking to Nest. */
-    public static final String NEST_THERMOSTAT_UPDATE_URL = NEST_URL + "/devices/thermostats/";
+    /** The path to set values on the thermostat when talking to Nest. */
+    public static final String NEST_THERMOSTAT_UPDATE_PATH = "/devices/thermostats/";
 
-    /** The URL to get set values on the structure when talking to Nest. */
-    public static final String NEST_STRUCTURE_UPDATE_URL = NEST_URL + "/structures/";
+    /** The path to set values on the structure when talking to Nest. */
+    public static final String NEST_STRUCTURE_UPDATE_PATH = "/structures/";
 
-    /** The URL to get set values on the camera when talking to Nest. */
-    public static final String NEST_CAMERA_UPDATE_URL = NEST_URL + "/devices/cameras/";
+    /** The path to set values on the camera when talking to Nest. */
+    public static final String NEST_CAMERA_UPDATE_PATH = "/devices/cameras/";
 
-    /** The URL to get set values on the camera when talking to Nest. */
-    public static final String NEST_SMOKE_ALARM_UPDATE_URL = NEST_URL + "/devices/smoke_co_alarms/";
+    /** The path to set values on the camera when talking to Nest. */
+    public static final String NEST_SMOKE_ALARM_UPDATE_PATH = "/devices/smoke_co_alarms/";
 
     /** The JSON content type used when talking to Nest. */
     public static final String JSON_CONTENT_TYPE = "application/json";
+
+    /** To keep the streaming REST connection alive Nest sends every 30 seconds a message. */
+    public static final long KEEP_ALIVE_MILLIS = Duration.ofSeconds(30).toMillis();
 
     /** To avoid API throttling errors (429 Too Many Requests) Nest recommends making at most one call per minute. */
     public static final int MIN_SECONDS_BETWEEN_API_CALLS = 60;

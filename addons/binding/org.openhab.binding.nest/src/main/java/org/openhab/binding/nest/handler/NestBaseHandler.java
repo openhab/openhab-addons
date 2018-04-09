@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -81,11 +82,11 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestDevice
         }
     }
 
-    protected void addUpdateRequest(String updateUrl, String field, Object value) {
+    protected void addUpdateRequest(String updatePath, String field, Object value) {
         if (getNestBridgeHandler() != null) {
         // @formatter:off
         getNestBridgeHandler().addUpdateRequest(new NestUpdateRequest.Builder()
-            .withBaseUrl(updateUrl)
+            .withBasePath(updatePath)
             .withIdentifier(getId())
             .withAdditionalValue(field, value)
             .build());
@@ -119,8 +120,12 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestDevice
         return new DateTimeType(ZonedDateTime.ofInstant(instant, TimeZone.getDefault().toZoneId()));
     }
 
-    protected OnOffType getAsOnOffType(boolean value) {
-        return value ? OnOffType.ON : OnOffType.OFF;
+    protected State getAsDecimalTypeOrNull(Integer value) {
+        return value == null ? UnDefType.NULL : new DecimalType(value);
+    }
+
+    protected State getAsOnOffTypeOrNull(Boolean value) {
+        return value == null ? UnDefType.NULL : value ? OnOffType.ON : OnOffType.OFF;
     }
 
     protected State getAsStringTypeOrNull(Object value) {

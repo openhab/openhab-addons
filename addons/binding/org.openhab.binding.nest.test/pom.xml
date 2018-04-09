@@ -14,12 +14,6 @@
 
 	<name>Nest Binding Tests</name>
 
-	<properties>
-		<bundle.symbolicName>org.openhab.binding.nest.test</bundle.symbolicName>
-		<bundle.namespace>org.openhab.binding.nest</bundle.namespace>
-	</properties>
-
-
 	<build>
 		<plugins>
 			<plugin>
@@ -28,31 +22,36 @@
 				<configuration>
 					<dependency-resolution>
 						<extraRequirements>
-							<dependency>
-								<type>eclipse-plugin</type>
-								<id>org.eclipse.equinox.event</id>
-								<versionRange>0.0.0</versionRange>
-							</dependency>
-							<dependency>
+							<requirement>
 								<type>eclipse-plugin</type>
 								<id>org.eclipse.equinox.ds</id>
 								<versionRange>0.0.0</versionRange>
-							</dependency>
-							<dependency>
+							</requirement>
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>org.eclipse.equinox.event</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>org.eclipse.smarthome.config.discovery</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
+							<requirement>
 								<type>eclipse-plugin</type>
 								<id>org.eclipse.smarthome.config.xml</id>
 								<versionRange>0.0.0</versionRange>
-							</dependency>
-							<dependency>
-								<type>eclipse-plugin</type>
-								<id>org.eclipse.smarthome.core.thing.xml</id>
-								<versionRange>0.0.0</versionRange>
-							</dependency>
-							<dependency>
+							</requirement>
+							<requirement>
 								<type>eclipse-plugin</type>
 								<id>org.eclipse.smarthome.core.binding.xml</id>
 								<versionRange>0.0.0</versionRange>
-							</dependency>
+							</requirement>
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>org.eclipse.smarthome.core.thing.xml</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
 						</extraRequirements>
 					</dependency-resolution>
 				</configuration>
@@ -61,23 +60,6 @@
 				<groupId>${tycho-groupid}</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<configuration>
-					<dependencies>
-						<dependency>
-							<type>eclipse-plugin</type>
-							<artifactId>ch.qos.logback.classic</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-						<dependency>
-							<type>eclipse-plugin</type>
-							<artifactId>ch.qos.logback.core</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-						<dependency>
-							<type>eclipse-plugin</type>
-							<artifactId>ch.qos.logback.slf4j</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-					</dependencies>
 					<bundleStartLevel>
 						<bundle>
 							<id>org.eclipse.equinox.ds</id>
@@ -90,12 +72,12 @@
 							<autoStart>true</autoStart>
 						</bundle>
 						<bundle>
-							<id>org.eclipse.smarthome.core</id>
+							<id>org.eclipse.smarthome.config.core</id>
 							<level>4</level>
 							<autoStart>true</autoStart>
 						</bundle>
 						<bundle>
-							<id>org.eclipse.smarthome.core.thing</id>
+							<id>org.eclipse.smarthome.config.discovery</id>
 							<level>4</level>
 							<autoStart>true</autoStart>
 						</bundle>
@@ -105,12 +87,22 @@
 							<autoStart>true</autoStart>
 						</bundle>
 						<bundle>
-							<id>org.eclipse.smarthome.core.thing.xml</id>
+							<id>org.eclipse.smarthome.core</id>
 							<level>4</level>
 							<autoStart>true</autoStart>
 						</bundle>
 						<bundle>
 							<id>org.eclipse.smarthome.core.binding.xml</id>
+							<level>4</level>
+							<autoStart>true</autoStart>
+						</bundle>
+						<bundle>
+							<id>org.eclipse.smarthome.core.thing</id>
+							<level>4</level>
+							<autoStart>true</autoStart>
+						</bundle>
+						<bundle>
+							<id>org.eclipse.smarthome.core.thing.xml</id>
 							<level>4</level>
 							<autoStart>true</autoStart>
 						</bundle>

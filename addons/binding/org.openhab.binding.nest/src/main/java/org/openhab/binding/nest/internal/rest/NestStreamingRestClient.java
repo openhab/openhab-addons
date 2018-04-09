@@ -8,7 +8,8 @@
  */
 package org.openhab.binding.nest.internal.rest;
 
-import java.time.Duration;
+import static org.openhab.binding.nest.NestBindingConstants.KEEP_ALIVE_MILLIS;
+
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
@@ -41,17 +42,14 @@ import com.google.gson.GsonBuilder;
  */
 public class NestStreamingRestClient {
 
-    // Nest sends every 30 seconds a message to keep the connection alive
-    private static final long KEEP_ALIVE_MILLIS = Duration.ofSeconds(30).toMillis();
-
     // Assume connection timeout when 2 keep alive message should have been received
     private static final long CONNECTION_TIMEOUT_MILLIS = 2 * KEEP_ALIVE_MILLIS + KEEP_ALIVE_MILLIS / 2;
 
-    private static final String AUTH_REVOKED = "auth_revoked";
-    private static final String ERROR = "error";
-    private static final String KEEP_ALIVE = "keep-alive";
-    private static final String OPEN = "open";
-    private static final String PUT = "put";
+    public static final String AUTH_REVOKED = "auth_revoked";
+    public static final String ERROR = "error";
+    public static final String KEEP_ALIVE = "keep-alive";
+    public static final String OPEN = "open";
+    public static final String PUT = "put";
 
     private final Logger logger = LoggerFactory.getLogger(NestStreamingRestClient.class);
 
@@ -153,7 +151,7 @@ public class NestStreamingRestClient {
         synchronized (this) {
             logger.debug("Closing EventSource and stopping checkConnection job");
             if (eventSource != null) {
-                eventSource.close();
+                eventSource.close(0, TimeUnit.SECONDS);
             }
             if (checkConnectionJob != null && !checkConnectionJob.isCancelled()) {
                 checkConnectionJob.cancel(true);

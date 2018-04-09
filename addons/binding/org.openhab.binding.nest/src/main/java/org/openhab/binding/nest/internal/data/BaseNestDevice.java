@@ -27,7 +27,7 @@ public class BaseNestDevice implements NestIdentifiable {
     @SerializedName("last_connection")
     private Date lastConnection;
     @SerializedName("is_online")
-    private boolean isOnline;
+    private Boolean isOnline;
     @SerializedName("software_version")
     private String softwareVersion;
     @SerializedName("structure_id")
@@ -44,10 +44,6 @@ public class BaseNestDevice implements NestIdentifiable {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getDeviceId() {
         return deviceId;
     }
@@ -56,7 +52,7 @@ public class BaseNestDevice implements NestIdentifiable {
         return lastConnection;
     }
 
-    public boolean isOnline() {
+    public Boolean isOnline() {
         return isOnline;
     }
 

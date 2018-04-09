@@ -9,48 +9,39 @@
 package org.openhab.binding.nest.internal.data;
 
 import static org.junit.Assert.*;
+import static org.openhab.binding.nest.internal.data.NestDataUtil.*;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.junit.Test;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GsonParsingTest {
 
-    private static <T> T fromJson(String fileName, Class<T> dataClass) throws UnsupportedEncodingException {
-        String packagePath = (GsonParsingTest.class.getPackage().getName()).replaceAll("\\.", "/");
-        String filePath = "src/test/resources/" + packagePath + "/" + fileName;
-        InputStream inputStream = GsonParsingTest.class.getClassLoader().getResourceAsStream(filePath);
-        Reader reader = new InputStreamReader(inputStream, "UTF-8");
-        Gson gson = new GsonBuilder().create();
-        return gson.fromJson(reader, dataClass);
-    }
+    private final Logger logger = LoggerFactory.getLogger(GsonParsingTest.class);
 
     @Test
-    public void verifyCompleteInput() throws UnsupportedEncodingException {
+    public void verifyCompleteInput() throws IOException {
         TopLevelData topLevel = fromJson("top-level-data.json", TopLevelData.class);
 
         assertEquals(topLevel.getDevices().getThermostats().size(), 1);
-        assertNotNull(topLevel.getDevices().getThermostats().get("therm1"));
+        assertNotNull(topLevel.getDevices().getThermostats().get(THERMOSTAT1_DEVICE_ID));
         assertEquals(topLevel.getDevices().getCameras().size(), 2);
-        assertNotNull(topLevel.getDevices().getCameras().get("camera1"));
-        assertNotNull(topLevel.getDevices().getCameras().get("camera2"));
+        assertNotNull(topLevel.getDevices().getCameras().get(CAMERA1_DEVICE_ID));
+        assertNotNull(topLevel.getDevices().getCameras().get(CAMERA2_DEVICE_ID));
         assertEquals(topLevel.getDevices().getSmokeDetectors().size(), 4);
-        assertNotNull(topLevel.getDevices().getSmokeDetectors().get("smoke1"));
-        assertNotNull(topLevel.getDevices().getSmokeDetectors().get("smoke2"));
-        assertNotNull(topLevel.getDevices().getSmokeDetectors().get("smoke3"));
-        assertNotNull(topLevel.getDevices().getSmokeDetectors().get("smoke4"));
+        assertNotNull(topLevel.getDevices().getSmokeDetectors().get(SMOKE1_DEVICE_ID));
+        assertNotNull(topLevel.getDevices().getSmokeDetectors().get(SMOKE2_DEVICE_ID));
+        assertNotNull(topLevel.getDevices().getSmokeDetectors().get(SMOKE3_DEVICE_ID));
+        assertNotNull(topLevel.getDevices().getSmokeDetectors().get(SMOKE4_DEVICE_ID));
     }
 
     @Test
-    public void verifyCompleteStreamingInput() throws UnsupportedEncodingException {
+    public void verifyCompleteStreamingInput() throws IOException {
         TopLevelStreamingData topLevelStreamingData = fromJson("top-level-streaming-data.json",
                 TopLevelStreamingData.class);
 
@@ -58,20 +49,21 @@ public class GsonParsingTest {
 
         TopLevelData data = topLevelStreamingData.getData();
         assertEquals(data.getDevices().getThermostats().size(), 1);
-        assertNotNull(data.getDevices().getThermostats().get("therm1"));
+        assertNotNull(data.getDevices().getThermostats().get(THERMOSTAT1_DEVICE_ID));
         assertEquals(data.getDevices().getCameras().size(), 2);
-        assertNotNull(data.getDevices().getCameras().get("camera1"));
-        assertNotNull(data.getDevices().getCameras().get("camera2"));
+        assertNotNull(data.getDevices().getCameras().get(CAMERA1_DEVICE_ID));
+        assertNotNull(data.getDevices().getCameras().get(CAMERA2_DEVICE_ID));
         assertEquals(data.getDevices().getSmokeDetectors().size(), 4);
-        assertNotNull(data.getDevices().getSmokeDetectors().get("smoke1"));
-        assertNotNull(data.getDevices().getSmokeDetectors().get("smoke2"));
-        assertNotNull(data.getDevices().getSmokeDetectors().get("smoke3"));
-        assertNotNull(data.getDevices().getSmokeDetectors().get("smoke4"));
+        assertNotNull(data.getDevices().getSmokeDetectors().get(SMOKE1_DEVICE_ID));
+        assertNotNull(data.getDevices().getSmokeDetectors().get(SMOKE2_DEVICE_ID));
+        assertNotNull(data.getDevices().getSmokeDetectors().get(SMOKE3_DEVICE_ID));
+        assertNotNull(data.getDevices().getSmokeDetectors().get(SMOKE4_DEVICE_ID));
     }
 
     @Test
-    public void verifyThermostat() throws UnsupportedEncodingException {
+    public void verifyThermostat() throws IOException {
         Thermostat thermostat = fromJson("thermostat-data.json", Thermostat.class);
+        logger.debug("Thermostat: {}", thermostat);
 
         assertTrue(thermostat.isOnline());
         assertTrue(thermostat.isCanHeat());
@@ -82,7 +74,7 @@ public class GsonParsingTest {
         assertFalse(thermostat.isSunlightCorrectionActive());
         assertTrue(thermostat.isSunlightCorrectionEnabled());
         assertFalse(thermostat.isUsingEmergencyHeat());
-        assertEquals("G1jouHN5yl6mXFaQw5iGwXOu-iQr8PMV", thermostat.getDeviceId());
+        assertEquals(THERMOSTAT1_DEVICE_ID, thermostat.getDeviceId());
         assertEquals(Integer.valueOf(15), thermostat.getFanTimerDuration());
         Calendar utcCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         utcCal.set(2017, 1, 2, 21, 0, 6);
@@ -97,13 +89,13 @@ public class GsonParsingTest {
         assertEquals(null, thermostat.getPreviousMode());
         assertEquals("5.6-7", thermostat.getSoftwareVersion());
         assertEquals(Thermostat.State.OFF, thermostat.getState());
-        assertEquals("ysCnsCaq1pQwKUPP9H4AqE943C1XtLin3x6uCVN5Qh09IDyTg7Ey5A", thermostat.getStructureId());
+        assertEquals(STRUCTURE1_STRUCTURE_ID, thermostat.getStructureId());
         assertEquals(Double.valueOf(15.5), thermostat.getTargetTemperature());
         assertEquals(Double.valueOf(24.0), thermostat.getTargetTemperatureHigh());
         assertEquals(Double.valueOf(20.0), thermostat.getTargetTemperatureLow());
-        assertEquals("F", thermostat.getTempScale());
+        assertEquals(SIUnits.CELSIUS, thermostat.getTemperatureUnit());
         assertEquals(Integer.valueOf(0), thermostat.getTimeToTarget());
-        assertEquals("z8fK075vJJPPWnXxLx1m3GskRSZQ64iQydB59k-UPsKQrCrjN0yXiw", thermostat.getWhereId());
+        assertEquals(THERMOSTAT1_WHERE_ID, thermostat.getWhereId());
         assertEquals("Living Room", thermostat.getWhereName());
     }
 
@@ -123,14 +115,15 @@ public class GsonParsingTest {
     }
 
     @Test
-    public void verifyCamera() throws UnsupportedEncodingException {
+    public void verifyCamera() throws IOException {
         Camera camera = fromJson("camera-data.json", Camera.class);
+        logger.debug("Camera: {}", camera);
 
-        assertFalse(camera.isOnline());
+        assertTrue(camera.isOnline());
         assertEquals("Upstairs", camera.getName());
         assertEquals("Upstairs Camera", camera.getNameLong());
-        assertEquals("ysCnsCaq1pQwKUPP9H4AqE943C1XtLin3x6uCVN5Qh09IDyTg7Ey5A", camera.getStructureId());
-        assertEquals("z8fK075vJJPPWnXxLx1m3GskRSZQ64iQydB59k-UPsKCxvyZfxNpKA", camera.getWhereId());
+        assertEquals(STRUCTURE1_STRUCTURE_ID, camera.getStructureId());
+        assertEquals(CAMERA1_WHERE_ID, camera.getWhereId());
         assertTrue(camera.isAudioInputEnabled());
         assertFalse(camera.isPublicShareEnabled());
         assertFalse(camera.isStreaming());
@@ -139,7 +132,7 @@ public class GsonParsingTest {
                 + "tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQjc2ejhSWFl3SFFxWXFrSWx2QlpxN1g"
                 + "yeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9ESvlhJF0D7vG8Y0TFV39zX1vIOsWrv"
                 + "8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc", camera.getAppUrl());
-        assertEquals("_LK8j9rRXwCKEBOtDo7JskNxzWfHBOIm3CLouCT3FQZzrvokK_DzFQ", camera.getDeviceId());
+        assertEquals(CAMERA1_DEVICE_ID, camera.getDeviceId());
         Calendar utcCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         // 2017-01-22T08:19:20.000Z
         utcCal.set(2017, 0, 22, 8, 19, 20);
@@ -175,12 +168,13 @@ public class GsonParsingTest {
     }
 
     @Test
-    public void verifySmokeDetector() throws UnsupportedEncodingException {
+    public void verifySmokeDetector() throws IOException {
         SmokeDetector smokeDetector = fromJson("smoke-detector-data.json", SmokeDetector.class);
+        logger.debug("SmokeDetector: {}", smokeDetector);
 
         assertTrue(smokeDetector.isOnline());
-        assertEquals("z8fK075vJJPPWnXxLx1m3GskRSZQ64iQydB59k-UPsIm5E0NfJPeeg", smokeDetector.getWhereId());
-        assertEquals("p1b1oySOcs_sbi4iczruW3Ou-iQr8PMV", smokeDetector.getDeviceId());
+        assertEquals(SMOKE1_WHERE_ID, smokeDetector.getWhereId());
+        assertEquals(SMOKE1_DEVICE_ID, smokeDetector.getDeviceId());
         assertEquals("Downstairs", smokeDetector.getName());
         assertEquals("Downstairs Nest Protect", smokeDetector.getNameLong());
         Calendar utcCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -191,21 +185,23 @@ public class GsonParsingTest {
         assertEquals(SmokeDetector.AlarmState.OK, smokeDetector.getCoAlarmState());
         assertEquals(SmokeDetector.AlarmState.OK, smokeDetector.getSmokeAlarmState());
         assertEquals("3.1rc9", smokeDetector.getSoftwareVersion());
-        assertEquals("ysCnsCaq1pQwKUPP9H4AqE943C1XtLin3x6uCVN5Qh09IDyTg7Ey5A", smokeDetector.getStructureId());
+        assertEquals(STRUCTURE1_STRUCTURE_ID, smokeDetector.getStructureId());
         assertEquals(SmokeDetector.UiColorState.GREEN, smokeDetector.getUiColorState());
     }
 
     @Test
-    public void verifyAccessToken() throws UnsupportedEncodingException {
+    public void verifyAccessToken() throws IOException {
         AccessTokenData accessToken = fromJson("access-token-data.json", AccessTokenData.class);
+        logger.debug("AccessTokenData: {}", accessToken);
 
         assertEquals("access_token", accessToken.getAccessToken());
         assertEquals(Long.valueOf(315360000L), accessToken.getExpiresIn());
     }
 
     @Test
-    public void verifyStructure() throws UnsupportedEncodingException {
+    public void verifyStructure() throws IOException {
         Structure structure = fromJson("structure-data.json", Structure.class);
+        logger.debug("Structure: {}", structure);
 
         assertEquals("Home", structure.getName());
         assertEquals("US", structure.getCountryCode());
@@ -218,14 +214,15 @@ public class GsonParsingTest {
         assertNull(structure.getEta());
         assertNull(structure.getPeakPeriodEndTime());
         assertNull(structure.getPeakPeriodStartTime());
-        assertEquals("ysCnsCaq1pQwKUPP9H4AqE943C1XtLin3x6uCVN5Qh09IDyTg7Ey5A", structure.getStructureId());
+        assertEquals(STRUCTURE1_STRUCTURE_ID, structure.getStructureId());
         assertEquals("America/Los_Angeles", structure.getTimeZone());
         assertFalse(structure.isRushHourRewardsEnrollement());
     }
 
     @Test
-    public void verifyError() throws UnsupportedEncodingException {
+    public void verifyError() throws IOException {
         ErrorData error = fromJson("error-data.json", ErrorData.class);
+        logger.debug("ErrorData: {}", error);
 
         assertEquals("blocked", error.getError());
         assertEquals("https://developer.nest.com/documentation/cloud/error-messages#blocked", error.getType());

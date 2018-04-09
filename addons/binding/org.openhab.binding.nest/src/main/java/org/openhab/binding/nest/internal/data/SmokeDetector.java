@@ -27,7 +27,7 @@ public class SmokeDetector extends BaseNestDevice {
     @SerializedName("smoke_alarm_state")
     private AlarmState smokeAlarmState;
     @SerializedName("is_manual_test_active")
-    private boolean isManualTestActive;
+    private Boolean isManualTestActive;
     @SerializedName("ui_color_state")
     private UiColorState uiColorState;
 
@@ -51,7 +51,7 @@ public class SmokeDetector extends BaseNestDevice {
         return smokeAlarmState;
     }
 
-    public boolean isManualTestActive() {
+    public Boolean isManualTestActive() {
         return isManualTestActive;
     }
 

@@ -55,7 +55,7 @@ public class NestStructureHandler extends NestBaseHandler<Structure> {
             case CHANNEL_POSTAL_CODE:
                 return getAsStringTypeOrNull(structure.getPostalCode());
             case CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT:
-                return getAsOnOffType(structure.isRushHourRewardsEnrollement());
+                return getAsOnOffTypeOrNull(structure.isRushHourRewardsEnrollement());
             case CHANNEL_SMOKE_ALARM_STATE:
                 return getAsStringTypeOrNull(structure.getSmokeAlarmState());
             case CHANNEL_TIME_ZONE:
@@ -93,7 +93,7 @@ public class NestStructureHandler extends NestBaseHandler<Structure> {
             if (command instanceof StringType) {
                 StringType cmd = (StringType) command;
                 // Set the mode to be the cmd value.
-                addUpdateRequest(NEST_STRUCTURE_UPDATE_URL, "away", HomeAwayState.valueOf(cmd.toString()));
+                addUpdateRequest(NEST_STRUCTURE_UPDATE_PATH, "away", HomeAwayState.valueOf(cmd.toString()));
             }
         }
     }

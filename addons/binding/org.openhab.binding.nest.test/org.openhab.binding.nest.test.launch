@@ -4,7 +4,7 @@
 <stringAttribute key="application" value="org.eclipse.pde.junit.runtime.coretestapplication"/>
 <booleanAttribute key="askclear" value="false"/>
 <booleanAttribute key="automaticAdd" value="false"/>
-<booleanAttribute key="automaticValidate" value="false"/>
+<booleanAttribute key="automaticValidate" value="true"/>
 <stringAttribute key="bootstrap" value=""/>
 <stringAttribute key="checked" value="[NONE]"/>
 <booleanAttribute key="clearConfig" value="true"/>
@@ -12,15 +12,16 @@
 <booleanAttribute key="clearwslog" value="false"/>
 <stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/pde-junit"/>
 <booleanAttribute key="default" value="false"/>
+<booleanAttribute key="default_auto_start" value="true"/>
 <booleanAttribute key="includeOptional" value="false"/>
 <stringAttribute key="location" value="${workspace_loc}/../junit-workspace"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/org.openhab.binding.nest.test/src/test/java"/>
+<listEntry value="/org.openhab.binding.nest.test"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
-<listEntry value="2"/>
+<listEntry value="4"/>
 </listAttribute>
-<stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value="=org.openhab.binding.nest.test/src\/test\/java"/>
+<stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value="=org.openhab.binding.nest.test"/>
 <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
 <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
 <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
@@ -30,12 +31,11 @@
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.openhab.binding.nest.test"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea"/>
 <stringAttribute key="pde.version" value="3.3"/>
 <stringAttribute key="product" value="org.eclipse.equinox.p2.director.app.product"/>
 <booleanAttribute key="run_in_ui_thread" value="false"/>
-<stringAttribute key="selected_target_plugins" value="ch.qos.logback.classic@default:default,ch.qos.logback.core@default:default,ch.qos.logback.slf4j@default:false,com.eclipsesource.jaxrs.jersey-min@default:default,com.google.gson@default:default,com.google.guava@default:default,javax.activation@default:default,javax.inject@default:default,javax.servlet@default:default,javax.transaction@default:false,javax.xml@default:default,net.bytebuddy.byte-buddy-agent@default:default,net.bytebuddy.byte-buddy@default:default,org.apache.ant@default:default,org.apache.commons.collections@default:default,org.apache.commons.exec@default:default,org.apache.commons.io@default:default,org.apache.commons.lang@default:default,org.apache.felix.gogo.command@default:default,org.apache.felix.gogo.runtime@default:default,org.codehaus.groovy@default:default,org.eclipse.core.contenttype@default:default,org.eclipse.core.jobs@default:default,org.eclipse.core.runtime@default:true,org.eclipse.equinox.app@default:default,org.eclipse.equinox.common@2:true,org.eclipse.equinox.preferences@default:default,org.eclipse.equinox.region@default:false,org.eclipse.equinox.registry@default:default,org.eclipse.equinox.transforms.hook@default:false,org.eclipse.equinox.weaving.hook@default:false,org.eclipse.jetty.client@default:default,org.eclipse.jetty.http*9.3.22.v20171030@default:default,org.eclipse.jetty.io*9.3.22.v20171030@default:default,org.eclipse.jetty.osgi.alpn.fragment@default:false,org.eclipse.jetty.util*9.3.22.v20171030@default:default,org.eclipse.osgi.services@default:default,org.eclipse.osgi.util@default:default,org.eclipse.osgi@-1:true,org.eclipse.smarthome.config.core@default:default,org.eclipse.smarthome.config.discovery@default:default,org.eclipse.smarthome.config.xml@default:default,org.eclipse.smarthome.core.autoupdate@default:default,org.eclipse.smarthome.core.thing@default:default,org.eclipse.smarthome.core@default:default,org.eclipse.smarthome.io.console@default:default,org.eclipse.smarthome.io.net@default:default,org.eclipse.smarthome.test@default:default,org.hamcrest.core@default:default,org.junit@default:default,org.mockito.mockito-core@default:default,org.objenesis@default:default,org.slf4j.api@default:default"/>
-<stringAttribute key="selected_workspace_plugins" value="org.openhab.binding.nest.test@default:false,org.openhab.binding.nest@default:default"/>
+<stringAttribute key="selected_target_plugins" value="ch.qos.logback.classic@default:default,ch.qos.logback.core@default:default,ch.qos.logback.slf4j@default:false,com.eclipsesource.jaxrs.jersey-min@default:default,com.google.gson@default:default,com.google.guava@default:default,com.ibm.icu@default:default,javax.activation@default:default,javax.inject@default:default,javax.measure.unit-api@default:default,javax.servlet@default:default,javax.transaction@default:false,javax.xml@default:default,net.bytebuddy.byte-buddy-agent@default:default,net.bytebuddy.byte-buddy@default:default,org.apache.ant@default:default,org.apache.commons.collections@default:default,org.apache.commons.exec@default:default,org.apache.commons.io@default:default,org.apache.commons.lang@default:default,org.apache.felix.gogo.command@default:default,org.apache.felix.gogo.runtime@default:default,org.apache.felix.scr@default:default,org.codehaus.groovy@default:default,org.eclipse.core.contenttype@default:default,org.eclipse.core.jobs@default:default,org.eclipse.core.runtime@default:true,org.eclipse.emf.common@default:default,org.eclipse.emf.ecore.xmi@default:default,org.eclipse.emf.ecore@default:default,org.eclipse.equinox.app@default:default,org.eclipse.equinox.cm@default:default,org.eclipse.equinox.common@2:true,org.eclipse.equinox.ds@1:true,org.eclipse.equinox.event@default:default,org.eclipse.equinox.preferences@default:default,org.eclipse.equinox.region@default:false,org.eclipse.equinox.registry@default:default,org.eclipse.equinox.transforms.hook@default:false,org.eclipse.equinox.util@default:default,org.eclipse.equinox.weaving.hook@default:false,org.eclipse.jetty.client@default:default,org.eclipse.jetty.http@default:default,org.eclipse.jetty.io@default:default,org.eclipse.jetty.security@default:default,org.eclipse.jetty.server@default:default,org.eclipse.jetty.servlet@default:default,org.eclipse.jetty.util@default:default,org.eclipse.osgi.services@default:default,org.eclipse.osgi.util@default:default,org.eclipse.osgi@-1:true,org.hamcrest.core@default:default,org.hamcrest.integration@default:default,org.hamcrest.library@default:default,org.hamcrest.text@default:default,org.hamcrest@default:default,org.junit@default:default,org.mockito.mockito-core@default:default,org.objenesis@default:default,org.slf4j.api@default:default,tec.uom.lib.uom-lib-common@default:default,tec.uom.se@default:default"/>
+<stringAttribute key="selected_workspace_plugins" value="org.eclipse.smarthome.config.core@default:default,org.eclipse.smarthome.config.discovery@default:default,org.eclipse.smarthome.config.xml@default:default,org.eclipse.smarthome.core.autoupdate@default:default,org.eclipse.smarthome.core.thing.xml@default:default,org.eclipse.smarthome.core.thing@default:true,org.eclipse.smarthome.core@default:true,org.eclipse.smarthome.io.console@default:default,org.eclipse.smarthome.io.net@default:default,org.eclipse.smarthome.test@default:default,org.openhab.binding.nest.test@default:false,org.openhab.binding.nest@default:default"/>
 <booleanAttribute key="show_selected_only" value="false"/>
 <booleanAttribute key="tracing" value="false"/>
 <booleanAttribute key="useCustomFeatures" value="false"/>
