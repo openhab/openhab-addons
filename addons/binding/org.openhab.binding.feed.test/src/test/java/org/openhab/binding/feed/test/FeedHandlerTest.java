@@ -229,7 +229,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
         // This will ensure that the configuration is read before the channelLinked() method in FeedHandler is called !
         waitForAssert(() -> {
             assertThat(feedThing.getStatus(), anyOf(is(ONLINE), is(OFFLINE)));
-        });
+        }, 30000, DFL_SLEEP_TIME);
         initializeItem(channelUID);
     }
 
