@@ -24,14 +24,13 @@ import org.openhab.binding.nest.handler.NestBridgeHandler;
 import org.openhab.binding.nest.internal.discovery.NestDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link NestTestHandlerFactory} is responsible for creating test things and thing handlers.
  *
  * @author Wouter Born - Increase test coverage
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.nest.test")
 public class NestTestHandlerFactory extends BaseThingHandlerFactory {
 
     private String redirectUrl = "http://localhost";

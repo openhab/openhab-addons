@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Modified;
  *
  * @author David Graeff
  */
-@Component(immediate = true, service = ThingHandlerFactory.class)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.network")
 public class NetworkHandlerFactory extends BaseThingHandlerFactory {
     @NonNull
     final NetworkBindingConfiguration configuration = new NetworkBindingConfiguration();

@@ -54,7 +54,7 @@ import gnu.io.CommPortIdentifier;
  *
  * @author Wouter Born - Initial contribution
  */
-@Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.plugwise")
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.plugwise")
 public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
         implements ExtendedDiscoveryService, PlugwiseMessageListener {
 
