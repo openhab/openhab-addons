@@ -21,7 +21,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.tesla.handler.TeslaHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -31,7 +30,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Karel Goderis - Initial contribution
  * @author Nicolai Grødum - Adding token based auth
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.tesla", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.tesla")
 public class TeslaHandlerFactory extends BaseThingHandlerFactory {
 
     private StorageService storageService;

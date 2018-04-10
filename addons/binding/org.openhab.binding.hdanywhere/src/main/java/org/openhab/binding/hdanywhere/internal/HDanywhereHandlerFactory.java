@@ -23,7 +23,6 @@ import org.openhab.binding.hdanywhere.HDanywhereBindingConstants;
 import org.openhab.binding.hdanywhere.handler.Mhub4K431Handler;
 import org.openhab.binding.hdanywhere.handler.MultiroomPlusHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 import com.google.common.collect.Sets;
 
@@ -33,7 +32,7 @@ import com.google.common.collect.Sets;
  *
  * @author Karel Goderis - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.hdanywhere", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.hdanywhere")
 public class HDanywhereHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_MULTIROOMPLUS,

@@ -25,7 +25,6 @@ import org.openhab.binding.regoheatpump.handler.IpRego6xxHeatPumpHandler;
 import org.openhab.binding.regoheatpump.handler.SerialHusdataHandler;
 import org.openhab.binding.regoheatpump.handler.SerialRego6xxHeatPumpHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link RegoHeatPumpHandlerFactory} is responsible for creating things and thing
@@ -33,7 +32,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  *
  * @author Boris Krivonog - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.regoheatpump", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.regoheatpump")
 public class RegoHeatPumpHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream

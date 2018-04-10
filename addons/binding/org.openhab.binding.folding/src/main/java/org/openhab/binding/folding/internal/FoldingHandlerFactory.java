@@ -22,7 +22,6 @@ import org.openhab.binding.folding.FoldingBindingConstants;
 import org.openhab.binding.folding.handler.FoldingClientHandler;
 import org.openhab.binding.folding.handler.SlotHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link FoldingHandlerFactory} is responsible for creating things and thing
@@ -30,7 +29,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  *
  * @author Marius Bjoernstad - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.folding", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.folding")
 public class FoldingHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(

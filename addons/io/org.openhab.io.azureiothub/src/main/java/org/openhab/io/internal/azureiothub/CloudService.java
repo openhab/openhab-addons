@@ -21,7 +21,6 @@ import org.eclipse.smarthome.core.items.events.ItemStateEvent;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -33,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Niko Tanghe - Initial contribution
  *
  */
-@Component(immediate = true, configurationPid = "org.openhab.azureiothub", configurationPolicy = ConfigurationPolicy.OPTIONAL, property = {
+@Component(immediate = true, configurationPid = "org.openhab.azureiothub", property = {
         "service.pid=org.openhab.azureiothub", "service.config.description.uri=io:azureiothub",
         "service.config.label=Azure IoT Hub", "service.config.category=io" })
 public class CloudService implements EventSubscriber {

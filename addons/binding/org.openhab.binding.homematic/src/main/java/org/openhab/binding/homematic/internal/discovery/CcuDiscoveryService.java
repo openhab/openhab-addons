@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-@Component(immediate = true, service = DiscoveryService.class)
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.homematic")
 public class CcuDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(CcuDiscoveryService.class);
 

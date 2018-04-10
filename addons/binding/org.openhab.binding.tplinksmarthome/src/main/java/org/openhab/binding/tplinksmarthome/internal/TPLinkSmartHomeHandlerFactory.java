@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Hilbrand Bouwkamp - Specific handlers for different type of devices.
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, immediate = true)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.tplinksmarthome")
 public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

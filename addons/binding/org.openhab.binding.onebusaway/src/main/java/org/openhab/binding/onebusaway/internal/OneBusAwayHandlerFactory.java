@@ -22,7 +22,6 @@ import org.openhab.binding.onebusaway.internal.handler.ApiHandler;
 import org.openhab.binding.onebusaway.internal.handler.RouteHandler;
 import org.openhab.binding.onebusaway.internal.handler.StopHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -32,7 +31,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Shawn Wilsher - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.onebusaway", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.onebusaway")
 public class OneBusAwayHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(ApiHandler.SUPPORTED_THING_TYPE,

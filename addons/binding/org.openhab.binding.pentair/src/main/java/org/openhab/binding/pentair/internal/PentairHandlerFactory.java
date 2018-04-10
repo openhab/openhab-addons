@@ -22,7 +22,6 @@ import org.openhab.binding.pentair.handler.PentairIntelliChlorHandler;
 import org.openhab.binding.pentair.handler.PentairIntelliFloHandler;
 import org.openhab.binding.pentair.handler.PentairSerialBridgeHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link PentairHandlerFactory} is responsible for creating things and thing
@@ -30,7 +29,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  *
  * @author Jeff James - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.pentair", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.pentair")
 public class PentairHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

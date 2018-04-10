@@ -21,7 +21,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.systeminfo.handler.SysteminfoHandler;
 import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -31,7 +30,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Svilen Valkanov - Initial contribution
  * @author Lyubomir Papazov - Pass systeminfo service to the SysteminfoHandler constructor
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.systeminfo", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.systeminfo")
 public class SysteminfoHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COMPUTER);

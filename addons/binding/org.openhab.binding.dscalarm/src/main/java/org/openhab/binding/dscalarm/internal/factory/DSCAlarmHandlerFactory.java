@@ -40,7 +40,6 @@ import org.openhab.binding.dscalarm.internal.config.TCPServerBridgeConfiguration
 import org.openhab.binding.dscalarm.internal.discovery.DSCAlarmDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Russell Stephens - Initial Contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.dscalarm", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.dscalarm")
 public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(DSCAlarmHandlerFactory.class);

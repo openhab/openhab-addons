@@ -31,7 +31,6 @@ import org.openhab.binding.pulseaudio.internal.discovery.PulseaudioDeviceDiscove
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +42,7 @@ import com.google.common.collect.Sets;
  *
  * @author Tobias Bräutigam - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.pulseaudio", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.pulseaudio")
 public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(PulseaudioHandlerFactory.class);
 

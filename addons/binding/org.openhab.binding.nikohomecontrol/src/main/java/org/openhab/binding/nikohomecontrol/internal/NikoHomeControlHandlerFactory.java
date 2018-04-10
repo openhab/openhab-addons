@@ -27,7 +27,6 @@ import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlHandler;
 import org.openhab.binding.nikohomecontrol.internal.discovery.NikoHomeControlDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link NikoHomeControlHandlerFactory} is responsible for creating things and thing
@@ -36,7 +35,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  * @author Mark Herwege
  */
 
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.nikohomecontrol", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.nikohomecontrol")
 public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();

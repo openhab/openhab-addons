@@ -22,7 +22,6 @@ import org.openhab.binding.hdpowerview.handler.HDPowerViewHubHandler;
 import org.openhab.binding.hdpowerview.handler.HDPowerViewShadeHandler;
 import org.openhab.binding.hdpowerview.internal.discovery.HDPowerViewShadeDiscoveryService;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link HDPowerViewHandlerFactory} is responsible for creating things and thing
@@ -30,7 +29,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  *
  * @author Andy Lintner - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.hdpowerview", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.hdpowerview")
 public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

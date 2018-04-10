@@ -23,7 +23,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.feican")
 public class FeicanHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
