@@ -15,10 +15,15 @@ package org.openhab.binding.robonect.internal.model;
  */
 public class VersionInfo extends RobonectAnswer {
 
+
+    private static final RobonectVersion NA_VERSION = new RobonectVersion();
     /**
      * encapsulates the robonect version information.
      */
-    public class RobonectVersion {
+    public static class RobonectVersion {
+        
+        private static final String NA = "n/a";
+        
         private String serial;
 
         private String version;
@@ -26,6 +31,17 @@ public class VersionInfo extends RobonectAnswer {
         private String compiled;
 
         private String comment;
+
+        public RobonectVersion(){
+            this(NA,NA,NA,NA);
+        }
+        
+        public RobonectVersion(String serial, String version, String compiled, String comment) {
+            this.serial = serial;
+            this.version = version;
+            this.compiled = compiled;
+            this.comment = comment;
+        }
 
         /**
          * @return - The serial number of the robonect module.
@@ -78,7 +94,11 @@ public class VersionInfo extends RobonectAnswer {
      * @return - the object encapsulating the version information. See {@link RobonectVersion}
      */
     public RobonectVersion getRobonect() {
-        return robonect;
+        if(robonect != null){
+            return robonect;
+        }else {
+            return NA_VERSION;
+        }
     }
 
     public void setRobonect(RobonectVersion robonect) {

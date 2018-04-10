@@ -179,4 +179,46 @@ public class ModelParserTest {
         assertEquals("2017-03-25 20:10:00", versionInfo.getRobonect().getCompiled());
         assertEquals("V0.9c", versionInfo.getRobonect().getComment());
     }
+    
+    @Test
+    public void shouldParseVersionInfoV1betaToNA(){
+        String versionResponse = "{\n" +
+                "mower: {\n" +
+                "hardware: {\n" +
+                "serial: 170602001,\n" +
+                "production: \"2017-02-07 15:12:00\"\n" +
+                "},\n" +
+                "msw: {\n" +
+                "title: \"420\",\n" +
+                "version: \"7.10.00\",\n" +
+                "compiled: \"2016-11-29 08:44:06\"\n" +
+                "},\n" +
+                "sub: {\n" +
+                "version: \"6.01.00\"\n" +
+                "}\n" +
+                "},\n" +
+                "serial: \"05D80037-39355548-43163930\",\n" +
+                "bootloader: {\n" +
+                "version: \"V0.4\",\n" +
+                "compiled: \"2016-10-22 01:12:00\",\n" +
+                "comment: \"\"\n" +
+                "},\n" +
+                "wlan: {\n" +
+                "at-version: \"V1.4.0\",\n" +
+                "sdk-version: \"V2.1.0\"\n" +
+                "},\n" +
+                "application: {\n" +
+                "version: \"V1.0\",\n" +
+                "compiled: \"2018-03-12 21:01:00\",\n" +
+                "comment: \"Release V1.0 Beta2\"\n" +
+                "},\n" +
+                "successful: true\n" +
+                "}";
+        VersionInfo versionInfo = subject.parse(versionResponse, VersionInfo.class);
+        assertTrue(versionInfo.isSuccessful());
+        assertEquals("n/a", versionInfo.getRobonect().getSerial());
+        assertEquals("n/a", versionInfo.getRobonect().getVersion());
+        assertEquals("n/a", versionInfo.getRobonect().getCompiled());
+        assertEquals("n/a", versionInfo.getRobonect().getComment());
+    }
 }

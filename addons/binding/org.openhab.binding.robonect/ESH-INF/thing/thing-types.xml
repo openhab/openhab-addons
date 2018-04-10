@@ -39,7 +39,6 @@
 				<label>Polling interval</label>
 				<default>30</default>
 				<description>The interval for the binding to poll the mowers status information.
-					seconds.
 				</description>
 			</parameter>
 			<parameter name="offlineTimeout" type="integer" required="false" unit="m">
@@ -161,7 +160,7 @@
 	<channel-type id="temperatureType">
 		<item-type>Number</item-type>
 		<label>Temperature</label>
-		<description>The tempurature in the mower</description>
+		<description>The temperature inside the mower</description>
 		<state readOnly="true" pattern="%d °C"/>
 	</channel-type>
 
@@ -169,7 +168,7 @@
 		<item-type>Number</item-type>
 		<label>Humidity</label>
 		<description>The humidity in the mower</description>
-		<state readOnly="true" pattern="%d '%'"/>
+		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="modeType">

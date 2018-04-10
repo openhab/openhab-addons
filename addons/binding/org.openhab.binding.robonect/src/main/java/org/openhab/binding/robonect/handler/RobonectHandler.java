@@ -388,7 +388,7 @@ public class RobonectHandler extends BaseThingHandler {
             httpClient.start();
             robonectClient = new RobonectClient(httpClient, endpoint);
             refreshVersionInfo();
-            Runnable runnable = new MowerChannelPoller(robonectConfig);
+            Runnable runnable = new MowerChannelPoller(TimeUnit.SECONDS.toMillis(robonectConfig.getOfflineTimeout()));
             int pollInterval = robonectConfig.getPollInterval();
             pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollInterval, TimeUnit.SECONDS);
         } catch (Exception e) {
@@ -403,10 +403,12 @@ public class RobonectHandler extends BaseThingHandler {
     public void dispose() {
         if (pollingJob != null) {
             pollingJob.cancel(true);
+            pollingJob = null;
         }
         try {
             if (httpClient != null) {
                 httpClient.stop();
+                httpClient = null;
             }
         } catch (Exception e) {
             logger.debug("Could not stop http client", e);
@@ -423,15 +425,13 @@ public class RobonectHandler extends BaseThingHandler {
 
     private class MowerChannelPoller implements Runnable {
 
-        private final RobonectConfig robonectConfig;
         private long offlineSince;
-        private long offlineTriggerDealay;
+        private long offlineTriggerDelay;
         private boolean offlineTimeoutTriggered;
 
-        public MowerChannelPoller(RobonectConfig robonectConfig) {
-            this.robonectConfig = robonectConfig;
+        public MowerChannelPoller(long offlineTriggerDelay) {
             offlineSince = -1;
-            offlineTriggerDealay = robonectConfig.getOfflineTimeout() * 60 * 1000;
+            this.offlineTriggerDelay = offlineTriggerDelay;
             offlineTimeoutTriggered = false;
         }
 
@@ -446,7 +446,7 @@ public class RobonectHandler extends BaseThingHandler {
                 if (offlineSince < 0) {
                     offlineSince = System.currentTimeMillis();
                 }
-                if (!offlineTimeoutTriggered && System.currentTimeMillis() - offlineSince > offlineTriggerDealay) {
+                if (!offlineTimeoutTriggered && System.currentTimeMillis() - offlineSince > offlineTriggerDelay) {
                     // trigger offline
                     updateState(CHANNEL_MOWER_STATUS_OFFLINE_TRIGGER, new StringType("OFFLINE_TIMEOUT"));
                     offlineTimeoutTriggered = true;
@@ -457,7 +457,7 @@ public class RobonectHandler extends BaseThingHandler {
                 // the module sporadically sends invalid json responses. As this is usually recovered with the
                 // next poll interval, we just log it to debug here.
                 logger.debug("Failed to parse response.", jse);
-            } catch (Exception e) {
+            } catch (InterruptedException e) {
                 logger.debug("Unexpected exception. Setting thing offline", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
             }
