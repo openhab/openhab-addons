@@ -10,15 +10,14 @@ package org.openhab.binding.pioneeravr.protocol.event;
 
 /**
  * A listener which is notified when an AVR is disconnected.
- * 
- * @author Antoine Besnard
  *
+ * @author Antoine Besnard - Initial contribution
  */
 public interface AvrDisconnectionListener {
 
     /**
      * Called when an AVR is disconnected.
-     * 
+     *
      * @param event
      */
     public void onDisconnection(AvrDisconnectionEvent event);

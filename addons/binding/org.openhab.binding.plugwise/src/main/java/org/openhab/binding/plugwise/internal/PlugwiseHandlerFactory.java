@@ -29,14 +29,13 @@ import org.openhab.binding.plugwise.handler.PlugwiseStickHandler;
 import org.openhab.binding.plugwise.handler.PlugwiseSwitchHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link PlugwiseHandlerFactory} is responsible for creating Plugwise things and thing handlers.
  *
  * @author Wouter Born - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.plugwise", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.plugwise")
 public class PlugwiseHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

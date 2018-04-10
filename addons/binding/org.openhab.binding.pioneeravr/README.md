@@ -41,7 +41,7 @@ pioneeravr:serialAvr:vsx921Serial [ serialPort="COM9" ]
 ## Channels
 
 *   power: power On/Off the AVR. Receive power events.
-*   volumeDimmer: Increase/Decrease the volume on the AVR or set the volume as %. Receive volume change events (in %).  
+*   volumeDimmer: Increase/Decrease the volume on the AVR or set the volume as %. Receive volume change events (in %).
 *   volumeDb: Set the volume of the AVR in dB (from -80.0 to 12 with 0.5 dB steps). Receive volume change events (in dB).
 *   mute: Mute/Unmute the AVR. Receive mute events.
 *   setInputSource: Set the input source of the AVR. See input source mapping for more details. Receive source input change events with the input source ID.
@@ -49,30 +49,42 @@ pioneeravr:serialAvr:vsx921Serial [ serialPort="COM9" ]
 
 ## Input Source Mapping
 
-Here after are the ID values of the input sources:
+Here after are the ID values of the input sources (depending on you AVR input sources might not be available):
 
-*   04: DVD
-*   25: BD
-*   05: TV/SAT
-*   15: DVR/BDR
-*   10: VIDEO 1(VIDEO)
-*   14: VIDEO 2
-*   19: HDMI 1
-*   20: HDMI 2
-*   21: HDMI 3
-*   22: HDMI 4
-*   23: HDMI 5
-*   26: HOME MEDIA GALLERY(Internet Radio)
-*   17: iPod/USB
-*   18: XM RADIO
-*   01: CD
-*   03: CD-R/TAPE
-*   02: TUNER
-*   00: PHONO
-*   12: MULTI CH IN
-*   33: ADAPTER PORT
-*   27: SIRIUS
-*   31: HDMI (cyclic)
+* 04: DVD
+* 25: BD
+* 05: TV/SAT
+* 06: SAT/CBL
+* 15: DVR/BDR
+* 10: VIDEO 1(VIDEO)
+* 14: VIDEO 2
+* 19: HDMI 1
+* 20: HDMI 2
+* 21: HDMI 3
+* 22: HDMI 4
+* 23: HDMI 5
+* 24: HDMI 6
+* 34: HDMI 7
+* 35: HDMI 8
+* 26: HOME MEDIA GALLERY(Internet Radio)
+* 44: Media Server
+* 38: Internet Radio
+* 17: iPod/USB
+* 48: MHL
+* 01: CD
+* 03: CD-R/TAPE
+* 02: TUNER
+* 00: PHONO
+* 13: USB-DAC
+* 12: MULTI CH IN
+* 33: ADAPTER PORT (BT)
+* 18: XM RADIO
+* 27: SIRIUS
+* 40: SiriusXM
+* 41: PANDORA
+* 45: Favourites
+* 57: Spotify
+* 31: HDMI (cyclic)
 
 ## Example
 
@@ -86,12 +98,12 @@ pioneeravr:ipAvr:vsx921 [ address="192.168.188.89" ]
 
 ```
 /* Pioneer AVR Items */
-Switch vsx921PowerSwitch		"Power"								(All)	{ channel="pioneeravr:ipAvr:vsx921:power" }
-Switch vsx921MuteSwitch			"Mute"					<none>		(All)	{ channel="pioneeravr:ipAvr:vsx921:mute" }
-Dimmer vsx921VolumeDimmer		"Volume [%.1f] %"		<none>		(All)	{ channel="pioneeravr:ipAvr:vsx921:volumeDimmer" }
-Number vsx921VolumeNumber		"Volume [%.1f] dB"		<none>		(All)	{ channel="pioneeravr:ipAvr:vsx921:volumeDb" }
-String vsx921InputSourceSet		"Input"					<none>		(All)	{ channel="pioneeravr:ipAvr:vsx921:setInputSource" }
-String vsx921InformationDisplay "Information [%s]"		<none> 		(All)	{ channel="pioneeravr:ipAvr:vsx921:displayInformation" }
+Switch vsx921PowerSwitch        "Power"                                (All)    { channel="pioneeravr:ipAvr:vsx921:power" }
+Switch vsx921MuteSwitch            "Mute"                    <none>        (All)    { channel="pioneeravr:ipAvr:vsx921:mute" }
+Dimmer vsx921VolumeDimmer        "Volume [%.1f] %"        <none>        (All)    { channel="pioneeravr:ipAvr:vsx921:volumeDimmer" }
+Number vsx921VolumeNumber        "Volume [%.1f] dB"        <none>        (All)    { channel="pioneeravr:ipAvr:vsx921:volumeDb" }
+String vsx921InputSourceSet        "Input"                    <none>        (All)    { channel="pioneeravr:ipAvr:vsx921:setInputSource" }
+String vsx921InformationDisplay "Information [%s]"        <none>         (All)    { channel="pioneeravr:ipAvr:vsx921:displayInformation" }
 ```
 
 *demo.sitemap:
