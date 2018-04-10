@@ -1,23 +1,17 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.openhab.binding</groupId>
-		<artifactId>pom</artifactId>
-		<version>2.3.0-SNAPSHOT</version>
-	</parent>
+  <parent>
+    <artifactId>pom</artifactId>
+    <groupId>org.openhab.binding</groupId>
+    <version>2.3.0-SNAPSHOT</version>
+  </parent>
 
-	<properties>
-		<bundle.symbolicName>org.openhab.binding.zway</bundle.symbolicName>
-		<bundle.namespace>org.openhab.binding.zway</bundle.namespace>
-	</properties>
+  <artifactId>org.openhab.binding.zway</artifactId>
+  <packaging>eclipse-plugin</packaging>
 
-	<groupId>org.openhab.binding</groupId>
-	<artifactId>org.openhab.binding.zway</artifactId>
-	<version>2.3.0-SNAPSHOT</version>
-
-	<name>ZWay Binding</name>
-	<packaging>eclipse-plugin</packaging>
+  <name>ZWay Binding</name>
 
 </project>
