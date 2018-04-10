@@ -46,7 +46,7 @@ public enum VVM320Channels implements Channel {
     CH_44300("44300", "Heat Meter - Heat Cpr and Add EP14", ChannelGroup.GENERAL, ValueType.NUMBER_10),
 
     CH_47011("47011", "Heat Offset S1", ChannelGroup.GENERAL, ValueType.NUMBER, "/Manage/1.9.1.1-S1", "[-1]*[0-9]"),
-    CH_47394("47394", "Room Sensor", ChannelGroup.GENERAL, ValueType.NUMBER, "/Manage/1.9.4", "[01]"),
+    CH_47394("47394", "Room Sensor", ChannelGroup.GENERAL, ValueType.STRING, "/Manage/1.9.4", "[01]"),
     CH_47402("47402", "Room sensor factor", ChannelGroup.GENERAL, ValueType.NUMBER_10, "/Manage/1.9.4",
             "[0123456]*[0-9]"),
     CH_48793("48793", "Room sensor cool factor", ChannelGroup.GENERAL, ValueType.NUMBER_10, "/Manage/1.9.4",

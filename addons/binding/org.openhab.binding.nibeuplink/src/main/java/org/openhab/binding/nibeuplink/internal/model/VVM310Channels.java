@@ -19,7 +19,7 @@ public enum VVM310Channels implements Channel {
     // General
     CH_40004("40004", "BT1 Outdoor Temperature", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_40067("40067", "BT1 Average", ChannelGroup.GENERAL, ValueType.NUMBER_10),
-    CH_43005("43005", "Degree Minutes (16 bit)", ChannelGroup.GENERAL, ValueType.NUMBER_10),
+    CH_43005("43005", "Degree Minutes (16 bit)", ChannelGroup.GENERAL, ValueType.NUMBER_10, "/Manage/4.9.3", "[0-9]+"),
     CH_43009("43009", "Calc. Supply S1", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_40033("40033", "BT50 Room Temp S1", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_43161("43161", "External adjustment activated via input S1", ChannelGroup.GENERAL, ValueType.STRING),
@@ -37,19 +37,29 @@ public enum VVM310Channels implements Channel {
     CH_47212("47212", "Max int add. power", ChannelGroup.GENERAL, ValueType.NUMBER_100),
     CH_48914("48914", "Max int add. power, SG Ready", ChannelGroup.GENERAL, ValueType.NUMBER_100),
     CH_40121("40121", "BT63 Add Supply Temp", ChannelGroup.GENERAL, ValueType.NUMBER_10),
+    CH_43437("43437", "Supply Pump Speed EP14", ChannelGroup.GENERAL, ValueType.NUMBER),
 
     CH_44308("44308", "Heat Meter - Heat Cpr EP14", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_44304("44304", "Heat Meter - Pool Cpr EP14", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_44302("44302", "Heat Meter - Cooling Cpr EP14", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_44300("44300", "Heat Meter - Heat Cpr and Add EP14", ChannelGroup.GENERAL, ValueType.NUMBER_10),
 
+    CH_47011("47011", "Heat Offset S1", ChannelGroup.GENERAL, ValueType.NUMBER, "/Manage/1.9.1.1-S1", "[-1]*[0-9]"),
+    CH_47394("47394", "Room Sensor", ChannelGroup.GENERAL, ValueType.STRING, "/Manage/1.9.4", "[01]"),
+    CH_47402("47402", "Room sensor factor", ChannelGroup.GENERAL, ValueType.NUMBER_10, "/Manage/1.9.4",
+            "[0123456]*[0-9]"),
+    CH_48793("48793", "Room sensor cool factor", ChannelGroup.GENERAL, ValueType.NUMBER_10, "/Manage/1.9.4",
+            "[0123456]*[0-9]"),
+
+    CH_48043("48043", "Holiday Mode", ChannelGroup.GENERAL, ValueType.STRING, "/Manage/4.7", "[1]*[0]"),
+
     // Hotwater
     CH_40013("40013", "BT7 HW Top", ChannelGroup.HOTWATER, ValueType.NUMBER_10),
     CH_40014("40014", "BT6 HW Load", ChannelGroup.HOTWATER, ValueType.NUMBER_10),
     CH_44306("44306", "Heat Meter - HW Cpr EP14", ChannelGroup.HOTWATER, ValueType.NUMBER_10),
     CH_44298("44298", "Heat Meter - HW Cpr and Add EP14", ChannelGroup.HOTWATER, ValueType.NUMBER_10),
-    CH_48132("48132", "Temporary Lux", ChannelGroup.HOTWATER, ValueType.STRING),
-    CH_47041("47041", "Hot water mode", ChannelGroup.HOTWATER, ValueType.STRING),
+    CH_48132("48132", "Temporary Lux", ChannelGroup.HOTWATER, ValueType.STRING, "/Manage/2.1", "[01234]"),
+    CH_47041("47041", "Hot water mode", ChannelGroup.HOTWATER, ValueType.STRING, "/Manage/2.2", "[012]"),
 
     // Compressor
     CH_44362("44362", "EB101-EP14-BT28 Outdoor Temp", ChannelGroup.COMPRESSOR, ValueType.NUMBER_10),
@@ -70,6 +80,7 @@ public enum VVM310Channels implements Channel {
     CH_44701("44701", "EB101-EP14 Actual Cpr Frequency Outdoor Unit", ChannelGroup.COMPRESSOR, ValueType.NUMBER_10),
     CH_44702("44702", "EB101-EP14 Protection Status Register Outdoor Unit", ChannelGroup.COMPRESSOR, ValueType.STRING),
     CH_44700("44700", "EB101-EP14 Low Pressure Sensor Outdoor Unit", ChannelGroup.COMPRESSOR, ValueType.NUMBER_10),
+    CH_44457("44457", "EB101-EP14 Compressor State", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
     CH_10012("10012", "Compressor blocked", ChannelGroup.COMPRESSOR, ValueType.STRING),
 
     // Airsupply
@@ -80,6 +91,7 @@ public enum VVM310Channels implements Channel {
     CH_40311("40311", "External ERS accessory GQ2 speed", ChannelGroup.AIRSUPPLY, ValueType.NUMBER),
     CH_40312("40312", "External ERS accessory GQ3 speed", ChannelGroup.AIRSUPPLY, ValueType.NUMBER),
     CH_40942("40942", "External ERS accessory block status", ChannelGroup.AIRSUPPLY, ValueType.STRING),
+    CH_47260("47260", "Selected Fan speed", ChannelGroup.AIRSUPPLY, ValueType.STRING, "/Manage/1.2", "[01234]"),
 
     /* END */
     ;

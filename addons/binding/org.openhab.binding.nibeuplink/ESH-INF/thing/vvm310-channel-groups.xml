@@ -27,12 +27,19 @@
 			<channel id="47212" typeId="vvm310-type-47212" />
 			<channel id="48914" typeId="vvm310-type-48914" />
 			<channel id="40121" typeId="vvm310-type-40121" />
-
+			<channel id="43437" typeId="vvm310-type-43437" />
 
 			<channel id="44308" typeId="vvm310-type-44308" />
 			<channel id="44304" typeId="vvm310-type-44304" />
 			<channel id="44302" typeId="vvm310-type-44302" />
 			<channel id="44300" typeId="vvm310-type-44300" />
+
+			<channel id="47011" typeId="vvm310-type-47011" />
+			<channel id="47394" typeId="vvm310-type-47394" />
+			<channel id="47402" typeId="vvm310-type-47402" />
+			<channel id="48793" typeId="vvm310-type-48793" />
+
+			<channel id="48043" typeId="vvm310-type-48043" />
 		</channels>
 	</channel-group-type>
 
@@ -69,6 +76,7 @@
 			<channel id="44701" typeId="vvm310-type-44701" />
 			<channel id="44702" typeId="vvm310-type-44702" />
 			<channel id="44700" typeId="vvm310-type-44700" />
+			<channel id="44457" typeId="vvm310-type-44457" />
 			<channel id="10012" typeId="vvm310-type-10012" />
 		</channels>
 	</channel-group-type>
@@ -83,6 +91,7 @@
 			<channel id="40311" typeId="vvm310-type-40311" />
 			<channel id="40312" typeId="vvm310-type-40312" />
 			<channel id="40942" typeId="vvm310-type-40942" />
+			<channel id="47260" typeId="vvm310-type-47260" />
 		</channels>
 	</channel-group-type>
 

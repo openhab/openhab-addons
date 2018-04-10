@@ -170,6 +170,10 @@
 		<label>External ERS accessory block status</label>
 		<description>Indicates if the ERS accessory is externaly blocked.</description>
 		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+			</options>
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-43005">
@@ -205,6 +209,17 @@
 		<label>External adjustment activated via input S1</label>
 		<description></description>
 		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="vvm310-type-43437">
+		<item-type>Number</item-type>
+		<label>Supply Pump Speed EP14</label>
+		<description>Supply Pump Speed EP14 (GP6)</description>
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-44055">
@@ -333,6 +348,13 @@
 		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
+	<channel-type id="vvm310-type-44457">
+		<item-type>Number</item-type>
+		<label>EB101-EP14 Compressor State</label>
+		<description></description>
+		<state pattern="%.1f" readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="vvm310-type-44699">
 		<item-type>Number</item-type>
 		<label>EB101-EP14-BP4 Pressure Sensor</label>
@@ -359,6 +381,11 @@
 		<label>EB101-EP14 Protection Status Register Outdoor Unit</label>
 		<description></description>
 		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+			</options>
+
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-44703">
@@ -367,9 +394,17 @@
 		<description></description>
 		<state pattern="%s" readOnly="true">
 			<options>
-				<option value="0">Off</option>
-				<option value="1">On</option>
+				<option value="0">No</option>
+				<option value="1">Active</option>
+				<option value="1">Passive</option>
 			</options>
+		</state>
+	</channel-type>
+	<channel-type id="vvm310-type-47011">
+		<item-type>Number</item-type>
+		<label>Heat Offset S1</label>
+		<description>Offset of the heat curve, see manual for more information</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-47041">
@@ -391,6 +426,49 @@
 		<state min="0" max="4500" step="1" pattern="%.2f kW" readOnly="false">
 		</state>
 	</channel-type>
+	<channel-type id="vvm310-type-47260">
+		<item-type>String</item-type>
+		<label>Selected Fan speed</label>
+		<description></description>
+		<state pattern="%s" readOnly="false">
+			<options>
+				<option value="0">normal</option>
+				<option value="1">speed 1</option>
+				<option value="2">speed 2</option>
+				<option value="3">speed 3</option>
+				<option value="4">speed 4</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="vvm310-type-47394">
+		<item-type>String</item-type>
+		<label>Use room sensor S1</label>
+		<description>When activated the system uses the room sensor 0=Off 1=On</description>
+		<state pattern="%s" readOnly="false">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="vvm310-type-47402">
+		<item-type>Number</item-type>
+		<label>Room sensor factor S1</label>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="vvm310-type-48043">
+		<item-type>String</item-type>
+		<label>Holiday</label>
+		<description>0=inactive, 10=active</description>
+		<state pattern="%s" readOnly="false">
+			<options>
+				<option value="0">inactive</option>
+				<option value="10">active</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="vvm310-type-48132">
 		<item-type>String</item-type>
 		<label>Temporary Lux</label>
@@ -403,6 +481,13 @@
 				<option value="3">12h</option>
 				<option value="4">One time</option>
 			</options>
+		</state>
+	</channel-type>
+	<channel-type id="vvm310-type-48793">
+		<item-type>Number</item-type>
+		<label>Room sensor cool factor S1</label>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature in cooling mode.</description>
+		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-48914">

@@ -26,7 +26,7 @@
 | general#44302 | Number | 0 | 9999999 | No | Heat Meter - Cooling Cpr EP14 |  |
 | general#44300 | Number | 0 | 9999999 | No | Heat Meter - Heat Cpr and Add EP14 |  |
 | general#47011 | Number | -10 | 10 | Yes | Heat Offset S1 | values between -10 and 10 |
-| general#47394 | Number | 0 | 1 | Setting | Use room sensor S1 | 0=off, 1=on |
+| general#47394 | String | --- | --- | Yes | Use room sensor S1 | 0=off, 1=on |
 | general#47402 | Number | 0 | 60 | Yes | Room sensor factor S1 | Values between 0 and 6 |
 | general#48793 | Number | 0 | 60 | Yes | Room sensor cool factor S1 | Values between 0 and 6 |
 | general#48043 | String | --- | --- | Yes | vacation mode | 0=off, 10=on |
