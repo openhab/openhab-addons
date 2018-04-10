@@ -36,7 +36,7 @@ following configuration settings are supported for the `mower` thing.
 
 An example things configuration might look like
 
-```text
+```java
 Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInterval="5", user="gardener", password = "cutter"]
 ```
 
@@ -80,7 +80,7 @@ Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInte
 
 Items file `.items`
 
-```text
+```java
 String    mowerName            "Mower name"                                    {robonect:mower:automower:mowerInfo#name"}
 Number    mowerBattery         "Mower battery [%d %%]" <energy>                {channel="robonect:mower:automower:mowerStatus#battery"}
 Number    mowerHours           "Mower operation hours [%d h]" <clock>          {channel="robonect:mower:automower:mowerStatus#hours"}
