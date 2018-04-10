@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.nibeheatpump.internal.message;
 
-import javax.xml.bind.DatatypeConverter;
+import org.eclipse.smarthome.core.util.HexUtils;
 
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 import org.openhab.binding.nibeheatpump.internal.protocol.NibeHeatPumpProtocol;
@@ -76,8 +76,7 @@ public abstract class NibeHeatPumpBaseMessage implements NibeHeatPumpMessage {
 
     @Override
     public String toString() {
-        String str = "Message type = " + msgType;
-        return str;
+        return "Message type = " + msgType;
     }
 
     @Override
@@ -85,7 +84,7 @@ public abstract class NibeHeatPumpBaseMessage implements NibeHeatPumpMessage {
         if (rawMessage == null) {
             return null;
         } else {
-            return DatatypeConverter.printHexBinary(rawMessage);
+            return HexUtils.bytesToHex(rawMessage);
         }
     }
 

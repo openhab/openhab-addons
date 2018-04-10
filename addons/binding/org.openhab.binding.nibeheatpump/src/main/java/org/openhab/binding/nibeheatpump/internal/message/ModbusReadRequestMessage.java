@@ -25,16 +25,12 @@ public class ModbusReadRequestMessage extends NibeHeatPumpBaseMessage {
         this.coilAddress = builder.coilAddress;
     }
 
-    public ModbusReadRequestMessage(byte[] data) throws NibeHeatPumpException {
+    ModbusReadRequestMessage(byte[] data) throws NibeHeatPumpException {
         encodeMessage(data);
     }
 
     public int getCoilAddress() {
         return coilAddress;
-    }
-
-    public void setcoilAddress(int coilAddress) {
-        this.coilAddress = coilAddress;
     }
 
     @Override

@@ -10,7 +10,7 @@ package org.openhab.binding.nibeheatpump.internal.message;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.xml.bind.DatatypeConverter;
+import org.eclipse.smarthome.core.util.HexUtils;
 
 import org.junit.Test;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
@@ -31,12 +31,12 @@ public class ModbusReadResponseMessageTest {
         ModbusReadResponseMessage m = new ModbusReadResponseMessage.MessageBuilder().coilAddress(coilAddress)
                 .value(value).build();
         byte[] byteMessage = m.decodeMessage();
-        assertEquals(okMessage, DatatypeConverter.printHexBinary(byteMessage));
+        assertEquals(okMessage, HexUtils.bytesToHex(byteMessage));
     }
 
     @Test
     public void parseMessageTest() throws NibeHeatPumpException {
-        byte[] msg = DatatypeConverter.parseHexBinary(okMessage);
+        byte[] msg = HexUtils.hexToBytes(okMessage);
         ModbusReadResponseMessage m = (ModbusReadResponseMessage) MessageFactory.getMessage(msg);
         assertEquals(coilAddress, m.getCoilAddress());
         assertEquals(value, m.getValue());
@@ -45,14 +45,14 @@ public class ModbusReadResponseMessageTest {
     @Test(expected = NibeHeatPumpException.class)
     public void badCrcTest() throws NibeHeatPumpException {
         final String strMessage = "5C00206A060102030405064C";
-        final byte[] byteMessage = DatatypeConverter.parseHexBinary(strMessage);
+        final byte[] byteMessage = HexUtils.hexToBytes(strMessage);
         MessageFactory.getMessage(byteMessage);
     }
 
     @Test(expected = NibeHeatPumpException.class)
     public void notReadResponseMessageTest() throws NibeHeatPumpException {
         final String strMessage = "5C00206B060102030405064A";
-        final byte[] byteMessage = DatatypeConverter.parseHexBinary(strMessage);
+        final byte[] byteMessage = HexUtils.hexToBytes(strMessage);
         new ModbusReadResponseMessage(byteMessage);
     }
 }

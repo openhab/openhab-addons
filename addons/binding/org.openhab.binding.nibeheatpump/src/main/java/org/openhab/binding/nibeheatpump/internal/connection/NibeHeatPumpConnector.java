@@ -27,14 +27,12 @@ public interface NibeHeatPumpConnector {
      *
      * @throws NibeHeatPumpException
      */
-    public void connect(NibeHeatPumpConfiguration configuration) throws NibeHeatPumpException;
+    void connect(NibeHeatPumpConfiguration configuration) throws NibeHeatPumpException;
 
     /**
      * Procedure for disconnect from heat pump.
-     *
-     * @throws NibeHeatPumpException
      */
-    public void disconnect() throws NibeHeatPumpException;
+    void disconnect();
 
     /**
      * Procedure for register event listener.
@@ -42,7 +40,7 @@ public interface NibeHeatPumpConnector {
      * @param listener
      *            Event listener instance to handle events.
      */
-    public void addEventListener(NibeHeatPumpEventListener listener);
+    void addEventListener(NibeHeatPumpEventListener listener);
 
     /**
      * Procedure for remove event listener.
@@ -50,14 +48,14 @@ public interface NibeHeatPumpConnector {
      * @param listener
      *            Event listener instance to remove.
      */
-    public void removeEventListener(NibeHeatPumpEventListener listener);
+    void removeEventListener(NibeHeatPumpEventListener listener);
 
     /**
      * Procedure for sending datagram to heat pump.
      *
      * @throws NibeHeatPumpException
      */
-    public void sendDatagram(NibeHeatPumpMessage msg) throws NibeHeatPumpException;
+    void sendDatagram(NibeHeatPumpMessage msg) throws NibeHeatPumpException;
 
     /**
      * Procedure to check if connector is currently connected to heat pump.

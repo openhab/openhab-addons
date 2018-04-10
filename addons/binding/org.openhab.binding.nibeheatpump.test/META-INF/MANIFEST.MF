@@ -9,6 +9,7 @@ Fragment-Host: org.openhab.binding.nibeheatpump
 Import-Package:  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.core.events,
  org.eclipse.smarthome.core.thing.util,
+ org.eclipse.smarthome.core.util,
  org.eclipse.smarthome.test,
  org.eclipse.smarthome.test.storage,
  org.hamcrest;core=split,

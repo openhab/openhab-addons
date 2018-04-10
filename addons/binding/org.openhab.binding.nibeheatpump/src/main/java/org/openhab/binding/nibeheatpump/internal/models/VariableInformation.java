@@ -21,12 +21,12 @@ public class VariableInformation {
         U32,
         S8,
         S16,
-        S32;
+        S32
     }
 
     public enum Type {
         SENSOR,
-        SETTING;
+        SETTING
     }
 
     public int factor;

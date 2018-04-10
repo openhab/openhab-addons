@@ -125,9 +125,9 @@ public class NibeHeatPumpProtocol {
     }
 
     public static byte[] checkMessageChecksumAndRemoveDoubles(byte[] data) throws NibeHeatPumpException {
-        int msglen = 0;
-        int startIndex = 0;
-        int stopIndex = 0;
+        int msglen;
+        int startIndex;
+        int stopIndex;
 
         if (NibeHeatPumpProtocol.isModbus40ReadRequestPdu(data)
                 || NibeHeatPumpProtocol.isModbus40WriteRequestPdu(data)) {

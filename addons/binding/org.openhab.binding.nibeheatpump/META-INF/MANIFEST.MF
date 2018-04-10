@@ -18,6 +18,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.util,
  org.eclipse.smarthome.core.types,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

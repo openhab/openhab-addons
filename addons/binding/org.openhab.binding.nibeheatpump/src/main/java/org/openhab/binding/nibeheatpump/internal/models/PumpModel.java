@@ -19,7 +19,7 @@ public enum PumpModel {
 
     private final String pumpModel;
 
-    private PumpModel(String pumpModel) {
+    PumpModel(String pumpModel) {
         this.pumpModel = pumpModel;
     }
 

@@ -91,7 +91,7 @@ public class ModbusDataReadOutMessage extends NibeHeatPumpBaseMessage {
             super.encodeMessage(data);
             final int msglen = 5 + rawMessage[NibeHeatPumpProtocol.OFFSET_LEN];
 
-            List<ModbusValue> vals = new ArrayList<ModbusValue>();
+            List<ModbusValue> vals = new ArrayList<>();
 
             try {
                 for (int i = NibeHeatPumpProtocol.OFFSET_DATA; i < (msglen - 1); i += 4) {
@@ -115,7 +115,7 @@ public class ModbusDataReadOutMessage extends NibeHeatPumpBaseMessage {
     }
 
     public static class MessageBuilder {
-        private List<ModbusValue> values = new ArrayList<ModbusValue>();
+        private List<ModbusValue> values = new ArrayList<>();
 
         public MessageBuilder values(List<ModbusValue> values) {
             this.values = values;

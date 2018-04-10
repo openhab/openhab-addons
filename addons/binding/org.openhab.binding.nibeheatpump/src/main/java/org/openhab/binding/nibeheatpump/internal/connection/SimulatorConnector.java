@@ -39,13 +39,12 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
 
     private Thread readerThread = null;
 
-    private List<byte[]> readQueue = new ArrayList<byte[]>();
-    private List<byte[]> writeQueue = new ArrayList<byte[]>();
+    private final List<byte[]> readQueue = new ArrayList<>();
+    private final List<byte[]> writeQueue = new ArrayList<>();
 
     private static final Random RANDOM = new Random();
 
-    @SuppressWarnings("serial")
-    ArrayList<ModbusValue> dataReadoutValues = new ArrayList<ModbusValue>() {
+    private final ArrayList<ModbusValue> dataReadoutValues = new ArrayList<ModbusValue>() {
         {
             add(new ModbusValue(43009, 287));
             add(new ModbusValue(43008, 100));
@@ -70,14 +69,14 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
         }
     };
 
-    private Map<Integer, Integer> cache = Collections.synchronizedMap(new HashMap<Integer, Integer>());
+    private final Map<Integer, Integer> cache = Collections.synchronizedMap(new HashMap<>());
 
-    public SimulatorConnector() {
+    SimulatorConnector() {
         logger.debug("Nibe heatpump Test message listener created");
     }
 
     @Override
-    public void connect(NibeHeatPumpConfiguration configuration) throws NibeHeatPumpException {
+    public void connect(NibeHeatPumpConfiguration configuration) {
         if (isConnected()) {
             return;
         }
@@ -87,7 +86,7 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
     }
 
     @Override
-    public void disconnect() throws NibeHeatPumpException {
+    public void disconnect() {
         if (readerThread != null) {
             logger.debug("Interrupt message listener");
             readerThread.interrupt();
@@ -103,7 +102,7 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
     }
 
     @Override
-    public void sendDatagram(NibeHeatPumpMessage msg) throws NibeHeatPumpException {
+    public void sendDatagram(NibeHeatPumpMessage msg) {
         logger.debug("Sending request: {}", msg.toHexString());
 
         if (msg instanceof ModbusWriteRequestMessage) {
@@ -253,7 +252,7 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
         }
     }
 
-    public static double random(double min, double max) {
+    private static double random(double min, double max) {
         return min + (RANDOM.nextDouble() * (max - min));
     }
 }

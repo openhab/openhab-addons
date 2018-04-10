@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.xml.bind.DatatypeConverter;
+import org.eclipse.smarthome.core.util.HexUtils;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,7 +30,7 @@ public class NibeHeatPumpProtocolTest {
     int sendReadMsgCount = 0;
     List<byte[]> receivedMsgs = null;
 
-    NibeHeatPumpProtocolContext mockupContext = new NibeHeatPumpProtocolDefaultContext() {
+    final NibeHeatPumpProtocolContext mockupContext = new NibeHeatPumpProtocolDefaultContext() {
         @Override
         public void sendAck() {
             ackRequestCount++;
@@ -63,7 +63,7 @@ public class NibeHeatPumpProtocolTest {
         nakRequestCount = 0;
         sendWriteMsgCount = 0;
         sendReadMsgCount = 0;
-        receivedMsgs = new ArrayList<byte[]>();
+        receivedMsgs = new ArrayList<>();
         mockupContext.buffer().clear();
         mockupContext.msg().clear();
     }
@@ -106,7 +106,7 @@ public class NibeHeatPumpProtocolTest {
         //@formatter:on
 
         // create byte data from hex string
-        final byte[] rawData = DatatypeConverter.parseHexBinary(strTestData);
+        final byte[] rawData = HexUtils.hexToBytes(strTestData);
 
         // put byte data to protocol state machine
         mockupContext.buffer().put(rawData);
@@ -114,7 +114,7 @@ public class NibeHeatPumpProtocolTest {
 
         // run protocol state machine to process test data
         while (mockupContext.state().process(mockupContext)) {
-            ;
+
         }
 
         // test results
@@ -128,24 +128,24 @@ public class NibeHeatPumpProtocolTest {
         String expect;
 
         expect = "5C001962189600E1010200000000800000000000020914340001000005B8";
-        Assert.assertArrayEquals(DatatypeConverter.parseHexBinary(expect), receivedMsgs.get(0));
+        Assert.assertArrayEquals(HexUtils.hexToBytes(expect), receivedMsgs.get(0));
 
         expect = "5C00206850449C9600489C88014C9C2D014E9CCF004D9CE0014F9C3200509C0400519C8201529C6B02569C3E00C9AF000001A8F600FDA77E02FAA90F0098A9DC27FFFF0000A0A93A04FFFF00009CA9FD19FFFF000081";
-        Assert.assertArrayEquals(DatatypeConverter.parseHexBinary(expect), receivedMsgs.get(1));
+        Assert.assertArrayEquals(HexUtils.hexToBytes(expect), receivedMsgs.get(1));
 
         expect = "5C001962189600DF01020000000080000000000002091434000100000586";
-        Assert.assertArrayEquals(DatatypeConverter.parseHexBinary(expect), receivedMsgs.get(2));
+        Assert.assertArrayEquals(HexUtils.hexToBytes(expect), receivedMsgs.get(2));
 
         expect = "5C0019600079";
-        Assert.assertArrayEquals(DatatypeConverter.parseHexBinary(expect), receivedMsgs.get(3));
+        Assert.assertArrayEquals(HexUtils.hexToBytes(expect), receivedMsgs.get(3));
 
         expect = "5C00206851449C2500489CFC004C9CF1004E9CC7014D9C0B024F9C2500509C3300519C0B01529C5C5C01569C3100C9AF000001A80C01FDA716FAFAA9070098A91B1BFFFF0000A0A9CA02FFFF00009CA99212FFFF0000BE";
-        Assert.assertArrayEquals(DatatypeConverter.parseHexBinary(expect), receivedMsgs.get(4));
+        Assert.assertArrayEquals(HexUtils.hexToBytes(expect), receivedMsgs.get(4));
 
         expect = "5C00206852449C2500489CFE004C9CF2004E9CD4014D9CFB014F9C2500509C3700519C0D01529C5C5C01569C3200C9AF000001A80C01FDA712FAFAA9070098A95C5C1BFFFF0000A0A9D102FFFF00009CA9B412FFFF00007F";
-        Assert.assertArrayEquals(DatatypeConverter.parseHexBinary(expect), receivedMsgs.get(5));
+        Assert.assertArrayEquals(HexUtils.hexToBytes(expect), receivedMsgs.get(5));
 
         expect = "5C00206850449C2600489CF6004C9CF1004E9CD6014D9C0C024F9C4500509C3F00519CF100529C0401569CD500C9AF000001A80C01FDA799FAFAA9020098A91A1BFFFF0000A0A9CA02FFFF00009CA99212FFFF0000C5";
-        Assert.assertArrayEquals(DatatypeConverter.parseHexBinary(expect), receivedMsgs.get(6));
+        Assert.assertArrayEquals(HexUtils.hexToBytes(expect), receivedMsgs.get(6));
     }
 }

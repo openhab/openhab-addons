@@ -17,10 +17,6 @@ public class NibeHeatPumpException extends Exception {
 
     private static final long serialVersionUID = 8030315127747955747L;
 
-    public NibeHeatPumpException() {
-        super();
-    }
-
     public NibeHeatPumpException(String message) {
         super(message);
     }

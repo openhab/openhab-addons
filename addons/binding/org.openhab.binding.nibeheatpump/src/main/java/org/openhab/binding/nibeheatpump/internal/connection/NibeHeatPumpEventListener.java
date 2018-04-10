@@ -20,7 +20,7 @@ public interface NibeHeatPumpEventListener {
     /**
      * Procedure for receive raw data from heat pump.
      *
-     * @param data
+     * @param msg
      *            Received raw data.
      */
     void msgReceived(NibeHeatPumpMessage msg);
