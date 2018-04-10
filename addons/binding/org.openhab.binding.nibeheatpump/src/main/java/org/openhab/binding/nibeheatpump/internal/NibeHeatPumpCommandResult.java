@@ -54,7 +54,7 @@ public class NibeHeatPumpCommandResult implements Future<NibeHeatPumpMessage> {
     }
 
     @Override
-    public NibeHeatPumpMessage get() throws InterruptedException, ExecutionException {
+    public NibeHeatPumpMessage get() throws InterruptedException {
         lock.lock();
         try {
             if (!done) {
@@ -68,7 +68,7 @@ public class NibeHeatPumpCommandResult implements Future<NibeHeatPumpMessage> {
 
     @Override
     public NibeHeatPumpMessage get(long timeout, TimeUnit unit)
-            throws InterruptedException, ExecutionException, TimeoutException {
+            throws InterruptedException, TimeoutException {
         lock.lock();
         try {
             if (!done) {

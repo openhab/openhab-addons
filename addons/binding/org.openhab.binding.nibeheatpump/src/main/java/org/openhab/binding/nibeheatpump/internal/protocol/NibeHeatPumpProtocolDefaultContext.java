@@ -18,8 +18,8 @@ import java.nio.ByteBuffer;
  */
 public class NibeHeatPumpProtocolDefaultContext implements NibeHeatPumpProtocolContext {
     private NibeHeatPumpProtocolStates state = NibeHeatPumpProtocolStates.WAIT_START;
-    private ByteBuffer buffer = ByteBuffer.allocate(1000);
-    private ByteBuffer msg = ByteBuffer.allocate(100);
+    private final ByteBuffer buffer = ByteBuffer.allocate(1000);
+    private final ByteBuffer msg = ByteBuffer.allocate(100);
 
     @Override
     public NibeHeatPumpProtocolStates state() {

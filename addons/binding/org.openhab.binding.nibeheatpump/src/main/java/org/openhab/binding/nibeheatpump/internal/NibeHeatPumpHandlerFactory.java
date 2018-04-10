@@ -44,7 +44,7 @@ public class NibeHeatPumpHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private PumpModel parsePumpModel(Thing thing) {
-        String[] pumpModelStrings = thing.getThingTypeUID().getId().toString().split("-");
+        String[] pumpModelStrings = thing.getThingTypeUID().getId().split("-");
         return PumpModel.getPumpModel(pumpModelStrings[0]);
     }
 }

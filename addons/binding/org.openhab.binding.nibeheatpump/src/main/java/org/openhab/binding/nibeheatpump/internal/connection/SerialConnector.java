@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TooManyListenersException;
 
-import javax.xml.bind.DatatypeConverter;
+import org.eclipse.smarthome.core.util.HexUtils;
 
 import org.apache.commons.io.IOUtils;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
@@ -55,10 +55,10 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
     private Thread readerThread;
     private NibeHeatPumpConfiguration conf;
 
-    private List<byte[]> readQueue = new ArrayList<byte[]>();
-    private List<byte[]> writeQueue = new ArrayList<byte[]>();
+    private final List<byte[]> readQueue = new ArrayList<>();
+    private final List<byte[]> writeQueue = new ArrayList<>();
 
-    public SerialConnector() {
+    SerialConnector() {
         logger.debug("Nibe heatpump Serial Port message listener created");
     }
 
@@ -102,7 +102,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
     }
 
     @Override
-    public void disconnect() throws NibeHeatPumpException {
+    public void disconnect() {
         logger.debug("Disconnecting");
         serialPort.removeEventListener();
         if (readerThread != null) {
@@ -130,7 +130,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
     }
 
     @Override
-    public void sendDatagram(NibeHeatPumpMessage msg) throws NibeHeatPumpException {
+    public void sendDatagram(NibeHeatPumpMessage msg) {
         if (logger.isTraceEnabled()) {
             logger.trace("Add request to queue: {}", msg.toHexString());
         }
@@ -148,9 +148,9 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
 
     public class SerialReader extends Thread implements SerialPortEventListener {
         boolean interrupted = false;
-        InputStream in;
+        final InputStream in;
 
-        public SerialReader(InputStream in) {
+        SerialReader(InputStream in) {
             this.in = in;
         }
 
@@ -336,11 +336,11 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
         if (logger.isTraceEnabled()) {
             try {
                 NibeHeatPumpMessage msg = MessageFactory.getMessage(data);
-                logger.trace("Sending msg: {}", msg.toString());
+                logger.trace("Sending msg: {}", msg);
             } catch (NibeHeatPumpException e) {
                 // do nothing
             }
-            logger.trace("Sending data (len={}): {}", data.length, DatatypeConverter.printHexBinary(data));
+            logger.trace("Sending data (len={}): {}", data.length, HexUtils.bytesToHex(data));
         }
         out.write(data);
         out.flush();
