@@ -21,7 +21,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.urtsi.handler.RtsDeviceHandler;
 import org.openhab.binding.urtsi.handler.UrtsiDeviceHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 import com.google.common.collect.Lists;
 
@@ -31,7 +30,7 @@ import com.google.common.collect.Lists;
  *
  * @author Oliver Libutzki - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.urtsi", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.urtsi")
 public class UrtsiHandlerFactory extends BaseThingHandlerFactory {
 
     private static final List<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(URTSI_DEVICE_THING_TYPE,

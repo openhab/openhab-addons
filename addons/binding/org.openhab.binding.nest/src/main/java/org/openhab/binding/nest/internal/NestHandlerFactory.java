@@ -33,7 +33,6 @@ import org.openhab.binding.nest.handler.NestThermostatHandler;
 import org.openhab.binding.nest.internal.discovery.NestDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link NestHandlerFactory} is responsible for creating things and thing
@@ -42,7 +41,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  *
  * @author David Bennett - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.nest", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.nest")
 public class NestHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_THERMOSTAT,
             THING_TYPE_CAMERA, THING_TYPE_BRIDGE, THING_TYPE_STRUCTURE, THING_TYPE_SMOKE_DETECTOR).collect(toSet());

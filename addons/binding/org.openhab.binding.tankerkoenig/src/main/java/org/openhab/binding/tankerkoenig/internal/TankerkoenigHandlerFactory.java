@@ -22,7 +22,6 @@ import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
 import org.openhab.binding.tankerkoenig.handler.StationHandler;
 import org.openhab.binding.tankerkoenig.handler.WebserviceHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 import com.google.common.collect.Sets;
 
@@ -32,7 +31,7 @@ import com.google.common.collect.Sets;
  *
  * @author Dennis Dollinger - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.tankerkoenig", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.tankerkoenig")
 public class TankerkoenigHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(BRIDGE_THING_TYPES_UIDS,
             TankerkoenigBindingConstants.SUPPORTED_THING_TYPES_UIDS);

@@ -27,7 +27,6 @@ import org.openhab.binding.zway.handler.ZWayZWaveDeviceHandler;
 import org.openhab.binding.zway.internal.discovery.ZWayDeviceDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -37,7 +36,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Patrick Hecker - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.zway", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.zway")
 public class ZWayHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(

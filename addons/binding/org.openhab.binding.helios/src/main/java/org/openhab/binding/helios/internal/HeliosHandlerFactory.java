@@ -20,7 +20,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.helios.handler.HeliosHandler221;
 import org.openhab.binding.helios.handler.HeliosHandler27;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 import com.google.common.collect.Lists;
 
@@ -30,7 +29,7 @@ import com.google.common.collect.Lists;
  *
  * @author Karel Goderis - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.helios", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.helios")
 public class HeliosHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
