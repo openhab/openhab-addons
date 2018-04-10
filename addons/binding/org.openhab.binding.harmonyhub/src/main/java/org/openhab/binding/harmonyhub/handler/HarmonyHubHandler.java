@@ -113,6 +113,8 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
                 } catch (NumberFormatException ignored) {
                     client.startActivityByName(command.toString());
                 }
+            } catch (IllegalArgumentException e) {
+                logger.warn("Activity '{}' is not known by the hub, ignoring it.", command);
             } catch (Exception e) {
                 logger.error("Could not start activity", e);
             }
