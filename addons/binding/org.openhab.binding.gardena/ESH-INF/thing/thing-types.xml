@@ -43,7 +43,6 @@
 		<description>Information about the rechargeable battery</description>
 		<channels>
 			<channel id="level" typeId="system.battery-level" />
-			<channel id="rechargeable_battery_status" typeId="rechargeableBatteryStatus" />
 			<channel id="charging" typeId="charging" />
 		</channels>
 	</channel-group-type>
@@ -111,19 +110,6 @@
 		<label>Last Time Online</label>
 		<description>Last time the device was online</description>
 		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="rechargeableBatteryStatus" advanced="true">
-		<item-type>String</item-type>
-		<label>Rechargeable Battery Status</label>
-		<description>The status of the rechargeable battery</description>
-		<state readOnly="true">
-			<options>
-				<option value="weak">Weak</option>
-				<option value="ok">OK</option>
-				<option value="undefined">Undefined</option>
-			</options>
-		</state>
 	</channel-type>
 
 	<channel-type id="charging" advanced="true">

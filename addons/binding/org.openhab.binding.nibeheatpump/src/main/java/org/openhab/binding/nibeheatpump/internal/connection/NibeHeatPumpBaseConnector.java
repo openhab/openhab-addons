@@ -9,7 +9,6 @@
 package org.openhab.binding.nibeheatpump.internal.connection;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
@@ -28,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public abstract class NibeHeatPumpBaseConnector implements NibeHeatPumpConnector {
     private final Logger logger = LoggerFactory.getLogger(NibeHeatPumpBaseConnector.class);
 
-    private List<NibeHeatPumpEventListener> listeners = new ArrayList<NibeHeatPumpEventListener>();
+    private final List<NibeHeatPumpEventListener> listeners = new ArrayList<>();
     public boolean connected = false;
 
     @Override
@@ -60,10 +59,9 @@ public abstract class NibeHeatPumpBaseConnector implements NibeHeatPumpConnector
     public void sendMsgToListeners(NibeHeatPumpMessage msg) {
         if (msg != null) {
 
-            Iterator<NibeHeatPumpEventListener> iterator = listeners.iterator();
-            while (iterator.hasNext()) {
+            for (NibeHeatPumpEventListener listener : listeners) {
                 try {
-                    iterator.next().msgReceived(msg);
+                    listener.msgReceived(msg);
                 } catch (Exception e) {
                     logger.error("Event listener invoking error, exception {}", e);
                 }
@@ -72,10 +70,9 @@ public abstract class NibeHeatPumpBaseConnector implements NibeHeatPumpConnector
     }
 
     public void sendErrorToListeners(String error) {
-        Iterator<NibeHeatPumpEventListener> iterator = listeners.iterator();
-        while (iterator.hasNext()) {
+        for (NibeHeatPumpEventListener listener : listeners) {
             try {
-                iterator.next().errorOccurred(error);
+                listener.errorOccurred(error);
             } catch (Exception e) {
                 logger.error("Event listener invoking error, exception {}", e);
             }

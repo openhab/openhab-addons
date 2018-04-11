@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.velbus.internal.VelbusModuleAddress;
 import org.openhab.binding.velbus.internal.VelbusPacketListener;
 import org.openhab.binding.velbus.internal.packets.VelbusStatusRequestPacket;
@@ -45,30 +46,15 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
 
     private VelbusBridgeHandler velbusBridgeHandler;
     private VelbusModuleAddress velbusModuleAddress;
+
+    private int numberOfSubAddresses;
     private String acceptedItemType;
 
     public VelbusThingHandler(Thing thing, int numberOfSubAddresses, String acceptedItemType) {
         super(thing);
 
-        this.velbusModuleAddress = createVelbusModuleAddress(thing, numberOfSubAddresses);
+        this.numberOfSubAddresses = numberOfSubAddresses;
         this.acceptedItemType = acceptedItemType;
-    }
-
-    private VelbusModuleAddress createVelbusModuleAddress(Thing thing, int numberOfSubAddresses) {
-        byte address = hexToByte((String) getConfig().get(MODULE_ADDRESS));
-
-        byte[] subAddresses = new byte[numberOfSubAddresses];
-        for (int i = 0; i < numberOfSubAddresses; i++) {
-            String propertyKey = SUB_ADDRESS + (i + 1);
-            if (getThing().getProperties().containsKey(propertyKey)) {
-                String subAddress = getThing().getProperties().get(propertyKey);
-                subAddresses[i] = hexToByte(subAddress);
-            } else {
-                subAddresses[i] = (byte) 0xFF;
-            }
-        }
-
-        return new VelbusModuleAddress(address, subAddresses);
     }
 
     @Override
@@ -107,6 +93,8 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
     }
 
     private void initializeThing(ThingStatus bridgeStatus) {
+        this.velbusModuleAddress = createVelbusModuleAddress(thing, numberOfSubAddresses);
+
         logger.debug("initializeThing thing {} with address {} bridge status {}", getThing().getUID(),
                 velbusModuleAddress.getAddress(), bridgeStatus);
 
@@ -121,6 +109,23 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
+    }
+
+    private VelbusModuleAddress createVelbusModuleAddress(Thing thing, int numberOfSubAddresses) {
+        byte address = hexToByte((String) getConfig().get(MODULE_ADDRESS));
+
+        byte[] subAddresses = new byte[numberOfSubAddresses];
+        for (int i = 0; i < numberOfSubAddresses; i++) {
+            String propertyKey = SUB_ADDRESS + (i + 1);
+            if (getThing().getProperties().containsKey(propertyKey)) {
+                String subAddress = getThing().getProperties().get(propertyKey);
+                subAddresses[i] = hexToByte(subAddress);
+            } else {
+                subAddresses[i] = (byte) 0xFF;
+            }
+        }
+
+        return new VelbusModuleAddress(address, subAddresses);
     }
 
     private void initializeChannelNames() {
@@ -144,9 +149,12 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
         velbusBridgeHandler.sendPacket(packetBytes);
     }
 
-    private byte hexToByte(String hex) {
-        return (byte) ((Character.digit(hex.charAt(hex.length() - 2), 16) << 4)
-                + Character.digit(hex.charAt(hex.length() - 1), 16));
+    private byte hexToByte(String hexString) {
+        if (hexString.length() > 2) {
+            throw new IllegalArgumentException("hexString contains more than one byte: " + hexString);
+        }
+
+        return HexUtils.hexToBytes(hexString)[0];
     }
 
     protected synchronized VelbusBridgeHandler getVelbusBridgeHandler() {

@@ -19,7 +19,6 @@ import org.openhab.binding.atlona.AtlonaBindingConstants;
 import org.openhab.binding.atlona.internal.pro3.AtlonaPro3Capabilities;
 import org.openhab.binding.atlona.internal.pro3.AtlonaPro3Handler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +30,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Tim Roberts - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.atlona", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.atlona")
 public class AtlonaHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(AtlonaHandlerFactory.class);

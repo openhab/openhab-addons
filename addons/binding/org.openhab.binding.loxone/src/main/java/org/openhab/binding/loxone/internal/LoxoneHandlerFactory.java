@@ -27,7 +27,7 @@ import com.google.common.collect.Sets;
  *
  * @author Pawel Pieczul - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.loxone")
 public class LoxoneHandlerFactory extends BaseThingHandlerFactory {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets

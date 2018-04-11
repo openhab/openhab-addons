@@ -33,7 +33,6 @@ import org.openhab.binding.avmfritz.handler.Powerline546EHandler;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Robert Bausdorf - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.avmfritz", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.avmfritz")
 public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Logger
