@@ -14,8 +14,10 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.nibeheatpump.handler.NibeHeatPumpHandler;
 import org.openhab.binding.nibeheatpump.internal.models.PumpModel;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link NibeHeatPumpHandlerFactory} is responsible for creating things and
@@ -23,6 +25,7 @@ import org.openhab.binding.nibeheatpump.internal.models.PumpModel;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.nibeheatpump")
 public class NibeHeatPumpHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

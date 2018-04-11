@@ -71,7 +71,7 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
     }
 
     @Override
-    public void disconnect()  {
+    public void disconnect() {
         if (readerThread != null) {
             logger.debug("Interrupt message listener");
             readerThread.interrupt();
@@ -94,29 +94,26 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
     public void sendDatagram(NibeHeatPumpMessage msg) throws NibeHeatPumpException {
         logger.debug("Sending request: {}", msg.toHexString());
 
-        try {
-            DatagramSocket sock = new DatagramSocket();
-            byte data[] = msg.decodeMessage();
-            int port = -1;
+        byte data[] = msg.decodeMessage();
+        int port = -1;
 
-            if (msg instanceof ModbusWriteRequestMessage) {
-                port = conf.writeCommandsPort;
-            } else if (msg instanceof ModbusReadRequestMessage) {
-                port = conf.readCommandsPort;
-            } else {
-                logger.trace("Ignore PDU: {}", msg.getClass());
-            }
+        if (msg instanceof ModbusWriteRequestMessage) {
+            port = conf.writeCommandsPort;
+        } else if (msg instanceof ModbusReadRequestMessage) {
+            port = conf.readCommandsPort;
+        } else {
+            logger.trace("Ignore PDU: {}", msg.getClass());
+        }
 
-            if (port > 0) {
+        if (port > 0) {
+            try (DatagramSocket socket = new DatagramSocket()) {
                 // Create a packet
                 DatagramPacket packet = new DatagramPacket(data, data.length, InetAddress.getByName(conf.hostName),
                         port);
-
-                sock.send(packet);
-                sock.close();
+                socket.send(packet);
+            } catch (IOException e) {
+                throw new NibeHeatPumpException(e);
             }
-        } catch (IOException e) {
-            throw new NibeHeatPumpException(e);
         }
     }
 
