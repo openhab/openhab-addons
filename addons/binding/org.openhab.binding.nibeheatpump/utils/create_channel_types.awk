@@ -28,8 +28,16 @@ NR>5{
 	mode=$10
 
 	gsub("\"", "", title)
-	gsub("\"", "", info)
+    gsub("&","\\&amp;", title) 
+    gsub(/</,"\\&lt;", title) 
+    gsub(">","\\&gt;", title) 
+
 	gsub("\"", "", unit)
+
+    gsub("\"", "", info)
+    gsub("&","\\&amp;", info) 
+    gsub(/</,"\\&lt;", info) 
+    gsub(">","\\&gt;", info) 
 
 	optionsData=info
 	delete keys
@@ -84,7 +92,7 @@ NR>5{
 	}
 
 
-	printf("	<channel-type id=\"type-%s\">\n", id)
+	printf("	<channel-type id=\"type-%s\" advanced=\"true\">\n", id)
 
 	if (min == 0 && max == 1)
 	{
