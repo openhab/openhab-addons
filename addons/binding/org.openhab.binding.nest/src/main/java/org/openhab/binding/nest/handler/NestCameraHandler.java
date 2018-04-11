@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nest.internal.data.Camera;
+import org.openhab.binding.nest.internal.data.Camera.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,25 +40,71 @@ public class NestCameraHandler extends NestBaseHandler<Camera> {
 
     @Override
     protected State getChannelState(ChannelUID channelUID, Camera camera) {
+        if (channelUID.getId().startsWith(CHANNEL_GROUP_CAMERA_PREFIX)) {
+            return getCameraChannelState(channelUID, camera);
+        } else if (channelUID.getId().startsWith(CHANNEL_GROUP_LAST_EVENT_PREFIX)) {
+            return getLastEventChannelState(channelUID, camera);
+        } else {
+            logger.error("Unsupported channelId '{}'", channelUID.getId());
+            return UnDefType.UNDEF;
+        }
+    }
+
+    protected State getCameraChannelState(ChannelUID channelUID, Camera camera) {
         switch (channelUID.getId()) {
-            case CHANNEL_APP_URL:
+            case CHANNEL_CAMERA_APP_URL:
                 return getAsStringTypeOrNull(camera.getAppUrl());
-            case CHANNEL_AUDIO_INPUT_ENABLED:
+            case CHANNEL_CAMERA_AUDIO_INPUT_ENABLED:
                 return getAsOnOffTypeOrNull(camera.isAudioInputEnabled());
-            case CHANNEL_LAST_ONLINE_CHANGE:
+            case CHANNEL_CAMERA_LAST_ONLINE_CHANGE:
                 return getAsDateTimeTypeOrNull(camera.getLastIsOnlineChange());
-            case CHANNEL_PUBLIC_SHARE_ENABLED:
+            case CHANNEL_CAMERA_PUBLIC_SHARE_ENABLED:
                 return getAsOnOffTypeOrNull(camera.isPublicShareEnabled());
-            case CHANNEL_PUBLIC_SHARE_URL:
+            case CHANNEL_CAMERA_PUBLIC_SHARE_URL:
                 return getAsStringTypeOrNull(camera.getPublicShareUrl());
-            case CHANNEL_SNAPSHOT_URL:
+            case CHANNEL_CAMERA_SNAPSHOT_URL:
                 return getAsStringTypeOrNull(camera.getSnapshotUrl());
-            case CHANNEL_STREAMING:
+            case CHANNEL_CAMERA_STREAMING:
                 return getAsOnOffTypeOrNull(camera.isStreaming());
-            case CHANNEL_VIDEO_HISTORY_ENABLED:
+            case CHANNEL_CAMERA_VIDEO_HISTORY_ENABLED:
                 return getAsOnOffTypeOrNull(camera.isVideoHistoryEnabled());
-            case CHANNEL_WEB_URL:
+            case CHANNEL_CAMERA_WEB_URL:
                 return getAsStringTypeOrNull(camera.getWebUrl());
+            default:
+                logger.error("Unsupported channelId '{}'", channelUID.getId());
+                return UnDefType.UNDEF;
+        }
+    }
+
+    protected State getLastEventChannelState(ChannelUID channelUID, Camera camera) {
+        Event lastEvent = camera.getLastEvent();
+        if (lastEvent == null) {
+            return UnDefType.NULL;
+        }
+
+        switch (channelUID.getId()) {
+            case CHANNEL_LAST_EVENT_ACTIVITY_ZONES:
+                return getAsStringTypeListOrNull(lastEvent.getActivityZones());
+            case CHANNEL_LAST_EVENT_ANIMATED_IMAGE_URL:
+                return getAsStringTypeOrNull(lastEvent.getAnimatedImageUrl());
+            case CHANNEL_LAST_EVENT_APP_URL:
+                return getAsStringTypeOrNull(lastEvent.getAppUrl());
+            case CHANNEL_LAST_EVENT_END_TIME:
+                return getAsDateTimeTypeOrNull(lastEvent.getEndTime());
+            case CHANNEL_LAST_EVENT_HAS_MOTION:
+                return getAsOnOffTypeOrNull(lastEvent.isHasMotion());
+            case CHANNEL_LAST_EVENT_HAS_PERSON:
+                return getAsOnOffTypeOrNull(lastEvent.isHasPerson());
+            case CHANNEL_LAST_EVENT_HAS_SOUND:
+                return getAsOnOffTypeOrNull(lastEvent.isHasSound());
+            case CHANNEL_LAST_EVENT_IMAGE_URL:
+                return getAsStringTypeOrNull(lastEvent.getImageUrl());
+            case CHANNEL_LAST_EVENT_START_TIME:
+                return getAsDateTimeTypeOrNull(lastEvent.getStartTime());
+            case CHANNEL_LAST_EVENT_URLS_EXPIRE_TIME:
+                return getAsDateTimeTypeOrNull(lastEvent.getUrlsExpireTime());
+            case CHANNEL_LAST_EVENT_WEB_URL:
+                return getAsStringTypeOrNull(lastEvent.getWebUrl());
             default:
                 logger.error("Unsupported channelId '{}'", channelUID.getId());
                 return UnDefType.UNDEF;
@@ -70,7 +117,7 @@ public class NestCameraHandler extends NestBaseHandler<Camera> {
             if (getLastUpdate() != null) {
                 updateState(channelUID, getChannelState(channelUID, getLastUpdate()));
             }
-        } else if (CHANNEL_STREAMING.equals(channelUID.getId())) {
+        } else if (CHANNEL_CAMERA_STREAMING.equals(channelUID.getId())) {
             // Change the mode.
             if (command instanceof OnOffType) {
                 // Set the mode to be the cmd value.
