@@ -19,7 +19,7 @@ public class ShadeMove {
 
     ShadeIdPosition shade;
 
-    public ShadeMove(String id, ShadePosition position) {
-        this.shade = new ShadeIdPosition(id, position);
+    public ShadeMove(int intid, ShadePosition position) {
+        this.shade = new ShadeIdPosition(intid, position);
     }
 }
