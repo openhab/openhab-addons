@@ -9,10 +9,10 @@
 package org.openhab.binding.nibeheatpump;
 
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link NibeHeatPumpBindingConstants} class defines common constants, which are
@@ -32,6 +32,6 @@ public class NibeHeatPumpBindingConstants {
     /**
      * Presents all supported thing types by NibeHeatPump binding.
      */
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_F1X45_UDP,
-            THING_TYPE_F1X45_SERIAL, THING_TYPE_F1X45_SIMULATOR);
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(THING_TYPE_F1X45_UDP, THING_TYPE_F1X45_SERIAL, THING_TYPE_F1X45_SIMULATOR).collect(Collectors.toSet());
 }
