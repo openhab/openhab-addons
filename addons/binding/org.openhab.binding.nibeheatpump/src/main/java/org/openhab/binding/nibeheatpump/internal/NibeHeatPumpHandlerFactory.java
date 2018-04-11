@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.nibeheatpump.internal;
 
-import static org.openhab.binding.nibeheatpump.NibeHeatPumpBindingConstants.*;
+import static org.openhab.binding.nibeheatpump.NibeHeatPumpBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -35,8 +35,7 @@ public class NibeHeatPumpHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_F1X45_UDP) || thingTypeUID.equals(THING_TYPE_F1X45_SERIAL)
-                || thingTypeUID.equals(THING_TYPE_F1X45_SIMULATOR)) {
+        if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new NibeHeatPumpHandler(thing, parsePumpModel(thing));
         }
 
