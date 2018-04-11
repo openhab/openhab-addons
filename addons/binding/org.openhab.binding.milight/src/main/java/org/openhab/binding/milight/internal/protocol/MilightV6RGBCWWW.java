@@ -13,13 +13,13 @@ import org.openhab.binding.milight.internal.MilightThingState;
 /**
  * Implements the RGB cold white / warm white bulb. It is the most feature rich bulb.
  *
- * @author David Graeff <david.graeff@web.de>
+ * @author David Graeff - Initial contribution
  * @since 2.1
  */
-public class MilightV6RGB_CW_WW extends MilightV6 {
-    private final int ADDR = 0x08;
+public class MilightV6RGBCWWW extends MilightV6 {
+    private static final int ADDR = 0x08;
 
-    public MilightV6RGB_CW_WW(QueuedSend sendQueue, MilightV6SessionManager session, int zone) {
+    public MilightV6RGBCWWW(QueuedSend sendQueue, MilightV6SessionManager session, int zone) {
         super(10, sendQueue, session, zone);
     }
 
@@ -36,9 +36,9 @@ public class MilightV6RGB_CW_WW extends MilightV6 {
         }
 
         if (on) {
-            sendQueue.queueRepeatable(uidc(CAT_POWER_SET), make_command(4, 1));
+            sendQueue.queueRepeatable(uidc(CAT_POWER_SET), makeCommand(4, 1));
         } else {
-            sendQueue.queueRepeatable(uidc(CAT_POWER_SET), make_command(4, 2));
+            sendQueue.queueRepeatable(uidc(CAT_POWER_SET), makeCommand(4, 2));
         }
     }
 
@@ -49,7 +49,7 @@ public class MilightV6RGB_CW_WW extends MilightV6 {
             return;
         }
 
-        sendQueue.queueRepeatable(uidc(CAT_WHITEMODE), make_command(5, state.colorTemperature));
+        sendQueue.queueRepeatable(uidc(CAT_WHITEMODE), makeCommand(5, state.colorTemperature));
     }
 
     @Override
@@ -60,21 +60,21 @@ public class MilightV6RGB_CW_WW extends MilightV6 {
         }
 
         setPower(true, state);
-        sendQueue.queueRepeatable(uidc(CAT_NIGHTMODE), make_command(4, 5));
+        sendQueue.queueRepeatable(uidc(CAT_NIGHTMODE), makeCommand(4, 5));
     }
 
     @Override
-    public void setColorTemperature(int color_temp, MilightThingState state) {
+    public void setColorTemperature(int colorTemp, MilightThingState state) {
         if (!session.isValid()) {
             logger.error("Bridge communication session not valid yet!");
             return;
         }
 
-        int ct = (color_temp * MAX_TEMP) / 100;
+        int ct = (colorTemp * MAX_TEMP) / 100;
         ct = Math.min(ct, MAX_TEMP);
         ct = Math.max(ct, 0);
-        sendQueue.queueRepeatable(uidc(CAT_TEMPERATURE_SET), make_command(5, ct));
-        state.colorTemperature = color_temp;
+        sendQueue.queueRepeatable(uidc(CAT_TEMPERATURE_SET), makeCommand(5, ct));
+        state.colorTemperature = colorTemp;
     }
 
     @Override
@@ -93,7 +93,7 @@ public class MilightV6RGB_CW_WW extends MilightV6 {
         br = MAX_SAT - br; // inverse value
         br = Math.min(br, MAX_SAT); // force maximum value
         br = Math.max(br, 0); // force minimum value
-        sendQueue.queueRepeatable(uidc(CAT_SATURATION_SET), make_command(2, br));
+        sendQueue.queueRepeatable(uidc(CAT_SATURATION_SET), makeCommand(2, br));
         state.saturation = value;
     }
 
@@ -106,16 +106,16 @@ public class MilightV6RGB_CW_WW extends MilightV6 {
 
         mode = Math.min(mode, 9);
         mode = Math.max(mode, 1);
-        sendQueue.queueRepeatable(uidc(CAT_MODE_SET), make_command(6, mode));
+        sendQueue.queueRepeatable(uidc(CAT_MODE_SET), makeCommand(6, mode));
         state.animationMode = mode;
     }
 
     @Override
-    public void changeSpeed(int relative_speed, MilightThingState state) {
-        if (relative_speed > 1) {
-            sendQueue.queue(QueueItem.createNonRepeatable(make_command(4, 3)));
-        } else if (relative_speed < 1) {
-            sendQueue.queue(QueueItem.createNonRepeatable(make_command(4, 4)));
+    public void changeSpeed(int relativeSpeed, MilightThingState state) {
+        if (relativeSpeed > 1) {
+            sendQueue.queue(QueueItem.createNonRepeatable(makeCommand(4, 3)));
+        } else if (relativeSpeed < 1) {
+            sendQueue.queue(QueueItem.createNonRepeatable(makeCommand(4, 4)));
         }
     }
 }

@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * The {@link AbstractMilightBridgeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author David Graeff <david.graeff@web.de>
+ * @author David Graeff - Initial contribution
  */
 public abstract class AbstractMilightBridgeHandler extends BaseBridgeHandler {
     protected Logger logger = LoggerFactory.getLogger(AbstractMilightBridgeHandler.class);
@@ -43,7 +43,7 @@ public abstract class AbstractMilightBridgeHandler extends BaseBridgeHandler {
     protected String bridgeid;
     protected ThingDiscoveryService thingDiscoveryService;
     private ScheduledFuture<?> keepAliveTimer;
-    protected int refrehIntervalSec = 5;
+    protected int refreshIntervalSec = 5;
 
     public AbstractMilightBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -64,14 +64,14 @@ public abstract class AbstractMilightBridgeHandler extends BaseBridgeHandler {
     protected abstract Runnable getKeepAliveRunnable();
 
     private void connectAndKeepAlive() {
-        Object host_config_obj = thing.getConfiguration().get(MilightBindingConstants.CONFIG_HOST_NAME);
-        String host_config = ((host_config_obj instanceof String) ? (String) host_config_obj
-                : (host_config_obj instanceof InetAddress) ? ((InetAddress) host_config_obj).getHostAddress() : null);
+        Object hostConfigObj = thing.getConfiguration().get(MilightBindingConstants.CONFIG_HOST_NAME);
+        String hostConfig = ((hostConfigObj instanceof String) ? (String) hostConfigObj
+                : (hostConfigObj instanceof InetAddress) ? ((InetAddress) hostConfigObj).getHostAddress() : null);
 
         InetAddress addr = null;
 
         try {
-            addr = InetAddress.getByName(host_config);
+            addr = InetAddress.getByName(hostConfig);
         } catch (UnknownHostException ignored) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No address known!");
             return;
@@ -90,17 +90,16 @@ public abstract class AbstractMilightBridgeHandler extends BaseBridgeHandler {
         thingDiscoveryService.start(bundleContext);
 
         if (com != null) {
-            BigDecimal repeat_command = (BigDecimal) thing.getConfiguration()
-                    .get(MilightBindingConstants.CONFIG_REPEAT);
-            if (repeat_command != null && repeat_command.intValue() > 1 && repeat_command.intValue() <= 5) {
-                com.setRepeatCommands(repeat_command.intValue());
+            BigDecimal repeatCommand = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_REPEAT);
+            if (repeatCommand != null && repeatCommand.intValue() > 1 && repeatCommand.intValue() <= 5) {
+                com.setRepeatCommands(repeatCommand.intValue());
             }
 
-            BigDecimal wait_between_commands = (BigDecimal) thing.getConfiguration()
+            BigDecimal waitBetweenCommands = (BigDecimal) thing.getConfiguration()
                     .get(MilightBindingConstants.CONFIG_WAIT_BETWEEN_COMMANDS);
-            if (wait_between_commands != null && wait_between_commands.intValue() > 1
-                    && wait_between_commands.intValue() <= 200) {
-                com.setDelayBetweenCommands(wait_between_commands.intValue());
+            if (waitBetweenCommands != null && waitBetweenCommands.intValue() > 1
+                    && waitBetweenCommands.intValue() <= 200) {
+                com.setDelayBetweenCommands(waitBetweenCommands.intValue());
             }
         }
     }
@@ -126,44 +125,44 @@ public abstract class AbstractMilightBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        BigDecimal refresh_time = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_REFRESH_SEC);
-        if (refresh_time != null && refresh_time.intValue() != refrehIntervalSec) {
-            setupRefreshTimer(refresh_time.intValue());
+        BigDecimal refreshTime = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_REFRESH_SEC);
+        if (refreshTime != null && refreshTime.intValue() != refreshIntervalSec) {
+            setupRefreshTimer(refreshTime.intValue());
         }
 
         // Create a new communication object if the user changed the IP configuration.
-        String host_config = (String) thing.getConfiguration().get(MilightBindingConstants.CONFIG_HOST_NAME);
-        if (host_config != null && !host_config.equals(com.getAddr().getHostAddress())) {
+        String hostConfig = (String) thing.getConfiguration().get(MilightBindingConstants.CONFIG_HOST_NAME);
+        if (hostConfig != null && !hostConfig.equals(com.getAddr().getHostAddress())) {
             try {
-                com.setAddress(InetAddress.getByName(host_config));
+                com.setAddress(InetAddress.getByName(hostConfig));
             } catch (UnknownHostException e) {
-                logger.warn("Unknown host {}", host_config, e);
+                logger.warn("Unknown host {}", hostConfig, e);
             }
         }
 
         // Create a new communication object if the user changed the port configuration.
-        BigDecimal port_config = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_CUSTOM_PORT);
-        if (port_config != null && port_config.intValue() > 0 && port_config.intValue() <= 65000
-                && port_config.intValue() != com.getPort()) {
-            com.setPort(port_config.intValue());
+        BigDecimal portConfig = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_CUSTOM_PORT);
+        if (portConfig != null && portConfig.intValue() > 0 && portConfig.intValue() <= 65000
+                && portConfig.intValue() != com.getPort()) {
+            com.setPort(portConfig.intValue());
         }
 
         // Create a new communication object if the user changed the bridge ID configuration.
-        String id_config = (String) thing.getConfiguration().get(MilightBindingConstants.CONFIG_ID);
-        if (id_config != null && !id_config.equals(bridgeid)) {
+        String idConfig = (String) thing.getConfiguration().get(MilightBindingConstants.CONFIG_ID);
+        if (idConfig != null && !idConfig.equals(bridgeid)) {
             connectAndKeepAlive();
         }
 
-        BigDecimal repeat_command = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_REPEAT);
-        if (repeat_command != null && repeat_command.intValue() >= 1 && repeat_command.intValue() <= 5) {
-            com.setRepeatCommands(repeat_command.intValue());
+        BigDecimal repeatCommand = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_REPEAT);
+        if (repeatCommand != null && repeatCommand.intValue() >= 1 && repeatCommand.intValue() <= 5) {
+            com.setRepeatCommands(repeatCommand.intValue());
         }
 
-        BigDecimal wait_between_commands = (BigDecimal) thing.getConfiguration()
+        BigDecimal waitBetweenCommands = (BigDecimal) thing.getConfiguration()
                 .get(MilightBindingConstants.CONFIG_WAIT_BETWEEN_COMMANDS);
-        if (wait_between_commands != null && wait_between_commands.intValue() > 1
-                && wait_between_commands.intValue() <= 200) {
-            com.setDelayBetweenCommands(wait_between_commands.intValue());
+        if (waitBetweenCommands != null && waitBetweenCommands.intValue() > 1
+                && waitBetweenCommands.intValue() <= 200) {
+            com.setDelayBetweenCommands(waitBetweenCommands.intValue());
         }
     }
 
@@ -206,13 +205,12 @@ public abstract class AbstractMilightBridgeHandler extends BaseBridgeHandler {
         if (com != null) {
             com.dispose();
         }
-
     }
 
-    protected void setupRefreshTimer(int refrehIntervalSec) {
-        this.refrehIntervalSec = refrehIntervalSec;
-        keepAliveTimer = scheduler.scheduleWithFixedDelay(getKeepAliveRunnable(), refrehIntervalSec, refrehIntervalSec,
-                TimeUnit.SECONDS);
+    protected void setupRefreshTimer(int refreshIntervalSec) {
+        this.refreshIntervalSec = refreshIntervalSec;
+        keepAliveTimer = scheduler.scheduleWithFixedDelay(getKeepAliveRunnable(), refreshIntervalSec,
+                refreshIntervalSec, TimeUnit.SECONDS);
     }
 
     /**
@@ -223,12 +221,12 @@ public abstract class AbstractMilightBridgeHandler extends BaseBridgeHandler {
         return com;
     }
 
-    protected int getPort(int default_port) {
-        BigDecimal port_config = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_CUSTOM_PORT);
-        if (port_config != null && (port_config.intValue() < 0 || port_config.intValue() > 65000)) {
+    protected int getPort(int defaultPort) {
+        BigDecimal portConfig = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_CUSTOM_PORT);
+        if (portConfig != null && (portConfig.intValue() < 0 || portConfig.intValue() > 65000)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No valid port set!");
             return 0;
         }
-        return (port_config != null) ? port_config.intValue() : default_port;
+        return (portConfig != null) ? portConfig.intValue() : defaultPort;
     }
 }

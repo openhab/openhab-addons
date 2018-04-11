@@ -27,7 +27,7 @@ import org.openhab.binding.milight.internal.protocol.MilightDiscover.DiscoverRes
  * The {@link MilightBridgeV3Handler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author David Graeff <david.graeff@web.de>
+ * @author David Graeff - Initial contribution
  */
 public class MilightBridgeV3Handler extends AbstractMilightBridgeHandler implements DiscoverResult {
     private MilightDiscover discover;
@@ -44,9 +44,9 @@ public class MilightBridgeV3Handler extends AbstractMilightBridgeHandler impleme
             return;
         }
 
-        BigDecimal refresh_time = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_REFRESH_SEC);
-        if (refresh_time != null && refresh_time.intValue() != refrehIntervalSec) {
-            setupRefreshTimer(refresh_time.intValue());
+        BigDecimal refreshTime = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_REFRESH_SEC);
+        if (refreshTime != null && refreshTime.intValue() != refreshIntervalSec) {
+            setupRefreshTimer(refreshTime.intValue());
         }
     }
 
@@ -97,8 +97,8 @@ public class MilightBridgeV3Handler extends AbstractMilightBridgeHandler impleme
 
         discover.sendDiscover(scheduler);
 
-        BigDecimal refresh_sec = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_REFRESH_SEC);
-        setupRefreshTimer(refresh_sec == null ? 0 : refresh_sec.intValue());
+        BigDecimal refreshSec = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_REFRESH_SEC);
+        setupRefreshTimer(refreshSec == null ? 0 : refreshSec.intValue());
     }
 
     @Override

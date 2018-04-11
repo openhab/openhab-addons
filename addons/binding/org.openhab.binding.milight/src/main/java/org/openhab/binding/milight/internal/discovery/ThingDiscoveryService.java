@@ -45,7 +45,6 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-
     }
 
     public void addDevice(ThingUID uid, String thingName) {
