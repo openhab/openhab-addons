@@ -22,39 +22,23 @@ import com.google.gson.annotations.SerializedName;
  * @author David Bennett - Initial Contribution
  */
 public class Structure implements NestIdentifiable {
-    @SerializedName("structure_id")
+
     private String structureId;
-    @SerializedName("thermostats")
-    private List<String> thermostatIds;
-    @SerializedName("smoke_co_alarms")
-    private List<String> smokeAlarmIds;
-    @SerializedName("cameras")
-    private List<String> cameraIds;
-    @SerializedName("country_code")
+    private List<String> thermostats;
+    private List<String> smokeCoAlarms;
+    private List<String> cameras;
     private String countryCode;
-    @SerializedName("postal_code")
     private String postalCode;
-    @SerializedName("peak_period_start_time")
     private Date peakPeriodStartTime;
-    @SerializedName("peak_period_end_time")
     private Date peakPeriodEndTime;
-    @SerializedName("time_zone")
     private String timeZone;
-    @SerializedName("eta_begin")
     private Date etaBegin;
-    @SerializedName("co_alarm_state")
     private SmokeDetector.AlarmState coAlarmState;
-    @SerializedName("smoke_alarm_state")
     private SmokeDetector.AlarmState smokeAlarmState;
-    @SerializedName("rhr_enrollment")
-    private Boolean rushHourRewardsEnrollement;
-    @SerializedName("wheres")
-    private Map<String, Where> whereIds;
-    @SerializedName("away")
+    private Boolean rhrEnrollment;
+    private Map<String, Where> wheres;
     private HomeAwayState away;
-    @SerializedName("name")
     private String name;
-    @SerializedName("eta")
     private ETA eta;
 
     @Override
@@ -75,15 +59,15 @@ public class Structure implements NestIdentifiable {
     }
 
     public List<String> getThermostatIds() {
-        return thermostatIds;
+        return thermostats;
     }
 
     public List<String> getSmokeAlarmIds() {
-        return smokeAlarmIds;
+        return smokeCoAlarms;
     }
 
     public List<String> getCameraIds() {
-        return cameraIds;
+        return cameras;
     }
 
     public String getCountryCode() {
@@ -119,11 +103,11 @@ public class Structure implements NestIdentifiable {
     }
 
     public Boolean isRushHourRewardsEnrollement() {
-        return rushHourRewardsEnrollement;
+        return rhrEnrollment;
     }
 
     public Map<String, Where> getWhereIds() {
-        return whereIds;
+        return wheres;
     }
 
     public ETA getEta() {
@@ -146,11 +130,9 @@ public class Structure implements NestIdentifiable {
      * Used to set and update the eta values for Nest.
      */
     public class ETA {
-        @SerializedName("trip_id")
+
         private String tripId;
-        @SerializedName("estimated_arrival_window_begin")
         private Date estimatedArrivalWindowBegin;
-        @SerializedName("estimated_arrival_window_end")
         private Date estimatedArrivalWindowEnd;
 
         public String getTripId() {
@@ -179,9 +161,7 @@ public class Structure implements NestIdentifiable {
     }
 
     public class Where {
-        @SerializedName("where_id")
         private String whereId;
-        @SerializedName("name")
         private String name;
 
         public String getWhereId() {
@@ -205,15 +185,14 @@ public class Structure implements NestIdentifiable {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Structure [structureId=").append(structureId).append(", thermostatIds=").append(thermostatIds)
-                .append(", smokeAlarmIds=").append(smokeAlarmIds).append(", cameraIds=").append(cameraIds)
+        builder.append("Structure [structureId=").append(structureId).append(", thermostats=").append(thermostats)
+                .append(", smokeCoAlarms=").append(smokeCoAlarms).append(", cameras=").append(cameras)
                 .append(", countryCode=").append(countryCode).append(", postalCode=").append(postalCode)
                 .append(", peakPeriodStartTime=").append(peakPeriodStartTime).append(", peakPeriodEndTime=")
                 .append(peakPeriodEndTime).append(", timeZone=").append(timeZone).append(", etaBegin=").append(etaBegin)
                 .append(", coAlarmState=").append(coAlarmState).append(", smokeAlarmState=").append(smokeAlarmState)
-                .append(", rushHourRewardsEnrollement=").append(rushHourRewardsEnrollement).append(", whereIds=")
-                .append(whereIds).append(", away=").append(away).append(", name=").append(name).append(", eta=")
-                .append(eta).append("]");
+                .append(", rhrEnrollment=").append(rhrEnrollment).append(", wheres=").append(wheres).append(", away=")
+                .append(away).append(", name=").append(name).append(", eta=").append(eta).append("]");
         return builder.toString();
     }
 

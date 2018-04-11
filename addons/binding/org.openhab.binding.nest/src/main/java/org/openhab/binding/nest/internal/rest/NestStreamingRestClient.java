@@ -9,6 +9,7 @@
 package org.openhab.binding.nest.internal.rest;
 
 import static org.openhab.binding.nest.NestBindingConstants.KEEP_ALIVE_MILLIS;
+import static org.openhab.binding.nest.internal.NestUtils.GSON;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -32,9 +33,6 @@ import org.openhab.binding.nest.internal.listener.NestStreamingDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
  * A client that generates events based on Nest streaming REST API Server-Sent Events (SSE).
  *
@@ -54,7 +52,6 @@ public class NestStreamingRestClient {
     private final Logger logger = LoggerFactory.getLogger(NestStreamingRestClient.class);
 
     private final List<NestStreamingDataListener> listeners = new CopyOnWriteArrayList<>();
-    private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
     private final ScheduledExecutorService scheduler;
 
     private String accessToken;
@@ -200,7 +197,7 @@ public class NestStreamingRestClient {
                 logger.debug("Event stream opened");
             } else if (PUT.equals(name)) {
                 logger.debug("Data has changed (or initial data sent)");
-                lastReceivedTopLevelData = gson.fromJson(data, TopLevelStreamingData.class).getData();
+                lastReceivedTopLevelData = GSON.fromJson(data, TopLevelStreamingData.class).getData();
                 listeners.forEach(listener -> listener.onNewTopLevelData(lastReceivedTopLevelData));
             } else {
                 logger.debug("Received unhandled event with name '{}' and data '{}'", name, data);

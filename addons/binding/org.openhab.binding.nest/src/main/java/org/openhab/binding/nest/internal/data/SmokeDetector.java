@@ -18,17 +18,12 @@ import com.google.gson.annotations.SerializedName;
  * @author David Bennett - Initial Contribution
  */
 public class SmokeDetector extends BaseNestDevice {
-    @SerializedName("battery_health")
+
     private BatteryHealth batteryHealth;
-    @SerializedName("co_alarm_state")
     private AlarmState coAlarmState;
-    @SerializedName("last_manual_test_time")
     private Date lastManualTestTime;
-    @SerializedName("smoke_alarm_state")
     private AlarmState smokeAlarmState;
-    @SerializedName("is_manual_test_active")
     private Boolean isManualTestActive;
-    @SerializedName("ui_color_state")
     private UiColorState uiColorState;
 
     public UiColorState getUiColorState() {

@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.nest.internal.rest;
 
+import static org.openhab.binding.nest.internal.NestUtils.GSON;
+
 import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
@@ -19,9 +21,6 @@ import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
  * Retrieves the Nest access token using the OAuth 2.0 protocol using pin-based authorization.
  *
@@ -32,7 +31,6 @@ public class NestAuthorizer {
     private final Logger logger = LoggerFactory.getLogger(NestAuthorizer.class);
 
     private final NestBridgeConfiguration config;
-    private final Gson gson = new GsonBuilder().create();
 
     /**
      * Create the helper class for the Nest access token. Also creates the folder
@@ -71,7 +69,7 @@ public class NestAuthorizer {
             String responseContentAsString = HttpUtil.executeUrl("POST", urlBuilder.toString(), null, null,
                     "application/x-www-form-urlencoded", 10_000);
 
-            AccessTokenData data = gson.fromJson(responseContentAsString, AccessTokenData.class);
+            AccessTokenData data = GSON.fromJson(responseContentAsString, AccessTokenData.class);
             logger.debug("Received: {}", data);
 
             if (StringUtils.isEmpty(data.getAccessToken())) {

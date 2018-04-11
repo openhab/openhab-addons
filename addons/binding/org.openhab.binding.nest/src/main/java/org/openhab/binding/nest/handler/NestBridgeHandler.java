@@ -10,6 +10,7 @@ package org.openhab.binding.nest.handler;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openhab.binding.nest.NestBindingConstants.JSON_CONTENT_TYPE;
+import static org.openhab.binding.nest.internal.NestUtils.GSON;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -52,9 +53,6 @@ import org.openhab.binding.nest.internal.rest.NestUpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
  * This bridge handler connects to Nest and handles all the API requests. It pulls down the
  * updated data, polls the system and does all the co-ordination with the other handlers
@@ -71,7 +69,6 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
 
     private final List<NestDeviceDataListener> listeners = new CopyOnWriteArrayList<>();
     private final List<NestUpdateRequest> nestUpdateRequests = new CopyOnWriteArrayList<>();
-    private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
 
     private NestAuthorizer authorizer;
     private NestBridgeConfiguration config;
@@ -330,7 +327,7 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
             String url = redirectUrlSupplier.getRedirectUrl() + request.getUpdatePath();
             logger.debug("Putting data to: {}", url);
 
-            String jsonContent = gson.toJson(request.getValues());
+            String jsonContent = GSON.toJson(request.getValues());
             logger.debug("PUT content: {}", jsonContent);
 
             ByteArrayInputStream inputStream = new ByteArrayInputStream(jsonContent.getBytes(StandardCharsets.UTF_8));
@@ -338,7 +335,7 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
                     REQUEST_TIMEOUT);
             logger.debug("PUT response: {}", jsonResponse);
 
-            ErrorData error = gson.fromJson(jsonResponse, ErrorData.class);
+            ErrorData error = GSON.fromJson(jsonResponse, ErrorData.class);
             if (StringUtils.isNotBlank(error.getError())) {
                 logger.debug("Nest API error: {}", error);
                 logger.warn("Nest API error: {}", error.getMessage());
