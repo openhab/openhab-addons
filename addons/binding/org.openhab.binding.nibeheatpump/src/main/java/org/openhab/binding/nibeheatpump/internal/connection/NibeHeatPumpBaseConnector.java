@@ -9,7 +9,6 @@
 package org.openhab.binding.nibeheatpump.internal.connection;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
