@@ -26,6 +26,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.client.BinRpcClient;
@@ -89,6 +90,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     private Map<TransferMode, RpcServer> rpcServers = new HashMap<TransferMode, RpcServer>();
 
     protected HomematicConfig config;
+    protected HttpClient httpClient;
     private String id;
     private HomematicGatewayAdapter gatewayAdapter;
     private DelayedExecuter sendDelayedExecutor = new DelayedExecuter();
@@ -126,10 +128,12 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         virtualDatapointHandlers.add(new PressVirtualDatapointHandler());
     }
 
-    public AbstractHomematicGateway(String id, HomematicConfig config, HomematicGatewayAdapter gatewayAdapter) {
+    public AbstractHomematicGateway(String id, HomematicConfig config, HomematicGatewayAdapter gatewayAdapter,
+            HttpClient httpClient) {
         this.id = id;
         this.config = config;
         this.gatewayAdapter = gatewayAdapter;
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -214,7 +218,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         for (TransferMode mode : availableInterfaces.values()) {
             if (!rpcClients.containsKey(mode)) {
                 rpcClients.put(mode,
-                        mode == TransferMode.XML_RPC ? new XmlRpcClient(config) : new BinRpcClient(config));
+                        mode == TransferMode.XML_RPC ? new XmlRpcClient(config, httpClient) : new BinRpcClient(config));
             }
         }
     }

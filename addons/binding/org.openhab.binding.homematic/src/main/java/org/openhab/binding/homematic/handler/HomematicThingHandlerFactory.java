@@ -10,6 +10,7 @@ package org.openhab.binding.homematic.handler;
 
 import static org.openhab.binding.homematic.HomematicBindingConstants.*;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -17,6 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.homematic.internal.type.HomematicTypeGenerator;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -30,6 +32,7 @@ import org.osgi.service.component.annotations.Reference;
 public class HomematicThingHandlerFactory extends BaseThingHandlerFactory {
     private HomematicTypeGenerator typeGenerator;
     private NetworkAddressService networkAddressService;
+    private HttpClient httpClient;
 
     @Reference
     protected void setTypeGenerator(HomematicTypeGenerator typeGenerator) {
@@ -38,6 +41,15 @@ public class HomematicThingHandlerFactory extends BaseThingHandlerFactory {
 
     protected void unsetTypeGenerator(HomematicTypeGenerator typeGenerator) {
         this.typeGenerator = null;
+    }
+
+    @Reference
+    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
+    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = null;
     }
 
     @Reference
@@ -58,7 +70,7 @@ public class HomematicThingHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())) {
             return new HomematicBridgeHandler((Bridge) thing, typeGenerator,
-                    networkAddressService.getPrimaryIpv4HostAddress());
+                    networkAddressService.getPrimaryIpv4HostAddress(), httpClient);
         } else {
             return new HomematicThingHandler(thing);
         }
