@@ -28,16 +28,16 @@ NR>5{
 	mode=$10
 
 	gsub("\"", "", title)
-    gsub("&","\\&amp;", title) 
-    gsub(/</,"\\&lt;", title) 
-    gsub(">","\\&gt;", title) 
+	gsub("&","\\&amp;", title) 
+	gsub(/</,"\\&lt;", title) 
+	gsub(">","\\&gt;", title) 
 
 	gsub("\"", "", unit)
 
-    gsub("\"", "", info)
-    gsub("&","\\&amp;", info) 
-    gsub(/</,"\\&lt;", info) 
-    gsub(">","\\&gt;", info) 
+	gsub("\"", "", info)
+	gsub("&","\\&amp;", info) 
+	gsub(/</,"\\&lt;", info) 
+	gsub(">","\\&gt;", info) 
 
 	optionsData=info
 	delete keys
@@ -166,10 +166,10 @@ NR>5{
 		{
 			printf("			<options>\n")
 			for (x = 1; x <= keyCount; x++) 
-        		printf("				<option value=\"%s\">%s</option>\n", keys[x], values[x])
-    		printf("			</options>\n")
-    	}
-    	printf("		</state>\n")
+				printf("				<option value=\"%s\">%s</option>\n", keys[x], values[x])
+			printf("			</options>\n")
+		}
+		printf("		</state>\n")
 	}
 
 	printf("	</channel-type>\n")
