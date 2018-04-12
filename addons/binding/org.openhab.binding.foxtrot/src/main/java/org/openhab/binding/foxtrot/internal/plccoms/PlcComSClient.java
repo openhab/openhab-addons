@@ -37,7 +37,7 @@ public class PlcComSClient {
     /** {@link Pattern} for matching value reply (diff, get) messages: <op>:<variable>,<value> */
     private final Pattern REPLY_PATTERN = Pattern.compile("(\\w+):([\\w.]+),(.+)");
     /** {@link Pattern} for matching get info messages: GETINFO:<info_key>,<value> */
-    private final Pattern GI_PATTERN = Pattern.compile("(\\w+),(.+)");
+    private final Pattern GI_PATTERN = Pattern.compile("GETINFO:(\\w+),(.+)");
 
     private String host;
     private int port;
@@ -94,8 +94,8 @@ public class PlcComSClient {
      *
      * @return true if connection is open, otherwise false
      */
-    public boolean isOpen() {
-        return !socket.isClosed();
+    public boolean isClosed() {
+        return socket.isClosed();
     }
 
     /**
@@ -221,7 +221,7 @@ public class PlcComSClient {
     }
 
     private PlcComSReply receive() throws IOException {
-        if (!isOpen()) {
+        if (isClosed()) {
             throw new ConnectException("Socket closed");
         }
         if (socketReader.ready()) {

@@ -68,7 +68,7 @@ public class FoxtrotBridgeHandler extends BaseBridgeHandler {
 
             watchDogJob = scheduler.scheduleWithFixedDelay(() -> {
                 logger.trace("Foxtrot PlcComS client liveness check ...");
-                if (!client.isOpen() || !receiver.isRunning() || !executor.isRunning()) {
+                if (client.isClosed() || !receiver.isRunning() || !executor.isRunning()) {
                     try {
                         internalDispose();
                         sleep(10000);
