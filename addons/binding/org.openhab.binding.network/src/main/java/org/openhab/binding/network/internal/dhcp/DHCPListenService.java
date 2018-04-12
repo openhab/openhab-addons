@@ -36,10 +36,9 @@ public class DHCPListenService {
             instance = new DHCPPacketListenerServer((String ipAddress) -> {
                 IPRequestReceivedCallback listener = registeredListeners.get(ipAddress);
                 if (listener != null) {
-                    logger.info("DHCP request for registered address: {}", ipAddress);
                     listener.dhcpRequestReceived(ipAddress);
                 } else {
-                    logger.info("DHCP request for unknown address: {}", ipAddress);
+                    logger.trace("DHCP request for unknown address: {}", ipAddress);
                 }
             });
             instance.start();
