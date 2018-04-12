@@ -49,7 +49,7 @@ public abstract class AbstractLogFileReader implements LogFileReader {
                 fileReaderListener.fileNotFound();
             } catch (Exception e) {
                 // catch all exceptions give all handlers a fair chance of handling the messages
-                logger.error("An exception occurred while calling the FileReaderListener. ", e);
+                logger.debug("An exception occurred while calling the FileReaderListener. ", e);
             }
         }
     }
@@ -64,7 +64,7 @@ public abstract class AbstractLogFileReader implements LogFileReader {
                 fileReaderListener.handle(line);
             } catch (Exception e) {
                 // catch all exceptions give all handlers a fair chance of handling the messages
-                logger.error("An exception occurred while calling the FileReaderListener. ", e);
+                logger.debug("An exception occurred while calling the FileReaderListener. ", e);
             }
         }
     }
@@ -79,7 +79,7 @@ public abstract class AbstractLogFileReader implements LogFileReader {
                 fileReaderListener.fileRotated();
             } catch (Exception e) {
                 // catch all exceptions give all handlers a fair chance of handling the messages
-                logger.error("An exception occurred while calling the FileReaderListener. ", e);
+                logger.debug("An exception occurred while calling the FileReaderListener. ", e);
             }
         }
     }
@@ -94,7 +94,7 @@ public abstract class AbstractLogFileReader implements LogFileReader {
                 fileReaderListener.handle(e);
             } catch (Exception ex) {
                 // catch all exceptions give all handlers a fair chance of handling the messages
-                logger.error("An exception occurred while calling the FileReaderListener. ", ex);
+                logger.debug("An exception occurred while calling the FileReaderListener. ", ex);
             }
         }
     }
