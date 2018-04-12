@@ -90,7 +90,7 @@ public class SearchEngine {
     }
 
     private boolean notBlacklisted(String data) {
-        return isMatching(blacklistingMatchers, data) ? false : true;
+        return !isMatching(blacklistingMatchers, data);
     }
 
     private boolean isMatching(@Nullable List<Pattern> patterns, String data) {

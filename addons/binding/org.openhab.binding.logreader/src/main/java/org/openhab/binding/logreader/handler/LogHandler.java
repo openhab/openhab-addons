@@ -96,12 +96,13 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
             return;
         }
 
+        logger.debug("Start file reader");
+
         try {
-            logger.debug("Start file reader");
             fileReader.registerListener(this);
             fileReader.start(configuration.filePath, configuration.refreshRate, scheduler);
             updateStatus(ThingStatus.ONLINE);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.debug("Exception occurred during initalization: {}. ", e.getMessage(), e);
             shutdown();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
@@ -150,7 +151,7 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
 
     @Override
     public void fileNotFound() {
-        final String msg = String.format("Log file '%s' does not exist", configuration.filePath);
+        final String msg = String.format("Log file '{}' does not exist", configuration.filePath);
         logger.debug(msg);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, msg);
     }
@@ -167,7 +168,7 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
             return;
         }
 
-        if (!thing.getStatus().equals(ThingStatus.ONLINE)) {
+        if (!(thing.getStatus() == ThingStatus.ONLINE)) {
             updateStatus(ThingStatus.ONLINE);
         }
 

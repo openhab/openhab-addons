@@ -1,6 +1,6 @@
 # LogReader Binding
 
-Binding to read and analyze log files. Binding can be used to monitor openHAB logs, but as search patterns are configurable any other system logs can be monitored as well. When certain log events is recognized, openHAB rules can used to send notification about the event e.g by email for further analyze.
+Binding to read and analyze log files. Search patterns are fully configurable, therefore different kind of log files should be possible to monitor by this binding. When certain log events is recognized, openHAB rules can be used to send notification about the event e.g by email for further analyze.
 
 ## Supported Things
 
@@ -98,7 +98,7 @@ Check thing status for errors.
 
 ### Verbose logging
 
-Enable DEBUG logging in karaf console to see more presice error messages:
+Enable DEBUG logging in karaf console to see more precise error messages:
 
 `log:set DEBUG org.openhab.binding.logreader`
 

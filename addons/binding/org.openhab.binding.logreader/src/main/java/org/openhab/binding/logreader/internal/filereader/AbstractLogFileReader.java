@@ -9,6 +9,7 @@
 package org.openhab.binding.logreader.internal.filereader;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.openhab.binding.logreader.internal.filereader.api.FileReaderListener;
@@ -28,17 +29,13 @@ public abstract class AbstractLogFileReader implements LogFileReader {
 
     @Override
     public boolean registerListener(FileReaderListener fileReaderListener) {
-        if (fileReaderListener == null) {
-            throw new IllegalArgumentException("It's not allowed to pass a null FileReaderListener.");
-        }
+        Objects.requireNonNull(fileReaderListener, "It's not allowed to pass a null FileReaderListener.");
         return fileReaderListeners.contains(fileReaderListener) ? false : fileReaderListeners.add(fileReaderListener);
     }
 
     @Override
     public boolean unregisterListener(FileReaderListener fileReaderListener) {
-        if (fileReaderListener == null) {
-            throw new IllegalArgumentException("It's not allowed to pass a null FileReaderListener.");
-        }
+        Objects.requireNonNull(fileReaderListener, "It's not allowed to pass a null FileReaderListener.");
         return fileReaderListeners.remove(fileReaderListener);
     }
 

@@ -62,8 +62,7 @@ public class FileTailer extends AbstractLogFileReader implements LogFileReader {
         try {
             logger.debug("Start executor");
             scheduler.execute(tailer);
-        } catch (Throwable e) {
-            logger.debug("Exception occurred during initalization: {}. ", e.getMessage(), e);
+        } catch (Exception e) {
             throw new FileReaderException(e);
         }
     }
