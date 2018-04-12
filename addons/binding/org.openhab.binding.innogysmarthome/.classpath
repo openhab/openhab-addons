@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="lib" path="lib/google-oauth-client-1.22.0.jar"/>
-	<classpathentry kind="lib" path="lib/google-http-client-jackson2-1.22.0.jar" sourcepath="/Users/ollie-dev/.m2/repository/com/google/http-client/google-http-client-jackson2/1.22.0/google-http-client-jackson2-1.22.0-sources.jar"/>
+	<classpathentry kind="lib" path="lib/google-http-client-jackson2-1.22.0.jar"/>
 	<classpathentry kind="lib" path="lib/google-http-client-1.22.0.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.0.1.jar"/>
