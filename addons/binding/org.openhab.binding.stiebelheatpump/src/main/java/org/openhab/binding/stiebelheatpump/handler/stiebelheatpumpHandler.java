@@ -38,7 +38,6 @@ import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.thing.type.ThingType;
-import org.eclipse.smarthome.core.thing.type.TypeResolver;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.StateDescription;
@@ -50,6 +49,8 @@ import org.openhab.binding.stiebelheatpump.protocol.RecordDefinition.Type;
 import org.openhab.binding.stiebelheatpump.protocol.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.reflect.TypeResolver;
 
 /**
  * The {@link stiebelheatpumpHandler} is responsible for handling commands, which are
@@ -86,8 +87,12 @@ public class stiebelheatpumpHandler extends BaseThingHandler {
     /** cyclic update of time in the heat pump */
     ScheduledFuture<?> timeRefreshJob;
 
-    public stiebelheatpumpHandler(Thing thing) {
+    private ThingType thingType;
+
+    public stiebelheatpumpHandler(Thing thing, ThingType thingType) {
         super(thing);
+        this.thingType = thingType;
+
     }
 
     @Override
@@ -358,10 +363,11 @@ public class stiebelheatpumpHandler extends BaseThingHandler {
         String version = "";
 
         if (heatPumpConfiguration.isEmpty()) {
-            ThingType thingType = TypeResolver.resolve(getThing().getThingTypeUID());
+
             List<ChannelGroupDefinition> channelGroups = thingType.getChannelGroupDefinitions();
 
             for (ChannelGroupDefinition channelGroup : channelGroups) {
+
                 ChannelGroupTypeUID ChannelGroupTypeUID = channelGroup.getTypeUID();
                 ChannelGroupType channelGroupType = TypeResolver.resolve(ChannelGroupTypeUID);
 

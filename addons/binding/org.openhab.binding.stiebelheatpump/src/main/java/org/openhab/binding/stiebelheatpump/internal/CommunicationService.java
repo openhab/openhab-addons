@@ -122,47 +122,47 @@ public class CommunicationService {
             boolean updateRequired = false;
 
             for (RecordDefinition record : timeRequest.getRecordDefinitions()) {
-                String fullname = timeRequest.getName() + stiebelheatpumpBindingConstants.CHANNELGROUPSEPERATOR
-                        + record.getName();
-                String entryValue = data.get(fullname);
+                String fullname = record.getName();
+                String entryValue = data.get(timeRequest.getName()
+                        + stiebelheatpumpBindingConstants.CHANNELGROUPSEPERATOR + record.getName());
 
-                if (fullname.endsWith("weekday") && !entryValue.equals(weekday)) {
+                if (fullname.equalsIgnoreCase("weekday") && !entryValue.equals(weekday)) {
                     updateRequired = true;
                     response = parser.composeRecord(weekday, response, record);
                     logger.debug("weekday needs update from {} to {}", entryValue, weekday);
                     continue;
                 }
-                if (fullname.endsWith("hours") && !entryValue.equals(hours)) {
+                if (fullname.equalsIgnoreCase("hours") && !entryValue.equals(hours)) {
                     updateRequired = true;
                     response = parser.composeRecord(hours, response, record);
                     logger.debug("Hours needs update from {} to {}", entryValue, hours);
                     continue;
                 }
-                if (fullname.endsWith("minutes") && !entryValue.equals(minutes)) {
+                if (fullname.equalsIgnoreCase("minutes") && !entryValue.equals(minutes)) {
                     updateRequired = true;
                     response = parser.composeRecord(minutes, response, record);
                     logger.debug("Minutes needs update from {} to {}", entryValue, minutes);
                     continue;
                 }
-                if (fullname.endsWith("seconds") && !entryValue.equals(seconds)) {
+                if (fullname.equalsIgnoreCase("seconds") && !entryValue.equals(seconds)) {
                     updateRequired = true;
                     response = parser.composeRecord(seconds, response, record);
                     logger.debug("Seconds needs update from {} to {}", entryValue, seconds);
                     continue;
                 }
-                if (fullname.endsWith("year") && !entryValue.equals(year)) {
+                if (fullname.equalsIgnoreCase("year") && !entryValue.equals(year)) {
                     updateRequired = true;
                     response = parser.composeRecord(year, response, record);
                     logger.debug("Year needs update from {} to {}", entryValue, year);
                     continue;
                 }
-                if (fullname.endsWith("month") && !entryValue.equals(month)) {
+                if (fullname.equalsIgnoreCase("month") && !entryValue.equals(month)) {
                     updateRequired = true;
                     response = parser.composeRecord(month, response, record);
                     logger.debug("Month needs update from {} to {}", entryValue, month);
                     continue;
                 }
-                if (fullname.endsWith("day") && !entryValue.equals(day)) {
+                if (fullname.equalsIgnoreCase("day") && !entryValue.equals(day)) {
                     updateRequired = true;
                     response = parser.composeRecord(day, response, record);
                     logger.debug("Day needs update from {} to {}", entryValue, day);

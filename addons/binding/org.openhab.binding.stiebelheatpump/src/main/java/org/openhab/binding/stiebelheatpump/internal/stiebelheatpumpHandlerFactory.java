@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.openhab.binding.stiebelheatpump.handler.stiebelheatpumpHandler;
 
 /**
@@ -30,8 +31,11 @@ public class stiebelheatpumpHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>() {
         {
             add(THING_TYPE_LWZ206);
+            add(THING_TYPE_LWZ236);
+            add(THING_TYPE_LWZ419);
             add(THING_TYPE_LWZ509);
             add(THING_TYPE_LWZ539);
+            add(THING_TYPE_LWZ739);
         }
     };
 
@@ -43,9 +47,10 @@ public class stiebelheatpumpHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        ThingType thingType = getThingTypeByUID(thing.getThingTypeUID());
 
         if (supportsThingType(thingTypeUID)) {
-            return new stiebelheatpumpHandler(thing);
+            return new stiebelheatpumpHandler(thing, thingType);
         }
 
         return null;

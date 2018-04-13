@@ -39,13 +39,119 @@
             <channel-group id="absenceProgram" typeId="channelGroupTypeAbsenceProgram"/>
             <channel-group id="restartAndMixerTime" typeId="channelGroupTypeRestartAndMixerTime"/>
             <channel-group id="domesticHotWater" typeId="channelGroupTypeDomesticHotWater"/>
-            <channel-group id="LastErrors" typeId="channelGroupTypeLastErrors"/>
+            <channel-group id="lastErrors" typeId="channelGroupTypeLastErrors"/>
+<!--             <channel-group id="operationMode" typeId="channelGroupTypeOperationMode"/>
+ -->                        
 	    </channel-groups>
         <properties>
              <property name="vendor">Stiebel Eltron</property>
              <property name="modelId">LWZ303</property>
              <property name="protocol">Serial</property>
              <property name="firmware">2.06</property>
+        </properties>
+        <config-description>
+            <parameter name="port" type="text" required="true">
+                <label>Portname</label>
+                <description>Serial port to use connecting to the heat pump device e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>
+                <default>/dev/ttyS4</default>
+            </parameter>
+            <parameter name="baudRate" type="decimal"  required="true">
+                <label>Baud rate</label>
+                <description>Baud rate of the serial interface.</description>
+                <default>9600</default>
+            </parameter>
+            <parameter name="waitingTime" type="integer"  required="true">
+                <label>Waiting time between requests</label>
+                <description>Time between polling requests in [ms], it depends on the speed of the heat pump CPU and interface .</description>
+                <default>1200</default>
+            </parameter>
+            <parameter name="refresh" type="decimal" required="true">
+                <label>Heat pump refresh rate</label>
+                <description>Refresh rate in [s] to query the meter data.</description>
+                <default>60</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <thing-type id="stiebelHeatPumpLWZ303_2_36">
+        <label>Stiebel heat pump firmware 2.36</label>
+        <description>Stiebel heat pump binding for LWZ/THZ connecting via serial RS232 interface to firmware version 2.36.</description>
+        <channel-groups>
+         <!-- at least 1 channel-group with id = version must be included  -->
+            <channel-group id="version" typeId="channelGroupTypeVersion"/>
+            <channel-group id="time" typeId="channelGroupTypeTime"/>
+            <channel-group id="currentValues" typeId="channelGroupTypeCurrentValues"/>
+            <channel-group id="operationCounters" typeId="channelGroupTypeOperationCounters"/>
+            <channel-group id="nominalValues" typeId="channelGroupTypeNominalValues"/>
+            <channel-group id="ventilation" typeId="channelGroupTypeVentilation"/>
+            <channel-group id="heating1" typeId="channelGroupTypeHeating1"/>
+            <channel-group id="heating2" typeId="channelGroupTypeHeating2"/>
+            <channel-group id="evaporator1" typeId="channelGroupTypeEvaporator1"/>
+            <channel-group id="evaporator2" typeId="channelGroupTypeEvaporator2"/>
+            <channel-group id="circulationPump" typeId="channelGroupTypecirculationPump"/>
+            <channel-group id="heatingProgram" typeId="channelGroupTypeHeatingProgram"/>
+            <channel-group id="domesticHotWaterProgram" typeId="channelGroupTypeDomesticHotWaterProgram"/>
+            <channel-group id="ventilationProgram" typeId="channelGroupTypeVentilationProgram"/>
+            <channel-group id="absenceProgram" typeId="channelGroupTypeAbsenceProgram"/>
+            <channel-group id="restartAndMixerTime" typeId="channelGroupTypeRestartAndMixerTime"/>
+            <channel-group id="domesticHotWater" typeId="channelGroupTypeDomesticHotWater"/>
+        </channel-groups>
+        <properties>
+             <property name="vendor">Stiebel Eltron</property>
+             <property name="modelId">LWZ/THZ</property>
+             <property name="protocol">Serial</property>
+             <property name="firmware">2.36</property>
+        </properties>
+        <config-description>
+            <parameter name="port" type="text" required="true">
+                <label>Portname</label>
+                <description>Serial port to use connecting to the heat pump device e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>
+                <default>/dev/ttyS4</default>
+            </parameter>
+            <parameter name="baudRate" type="decimal"  required="true">
+                <label>Baud rate</label>
+                <description>Baud rate of the serial interface.</description>
+                <default>9600</default>
+            </parameter>
+            <parameter name="waitingTime" type="integer"  required="true">
+                <label>Waiting time between requests</label>
+                <description>Time between polling requests in [ms], it depends on the speed of the heat pump CPU and interface .</description>
+                <default>1200</default>
+            </parameter>
+            <parameter name="refresh" type="decimal" required="true">
+                <label>Heat pump refresh rate</label>
+                <description>Refresh rate in [s] to query the meter data.</description>
+                <default>60</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <thing-type id="stiebelHeatPumpLWZ303_4_19">
+        <label>Stiebel heat pump firmware 4.19</label>
+        <description>Stiebel heat pump binding for LWZ/THZ connecting via serial RS232 interface to firmware version 4.19.</description>
+        <channel-groups>
+         <!-- at least 1 channel-group with id = version must be included  -->
+            <channel-group id="version" typeId="channelGroupTypeVersion"/>
+            <channel-group id="time" typeId="channelGroupTypeTime"/>
+            <channel-group id="currentValues" typeId="channelGroupTypeCurrentValues"/>
+            <channel-group id="operationCounters" typeId="channelGroupTypeOperationCounters"/>
+            <channel-group id="nominalValues" typeId="channelGroupTypeNominalValues"/>
+            <channel-group id="ventilation" typeId="channelGroupTypeVentilation"/>
+            <channel-group id="heating1" typeId="channelGroupTypeHeating1"/>
+            <channel-group id="heating2" typeId="channelGroupTypeHeating2"/>
+            <channel-group id="evaporator1" typeId="channelGroupTypeEvaporator1"/>
+            <channel-group id="evaporator2" typeId="channelGroupTypeEvaporator2"/>
+            <channel-group id="circulationPump" typeId="channelGroupTypecirculationPump"/>
+            <channel-group id="heatingProgram" typeId="channelGroupTypeHeatingProgram"/>
+            <channel-group id="domesticHotWaterProgram" typeId="channelGroupTypeDomesticHotWaterProgram"/>
+            <channel-group id="ventilationProgram" typeId="channelGroupTypeVentilationProgram"/>
+            <channel-group id="absenceProgram" typeId="channelGroupTypeAbsenceProgram"/>
+            <channel-group id="restartAndMixerTime" typeId="channelGroupTypeRestartAndMixerTime"/>
+            <channel-group id="domesticHotWater" typeId="channelGroupTypeDomesticHotWater"/>
+        </channel-groups>
+        <properties>
+             <property name="vendor">Stiebel Eltron</property>
+             <property name="modelId">LWZ/THZ</property>
+             <property name="protocol">Serial</property>
+             <property name="firmware">4.19</property>
         </properties>
         <config-description>
             <parameter name="port" type="text" required="true">
@@ -126,6 +232,46 @@
              <property name="modelId">LWZ303</property>
              <property name="protocol">Serial</property>
              <property name="firmware">5.39</property>
+        </properties>
+        <config-description>
+            <parameter name="port" type="text" required="true">
+                <label>Portname</label>
+                <description>Serial port to use connecting to the heat pump device e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>
+                <default>/dev/ttyUSB0</default>
+            </parameter>
+            <parameter name="baudRate" type="decimal" required="true">
+                <label>Baud rate</label>
+                <description>Baud rate of the serial interface.</description>
+                <default>115200</default>
+            </parameter>
+            <parameter name="waitingTime" type="integer"  required="true">
+                <label>Waiting time between requests</label>
+                <description>Time between polling requests in [ms], it depends on the speed of the heat pump CPU and interface .</description>
+                <default>1200</default>
+            </parameter>
+            <parameter name="refresh" type="decimal" required="true">
+                <label>Heat pump refresh rate</label>
+                <description>Refresh rate in [s] to query the meter data.</description>
+                <default>60</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <thing-type id="stiebelHeatPumpLWZ303_7_39">
+        <label>Stiebel heat pump LWZ303 7.39</label>
+        <description>Stiebel heat pump binding for LWZ/THZ connecting via serial RS232 interface to firmware version 7.39.</description>
+        <channel-groups>
+         <!-- at least 1 channel-group with id = version must be included  -->
+            <channel-group id="version" typeId="channelGroupTypeVersion"/>
+            <channel-group id="time" typeId="channelGroupTypeTime"/>
+            <channel-group id="currentValues" typeId="channelGroupTypeCurrentValues"/>
+            <channel-group id="operationCounters" typeId="channelGroupTypeOperationCounters"/>
+            <channel-group id="nominalValues" typeId="channelGroupTypeNominalValues"/>
+        </channel-groups>
+        <properties>
+             <property name="vendor">Stiebel Eltron</property>
+             <property name="modelId">LWZ303</property>
+             <property name="protocol">Serial</property>
+             <property name="firmware">7.39</property>
         </properties>
         <config-description>
             <parameter name="port" type="text" required="true">
@@ -396,6 +542,138 @@
                     <property name="scale">0.1</property>
                 </properties>
             </channel>
+            <channel id="dHWPumpStatus" typeId="switchStatus">
+                <label>DHW pump status</label>
+                <description>DHW pump status</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">24</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">1</property>                    
+                </properties>
+            </channel>
+            <channel id="heatingCircuitPumpStatus" typeId="switchStatus">
+                <label>Heating Circuit pump status</label>
+                <description>Heating Circuit pump status</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">24</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">2</property>                    
+                </properties>
+            </channel>
+            <channel id="solarPumpStatus" typeId="switchStatus">
+                <label>Solar pump status</label>
+                <description>Solar pump status</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">24</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">3</property>                    
+                </properties>
+            </channel>
+            <channel id="mixerOpen" typeId="switchStatus">
+                <label>Mixer Open status</label>
+                <description>Mixer Open status</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">24</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">4</property>                    
+                </properties>
+            </channel>
+            <channel id="mixerClose" typeId="switchStatus">
+                <label>Mixer Close status</label>
+                <description>Mixer Close status</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">24</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">5</property>                    
+                </properties>
+            </channel>
+            <channel id="heatPipeValve" typeId="switchStatus">
+                <label>Heat Pipe Valve status</label>
+                <description>Heat Pipe Valve status</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">24</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">6</property>                    
+                </properties>
+            </channel>
+            <channel id="DiverterValve" typeId="switchStatus">
+                <label>Diverter Valve status</label>
+                <description>Diverter Valve status</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">24</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">7</property>                    
+                </properties>
+            </channel>
+            <channel id="CompressorStatus" typeId="switchStatus">
+                <label>Compressor status</label>
+                <description>Compressor status</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">25</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">4</property>                    
+                </properties>
+            </channel>
+            <channel id="BoosterStage3" typeId="switchStatus">
+                <label>BoosterStage 3</label>
+                <description>BoosterStage 3</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">25</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">5</property>                    
+                </properties>
+            </channel>
+            <channel id="BoosterStage2" typeId="switchStatus">
+                <label>BoosterStage 2</label>
+                <description>BoosterStage 2</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">25</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">6</property>                    
+                </properties>
+            </channel>
+            <channel id="BoosterStage1" typeId="switchStatus">
+                <label>BoosterStage 1</label>
+                <description>BoosterStage 1</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">25</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">7</property>                    
+                </properties>
+            </channel>            
         </channels>
     </channel-group-type>
     <channel-group-type id="channelGroupTypeOperationCounters">
@@ -496,7 +774,7 @@
                     <property name="scale">0.1</property>
                 </properties>
             </channel>
-            <channel id="p04DHWTemperatureStandardMode" typeId="temperatureSetting">
+            <channel id="p04DHWTemperatureStandardMode" typeId="dHWTemperatureSetting">
                 <label>P04 Domestic hot water temperature standard</label>
                 <description>P04 Domestic hot water standard mode setting</description>
                 <properties>
@@ -507,7 +785,7 @@
                     <property name="scale">0.1</property>
                 </properties>
             </channel>
-            <channel id="p05DHWTemperaturSetbackMode" typeId="temperatureSetting">
+            <channel id="p05DHWTemperaturSetbackMode" typeId="dHWTemperatureSetting">
                 <label>P05 Domestic hot water temperature set back</label>
                 <description>P05 Domestic hot water set back mode setting</description>
                 <properties>
@@ -518,7 +796,7 @@
                     <property name="scale">0.1</property>
                 </properties>
             </channel>
-            <channel id="p06DHWTemperatureStandby" typeId="temperatureSetting">
+            <channel id="p06DHWTemperatureStandby" typeId="dHWTemperatureSetting">
                 <label>P06 Domestic hot water temperature set back</label>
                 <description>P06 Domestic hot water set back mode setting</description>
                 <properties>
@@ -586,7 +864,7 @@
                 </properties>
             </channel>
             <channel id="p12FanStageManual" typeId="fanStageSetting">
-                <label>P12 Fan stage standby</label>
+                <label>P12 Fan stage manual</label>
                 <description>P12 Fan stage manual mode setting</description>
                 <properties>
                     <property name="dataType">Settings</property>
@@ -2119,6 +2397,56 @@
             </channel>
         </channels>     
     </channel-group-type>
+    <channel-group-type id="channelGroupTypeOperationMode">
+        <label>Operation Mode</label>
+        <description>Reads Operation mode of the heat pump.</description>
+        <channels >
+            <channel id="opMode" typeId="operationMode">
+                <label>Operation mode</label>
+                <description>Operation mode</description>
+                <properties>
+                    <property name="dataType">Status</property>
+                    <property name="requestByte">0xEE</property>
+                    <property name="position">4</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="progStateHC" typeId="programState">
+                <label>Program State HC</label>
+                <description>Program State HC</description>
+                <properties>
+                    <property name="dataType">Status</property>
+                    <property name="requestByte">0xEE</property>
+                    <property name="position">10</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="progStateDHW" typeId="programState">
+                <label>Program State DHW</label>
+                <description>Program State DHW</description>
+                <properties>
+                    <property name="dataType">Status</property>
+                    <property name="requestByte">0xEE</property>
+                    <property name="position">12</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>    
+            <channel id="progStateFAN" typeId="programState">
+                <label>Program State Fan</label>
+                <description>Program State Fan</description>
+                <properties>
+                    <property name="dataType">Status</property>
+                    <property name="requestByte">0xEE</property>
+                    <property name="position">14</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>    
+        </channels>
+    </channel-group-type>
   
     <channel-type id="version">
         <item-type>String</item-type>
@@ -2156,6 +2484,11 @@
         <item-type>Number</item-type>
         <label>Temperature Setting in [°C]</label>
         <state min="10" max="30" step="0.1" pattern="%.1f °C"/>
+    </channel-type>
+    <channel-type id="dHWTemperatureSetting" advanced="true">
+        <item-type>Number</item-type>
+        <label>DHW Temperature Setting in [°C]</label>
+        <state min="10" max="55" step="0.1" pattern="%.1f °C"/>
     </channel-type>
     <channel-type id="temperatureManualSetting" advanced="true">
         <item-type>Number</item-type>
@@ -2361,6 +2694,11 @@
         <label>Enabling switch</label>
          <state min="0" max="1"/>
     </channel-type> 
+    <channel-type id="switchStatus">
+        <item-type>Switch</item-type>
+        <label>Enabling switch</label>
+         <state min="0" max="1" readOnly="true"/>
+    </channel-type> 
     <channel-type id="timeAp0Setting" advanced="true">
         <item-type>Number</item-type>
         <label>Time settings in [h]</label>
@@ -2480,5 +2818,53 @@
         <description>Hours of the current time.</description>
         <state  min="1" max="31" step="1" pattern="%d dd" readOnly="true"/>
     </channel-type>
-
+    <channel-type id="operationMode" advanced="true">
+        <item-type>Number</item-type>
+        <label>Operation Mode</label>
+        <description>Operation Mode.</description>
+        <state  readOnly="true">
+            <options>
+                <option value="1">Standby</option>
+                <option value="11">Automatic</option>
+                <option value="3">DayMode</option>
+                <option value="4">Setback</option>
+                <option value="5">DHWmode</option>
+                <option value="14">DHWmode</option>                
+                <option value="0">Emergengy</option>                
+                <!--
+                    info from FHEM
+                    "1" =>"standby", 
+                    "11" => "automatic", 
+                    "3" =>"DAYmode", 
+                    "4" =>"setback", 
+                    "5" =>"DHWmode", 
+                    "14" =>"manual", 
+                    "0" =>"emergency"
+                -->                
+            </options>
+        </state>
+    </channel-type>
+    <channel-type id="programState" advanced="true">
+        <item-type>Number</item-type>
+        <label>Program State mode</label>
+        <description>Program State mode.</description>
+        <state  readOnly="true">
+            <options>
+                <option value="1">Normal</option>
+                <option value="2">Setback</option>
+                <option value="3">Standby</option>
+                <option value="4">Restart</option>
+                <option value="5">Restart</option>
+                <!--
+                    info from FHEM
+                    "1" =>"normal",
+                    "2" => "setback",
+                    "3" =>"standby",
+                    "4" =>"restart",
+                    "5" =>"restart"
+                -->                
+            </options>
+        </state>
+    </channel-type>
+    
 </thing:thing-descriptions>

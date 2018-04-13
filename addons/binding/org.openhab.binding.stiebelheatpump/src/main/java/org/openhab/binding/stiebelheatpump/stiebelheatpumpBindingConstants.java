@@ -23,8 +23,11 @@ public class stiebelheatpumpBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_LWZ206 = new ThingTypeUID(BINDING_ID, "stiebelHeatPumpLWZ303_2_06");
+    public static final ThingTypeUID THING_TYPE_LWZ236 = new ThingTypeUID(BINDING_ID, "stiebelHeatPumpLWZ303_2_36");
+    public static final ThingTypeUID THING_TYPE_LWZ419 = new ThingTypeUID(BINDING_ID, "stiebelHeatPumpLWZ303_4_19");
     public static final ThingTypeUID THING_TYPE_LWZ509 = new ThingTypeUID(BINDING_ID, "stiebelHeatPumpLWZ303_5_09");
     public static final ThingTypeUID THING_TYPE_LWZ539 = new ThingTypeUID(BINDING_ID, "stiebelHeatPumpLWZ303_5_39");
+    public static final ThingTypeUID THING_TYPE_LWZ739 = new ThingTypeUID(BINDING_ID, "stiebelHeatPumpLWZ303_7_39");
 
     // List of important Channel ids
     public static final String CHANNELGROUP_VERSION = "channelGroupTypeVersion";
@@ -49,6 +52,7 @@ public class stiebelheatpumpBindingConstants {
 
     public static final byte[] DEBUGBYTES = { (byte) 0x01, (byte) 0x03, (byte) 0x04, (byte) 0x05, (byte) 0x06,
             (byte) 0x07, (byte) 0x09, (byte) 0x10, (byte) 0x16, (byte) 0x17, (byte) 0xD1, (byte) 0xD2, (byte) 0xE8,
-            (byte) 0xE9, (byte) 0xF2, (byte) 0xF3, (byte) 0xF4, (byte) 0xF5, (byte) 0xF6, (byte) 0xFB, (byte) 0xFC,
-            (byte) 0xFD, (byte) 0xFE, (byte) 0x0A, (byte) 0x0B, (byte) 0x0C, (byte) 0x0D, (byte) 0x0E, (byte) 0x0F };
+            (byte) 0xE9, (byte) 0xEE, (byte) 0xF2, (byte) 0xF3, (byte) 0xF4, (byte) 0xF5, (byte) 0xF6, (byte) 0xFB,
+            (byte) 0xFC, (byte) 0xFD, (byte) 0xFE, (byte) 0x0A, (byte) 0x0B, (byte) 0x0C, (byte) 0x0D, (byte) 0x0E,
+            (byte) 0x0F };
 }
