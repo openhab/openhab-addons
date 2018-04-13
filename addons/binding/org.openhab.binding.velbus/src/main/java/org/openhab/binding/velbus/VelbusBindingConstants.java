@@ -71,6 +71,38 @@ public class VelbusBindingConstants {
                     THING_TYPE_VMBGP2, THING_TYPE_VMBGP4, THING_TYPE_VMBGP4PIR, THING_TYPE_VMBGPO, THING_TYPE_VMBGPOD,
                     THING_TYPE_VMBPIRC, THING_TYPE_VMBPIRM, THING_TYPE_VMBPIRO)));
 
+    // Velbus module types
+    public static final byte MODULE_TYPE_VMB8PB = 0x01;
+    public static final byte MODULE_TYPE_VMB1RY = 0x02;
+    public static final byte MODULE_TYPE_VMB6IN = 0x05;
+    public static final byte MODULE_TYPE_VMB1DM = 0x07;
+    public static final byte MODULE_TYPE_VMB4RY = 0x08;
+    public static final byte MODULE_TYPE_VMB8IR = 0x0A;
+    public static final byte MODULE_TYPE_VMB1LED = 0x0F;
+    public static final byte MODULE_TYPE_VMB4RYLD = 0x10;
+    public static final byte MODULE_TYPE_VMB4RYNO = 0x11;
+    public static final byte MODULE_TYPE_VMB4DC = 0x12;
+    public static final byte MODULE_TYPE_VMBDME = 0x14;
+    public static final byte MODULE_TYPE_VMBDMI = 0x15;
+    public static final byte MODULE_TYPE_VMB8PBU = 0x16;
+    public static final byte MODULE_TYPE_VMB6PBN = 0x17;
+    public static final byte MODULE_TYPE_VMB2PBN = 0x18;
+    public static final byte MODULE_TYPE_VMB1RYNO = 0x1B;
+    public static final byte MODULE_TYPE_VMB2BLE = 0x1D;
+    public static final byte MODULE_TYPE_VMBGP1 = 0x1E;
+    public static final byte MODULE_TYPE_VMBGP2 = 0x1F;
+    public static final byte MODULE_TYPE_VMBGP4 = 0x20;
+    public static final byte MODULE_TYPE_VMBGPO = 0x21;
+    public static final byte MODULE_TYPE_VMB7IN = 0x22;
+    public static final byte MODULE_TYPE_VMBGPOD = 0x28;
+    public static final byte MODULE_TYPE_VMB1RYNOS = 0x29;
+    public static final byte MODULE_TYPE_VMBPIRM = 0x2A;
+    public static final byte MODULE_TYPE_VMBPIRC = 0x2B;
+    public static final byte MODULE_TYPE_VMBPIRO = 0x2C;
+    public static final byte MODULE_TYPE_VMBGP4PIR = 0x2D;
+    public static final byte MODULE_TYPE_VMB1BLS = 0x2E;
+    public static final byte MODULE_TYPE_VMBDMIR = 0x2F;
+
     // Velbus commands
     public static final byte COMMAND_PUSH_BUTTON_STATUS = 0x00;
     public static final byte COMMAND_SWITCH_RELAY_OFF = 0x01;

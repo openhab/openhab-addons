@@ -36,37 +36,6 @@ import org.slf4j.LoggerFactory;
  * @author Cedric Boon - Initial contribution
  */
 public class VelbusThingDiscoveryService extends AbstractDiscoveryService implements VelbusPacketListener {
-    private static final byte MODULE_TYPE_VMB8PB = 0x01;
-    private static final byte MODULE_TYPE_VMB1RY = 0x02;
-    private static final byte MODULE_TYPE_VMB6IN = 0x05;
-    private static final byte MODULE_TYPE_VMB1DM = 0x07;
-    private static final byte MODULE_TYPE_VMB4RY = 0x08;
-    private static final byte MODULE_TYPE_VMB8IR = 0x0A;
-    private static final byte MODULE_TYPE_VMB1LED = 0x0F;
-    private static final byte MODULE_TYPE_VMB4RYLD = 0x10;
-    private static final byte MODULE_TYPE_VMB4RYNO = 0x11;
-    private static final byte MODULE_TYPE_VMB4DC = 0x12;
-    private static final byte MODULE_TYPE_VMBDME = 0x14;
-    private static final byte MODULE_TYPE_VMBDMI = 0x15;
-    private static final byte MODULE_TYPE_VMB8PBU = 0x16;
-    private static final byte MODULE_TYPE_VMB6PBN = 0x17;
-    private static final byte MODULE_TYPE_VMB2PBN = 0x18;
-    private static final byte MODULE_TYPE_VMB1RYNO = 0x1B;
-    private static final byte MODULE_TYPE_VMB2BLE = 0x1D;
-    private static final byte MODULE_TYPE_VMBGP1 = 0x1E;
-    private static final byte MODULE_TYPE_VMBGP2 = 0x1F;
-    private static final byte MODULE_TYPE_VMBGP4 = 0x20;
-    private static final byte MODULE_TYPE_VMBGPO = 0x21;
-    private static final byte MODULE_TYPE_VMB7IN = 0x22;
-    private static final byte MODULE_TYPE_VMBGPOD = 0x28;
-    private static final byte MODULE_TYPE_VMB1RYNOS = 0x29;
-    private static final byte MODULE_TYPE_VMBPIRM = 0x2A;
-    private static final byte MODULE_TYPE_VMBPIRC = 0x2B;
-    private static final byte MODULE_TYPE_VMBPIRO = 0x2C;
-    private static final byte MODULE_TYPE_VMBGP4PIR = 0x2D;
-    private static final byte MODULE_TYPE_VMB1BLS = 0x2E;
-    private static final byte MODULE_TYPE_VMBDMIR = 0x2F;
-
     private static final int SEARCH_TIME = 60;
 
     private final Logger logger = LoggerFactory.getLogger(VelbusThingDiscoveryService.class);
