@@ -9,7 +9,6 @@
 package org.openhab.binding.avmfritz.handler;
 
 import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
-import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
@@ -29,6 +28,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -217,9 +217,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             }
             if (device.isPowermeter() && device.getPowermeter() != null) {
                 updateThingChannelState(thing, CHANNEL_ENERGY,
-                        new QuantityType<>(device.getPowermeter().getEnergy(), WATT_HOUR));
+                        new QuantityType<>(device.getPowermeter().getEnergy(), SmartHomeUnits.WATT_HOUR));
                 updateThingChannelState(thing, CHANNEL_POWER,
-                        new QuantityType<>(device.getPowermeter().getPower(), WATT));
+                        new QuantityType<>(device.getPowermeter().getPower(), SmartHomeUnits.WATT));
             }
             if (device.isSwitchableOutlet() && device.getSwitch() != null) {
                 updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getSwitch().getMode()));
