@@ -27,6 +27,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.openhab.binding.spotify.handler.SpotifyHandler;
 import org.openhab.binding.spotify.internal.SpotifySession.SpotifyWebAPIAuthResult;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpContext;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
@@ -43,7 +46,9 @@ import com.google.gson.annotations.SerializedName;
  * Authorization Code flow and saves the resulting refreshToken with the bridge.
  *
  * @author Andreas Stenlund - Initial contribution
+ * @author Matthew Bowman - Initial contribution
  */
+@Component(service = SpotifyAuthService.class, immediate = true, configurationPid = "binding.spotify.authService", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class SpotifyAuthServlet extends HttpServlet implements SpotifyAuthService {
 
     /**
@@ -78,6 +83,7 @@ public class SpotifyAuthServlet extends HttpServlet implements SpotifyAuthServic
      *
      * @param httpService the shared http service
      */
+    @Reference
     protected void setHttpService(HttpService httpService) {
         this.httpService = httpService;
 

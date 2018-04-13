@@ -13,16 +13,22 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.spotify.SpotifyBindingConstants;
-import org.openhab.binding.spotify.handler.SpotifyHandler;
 import org.openhab.binding.spotify.handler.SpotifyDeviceHandler;
+import org.openhab.binding.spotify.handler.SpotifyHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link SpotifyHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Andreas Stenlund - Initial contribution
+ * @author Matthew Bowman - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.spotify", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class SpotifyHandlerFactory extends BaseThingHandlerFactory {
 
     private SpotifyAuthService authService = null;
@@ -57,6 +63,7 @@ public class SpotifyHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
+    @Reference
     public void bindAuthService(SpotifyAuthService service) {
         this.authService = service;
     }
