@@ -20,9 +20,13 @@ import com.google.gson.GsonBuilder;
  * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
-public class NestUtils {
+public final class NestUtils {
 
     public static final Gson GSON = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+
+    private NestUtils() {
+        // hidden utility class constructor
+    }
 
 }
