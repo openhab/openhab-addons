@@ -66,4 +66,18 @@ public interface BitArray extends Iterable<Boolean> {
         }
         return true;
     }
+
+    /**
+     * Get data as binary string
+     *
+     * For example, 0010
+     *
+     * @return string representing the data
+     */
+    default String toBinaryString() {
+        final StringBuilder buffer = new StringBuilder(size());
+        IntStream.range(0, size()).mapToObj(i -> getBit(i) ? '1' : '0').forEach(buffer::append);
+        return buffer.toString();
+    }
+
 }

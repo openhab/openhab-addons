@@ -71,6 +71,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
             if (hasConfigurationError() || disposed) {
                 return;
             }
+            logger.debug("Thing {} received registers {} for request {}", thing.getUID(), registers, request);
             resetCommunicationError();
             forEachAllChildCallbacks(callback -> callback.onRegisters(request, registers));
         }
@@ -81,6 +82,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
             if (hasConfigurationError() || disposed) {
                 return;
             }
+            logger.debug("Thing {} received coils {} for request {}", thing.getUID(), coils, request);
             resetCommunicationError();
             forEachAllChildCallbacks(callback -> callback.onBits(request, coils));
         }
@@ -91,6 +93,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
             if (hasConfigurationError() || disposed) {
                 return;
             }
+            logger.debug("Thing {} received error {} for request {}", thing.getUID(), error, request);
             forEachAllChildCallbacks(callback -> callback.onError(request, error));
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Error with read: %s: %s", error.getClass().getName(), error.getMessage()));

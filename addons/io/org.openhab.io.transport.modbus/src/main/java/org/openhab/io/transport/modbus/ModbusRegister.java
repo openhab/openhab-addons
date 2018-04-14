@@ -35,4 +35,37 @@ public interface ModbusRegister {
      * @return the register content as unsigned integer
      */
     public int toUnsignedShort();
+
+    /**
+     * Returns the register value as hex string
+     *
+     * For example, 12 34
+     *
+     * @return string representing the register data
+     */
+    default String toHexString() {
+        StringBuffer buffer = new StringBuffer(5);
+        return appendHexString(buffer).toString();
+    }
+
+    /**
+     * Appends the register value as hex string to the given StringBuffer
+     *
+     */
+    default StringBuffer appendHexString(StringBuffer buffer) {
+        byte[] bytes = getBytes();
+        for (int i = 0; i < 2; i++) {
+            byte b = bytes[i];
+            String byteHex = Long.toHexString(b & 0xff);
+            if ((b & 0xff) < 0x10) {
+                buffer.append('0');
+            }
+            buffer.append(byteHex);
+            if (i == 0) {
+                buffer.append(' ');
+            }
+        }
+        return buffer;
+    }
+
 }

@@ -44,4 +44,34 @@ public interface ModbusRegisterArray extends Iterable<ModbusRegister> {
         return IntStream.range(0, size()).mapToObj(i -> getRegister(i)).iterator();
     }
 
+    /**
+     * Get register data as a hex string
+     *
+     * For example, 04 45 00 00
+     *
+     * @return string representing the bytes of the register array
+     */
+    default String toHexString() {
+        if (size() == 0) {
+            return "";
+        }
+        // Initialize capacity to (n*2 + n-1), two chars per byte + spaces in between
+        StringBuffer buffer = new StringBuffer(size() * 2 + (size() - 1));
+        return appendHexString(buffer).toString();
+    }
+
+    /**
+     * Appends the register data as hex string to the given StringBuffer
+     *
+     */
+    default StringBuffer appendHexString(StringBuffer buffer) {
+        IntStream.range(0, size()).forEachOrdered(index -> {
+            getRegister(index).appendHexString(buffer);
+            if (index < size() - 1) {
+                buffer.append(' ');
+            }
+        });
+        return buffer;
+    }
+
 }

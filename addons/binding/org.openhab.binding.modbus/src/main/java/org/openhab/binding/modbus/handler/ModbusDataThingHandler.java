@@ -191,8 +191,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
         if (!transformedCommand.isPresent()) {
             // transformation failed, return
-            logger.warn("Cannot process command {} with channel {} since transformation was unsuccessful", command,
-                    channelUID);
+            logger.warn("Cannot process command {} (of type {}) with channel {} since transformation was unsuccessful",
+                    command, command.getClass().getSimpleName(), channelUID);
             return;
         }
 
@@ -627,7 +627,11 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
         numericState = ModbusBitUtilities.extractStateFromRegisters(registers, extractIndex, readValueType);
         boolean boolValue = !numericState.equals(DecimalType.ZERO);
-        processUpdatedValue(numericState, boolValue);
+        Map<ChannelUID, State> values = processUpdatedValue(numericState, boolValue);
+        logger.debug(
+                "Thing {} channels updated: {}. readValueType={}, readIndex={}, readSubIndex(or 0)={}, extractIndex={} -> numeric value {} and boolValue={}. Registers {} for request {}",
+                thing.getUID(), values, readValueType, readIndex, readSubIndex.orElse(0), extractIndex, numericState,
+                boolValue, registers, request);
     }
 
     @Override
@@ -639,8 +643,10 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
         boolean boolValue = bits.getBit(readIndex.get() - pollStart);
         DecimalType numericState = boolValue ? new DecimalType(BigDecimal.ONE) : DecimalType.ZERO;
-
-        processUpdatedValue(numericState, boolValue);
+        Map<ChannelUID, State> values = processUpdatedValue(numericState, boolValue);
+        logger.debug(
+                "Thing {} channels updated: {}. readValueType={}, readIndex={} -> numeric value {} and boolValue={}. Bits {} for request {}",
+                thing.getUID(), values, readValueType, readIndex, numericState, boolValue, bits, request);
     }
 
     @Override
@@ -762,13 +768,18 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
             if (transformedState != null) {
                 logger.trace(
-                        "Thing {} '{}', channel {} will be updated to '{}' (type {}). Numeric state '{}' and bool value '{}'",
-                        getThing().getUID(), getThing().getLabel(), channelUID, transformedState,
-                        transformedState.getClass().getSimpleName(), numericState, boolValue);
+                        "Channel {} will be updated to '{}' (type {}). Input data: number value {} (value type '{}' taken into account) and bool value {}. Transformation: {}",
+                        channelUID, transformedState, transformedState.getClass().getSimpleName(), numericState,
+                        readValueType, boolValue,
+                        readTransformation.isIdentityTransform() ? "<identity>" : readTransformation);
                 states.put(channelUID, transformedState);
             } else {
-                logger.debug("Thing {} '{}', channel {} will not be updated since transformation was unsuccesful",
-                        getThing().getUID(), getThing().getLabel(), channelUID);
+                String types = StringUtils.join(acceptedDataTypes.stream().map(cls -> cls.getSimpleName()).toArray(),
+                        ", ");
+                logger.debug(
+                        "Channel {} will not be updated since transformation was unsuccesful. Channel is expecting the following data types [{}]. Input data: number value {} (value type '{}' taken into account) and bool value {}. Transformation: {}",
+                        channelUID, types, numericState, readValueType, boolValue,
+                        readTransformation.isIdentityTransform() ? "<identity>" : readTransformation);
             }
         });
 

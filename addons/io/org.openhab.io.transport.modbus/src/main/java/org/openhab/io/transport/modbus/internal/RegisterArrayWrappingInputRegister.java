@@ -8,12 +8,9 @@
  */
 package org.openhab.io.transport.modbus.internal;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 
@@ -49,6 +46,13 @@ public class RegisterArrayWrappingInputRegister implements ModbusRegisterArray {
             return wrappedRegister.toUnsignedShort();
         }
 
+        @Override
+        public String toString() {
+            StringBuffer buffer = new StringBuffer("ModbusRegisterImpl(");
+            buffer.append("uint16=").append(toUnsignedShort()).append(", hex=");
+            return appendHexString(buffer).append(')').toString();
+        }
+
     }
 
     private InputRegister[] wrapped;
@@ -70,9 +74,11 @@ public class RegisterArrayWrappingInputRegister implements ModbusRegisterArray {
 
     @Override
     public String toString() {
-        return new StringBuilder("RegisterArrayWrappingInputRegister(hiLowBytes=[ ").append(StringUtils.join(
-                Stream.of(wrapped).map(reg -> reg.toBytes()).map(bytes -> Arrays.toString(bytes)).iterator(), ", "))
-                .append(" ])").toString();
+        if (wrapped.length == 0) {
+            return "RegisterArrayWrappingInputRegister(<empty>)";
+        }
+        StringBuffer buffer = new StringBuffer(wrapped.length * 2).append("RegisterArrayWrappingInputRegister(");
+        return appendHexString(buffer).append(')').toString();
     }
 
 }

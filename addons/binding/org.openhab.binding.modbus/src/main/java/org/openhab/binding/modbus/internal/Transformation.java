@@ -169,49 +169,11 @@ public class Transformation {
             transformedResponse = this.transformation;
         }
 
-        logger.debug("transformed response is '{}'", transformedResponse);
-
         return transformedResponse;
     }
 
     public boolean isIdentityTransform() {
         return TRANSFORM_DEFAULT.equalsIgnoreCase(this.transformation);
-    }
-
-    /**
-     * Transform command to another command using this transformation
-     *
-     *
-     * @param context
-     * @param command
-     * @param context
-     * @return Transformed command, or empty if no transformation was possible
-     */
-    @Deprecated
-    public Optional<Command> transformCommand(BundleContext context, Command command) {
-        if (isIdentityTransform()) {
-            // optimization, do not convert command->string->command if the transformation is identity transform
-            return Optional.ofNullable(command);
-        }
-        final String commandAsString = command.toString();
-        final String transformed = transform(context, commandAsString);
-
-        Optional<Command> transformedCommand = Optional.ofNullable(TypeParser.parseCommand(DEFAULT_TYPES, transformed));
-        // if (!transformedCommand.isPresent()) {
-        // transformedCommand = Optional.ofNullable(TypeParser.parseCommand(types, transformed));
-        // }
-        if (transformedCommand.isPresent()) {
-            logger.debug(
-                    "Transformed item command '{}' to a command {}. Command as string '{}', "
-                            + "transformed string '{}', transformation '{}'",
-                    command, transformedCommand, commandAsString, transformed, transformation);
-        } else {
-            logger.debug(
-                    "Could not transform item command '{}' to a Command. Command as string '{}', "
-                            + "transformed string '{}', transformation '{}'",
-                    command, commandAsString, transformed, transformation);
-        }
-        return transformedCommand;
     }
 
     public static Optional<Command> tryConvertToCommand(String transformed) {
@@ -232,20 +194,7 @@ public class Transformation {
         // overhead but takes care of DecimalType -> PercentType conversions, for example.
         final String stateAsString = state.toString();
         final String transformed = transform(context, stateAsString);
-        State transformedState = TypeParser.parseState(types, transformed);
-        if (transformedState == null) {
-            logger.debug(
-                    "Could not transform item state '{}' (of type {}) to a State (tried the following types: {})! Input state as string '{}', "
-                            + "transformed string '{}', transformation '{}'",
-                    state, state.getClass().getSimpleName(), types, stateAsString, transformed, transformation);
-        } else {
-            logger.debug(
-                    "Transformed item state '{}' (of type {}) to a state {} (of type {}). Input state as string '{}', "
-                            + "transformed string '{}', transformation '{}'",
-                    state, state.getClass().getSimpleName(), transformedState,
-                    transformedState.getClass().getSimpleName(), stateAsString, transformed, transformation);
-        }
-        return transformedState;
+        return TypeParser.parseState(types, transformed);
     }
 
     public boolean hasTransformationService() {

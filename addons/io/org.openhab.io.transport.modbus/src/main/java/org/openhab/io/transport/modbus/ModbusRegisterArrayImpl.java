@@ -8,8 +8,6 @@
  */
 package org.openhab.io.transport.modbus;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * Immutable {@link ModbusRegisterArray} implementation
  *
@@ -64,8 +62,11 @@ public class ModbusRegisterArrayImpl implements ModbusRegisterArray {
 
     @Override
     public String toString() {
-        return new StringBuffer("ModbusRegisterArrayImpl(").append(StringUtils.join(registers, ',')).append(')')
-                .toString();
+        if (registers.length == 0) {
+            return "ModbusRegisterArrayImpl(<empty>)";
+        }
+        StringBuffer buffer = new StringBuffer(registers.length * 2).append("ModbusRegisterArrayImpl(");
+        return appendHexString(buffer).append(')').toString();
     }
 
 }

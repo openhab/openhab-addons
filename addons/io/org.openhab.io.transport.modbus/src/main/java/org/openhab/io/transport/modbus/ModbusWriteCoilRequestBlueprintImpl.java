@@ -39,7 +39,7 @@ public class ModbusWriteCoilRequestBlueprintImpl implements ModbusWriteCoilReque
 
         @Override
         public String toString() {
-            return "SingleBitArray(" + String.valueOf(getBit(0)) + ")";
+            return "SingleBitArray(bit=" + toBinaryString() + ")";
         }
 
     }
