@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.avmfritz.handler;
 
+import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
@@ -23,10 +24,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -211,11 +213,13 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             if (device instanceof DeviceModel && device.isTempSensor()
                     && ((DeviceModel) device).getTemperature() != null) {
                 updateThingChannelState(thing, CHANNEL_TEMP,
-                        new DecimalType(((DeviceModel) device).getTemperature().getCelsius()));
+                        new QuantityType<>(((DeviceModel) device).getTemperature().getCelsius(), CELSIUS));
             }
             if (device.isPowermeter() && device.getPowermeter() != null) {
-                updateThingChannelState(thing, CHANNEL_ENERGY, new DecimalType(device.getPowermeter().getEnergy()));
-                updateThingChannelState(thing, CHANNEL_POWER, new DecimalType(device.getPowermeter().getPower()));
+                updateThingChannelState(thing, CHANNEL_ENERGY,
+                        new QuantityType<>(device.getPowermeter().getEnergy(), SmartHomeUnits.WATT_HOUR));
+                updateThingChannelState(thing, CHANNEL_POWER,
+                        new QuantityType<>(device.getPowermeter().getPower(), SmartHomeUnits.WATT));
             }
             if (device.isSwitchableOutlet() && device.getSwitch() != null) {
                 updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getSwitch().getMode()));
@@ -241,13 +245,13 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                         BigDecimal.ZERO.equals(device.getHkr().getDevicelock()) ? OpenClosedType.OPEN
                                 : OpenClosedType.CLOSED);
                 updateThingChannelState(thing, CHANNEL_ACTUALTEMP,
-                        new DecimalType(HeatingModel.toCelsius(device.getHkr().getTist())));
+                        new QuantityType<>(HeatingModel.toCelsius(device.getHkr().getTist()), CELSIUS));
                 updateThingChannelState(thing, CHANNEL_SETTEMP,
-                        new DecimalType(HeatingModel.toCelsius(device.getHkr().getTsoll())));
+                        new QuantityType<>(HeatingModel.toCelsius(device.getHkr().getTsoll()), CELSIUS));
                 updateThingChannelState(thing, CHANNEL_ECOTEMP,
-                        new DecimalType(HeatingModel.toCelsius(device.getHkr().getAbsenk())));
+                        new QuantityType<>(HeatingModel.toCelsius(device.getHkr().getAbsenk()), CELSIUS));
                 updateThingChannelState(thing, CHANNEL_COMFORTTEMP,
-                        new DecimalType(HeatingModel.toCelsius(device.getHkr().getKomfort())));
+                        new QuantityType<>(HeatingModel.toCelsius(device.getHkr().getKomfort()), CELSIUS));
                 updateThingChannelState(thing, CHANNEL_RADIATOR_MODE,
                         new StringType(device.getHkr().getRadiatorMode()));
                 if (device.getHkr().getNextchange() != null) {
@@ -262,8 +266,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                     if (HeatingModel.TEMP_FRITZ_UNDEFINED.equals(device.getHkr().getNextchange().getTchange())) {
                         updateThingChannelState(thing, CHANNEL_NEXTTEMP, UnDefType.UNDEF);
                     } else {
-                        updateThingChannelState(thing, CHANNEL_NEXTTEMP,
-                                new DecimalType(HeatingModel.toCelsius(device.getHkr().getNextchange().getTchange())));
+                        updateThingChannelState(thing, CHANNEL_NEXTTEMP, new QuantityType<>(
+                                HeatingModel.toCelsius(device.getHkr().getNextchange().getTchange()), CELSIUS));
                     }
                 }
                 if (device.getHkr().getBatterylow() == null) {

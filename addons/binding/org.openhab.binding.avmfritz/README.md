@@ -79,23 +79,23 @@ If correct credentials are set in the bridge configuration, connected AHA device
 
 ## Supported Channels
 
-| Channel Type ID | Item Type | Description                                                                                            | Available on thing                                                                                  |
-|-----------------|-----------|--------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
-| mode            | String    | States the mode of the device (MANUAL/AUTOMATIC)                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT    |
-| locked          | Contact   | Device is locked for switching over external sources (OPEN/CLOSE)                                      | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT    |
-| device_locked   | Contact   | Device is locked for switching manually (OPEN/CLOSE) - FRITZ!OS 6.90                                   | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT    |
-| temperature     | Number    | Actual measured temperature (in °C)                                                                    | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!DECT Repeater 100, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT |
-| energy          | Number    | Accumulated energy consumption (in kWh)                                                                | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
-| power           | Number    | Current power consumption (in W)                                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
-| outlet          | Switch    | Switchable outlet (ON/OFF)                                                                             | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
-| actual_temp     | Number    | Actual Temperature of heating thermostat (in °C)                                                       | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| set_temp        | Number    | Set Temperature of heating thermostat (in °C)                                                          | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| eco_temp        | Number    | Eco Temperature of heating thermostat (in °C)                                                          | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| comfort_temp    | Number    | Comfort Temperature of heating thermostat (in °C)                                                      | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| radiator_mode   | String    | Mode of heating thermostat (ON/OFF/COMFORT/ECO/BOOST)                                                  | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| next_change     | DateTime  | Next change of the Set Temperature if scheduler is activated in the FRITZ!Box settings - FRITZ!OS 6.80 | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| next_temp       | Number    | Next Set Temperature if scheduler is activated in the FRITZ!Box settings (in °C) - FRITZ!OS 6.80       | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| battery_low     | Switch    | Battery Level Low (ON/OFF) - FRITZ!OS 6.80                                                             | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
+| Channel Type ID | Item Type          | Description                                                                                            | Available on thing                                                                                  |
+|-----------------|--------------------|--------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| mode            | String             | States the mode of the device (MANUAL/AUTOMATIC)                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT    |
+| locked          | Contact            | Device is locked for switching over external sources (OPEN/CLOSE)                                      | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT    |
+| device_locked   | Contact            | Device is locked for switching manually (OPEN/CLOSE) - FRITZ!OS 6.90                                   | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT    |
+| temperature     | Number:Temperature | Actual measured temperature                                                                            | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!DECT Repeater 100, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT |
+| energy          | Number:Energy      | Accumulated energy consumption                                                                         | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
+| power           | Number:Power       | Current power consumption (in W)                                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
+| outlet          | Switch             | Switchable outlet (ON/OFF)                                                                             | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
+| actual_temp     | Number:Temperature | Actual Temperature of heating thermostat                                                               | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
+| set_temp        | Number:Temperature | Set Temperature of heating thermostat                                                                  | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
+| eco_temp        | Number:Temperature | Eco Temperature of heating thermostat                                                                  | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
+| comfort_temp    | Number:Temperature | Comfort Temperature of heating thermostat                                                              | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
+| radiator_mode   | String             | Mode of heating thermostat (ON/OFF/COMFORT/ECO/BOOST)                                                  | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
+| next_change     | DateTime           | Next change of the Set Temperature if scheduler is activated in the FRITZ!Box settings - FRITZ!OS 6.80 | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
+| next_temp       | Number:Temperature | Next Set Temperature if scheduler is activated in the FRITZ!Box settings - FRITZ!OS 6.80               | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
+| battery_low     | Switch             | Battery Level Low (ON/OFF) - FRITZ!OS 6.80                                                             | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
 
 ## Full Example
 
@@ -115,18 +115,18 @@ demo.items:
 
 ```java
 Switch Outlet1 "Switchable outlet" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:outlet" }
-Number Temperature1 "Actual measured temperature [%.1f °C]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:temperature" }
-Number Energy1 "Accumulated energy consumption [%.3f Wh]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:energy" }
-Number Power1 "Current power consumption [%.2f W]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:power" }
+Number:Temperature Temperature1 "Current measured temperature [%.1f %unit%]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:temperature" }
+Number:Energy Energy1 "Accumulated energy consumption [%.3f Wh]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:energy" }
+Number:Power Power1 "Current power consumption [%.2f %unit%]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:power" }
 
 Switch Outlet2 "Switchable outlet" { channel="avmfritz:FRITZ_Powerline_546E:1:yy_yy_yy_yy_yy_yy:outlet" }
 
-Number COMETDECTActualTemp "Actual measured temperature [%.1f °C]" { channel="avmfritz:Comet_DECT:1:aaaaaabbbbbb:actual_temp" }
-Number COMETDECTSetTemp "Thermostat temperature set point [%.1f °C]" { channel="avmfritz:Comet_DECT:1:aaaaaabbbbbb:set_temp" }
+Number:Temperature COMETDECTTemperature "Current measured temperature [%.1f %unit%]" { channel="avmfritz:Comet_DECT:1:aaaaaabbbbbb:actual_temp" }
+Number:Temperature COMETDECTSetTemperature "Thermostat temperature set point [%.1f %unit%]" { channel="avmfritz:Comet_DECT:1:aaaaaabbbbbb:set_temp" }
 String COMETDECTRadiatorMode "Radiator mode [%s]" { channel="avmfritz:Comet_DECT:1:aaaaaabbbbbb:radiator_mode" }
 Switch COMETDECTBattery "Battery low" { channel="avmfritz:Comet_DECT:1:aaaaaabbbbbb:battery_low" }
 
-Number FRITZ_GROUP_HEATINGSetTemp "Group temperature set point [%.1f °C]" { channel="avmfritz:FRITZ_GROUP_HEATING:1:AA_AA_AA_900:set_temp" }
+Number:Temperature FRITZ_GROUP_HEATINGSetTemperature "Group temperature set point [%.1f %unit%]" { channel="avmfritz:FRITZ_GROUP_HEATING:1:AA_AA_AA_900:set_temp" }
 
 Switch Outlet3 "Group switch" { channel="avmfritz:FRITZ_GROUP_SWITCH:1:BB_BB_BB_900:outlet" }
 ```
@@ -148,8 +148,8 @@ sitemap demo label="Main Menu" {
 	}
 
 	Frame "Comet DECT heating thermostat" {
-		Text item=COMETDECTActualTemp icon="temperature"
-		Setpoint item=COMETDECTSetTemp minValue=8.0 maxValue=28.0 step=0.5 icon="temperature"
+		Text item=COMETDECTTemperature icon="temperature"
+		Setpoint item=COMETDECTSetTemperature minValue=8.0 maxValue=28.0 step=0.5 icon="temperature"
 		Selection item=COMETDECTRadiatorMode mappings=["ON"="ON", "OFF"="OFF", "COMFORT"="COMFORT", "ECO"="ECO", "BOOST"="BOOST"] icon="heating"
 		Switch item=COMETDECTBattery icon="lowbattery"
 	}

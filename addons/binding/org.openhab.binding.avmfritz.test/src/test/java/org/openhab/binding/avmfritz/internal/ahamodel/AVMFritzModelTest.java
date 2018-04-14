@@ -130,7 +130,7 @@ public class AVMFritzModelTest {
         assertEquals(new BigDecimal("0.0"), device.getTemperature().getOffset());
 
         assertEquals(new BigDecimal("0.045"), device.getPowermeter().getPower());
-        assertEquals(new BigDecimal("0.166"), device.getPowermeter().getEnergy());
+        assertEquals(new BigDecimal("166"), device.getPowermeter().getEnergy());
     }
 
     @Test
@@ -304,7 +304,7 @@ public class AVMFritzModelTest {
         assertEquals(BigDecimal.ONE, device.getSwitch().getDevicelock());
 
         assertEquals(new BigDecimal("0.000"), device.getPowermeter().getPower());
-        assertEquals(new BigDecimal("2.087"), device.getPowermeter().getEnergy());
+        assertEquals(new BigDecimal("2087"), device.getPowermeter().getEnergy());
     }
 
     @Test
@@ -340,7 +340,7 @@ public class AVMFritzModelTest {
         assertEquals(BigDecimal.ZERO, group.getSwitch().getDevicelock());
 
         assertEquals(new BigDecimal("0.000"), group.getPowermeter().getPower());
-        assertEquals(new BigDecimal("2.087"), group.getPowermeter().getEnergy());
+        assertEquals(new BigDecimal("2087"), group.getPowermeter().getEnergy());
 
         assertEquals("1000", group.getGroupinfo().getMasterdeviceid());
         assertEquals("20000", group.getGroupinfo().getMembers());

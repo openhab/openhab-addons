@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.avmfritz.internal.ahamodel;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
 
@@ -18,26 +18,40 @@ import org.junit.Test;
  * Tests for {@link HeatingModel} methods.
  *
  * @author Christoph Weitkamp - Initial contribution
- *
  */
 public class HeatingModelTest {
 
+    private static final BigDecimal BIGDECIMAL_FOURTEEN = new BigDecimal("14.0");
+    private static final BigDecimal BIGDECIMAL_FOURTEEN_POINT_FIVE = new BigDecimal("14.5");
+
     @Test
-    public void validateTemperatureConversion() {
+    public void validateTemperatureConversionFromCelsius() {
         assertEquals(BigDecimal.ZERO, HeatingModel.fromCelsius(null));
         assertEquals(HeatingModel.TEMP_FRITZ_MIN, HeatingModel.fromCelsius(BigDecimal.ONE));
         assertEquals(HeatingModel.TEMP_FRITZ_MIN, HeatingModel.fromCelsius(new BigDecimal("7.5")));
-        assertEquals(new BigDecimal("16.0"), HeatingModel.fromCelsius(new BigDecimal("8")));
-        assertEquals(new BigDecimal("28.0"), HeatingModel.fromCelsius(new BigDecimal("14")));
-        assertEquals(new BigDecimal("29.00"), HeatingModel.fromCelsius(new BigDecimal("14.5")));
-        assertEquals(new BigDecimal("56.0"), HeatingModel.fromCelsius(new BigDecimal("28")));
+        assertEquals(new BigDecimal("16.00"), HeatingModel.fromCelsius(HeatingModel.TEMP_CELSIUS_MIN));
+        assertEquals(new BigDecimal("28.00"), HeatingModel.fromCelsius(BIGDECIMAL_FOURTEEN));
+        assertEquals(new BigDecimal("29.00"), HeatingModel.fromCelsius(BIGDECIMAL_FOURTEEN_POINT_FIVE));
+        assertEquals(new BigDecimal("56.00"), HeatingModel.fromCelsius(HeatingModel.TEMP_CELSIUS_MAX));
         assertEquals(HeatingModel.TEMP_FRITZ_MAX, HeatingModel.fromCelsius(new BigDecimal("28.5")));
-        assertEquals(HeatingModel.TEMP_FRITZ_MAX, HeatingModel.fromCelsius(new BigDecimal("30")));
+        assertEquals(HeatingModel.TEMP_FRITZ_MAX, HeatingModel.fromCelsius(new BigDecimal("35")));
+    }
 
+    @Test
+    public void validateTemperatureConversionToCelsius() {
         assertEquals(BigDecimal.ZERO, HeatingModel.toCelsius(null));
-        assertEquals(new BigDecimal("14.0"), HeatingModel.toCelsius(new BigDecimal("28")));
-        assertEquals(new BigDecimal("14.5"), HeatingModel.toCelsius(new BigDecimal("29")));
-        assertEquals(new BigDecimal("6.0"), HeatingModel.toCelsius(new BigDecimal("253")));
-        assertEquals(new BigDecimal("30.0"), HeatingModel.toCelsius(new BigDecimal("254")));
+        assertEquals(BIGDECIMAL_FOURTEEN, HeatingModel.toCelsius(new BigDecimal("28")));
+        assertEquals(BIGDECIMAL_FOURTEEN_POINT_FIVE, HeatingModel.toCelsius(new BigDecimal("29")));
+        assertEquals(new BigDecimal("6.0"), HeatingModel.toCelsius(HeatingModel.TEMP_FRITZ_OFF));
+        assertEquals(new BigDecimal("30.0"), HeatingModel.toCelsius(HeatingModel.TEMP_FRITZ_ON));
+    }
+
+    @Test
+    public void validateTemperatureNormalization() {
+        assertEquals(BIGDECIMAL_FOURTEEN, HeatingModel.normalizeCelsius(BIGDECIMAL_FOURTEEN));
+        assertEquals(BIGDECIMAL_FOURTEEN, HeatingModel.normalizeCelsius(new BigDecimal("13.9")));
+        assertEquals(BIGDECIMAL_FOURTEEN, HeatingModel.normalizeCelsius(new BigDecimal("14.1")));
+        assertEquals(BIGDECIMAL_FOURTEEN_POINT_FIVE, HeatingModel.normalizeCelsius(new BigDecimal("14.4")));
+        assertEquals(BIGDECIMAL_FOURTEEN_POINT_FIVE, HeatingModel.normalizeCelsius(new BigDecimal("14.6")));
     }
 }
