@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="s7"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!--S7 server bridge-->
+    <thing-type id="switch">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="server" />
+        </supported-bridge-type-refs>
+        
+        <label>Relay</label>
+        <description>Relay managed by a S7 PLC</description>
+
+        <channels>
+            <channel id="state" typeId="switch" />
+        </channels>
+        
+        <config-description>
+            <parameter name="accessMode" type="text">
+                <label>Access mode</label>
+                <description>Define how to get and manipulate the thing's state.</description>
+                <limitToOptions>true</limitToOptions>
+                <advanced>true</advanced>
+                <default>ToggleMode</default>
+                <options>
+                    <option value="ReadOnly">Read only</option>
+                    <option value="ToggleMode">Toggle mode</option>
+                    <option value="ReadWrite">ReadWrite</option>
+                    <option value="Pushbutton">Push button</option>
+                </options>
+            </parameter>
+            <parameter name="inputDBArea" type="integer">
+                <label>Input DB Area</label>
+                <description>The DB area of the switch. (Not used if access mode is read only)</description>
+                <limitToOptions>true</limitToOptions>
+                <options>
+                    <option value="129">Area PE</option>
+                    <option value="130">Area PA</option>
+                    <option value="131">Area MK</option>
+                    <option value="132">Area DB</option>
+                </options>
+                <required>true</required>
+            </parameter>
+            <parameter name="inputAddress" type="integer" max="96">
+                <label>Input Address</label>
+                <description>The input address of the switch. (Not used if access mode is read only)</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="outputDBArea" type="integer">
+                <label>Output DB Area</label>
+                <description>The DB area of the output. (Not used if access mode is push button)</description>
+                <limitToOptions>true</limitToOptions>
+                <options>
+                    <option value="129">Area PE</option>
+                    <option value="130">Area PA</option>
+                    <option value="131">Area MK</option>
+                    <option value="132">Area DB</option>
+                </options>
+                <required>true</required>
+            </parameter>
+            <parameter name="outputAddress" type="integer" max="96">
+                <label>Output Address</label>
+                <description>The output address of the toggle switch. (Not used if access mode is push button)</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <!-- Sample Channel Type -->
+    <channel-type id="switch">
+        <item-type>Switch</item-type>
+        <label>Switch</label>
+        <description>Switch the light on and off</description>
+        <category>Switch</category>
+        <state>
+            <options>
+                <option value="ON">On</option>
+                <option value="OFF">Off</option>
+            </options>
+        </state>
+    </channel-type>
+
+</thing:thing-descriptions>

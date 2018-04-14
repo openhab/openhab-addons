@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="s7"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!--Siemens S7 Server bridge-->
+    <bridge-type id="server">
+    	<label>Siemens S7 Server</label>
+    	<description>The S7 Server represent a Siemens S7 PLC</description>
+    	
+        <channels>
+            <channel typeId="refreshDuration" id="refreshDuration"></channel>
+            <channel typeId="refreshDuration" id="maxRefreshDuration"/>
+        </channels>
+        
+    	<config-description>
+    		<parameter name="ipAddress" type="text">
+                <context>network_address</context>
+                <label>Network Address</label>
+                <description>Network address of the hue bridge.</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="localTSAP" type="integer">
+                <context>Siemens TSAP</context>
+                <label>Local TSAP</label>
+                <description>Local TSAP of the client</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="remoteTSAP" type="integer">
+                <context>Siemens TSAP</context>
+                <label>Remote TSAP</label>
+                <description>Remote TSAP of the client</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="pollingInterval" type="integer" min="1" step="1">
+                <label>Polling Interval</label>
+                <description>Milliseconds between fetching values from the Bridge.</description>
+                <required>true</required>
+                <default>200</default>
+            </parameter>
+        </config-description>
+
+    </bridge-type>
+    
+    <channel-type id="refreshDuration">
+        <item-type>Number</item-type>
+        <label>Refresh duration</label>
+        <description>Duration of a complete data refresh.</description>
+    </channel-type>
+    
+</thing:thing-descriptions>
