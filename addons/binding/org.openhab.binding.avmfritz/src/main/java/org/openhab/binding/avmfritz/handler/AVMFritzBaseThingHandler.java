@@ -8,15 +8,19 @@
  */
 package org.openhab.binding.avmfritz.handler;
 
+import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
 import java.math.BigDecimal;
+
+import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -100,7 +104,13 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
                 break;
             case CHANNEL_SETTEMP:
                 if (command instanceof DecimalType) {
-                    BigDecimal temperature = new BigDecimal(command.toString());
+                    BigDecimal temperature = HeatingModel.normalizeCelsius(((DecimalType) command).toBigDecimal());
+                    state.getHkr().setTsoll(temperature);
+                    fritzBox.setSetTemp(ain, HeatingModel.fromCelsius(temperature));
+                    updateState(CHANNEL_RADIATOR_MODE, new StringType(state.getHkr().getRadiatorMode()));
+                } else if (command instanceof QuantityType) {
+                    BigDecimal temperature = HeatingModel
+                            .normalizeCelsius(((QuantityType<Temperature>) command).toUnit(CELSIUS).toBigDecimal());
                     state.getHkr().setTsoll(temperature);
                     fritzBox.setSetTemp(ain, HeatingModel.fromCelsius(temperature));
                     updateState(CHANNEL_RADIATOR_MODE, new StringType(state.getHkr().getRadiatorMode()));
