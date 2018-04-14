@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * Implements basic V6 bulb functionally. But commands are different for different v6 bulbs, so almost all the work is
  * done in subclasses.
  *
- * @author David Graeff <david.graeff@web.de>
+ * @author David Graeff - Initial contribution
  * @since 2.1
  */
 public abstract class MilightV6 extends AbstractBulbInterface {
@@ -28,11 +28,11 @@ public abstract class MilightV6 extends AbstractBulbInterface {
 
     protected MilightV6SessionManager session;
 
-    public MilightV6(int type_offset, QueuedSend sendQueue, MilightV6SessionManager session, int zone) {
-        super(type_offset, sendQueue, zone);
+    public MilightV6(int typeOffset, QueuedSend sendQueue, MilightV6SessionManager session, int zone) {
+        super(typeOffset, sendQueue, zone);
         this.session = session;
         if (session == null) {
-            throw new RuntimeException("Session object is null!");
+            throw new IllegalArgumentException("Session object is null!");
         }
     }
 
@@ -64,7 +64,7 @@ public abstract class MilightV6 extends AbstractBulbInterface {
      *
      * @return
      */
-    protected byte[] make_command(int... data) {
+    protected byte[] makeCommand(int... data) {
         byte[] t = { (byte) 0x80, 0x00, 0x00, 0x00, 0x11, session.getSid1(), session.getSid2(),
                 session.getNextSequenceNo1(), session.getNextSequenceNo2(), 0x00, 0x31, session.getPw1(),
                 session.getPw2(), getAddr(), 0, 0, 0, 0, 0, (byte) zone, 0, 0 };
@@ -79,7 +79,7 @@ public abstract class MilightV6 extends AbstractBulbInterface {
         return t;
     }
 
-    protected byte[] make_link(boolean link) {
+    protected byte[] makeLink(boolean link) {
         byte[] t = { (link ? (byte) 0x3D : (byte) 0x3E), 0x00, 0x00, 0x00, 0x11, session.getSid1(), session.getSid2(),
                 session.getNextSequenceNo1(), session.getNextSequenceNo2(), 0x00, 0x31, session.getPw1(),
                 session.getPw2(), getAddr(), 0x00, 0x00, 0x00, 0x00, 0x00, (byte) zone, 0x00, 0x00 };
@@ -109,7 +109,7 @@ public abstract class MilightV6 extends AbstractBulbInterface {
         // Compute destination hue and current hue value, each mapped to 256 values.
         // int cHue = state.hue360 * 255 / 360; // map to 256 values
         int dHue = hue * 255 / 360; // map to 256 values
-        sendQueue.queueRepeatable(uidc(CAT_COLOR_SET), make_command(1, dHue, dHue, dHue, dHue));
+        sendQueue.queueRepeatable(uidc(CAT_COLOR_SET), makeCommand(1, dHue, dHue, dHue, dHue));
 
         state.hue360 = hue;
 
@@ -141,40 +141,40 @@ public abstract class MilightV6 extends AbstractBulbInterface {
         int br = (value * MAX_BR) / 100;
         br = Math.min(br, MAX_BR);
         br = Math.max(br, 0);
-        sendQueue.queueRepeatable(uidc(CAT_BRIGHTNESS_SET), make_command(getBrCmd(), br));
+        sendQueue.queueRepeatable(uidc(CAT_BRIGHTNESS_SET), makeCommand(getBrCmd(), br));
 
         state.brightness = value;
     }
 
     @Override
-    public void changeColorTemperature(int color_temp_relative, MilightThingState state) {
+    public void changeColorTemperature(int colorTempRelative, MilightThingState state) {
         if (!session.isValid()) {
             logger.error("Bridge communication session not valid yet!");
             return;
         }
 
-        if (color_temp_relative == 0) {
+        if (colorTempRelative == 0) {
             return;
         }
 
-        int ct = (state.colorTemperature * MAX_TEMP) / 100 + color_temp_relative;
+        int ct = (state.colorTemperature * MAX_TEMP) / 100 + colorTempRelative;
         ct = Math.min(ct, MAX_TEMP);
         ct = Math.max(ct, 0);
         setColorTemperature(ct * 100 / MAX_TEMP, state);
     }
 
     @Override
-    public void changeBrightness(int relative_brightness, MilightThingState state) {
+    public void changeBrightness(int relativeBrightness, MilightThingState state) {
         if (!session.isValid()) {
             logger.error("Bridge communication session not valid yet!");
             return;
         }
 
-        if (relative_brightness == 0) {
+        if (relativeBrightness == 0) {
             return;
         }
 
-        int br = (state.brightness * MAX_BR) / 100 + relative_brightness;
+        int br = (state.brightness * MAX_BR) / 100 + relativeBrightness;
         br = Math.min(br, MAX_BR);
         br = Math.max(br, 0);
 
@@ -210,10 +210,10 @@ public abstract class MilightV6 extends AbstractBulbInterface {
     }
 
     public void link(int zone) {
-        sendQueue.queueRepeatable(uidc(CAT_LINK), make_link(true));
+        sendQueue.queueRepeatable(uidc(CAT_LINK), makeLink(true));
     }
 
     public void unlink(int zone) {
-        sendQueue.queueRepeatable(uidc(CAT_LINK), make_link(false));
+        sendQueue.queueRepeatable(uidc(CAT_LINK), makeLink(false));
     }
 }

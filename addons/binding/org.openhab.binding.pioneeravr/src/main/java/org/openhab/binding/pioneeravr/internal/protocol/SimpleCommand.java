@@ -13,31 +13,27 @@ import org.openhab.binding.pioneeravr.protocol.AvrCommand;
 /**
  * A simple command without parameters.
  *
- * @author Antoine Besnard
- *
+ * @author Antoine Besnard - Initial contribution
  */
 public class SimpleCommand implements AvrCommand {
 
     /**
      * List of the simple command types.
-     *
-     * @author Antoine Besnard
-     *
      */
     public enum SimpleCommandType implements AvrCommand.CommandType {
 
-        POWER_ON("PO", "APO", "BPO"),
-        POWER_OFF("PF", "APF", "BPF"),
-        POWER_QUERY("?P", "?AP", "?BP"),
-        VOLUME_UP("VU", "ZU", "YU"),
-        VOLUME_DOWN("VD", "ZD", "YD"),
-        VOLUME_QUERY("?V", "?ZV", "?YV"),
-        MUTE_ON("MO", "Z2MO", "Z3MO"),
-        MUTE_OFF("MF", "Z2MF", "Z3MF"),
-        MUTE_QUERY("?M", "?Z2M", "?Z3M"),
+        POWER_ON("PO", "APO", "BPO", "ZEO"),
+        POWER_OFF("PF", "APF", "BPF", "ZEF"),
+        POWER_QUERY("?P", "?AP", "?BP", "?ZEP"),
+        VOLUME_UP("VU", "ZU", "YU", "HZU"),
+        VOLUME_DOWN("VD", "ZD", "YD", "HZD"),
+        VOLUME_QUERY("?V", "?ZV", "?YV", "?HZV"),
+        MUTE_ON("MO", "Z2MO", "Z3MO", "HZMO"),
+        MUTE_OFF("MF", "Z2MF", "Z3MF", "HZMF"),
+        MUTE_QUERY("?M", "?Z2M", "?Z3M", "?HZM"),
         INPUT_CHANGE_CYCLIC("FU"),
         INPUT_CHANGE_REVERSE("FD"),
-        INPUT_QUERY("?F", "?ZS", "?ZT");
+        INPUT_QUERY("?F", "?ZS", "?ZT", "?ZEA");
 
         private String zoneCommands[];
 

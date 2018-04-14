@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventListener {
 
-    private Logger logger = LoggerFactory.getLogger(OnkyoHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(OnkyoHandler.class);
 
     private OnkyoDeviceConfiguration configuration;
 
@@ -70,7 +70,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
     private OnkyoAlbumArt onkyoAlbumArt = new OnkyoAlbumArt();
 
-    private final int NET_USB_ID = 43;
+    private static final int NET_USB_ID = 43;
 
     public OnkyoHandler(Thing thing, UpnpIOService upnpIOService, AudioHTTPServer audioHTTPServer, String callbackUrl) {
         super(thing, upnpIOService, audioHTTPServer, callbackUrl);
@@ -129,7 +129,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand for channel {}: {}", channelUID.getId(), command.toString());
         switch (channelUID.getId()) {
-
             /*
              * ZONE 1
              */
@@ -327,7 +326,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             logger.debug("Received command {}", receivedCommand);
 
             switch (receivedCommand) {
-
                 /*
                  * ZONE 1
                  */
@@ -670,7 +668,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
     private void sendCommand(EiscpCommand deviceCommand, Command command) {
         if (connection != null) {
-
             final String cmd = deviceCommand.getCommand();
             String valTemplate = deviceCommand.getValue();
             String val;
@@ -707,7 +704,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         sendCommand(EiscpCommand.POWER_QUERY);
 
         if (connection != null && connection.isConnected()) {
-
             sendCommand(EiscpCommand.VOLUME_QUERY);
             sendCommand(EiscpCommand.SOURCE_QUERY);
             sendCommand(EiscpCommand.MUTE_QUERY);

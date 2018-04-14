@@ -18,20 +18,18 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 /**
  * See {@link DevicelistModel}.
  *
- * @author Robert Bausdorf
- *
+ * @author Robert Bausdorf - Initial contribution
  */
 @XmlRootElement(name = "powermeter")
 @XmlType(propOrder = { "power", "energy" })
 public class PowerMeterModel {
     public static final BigDecimal POWER_FACTOR = new BigDecimal("0.001");
-    public static final BigDecimal ENERGY_FACTOR = new BigDecimal("0.001");
 
     private BigDecimal power;
     private BigDecimal energy;
 
     public BigDecimal getPower() {
-        return power != null ? power.multiply(POWER_FACTOR) : BigDecimal.ZERO;
+        return power != null ? POWER_FACTOR.multiply(power) : BigDecimal.ZERO;
     }
 
     public void setPower(BigDecimal power) {
@@ -39,7 +37,7 @@ public class PowerMeterModel {
     }
 
     public BigDecimal getEnergy() {
-        return energy != null ? energy.multiply(ENERGY_FACTOR) : BigDecimal.ZERO;
+        return energy != null ? energy : BigDecimal.ZERO;
     }
 
     public void setEnergy(BigDecimal energy) {

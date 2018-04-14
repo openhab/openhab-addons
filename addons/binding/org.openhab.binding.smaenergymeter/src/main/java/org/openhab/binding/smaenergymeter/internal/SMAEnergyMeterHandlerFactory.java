@@ -17,7 +17,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.smaenergymeter.handler.SMAEnergyMeterHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link SMAEnergyMeterHandlerFactory} is responsible for creating things and thing
@@ -25,7 +24,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  *
  * @author Osman Basha - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.smaenergymeter", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.smaenergymeter")
 public class SMAEnergyMeterHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="avmfritz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="avmfritz"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -7,7 +8,7 @@
 	<thing-type id="Comet_DECT">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox" />
-			<bridge-type-ref id="fritzpowerline" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
 		</supported-bridge-type-refs>
 
 		<label>Comet DECT</label>
@@ -36,7 +37,7 @@
 	<thing-type id="FRITZ_DECT_301">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox" />
-			<bridge-type-ref id="fritzpowerline" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
 		</supported-bridge-type-refs>
 
 		<label>FRITZ!DECT 301</label>
@@ -65,7 +66,7 @@
 	<thing-type id="FRITZ_DECT_300">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox" />
-			<bridge-type-ref id="fritzpowerline" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
 		</supported-bridge-type-refs>
 
 		<label>FRITZ!DECT 300</label>
@@ -94,7 +95,7 @@
 	<thing-type id="FRITZ_DECT_210">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox" />
-			<bridge-type-ref id="fritzpowerline" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
 		</supported-bridge-type-refs>
 
 		<label>FRITZ!DECT 210</label>
@@ -118,7 +119,7 @@
 	<thing-type id="FRITZ_DECT_200">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox" />
-			<bridge-type-ref id="fritzpowerline" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
 		</supported-bridge-type-refs>
 
 		<label>FRITZ!DECT 200</label>
@@ -142,7 +143,7 @@
 	<thing-type id="FRITZ_Powerline_546E">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox" />
-			<bridge-type-ref id="fritzpowerline" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
 		</supported-bridge-type-refs>
 
 		<label>FRITZ!Powerline 546E</label>
@@ -163,29 +164,10 @@
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
 
-	<thing-type id="FRITZ_Powerline_546E_Solo">
-		<label>FRITZ!Powerline 546E</label>
-		<description>FRITZ!Powerline 546E with switchable outlet in stand-alone mode.
-		</description>
-
-		<channels>
-			<channel id="mode" typeId="mode" />
-			<channel id="locked" typeId="locked" />
-			<channel id="device_locked" typeId="device_locked" />
-			<channel id="energy" typeId="energy" />
-			<channel id="power" typeId="power" />
-			<channel id="outlet" typeId="outlet" />
-		</channels>
-
-		<representation-property>ipAddress</representation-property>
-
-		<config-description-ref uri="bridge-type:avmfritz:fritzpowerline" />
-	</thing-type>
-
 	<thing-type id="FRITZ_DECT_Repeater_100">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox" />
-			<bridge-type-ref id="fritzpowerline" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
 		</supported-bridge-type-refs>
 
 		<label>FRITZ!DECT Repeater 100</label>
@@ -200,4 +182,55 @@
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
 
+	<!-- Supported FRITZ! groups and features -->
+	<thing-type id="FRITZ_GROUP_HEATING">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
+		</supported-bridge-type-refs>
+
+		<label>Heating Group</label>
+		<description>Group for heating thermostats.</description>
+
+		<channels>
+			<channel id="mode" typeId="mode" />
+			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
+			<channel id="actual_temp" typeId="actual_temp" />
+			<channel id="set_temp" typeId="set_temp" />
+			<channel id="eco_temp" typeId="eco_temp" />
+			<channel id="comfort_temp" typeId="comfort_temp" />
+			<channel id="radiator_mode" typeId="radiator_mode" />
+			<channel id="next_change" typeId="next_change" />
+			<channel id="next_temp" typeId="next_temp" />
+			<channel id="battery_low" typeId="system.low-battery" />
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzgroup" />
+	</thing-type>
+
+	<thing-type id="FRITZ_GROUP_SWITCH">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
+		</supported-bridge-type-refs>
+
+		<label>Switch Group</label>
+		<description>Group for switchable outlets and power meters.</description>
+
+		<channels>
+			<channel id="mode" typeId="mode" />
+			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
+			<channel id="energy" typeId="energy" />
+			<channel id="power" typeId="power" />
+			<channel id="outlet" typeId="outlet" />
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzgroup" />
+	</thing-type>
 </thing:thing-descriptions>

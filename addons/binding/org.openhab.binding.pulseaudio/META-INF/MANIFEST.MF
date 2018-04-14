@@ -29,5 +29,6 @@ Import-Package:
  org.openhab.binding.pulseaudio,
  org.openhab.binding.pulseaudio.handler,
  org.osgi.framework,
+ org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

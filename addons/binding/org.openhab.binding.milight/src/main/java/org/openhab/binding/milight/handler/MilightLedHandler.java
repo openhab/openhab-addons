@@ -27,9 +27,9 @@ import org.openhab.binding.milight.internal.protocol.MilightV2RGB;
 import org.openhab.binding.milight.internal.protocol.MilightV3RGBW;
 import org.openhab.binding.milight.internal.protocol.MilightV3White;
 import org.openhab.binding.milight.internal.protocol.MilightV6;
-import org.openhab.binding.milight.internal.protocol.MilightV6RGB_CW_WW;
-import org.openhab.binding.milight.internal.protocol.MilightV6RGB_IBOX;
-import org.openhab.binding.milight.internal.protocol.MilightV6RGB_W;
+import org.openhab.binding.milight.internal.protocol.MilightV6RGBCWWW;
+import org.openhab.binding.milight.internal.protocol.MilightV6RGBIBOX;
+import org.openhab.binding.milight.internal.protocol.MilightV6RGBW;
 import org.openhab.binding.milight.internal.protocol.QueuedSend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,7 +120,6 @@ public class MilightLedHandler extends BaseThingHandler {
                 }
                 break;
             }
-
             case MilightBindingConstants.CHANNEL_BRIGHTNESS: {
                 if (command instanceof OnOffType) {
                     OnOffType s = (OnOffType) command;
@@ -224,11 +223,11 @@ public class MilightLedHandler extends BaseThingHandler {
             } else if (thing.getThingTypeUID().equals(MilightBindingConstants.RGB_THING_TYPE)) {
                 bulbCom = new MilightV3RGBW(com, zone);
             } else if (thing.getThingTypeUID().equals(MilightBindingConstants.RGB_IBOX_THING_TYPE)) {
-                bulbCom = new MilightV6RGB_IBOX(com, ((MilightBridgeV6Handler) brHandler).getSessionManager());
+                bulbCom = new MilightV6RGBIBOX(com, ((MilightBridgeV6Handler) brHandler).getSessionManager());
             } else if (thing.getThingTypeUID().equals(MilightBindingConstants.RGB_CW_WW_THING_TYPE)) {
-                bulbCom = new MilightV6RGB_CW_WW(com, ((MilightBridgeV6Handler) brHandler).getSessionManager(), zone);
+                bulbCom = new MilightV6RGBCWWW(com, ((MilightBridgeV6Handler) brHandler).getSessionManager(), zone);
             } else if (thing.getThingTypeUID().equals(MilightBindingConstants.RGB_W_THING_TYPE)) {
-                bulbCom = new MilightV6RGB_W(com, ((MilightBridgeV6Handler) brHandler).getSessionManager(), zone);
+                bulbCom = new MilightV6RGBW(com, ((MilightBridgeV6Handler) brHandler).getSessionManager(), zone);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bulb type not supported!");
             }

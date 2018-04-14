@@ -1,7 +1,7 @@
 {
 	"devices": {
 		"cameras": {
-			"camera1": {
+			"_LK8j9rRXwCKEBOtDo7JskNxzWfHBOIm3CLouCT3FQZzrvokK_DzFQ": {
 				"app_url": "nestmobile://cameras/CjZfTEs4ajlyUlh3Q0tFQk90RG83SnNrTnh6V2ZIQk9JbTNDTG91Q1QzRlFaenJ2b2tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQjc2ejhSWFl3SFFxWXFrSWx2QlpxN1gyeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9ESvlhJF0D7vG8Y0TFV39zX1vIOsWrv8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc",
 				"device_id": "_LK8j9rRXwCKEBOtDo7JskNxzWfHBOIm3CLouCT3FQZzrvokK_DzFQ",
 				"is_audio_input_enabled": true,
@@ -33,7 +33,7 @@
 				"web_url": "https://home.nest.com/cameras/CjZfTEs4ajlyUlh3Q0tFQk90RG83SnNrTnh6V2ZIQk9JbTNDTG91Q1QzRlFaenJ2b2tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQjc2ejhSWFl3SFFxWXFrSWx2QlpxN1gyeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9ESvlhJF0D7vG8Y0TFV39zX1vIOsWrv8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc",
 				"where_id": "z8fK075vJJPPWnXxLx1m3GskRSZQ64iQydB59k-UPsKCxvyZfxNpKA"
 			},
-			"camera2": {
+			"VG7C7BU6Zf8OjEfizmBCVnwnuKHSnOBIHgbQKa57xKJzrvokK_DzFQ": {
 				"app_url": "nestmobile://cameras/CjZWRzdDN0JVNlpmOE9qRWZpem1CQ1Zud251S0hTbk9CSUhnYlFLYTU3eEtKenJ2b2tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQjc2ejhSWFl3SFFxWXFrSWx2QlpxN1gyeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9ESvlhJF0D7vG8Y0TFV39zX1vIOsWrv8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc",
 				"device_id": "VG7C7BU6Zf8OjEfizmBCVnwnuKHSnOBIHgbQKa57xKJzrvokK_DzFQ",
 				"is_audio_input_enabled": true,
@@ -59,7 +59,7 @@
 			}
 		},
 		"smoke_co_alarms": {
-			"smoke1": {
+			"p1b1oySOcs_sbi4iczruW3Ou-iQr8PMV": {
 				"battery_health": "ok",
 				"co_alarm_state": "ok",
 				"device_id": "p1b1oySOcs_sbi4iczruW3Ou-iQr8PMV",
@@ -76,7 +76,7 @@
 				"where_id": "z8fK075vJJPPWnXxLx1m3GskRSZQ64iQydB59k-UPsIm5E0NfJPeeg",
 				"where_name": "Downstairs"
 			},
-			"smoke2": {
+			"p1b1oySOcs8W9WwaNu80oXOu-iQr8PMV": {
 				"battery_health": "ok",
 				"co_alarm_state": "ok",
 				"device_id": "p1b1oySOcs8W9WwaNu80oXOu-iQr8PMV",
@@ -94,7 +94,7 @@
 				"where_id": "z8fK075vJJPPWnXxLx1m3GskRSZQ64iQydB59k-UPsKCxvyZfxNpKA",
 				"where_name": "Upstairs"
 			},
-			"smoke3": {
+			"p1b1oySOcs-OJHIgmgeMkHOu-iQr8PMV": {
 				"battery_health": "ok",
 				"co_alarm_state": "ok",
 				"device_id": "p1b1oySOcs-OJHIgmgeMkHOu-iQr8PMV",
@@ -112,7 +112,7 @@
 				"where_id": "6UAWzz8czKpFrH6EK3AcjDiTjbRgts8x5MJxEnn1yKKQpYTBO7n2UQ",
 				"where_name": "Downstairs Kitchen"
 			},
-			"smoke4": {
+			"p1b1oySOcs8Qu7IAJVrQ7XOu-iQr8PMV": {
 				"battery_health": "ok",
 				"co_alarm_state": "ok",
 				"device_id": "p1b1oySOcs8Qu7IAJVrQ7XOu-iQr8PMV",
@@ -132,7 +132,7 @@
 			}
 		},
 		"thermostats": {
-			"therm1": {
+			"G1jouHN5yl6mXFaQw5iGwXOu-iQr8PMV": {
 				"ambient_temperature_c": 19.0,
 				"ambient_temperature_f": 66,
 				"away_temperature_high_c": 24.0,
@@ -177,7 +177,7 @@
 				"target_temperature_high_f": 75,
 				"target_temperature_low_c": 20.0,
 				"target_temperature_low_f": 68,
-				"temperature_scale": "F",
+				"temperature_scale": "C",
 				"time_to_target": "~0",
 				"time_to_target_training": "ready",
 				"where_id": "z8fK075vJJPPWnXxLx1m3GskRSZQ64iQydB59k-UPsKQrCrjN0yXiw",
@@ -190,7 +190,7 @@
 		"client_version": 1
 	},
 	"structures": {
-		"struct1": {
+		"ysCnsCaq1pQwKUPP9H4AqE943C1XtLin3x6uCVN5Qh09IDyTg7Ey5A": {
 			"away": "home",
 			"cameras": [
 				"_LK8j9rRXwCKEBOtDo7JskNxzWfHBOIm3CLouCT3FQZzrvokK_DzFQ",

@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.avmfritz;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,18 +22,23 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
  *         DECT
- *
+ * @author Christoph Weitkamp - Added support for groups
  */
 @NonNullByDefault
 public class BindingConstants {
 
+    public static final String INVALID_PATTERN = "[^a-zA-Z0-9_]";
+
     public static final String BINDING_ID = "avmfritz";
     public static final String CONFIG_IP_ADDRESS = "ipAddress";
+    public static final String CONFIG_PROTOCOL = "protocol";
     public static final String CONFIG_USER = "user";
     public static final String CONFIG_PASSWORD = "password";
+    public static final String CONFIG_POLLING_INTERVAL = "pollingInterval";
+    public static final String CONFIG_SYNC_TIMEOUT = "syncTimeout";
     public static final String BRIDGE_FRITZBOX = "fritzbox";
-    public static final String BRIDGE_MODEL_NAME = "FRITZ!Box";
-    public static final String PL546E_MODEL_NAME = "FRITZ!Powerline";
+    public static final String BOX_MODEL_NAME = "FRITZ!Box";
+    public static final String POWERLINE_MODEL_NAME = "FRITZ!Powerline";
     public static final String THING_AIN = "ain";
 
     // List of main device types
@@ -45,6 +51,10 @@ public class BindingConstants {
     public static final String DEVICE_PL546E_STANDALONE = "FRITZ_Powerline_546E_Solo";
     public static final String DEVICE_COMETDECT = "Comet_DECT";
 
+    // List of main group types
+    public static final String GROUP_HEATING = "FRITZ_GROUP_HEATING";
+    public static final String GROUP_SWITCH = "FRITZ_GROUP_SWITCH";
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_FRITZBOX);
     public static final ThingTypeUID DECT301_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT301);
@@ -56,6 +66,12 @@ public class BindingConstants {
     public static final ThingTypeUID PL546E_STANDALONE_THING_TYPE = new ThingTypeUID(BINDING_ID,
             DEVICE_PL546E_STANDALONE);
     public static final ThingTypeUID COMETDECT_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_COMETDECT);
+    public static final ThingTypeUID GROUP_HEATING_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_HEATING);
+    public static final ThingTypeUID GROUP_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_SWITCH);
+
+    // List of all Properties
+    public static final String PROPERTY_MASTER = "master";
+    public static final String PROPERTY_MEMBERS = "members";
 
     // List of all Channel ids
     public static final String CHANNEL_MODE = "mode";
@@ -94,15 +110,18 @@ public class BindingConstants {
     public static final String MODE_BOOST = "BOOST";
     public static final String MODE_UNKNOWN = "UNKNOWN";
 
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Stream
-            .of(DECT100_THING_TYPE, DECT200_THING_TYPE, DECT210_THING_TYPE, DECT300_THING_TYPE, DECT301_THING_TYPE,
-                    PL546E_THING_TYPE, COMETDECT_THING_TYPE)
-            .collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(DECT100_THING_TYPE, DECT200_THING_TYPE, DECT210_THING_TYPE, DECT300_THING_TYPE,
+                    DECT301_THING_TYPE, PL546E_THING_TYPE, COMETDECT_THING_TYPE).collect(Collectors.toSet()));
 
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Stream
-            .of(BRIDGE_THING_TYPE, PL546E_STANDALONE_THING_TYPE).collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(GROUP_HEATING_THING_TYPE, GROUP_SWITCH_THING_TYPE).collect(Collectors.toSet()));
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .concat(SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(), SUPPORTED_BRIDGE_THING_TYPES_UIDS.stream())
-            .collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(BRIDGE_THING_TYPE, PL546E_STANDALONE_THING_TYPE).collect(Collectors.toSet()));
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
+            .of(SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(), SUPPORTED_GROUP_THING_TYPES_UIDS.stream(),
+                    SUPPORTED_BRIDGE_THING_TYPES_UIDS.stream())
+            .reduce(Stream::concat).orElseGet(Stream::empty).collect(Collectors.toSet()));
 }

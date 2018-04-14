@@ -17,9 +17,11 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.orvibo.OrviboBindingConstants;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,7 @@ import com.github.tavalin.s20.Socket;
  *
  * @author Daniel Walters - Initial contribution
  */
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.orvibo")
 public class SocketDiscoveryService extends AbstractDiscoveryService implements SocketDiscoveryListener {
 
     private final Logger logger = LoggerFactory.getLogger(SocketDiscoveryService.class);

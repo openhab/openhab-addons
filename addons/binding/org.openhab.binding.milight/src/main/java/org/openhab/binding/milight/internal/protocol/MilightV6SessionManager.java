@@ -35,16 +35,16 @@ import org.slf4j.LoggerFactory;
  * with our own client session bytes included.
  *
  * The response will assign as session bytes that we can use for subsequent commands
- * (@see MilightV6SessionManager.sid1} and {@see MilightV6SessionManager.sid2}.
+ * see {@link MilightV6SessionManager#sid1} and see {@link MilightV6SessionManager#sid2}.
  *
  * We register ourself to the bridge now and finalise the handshake by sending a register command
- * {@see MilightV6SessionManager.send_registration} to the bridge.
+ * see {@link MilightV6SessionManager#sendRegistration()} to the bridge.
  *
  * From this point on we are required to send keep alive packets to the bridge every ~10sec
  * to keep the session alive. Because each command we send is confirmed by the bridge, we know if
  * our session is still valid and can redo the session handshake if necessary.
  *
- * @author David Graeff <david.graeff@web.de>
+ * @author David Graeff - Initial contribution
  * @since 2.1
  */
 public class MilightV6SessionManager implements Runnable {
@@ -52,9 +52,9 @@ public class MilightV6SessionManager implements Runnable {
 
     // The used sequence number for a command will be present in the response of the iBox. This
     // allows us to identify failed command deliveries.
-    private byte sequence_no = 0;
+    private byte sequenceNo = 0;
     // The sequence number is 16 bits, we use 8 bits only and a fixed value for the other 8 bits.
-    private byte fixed_seq_no = 0x00;
+    private byte fixedSeqNo = 0x00;
 
     // Password bytes 1 and 2
     private byte pw1 = 0;
@@ -65,11 +65,11 @@ public class MilightV6SessionManager implements Runnable {
     private byte sid2 = 0;
 
     // Client session bytes 1 and 2. Those are fixed for now.
-    private byte client_sid1 = (byte) 0xab;
-    private byte client_sid2 = (byte) 0xde;
+    private byte clientSID1 = (byte) 0xab;
+    private byte clientSID2 = (byte) 0xde;
 
     // We need the bridge mac (bridge ID) in many responses to the session commands.
-    private byte[] BRIDGE_MAC = { (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0 };
+    private byte[] bridgeMAC = { (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0 };
 
     /**
      * The session handshake is a 3 way handshake.
@@ -101,7 +101,7 @@ public class MilightV6SessionManager implements Runnable {
     // Quits the receive thread if set to true
     private boolean willbeclosed = false;
     // Keep track of send commands and their sequence number
-    private Map<Byte, Long> used_sequence_no = new TreeMap<Byte, Long>();
+    private Map<Byte, Long> usedSequenceNo = new TreeMap<Byte, Long>();
     // The receive thread for all bridge responses.
     private Thread sessionThread;
 
@@ -144,7 +144,7 @@ public class MilightV6SessionManager implements Runnable {
         this.observer = observer;
         this.lastKnownIP = lastKnownIP;
         for (int i = 0; i < 6; ++i) {
-            BRIDGE_MAC[i] = Integer.valueOf(bridgeId.substring(i * 2, i * 2 + 2), 16).byteValue();
+            bridgeMAC[i] = Integer.valueOf(bridgeId.substring(i * 2, i * 2 + 2), 16).byteValue();
         }
         sessionThread = new Thread(this, "SessionThread");
         sessionThread.start();
@@ -197,25 +197,25 @@ public class MilightV6SessionManager implements Runnable {
     // The bridge response will remove the queued number. This method also checks
     // for non confirmed sequence numbers older that 2 seconds and report them.
     public byte getNextSequenceNo1() {
-        return fixed_seq_no;
+        return fixedSeqNo;
     }
 
     // Get the second byte of a new sequence number. Add that to a queue of used sequence numbers.
     // The bridge response will remove the queued number. This method also checks
     // for non confirmed sequence numbers older that 2 seconds and report them.
     byte getNextSequenceNo2() {
-        byte t = sequence_no;
+        byte t = sequenceNo;
         long current = System.currentTimeMillis();
-        used_sequence_no.put(t, current);
+        usedSequenceNo.put(t, current);
         // Check old seq no:
-        for (Iterator<Map.Entry<Byte, Long>> it = used_sequence_no.entrySet().iterator(); it.hasNext();) {
+        for (Iterator<Map.Entry<Byte, Long>> it = usedSequenceNo.entrySet().iterator(); it.hasNext();) {
             Map.Entry<Byte, Long> entry = it.next();
             if (entry.getValue() + 2000 < current) {
                 logger.warn("Command not confirmed: {}", entry.getKey());
                 it.remove();
             }
         }
-        ++sequence_no;
+        ++sequenceNo;
         return t;
     }
 
@@ -234,10 +234,10 @@ public class MilightV6SessionManager implements Runnable {
         sessionThread = null;
     }
 
-    private byte[] search_for_packet() {
-        return new byte[] { (byte) 0x10, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x0A, (byte) 0x02, client_sid1,
-                client_sid2, (byte) 0x01, BRIDGE_MAC[0], BRIDGE_MAC[1], BRIDGE_MAC[2], BRIDGE_MAC[3], BRIDGE_MAC[4],
-                BRIDGE_MAC[5] };
+    private byte[] searchForPacket() {
+        return new byte[] { (byte) 0x10, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x0A, (byte) 0x02, clientSID1,
+                clientSID2, (byte) 0x01, bridgeMAC[0], bridgeMAC[1], bridgeMAC[2], bridgeMAC[3], bridgeMAC[4],
+                bridgeMAC[5] };
     }
 
     /**
@@ -249,12 +249,12 @@ public class MilightV6SessionManager implements Runnable {
      *
      * @throws InterruptedException
      */
-    private void send_search_for_broadcast() throws InterruptedException {
+    private void sendSearchForBroadcast() throws InterruptedException {
         byte[] buf = new byte[1000];
 
         DatagramPacket p = new DatagramPacket(buf, buf.length);
         p.setPort(sendQueue.getPort());
-        p.setData(search_for_packet());
+        p.setData(searchForPacket());
         if (lastKnownIP != null) {
             p.setAddress(lastKnownIP);
             try {
@@ -299,21 +299,21 @@ public class MilightV6SessionManager implements Runnable {
 
     // Search for a specific bridge (our bridge). A response will assign us session bytes.
     // private void send_search_for() {
-    // sendQueue.queue(AbstractBulbInterface.CAT_SESSION, search_for_packet());
+    // sendQueue.queue(AbstractBulbInterface.CAT_SESSION, searchForPacket());
     // }
 
-    private void send_establish_session() {
+    private void sendEstablishSession() {
         byte unknown = (byte) 0x1E; // TODO: Either checksum or counter. Was 64 and 1e so far.
         byte[] t = { (byte) 0x20, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x16, (byte) 0x02, (byte) 0x62,
                 (byte) 0x3A, (byte) 0xD5, (byte) 0xED, (byte) 0xA3, (byte) 0x01, (byte) 0xAE, (byte) 0x08, (byte) 0x2D,
-                (byte) 0x46, (byte) 0x61, (byte) 0x41, (byte) 0xA7, (byte) 0xF6, (byte) 0xDC, (byte) 0xAF, client_sid1,
-                client_sid2, (byte) 0x00, (byte) 0x00, unknown };
+                (byte) 0x46, (byte) 0x61, (byte) 0x41, (byte) 0xA7, (byte) 0xF6, (byte) 0xDC, (byte) 0xAF, clientSID1,
+                clientSID2, (byte) 0x00, (byte) 0x00, unknown };
         sendQueue.queue(QueueItem.createNonRepeatable(AbstractBulbInterface.CAT_SESSION, t));
     }
 
     // Some apps first send {@see send_establish_session} and with the aquired session bytes they
     // subsequently send this command for establishing the session. This is not well documented unfortunately.
-    void send_pre_registration() {
+    void sendPreRegistration() {
         byte[] t = { 0x30, 0, 0, 0, 3, sid1, sid2, 1, 0 };
         sendQueue.queue(QueueItem.createNonRepeatable(AbstractBulbInterface.CAT_SESSION, t));
     }
@@ -321,7 +321,7 @@ public class MilightV6SessionManager implements Runnable {
     // After the bridges knows our client session bytes and we know the bridge session bytes, we do a final
     // registration with this command. The response will again contain the bridge ID and the session should
     // be established by then.
-    void send_registration() {
+    void sendRegistration() {
         byte[] t = { (byte) 0x80, 0x00, 0x00, 0x00, 0x11, sid1, sid2, getNextSequenceNo1(), getNextSequenceNo2(), 0x00,
                 0x33, pw1, pw2, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, (byte) (0x33 + pw1 + pw2) };
         sendQueue.queue(QueueItem.createNonRepeatable(AbstractBulbInterface.CAT_SESSION, t));
@@ -331,17 +331,17 @@ public class MilightV6SessionManager implements Runnable {
      * This will send keep alive messages and check for confirmed keep alive messages. If no valid confirmation for
      * a period of time has been received, we reestablish the session.
      *
-     * @param periodic_interval_ms How often this method is called in ms. This is used to determine if a session is
+     * @param periodicIntervalMs How often this method is called in ms. This is used to determine if a session is
      *            still valid.
      * @throws InterruptedException
      */
-    public void keep_alive(int periodic_interval_ms) throws InterruptedException {
-        if (lastSessionConfirmed != 0 && lastSessionConfirmed + 2 * periodic_interval_ms < System.currentTimeMillis()) {
+    public void keepAlive(int periodicIntervalMs) throws InterruptedException {
+        if (lastSessionConfirmed != 0 && lastSessionConfirmed + 2 * periodicIntervalMs < System.currentTimeMillis()) {
             sessionState = SessionState.SESSION_INVALID;
             lastSessionConfirmed = 0;
         }
         if (sessionState == SessionState.SESSION_INVALID) {
-            session_handshake_process();
+            sessionHandshakeProcess();
         } else if (sessionState == SessionState.SESSION_VALID) {
             byte[] t = { (byte) 0xD0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x02, sid1, sid2 };
             sendQueue.queue(QueueItem.createNonRepeatable(AbstractBulbInterface.CAT_KEEP_ALIVE, t));
@@ -354,25 +354,25 @@ public class MilightV6SessionManager implements Runnable {
      *
      * @throws InterruptedException
      */
-    private void session_handshake_process() throws InterruptedException {
-        stop_timeout_timer();
+    private void sessionHandshakeProcess() throws InterruptedException {
+        stopTimeoutTimer();
 
         switch (sessionState) {
             case SESSION_INVALID:
                 sessionState = SessionState.SESSION_WAIT_FOR_BRIDGE;
                 observer.sessionStateChanged(sessionState);
-                send_search_for_broadcast();
+                sendSearchForBroadcast();
                 break;
             case SESSION_WAIT_FOR_BRIDGE:
-                send_search_for_broadcast();
+                sendSearchForBroadcast();
                 break;
             case SESSION_WAIT_FOR_BRIDGE_SID:
                 observer.sessionStateChanged(sessionState);
-                send_establish_session();
+                sendEstablishSession();
                 break;
             case SESSION_NEED_REGISTER:
                 observer.sessionStateChanged(sessionState);
-                send_registration();
+                sendRegistration();
                 break;
             case SESSION_VALID:
                 observer.sessionStateChanged(sessionState);
@@ -384,13 +384,13 @@ public class MilightV6SessionManager implements Runnable {
 
         checkHandshakeTimer = scheduler.schedule(() -> {
             try {
-                reset_registration_process();
+                resetRegistrationProcess();
             } catch (InterruptedException ignored) {
             }
         }, REG_TIMEOUT_SEC, TimeUnit.SECONDS);
     }
 
-    private void stop_timeout_timer() {
+    private void stopTimeoutTimer() {
         if (checkHandshakeTimer != null) {
             checkHandshakeTimer.cancel(false);
             checkHandshakeTimer = null;
@@ -398,14 +398,14 @@ public class MilightV6SessionManager implements Runnable {
 
     }
 
-    private void reset_registration_process() throws InterruptedException {
+    private void resetRegistrationProcess() throws InterruptedException {
         if (sessionState != SessionState.SESSION_WAIT_FOR_BRIDGE) {
             logger.warn("Session registration aborted by timeout timer!");
         }
         // One reason we failed, might be that a last known IP is not correct anymore.
         lastKnownIP = null;
         sessionState = SessionState.SESSION_WAIT_FOR_BRIDGE;
-        session_handshake_process();
+        sessionHandshakeProcess();
     }
 
     private void logUnknownPacket(byte[] data, int len, String reason) {
@@ -427,24 +427,24 @@ public class MilightV6SessionManager implements Runnable {
                 logger.debug("MilightCommunicationV6 receive thread ready");
             }
             byte[] buffer = new byte[1024];
-            DatagramPacket r_packet = new DatagramPacket(buffer, buffer.length);
+            DatagramPacket rPacket = new DatagramPacket(buffer, buffer.length);
 
-            session_handshake_process();
+            sessionHandshakeProcess();
 
             // Now loop forever, waiting to receive packets and printing them.
             while (!willbeclosed) {
-                r_packet.setLength(buffer.length);
-                sendQueue.getSocket().receive(r_packet);
-                int len = r_packet.getLength();
+                rPacket.setLength(buffer.length);
+                sendQueue.getSocket().receive(rPacket);
+                int len = rPacket.getLength();
 
                 if (len < 5 || buffer[1] != 0 || buffer[2] != 0 || buffer[3] != 0) {
                     logUnknownPacket(buffer, len, "Not an iBox response!");
                     continue;
                 }
 
-                int expected_len = buffer[4] + 5;
+                int expectedLen = buffer[4] + 5;
 
-                if (expected_len > len) {
+                if (expectedLen > len) {
                     logUnknownPacket(buffer, len, "Unexpected size!");
                     continue;
                 }
@@ -456,7 +456,7 @@ public class MilightV6SessionManager implements Runnable {
                     // Response to the v6 SEARCH and the SEARCH FOR commands to look for new or known devices. A client
                     // session id will be transfered in this process (!= session id)
                     case (byte) 0x18: {
-                        boolean eq = ByteBuffer.wrap(BRIDGE_MAC, 0, 6).equals(ByteBuffer.wrap(buffer, 6, 6));
+                        boolean eq = ByteBuffer.wrap(bridgeMAC, 0, 6).equals(ByteBuffer.wrap(buffer, 6, 6));
                         if (eq) {
                             if (DEBUG_SESSION) {
                                 logger.debug("Session ID reestablished");
@@ -464,8 +464,8 @@ public class MilightV6SessionManager implements Runnable {
                             if (sessionState == SessionState.SESSION_WAIT_FOR_BRIDGE) {
                                 sessionState = SessionState.SESSION_WAIT_FOR_BRIDGE_SID;
                             }
-                            sendQueue.setAddress(r_packet.getAddress());
-                            session_handshake_process();
+                            sendQueue.setAddress(rPacket.getAddress());
+                            sessionHandshakeProcess();
                         } else {
                             logger.info("Session ID received, but not for our bridge ({})", bridgeId);
                             logUnknownPacket(buffer, len, "ID not matching");
@@ -477,7 +477,7 @@ public class MilightV6SessionManager implements Runnable {
                     // Response to the keepAlive() packet if session is not valid yet.
                     // Should contain the session ids
                     case (byte) 0x28: {
-                        boolean eq = ByteBuffer.wrap(BRIDGE_MAC, 0, 6).equals(ByteBuffer.wrap(buffer, 7, 6));
+                        boolean eq = ByteBuffer.wrap(bridgeMAC, 0, 6).equals(ByteBuffer.wrap(buffer, 7, 6));
                         if (eq) {
                             if (DEBUG_SESSION) {
                                 logger.debug("Session ID received: {}",
@@ -487,7 +487,7 @@ public class MilightV6SessionManager implements Runnable {
                             if (sessionState == SessionState.SESSION_WAIT_FOR_BRIDGE_SID) {
                                 sessionState = SessionState.SESSION_NEED_REGISTER;
                             }
-                            session_handshake_process();
+                            sessionHandshakeProcess();
                         } else {
                             logger.info("Session ID received, but not for our bridge ({})", bridgeId);
                             logUnknownPacket(buffer, len, "ID not matching");
@@ -498,10 +498,10 @@ public class MilightV6SessionManager implements Runnable {
                     // 80 00 00 00 15 (AC CF 23 F5 7A D4) 05 02 00 34 00 00 00 00 00 00 00 00 00 00 34
                     // Response to the registration packet
                     case (byte) 0x80: {
-                        boolean eq = ByteBuffer.wrap(BRIDGE_MAC, 0, 6).equals(ByteBuffer.wrap(buffer, 5, 6));
+                        boolean eq = ByteBuffer.wrap(bridgeMAC, 0, 6).equals(ByteBuffer.wrap(buffer, 5, 6));
                         if (eq) {
                             sessionState = SessionState.SESSION_VALID;
-                            session_handshake_process();
+                            sessionHandshakeProcess();
                             if (DEBUG_SESSION) {
                                 logger.debug("Registration complete");
                             }
@@ -513,7 +513,7 @@ public class MilightV6SessionManager implements Runnable {
                     }
                     // 88 00 00 00 03 SN SN 00 // two byte sequence number, we use the later one only
                     case (byte) 0x88:
-                        used_sequence_no.remove(buffer[6]);
+                        usedSequenceNo.remove(buffer[6]);
                         if (buffer[07] == 0) {
                             if (DEBUG_SESSION) {
                                 logger.debug("Confirmation received for command: {}", String.valueOf(buffer[6]));
@@ -525,7 +525,7 @@ public class MilightV6SessionManager implements Runnable {
                     // D8 00 00 00 07 (AC CF 23 F5 7A D4) 01
                     // Response to the keepAlive() packet
                     case (byte) 0xD8: {
-                        boolean eq = ByteBuffer.wrap(BRIDGE_MAC, 0, 6).equals(ByteBuffer.wrap(buffer, 5, 6));
+                        boolean eq = ByteBuffer.wrap(bridgeMAC, 0, 6).equals(ByteBuffer.wrap(buffer, 5, 6));
                         if (eq) {
                             sessionState = SessionState.SESSION_VALID;
                             lastSessionConfirmed = System.currentTimeMillis();

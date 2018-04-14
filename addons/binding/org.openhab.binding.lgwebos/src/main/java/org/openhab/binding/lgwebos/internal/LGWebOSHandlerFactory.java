@@ -26,7 +26,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Sebastian Prehn - initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.lgwebos")
 public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
     private LGWebOSDiscovery discovery;
 
@@ -41,7 +41,7 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
     }
 
     protected void unbindDiscovery(LGWebOSDiscovery discovery) {
-        discovery = null;
+        this.discovery = null;
     }
 
     @Override

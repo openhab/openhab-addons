@@ -70,8 +70,8 @@ public class FeedHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         checkConfiguration();
+        updateStatus(ThingStatus.UNKNOWN);
         startAutomaticRefresh();
-        updateStatus(ThingStatus.ONLINE);
     }
 
     /**

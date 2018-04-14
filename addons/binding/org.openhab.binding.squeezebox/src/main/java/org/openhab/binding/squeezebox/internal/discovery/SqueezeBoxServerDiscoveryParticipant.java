@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.squeezebox.internal.utils.HttpUtils;
+import org.openhab.binding.squeezebox.internal.utils.SqueezeBoxCommunicationException;
 import org.openhab.binding.squeezebox.internal.utils.SqueezeBoxNotAuthorizedException;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -61,13 +62,17 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
             String host = uri.getHost();
             int webPort = uri.getPort();
             int cliPort = 0;
+            int defaultCliPort = 9090;
 
             try {
                 cliPort = HttpUtils.getCliPort(host, webPort);
             } catch (SqueezeBoxNotAuthorizedException e) {
-                logger.debug("Not authorized to query CLI port from Squeeze Server. Setting CLI to default of 9090");
-                cliPort = 9090;
-            } catch (Exception e) {
+                logger.debug("Not authorized to query CLI port. Using default of {}", defaultCliPort);
+                cliPort = defaultCliPort;
+            } catch (NumberFormatException e) {
+                logger.debug("Badly formed CLI port. Using default of {}", defaultCliPort);
+                cliPort = defaultCliPort;
+            } catch (SqueezeBoxCommunicationException e) {
                 logger.debug("Could not get cli port: {}", e.getMessage(), e);
                 return null;
             }
@@ -91,14 +96,12 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
 
     @Override
     public ThingUID getThingUID(RemoteDevice device) {
-        if (device != null) {
-            if (device.getDetails().getFriendlyName() != null) {
-                if (device.getDetails().getModelDetails().getModelName().contains(MODEL_NAME)) {
-                    logger.debug("Discovered a {} thing with UDN '{}'", device.getDetails().getFriendlyName(),
-                            device.getIdentity().getUdn().getIdentifierString());
-                    return new ThingUID(SQUEEZEBOXSERVER_THING_TYPE,
-                            device.getIdentity().getUdn().getIdentifierString().toUpperCase());
-                }
+        if (device.getDetails().getFriendlyName() != null) {
+            if (device.getDetails().getModelDetails().getModelName().contains(MODEL_NAME)) {
+                logger.debug("Discovered a {} thing with UDN '{}'", device.getDetails().getFriendlyName(),
+                        device.getIdentity().getUdn().getIdentifierString());
+                return new ThingUID(SQUEEZEBOXSERVER_THING_TYPE,
+                        device.getIdentity().getUdn().getIdentifierString().toUpperCase());
             }
         }
         return null;

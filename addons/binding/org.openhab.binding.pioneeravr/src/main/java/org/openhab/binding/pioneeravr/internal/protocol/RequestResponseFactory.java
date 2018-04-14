@@ -15,8 +15,7 @@ import org.openhab.binding.pioneeravr.internal.protocol.ip.IpAvrConnection;
 /**
  * Factory that allows to build IpControl commands/responses.
  *
- * @author Antoine Besnard
- *
+ * @author Antoine Besnard - Initial contribution
  */
 public final class RequestResponseFactory {
 

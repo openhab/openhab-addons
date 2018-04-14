@@ -8,17 +8,15 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
-
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_CHANNEL1_AMPS;
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_CHANNEL2_AMPS;
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_CHANNEL3_AMPS;
-import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
 /**
  * RFXCOM data class for current message.

@@ -11,8 +11,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.junit.Assert.assertEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComTemperatureRainMessage.SubType.WS1200;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
@@ -26,7 +25,7 @@ public class RFXComTemperatureRainMessageTest {
     @Test
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "0A4F01CCF001004F03B759";
-        byte[] message = DatatypeConverter.parseHexBinary(hexMessage);
+        byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComTemperatureRainMessage msg = (RFXComTemperatureRainMessage) RFXComMessageFactory.createMessage(message);
         assertEquals("SubType", WS1200, msg.subType);
         assertEquals("Seq Number", 204, (short) (msg.seqNbr & 0xFF));
@@ -37,6 +36,6 @@ public class RFXComTemperatureRainMessageTest {
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
     }
 }

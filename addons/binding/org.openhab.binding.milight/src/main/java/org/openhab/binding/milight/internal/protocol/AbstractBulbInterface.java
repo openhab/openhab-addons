@@ -15,7 +15,7 @@ import org.openhab.binding.milight.internal.MilightThingState;
 /**
  * Implement this bulb interface for each new bulb type. It is used by {@see MilightLedHandler} to handle commands.
  *
- * @author David Graeff <david.graeff@web.de>
+ * @author David Graeff - Initial contribution
  * @since 2.1
  */
 public abstract class AbstractBulbInterface {
@@ -44,13 +44,13 @@ public abstract class AbstractBulbInterface {
      */
     public abstract void nightMode(MilightThingState state);
 
-    public abstract void setColorTemperature(int color_temp, MilightThingState state);
+    public abstract void setColorTemperature(int colorTemp, MilightThingState state);
 
-    public abstract void changeColorTemperature(int color_temp_relative, MilightThingState state);
+    public abstract void changeColorTemperature(int colorTempRelative, MilightThingState state);
 
     public abstract void setBrightness(int value, MilightThingState state);
 
-    public abstract void changeBrightness(int relative_brightness, MilightThingState state);
+    public abstract void changeBrightness(int relativeBrightness, MilightThingState state);
 
     public abstract void setSaturation(int value, MilightThingState state);
 
@@ -60,7 +60,7 @@ public abstract class AbstractBulbInterface {
 
     public abstract void nextAnimationMode(MilightThingState state);
 
-    public abstract void changeSpeed(int relative_speed, MilightThingState state);
+    public abstract void changeSpeed(int relativeSpeed, MilightThingState state);
 
     /**
      * There can only be one command of a category in the send queue (to avoid
@@ -87,30 +87,31 @@ public abstract class AbstractBulbInterface {
     protected final QueuedSend sendQueue;
     protected final int zone;
     // Each bulb type including zone has to be unique. To realise this, each type has an offset.
-    protected final int type_offset;
+    protected final int typeOffset;
 
     /**
      * A bulb always belongs to a zone in the milight universe and we need a way to queue commands for being send.
      *
-     * @param type_offset Each bulb type including its zone has to be unique. To realise this, each type has an offset.
+     * @param typeOffset Each bulb type including its zone has to be unique. To realise this, each type has an offset.
      * @param sendQueue The send queue.
      * @param zone A zone, usually 0 means all bulbs of the same type. [0-4]
      * @throws SocketException
      */
-    public AbstractBulbInterface(int type_offset, QueuedSend sendQueue, int zone) {
+    public AbstractBulbInterface(int typeOffset, QueuedSend sendQueue, int zone) {
         this.sendQueue = sendQueue;
         this.zone = zone;
-        this.type_offset = type_offset;
+        this.typeOffset = typeOffset;
     }
 
     /**
      * Generates a unique command id for the {@see QueuedSend}. It incorporates the zone, bulb type and command
      * category.
-     * @param command_category The category of the command.
+     *
+     * @param commandCategory The category of the command.
      *
      * @return
      */
-    protected int uidc(int command_category) {
-        return (zone + type_offset + 1) * 64 + command_category;
+    protected int uidc(int commandCategory) {
+        return (zone + typeOffset + 1) * 64 + commandCategory;
     }
 }

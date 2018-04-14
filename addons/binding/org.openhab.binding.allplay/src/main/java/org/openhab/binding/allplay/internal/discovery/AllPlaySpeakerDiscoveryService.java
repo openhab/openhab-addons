@@ -36,7 +36,7 @@ import de.kaizencode.tchaikovsky.speaker.Speaker;
  *
  * @author Dominic Lerbs - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true)
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.allplay")
 public class AllPlaySpeakerDiscoveryService extends AbstractDiscoveryService implements SpeakerAnnouncedListener {
 
     private final Logger logger = LoggerFactory.getLogger(AllPlaySpeakerDiscoveryService.class);

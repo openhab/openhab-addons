@@ -18,7 +18,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.coolmasternet.handler.HVACHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link CoolMasterNetHandlerFactory} is responsible for creating things and thing
@@ -26,7 +25,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  *
  * @author Angus Gratton - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.coolmasternet", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.coolmasternet")
 public class CoolMasterNetHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

@@ -16,14 +16,12 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.commons.io.IOUtils;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpCommand;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpException;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpMessage;
@@ -34,11 +32,11 @@ import org.slf4j.LoggerFactory;
 /**
  * This class open a TCP/IP connection to the Onkyo device and send a command.
  *
- * @author Pauli Anttila
+ * @author Pauli Anttila - Initial contribution
  */
 public class OnkyoConnection {
 
-    private Logger logger = LoggerFactory.getLogger(OnkyoConnection.class);
+    private final Logger logger = LoggerFactory.getLogger(OnkyoConnection.class);
 
     /** default eISCP port. **/
     public static final int DEFAULT_EISCP_PORT = 60128;
@@ -61,14 +59,14 @@ public class OnkyoConnection {
 
     private String ip;
     private int port;
-    private Socket eiscpSocket = null;
-    private DataListener dataListener = null;
-    private DataOutputStream outStream = null;
-    private DataInputStream inStream = null;
-    private boolean connected = false;
-    private List<OnkyoEventListener> listeners = new ArrayList<OnkyoEventListener>();
+    private Socket eiscpSocket;
+    private DataListener dataListener;
+    private DataOutputStream outStream;
+    private DataInputStream inStream;
+    private boolean connected;
+    private List<OnkyoEventListener> listeners = new ArrayList<>();
     private int retryCount = 1;
-    private ConnectionSupervisor connectionSupervisor = null;
+    private ConnectionSupervisor connectionSupervisor;
 
     public OnkyoConnection(String ip) {
         this.ip = ip;
@@ -82,16 +80,14 @@ public class OnkyoConnection {
 
     /**
      * Open connection to the Onkyo device.
-     *
-     **/
+     */
     public void openConnection() {
         connectSocket();
     }
 
     /**
      * Closes the connection to the Onkyo device.
-     *
-     **/
+     */
     public void closeConnection() {
         closeSocket();
     }
@@ -118,13 +114,11 @@ public class OnkyoConnection {
      * @param cmd eISCP command to send
      */
     public void send(final String cmd, final String value) {
-
         try {
             sendCommand(new EiscpMessage.MessageBuilder().command(cmd).value(value).build());
         } catch (Exception e) {
             logger.warn("Could not send command to device on {}:{}: ", ip, port, e);
         }
-
     }
 
     private void sendCommand(EiscpMessage msg) {
@@ -137,16 +131,13 @@ public class OnkyoConnection {
      *
      * @param eiscpCmd the eISCP command to send.
      * @param retry retry count when connection fails.
-     **/
+     */
     private void sendCommand(EiscpMessage msg, int retry) {
-
         if (connectSocket()) {
             try {
-
                 String data = EiscpProtocol.createEiscpPdu(msg);
                 if (logger.isTraceEnabled()) {
-                    logger.trace("Sending {} bytes: {}", data.length(),
-                            DatatypeConverter.printHexBinary(data.toString().getBytes()));
+                    logger.trace("Sending {} bytes: {}", data.length(), HexUtils.bytesToHex(data.getBytes()));
                 }
 
                 outStream.writeBytes(data);
@@ -168,9 +159,8 @@ public class OnkyoConnection {
     /**
      * Connects to the receiver by opening a socket connection through the
      * IP and port.
-     **/
+     */
     private synchronized boolean connectSocket() {
-
         if (eiscpSocket == null || !connected || !eiscpSocket.isConnected()) {
             try {
                 // Creating a socket to connect to the server
@@ -198,7 +188,6 @@ public class OnkyoConnection {
                     dataListener = new DataListener();
                     dataListener.start();
                 }
-
             } catch (UnknownHostException unknownHost) {
                 logger.debug("You are trying to connect to an unknown host: {}", unknownHost.getMessage());
                 sendConnectionErrorEvent(unknownHost.getMessage());
@@ -215,7 +204,7 @@ public class OnkyoConnection {
      * Closes the socket connection.
      *
      * @return true if the closed successfully
-     **/
+     */
     private boolean closeSocket() {
         try {
             if (dataListener != null) {
@@ -257,25 +246,21 @@ public class OnkyoConnection {
      * @throws IOException
      * @throws InterruptedException
      * @throws EiscpException
-     **/
+     */
     private void waitStateMessages() throws NumberFormatException, IOException, InterruptedException, EiscpException {
-
         if (connected) {
-
             logger.trace("Waiting status messages");
 
             while (true) {
                 EiscpMessage message = EiscpProtocol.getNextMessage(inStream);
                 sendMessageEvent(message);
             }
-
         } else {
             throw new IOException("Not Connected to Receiver");
         }
     }
 
     private class DataListener extends Thread {
-
         private boolean interrupted = false;
 
         DataListener() {
@@ -288,7 +273,6 @@ public class OnkyoConnection {
 
         @Override
         public void run() {
-
             logger.debug("Data listener started");
 
             boolean restartConnection = false;
@@ -300,17 +284,11 @@ public class OnkyoConnection {
                     waitStateMessages();
                     connectionAttempts = 0;
                 } catch (EiscpException e) {
-
                     logger.debug("Error occurred during message waiting: {}", e.getMessage());
-
                 } catch (SocketTimeoutException e) {
-
                     logger.debug("No data received during supervision interval ({} ms)!", SOCKET_TIMEOUT);
-
                     restartConnection = true;
-
                 } catch (Exception e) {
-
                     if (!interrupted && !this.isInterrupted()) {
                         logger.debug("Error occurred during message waiting: {}", e.getMessage());
                         restartConnection = true;
@@ -342,7 +320,6 @@ public class OnkyoConnection {
                         logger.debug("Test connection to {}:{}", ip, port);
                         sendCommand(new EiscpMessage.MessageBuilder().command(EiscpCommand.POWER_QUERY.getCommand())
                                 .value(EiscpCommand.POWER_QUERY.getValue()).build());
-
                     } catch (Exception ex) {
                         logger.debug("Reconnection invoking error: {}", ex.getMessage());
                         sendConnectionErrorEvent(ex.getMessage());
@@ -389,12 +366,9 @@ public class OnkyoConnection {
     private void sendConnectionErrorEvent(String errorMsg) {
         // send message to event listeners
         try {
-            Iterator<OnkyoEventListener> iterator = listeners.iterator();
-
-            while (iterator.hasNext()) {
-                iterator.next().connectionError(ip, errorMsg);
+            for (OnkyoEventListener listener : listeners) {
+                listener.connectionError(ip, errorMsg);
             }
-
         } catch (Exception ex) {
             logger.debug("Event listener invoking error: {}", ex.getMessage());
         }
@@ -403,12 +377,9 @@ public class OnkyoConnection {
     private void sendMessageEvent(EiscpMessage message) {
         // send message to event listeners
         try {
-            Iterator<OnkyoEventListener> iterator = listeners.iterator();
-
-            while (iterator.hasNext()) {
-                iterator.next().statusUpdateReceived(ip, message);
+            for (OnkyoEventListener listener : listeners) {
+                listener.statusUpdateReceived(ip, message);
             }
-
         } catch (Exception e) {
             logger.debug("Event listener invoking error: {}", e.getMessage());
         }

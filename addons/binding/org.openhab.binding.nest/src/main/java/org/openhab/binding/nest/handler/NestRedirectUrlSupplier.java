@@ -37,11 +37,11 @@ public class NestRedirectUrlSupplier {
 
     private final Logger logger = LoggerFactory.getLogger(NestRedirectUrlSupplier.class);
 
-    private String cachedUrl = "";
+    protected String cachedUrl = "";
 
-    private Properties httpHeaders;
+    protected Properties httpHeaders;
 
-    NestRedirectUrlSupplier(Properties httpHeaders) {
+    public NestRedirectUrlSupplier(Properties httpHeaders) {
         this.httpHeaders = httpHeaders;
     }
 
