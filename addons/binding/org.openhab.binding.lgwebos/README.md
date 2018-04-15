@@ -98,8 +98,6 @@ sitemap demo label="Main Menu"
         Text item=LG_TV0_ChannelNo
         Switch item=LG_TV0_ChannelDummy icon="television" label="Kanal" mappings=[1="▲", 0="▼"]
         Text item=LG_TV0_Channel
-        Switch item=LG_TV0_ChannelDown
-        Switch item=LG_TV0_ChannelUp
         Default item=LG_TV0_Player
         Text item=LG_TV0_Application
         Selection item=LG_TV0_Application mappings=[
