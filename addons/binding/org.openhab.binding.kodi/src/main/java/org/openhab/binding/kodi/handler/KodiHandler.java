@@ -389,7 +389,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
      * Wait for the volume status to equal the targetVolume
      */
     private boolean waitForVolume(int targetVolume) {
-        int timeoutMaxCount = getConfigAs(KodiConfig.class).getNotificationTimeout().intValue(), timeoutCount = 0;
+        int timeoutMaxCount = 20, timeoutCount = 0;
         logger.trace("Waiting up to {} ms for the volume to be updated ...", timeoutMaxCount * 100);
         while (targetVolume != connection.getVolume() && timeoutCount < timeoutMaxCount) {
             try {
@@ -423,7 +423,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
      * Wait for the playlist state so that we know when the notification has started or finished playing
      */
     private boolean waitForPlaylistState(KodiPlaylistState playlistState) {
-        int timeoutMaxCount = getConfigAs(KodiConfig.class).getNotificationTimeout().intValue(), timeoutCount = 0;
+        int timeoutMaxCount = 20, timeoutCount = 0;
         logger.trace("Waiting up to {} ms for playlist state '{}' to be set ...", timeoutMaxCount * 100, playlistState);
         while (!playlistState.equals(connection.getPlaylistState()) && timeoutCount < timeoutMaxCount) {
             try {
@@ -473,7 +473,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
      */
     public PercentType getNotificationSoundVolume() {
         Integer notificationSoundVolume = getConfigAs(KodiConfig.class).getNotificationVolume();
-        if (notificationSoundVolume == 0) {
+        if (notificationSoundVolume == null) {
             // if no value is set we use the current volume instead
             return new PercentType(connection.getVolume());
         }

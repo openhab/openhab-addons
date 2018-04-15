@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This makes Kodi to serve as an {@link AudioSink}-
+ * This makes Kodi to serve as an {@link AudioSink}.
  *
  * @author Kai Kreuzer - Initial contribution and API
  * @author Paul Frank - Adapted for Kodi
