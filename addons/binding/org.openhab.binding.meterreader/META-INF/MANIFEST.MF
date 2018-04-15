@@ -37,6 +37,8 @@ Import-Package:
  org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.meterreader,
+Export-Package: gnu.io.factory;x-internal:=true,
+ gnu.io.rfc2217;x-internal:=true,
+ org.openhab.binding.meterreader;x-internal:=true,
  org.openhab.binding.meterreader.connectors
 Bundle-ActivationPolicy: lazy
