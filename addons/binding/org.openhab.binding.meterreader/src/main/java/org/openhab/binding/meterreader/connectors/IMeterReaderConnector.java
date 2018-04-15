@@ -9,7 +9,9 @@
 package org.openhab.binding.meterreader.connectors;
 
 import java.io.IOException;
-import java.util.function.Consumer;
+import java.time.Duration;
+
+import org.reactivestreams.Publisher;
 
 /**
  * Specifies the generic method to retrieve SML values from a device
@@ -21,17 +23,14 @@ public interface IMeterReaderConnector<T> {
 
     /**
      * Establishes the connection against the device and reads native encoded SML informations.
+     * Ensures that a connection is opened and notifies any attached listeners
      *
      * @param serialParmeter
-     *
+     * @param period hint for the connector to emit items in this time intervals.
      * @return native encoded SML informations from a device.
      * @throws IOException
      */
-    T getMeterValues(byte[] initMessage) throws IOException;
-
-    void addValueChangeListener(Consumer<T> changeListener);
-
-    void removeValueChangeListener(Consumer<T> changeListener);
+    Publisher<T> getMeterValues(byte[] initMessage, Duration period) throws IOException;
 
     /**
      * Open connection.

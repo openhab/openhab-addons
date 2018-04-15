@@ -13,7 +13,6 @@ import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.MessageFormat;
 
 import org.apache.commons.codec.binary.Hex;
@@ -36,14 +35,10 @@ import gnu.io.factory.DefaultSerialPortFactory;
  * @since 1.7.0
  */
 public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
-    SerialPort serialPort;
-    InputStream inputStream;
-    DataInputStream is;
 
-    /**
-     * The name of the port where the device is connected as defined in openHAB configuration.
-     */
-    private String portName;
+    private SerialPort serialPort;
+    private DataInputStream is;
+
     private DataOutputStream os;
     private int baudrate;
 
@@ -53,8 +48,7 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
      * @param portName the port where the device is connected as defined in openHAB configuration.
      */
     public SmlSerialConnector(String portName) {
-        super();
-        this.portName = portName;
+        super(portName);
     }
 
     /**
@@ -62,33 +56,21 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
      *
      * @param portName the port where the device is connected as defined in openHAB configuration.
      * @param baudrate
+     * @throws IOException
      */
     public SmlSerialConnector(String portName, int baudrate, int baudrateChangeDelay) {
-        super();
-        this.portName = portName;
+        this(portName);
         this.baudrate = baudrate;
     }
 
-    /**
-     * @throws IOException
-     * @throws ConnectorException
-     * @{inheritDoc}
-     */
     @Override
-    protected SmlFile getMeterValuesInternal(byte[] initMessage) throws IOException {
-
+    protected SmlFile readNext(byte[] initMessage) throws IOException {
         if (initMessage != null) {
             logger.debug("Writing init message: {}", Hex.encodeHexString(initMessage));
             os.write(initMessage);
             os.flush();
         }
-        try {
-            return new Transport().getSMLFile(is);
-        } catch (IOException e) {
-            logger.error("Error at SerialConnector.getMeterValuesInternal: {}", e.getMessage());
-            throw e;
-        }
-
+        return new Transport().getSMLFile(is);
     }
 
     /**
@@ -99,7 +81,8 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
     public void openConnection() throws IOException {
         DefaultSerialPortFactory serialPortFactory = new DefaultSerialPortFactory();
         try {
-            serialPort = serialPortFactory.createSerialPort(portName);
+            closeConnection();
+            serialPort = serialPortFactory.createSerialPort(getPortName());
             SerialParameter serialParameter = SerialParameter._8N1;
             int baudrateToUse = this.baudrate == Baudrate.AUTO.getBaudrate() ? Baudrate._9600.getBaudrate()
                     : this.baudrate;
@@ -111,18 +94,18 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
             os = new DataOutputStream(new BufferedOutputStream(serialPort.getOutputStream()));
         } catch (PortInUseException e) {
             throw new IOException(MessageFormat
-                    .format("Error at SerialConnector.openConnection: port {0} is already in use.", this.portName), e);
+                    .format("Error at SerialConnector.openConnection: port {0} is already in use.", getPortName()), e);
         } catch (UnsupportedCommOperationException e) {
             throw new IOException(MessageFormat.format(
-                    "Error at SerialConnector.openConnection: params for port {0} are not supported.", this.portName),
+                    "Error at SerialConnector.openConnection: params for port {0} are not supported.", getPortName()),
                     e);
         } catch (IOException e) {
             throw new IOException(MessageFormat.format(
-                    "Error at SerialConnector.openConnection: unable to get inputstream for port {0}.", this.portName),
+                    "Error at SerialConnector.openConnection: unable to get inputstream for port {0}.", getPortName()),
                     e);
         } catch (NoSuchPortException e) {
             throw new IOException(MessageFormat
-                    .format("Error at SerialConnector.openConnection: serial port not found {0}.", this.portName), e);
+                    .format("Error at SerialConnector.openConnection: serial port not found {0}.", getPortName()), e);
         }
     }
 
@@ -134,6 +117,7 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
         try {
             if (is != null) {
                 is.close();
+                is = null;
             }
         } catch (Exception e) {
             logger.error("Failed to close serial input stream", e);
@@ -141,6 +125,7 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
         try {
             if (os != null) {
                 os.close();
+                os = null;
             }
         } catch (Exception e) {
             logger.error("Failed to close serial output stream", e);
@@ -148,40 +133,11 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
         try {
             if (serialPort != null) {
                 serialPort.close();
+                serialPort = null;
             }
         } catch (Exception e) {
             logger.error("Error at SerialConnector.closeConnection", e);
         }
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((portName == null) ? 0 : portName.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        SmlSerialConnector other = (SmlSerialConnector) obj;
-        if (portName == null) {
-            if (other.portName != null) {
-                return false;
-            }
-        } else if (!portName.equals(other.portName)) {
-            return false;
-        }
-        return true;
     }
 
 }

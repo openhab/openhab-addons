@@ -22,9 +22,7 @@ public interface MeterValueListener {
 
     static Logger logger = LoggerFactory.getLogger(MeterValueListener.class);
 
-    public default void errorOccoured(Exception e) {
-        logger.error("", e);
-    }
+    public void errorOccoured(Throwable e);
 
     public <Q extends Quantity<Q>> void valueChanged(MeterValue<Q> value);
 

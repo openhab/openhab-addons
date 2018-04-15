@@ -9,12 +9,19 @@
 package org.openhab.binding.meterreader.connectors;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Throwables;
+
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
 
 /**
  * Represents a basic implementation of a SML device connector.
@@ -25,55 +32,98 @@ import org.slf4j.LoggerFactory;
 public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    private List<Consumer<T>> valueChangeListeners;
+    /**
+     * The name of the port where the device is connected as defined in openHAB configuration.
+     */
+    private String portName;
+    private static final int NUMBER_OF_RETRIES = 3;
 
     /**
      * Contructor for basic members.
      *
      * This constructor has to be called from derived classes!
+     *
+     * @throws IOException
      */
-    protected ConnectorBase() {
-        this.valueChangeListeners = new ArrayList<>();
+    protected ConnectorBase(String portName) {
+        this.portName = portName;
     }
 
     /**
-     * Close connection.
+     * Reads a new IO message.
      *
+     * @param initMessage
+     * @return
      * @throws IOException
-     *
-     * @throws ConnectorException
-     *
      */
-    protected abstract T getMeterValuesInternal(byte[] initMessage) throws IOException;
+    protected abstract T readNext(byte[] initMessage) throws IOException;
+
+    protected boolean applyPeriod() {
+        return true;
+    }
+
+    protected boolean applyRetryHandling() {
+        return true;
+    }
+
+    /**
+     * If reading of meter values fail a retry handling shall be implemented here.
+     * The provided publisher publishes the errors.
+     * If a retry shall happen, the returned publisher shall emit an event-
+     *
+     * @param period
+     * @param attempts
+     * @return
+     */
+    protected Publisher<?> getRetryPublisher(Duration period, Publisher<Throwable> attempts) {
+        return Flowable.fromPublisher(attempts)
+                .zipWith(Flowable.range(1, NUMBER_OF_RETRIES + 1), (throwable, attempt) -> {
+                    if (throwable instanceof TimeoutException || attempt == NUMBER_OF_RETRIES + 1) {
+                        throw Throwables.propagate(throwable);
+                    } else {
+                        logger.warn("{}. reading attempt failed: {}. Retrying {}...", attempt, throwable.getMessage(),
+                                getPortName());
+                        return attempt;
+                    }
+                }).flatMap(i -> {
+                    Duration additionalDelay = Duration.ofSeconds(i);
+                    logger.warn("Delaying retry by {}", additionalDelay);
+                    return Flowable.timer(additionalDelay.toMillis(), TimeUnit.MILLISECONDS);
+                });
+    }
 
     @Override
-    public T getMeterValues(byte[] initMessage) throws IOException {
-        T smlFile = null;
+    public Publisher<T> getMeterValues(byte[] initMessage, Duration period) throws IOException {
+        Flowable<T> itemPublisher = Flowable.create((emitter) -> {
+            emitValues(initMessage, emitter);
+        }, BackpressureStrategy.DROP);
 
-        try {
-            openConnection();
-            smlFile = getMeterValuesInternal(initMessage);
-            if (smlFile != null) {
-                notifyListeners(smlFile);
-            }
-        } finally {
-            closeConnection();
+        Flowable<T> result;
+        if (applyPeriod()) {
+            result = Flowable.interval(0, period.toMillis(), TimeUnit.MILLISECONDS).buffer(1).onBackpressureDrop()
+                    .flatMap(number -> itemPublisher);
+        } else {
+            result = itemPublisher;
+        }
+        if (applyRetryHandling()) {
+            return result.retryWhen(attempts -> {
+                return Flowable.fromPublisher(getRetryPublisher(period, attempts));
+            });
+        } else {
+            return result;
         }
 
-        return smlFile;
     }
 
-    @Override
-    public void addValueChangeListener(Consumer<T> changeListener) {
-        this.valueChangeListeners.add(changeListener);
+    protected void emitValues(byte[] initMessage, FlowableEmitter<T> emitter) throws IOException {
+        if (!emitter.isCancelled()) {
+
+            emitter.onNext(readNext(initMessage));
+            emitter.onComplete();
+        }
     }
 
-    @Override
-    public void removeValueChangeListener(Consumer<T> changeListener) {
-        this.valueChangeListeners.remove(changeListener);
-    }
-
-    protected void notifyListeners(T newValue) {
-        valueChangeListeners.forEach((listener) -> listener.accept(newValue));
+    public String getPortName() {
+        return portName;
     }
 }

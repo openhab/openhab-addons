@@ -7,8 +7,11 @@ Bundle-Version: 2.3.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/jsml.jar,
- lib/j62056.jar
+ lib/j62056.jar,
+ lib/rxjava-2.1.12.jar,
+ lib/reactive-streams-1.0.2.jar
 Import-Package: 
+ com.google.common.base;version="15.0.0",
  gnu.io,
  javax.measure,
  javax.measure.format,
@@ -29,10 +32,10 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.core.types.util,
  org.openhab.binding.meterreader,
  org.osgi.service.component,
- org.slf4j,
- tec.uom.se.spi
+ org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.meterreader,
  org.openhab.binding.meterreader.connectors

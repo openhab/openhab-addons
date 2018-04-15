@@ -11,7 +11,7 @@ package org.openhab.binding.meterreader.internal.iec62056;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import org.openhab.binding.meterreader.internal.UnitService;
+import org.eclipse.smarthome.core.types.util.UnitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ public class Iec62056_21UnitConversion {
     public static <Q extends Quantity<Q>> Unit<Q> getUnit(String unit) {
         if (unit != null && !unit.isEmpty()) {
             try {
-                return (Unit<Q>) UnitService.getInstance().parse(unit);
+                return (Unit<Q>) UnitUtils.parseUnit(" " + unit);
             } catch (Exception e) {
                 logger.warn("Failed to parse unit {}: {}", unit, e.getMessage());
                 return null;

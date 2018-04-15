@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.meterreader.internal;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Quantity;
@@ -24,6 +24,10 @@ import org.openhab.binding.meterreader.connectors.IMeterReaderConnector;
 import org.openhab.binding.meterreader.internal.helper.ProtocolMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  *
@@ -113,44 +117,42 @@ public abstract class MeterDevice<T> {
     /**
      * Read values from this device an store them locally against their OBIS code.
      *
+     * If there is an error in reading, it will be retried {@value #NUMBER_OF_RETRIES} times. The retry will be delayed
+     * by {@code period} seconds.
+     * If its still failing, the connection will be closed and opened again.
+     *
      * @return
      *
      * @throws Exception
      */
-    protected Cancelable readValues(ScheduledExecutorService executorService, long period) throws Exception {
+    protected Disposable readValues(ScheduledExecutorService executorService, Duration period) throws Exception {
         if (connector == null) {
             throw new IllegalArgumentException("{}: connector is not instantiated: " + this.toString());
         }
 
         try {
-            connector.addValueChangeListener((value) -> {
-                Map<String, MeterValue<?>> obisCodes = new HashMap<>(valueCache);
-                clearValueCache();
-                populateValueCache(value);
-                printInfo();
-                Collection<String> newObisCodes = getObisCodes();
-                // notify every removed obis code.
-                obisCodes.values().stream().filter((val) -> !newObisCodes.contains(val.getObisCode()))
-                        .forEach((val) -> notifyValuesRemoved(val));
-            });
+            Flowable<T> meterValuesFlowable = Flowable.fromPublisher(connector.getMeterValues(initMessage, period))
+                    .subscribeOn(Schedulers.from(executorService)).timeout(30, TimeUnit.SECONDS);
 
-            ScheduledFuture<?> future = executorService.scheduleWithFixedDelay(() -> {
-                try {
-                    connector.getMeterValues(initMessage);
-                } catch (Exception e) {
-                    notifyReadingError(e);
-                }
-
-            }, 0, period, TimeUnit.SECONDS);
-
-            return new Cancelable() {
-
-                @Override
-                public void cancel() {
-                    future.cancel(true);
-                    connector.closeConnection();
-                }
-            };
+            return Flowable.fromPublisher(meterValuesFlowable).doOnSubscribe(sub -> {
+                logger.info("Opening connection to {}", getDeviceId());
+                connector.openConnection();
+            }).doOnError(ex -> {
+                logger.error("Failed to read: {}. Closing connection and trying again...; {}", ex.getMessage(),
+                        getDeviceId(), ex);
+                connector.closeConnection();
+                notifyReadingError(ex);
+            }).retry().doOnCancel(connector::closeConnection).doOnComplete(connector::closeConnection)
+                    .subscribe((value) -> {
+                        Map<String, MeterValue<?>> obisCodes = new HashMap<>(valueCache);
+                        clearValueCache();
+                        populateValueCache(value);
+                        printInfo();
+                        Collection<String> newObisCodes = getObisCodes();
+                        // notify every removed obis code.
+                        obisCodes.values().stream().filter((val) -> !newObisCodes.contains(val.getObisCode()))
+                                .forEach((val) -> notifyValuesRemoved(val));
+                    });
 
         } catch (Exception ex) {
             logger.error("{}: Error during receive values from device: {}", this.toString(), ex.getMessage());
@@ -209,7 +211,7 @@ public abstract class MeterDevice<T> {
         this.valueChangeListeners.forEach((listener) -> listener.valueRemoved(value));
     }
 
-    private void notifyReadingError(Exception e) {
+    private void notifyReadingError(Throwable e) {
         this.valueChangeListeners.forEach((listener) -> listener.errorOccoured(e));
     }
 

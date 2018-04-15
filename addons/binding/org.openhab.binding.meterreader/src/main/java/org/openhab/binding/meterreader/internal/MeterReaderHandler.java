@@ -11,6 +11,7 @@ package org.openhab.binding.meterreader.internal;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +44,8 @@ import org.openhab.binding.meterreader.internal.helper.Baudrate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.reactivex.disposables.Disposable;
+
 /**
  * The {@link MeterReaderHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -54,7 +57,7 @@ public class MeterReaderHandler extends BaseThingHandler {
     private static final int DEFAULT_REFRESH_PERIOD = 30;
     private Logger logger = LoggerFactory.getLogger(MeterReaderHandler.class);
     private MeterDevice<?> smlDevice;
-    private Cancelable valueReader;
+    private Disposable valueReader;
     private Conformity conformity;
 
     public MeterReaderHandler(Thing thing) {
@@ -64,8 +67,7 @@ public class MeterReaderHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing SmlReader handler.");
-
-        UnitService.getInstance().addDefaultUnits();
+        cancelRead();
 
         MeterReaderConfiguration config = getConfigAs(MeterReaderConfiguration.class);
         logger.debug("config port = {}", config.port);
@@ -108,7 +110,7 @@ public class MeterReaderHandler extends BaseThingHandler {
 
     private void cancelRead() {
         if (this.valueReader != null) {
-            this.valueReader.cancel();
+            this.valueReader.dispose();
         }
     }
 
@@ -202,8 +204,7 @@ public class MeterReaderHandler extends BaseThingHandler {
                 }
 
                 @Override
-                public void errorOccoured(Exception e) {
-                    MeterValueListener.super.errorOccoured(e);
+                public void errorOccoured(Throwable e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
                 }
             });
@@ -211,7 +212,7 @@ public class MeterReaderHandler extends BaseThingHandler {
             MeterReaderConfiguration config = getConfigAs(MeterReaderConfiguration.class);
             int delay = config.refresh != null ? config.refresh : DEFAULT_REFRESH_PERIOD;
 
-            valueReader = this.smlDevice.readValues(this.scheduler, delay);
+            valueReader = this.smlDevice.readValues(this.scheduler, Duration.ofSeconds(delay));
 
         } catch (Exception e) {
             // Update the thing status

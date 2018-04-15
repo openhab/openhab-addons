@@ -14,7 +14,7 @@ import org.openhab.binding.meterreader.internal.sml.SmlMeterReader;
 
 /**
  * Factory to get the correct device reader for a specific {@link ProtocolMode}
- * 
+ *
  * @author MatthiasS
  *
  */
