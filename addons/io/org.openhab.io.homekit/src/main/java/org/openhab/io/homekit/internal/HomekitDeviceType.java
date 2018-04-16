@@ -19,13 +19,14 @@ import java.util.Map;
  */
 public enum HomekitDeviceType {
 
+    COLORFUL_LIGHTBULB("ColorfulLighting"),
     DIMMABLE_LIGHTBULB("DimmableLighting"),
     HUMIDITY_SENSOR("CurrentHumidity"),
     LIGHTBULB("Lighting"),
+    SECURITY_SYSTEM("SecuritySystem"),
     SWITCH("Switchable"),
     TEMPERATURE_SENSOR("CurrentTemperature"),
-    THERMOSTAT("Thermostat"),
-    COLORFUL_LIGHTBULB("ColorfulLighting");
+    THERMOSTAT("Thermostat");
 
     private static final Map<String, HomekitDeviceType> tagMap = new HashMap<>();
 

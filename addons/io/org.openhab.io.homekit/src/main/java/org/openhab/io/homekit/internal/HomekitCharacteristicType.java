@@ -21,7 +21,11 @@ public enum HomekitCharacteristicType {
 
     CURRENT_TEMPERATURE("CurrentTemperature"),
     TARGET_TEMPERATURE("TargetTemperature"),
-    HEATING_COOLING_MODE("homekit:HeatingCoolingMode");
+    HEATING_COOLING_MODE("homekit:HeatingCoolingMode"),
+
+    SECURITY_SYSTEM_CURRENT_STATE("SecuritySystemCurrentAlarmState"),
+    SECURITY_SYSTEM_TARGET_STATE("SecuritySystemTargetAlarmState"),
+    SECURITY_SYSTEM_ALARM_TYPE("SecuritySystemAlarmType");
 
     private static final Map<String, HomekitCharacteristicType> tagMap = new HashMap<>();
 
