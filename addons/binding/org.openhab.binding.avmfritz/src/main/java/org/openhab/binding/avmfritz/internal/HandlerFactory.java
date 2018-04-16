@@ -15,6 +15,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -23,12 +24,14 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.avmfritz.handler.BoxHandler;
 import org.openhab.binding.avmfritz.handler.DeviceHandler;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +52,10 @@ public class HandlerFactory extends BaseThingHandlerFactory {
      * Service registration map
      */
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    /**
+     * shared instance of HTTP client for asynchronous calls
+     */
+    private HttpClient httpClient;
 
     /**
      * Provides the supported thing types
@@ -63,17 +70,16 @@ public class HandlerFactory extends BaseThingHandlerFactory {
      */
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(BRIDGE_THING_TYPE)) {
-            BoxHandler handler = new BoxHandler((Bridge) thing);
+            BoxHandler handler = new BoxHandler((Bridge) thing, httpClient);
             registerDeviceDiscoveryService(handler);
             return handler;
         } else if (thingTypeUID.equals(PL546E_STANDALONE_THING_TYPE)) {
-            DeviceHandler handler = new DeviceHandler(thing);
+            DeviceHandler handler = new DeviceHandler(thing, httpClient);
             return handler;
         } else if (supportsThingType(thing.getThingTypeUID())) {
-            return new DeviceHandler(thing);
+            return new DeviceHandler(thing, httpClient);
         } else {
             logger.warn("ThingHandler not found for {}", thing.getThingTypeUID());
         }
@@ -108,5 +114,14 @@ public class HandlerFactory extends BaseThingHandlerFactory {
         AVMFritzDiscoveryService discoveryService = new AVMFritzDiscoveryService(handler);
         discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+    }
+
+    @Reference
+    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
+    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = null;
     }
 }

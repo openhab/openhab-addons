@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.KodiEventListener.KodiState;
+import org.openhab.binding.kodi.internal.model.KodiFavorite;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannel;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannelGroup;
 import org.slf4j.Logger;
@@ -176,6 +177,46 @@ public class KodiConnection implements KodiClientSocketEventListener {
         params.addProperty("playerid", activePlayer);
         params.addProperty("speed", speed);
         socket.callMethod("Player.SetSpeed", params);
+    }
+
+    public synchronized List<KodiFavorite> getFavorites() {
+        String method = "Favourites.GetFavourites";
+        JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(method, () -> {
+            final String[] properties = { "path", "window", "windowparameter" };
+
+            JsonObject params = new JsonObject();
+            params.add("properties", getJsonArray(properties));
+            return socket.callMethod(method, params);
+        });
+
+        List<KodiFavorite> favorites = new ArrayList<>();
+        if (response instanceof JsonObject) {
+            JsonObject result = response.getAsJsonObject();
+            if (result.has("favourites")) {
+                for (JsonElement element : result.get("favourites").getAsJsonArray()) {
+                    JsonObject object = (JsonObject) element;
+                    KodiFavorite favorite = new KodiFavorite();
+                    favorite.setTitle(object.get("title").getAsString());
+                    favorite.setFavoriteType(object.get("type").getAsString());
+                    favorite.setPath(object.get("path").getAsString());
+                    if (object.has("window")) {
+                        favorite.setWindow(object.get("window").getAsString());
+                        favorite.setWindowParameter(object.get("windowparameter").getAsString());
+                    }
+                    favorites.add(favorite);
+                }
+            }
+        }
+        return favorites;
+    }
+
+    public String getFavoritePath(final String favoriteTitle) {
+        for (KodiFavorite favorite : getFavorites()) {
+            if (StringUtils.equalsIgnoreCase(favorite.getTitle(), favoriteTitle)) {
+                return favorite.getPath();
+            }
+        }
+        return "";
     }
 
     public synchronized void increaseVolume() {

@@ -44,7 +44,9 @@
 		<module>org.openhab.binding.homematic</module>
 		<module>org.openhab.binding.globalcache</module>
 		<module>org.openhab.binding.icloud</module>
+		<module>org.openhab.binding.innogysmarthome</module>
 		<module>org.openhab.binding.ipp</module>
+		<module>org.openhab.binding.irtrans</module>
 		<module>org.openhab.binding.jeelink</module>
 		<module>org.openhab.binding.keba</module>
 		<module>org.openhab.binding.knx</module>
@@ -69,6 +71,8 @@
 		<module>org.openhab.binding.network.test</module>
 		<module>org.openhab.binding.nest</module>
 		<module>org.openhab.binding.nest.test</module>
+		<module>org.openhab.binding.nibeheatpump</module>
+		<module>org.openhab.binding.nibeheatpump.test</module>
 		<module>org.openhab.binding.nikohomecontrol</module>
 		<module>org.openhab.binding.oceanic</module>
 		<module>org.openhab.binding.onebusaway</module>
@@ -109,6 +113,6 @@
 		<module>org.openhab.binding.windcentrale</module>
 		<module>org.openhab.binding.yamahareceiver</module>
 		<module>org.openhab.binding.zoneminder</module>
-		<module>org.openhab.binding.zway</module>
+<!--		<module>org.openhab.binding.zway</module>-->
 	</modules>
 </project>

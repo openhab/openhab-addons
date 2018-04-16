@@ -20,14 +20,13 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.pioneeravr.internal.protocol.ParameterizedCommand.ParameterizedCommandType;
 import org.openhab.binding.pioneeravr.internal.protocol.SimpleCommand.SimpleCommandType;
 import org.openhab.binding.pioneeravr.protocol.AvrCommand;
@@ -152,7 +151,7 @@ public abstract class StreamAvrConnection implements AvrConnection {
             try {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Sending {} bytes: {}", command.length(),
-                            DatatypeConverter.printHexBinary(command.getBytes()));
+                            HexUtils.bytesToHex(command.getBytes()));
                 }
                 outputStream.writeBytes(command);
                 outputStream.flush();

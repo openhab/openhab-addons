@@ -81,8 +81,11 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                 configureThingProperties();
                 gateway.initialize();
 
+                // scan for already known devices (new devices will not be discovered, 
+                // since installMode==true is only achieved if the bridge is online
                 discoveryService.startScan(null);
                 discoveryService.waitForScanFinishing();
+                
                 updateStatus(ThingStatus.ONLINE);
                 if (!config.getGatewayInfo().isHomegear()) {
                     try {
@@ -95,6 +98,8 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                 gateway.startWatchdogs();
             } catch (IOException ex) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                logger.error("Homematic bridge was set to OFFLINE-COMMUNICATION_ERROR due to the following exception: {}",
+                        ex.getMessage(), ex);
                 dispose();
                 scheduleReinitialize();
             }
