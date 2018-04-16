@@ -211,8 +211,8 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         if (devices.getCameras() != null) {
             devices.getCameras().values().forEach(listener::onNewNestCameraData);
         }
-        if (devices.getSmokeDetectors() != null) {
-            devices.getSmokeDetectors().values().forEach(listener::onNewNestSmokeDetectorData);
+        if (devices.getSmokeCoAlarms() != null) {
+            devices.getSmokeCoAlarms().values().forEach(listener::onNewNestSmokeDetectorData);
         }
     }
 
@@ -400,8 +400,8 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
             if (data.getDevices().getCameras() != null) {
                 identifiers.addAll(data.getDevices().getCameras().keySet());
             }
-            if (data.getDevices().getSmokeDetectors() != null) {
-                identifiers.addAll(data.getDevices().getSmokeDetectors().keySet());
+            if (data.getDevices().getSmokeCoAlarms() != null) {
+                identifiers.addAll(data.getDevices().getSmokeCoAlarms().keySet());
             }
             if (data.getDevices().getThermostats() != null) {
                 identifiers.addAll(data.getDevices().getThermostats().keySet());

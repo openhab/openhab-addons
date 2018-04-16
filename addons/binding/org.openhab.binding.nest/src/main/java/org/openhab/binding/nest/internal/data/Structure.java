@@ -58,15 +58,15 @@ public class Structure implements NestIdentifiable {
         return structureId;
     }
 
-    public List<String> getThermostatIds() {
+    public List<String> getThermostats() {
         return thermostats;
     }
 
-    public List<String> getSmokeAlarmIds() {
+    public List<String> getSmokeCoAlarms() {
         return smokeCoAlarms;
     }
 
-    public List<String> getCameraIds() {
+    public List<String> getCameras() {
         return cameras;
     }
 
@@ -102,11 +102,11 @@ public class Structure implements NestIdentifiable {
         return smokeAlarmState;
     }
 
-    public Boolean isRushHourRewardsEnrollement() {
+    public Boolean isRhrEnrollment() {
         return rhrEnrollment;
     }
 
-    public Map<String, Where> getWhereIds() {
+    public Map<String, Where> getWheres() {
         return wheres;
     }
 

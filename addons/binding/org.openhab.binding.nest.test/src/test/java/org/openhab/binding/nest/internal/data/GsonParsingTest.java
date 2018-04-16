@@ -38,11 +38,11 @@ public class GsonParsingTest {
         assertEquals(topLevel.getDevices().getCameras().size(), 2);
         assertNotNull(topLevel.getDevices().getCameras().get(CAMERA1_DEVICE_ID));
         assertNotNull(topLevel.getDevices().getCameras().get(CAMERA2_DEVICE_ID));
-        assertEquals(topLevel.getDevices().getSmokeDetectors().size(), 4);
-        assertNotNull(topLevel.getDevices().getSmokeDetectors().get(SMOKE1_DEVICE_ID));
-        assertNotNull(topLevel.getDevices().getSmokeDetectors().get(SMOKE2_DEVICE_ID));
-        assertNotNull(topLevel.getDevices().getSmokeDetectors().get(SMOKE3_DEVICE_ID));
-        assertNotNull(topLevel.getDevices().getSmokeDetectors().get(SMOKE4_DEVICE_ID));
+        assertEquals(topLevel.getDevices().getSmokeCoAlarms().size(), 4);
+        assertNotNull(topLevel.getDevices().getSmokeCoAlarms().get(SMOKE1_DEVICE_ID));
+        assertNotNull(topLevel.getDevices().getSmokeCoAlarms().get(SMOKE2_DEVICE_ID));
+        assertNotNull(topLevel.getDevices().getSmokeCoAlarms().get(SMOKE3_DEVICE_ID));
+        assertNotNull(topLevel.getDevices().getSmokeCoAlarms().get(SMOKE4_DEVICE_ID));
     }
 
     @Test
@@ -58,11 +58,11 @@ public class GsonParsingTest {
         assertEquals(data.getDevices().getCameras().size(), 2);
         assertNotNull(data.getDevices().getCameras().get(CAMERA1_DEVICE_ID));
         assertNotNull(data.getDevices().getCameras().get(CAMERA2_DEVICE_ID));
-        assertEquals(data.getDevices().getSmokeDetectors().size(), 4);
-        assertNotNull(data.getDevices().getSmokeDetectors().get(SMOKE1_DEVICE_ID));
-        assertNotNull(data.getDevices().getSmokeDetectors().get(SMOKE2_DEVICE_ID));
-        assertNotNull(data.getDevices().getSmokeDetectors().get(SMOKE3_DEVICE_ID));
-        assertNotNull(data.getDevices().getSmokeDetectors().get(SMOKE4_DEVICE_ID));
+        assertEquals(data.getDevices().getSmokeCoAlarms().size(), 4);
+        assertNotNull(data.getDevices().getSmokeCoAlarms().get(SMOKE1_DEVICE_ID));
+        assertNotNull(data.getDevices().getSmokeCoAlarms().get(SMOKE2_DEVICE_ID));
+        assertNotNull(data.getDevices().getSmokeCoAlarms().get(SMOKE3_DEVICE_ID));
+        assertNotNull(data.getDevices().getSmokeCoAlarms().get(SMOKE4_DEVICE_ID));
     }
 
     @Test
@@ -83,14 +83,14 @@ public class GsonParsingTest {
         assertEquals(Integer.valueOf(15), thermostat.getFanTimerDuration());
         assertEqualDateTime("2017-02-02T21:00:06.000Z", thermostat.getLastConnection());
         assertEqualDateTime("1970-01-01T00:00:00.000Z", thermostat.getFanTimerTimeout());
-        assertEquals(Double.valueOf(22.0), thermostat.getLockedTemperatureHigh());
-        assertEquals(Double.valueOf(20.0), thermostat.getLockedTemperatureLow());
+        assertEquals(Double.valueOf(22.0), thermostat.getLockedTempMax());
+        assertEquals(Double.valueOf(20.0), thermostat.getLockedTempMin());
         assertEquals(Thermostat.Mode.HEAT, thermostat.getMode());
         assertEquals("Living Room (Living Room)", thermostat.getName());
         assertEquals("Living Room Thermostat (Living Room)", thermostat.getNameLong());
-        assertEquals(null, thermostat.getPreviousMode());
+        assertEquals(null, thermostat.getPreviousHvacMode());
         assertEquals("5.6-7", thermostat.getSoftwareVersion());
-        assertEquals(Thermostat.State.OFF, thermostat.getState());
+        assertEquals(Thermostat.State.OFF, thermostat.getHvacState());
         assertEquals(STRUCTURE1_STRUCTURE_ID, thermostat.getStructureId());
         assertEquals(Double.valueOf(15.5), thermostat.getTargetTemperature());
         assertEquals(Double.valueOf(24.0), thermostat.getTargetTemperatureHigh());
@@ -205,7 +205,7 @@ public class GsonParsingTest {
         assertNull(structure.getPeakPeriodStartTime());
         assertEquals(STRUCTURE1_STRUCTURE_ID, structure.getStructureId());
         assertEquals("America/Los_Angeles", structure.getTimeZone());
-        assertFalse(structure.isRushHourRewardsEnrollement());
+        assertFalse(structure.isRhrEnrollment());
     }
 
     @Test

@@ -104,7 +104,7 @@ public class Thermostat extends BaseNestDevice {
         return isLocked;
     }
 
-    public Double getLockedTemperatureHigh() {
+    public Double getLockedTempMax() {
         if (getTemperatureUnit() == CELSIUS) {
             return lockedTempMaxC;
         } else if (getTemperatureUnit() == FAHRENHEIT) {
@@ -114,7 +114,7 @@ public class Thermostat extends BaseNestDevice {
         }
     }
 
-    public Double getLockedTemperatureLow() {
+    public Double getLockedTempMin() {
         if (getTemperatureUnit() == CELSIUS) {
             return lockedTempMinC;
         } else if (getTemperatureUnit() == FAHRENHEIT) {
@@ -152,11 +152,11 @@ public class Thermostat extends BaseNestDevice {
         return hasLeaf;
     }
 
-    public Mode getPreviousMode() {
+    public Mode getPreviousHvacMode() {
         return previousHvacMode;
     }
 
-    public State getState() {
+    public State getHvacState() {
         return hvacState;
     }
 

@@ -32,7 +32,7 @@ public class NestDevices {
     }
 
     /** Id to smoke detector */
-    public Map<String, SmokeDetector> getSmokeDetectors() {
+    public Map<String, SmokeDetector> getSmokeCoAlarms() {
         return smokeCoAlarms;
     }
 
