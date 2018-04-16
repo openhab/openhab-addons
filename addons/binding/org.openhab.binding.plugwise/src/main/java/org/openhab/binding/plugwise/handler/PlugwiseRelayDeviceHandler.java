@@ -17,9 +17,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -421,7 +422,8 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
                 energy = mostRecentEnergy;
                 energy.setInterval(configuration.getMeasurementInterval());
                 logger.trace("Updating {} ({}) energy with: {}", deviceType, macAddress, mostRecentEnergy);
-                updateState(CHANNEL_ENERGY, new DecimalType(correctSign(energy.tokWh(calibration))));
+                updateState(CHANNEL_ENERGY,
+                        new QuantityType<>(correctSign(energy.tokWh(calibration)), SmartHomeUnits.KILOWATT_HOUR));
                 updateState(CHANNEL_ENERGY_STAMP, PlugwiseUtils.newDateTimeType(energy.getStart()));
             } else {
                 logger.trace("Most recent energy in buffer of {} ({}) is older than one interval ago: {}", deviceType,
@@ -446,7 +448,7 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
             return;
         }
 
-        updateState(CHANNEL_POWER, new DecimalType(correctSign(watt)));
+        updateState(CHANNEL_POWER, new QuantityType<>(correctSign(watt), SmartHomeUnits.WATT));
     }
 
     private void handleRealTimeClockGetResponse(RealTimeClockGetResponseMessage message) {
