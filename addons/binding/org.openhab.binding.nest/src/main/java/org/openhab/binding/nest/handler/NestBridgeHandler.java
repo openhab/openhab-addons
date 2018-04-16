@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.nest.internal.NestUtils;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.internal.data.ErrorData;
 import org.openhab.binding.nest.internal.data.NestDevices;
@@ -52,9 +53,6 @@ import org.openhab.binding.nest.internal.rest.NestUpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
  * This bridge handler connects to Nest and handles all the API requests. It pulls down the
  * updated data, polls the system and does all the co-ordination with the other handlers
@@ -71,7 +69,6 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
 
     private final List<NestDeviceDataListener> listeners = new CopyOnWriteArrayList<>();
     private final List<NestUpdateRequest> nestUpdateRequests = new CopyOnWriteArrayList<>();
-    private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
 
     private NestAuthorizer authorizer;
     private NestBridgeConfiguration config;
@@ -214,8 +211,8 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         if (devices.getCameras() != null) {
             devices.getCameras().values().forEach(listener::onNewNestCameraData);
         }
-        if (devices.getSmokeDetectors() != null) {
-            devices.getSmokeDetectors().values().forEach(listener::onNewNestSmokeDetectorData);
+        if (devices.getSmokeCoAlarms() != null) {
+            devices.getSmokeCoAlarms().values().forEach(listener::onNewNestSmokeDetectorData);
         }
     }
 
@@ -330,7 +327,7 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
             String url = redirectUrlSupplier.getRedirectUrl() + request.getUpdatePath();
             logger.debug("Putting data to: {}", url);
 
-            String jsonContent = gson.toJson(request.getValues());
+            String jsonContent = NestUtils.toJson(request.getValues());
             logger.debug("PUT content: {}", jsonContent);
 
             ByteArrayInputStream inputStream = new ByteArrayInputStream(jsonContent.getBytes(StandardCharsets.UTF_8));
@@ -338,7 +335,7 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
                     REQUEST_TIMEOUT);
             logger.debug("PUT response: {}", jsonResponse);
 
-            ErrorData error = gson.fromJson(jsonResponse, ErrorData.class);
+            ErrorData error = NestUtils.fromJson(jsonResponse, ErrorData.class);
             if (StringUtils.isNotBlank(error.getError())) {
                 logger.debug("Nest API error: {}", error);
                 logger.warn("Nest API error: {}", error.getMessage());
@@ -403,8 +400,8 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
             if (data.getDevices().getCameras() != null) {
                 identifiers.addAll(data.getDevices().getCameras().keySet());
             }
-            if (data.getDevices().getSmokeDetectors() != null) {
-                identifiers.addAll(data.getDevices().getSmokeDetectors().keySet());
+            if (data.getDevices().getSmokeCoAlarms() != null) {
+                identifiers.addAll(data.getDevices().getSmokeCoAlarms().keySet());
             }
             if (data.getDevices().getThermostats() != null) {
                 identifiers.addAll(data.getDevices().getThermostats().keySet());

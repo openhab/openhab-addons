@@ -24,65 +24,36 @@ import com.google.gson.annotations.SerializedName;
  * @author David Bennett - Initial Contribution
  */
 public class Thermostat extends BaseNestDevice {
-    @SerializedName("can_cool")
+
     private Boolean canCool;
-    @SerializedName("can_heat")
     private Boolean canHeat;
-    @SerializedName("is_using_emergency_heat")
     private Boolean isUsingEmergencyHeat;
-    @SerializedName("has_fan")
     private Boolean hasFan;
-    @SerializedName("fan_timer_active")
     private Boolean fanTimerActive;
-    @SerializedName("fan_timer_timeout")
     private Date fanTimerTimeout;
-    @SerializedName("has_leaf")
     private Boolean hasLeaf;
-    @SerializedName("temperature_scale")
     private String temperatureScale;
-    @SerializedName("ambient_temperature_c")
     private Double ambientTemperatureC;
-    @SerializedName("ambient_temperature_f")
     private Double ambientTemperatureF;
-    @SerializedName("humidity")
     private Integer humidity;
-    @SerializedName("target_temperature_c")
     private Double targetTemperatureC;
-    @SerializedName("target_temperature_f")
     private Double targetTemperatureF;
-    @SerializedName("target_temperature_high_c")
     private Double targetTemperatureHighC;
-    @SerializedName("target_temperature_high_f")
     private Double targetTemperatureHighF;
-    @SerializedName("target_temperature_low_c")
     private Double targetTemperatureLowC;
-    @SerializedName("target_temperature_low_f")
     private Double targetTemperatureLowF;
-    @SerializedName("hvac_mode")
-    private Mode mode;
-    @SerializedName("previous_hvac_mode")
-    private Mode previousMode;
-    @SerializedName("hvac_state")
-    private State state;
-    @SerializedName("is_locked")
+    private Mode hvacMode;
+    private Mode previousHvacMode;
+    private State hvacState;
     private Boolean isLocked;
-    @SerializedName("locked_temp_max_c")
-    private Double lockedTemperatureHighC;
-    @SerializedName("locked_temp_max_f")
-    private Double lockedTemperatureHighF;
-    @SerializedName("locked_temp_min_c")
-    private Double lockedTemperatureLowC;
-    @SerializedName("locked_temp_min_f")
-    private Double lockedTemperatureLowF;
-    @SerializedName("sunlight_correction_enabled")
+    private Double lockedTempMaxC;
+    private Double lockedTempMaxF;
+    private Double lockedTempMinC;
+    private Double lockedTempMinF;
     private Boolean sunlightCorrectionEnabled;
-    @SerializedName("sunlight_correction_active")
     private Boolean sunlightCorrectionActive;
-    @SerializedName("fan_timer_duration")
     private Integer fanTimerDuration;
-    @SerializedName("time_to_target")
     private String timeToTarget;
-    @SerializedName("where_name")
     private String whereName;
 
     public Unit<Temperature> getTemperatureUnit() {
@@ -126,28 +97,28 @@ public class Thermostat extends BaseNestDevice {
     }
 
     public Mode getMode() {
-        return mode;
+        return hvacMode;
     }
 
     public Boolean isLocked() {
         return isLocked;
     }
 
-    public Double getLockedTemperatureHigh() {
+    public Double getLockedTempMax() {
         if (getTemperatureUnit() == CELSIUS) {
-            return lockedTemperatureHighC;
+            return lockedTempMaxC;
         } else if (getTemperatureUnit() == FAHRENHEIT) {
-            return lockedTemperatureHighF;
+            return lockedTempMaxF;
         } else {
             return null;
         }
     }
 
-    public Double getLockedTemperatureLow() {
+    public Double getLockedTempMin() {
         if (getTemperatureUnit() == CELSIUS) {
-            return lockedTemperatureLowC;
+            return lockedTempMinC;
         } else if (getTemperatureUnit() == FAHRENHEIT) {
-            return lockedTemperatureLowF;
+            return lockedTempMinF;
         } else {
             return null;
         }
@@ -181,12 +152,12 @@ public class Thermostat extends BaseNestDevice {
         return hasLeaf;
     }
 
-    public Mode getPreviousMode() {
-        return previousMode;
+    public Mode getPreviousHvacMode() {
+        return previousHvacMode;
     }
 
-    public State getState() {
-        return state;
+    public State getHvacState() {
+        return hvacState;
     }
 
     public Boolean isSunlightCorrectionEnabled() {
@@ -269,15 +240,15 @@ public class Thermostat extends BaseNestDevice {
                 .append(targetTemperatureC).append(", targetTemperatureF=").append(targetTemperatureF)
                 .append(", targetTemperatureHighC=").append(targetTemperatureHighC).append(", targetTemperatureHighF=")
                 .append(targetTemperatureHighF).append(", targetTemperatureLowC=").append(targetTemperatureLowC)
-                .append(", targetTemperatureLowF=").append(targetTemperatureLowF).append(", mode=").append(mode)
-                .append(", previousMode=").append(previousMode).append(", state=").append(state).append(", isLocked=")
-                .append(isLocked).append(", lockedTemperatureHighC=").append(lockedTemperatureHighC)
-                .append(", lockedTemperatureHighF=").append(lockedTemperatureHighF).append(", lockedTemperatureLowC=")
-                .append(lockedTemperatureLowC).append(", lockedTemperatureLowF=").append(lockedTemperatureLowF)
-                .append(", sunlightCorrectionEnabled=").append(sunlightCorrectionEnabled)
-                .append(", sunlightCorrectionActive=").append(sunlightCorrectionActive).append(", fanTimerDuration=")
-                .append(fanTimerDuration).append(", timeToTarget=").append(timeToTarget).append(", whereName=")
-                .append(whereName).append(", getId()=").append(getId()).append(", getName()=").append(getName())
+                .append(", targetTemperatureLowF=").append(targetTemperatureLowF).append(", hvacMode=").append(hvacMode)
+                .append(", previousHvacMode=").append(previousHvacMode).append(", hvacState=").append(hvacState)
+                .append(", isLocked=").append(isLocked).append(", lockedTempMaxC=").append(lockedTempMaxC)
+                .append(", lockedTempMaxF=").append(lockedTempMaxF).append(", lockedTempMinC=").append(lockedTempMinC)
+                .append(", lockedTempMinF=").append(lockedTempMinF).append(", sunlightCorrectionEnabled=")
+                .append(sunlightCorrectionEnabled).append(", sunlightCorrectionActive=")
+                .append(sunlightCorrectionActive).append(", fanTimerDuration=").append(fanTimerDuration)
+                .append(", timeToTarget=").append(timeToTarget).append(", whereName=").append(whereName)
+                .append(", getId()=").append(getId()).append(", getName()=").append(getName())
                 .append(", getDeviceId()=").append(getDeviceId()).append(", getLastConnection()=")
                 .append(getLastConnection()).append(", isOnline()=").append(isOnline()).append(", getNameLong()=")
                 .append(getNameLong()).append(", getSoftwareVersion()=").append(getSoftwareVersion())

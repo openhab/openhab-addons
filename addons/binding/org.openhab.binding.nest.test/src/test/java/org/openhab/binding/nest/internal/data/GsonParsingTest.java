@@ -12,8 +12,8 @@ import static org.junit.Assert.*;
 import static org.openhab.binding.nest.internal.data.NestDataUtil.*;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.TimeZone;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.junit.Test;
@@ -24,6 +24,11 @@ public class GsonParsingTest {
 
     private final Logger logger = LoggerFactory.getLogger(GsonParsingTest.class);
 
+    private static void assertEqualDateTime(String expected, Date actual) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        assertEquals(expected, sdf.format(actual));
+    }
+
     @Test
     public void verifyCompleteInput() throws IOException {
         TopLevelData topLevel = fromJson("top-level-data.json", TopLevelData.class);
@@ -33,11 +38,11 @@ public class GsonParsingTest {
         assertEquals(topLevel.getDevices().getCameras().size(), 2);
         assertNotNull(topLevel.getDevices().getCameras().get(CAMERA1_DEVICE_ID));
         assertNotNull(topLevel.getDevices().getCameras().get(CAMERA2_DEVICE_ID));
-        assertEquals(topLevel.getDevices().getSmokeDetectors().size(), 4);
-        assertNotNull(topLevel.getDevices().getSmokeDetectors().get(SMOKE1_DEVICE_ID));
-        assertNotNull(topLevel.getDevices().getSmokeDetectors().get(SMOKE2_DEVICE_ID));
-        assertNotNull(topLevel.getDevices().getSmokeDetectors().get(SMOKE3_DEVICE_ID));
-        assertNotNull(topLevel.getDevices().getSmokeDetectors().get(SMOKE4_DEVICE_ID));
+        assertEquals(topLevel.getDevices().getSmokeCoAlarms().size(), 4);
+        assertNotNull(topLevel.getDevices().getSmokeCoAlarms().get(SMOKE1_DEVICE_ID));
+        assertNotNull(topLevel.getDevices().getSmokeCoAlarms().get(SMOKE2_DEVICE_ID));
+        assertNotNull(topLevel.getDevices().getSmokeCoAlarms().get(SMOKE3_DEVICE_ID));
+        assertNotNull(topLevel.getDevices().getSmokeCoAlarms().get(SMOKE4_DEVICE_ID));
     }
 
     @Test
@@ -53,11 +58,11 @@ public class GsonParsingTest {
         assertEquals(data.getDevices().getCameras().size(), 2);
         assertNotNull(data.getDevices().getCameras().get(CAMERA1_DEVICE_ID));
         assertNotNull(data.getDevices().getCameras().get(CAMERA2_DEVICE_ID));
-        assertEquals(data.getDevices().getSmokeDetectors().size(), 4);
-        assertNotNull(data.getDevices().getSmokeDetectors().get(SMOKE1_DEVICE_ID));
-        assertNotNull(data.getDevices().getSmokeDetectors().get(SMOKE2_DEVICE_ID));
-        assertNotNull(data.getDevices().getSmokeDetectors().get(SMOKE3_DEVICE_ID));
-        assertNotNull(data.getDevices().getSmokeDetectors().get(SMOKE4_DEVICE_ID));
+        assertEquals(data.getDevices().getSmokeCoAlarms().size(), 4);
+        assertNotNull(data.getDevices().getSmokeCoAlarms().get(SMOKE1_DEVICE_ID));
+        assertNotNull(data.getDevices().getSmokeCoAlarms().get(SMOKE2_DEVICE_ID));
+        assertNotNull(data.getDevices().getSmokeCoAlarms().get(SMOKE3_DEVICE_ID));
+        assertNotNull(data.getDevices().getSmokeCoAlarms().get(SMOKE4_DEVICE_ID));
     }
 
     @Test
@@ -76,19 +81,16 @@ public class GsonParsingTest {
         assertFalse(thermostat.isUsingEmergencyHeat());
         assertEquals(THERMOSTAT1_DEVICE_ID, thermostat.getDeviceId());
         assertEquals(Integer.valueOf(15), thermostat.getFanTimerDuration());
-        Calendar utcCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        utcCal.set(2017, 1, 2, 21, 0, 6);
-        assertEquals(utcCal.getTime().toString(), thermostat.getLastConnection().toString());
-        utcCal.set(1970, 0, 1, 0, 0, 0);
-        assertEquals(utcCal.getTime().toString(), thermostat.getFanTimerTimeout().toString());
-        assertEquals(Double.valueOf(22.0), thermostat.getLockedTemperatureHigh());
-        assertEquals(Double.valueOf(20.0), thermostat.getLockedTemperatureLow());
+        assertEqualDateTime("2017-02-02T21:00:06.000Z", thermostat.getLastConnection());
+        assertEqualDateTime("1970-01-01T00:00:00.000Z", thermostat.getFanTimerTimeout());
+        assertEquals(Double.valueOf(22.0), thermostat.getLockedTempMax());
+        assertEquals(Double.valueOf(20.0), thermostat.getLockedTempMin());
         assertEquals(Thermostat.Mode.HEAT, thermostat.getMode());
         assertEquals("Living Room (Living Room)", thermostat.getName());
         assertEquals("Living Room Thermostat (Living Room)", thermostat.getNameLong());
-        assertEquals(null, thermostat.getPreviousMode());
+        assertEquals(null, thermostat.getPreviousHvacMode());
         assertEquals("5.6-7", thermostat.getSoftwareVersion());
-        assertEquals(Thermostat.State.OFF, thermostat.getState());
+        assertEquals(Thermostat.State.OFF, thermostat.getHvacState());
         assertEquals(STRUCTURE1_STRUCTURE_ID, thermostat.getStructureId());
         assertEquals(Double.valueOf(15.5), thermostat.getTargetTemperature());
         assertEquals(Double.valueOf(24.0), thermostat.getTargetTemperatureHigh());
@@ -133,11 +135,8 @@ public class GsonParsingTest {
                 + "yeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9ESvlhJF0D7vG8Y0TFV39zX1vIOsWrv"
                 + "8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc", camera.getAppUrl());
         assertEquals(CAMERA1_DEVICE_ID, camera.getDeviceId());
-        Calendar utcCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        // 2017-01-22T08:19:20.000Z
-        utcCal.set(2017, 0, 22, 8, 19, 20);
         assertNull(camera.getLastConnection());
-        assertEquals(utcCal.getTime().toString(), camera.getLastIsOnlineChange().toString());
+        assertEqualDateTime("2017-01-22T08:19:20.000Z", camera.getLastIsOnlineChange());
         assertNull(camera.getPublicShareUrl());
         assertEquals("https://www.dropcam.com/api/wwn.get_snapshot/CjZfTEs4ajlyUlh3Q0tFQk90RG83SnNrTnh6V"
                 + "2ZIQk9JbTNDTG91Q1QzRlFaenJ2b2tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQj"
@@ -153,13 +152,9 @@ public class GsonParsingTest {
         assertEquals(2, camera.getLastEvent().getActivityZones().size());
         assertEquals("id1", camera.getLastEvent().getActivityZones().get(0));
         assertEquals("app_url", camera.getLastEvent().getAppUrl());
-        // 2017-01-22T07:40:38.680Z
-        utcCal.set(2017, 0, 22, 7, 40, 38);
-        assertEquals(utcCal.getTime().toString(), camera.getLastEvent().getEndTime().toString());
+        assertEqualDateTime("2017-01-22T07:40:38.680Z", camera.getLastEvent().getEndTime());
         assertEquals("image_url", camera.getLastEvent().getImageUrl());
-        // 2017-01-22T07:40:19.020Z
-        utcCal.set(2017, 0, 22, 7, 40, 19);
-        assertEquals(utcCal.getTime().toString(), camera.getLastEvent().getStartTime().toString());
+        assertEqualDateTime("2017-01-22T07:40:19.020Z", camera.getLastEvent().getStartTime());
         assertNull(camera.getLastEvent().getUrlsExpireTime());
         assertEquals("myurl", camera.getLastEvent().getWebUrl());
         assertTrue(camera.getLastEvent().isHasMotion());
@@ -177,10 +172,7 @@ public class GsonParsingTest {
         assertEquals(SMOKE1_DEVICE_ID, smokeDetector.getDeviceId());
         assertEquals("Downstairs", smokeDetector.getName());
         assertEquals("Downstairs Nest Protect", smokeDetector.getNameLong());
-        Calendar utcCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        // 2017-02-02T20:53:05.338Z
-        utcCal.set(2017, 1, 2, 20, 53, 5);
-        assertEquals(utcCal.getTime().toString(), smokeDetector.getLastConnection().toString());
+        assertEqualDateTime("2017-02-02T20:53:05.338Z", smokeDetector.getLastConnection());
         assertEquals(SmokeDetector.BatteryHealth.OK, smokeDetector.getBatteryHealth());
         assertEquals(SmokeDetector.AlarmState.OK, smokeDetector.getCoAlarmState());
         assertEquals(SmokeDetector.AlarmState.OK, smokeDetector.getSmokeAlarmState());
@@ -207,16 +199,13 @@ public class GsonParsingTest {
         assertEquals("US", structure.getCountryCode());
         assertEquals("98056", structure.getPostalCode());
         assertEquals(Structure.HomeAwayState.HOME, structure.getAway());
-        Calendar utcCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        // 2017-02-02T03:10:08.000Z
-        utcCal.set(2017, 1, 2, 3, 10, 8);
-        assertEquals(utcCal.getTime().toString(), structure.getEtaBegin().toString());
+        assertEqualDateTime("2017-02-02T03:10:08.000Z", structure.getEtaBegin());
         assertNull(structure.getEta());
         assertNull(structure.getPeakPeriodEndTime());
         assertNull(structure.getPeakPeriodStartTime());
         assertEquals(STRUCTURE1_STRUCTURE_ID, structure.getStructureId());
         assertEquals("America/Los_Angeles", structure.getTimeZone());
-        assertFalse(structure.isRushHourRewardsEnrollement());
+        assertFalse(structure.isRhrEnrollment());
     }
 
     @Test
