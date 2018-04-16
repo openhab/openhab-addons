@@ -55,7 +55,7 @@ public class NestStructureHandler extends NestBaseHandler<Structure> {
             case CHANNEL_POSTAL_CODE:
                 return getAsStringTypeOrNull(structure.getPostalCode());
             case CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT:
-                return getAsOnOffTypeOrNull(structure.isRushHourRewardsEnrollement());
+                return getAsOnOffTypeOrNull(structure.isRhrEnrollment());
             case CHANNEL_SMOKE_ALARM_STATE:
                 return getAsStringTypeOrNull(structure.getSmokeAlarmState());
             case CHANNEL_TIME_ZONE:

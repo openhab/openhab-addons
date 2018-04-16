@@ -8,17 +8,14 @@
  */
 package org.openhab.binding.nest.internal.data;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The meta data in the data downloads from Nest.
  *
  * @author David Bennett - Initial Contribution
  */
 public class NestMetadata {
-    @SerializedName("access_token")
+
     private String accessToken;
-    @SerializedName("client_version")
     private String clientVersion;
 
     public String getAccessToken() {

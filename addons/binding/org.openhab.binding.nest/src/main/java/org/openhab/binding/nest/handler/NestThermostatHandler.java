@@ -72,9 +72,9 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
             case CHANNEL_LOCKED:
                 return getAsOnOffTypeOrNull(thermostat.isLocked());
             case CHANNEL_LOCKED_MAX_SET_POINT:
-                return getAsTemperatureOrNull(thermostat.getLockedTemperatureHigh(), thermostat.getTemperatureUnit());
+                return getAsTemperatureOrNull(thermostat.getLockedTempMax(), thermostat.getTemperatureUnit());
             case CHANNEL_LOCKED_MIN_SET_POINT:
-                return getAsTemperatureOrNull(thermostat.getLockedTemperatureLow(), thermostat.getTemperatureUnit());
+                return getAsTemperatureOrNull(thermostat.getLockedTempMin(), thermostat.getTemperatureUnit());
             case CHANNEL_MAX_SET_POINT:
                 return getAsTemperatureOrNull(thermostat.getTargetTemperatureHigh(), thermostat.getTemperatureUnit());
             case CHANNEL_MIN_SET_POINT:
@@ -82,11 +82,11 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
             case CHANNEL_MODE:
                 return getAsStringTypeOrNull(thermostat.getMode());
             case CHANNEL_PREVIOUS_MODE:
-                Mode previousMode = thermostat.getPreviousMode() != null ? thermostat.getPreviousMode()
+                Mode previousMode = thermostat.getPreviousHvacMode() != null ? thermostat.getPreviousHvacMode()
                         : thermostat.getMode();
                 return getAsStringTypeOrNull(previousMode);
             case CHANNEL_STATE:
-                return getAsStringTypeOrNull(thermostat.getState());
+                return getAsStringTypeOrNull(thermostat.getHvacState());
             case CHANNEL_SET_POINT:
                 return getAsTemperatureOrNull(thermostat.getTargetTemperature(), thermostat.getTemperatureUnit());
             case CHANNEL_SUNLIGHT_CORRECTION_ACTIVE:

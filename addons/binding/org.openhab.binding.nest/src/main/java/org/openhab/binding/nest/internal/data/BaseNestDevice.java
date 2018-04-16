@@ -10,29 +10,20 @@ package org.openhab.binding.nest.internal.data;
 
 import java.util.Date;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Default properties shared across all Nest devices.
  *
  * @author David Bennett
  */
 public class BaseNestDevice implements NestIdentifiable {
-    @SerializedName("device_id")
+
     private String deviceId;
-    @SerializedName("name")
     private String name;
-    @SerializedName("name_long")
     private String nameLong;
-    @SerializedName("last_connection")
     private Date lastConnection;
-    @SerializedName("is_online")
     private Boolean isOnline;
-    @SerializedName("software_version")
     private String softwareVersion;
-    @SerializedName("structure_id")
     private String structureId;
-    @SerializedName("where_id")
     private String whereId;
 
     @Override
