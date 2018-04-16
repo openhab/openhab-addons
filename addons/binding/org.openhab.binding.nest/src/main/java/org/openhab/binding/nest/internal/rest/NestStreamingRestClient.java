@@ -9,7 +9,6 @@
 package org.openhab.binding.nest.internal.rest;
 
 import static org.openhab.binding.nest.NestBindingConstants.KEEP_ALIVE_MILLIS;
-import static org.openhab.binding.nest.internal.NestUtils.GSON;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -26,6 +25,7 @@ import org.glassfish.jersey.media.sse.EventSource;
 import org.glassfish.jersey.media.sse.InboundEvent;
 import org.glassfish.jersey.media.sse.SseFeature;
 import org.openhab.binding.nest.handler.NestRedirectUrlSupplier;
+import org.openhab.binding.nest.internal.NestUtils;
 import org.openhab.binding.nest.internal.data.TopLevelData;
 import org.openhab.binding.nest.internal.data.TopLevelStreamingData;
 import org.openhab.binding.nest.internal.exceptions.FailedResolvingNestUrlException;
@@ -197,7 +197,7 @@ public class NestStreamingRestClient {
                 logger.debug("Event stream opened");
             } else if (PUT.equals(name)) {
                 logger.debug("Data has changed (or initial data sent)");
-                lastReceivedTopLevelData = GSON.fromJson(data, TopLevelStreamingData.class).getData();
+                lastReceivedTopLevelData = NestUtils.fromJson(data, TopLevelStreamingData.class).getData();
                 listeners.forEach(listener -> listener.onNewTopLevelData(lastReceivedTopLevelData));
             } else {
                 logger.debug("Received unhandled event with name '{}' and data '{}'", name, data);

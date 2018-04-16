@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.nest.internal.data;
 
-import static org.openhab.binding.nest.internal.NestUtils.GSON;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,6 +20,7 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.openhab.binding.nest.internal.NestUtils;
 
 /**
  * Utility class for working with Nest test data in unit tests.
@@ -70,7 +69,7 @@ public final class NestDataUtil {
 
     public static <T> T fromJson(String fileName, Class<T> dataClass) throws IOException {
         try (Reader reader = openDataReader(fileName)) {
-            return GSON.fromJson(reader, dataClass);
+            return NestUtils.fromJson(reader, dataClass);
         }
     }
 

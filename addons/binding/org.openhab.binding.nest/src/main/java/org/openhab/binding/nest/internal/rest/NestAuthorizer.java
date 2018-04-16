@@ -8,13 +8,12 @@
  */
 package org.openhab.binding.nest.internal.rest;
 
-import static org.openhab.binding.nest.internal.NestUtils.GSON;
-
 import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.nest.NestBindingConstants;
+import org.openhab.binding.nest.internal.NestUtils;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.internal.data.AccessTokenData;
 import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
@@ -69,7 +68,7 @@ public class NestAuthorizer {
             String responseContentAsString = HttpUtil.executeUrl("POST", urlBuilder.toString(), null, null,
                     "application/x-www-form-urlencoded", 10_000);
 
-            AccessTokenData data = GSON.fromJson(responseContentAsString, AccessTokenData.class);
+            AccessTokenData data = NestUtils.fromJson(responseContentAsString, AccessTokenData.class);
             logger.debug("Received: {}", data);
 
             if (StringUtils.isEmpty(data.getAccessToken())) {

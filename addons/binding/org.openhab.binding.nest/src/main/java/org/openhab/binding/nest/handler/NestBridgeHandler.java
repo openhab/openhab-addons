@@ -10,7 +10,6 @@ package org.openhab.binding.nest.handler;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openhab.binding.nest.NestBindingConstants.JSON_CONTENT_TYPE;
-import static org.openhab.binding.nest.internal.NestUtils.GSON;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -36,6 +35,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.nest.internal.NestUtils;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.internal.data.ErrorData;
 import org.openhab.binding.nest.internal.data.NestDevices;
@@ -327,7 +327,7 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
             String url = redirectUrlSupplier.getRedirectUrl() + request.getUpdatePath();
             logger.debug("Putting data to: {}", url);
 
-            String jsonContent = GSON.toJson(request.getValues());
+            String jsonContent = NestUtils.toJson(request.getValues());
             logger.debug("PUT content: {}", jsonContent);
 
             ByteArrayInputStream inputStream = new ByteArrayInputStream(jsonContent.getBytes(StandardCharsets.UTF_8));
@@ -335,7 +335,7 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
                     REQUEST_TIMEOUT);
             logger.debug("PUT response: {}", jsonResponse);
 
-            ErrorData error = GSON.fromJson(jsonResponse, ErrorData.class);
+            ErrorData error = NestUtils.fromJson(jsonResponse, ErrorData.class);
             if (StringUtils.isNotBlank(error.getError())) {
                 logger.debug("Nest API error: {}", error);
                 logger.warn("Nest API error: {}", error.getMessage());
