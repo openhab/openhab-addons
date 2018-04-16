@@ -73,6 +73,8 @@ public class AutelisDiscoveryParticipant implements UpnpDiscoveryParticipant {
     public ThingUID getThingUID(RemoteDevice device) {
         if (device.getDetails().getManufacturerDetails().getManufacturer() != null
                 && device.getDetails().getModelDetails().getModelNumber() != null) {
+            logger.trace("UPNP {} : {}", device.getDetails().getManufacturerDetails().getManufacturer(),
+                    device.getDetails().getModelDetails().getModelNumber());
             if (device.getDetails().getManufacturerDetails().getManufacturer().toLowerCase().startsWith(MANUFACTURER)) {
                 logger.debug("Autelis Pool Control Found at {}", device.getDetails().getBaseURL());
                 String id = device.getIdentity().getUdn().getIdentifierString().replaceAll(":", "").toUpperCase();

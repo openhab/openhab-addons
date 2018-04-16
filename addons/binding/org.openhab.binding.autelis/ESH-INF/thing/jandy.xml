@@ -182,7 +182,7 @@
 			<channel id="chem-chlrp" typeId="chem-chlrp" />
 			<channel id="chem-saltp" typeId="chem-saltp" />
 			<channel id="chem-chlrs" typeId="chem-chlrs" />
-			<channel id="chem-slats" typeId="chem-slats" />
+			<channel id="chem-salts" typeId="chem-salts" />
 			<channel id="chem-orp1" typeId="chem-orp1" />
 			<channel id="chem-orp2" typeId="chem-orp2" />
 			<channel id="chem-ph1" typeId="chem-ph1" />

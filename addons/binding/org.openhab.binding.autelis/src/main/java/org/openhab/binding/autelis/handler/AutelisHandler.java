@@ -9,6 +9,7 @@
 package org.openhab.binding.autelis.handler;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +42,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.autelis.AutelisBindingConstants;
 import org.openhab.binding.autelis.internal.config.AutelisConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -341,7 +343,14 @@ public class AutelisHandler extends BaseThingHandler {
         StringBuilder sb = new StringBuilder("<response>");
 
         // pull down the three xml documents
-        String[] statuses = { "status", "chem", "pumps" };
+        ArrayList<String> statuses = new ArrayList<String>();
+        statuses.add("status");
+
+        if (getThing().getThingTypeUID() == AutelisBindingConstants.PENTAIR_THING_TYPE_UID) {
+            statuses.add("chem");
+            statuses.add("pumps");
+        }
+
         for (String status : statuses) {
             String response = getUrl(baseURL + "/" + status + ".xml", TIMEOUT);
             logger.trace("{}/{}.xml \n {}", baseURL, status, response);
@@ -445,7 +454,7 @@ public class AutelisHandler extends BaseThingHandler {
     private String getUrl(String url, int timeout) {
         url += (url.contains("?") ? "&" : "?") + "timestamp=" + System.currentTimeMillis();
         startHttpClient(client);
-        logger.debug("Gettiing URL {} ", url);
+        logger.trace("Gettiing URL {} ", url);
         Request request = client.newRequest(url).timeout(TIMEOUT, TimeUnit.MILLISECONDS);
         request.header(HttpHeader.AUTHORIZATION, basicAuthentication);
 
