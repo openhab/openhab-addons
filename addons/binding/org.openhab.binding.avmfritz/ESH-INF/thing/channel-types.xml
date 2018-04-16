@@ -50,7 +50,7 @@
 		<label>Energy Consumption</label>
 		<description>Accumulated energy consumption.</description>
 		<category>Energy</category>
-		<state pattern="%.3f %unit%" readOnly="true" />
+		<state pattern="%.3f kWh" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="power">

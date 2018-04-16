@@ -86,7 +86,7 @@ If correct credentials are set in the bridge configuration, connected AHA device
 | device_locked   | Contact            | Device is locked for switching manually (OPEN/CLOSE) - FRITZ!OS 6.90                                   | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT    |
 | temperature     | Number:Temperature | Actual measured temperature                                                                            | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!DECT Repeater 100, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT |
 | energy          | Number:Energy      | Accumulated energy consumption                                                                         | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
-| power           | Number:Power       | Current power consumption (in W)                                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
+| power           | Number:Power       | Current power consumption                                                                              | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
 | outlet          | Switch             | Switchable outlet (ON/OFF)                                                                             | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
 | actual_temp     | Number:Temperature | Actual Temperature of heating thermostat                                                               | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
 | set_temp        | Number:Temperature | Set Temperature of heating thermostat                                                                  | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
@@ -116,7 +116,7 @@ demo.items:
 ```java
 Switch Outlet1 "Switchable outlet" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:outlet" }
 Number:Temperature Temperature1 "Current measured temperature [%.1f %unit%]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:temperature" }
-Number:Energy Energy1 "Accumulated energy consumption [%.3f Wh]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:energy" }
+Number:Energy Energy1 "Accumulated energy consumption [%.3f kWh]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:energy" }
 Number:Power Power1 "Current power consumption [%.2f %unit%]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:power" }
 
 Switch Outlet2 "Switchable outlet" { channel="avmfritz:FRITZ_Powerline_546E:1:yy_yy_yy_yy_yy_yy:outlet" }
