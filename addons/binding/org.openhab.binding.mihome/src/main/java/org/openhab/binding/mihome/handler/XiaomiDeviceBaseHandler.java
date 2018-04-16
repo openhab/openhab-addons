@@ -77,12 +77,8 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
     @Override
     public void initialize() {
         setItemId((String) getConfig().get(ITEM_ID));
-        onlineCheckTask = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                updateThingStatus();
-            }
-        }, 0, ONLINE_TIMEOUT_MILLIS / 2, TimeUnit.MILLISECONDS);
+        onlineCheckTask = scheduler.scheduleWithFixedDelay(this::updateThingStatus, 0, ONLINE_TIMEOUT_MILLIS / 2,
+                TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -105,7 +101,7 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Device {} on channel {} received command {}", getItemId(), channelUID, command);
         if (command instanceof RefreshType) {
-            JsonObject message = getXiaomiBridgeHandler().getRetentedMessage(getItemId());
+            JsonObject message = getXiaomiBridgeHandler().getDeferredMessage(getItemId());
             if (message != null) {
                 String cmd = message.get("cmd").getAsString();
                 logger.debug("Update Item {} with retented message", getItemId());
