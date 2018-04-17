@@ -92,6 +92,10 @@ public class ControllerHandler extends DraytonWiserThingHandler {
                 updateState(new ChannelUID(getThing().getUID(),
                         DraytonWiserBindingConstants.CHANNEL_CURRENT_SIGNAL_STRENGTH), getSignalStrength());
                 updateState(
+                        new ChannelUID(getThing().getUID(),
+                                DraytonWiserBindingConstants.CHANNEL_CURRENT_UNIFIED_SIGNAL_STRENGTH),
+                        getUnifiedSignalStrength());
+                updateState(
                         new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_HEATCHANNEL_1_DEMAND),
                         getHeatChannel1Demand());
                 updateState(
@@ -155,6 +159,15 @@ public class ControllerHandler extends DraytonWiserThingHandler {
         }
 
         return UnDefType.UNDEF;
+    }
+
+    private State getUnifiedSignalStrength() {
+        if (device != null) {
+            return new DecimalType(DraytonWiserBindingConstants.UNIFIED_SIGNAL_STRENGTH_MAP
+                    .getOrDefault(device.getDisplayedSignalStrength(), 0));
+        }
+
+        return new DecimalType(0);
     }
 
     @SuppressWarnings("null")

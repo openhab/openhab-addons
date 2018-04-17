@@ -57,6 +57,7 @@
             <channel id="ecoModeState" typeId="ecoModeState-channel" />
             <channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
             <channel id="currentSignalStrength" typeId="signalStrength-channel" />
+            <channel id="currentUnifiedSignalStrength" typeId="unifiedSignalStrength-channel" />
         </channels>
     </thing-type>
     
@@ -126,9 +127,11 @@
             <channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
             <channel id="currentBatteryVoltage" typeId="batteryVoltage-channel"/>
             <channel id="currentBatteryLevel" typeId="batteryLevel-channel"/>
+            <channel id="currentUnifiedBatteryLevel" typeId="unifiedBatteryLevel-channel"/>
             <channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
             <channel id="currentSignalLQI" typeId="signalLQI-channel" />
             <channel id="currentSignalStrength" typeId="signalStrength-channel" />
+            <channel id="currentUnifiedSignalStrength" typeId="unifiedSignalStrength-channel" />
             <channel id="zigbeeConnected" typeId="zigbeeConnected-channel" />
        </channels>
         
@@ -157,9 +160,11 @@
             <channel id="currentDemand" typeId="demandPercent-channel"/>
             <channel id="currentBatteryVoltage" typeId="batteryVoltage-channel"/>
             <channel id="currentBatteryLevel" typeId="batteryLevel-channel"/>
+            <channel id="currentUnifiedBatteryLevel" typeId="unifiedBatteryLevel-channel"/>
             <channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
             <channel id="currentSignalLQI" typeId="signalLQI-channel" />
             <channel id="currentSignalStrength" typeId="signalStrength-channel" />
+            <channel id="currentUnifiedSignalStrength" typeId="unifiedSignalStrength-channel" />
             <channel id="zigbeeConnected" typeId="zigbeeConnected-channel" />
         </channels>
         
@@ -255,9 +260,23 @@
         <state readOnly="true" ></state>
     </channel-type>
     
+    <channel-type id="unifiedSignalStrength-channel">
+        <item-type>Number</item-type>
+        <label>Unified Signal Strength</label>
+        <description>The reported network signal strength</description>
+        <state readOnly="true" ></state>
+    </channel-type>
+    
     <channel-type id="batteryLevel-channel">
         <item-type>String</item-type>
         <label>Battery Level</label>
+        <description>Current Battery Level for the device</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="unifiedBatteryLevel-channel">
+        <item-type>Number</item-type>
+        <label>Unified Battery Level</label>
         <description>Current Battery Level for the device</description>
         <state readOnly="true"/>
     </channel-type>

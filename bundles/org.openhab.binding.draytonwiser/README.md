@@ -56,72 +56,77 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 
 #### Controller
 
-| Channel                   | Description                                              | Implemented |
-|---------------------------|----------------------------------------------------------|-------------|
-| `heatingOverride`         | State of the heating override button on the controller   | Yes         |
-| `heatChannel1Demand`      | Current demand level of heating channel 1                | Yes         |
-| `heatChannel1DemandState` | Is channel 1 calling the boiler for heat                 | Yes         |
-| `heatChannel2Demand`      | Current demand level of heating channel 2                | Yes         |
-| `heatChannel2DemandState` | Is channel 2 calling the boiler for heat                 | Yes         |
-| `currentSignalRSSI`       | Relative Signal Strength Indicator                       | Yes         |
-| `currentSignalStrength`   | Human readable signal strength                           | Yes         |
+| Channel                        | Description                                              |
+|--------------------------------|----------------------------------------------------------|
+| `heatingOverride`              | State of the heating override button on the controller   |         
+| `heatChannel1Demand`           | Current demand level of heating channel 1                |
+| `heatChannel1DemandState`      | Is channel 1 calling the boiler for heat                 |
+| `heatChannel2Demand`           | Current demand level of heating channel 2                |
+| `heatChannel2DemandState`      | Is channel 2 calling the boiler for heat                 |
+| `currentSignalRSSI`            | Relative Signal Strength Indicator                       |
+| `currentSignalStrength`        | Human readable signal strength                           |
+| `currentUnifiedSignalStrength` | Signal strength value that maps to qualityofservice icon |
 
 #### Hot Water
 
-| Channel                   | Description                                              | Implemented |
-|---------------------------|----------------------------------------------------------|-------------|
-| `hotWaterOverride`        | State of the hot water override button on the controller | Yes         |
-| `hotWaterDemandState`     | Is hot water calling the boiler for heat                 | Yes         |
-| `hotWaterBoosted`         | Is hot water currently being boosted                     | Yes         |
-| `hotWaterBoostRemaining`  | How long until the boost deactivates in minutes          | Yes         |
+| Channel                   | Description                                              |
+|---------------------------|----------------------------------------------------------|
+| `hotWaterOverride`        | State of the hot water override button on the controller |
+| `hotWaterDemandState`     | Is hot water calling the boiler for heat                 |
+| `hotWaterBoosted`         | Is hot water currently being boosted                     |
+| `hotWaterBoostRemaining`  | How long until the boost deactivates in minutes          |
 
 #### Room
 
-| Channel              | Description                                                                  | Implemented |
-|----------------------|------------------------------------------------------------------------------|-------------|
-| `currentTemperature` | Currently reported temperature                                               | Yes         |
-| `currentHumidity`    | Currently reported humidity (if there is a room stat configured in this room | Yes         |
-| `currentDemand`      | Current heat demand percentage of the room                                   | Yes         |
-| `heatRequest`        | Is the room actively requesting heat from the controller                     | Yes         |
-| `roomBoosted`        | Is the room currently being boosted                                          | Yes         |
-| `roomBoostRemaining` | How long until the boost deactivates in minutes                              | Yes         |
+| Channel              | Description                                                                  |
+|----------------------|------------------------------------------------------------------------------|
+| `currentTemperature` | Currently reported temperature                                               |
+| `currentHumidity`    | Currently reported humidity (if there is a room stat configured in this room |
+| `currentDemand`      | Current heat demand percentage of the room                                   |
+| `heatRequest`        | Is the room actively requesting heat from the controller                     |
+| `roomBoosted`        | Is the room currently being boosted                                          |
+| `roomBoostRemaining` | How long until the boost deactivates in minutes                              |
 
 #### Room Stat
 
-| Channel                 | Description                        | Implemented |
-|-------------------------|------------------------------------|-------------|
-| `currentTemperature`    | Currently reported temperature     | Yes         |
-| `currentHumidity`       | Currently reported humidity        | Yes         |
-| `currentSetPoint`       | Currently reported set point       | Yes         |
-| `currentBatteryVoltage` | Currently reported battery voltage | Yes         |
-| `currentBatteryLevel`   | Human readable battery level       | Yes         |
-| `currentSignalRSSI`     | Relative Signal Strength Indicator | Yes         |
-| `currentSignalLQI`      | Link Quality Indicator             | Yes         |
-| `currentSignalStrength` | Human readable signal strength     | Yes         |
-| `zigbeeConnected`       | Is the roomstat joined to network  | Yes         |
+| Channel                        | Description                                              |
+|--------------------------------|----------------------------------------------------------|
+| `currentTemperature`           | Currently reported temperature                           |
+| `currentHumidity`              | Currently reported humidity                              |
+| `currentSetPoint`              | Currently reported set point                             |
+| `currentBatteryVoltage`        | Currently reported battery voltage                       |
+| `currentBatteryLevel`          | Human readable battery level                             |
+| `currentUnifiedBatteryLevel`   | Battery level in percent                                 |
+| `currentSignalRSSI`            | Relative Signal Strength Indicator                       |
+| `currentSignalLQI`             | Link Quality Indicator                                   |
+| `currentSignalStrength`        | Human readable signal strength                           |
+| `currentUnifiedSignalStrength` | Signal strength value that maps to qualityofservice icon |
+| `zigbeeConnected`              | Is the roomstat joined to network                        |
 
 #### Smart TRV
 
-| Channel                 | Description                               | Implemented |
-|-------------------------|-------------------------------------------|-------------|
-| `currentTemperature`    | Currently reported temperature            | Yes         |
-| `currentDemand`         | Current heat demand percentage of the TRV | Yes         |
-| `currentSetPoint`       | Currently reported set point              | Yes         |
-| `currentBatteryVoltage` | Currently reported battery voltage        | Yes         |
-| `currentBatteryLevel`   | Human readable battery level              | Yes         |
-| `currentSignalRSSI`     | Relative Signal Strength Indicator        | Yes         |
-| `currentSignalLQI`      | Link Quality Indicator                    | Yes         |
-| `currentSignalStrength` | Human readable signal strength            | Yes         |
-| `zigbeeConnected`       | Is the TRV joined to network              | Yes         |
+| Channel                        | Description                                              |
+|--------------------------------|----------------------------------------------------------|
+| `currentTemperature`           | Currently reported temperature                           |
+| `currentDemand`                | Current heat demand percentage of the TRV                |
+| `currentSetPoint`              | Currently reported set point                             |
+| `currentBatteryVoltage`        | Currently reported battery voltage                       |
+| `currentBatteryLevel`          | Human readable battery level                             |
+| `currentUnifiedBatteryLevel`   | Battery level in percent                                 |
+| `currentSignalRSSI`            | Relative Signal Strength Indicator                       |
+| `currentSignalLQI`             | Link Quality Indicator                                   |
+| `currentSignalStrength`        | Human readable signal strength                           |
+| `currentUnifiedSignalStrength` | Signal strength value that maps to qualityofservice icon |
+| `zigbeeConnected`              | Is the TRV joined to network                             |
 
 ### Writeable Channels
 
 #### Controller
 
-| Channel            | Description                              | Implemented |
-|--------------------|------------------------------------------|-------------|
-| `awayModeState`    | Has away mode been enabled               | Yes         |
-| `ecoModeState`     | Has eco mode been enabled                | Yes         |
+| Channel            | Description                |
+|--------------------|----------------------------|
+| `awayModeState`    | Has away mode been enabled |
+| `ecoModeState`     | Has eco mode been enabled  |
 
 #### Hot Water
 

@@ -85,8 +85,16 @@ public class RoomStatHandler extends DraytonWiserThingHandler {
                 updateState(new ChannelUID(getThing().getUID(),
                         DraytonWiserBindingConstants.CHANNEL_CURRENT_SIGNAL_STRENGTH), getSignalStrength());
                 updateState(
+                        new ChannelUID(getThing().getUID(),
+                                DraytonWiserBindingConstants.CHANNEL_CURRENT_UNIFIED_SIGNAL_STRENGTH),
+                        getUnifiedSignalStrength());
+                updateState(
                         new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_BATTERY_LEVEL),
                         getBatteryLevel());
+                updateState(
+                        new ChannelUID(getThing().getUID(),
+                                DraytonWiserBindingConstants.CHANNEL_CURRENT_UNIFIED_BATTERY_LEVEL),
+                        getUnifiedBatteryLevel());
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_ZIGBEE_CONNECTED),
                         getZigbeeConnected());
             }
@@ -164,6 +172,18 @@ public class RoomStatHandler extends DraytonWiserThingHandler {
         return UnDefType.UNDEF;
     }
 
+    private State getUnifiedSignalStrength() {
+        if (roomStat != null && bridgeHandler != null) {
+            Device device = bridgeHandler.getExtendedDeviceProperties(roomStat.getId());
+            if (device != null) {
+                return new DecimalType(DraytonWiserBindingConstants.UNIFIED_SIGNAL_STRENGTH_MAP
+                        .getOrDefault(device.getDisplayedSignalStrength(), 0));
+            }
+        }
+
+        return new DecimalType(0);
+    }
+
     private State getBatteryVoltage() {
         if (roomStat != null && bridgeHandler != null) {
             Device device = bridgeHandler.getExtendedDeviceProperties(roomStat.getId());
@@ -180,6 +200,18 @@ public class RoomStatHandler extends DraytonWiserThingHandler {
             Device device = bridgeHandler.getExtendedDeviceProperties(roomStat.getId());
             if (device != null) {
                 return new StringType(device.getBatteryLevel());
+            }
+        }
+
+        return UnDefType.UNDEF;
+    }
+
+    private State getUnifiedBatteryLevel() {
+        if (roomStat != null && bridgeHandler != null) {
+            Device device = bridgeHandler.getExtendedDeviceProperties(roomStat.getId());
+            if (device != null) {
+                return new DecimalType(DraytonWiserBindingConstants.UNIFIED_BATTERY_LEVEL_MAP
+                        .getOrDefault(device.getBatteryLevel(), 0));
             }
         }
 

@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.draytonwiser;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
@@ -64,11 +67,13 @@ public class DraytonWiserBindingConstants {
     public static final String CHANNEL_CURRENT_SETPOINT = "currentSetPoint";
     public static final String CHANNEL_CURRENT_BATTERY_VOLTAGE = "currentBatteryVoltage";
     public static final String CHANNEL_CURRENT_BATTERY_LEVEL = "currentBatteryLevel";
+    public static final String CHANNEL_CURRENT_UNIFIED_BATTERY_LEVEL = "currentUnifiedBatteryLevel";
     public static final String CHANNEL_CURRENT_DEMAND = "currentDemand";
     public static final String CHANNEL_HEAT_REQUEST = "heatRequest";
     public static final String CHANNEL_CURRENT_SIGNAL_RSSI = "currentSignalRSSI";
     public static final String CHANNEL_CURRENT_SIGNAL_LQI = "currentSignalLQI";
     public static final String CHANNEL_CURRENT_SIGNAL_STRENGTH = "currentSignalStrength";
+    public static final String CHANNEL_CURRENT_UNIFIED_SIGNAL_STRENGTH = "currentUnifiedSignalStrength";
     public static final String CHANNEL_HEATING_OVERRIDE = "heatingOverride";
     public static final String CHANNEL_HOT_WATER_OVERRIDE = "hotWaterOverride";
     public static final String CHANNEL_HEATCHANNEL_1_DEMAND = "heatChannel1Demand";
@@ -91,4 +96,11 @@ public class DraytonWiserBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_CONTROLLER,
             THING_TYPE_ROOM, THING_TYPE_ROOMSTAT, THING_TYPE_BRIDGE, THING_TYPE_ITRV, THING_TYPE_HOTWATER);
 
+    // Lookups from text representations to useful openhab values
+    public static final Map<String, Integer> UNIFIED_SIGNAL_STRENGTH_MAP = Maps
+            .newHashMap(ImmutableMap.of("VeryGood", 4, "Good", 3, "Medium", 2, "Poor", 1, "NoSignal", 0));
+
+    public static final Map<String, Integer> UNIFIED_BATTERY_LEVEL_MAP = ImmutableMap.<String, Integer> builder()
+            .put("Full", 100).put("Normal", 80).put("TwoThirds", 60).put("OneThird", 40).put("Low", 20)
+            .put("Critical", 0).build();
 }
