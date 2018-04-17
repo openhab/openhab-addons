@@ -81,6 +81,7 @@ public class Connection {
 
     private @Nullable String sessionId;
     private @Nullable Date loginTime;
+    private @Nullable Date verifyTime;
 
     public Connection(@Nullable String email, @Nullable String password, @Nullable String amazonSite,
             @Nullable String accountThingId) {
@@ -108,6 +109,10 @@ public class Connection {
 
     public @Nullable Date tryGetLoginTime() {
         return loginTime;
+    }
+
+    public @Nullable Date tryGetVerifyTime() {
+        return verifyTime;
     }
 
     public String getEmail() {
@@ -241,6 +246,7 @@ public class Connection {
         cookieStore.removeAll();
         this.sessionId = null;
         this.loginTime = null;
+        this.verifyTime = null;
         return false;
     }
 
@@ -395,6 +401,8 @@ public class Connection {
         cookieManager.getCookieStore().removeAll();
         sessionId = null;
         loginTime = null;
+        verifyTime = null;
+
         logger.debug("Start Login to {}", alexaServer);
         // get login form
         String loginFormHtml = makeRequestAndReturnString(alexaServer);
@@ -457,6 +465,7 @@ public class Connection {
             cookieManager.getCookieStore().removeAll();
             sessionId = null;
             loginTime = null;
+            verifyTime = null;
             logger.info("Login failed: {}", e.getLocalizedMessage());
             // rethrow
             throw e;
@@ -503,8 +512,11 @@ public class Connection {
     public boolean verifyLogin() throws IOException, URISyntaxException {
         String response = makeRequestAndReturnString(alexaServer + "/api/bootstrap?version=0");
         Boolean result = response.contains("\"authenticated\":true");
-        if (result && loginTime == null) {
-            loginTime = new Date();
+        if (result) {
+            verifyTime = new Date();
+            if (loginTime == null) {
+                loginTime = verifyTime;
+            }
         }
         return result;
     }
@@ -513,6 +525,7 @@ public class Connection {
         cookieManager.getCookieStore().removeAll();
         sessionId = null;
         loginTime = null;
+        verifyTime = null;
     }
 
     // parser

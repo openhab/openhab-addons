@@ -265,6 +265,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
     }
 
     private void cleanup() {
+        logger.debug("cleanup {}", getThing().getUID().getAsString());
         @Nullable
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
@@ -285,85 +286,93 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
     }
 
     private void checkLogin() {
-        synchronized (synchronizeConnection) {
-            Connection currentConnection = this.connection;
-            if (currentConnection == null) {
-                return;
-            }
-            Date loginTime = currentConnection.tryGetLoginTime();
-            Date currentDate = new Date();
-            long currentTime = currentDate.getTime();
-            if (loginTime != null && currentTime - loginTime.getTime() > 3600000) // One hour
-            {
-                try {
-                    if (!currentConnection.verifyLogin()) {
+        try {
+            logger.debug("check login {}", getThing().getUID().getAsString());
+
+            synchronized (synchronizeConnection) {
+                Connection currentConnection = this.connection;
+                if (currentConnection == null) {
+                    return;
+                }
+                Date verifyTime = currentConnection.tryGetVerifyTime();
+                Date currentDate = new Date();
+                long currentTime = currentDate.getTime();
+                if (verifyTime != null && currentTime - verifyTime.getTime() > 3600000) // Every one hour
+                {
+                    try {
+                        if (!currentConnection.verifyLogin()) {
+                            currentConnection.logout();
+                        }
+                    } catch (IOException | URISyntaxException e) {
+                        logger.info("logout failed: {}", e.getMessage());
                         currentConnection.logout();
                     }
-                } catch (IOException | URISyntaxException e) {
-                    logger.info("logout failed: {}", e.getMessage());
-                    currentConnection.logout();
                 }
-            }
-            loginTime = currentConnection.tryGetLoginTime();
-            if (loginTime != null && currentTime - loginTime.getTime() > 86400000 * 5) // 5 days
-            {
-                // Recreate session
-                this.stateStorage.storeState("sessionStorage", "");
-                currentConnection = new Connection(currentConnection.getEmail(), currentConnection.getPassword(),
-                        currentConnection.getAmazonSite(), this.getThing().getUID().getId());
-            }
-            boolean loginIsValid = true;
-            if (!currentConnection.getIsLoggedIn()) {
-                try {
+                Date loginTime = currentConnection.tryGetLoginTime();
+                if (loginTime != null && currentTime - loginTime.getTime() > 86400000 * 5) // 5 days
+                {
+                    // Recreate session
+                    this.stateStorage.storeState("sessionStorage", "");
+                    currentConnection = new Connection(currentConnection.getEmail(), currentConnection.getPassword(),
+                            currentConnection.getAmazonSite(), this.getThing().getUID().getId());
+                }
+                boolean loginIsValid = true;
+                if (!currentConnection.getIsLoggedIn()) {
+                    try {
 
-                    // read session data from property
-                    String sessionStore = this.stateStorage.findState("sessionStorage");
+                        // read session data from property
+                        String sessionStore = this.stateStorage.findState("sessionStorage");
 
-                    // try use the session data
-                    if (!currentConnection.tryRestoreLogin(sessionStore)) {
-                        // session data not valid -> login
-                        int retry = 0;
-                        while (true) {
-                            try {
-                                currentConnection.makeLogin();
-                                break;
-                            } catch (ConnectionException e) {
-                                // Up to 2 retries for login
-                                retry++;
-                                if (retry >= 2) {
-                                    currentConnection.logout();
-                                    throw e;
-                                }
-                                // give amazon some time
+                        // try use the session data
+                        if (!currentConnection.tryRestoreLogin(sessionStore)) {
+                            // session data not valid -> login
+                            int retry = 0;
+                            while (true) {
                                 try {
-                                    Thread.sleep(2000);
-                                } catch (InterruptedException exception) {
-                                    // throw the original exception
-                                    throw e;
+                                    currentConnection.makeLogin();
+                                    break;
+                                } catch (ConnectionException e) {
+                                    // Up to 2 retries for login
+                                    retry++;
+                                    if (retry >= 2) {
+                                        currentConnection.logout();
+                                        throw e;
+                                    }
+                                    // give amazon some time
+                                    try {
+                                        Thread.sleep(2000);
+                                    } catch (InterruptedException exception) {
+                                        // throw the original exception
+                                        throw e;
+                                    }
                                 }
                             }
+                            // store session data in property
+                            String serializedStorage = currentConnection.serializeLoginData();
+                            this.stateStorage.storeState("sessionStorage", serializedStorage);
                         }
-                        // store session data in property
-                        String serializedStorage = currentConnection.serializeLoginData();
-                        this.stateStorage.storeState("sessionStorage", serializedStorage);
+                        updateSmartHomeDeviceList = true;
+                        this.connection = currentConnection;
+                    } catch (UnknownHostException e) {
+                        loginIsValid = false;
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unknown host name '"
+                                + e.getMessage() + "'. Maybe your internet connection is offline");
+                    } catch (IOException e) {
+                        loginIsValid = false;
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                e.getLocalizedMessage());
+                    } catch (URISyntaxException e) {
+                        loginIsValid = false;
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                e.getLocalizedMessage());
                     }
-                    updateSmartHomeDeviceList = true;
-                    this.connection = currentConnection;
-                } catch (UnknownHostException e) {
-                    loginIsValid = false;
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Unknown host name '" + e.getMessage() + "'. Maybe your internet connection is offline");
-                } catch (IOException e) {
-                    loginIsValid = false;
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-                } catch (URISyntaxException e) {
-                    loginIsValid = false;
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-                }
-                if (loginIsValid) {
-                    handleValidLogin();
+                    if (loginIsValid) {
+                        handleValidLogin();
+                    }
                 }
             }
+        } catch (Exception e) {
+            logger.error("check login fails {}", e);
         }
     }
 
@@ -383,43 +392,49 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
     }
 
     private void refreshData() {
-        logger.debug("amazon account bridge refreshing data ...");
+        try {
+            logger.debug("refreshing data {}", getThing().getUID().getAsString());
 
-        // check if logged in
-        Connection currentConnection = null;
-        synchronized (synchronizeConnection) {
-            currentConnection = connection;
-            if (currentConnection != null) {
-                if (!currentConnection.getIsLoggedIn()) {
-                    return;
+            // check if logged in
+            Connection currentConnection = null;
+            synchronized (synchronizeConnection) {
+                currentConnection = connection;
+                if (currentConnection != null) {
+                    if (!currentConnection.getIsLoggedIn()) {
+                        return;
+                    }
                 }
             }
-        }
-        if (currentConnection == null) {
-            return;
-        }
-
-        // get all devices registered in the account
-        updateDeviceList(false);
-
-        // update bluetooth states
-        JsonBluetoothStates states = null;
-        if (currentConnection.getIsLoggedIn()) {
-            states = currentConnection.getBluetoothConnectionStates();
-        }
-
-        // forward device information to echo handler
-        for (EchoHandler child : echoHandlers) {
-            Device device = findDeviceJson(child);
-            BluetoothState state = null;
-            if (states != null) {
-                state = states.findStateByDevice(device);
+            if (currentConnection == null) {
+                return;
             }
-            child.updateState(device, state);
-        }
 
-        // update account state
-        updateStatus(ThingStatus.ONLINE);
+            // get all devices registered in the account
+            updateDeviceList(false);
+
+            // update bluetooth states
+            JsonBluetoothStates states = null;
+            if (currentConnection.getIsLoggedIn()) {
+                states = currentConnection.getBluetoothConnectionStates();
+            }
+
+            // forward device information to echo handler
+            for (EchoHandler child : echoHandlers) {
+                Device device = findDeviceJson(child);
+                BluetoothState state = null;
+                if (states != null) {
+                    state = states.findStateByDevice(device);
+                }
+                child.updateState(device, state);
+            }
+
+            // update account state
+            updateStatus(ThingStatus.ONLINE);
+
+            logger.debug("refresh data {} finished", getThing().getUID().getAsString());
+        } catch (Exception e) {
+            logger.error("refresh data {} failed: {}", getThing().getUID().getAsString(), e);
+        }
     }
 
     public @Nullable Device findDeviceJson(EchoHandler echoHandler) {
