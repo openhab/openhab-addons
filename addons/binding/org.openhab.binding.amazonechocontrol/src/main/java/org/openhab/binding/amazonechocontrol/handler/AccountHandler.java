@@ -433,7 +433,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
 
             logger.debug("refresh data {} finished", getThing().getUID().getAsString());
         } catch (Exception e) {
-            logger.error("refresh data {} failed: {}", getThing().getUID().getAsString(), e);
+            logger.error("refresh data failed: {}", e);
         }
     }
 
