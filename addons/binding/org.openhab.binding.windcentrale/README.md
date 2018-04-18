@@ -55,8 +55,8 @@ No binding configuration required.
 ### demo.things
 
 ```
-Thing windcentrale:mill:geert  [ millId="1" ]
-Thing windcentrale:mill:reiger [ millId="131", wd=3, refreshInterval=60 ]
+Thing windcentrale:mill:geert  [ millId=1 ]
+Thing windcentrale:mill:reiger [ millId=131, wd=3, refreshInterval=60 ]
 ```
 
 ### demo.items
