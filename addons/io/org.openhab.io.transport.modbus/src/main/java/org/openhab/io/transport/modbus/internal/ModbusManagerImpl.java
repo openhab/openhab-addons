@@ -826,9 +826,9 @@ public class ModbusManagerImpl implements ModbusManager {
                 logger.error("Thread pool(s) shut down! Aborting activation of ModbusMangerImpl");
                 throw new IllegalStateException("Thread pool(s) shut down! Aborting activation of ModbusMangerImpl");
             }
+            monitorFuture = scheduledThreadPoolExecutor.scheduleWithFixedDelay(this::logTaskQueueInfo, 0,
+                    MONITOR_QUEUE_INTERVAL_MILLIS, TimeUnit.MILLISECONDS);
         }
-        monitorFuture = scheduledThreadPoolExecutor.scheduleWithFixedDelay(this::logTaskQueueInfo, 0,
-                MONITOR_QUEUE_INTERVAL_MILLIS, TimeUnit.MILLISECONDS);
     }
 
     @Deactivate
