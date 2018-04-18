@@ -17,17 +17,28 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.common.registry.AbstractRegistry;
+import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.items.ItemNotFoundException;
+import org.eclipse.smarthome.core.items.ItemNotUniqueException;
+import org.eclipse.smarthome.core.items.ItemProvider;
+import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.smarthome.core.items.ManagedItemProvider;
 import org.eclipse.smarthome.core.library.items.ContactItem;
 import org.eclipse.smarthome.core.library.items.DateTimeItem;
 import org.eclipse.smarthome.core.library.items.DimmerItem;
@@ -52,12 +63,15 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.binding.builder.BridgeBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.link.ItemChannelLink;
 import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
+import org.eclipse.smarthome.core.thing.link.ManagedItemChannelLinkProvider;
 import org.eclipse.smarthome.core.transform.TransformationException;
 import org.eclipse.smarthome.core.transform.TransformationService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.test.storage.VolatileStorageService;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
@@ -97,11 +111,90 @@ import com.google.common.collect.ImmutableMap;
 public class ModbusDataHandlerTest {
 
     private class ItemChannelLinkRegistryTestImpl extends ItemChannelLinkRegistry {
+        private final class ManagedItemChannelLinkProviderExtension extends ManagedItemChannelLinkProvider {
+            ManagedItemChannelLinkProviderExtension() {
+                setStorageService(new VolatileStorageService());
+            }
+        }
+
         public ItemChannelLinkRegistryTestImpl() {
             super();
             this.setThingRegistry(thingRegistry);
+            setItemRegistry(itemRegistry);
+            ManagedItemChannelLinkProviderExtension provider = new ManagedItemChannelLinkProviderExtension();
+            addProvider(provider);
+            setManagedProvider(provider);
+        }
+    };
+
+    private class ItemRegisteryTestImpl extends AbstractRegistry<Item, String, ItemProvider> implements ItemRegistry {
+
+        private Map<String, Item> items = new ConcurrentHashMap<>();
+
+        private final class ManagedProviderTestImpl extends ManagedItemProvider {
+            public ManagedProviderTestImpl() {
+                setStorageService(new VolatileStorageService());
+            }
         }
 
+        public ItemRegisteryTestImpl() {
+            super(null);
+            setManagedProvider(new ManagedProviderTestImpl());
+        }
+
+        @Override
+        public @NonNull Item getItem(String name) throws ItemNotFoundException {
+            Item item = super.get(name);
+            if (item == null) {
+                throw new ItemNotFoundException(name);
+            }
+            return (@NonNull Item) super.get(name);
+        }
+
+        @Override
+        public @NonNull Item getItemByPattern(@NonNull String name)
+                throws ItemNotFoundException, ItemNotUniqueException {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public @NonNull Collection<@NonNull Item> getItems() {
+            return items.values();
+        }
+
+        @Override
+        public @NonNull Collection<Item> getItemsOfType(@NonNull String type) {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public @NonNull Collection<@NonNull Item> getItems(@NonNull String pattern) {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public @NonNull Collection<Item> getItemsByTag(@NonNull String... tags) {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public @NonNull Collection<Item> getItemsByTagAndType(@NonNull String type, @NonNull String... tags) {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public <T extends GenericItem> @NonNull Collection<T> getItemsByTag(@NonNull Class<T> typeFilter,
+                @NonNull String... tags) {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public @Nullable Item remove(@NonNull String itemName, boolean recursive) {
+            if (recursive) {
+                throw new IllegalStateException();
+            }
+            return items.remove(itemName);
+        }
     };
 
     private static final Map<String, Class<? extends Item>> channelToItemClass = new HashMap<>();
@@ -126,6 +219,8 @@ public class ModbusDataHandlerTest {
 
     @Mock
     private ThingRegistry thingRegistry;
+
+    private ItemRegistry itemRegistry = new ItemRegisteryTestImpl();
 
     @Mock
     private ModbusManager manager;
@@ -161,7 +256,7 @@ public class ModbusDataHandlerTest {
         }
     }
 
-    private void hookItemRegistry(ThingHandler thingHandler) {
+    private void hookThingRegistry(ThingHandler thingHandler) {
         Field thingRegisteryField;
         try {
             thingRegisteryField = BaseThingHandler.class.getDeclaredField("thingRegistry");
@@ -261,13 +356,28 @@ public class ModbusDataHandlerTest {
 
     private ModbusDataThingHandler createDataHandler(String id, Bridge bridge,
             Function<ThingBuilder, ThingBuilder> builderConfigurator, BundleContext context) {
+        return createDataHandler(id, bridge, builderConfigurator, context, true);
+    }
+
+    private ModbusDataThingHandler createDataHandler(String id, Bridge bridge,
+            Function<ThingBuilder, ThingBuilder> builderConfigurator, BundleContext context,
+            boolean autoCreateItemsAndLinkToChannels) {
         ThingUID thingUID = new ThingUID(ModbusBindingConstants.THING_TYPE_MODBUS_DATA, id);
         ThingBuilder builder = ThingBuilder.create(ModbusBindingConstants.THING_TYPE_MODBUS_DATA, thingUID)
                 .withLabel("label for " + id);
         for (Entry<String, String> entry : channelToAcceptedType.entrySet()) {
             String channelId = entry.getKey();
             String channelAcceptedType = entry.getValue();
-            builder = builder.withChannel(new Channel(new ChannelUID(thingUID, channelId), channelAcceptedType));
+            ChannelUID channelUID = new ChannelUID(thingUID, channelId);
+            builder = builder.withChannel(new Channel(channelUID, channelAcceptedType));
+
+            if (autoCreateItemsAndLinkToChannels) {
+                // Create item and link it to channel
+                String itemName = channelUID.toString().replace(':', '_') + "_item";
+                GenericItem item = new StringItem(itemName);
+                itemRegistry.add(item);
+                linkRegistry.add(new ItemChannelLink(itemName, channelUID));
+            }
         }
         if (builderConfigurator != null) {
             builder = builderConfigurator.apply(builder);
@@ -279,7 +389,7 @@ public class ModbusDataHandlerTest {
         hookStateUpdates(dataThing);
 
         ModbusDataThingHandler dataThingHandler = new ModbusDataThingHandler(dataThing);
-        hookItemRegistry(dataThingHandler);
+        hookThingRegistry(dataThingHandler);
         hookLinkRegistry(dataThingHandler);
         dataThing.setHandler(dataThingHandler);
         dataThingHandler.setCallback(thingCallback);
@@ -464,10 +574,17 @@ public class ModbusDataHandlerTest {
         return testReadHandlingGeneric(functionCode, start, transform, valueType, bits, registers, error, null);
     }
 
-    @SuppressWarnings({ "null" })
     private ModbusDataThingHandler testReadHandlingGeneric(ModbusReadFunctionCode functionCode, String start,
             String transform, ValueType valueType, BitArray bits, ModbusRegisterArray registers, Exception error,
             BundleContext context) {
+        return testReadHandlingGeneric(functionCode, start, transform, valueType, bits, registers, error, context,
+                true);
+    }
+
+    @SuppressWarnings({ "null" })
+    private ModbusDataThingHandler testReadHandlingGeneric(ModbusReadFunctionCode functionCode, String start,
+            String transform, ValueType valueType, BitArray bits, ModbusRegisterArray registers, Exception error,
+            BundleContext context, boolean autoCreateItemsAndLinkToChannels) {
         ModbusSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint("thisishost", 502);
 
         int pollLength = 3;
@@ -489,33 +606,8 @@ public class ModbusDataHandlerTest {
         dataConfig.put("readValueType", valueType.getConfigValue());
 
         String thingId = "read1";
-        // //
-        // // Bind all channels to corresponding items
-        // //
-        // for (String channel : channelToItemClass.keySet()) {
-        // String itemName = channel + "item";
-        // links.add(new ItemChannelLink(itemName,
-        // new ChannelUID(new ThingUID(ModbusBindingConstants.THING_TYPE_MODBUS_WRITE, thingId), channel)));
-        // Class<?> clz = channelToItemClass.get(channel);
-        // Item item;
-        // try {
-        // item = (Item) clz.getConstructor(String.class).newInstance(itemName);
-        // } catch (NoSuchMethodException e) {
-        // throw new RuntimeException(e);
-        // } catch (InvocationTargetException e) {
-        // throw new RuntimeException(e);
-        // } catch (IllegalAccessException e) {
-        // throw new RuntimeException(e);
-        // } catch (InstantiationException e) {
-        // throw new RuntimeException(e);
-        // }
-        // items.add(item);
-        // }
-        //
-        // updateItemsAndLinks();
-
         ModbusDataThingHandler dataHandler = createDataHandler(thingId, poller,
-                builder -> builder.withConfiguration(dataConfig), context);
+                builder -> builder.withConfiguration(dataConfig), context, autoCreateItemsAndLinkToChannels);
 
         assertThat(dataHandler.getThing().getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
@@ -653,6 +745,36 @@ public class ModbusDataHandlerTest {
         assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_ROLLERSHUTTER, is(nullValue(State.class)));
         assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_STRING, new StringType("-30"));
         // no datetime, conversion not possible without transformation
+    }
+
+    @Test
+    public void testOnRegistersRealTransformationNoLinks() throws InvalidSyntaxException {
+        mockTransformation("MULTIPLY", new TransformationService() {
+
+            @Override
+            public String transform(String function, String source) throws TransformationException {
+                return String.valueOf(Integer.parseInt(function) * Integer.parseInt(source));
+            }
+        });
+        ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
+                "0", "MULTIPLY(10)", ModbusConstants.ValueType.INT16, null,
+                new ModbusRegisterArrayImpl(new ModbusRegister[] { new ModbusRegisterImpl((byte) 0xff, (byte) 0xfd) }),
+                null, bundleContext,
+                // Not linking items and channels
+                false);
+
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_READ_SUCCESS,
+                is(notNullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_READ_ERROR,
+                is(nullValue(State.class)));
+
+        // Since channles are not linked, they are not updated (are null)
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_CONTACT, is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_SWITCH, is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_DIMMER, is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_NUMBER, is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_ROLLERSHUTTER, is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_STRING, is(nullValue(State.class)));
     }
 
     @Test

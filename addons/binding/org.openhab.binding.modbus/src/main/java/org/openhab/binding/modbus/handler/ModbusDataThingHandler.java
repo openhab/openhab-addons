@@ -732,9 +732,16 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         updateState(ModbusBindingConstants.CHANNEL_LAST_WRITE_SUCCESS, now);
     }
 
+    /**
+     * Update linked channels
+     *
+     * @param numericState numeric state corresponding to polled data
+     * @param boolValue boolean value corresponding to polled data
+     * @return updated channel data
+     */
     private Map<ChannelUID, State> processUpdatedValue(DecimalType numericState, boolean boolValue) {
         Map<@NonNull ChannelUID, @NonNull State> states = new HashMap<>();
-        CHANNEL_ID_TO_ACCEPTED_TYPES.keySet().stream().forEach(channelId -> {
+        CHANNEL_ID_TO_ACCEPTED_TYPES.keySet().stream().filter(channelId -> isLinked(channelId)).forEach(channelId -> {
             ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
             List<Class<? extends State>> acceptedDataTypes = CHANNEL_ID_TO_ACCEPTED_TYPES.get(channelId);
             if (acceptedDataTypes.isEmpty()) {
