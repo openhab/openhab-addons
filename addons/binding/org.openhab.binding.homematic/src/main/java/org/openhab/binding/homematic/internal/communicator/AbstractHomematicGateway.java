@@ -529,14 +529,14 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     @Override
     public void setInstallMode(boolean enable, int seconds) throws IOException {
         HmDevice gwExtrasHm = devices.get(HmDevice.ADDRESS_GATEWAY_EXTRAS);
-        
+
         if (gwExtrasHm != null) {
             // since the homematic virtual device exist: try setting install mode via its dataPoints
             HmDatapoint installModeDataPoint = null;
             HmDatapoint installModeDurationDataPoint = null;
 
             // collect virtual datapoints to be accessed
-            HmChannel hmChannel = gwExtrasHm.getChannel(HmChannel.CHANNEL_NUMBER_EXTRAS);            
+            HmChannel hmChannel = gwExtrasHm.getChannel(HmChannel.CHANNEL_NUMBER_EXTRAS);
             HmDatapointInfo installModeDurationDataPointInfo = new HmDatapointInfo(HmParamsetType.VALUES, hmChannel,
                     HomematicConstants.VIRTUAL_DATAPOINT_NAME_INSTALL_MODE_DURATION);
             if (enable) {
@@ -545,16 +545,16 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
 
             HmDatapointInfo installModeDataPointInfo = new HmDatapointInfo(HmParamsetType.VALUES, hmChannel,
                     HomematicConstants.VIRTUAL_DATAPOINT_NAME_INSTALL_MODE);
-            
+
             installModeDataPoint = hmChannel.getDatapoint(installModeDataPointInfo);
-                        
+
             // first set duration on the datapoint
             if (installModeDurationDataPoint != null) {
                 try {
                     VirtualDatapointHandler handler = getVirtualDatapointHandler(installModeDurationDataPoint, null);
                     handler.handleCommand(this, installModeDurationDataPoint, new HmDatapointConfig(), seconds);
-                    
-                    // notify thing if exists 
+
+                    // notify thing if exists
                     gatewayAdapter.onStateUpdated(installModeDurationDataPoint);
                 } catch (HomematicClientException ex) {
                     logger.warn("Failed to send datapoint {}", installModeDurationDataPoint, ex);
@@ -566,17 +566,17 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 try {
                     VirtualDatapointHandler handler = getVirtualDatapointHandler(installModeDataPoint, null);
                     handler.handleCommand(this, installModeDataPoint, new HmDatapointConfig(), enable);
-                    
+
                     // notify thing if exists
                     gatewayAdapter.onStateUpdated(installModeDataPoint);
-                    
+
                     return;
                 } catch (HomematicClientException ex) {
                     logger.warn("Failed to send datapoint {}", installModeDataPoint, ex);
                 }
             }
         }
-        
+
         // no gwExtrasHm available (or previous approach failed), therefore use rpc client directly
         for (HmInterface hmInterface : availableInterfaces.keySet()) {
             if (hmInterface == HmInterface.RF || hmInterface == HmInterface.CUXD) {
@@ -584,7 +584,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
             }
         }
     }
-    
+
     @Override
     public int getInstallMode() throws IOException {
         for (HmInterface hmInterface : availableInterfaces.keySet()) {
@@ -592,7 +592,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 return getRpcClient(hmInterface).getInstallMode(hmInterface);
             }
         }
-        
+
         throw new IllegalStateException("Could not determine install mode because no suitable interface exists");
     }
 
@@ -866,7 +866,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                     // the CCU1 does not support the ping command, we need a workaround
                     getRpcClient(getDefaultInterface()).listBidcosInterfaces(getDefaultInterface());
                     // if there is no exception, connection is valid
-                    connectionConfirmed();
+                    pongReceived();
                 } else {
                     getRpcClient(getDefaultInterface()).ping(getDefaultInterface(), id);
                 }
