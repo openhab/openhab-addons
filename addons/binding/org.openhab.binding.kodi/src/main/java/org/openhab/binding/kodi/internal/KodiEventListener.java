@@ -32,12 +32,12 @@ public interface KodiEventListener extends EventListener {
     }
 
     public enum KodiPlaylistState {
-        Add,
-        Added,
-        Insert,
-        Remove,
-        Removed,
-        Clear
+        ADD,
+        ADDED,
+        INSERT,
+        REMOVE,
+        REMOVED,
+        CLEAR
     }
 
     void updateConnectionState(boolean connected);

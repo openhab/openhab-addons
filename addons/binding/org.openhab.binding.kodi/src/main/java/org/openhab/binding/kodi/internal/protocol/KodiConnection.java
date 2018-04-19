@@ -63,7 +63,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private int volume = 0;
     private KodiState currentState = KodiState.Stop;
-    private KodiPlaylistState currentPlaylistState = KodiPlaylistState.Clear;
+    private KodiPlaylistState currentPlaylistState = KodiPlaylistState.CLEAR;
 
     private final KodiEventListener listener;
 
@@ -238,7 +238,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public synchronized void playlistAdd(int playlistID, String uri) {
-        currentPlaylistState = KodiPlaylistState.Add;
+        currentPlaylistState = KodiPlaylistState.ADD;
 
         JsonObject item = new JsonObject();
         item.addProperty("file", uri);
@@ -250,7 +250,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public synchronized void playlistClear(int playlistID) {
-        currentPlaylistState = KodiPlaylistState.Clear;
+        currentPlaylistState = KodiPlaylistState.CLEAR;
 
         JsonObject params = new JsonObject();
         params.addProperty("playlistid", playlistID);
@@ -258,7 +258,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public synchronized void playlistInsert(int playlistID, String uri, int position) {
-        currentPlaylistState = KodiPlaylistState.Insert;
+        currentPlaylistState = KodiPlaylistState.INSERT;
 
         JsonObject item = new JsonObject();
         item.addProperty("file", uri);
@@ -279,7 +279,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public synchronized void playlistRemove(int playlistID, int position) {
-        currentPlaylistState = KodiPlaylistState.Remove;
+        currentPlaylistState = KodiPlaylistState.REMOVE;
 
         JsonObject params = new JsonObject();
         params.addProperty("playlistid", playlistID);
@@ -665,13 +665,13 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private void processPlaylistStateChanged(String method, JsonObject json) {
         if ("Playlist.OnAdd".equals(method)) {
-            currentPlaylistState = KodiPlaylistState.Added;
+            currentPlaylistState = KodiPlaylistState.ADDED;
 
-            listener.updatePlaylistState(KodiPlaylistState.Added);
+            listener.updatePlaylistState(KodiPlaylistState.ADDED);
         } else if ("Playlist.OnRemove".equals(method)) {
-            currentPlaylistState = KodiPlaylistState.Removed;
+            currentPlaylistState = KodiPlaylistState.REMOVED;
 
-            listener.updatePlaylistState(KodiPlaylistState.Removed);
+            listener.updatePlaylistState(KodiPlaylistState.REMOVED);
         } else {
             logger.debug("Unknown event from Kodi {}: {}", method, json.toString());
         }

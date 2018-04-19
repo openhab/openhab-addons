@@ -346,7 +346,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         // add the notification uri to the playlist and play it
         logger.trace("Playing notification");
         connection.playlistInsert(audioPlaylistID, uri.toString(), 0);
-        waitForPlaylistState(KodiPlaylistState.Added);
+        waitForPlaylistState(KodiPlaylistState.ADDED);
 
         connection.playlistPlay(audioPlaylistID, 0);
         waitForState(KodiState.Play);
@@ -357,7 +357,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
         // remove the notification uri from the playlist
         connection.playlistRemove(audioPlaylistID, 0);
-        waitForPlaylistState(KodiPlaylistState.Removed);
+        waitForPlaylistState(KodiPlaylistState.REMOVED);
 
         // restore previous volume
         connection.setVolume(playerState.getSavedVolume());
