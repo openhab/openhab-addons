@@ -8,7 +8,9 @@
  */
 package org.openhab.binding.network.internal.utils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -32,6 +34,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.smarthome.io.net.exec.ExecUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Network utility functions for pinging and for determining all interfaces and assigned IP addresses.
@@ -39,6 +43,8 @@ import org.eclipse.smarthome.io.net.exec.ExecUtil;
  * @author David Graeff <david.graeff@web.de>
  */
 public class NetworkUtils {
+    private Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
+
     /**
      * Gets every IPv4 Address on each Interface except the loopback
      * The Address format is ip/subnet
@@ -254,9 +260,42 @@ public class NetworkUtils {
 
         }
 
-        // The return code is 0 for a successful ping. 1 if device didn't respond and 2 if there is another error like
-        // network interface not ready.
-        return proc.waitFor() == 0;
+        // The return code is 0 for a successful ping, 1 if device didn't
+        // respond, and 2 if there is another error like network interface
+        // not ready.
+        // Exception: return code is also 0 in Windows for all requests on the local subnet.
+        // see https://superuser.com/questions/403905/ping-from-windows-7-get-no-reply-but-sets-errorlevel-to-0
+        if (method != IpPingMethodEnum.WINDOWS_PING) {
+            return proc.waitFor() == 0;
+        }
+
+        int result = proc.waitFor();
+        if (result != 0) {
+            return false;
+        }
+
+        try{
+            BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            String line = r.readLine();
+            if (line == null) {
+                logger.trace("Received no output from ping process.");
+                return false;
+            }
+            do {
+                logger.trace("Examining ping process line: '{}'", line);
+                if (line.contains("host unreachable") ||
+                    line.contains("timed out") ||
+                    line.contains("could not find host")) {
+                    return false;
+                }
+                line = r.readLine();
+            }while(line != null);
+
+            return true;
+        }catch(IOException e) {
+            logger.warn("Failed while reading the output of the ping process", e);
+            return false;
+        }
     }
 
     public enum ArpPingUtilEnum {
@@ -312,5 +351,4 @@ public class NetworkUtils {
             // We ignore the port unreachable error
         }
     }
-
 }
