@@ -673,7 +673,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
             listener.updatePlaylistState(KodiPlaylistState.REMOVED);
         } else {
-            logger.debug("Unknown event from Kodi {}: {}", method, json.toString());
+            logger.debug("Unknown event from Kodi {}: {}", method, json);
         }
         listener.updateConnectionState(true);
     }
