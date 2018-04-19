@@ -21,6 +21,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.eclipse.smarthome.core.items.GenericItem;
+import org.eclipse.smarthome.core.library.items.ColorItem;
+import org.eclipse.smarthome.core.library.items.ContactItem;
+import org.eclipse.smarthome.core.library.items.DateTimeItem;
+import org.eclipse.smarthome.core.library.items.DimmerItem;
+import org.eclipse.smarthome.core.library.items.NumberItem;
+import org.eclipse.smarthome.core.library.items.RollershutterItem;
+import org.eclipse.smarthome.core.library.items.StringItem;
+import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -33,6 +42,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.knx.KNXBindingConstants;
 import org.openhab.binding.knx.KNXTypeMapper;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -103,6 +113,11 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
     /** stores the default KNX DPT to use for each openHAB type */
     private final Map<Class<? extends Type>, String> defaultDptMap;
 
+    /** stores the default Item Type to use for each openHAB type */
+    private final Map<Class<? extends Type>, Class<? extends GenericItem>> defaulItemTypeMap;
+
+    private Map<Class<? extends GenericItem>, String> itemTypeStringMap;
+
     public KNXCoreTypeMapper() {
 
         @SuppressWarnings("unused")
@@ -116,6 +131,9 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
         dptTypeMap = new HashMap<String, Class<? extends Type>>();
         dptMainTypeMap = new HashMap<Integer, Class<? extends Type>>();
+        defaultDptMap = new HashMap<>();
+        defaulItemTypeMap = new HashMap<>();
+        itemTypeStringMap = new HashMap<>();
 
         /**
          * MainType: 1
@@ -523,7 +541,6 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
         /** Exceptions Datapoint Types "RGB Color", Main number 232 */
         // Example: dptTypeMap.put(DPTXlatorRGB.DPT_RGB.getID(), HSBType.class);
 
-        defaultDptMap = new HashMap<Class<? extends Type>, String>();
         defaultDptMap.put(OnOffType.class, DPTXlatorBoolean.DPT_SWITCH.getID());
         defaultDptMap.put(UpDownType.class, DPTXlatorBoolean.DPT_UPDOWN.getID());
         defaultDptMap.put(StopMoveType.class, DPTXlatorBoolean.DPT_START.getID());
@@ -534,6 +551,25 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
         defaultDptMap.put(DateTimeType.class, DPTXlatorTime.DPT_TIMEOFDAY.getID());
         defaultDptMap.put(StringType.class, DPTXlatorString.DPT_STRING_8859_1.getID());
         defaultDptMap.put(HSBType.class, DPTXlatorRGB.DPT_RGB.getID());
+
+        defaulItemTypeMap.put(DateTimeType.class, DateTimeItem.class);
+        defaulItemTypeMap.put(DecimalType.class, NumberItem.class);
+        defaulItemTypeMap.put(HSBType.class, ColorItem.class);
+        defaulItemTypeMap.put(IncreaseDecreaseType.class, DimmerItem.class);
+        defaulItemTypeMap.put(OnOffType.class, SwitchItem.class);
+        defaulItemTypeMap.put(OpenClosedType.class, ContactItem.class);
+        defaulItemTypeMap.put(PercentType.class, DimmerItem.class);
+        defaulItemTypeMap.put(StopMoveType.class, RollershutterItem.class);
+        defaulItemTypeMap.put(StringType.class, StringItem.class);
+        defaulItemTypeMap.put(UpDownType.class, RollershutterItem.class);
+
+        itemTypeStringMap.put(DateTimeItem.class, KNXBindingConstants.CHANNEL_DATETIME);
+        itemTypeStringMap.put(NumberItem.class, KNXBindingConstants.CHANNEL_NUMBER);
+        itemTypeStringMap.put(DimmerItem.class, KNXBindingConstants.CHANNEL_DIMMER);
+        itemTypeStringMap.put(ContactItem.class, KNXBindingConstants.CHANNEL_CONTACT);
+        itemTypeStringMap.put(SwitchItem.class, KNXBindingConstants.CHANNEL_SWITCH);
+        itemTypeStringMap.put(RollershutterItem.class, KNXBindingConstants.CHANNEL_ROLLERSHUTTER);
+        itemTypeStringMap.put(StringItem.class, KNXBindingConstants.CHANNEL_STRING);
     }
 
     @Override
@@ -830,6 +866,19 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      */
     public String toDPTid(Class<? extends Type> typeClass) {
         return defaultDptMap.get(typeClass);
+    }
+
+    @Override
+    public Class<? extends GenericItem> toItemTypeClass(Class<? extends Type> typeClass) {
+        return defaulItemTypeMap.get(typeClass);
+    }
+
+    public Class<? extends GenericItem> toItemTypeClass(String dpt) {
+        return defaulItemTypeMap.get(toTypeClass(dpt));
+    }
+
+    public String toItemType(String dpt) {
+        return itemTypeStringMap.get(toItemTypeClass(dpt));
     }
 
     /**

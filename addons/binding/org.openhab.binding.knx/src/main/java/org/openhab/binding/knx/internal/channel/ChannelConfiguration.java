@@ -11,6 +11,7 @@ package org.openhab.binding.knx.internal.channel;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,10 +27,10 @@ import org.eclipse.jdt.annotation.Nullable;
 public class ChannelConfiguration {
 
     private final @Nullable String dpt;
-    private final GroupAddressConfiguration mainGA;
+    private final @Nullable GroupAddressConfiguration mainGA;
     private final List<GroupAddressConfiguration> listenGAs;
 
-    public ChannelConfiguration(@Nullable String dpt, GroupAddressConfiguration mainGA,
+    public ChannelConfiguration(@Nullable String dpt, @Nullable GroupAddressConfiguration mainGA,
             List<GroupAddressConfiguration> listenGAs) {
         this.dpt = dpt;
         this.mainGA = mainGA;
@@ -40,12 +41,12 @@ public class ChannelConfiguration {
         return dpt;
     }
 
-    public GroupAddressConfiguration getMainGA() {
+    public @Nullable GroupAddressConfiguration getMainGA() {
         return mainGA;
     }
 
     public List<GroupAddressConfiguration> getListenGAs() {
-        return Stream.concat(Stream.of(mainGA), listenGAs.stream()).collect(toList());
+        return Stream.concat(Stream.of(mainGA), listenGAs.stream()).filter(Objects::nonNull).collect(toList());
     }
 
     public List<GroupAddressConfiguration> getReadGAs() {
