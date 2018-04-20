@@ -164,8 +164,7 @@ public class NetworkUtils {
         } catch (SocketTimeoutException ignored) {
             return false;
         } catch (ConnectException e) {
-            // Connection refused, there is a device on the other end though
-            return true;
+            return false;
         }
     }
 
