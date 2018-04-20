@@ -159,11 +159,7 @@ public class NetworkUtils {
         try (Socket socket = new Socket()) {
             socket.connect(socketAddress, timeout);
             return true;
-        } catch (NoRouteToHostException ignored) {
-            return false;
-        } catch (SocketTimeoutException ignored) {
-            return false;
-        } catch (ConnectException e) {
+        } catch (ConnectException | SocketTimeoutException | NoRouteToHostException ignored) {
             return false;
         }
     }
