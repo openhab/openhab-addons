@@ -1,0 +1,34 @@
+Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-ManifestVersion: 2
+Bundle-Name: UPnPControlPoint Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.upnpcontrolpoint;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Export-Package: 
+ org.openhab.binding.upnpcontrolpoint,
+ org.openhab.binding.upnpcontrolpoint.handler
+Import-Package: 
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.upnp,
+ org.eclipse.smarthome.core.audio,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.net,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.transport.upnp,
+ org.jupnp.model.meta,
+ org.jupnp.model.types,
+ org.openhab.binding.upnpcontrolpoint,
+ org.openhab.binding.upnpcontrolpoint.handler,
+ org.osgi.framework;version="1.8.0",
+ org.osgi.service.component;version="1.3.0",
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
