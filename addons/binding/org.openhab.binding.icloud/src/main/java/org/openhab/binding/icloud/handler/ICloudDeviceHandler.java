@@ -13,9 +13,7 @@ import static org.openhab.binding.icloud.ICloudBindingConstants.*;
 import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -171,8 +169,6 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
 
         if (deviceInformationRecord.getLocation().getTimeStamp() > 0) {
             Date date = new Date(deviceInformationRecord.getLocation().getTimeStamp());
-            Calendar calendar = new GregorianCalendar();
-            calendar.setTime(date);
             ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
             dateTime = new DateTimeType(zonedDateTime);
         }
