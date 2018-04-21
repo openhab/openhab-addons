@@ -88,7 +88,7 @@
         </supported-bridge-type-refs>
         
         <label>Room</label>
-        <description>A Room that contains a thermostat or TRV</description>
+        <description>A Room that contains a thermostat and/or TRV</description>
         
         <channels>
             <channel id="currentTemperature" typeId="currentTemperature-channel"/>          
@@ -100,6 +100,8 @@
             <channel id="roomBoostDuration" typeId="roomBoostDuration-channel"/>
             <channel id="roomBoosted" typeId="roomBoosted-channel"/>
             <channel id="roomBoostRemaining" typeId="roomBoostRemaining-channel"/>
+            <channel id="windowStateDetection" typeId="windowStateDetection-channel"/>
+            <channel id="windowState" typeId="windowState-channel"/>
         </channels>
         
         <config-description>
@@ -179,7 +181,7 @@
         </config-description>
     </thing-type>
 
-    <!-- Sample Channel Type -->
+    <!-- Channel Types -->
     <channel-type id="currentTemperature-channel">
         <item-type>Number</item-type>
         <label>Temperature</label>
@@ -395,6 +397,18 @@
         <label>Boost remaining</label>
         <description>How long until the boost deactivates</description>
         <state readOnly="true" pattern="%.0f m"></state>
+    </channel-type>
+    
+    <channel-type id="windowStateDetection-channel">
+        <item-type>Switch</item-type>
+        <label>Open Window Detection</label>
+        <description>Is window detection turned on</description>
+    </channel-type>
+    
+    <channel-type id="windowState-channel">
+        <item-type>Contact</item-type>
+        <label>Window State</label>
+        <description>Is the window open or closed</description>
     </channel-type>
     
 </thing:thing-descriptions>

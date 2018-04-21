@@ -12,6 +12,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -65,6 +66,11 @@ public class RoomHandler extends DraytonWiserThingHandler {
             int boostDuration = Math.round((Float.parseFloat(command.toString()) * 60));
             setBoostDuration(boostDuration);
         }
+
+        if (channelUID.getId().equals(DraytonWiserBindingConstants.CHANNEL_ROOM_WINDOW_STATE_DETECTION)) {
+            boolean windowStateDetection = command.toString().toUpperCase().equals("ON");
+            setWindowStateDetection(windowStateDetection);
+        }
     }
 
     @Override
@@ -91,6 +97,12 @@ public class RoomHandler extends DraytonWiserThingHandler {
                 updateState(
                         new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_ROOM_BOOST_REMAINING),
                         getBoostRemainingState());
+                updateState(
+                        new ChannelUID(getThing().getUID(),
+                                DraytonWiserBindingConstants.CHANNEL_ROOM_WINDOW_STATE_DETECTION),
+                        getWindowDetectionState());
+                updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_ROOM_WINDOW_STATE),
+                        getWindowState());
             }
         } catch (Exception e) {
             logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
@@ -184,6 +196,13 @@ public class RoomHandler extends DraytonWiserThingHandler {
         }
     }
 
+    private void setWindowStateDetection(Boolean stateDetection) {
+        if (bridgeHandler != null) {
+            bridgeHandler.setRoomWindowStateDetection(getThing().getConfiguration().get("roomName").toString(),
+                    stateDetection);
+        }
+    }
+
     private State getBoostedState() {
         if (room != null) {
             if (room.getOverrideTimeoutUnixTime() != null && !room.getOverrideType().toUpperCase().equals("NONE")) {
@@ -215,5 +234,25 @@ public class RoomHandler extends DraytonWiserThingHandler {
                 bridgeHandler.setRoomBoostInactive(getThing().getConfiguration().get("roomName").toString());
             }
         }
+    }
+
+    private State getWindowDetectionState() {
+        if (room != null) {
+            if (room.getWindowDetectionActive()) {
+                return OnOffType.ON;
+            }
+        }
+
+        return OnOffType.OFF;
+    }
+
+    private State getWindowState() {
+        if (room != null) {
+            if (room.getWindowState() != null && room.getWindowState().toUpperCase().equals("OPEN")) {
+                return OpenClosedType.OPEN;
+            }
+        }
+
+        return OpenClosedType.CLOSED;
     }
 }

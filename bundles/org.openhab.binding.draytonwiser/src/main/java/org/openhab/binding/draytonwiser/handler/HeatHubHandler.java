@@ -356,6 +356,19 @@ public class HeatHubHandler extends BaseBridgeHandler {
         refresh();
     }
 
+    public void setRoomWindowStateDetection(String roomName, Boolean windowStateDetection) {
+        Room room = getRoom(roomName);
+        if (room == null) {
+            return;
+        }
+
+        String payload = windowStateDetection.toString().toLowerCase();
+        sendMessageToHeatHub(
+                DraytonWiserBindingConstants.ROOMS_ENDPOINT + room.getId().toString() + "/WindowDetectionActive",
+                "PATCH", payload);
+        refresh();
+    }
+
     public void setRoomBoostActive(String roomName, Integer setPoint, Integer duration) {
         Room room = getRoom(roomName);
         if (room == null) {

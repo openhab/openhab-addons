@@ -86,6 +86,7 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 | `heatRequest`        | Is the room actively requesting heat from the controller                     |
 | `roomBoosted`        | Is the room currently being boosted                                          |
 | `roomBoostRemaining` | How long until the boost deactivates in minutes                              |
+| `windowState`        | Is the window open or closed?                                                |
 
 #### Room Stat
 
@@ -139,12 +140,13 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 
 #### Room
 
-| Channel             | Description                                    | Implemented |
-|---------------------|------------------------------------------------|-------------|
-| `currentSetPoint`   | The current set point temperature for the room | Yes         |
-| `manualModeState`   | Has manual mode been enabled                   | Yes         |
-| `roomBoostDuration` | Period in hours to boost the room temperature  | Yes         |
-| Schedules           | The Time and Set Point schedule                | No          |
+| Channel                | Description                                    | Implemented |
+|------------------------|------------------------------------------------|-------------|
+| `currentSetPoint`      | The current set point temperature for the room | Yes         |
+| `manualModeState`      | Has manual mode been enabled                   | Yes         |
+| `roomBoostDuration`    | Period in hours to boost the room temperature  | Yes         |
+| `windowStateDetection` | Detect whether windows are open                | Yes         |
+| Schedules              | The Time and Set Point schedule                | No          |
 
 #### Known string responses for specific channels:
 
