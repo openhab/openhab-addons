@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="powermax" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="mode" advanced="true">
+		<item-type>String</item-type>
+		<label>System mode</label>
+		<description>Current mode can be Standard, Powerlink or Download</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="trouble">
+		<item-type>Switch</item-type>
+		<label>Trouble detected</label>
+		<description>Whether or not a trouble is detected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="alert_in_memory" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Alert in memory</label>
+		<description>Whether or not an alert is saved in system memory</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="system_status">
+		<item-type>String</item-type>
+		<label>System status</label>
+		<description>A short status summary of the system</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="ready" advanced="true">
+		<item-type>Switch</item-type>
+		<label>System ready</label>
+		<description>Whether or not the system is ready for arming</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="with_zones_bypassed" advanced="true">
+		<item-type>Switch</item-type>
+		<label>With zones bypassed</label>
+		<description>Whether or not at least one zone is bypassed</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="alarm_active">
+		<item-type>Switch</item-type>
+		<label>Alarm active</label>
+		<description>Whether or not an alarm is active</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="system_armed">
+		<item-type>Switch</item-type>
+		<label>System armed</label>
+		<description>Whether or not the system is armed</description>
+	</channel-type>
+
+	<channel-type id="arm_mode">
+		<item-type>String</item-type>
+		<label>System arm mode</label>
+        <state readOnly="false" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="tripped">
+		<item-type>Contact</item-type>
+		<label>Zone tripped</label>
+		<description>Whether or not the zone is tripped</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="last_trip">
+		<item-type>DateTime</item-type>
+		<label>Zone last trip</label>
+		<description>Timestamp when the zone was last tripped</description>
+		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
+	</channel-type>
+
+	<channel-type id="bypassed">
+		<item-type>Switch</item-type>
+		<label>Zone bypassed</label>
+		<description>Whether or not the zone is bypassed</description>
+	</channel-type>
+
+	<channel-type id="armed">
+		<item-type>Switch</item-type>
+		<label>Zone armed</label>
+		<description>Whether or not the zone is armed</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="low_battery">
+		<item-type>Switch</item-type>
+		<label>Low battery</label>
+		<description>Whether or not the sensor battery is low</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="pgm_status" advanced="true">
+		<item-type>Switch</item-type>
+		<label>PGM status</label>
+	</channel-type>
+
+	<channel-type id="x10_status">
+		<item-type>String</item-type>
+		<label>X10 device status</label>
+        <state readOnly="false" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="event_log" advanced="true">
+		<item-type>String</item-type>
+		<label>Event log entry</label>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="update_event_logs" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Update event logs</label>
+		<description>Switch command to update the event logs</description>
+	</channel-type>
+
+	<channel-type id="download_setup" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Download setup</label>
+		<description>Switch command to download the setup</description>
+	</channel-type>
+
+</thing:thing-descriptions>
