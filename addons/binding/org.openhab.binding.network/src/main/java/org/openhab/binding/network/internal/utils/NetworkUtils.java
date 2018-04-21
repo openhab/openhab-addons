@@ -159,13 +159,8 @@ public class NetworkUtils {
         try (Socket socket = new Socket()) {
             socket.connect(socketAddress, timeout);
             return true;
-        } catch (NoRouteToHostException ignored) {
+        } catch (ConnectException | SocketTimeoutException | NoRouteToHostException ignored) {
             return false;
-        } catch (SocketTimeoutException ignored) {
-            return false;
-        } catch (ConnectException e) {
-            // Connection refused, there is a device on the other end though
-            return true;
         }
     }
 
