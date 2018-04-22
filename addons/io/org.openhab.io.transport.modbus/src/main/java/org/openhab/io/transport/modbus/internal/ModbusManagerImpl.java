@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.SwallowedExceptionListener;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
-import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.common.QueueingThreadPoolExecutor;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
@@ -240,31 +239,6 @@ public class ModbusManagerImpl implements ModbusManager {
      */
     private static final long WARN_QUEUE_SIZE = 500;
     private static final long MONITOR_QUEUE_INTERVAL_MILLIS = 30000;
-    private static final GenericKeyedObjectPoolConfig GENERAL_POOL_CONFIG = new GenericKeyedObjectPoolConfig();
-
-    static {
-        // When the pool is exhausted, multiple calling threads may be simultaneously blocked waiting for instances to
-        // become available. As of pool 1.5, a "fairness" algorithm has been implemented to ensure that threads receive
-        // available instances in request arrival order.
-        GENERAL_POOL_CONFIG.setFairness(true);
-        // Limit one connection per endpoint (i.e. same ip:port pair or same serial device).
-        // If there are multiple read/write requests to process at the same time, block until previous one finishes
-        GENERAL_POOL_CONFIG.setBlockWhenExhausted(true);
-        GENERAL_POOL_CONFIG.setMaxTotalPerKey(1);
-
-        // block infinitely when exhausted
-        GENERAL_POOL_CONFIG.setMaxWaitMillis(-1);
-
-        // Connections are "tested" on return. Effectively, disconnected connections are destroyed when returning on
-        // pool
-        // Note that we do not test on borrow -- that would mean blocking situation when connection cannot be
-        // established.
-        // Instead, borrowing connection from pool can return unconnected connection.
-        GENERAL_POOL_CONFIG.setTestOnReturn(true);
-
-        // disable JMX
-        GENERAL_POOL_CONFIG.setJmxEnabled(false);
-    }
 
     private final PollOperation pollOperation = new PollOperation();
     private final WriteOperation writeOperation = new WriteOperation();
@@ -327,8 +301,8 @@ public class ModbusManagerImpl implements ModbusManager {
             });
         });
 
-        GenericKeyedObjectPool<ModbusSlaveEndpoint, ModbusSlaveConnection> genericKeyedObjectPool = new GenericKeyedObjectPool<>(
-                connectionFactory, GENERAL_POOL_CONFIG);
+        GenericKeyedObjectPool<ModbusSlaveEndpoint, ModbusSlaveConnection> genericKeyedObjectPool = new ModbusConnectionPool(
+                connectionFactory);
         genericKeyedObjectPool.setSwallowedExceptionListener(new SwallowedExceptionListener() {
 
             @Override
