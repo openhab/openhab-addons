@@ -14,7 +14,6 @@ import com.google.gson.annotations.SerializedName;
  * Serializable class to create a "Find My Device" json request string.
  *
  * @author Patrik Gfeller
- *
  */
 public class ICloudFindMyDeviceRequest {
     @SerializedName("device")

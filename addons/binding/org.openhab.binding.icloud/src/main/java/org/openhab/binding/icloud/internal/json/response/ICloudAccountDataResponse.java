@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.icloud.internal.json.response;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -17,12 +17,11 @@ import com.google.gson.annotations.SerializedName;
  * received from the Apple server.
  *
  * @author Patrik Gfeller - Initial Contribution
- *
  */
 public class ICloudAccountDataResponse {
 
     @SerializedName("content")
-    private ArrayList<ICloudDeviceInformation> iCloudDeviceInformationList;
+    private List<ICloudDeviceInformation> iCloudDeviceInformationList;
 
     @SerializedName("serverContext")
     private ICloudServerContext iCloudServerContext;
@@ -33,15 +32,15 @@ public class ICloudAccountDataResponse {
     @SerializedName("userInfo")
     private ICloudAccountUserInfo iCloudAccountUserInfo;
 
-    public ArrayList<ICloudDeviceInformation> getICloudDeviceInformationList() {
-        return this.iCloudDeviceInformationList;
+    public List<ICloudDeviceInformation> getICloudDeviceInformationList() {
+        return iCloudDeviceInformationList;
     }
 
     public String getICloudAccountStatusCode() {
-        return this.iCloudAccountStatusCode;
+        return iCloudAccountStatusCode;
     }
 
     public ICloudAccountUserInfo getICloudAccountUserInfo() {
-        return this.iCloudAccountUserInfo;
+        return iCloudAccountUserInfo;
     }
 }

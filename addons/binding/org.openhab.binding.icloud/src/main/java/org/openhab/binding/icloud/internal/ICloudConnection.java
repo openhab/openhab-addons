@@ -28,7 +28,6 @@ import com.google.gson.GsonBuilder;
  * get device information and to find a device.
  *
  * @author Patrik Gfeller - Initial Contribution
- *
  */
 public class ICloudConnection {
     private static final String ICLOUD_URL = "https://www.icloud.com";
