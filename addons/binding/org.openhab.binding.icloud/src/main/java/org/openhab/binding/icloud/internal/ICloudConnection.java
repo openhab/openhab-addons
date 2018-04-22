@@ -19,8 +19,6 @@ import java.util.Properties;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.icloud.internal.json.request.ICloudAccountDataRequest;
 import org.openhab.binding.icloud.internal.json.request.ICloudFindMyDeviceRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -38,8 +36,6 @@ public class ICloudConnection {
     private static final String ICLOUD_API_COMMAND_PING_DEVICE = "/playSound";
     private static final String ICLOUD_API_COMMAND_REQUEST_DATA = "/initClient";
     private static final int SOCKET_TIMEOUT = 2500;
-
-    private final Logger logger = LoggerFactory.getLogger(ICloudConnection.class);
 
     private final Gson gson = new GsonBuilder().create();
     private final String iCloudDataRequest = gson.toJson(ICloudAccountDataRequest.defaultInstance());
