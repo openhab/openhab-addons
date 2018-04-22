@@ -76,7 +76,8 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
     private ScheduledFuture<?> connectorTask;
     private ScheduledFuture<?> pollingJob;
 
-    private final List<Integer> itemsToPoll = new ArrayList<>();
+    private final List<Integer> itemsToPoll = Collections.synchronizedList(new ArrayList<>());
+
     private final List<Integer> itemsToEnableWrite = new ArrayList<>();
 
     private final Map<Integer, CacheObject> stateMap = Collections.synchronizedMap(new HashMap<Integer, CacheObject>());
@@ -203,7 +204,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         // remove channel from polling loop
         int coilAddress = parseCoilAddressFromChannelUID(channelUID);
         synchronized (itemsToPoll) {
-            itemsToPoll.remove(coilAddress);
+            itemsToPoll.removeIf(c -> c.equals(coilAddress));
         }
     }
 
