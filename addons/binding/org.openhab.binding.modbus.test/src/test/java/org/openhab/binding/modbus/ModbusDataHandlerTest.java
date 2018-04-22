@@ -39,6 +39,7 @@ import org.eclipse.smarthome.core.items.ItemNotUniqueException;
 import org.eclipse.smarthome.core.items.ItemProvider;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.items.ManagedItemProvider;
+import org.eclipse.smarthome.core.items.RegistryHook;
 import org.eclipse.smarthome.core.library.items.ContactItem;
 import org.eclipse.smarthome.core.library.items.DateTimeItem;
 import org.eclipse.smarthome.core.library.items.DimmerItem;
@@ -195,6 +196,17 @@ public class ModbusDataHandlerTest {
             }
             return items.remove(itemName);
         }
+
+        @Override
+        public void addRegistryHook(RegistryHook<Item> hook) {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public void removeRegistryHook(RegistryHook<Item> hook) {
+            throw new IllegalStateException();
+        }
+
     };
 
     private static final Map<String, Class<? extends Item>> channelToItemClass = new HashMap<>();
