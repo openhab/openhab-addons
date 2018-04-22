@@ -38,6 +38,7 @@ import org.openhab.binding.draytonwiser.internal.config.HeatingChannel;
 import org.openhab.binding.draytonwiser.internal.config.HotWater;
 import org.openhab.binding.draytonwiser.internal.config.Room;
 import org.openhab.binding.draytonwiser.internal.config.RoomStat;
+import org.openhab.binding.draytonwiser.internal.config.Schedule;
 import org.openhab.binding.draytonwiser.internal.config.SmartValve;
 import org.openhab.binding.draytonwiser.internal.config.Station;
 import org.slf4j.Logger;
@@ -322,6 +323,22 @@ public class HeatHubHandler extends BaseBridgeHandler {
         return null;
     }
 
+    public @Nullable Schedule getSchedule(Integer scheduleId) {
+        if (domain == null) {
+            return null;
+        }
+
+        for (Schedule schedule : domain.getSchedule()) {
+            if (schedule != null) {
+                if (schedule.getId() != null && schedule.getId().equals(scheduleId)) {
+                    return schedule;
+                }
+            }
+        }
+
+        return null;
+    }
+
     public synchronized boolean registerItemListener(DraytonWiserItemUpdateListener listener) {
         boolean result = false;
         result = !(itemListeners.contains(listener)) ? itemListeners.add(listener) : false;
@@ -378,6 +395,18 @@ public class HeatHubHandler extends BaseBridgeHandler {
         String payload = "{\"RequestOverride\":{\"Type\":\"Manual\",\"Originator\" :\"App\",\"DurationMinutes\":"
                 + duration + ",\"SetPoint\":" + setPoint + "}}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + room.getId().toString(), "PATCH", payload);
+        refresh();
+    }
+
+    public void setRoomSchedule(String roomName, String scheduleJSON) {
+        Room room = getRoom(roomName);
+        if (room == null) {
+            return;
+        }
+
+        String payload = scheduleJSON;
+        sendMessageToHeatHub(DraytonWiserBindingConstants.SCHEDULES_ENDPOINT + room.getScheduleId().toString(), "PATCH",
+                payload);
         refresh();
     }
 

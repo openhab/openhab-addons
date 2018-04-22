@@ -131,22 +131,24 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 
 #### Hot Water
 
-| Channel                 | Description                                | Implemented |
-|-------------------------|--------------------------------------------|-------------|
-| `manualModeState`       | Has manual mode been enabled               | Yes         |
-| `hotWaterSetPoint`      | The current hot water setpoint (on or off) | Yes         |
-| `hotWaterBoostDuration` | Period in hours to boost the hot water     | Yes         |
-| Schedules               | The time and hot water state schedule      | No          |
+| Channel                 | Description                                |
+|-------------------------|--------------------------------------------|
+| `manualModeState`       | Has manual mode been enabled               |
+| `hotWaterSetPoint`      | The current hot water setpoint (on or off) |
+| `hotWaterBoostDuration` | Period in hours to boost the hot water     |
+| `masterSchedule`        | The current schedule JSON for hot water    |
 
 #### Room
 
-| Channel                | Description                                    | Implemented |
-|------------------------|------------------------------------------------|-------------|
-| `currentSetPoint`      | The current set point temperature for the room | Yes         |
-| `manualModeState`      | Has manual mode been enabled                   | Yes         |
-| `roomBoostDuration`    | Period in hours to boost the room temperature  | Yes         |
-| `windowStateDetection` | Detect whether windows are open                | Yes         |
-| Schedules              | The Time and Set Point schedule                | No          |
+| Channel                | Description                                    |
+|------------------------|------------------------------------------------|
+| `currentSetPoint`      | The current set point temperature for the room |
+| `manualModeState`      | Has manual mode been enabled                   |
+| `roomBoostDuration`    | Period in hours to boost the room temperature  |
+| `windowStateDetection` | Detect whether windows are open                |
+| `masterSchedule`       | The current schedule JSON for the room         |
+
+When updating the `masterSchedule` state, only the schedule portion of the JSON that is returned when querying the state is required. The `id`, `Type`, `CurrentSetPoint`, `NextEventTime` and `NextEventSetpoint` should not be sent.
 
 #### Known string responses for specific channels:
 

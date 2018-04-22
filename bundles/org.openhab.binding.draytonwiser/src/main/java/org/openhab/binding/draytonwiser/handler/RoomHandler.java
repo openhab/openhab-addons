@@ -13,6 +13,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -24,8 +25,11 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
 import org.openhab.binding.draytonwiser.internal.config.Room;
 import org.openhab.binding.draytonwiser.internal.config.RoomStat;
+import org.openhab.binding.draytonwiser.internal.config.Schedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * The {@link RoomHandler} is responsible for handling commands, which are
@@ -37,12 +41,14 @@ import org.slf4j.LoggerFactory;
 public class RoomHandler extends DraytonWiserThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RoomHandler.class);
+    private Gson gson;
 
     @Nullable
     private Room room;
 
     public RoomHandler(Thing thing) {
         super(thing);
+        gson = new Gson();
     }
 
     @Override
@@ -70,6 +76,10 @@ public class RoomHandler extends DraytonWiserThingHandler {
         if (channelUID.getId().equals(DraytonWiserBindingConstants.CHANNEL_ROOM_WINDOW_STATE_DETECTION)) {
             boolean windowStateDetection = command.toString().toUpperCase().equals("ON");
             setWindowStateDetection(windowStateDetection);
+        }
+
+        if (channelUID.getId().equals(DraytonWiserBindingConstants.CHANNEL_ROOM_MASTER_SCHEDULE)) {
+            setMasterScheduleState(command.toString());
         }
     }
 
@@ -103,6 +113,9 @@ public class RoomHandler extends DraytonWiserThingHandler {
                         getWindowDetectionState());
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_ROOM_WINDOW_STATE),
                         getWindowState());
+                updateState(
+                        new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_ROOM_MASTER_SCHEDULE),
+                        getMasterSchedule());
             }
         } catch (Exception e) {
             logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
@@ -236,6 +249,12 @@ public class RoomHandler extends DraytonWiserThingHandler {
         }
     }
 
+    private void setMasterScheduleState(String scheduleJSON) {
+        if (bridgeHandler != null && room != null) {
+            bridgeHandler.setRoomSchedule(getThing().getConfiguration().get("roomName").toString(), scheduleJSON);
+        }
+    }
+
     private State getWindowDetectionState() {
         if (room != null) {
             if (room.getWindowDetectionActive()) {
@@ -254,5 +273,16 @@ public class RoomHandler extends DraytonWiserThingHandler {
         }
 
         return OpenClosedType.CLOSED;
+    }
+
+    private State getMasterSchedule() {
+        if (room != null && bridgeHandler != null) {
+            Integer scheduleId = room.getScheduleId();
+            if (scheduleId != null) {
+                return new StringType(gson.toJson(bridgeHandler.getSchedule(scheduleId), Schedule.class));
+            }
+        }
+
+        return new StringType();
     }
 }

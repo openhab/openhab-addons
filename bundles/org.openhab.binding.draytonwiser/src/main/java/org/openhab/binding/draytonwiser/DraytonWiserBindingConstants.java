@@ -94,6 +94,7 @@ public class DraytonWiserBindingConstants {
     public static final String CHANNEL_ROOM_BOOST_REMAINING = "roomBoostRemaining";
     public static final String CHANNEL_ROOM_WINDOW_STATE_DETECTION = "windowStateDetection";
     public static final String CHANNEL_ROOM_WINDOW_STATE = "windowState";
+    public static final String CHANNEL_ROOM_MASTER_SCHEDULE = "masterSchedule";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_CONTROLLER,
             THING_TYPE_ROOM, THING_TYPE_ROOMSTAT, THING_TYPE_BRIDGE, THING_TYPE_ITRV, THING_TYPE_HOTWATER);
