@@ -65,7 +65,6 @@ public class ICloudDeviceDiscovery extends AbstractDiscoveryService implements I
 
                 ThingUID uid = new ThingUID(THING_TYPE_ICLOUDDEVICE, bridgeUID, deviceIdHash);
                 DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                        .withProperty(translatorService.getText(DEVICE_PROPERTY_NAME), deviceOwnerName)
                         .withProperty(translatorService.getText(DEVICE_PROPERTY_ID), deviceId)
                         .withRepresentationProperty(DEVICE_PROPERTY_ID).withLabel(thingLabel).build();
 
