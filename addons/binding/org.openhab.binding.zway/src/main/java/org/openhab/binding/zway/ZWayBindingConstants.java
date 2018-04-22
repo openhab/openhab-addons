@@ -86,17 +86,12 @@ public class ZWayBindingConstants {
     public static final String ACTIONS_CHANNEL_OPTION_REFRESH = "REFRESH";
 
     /* Bridge config properties */
-    public static final String BRIDGE_CONFIG_OPENHAB_ALIAS = "openHABAlias";
-    public static final String BRIDGE_CONFIG_OPENHAB_IP_ADDRESS = "openHABIpAddress";
-    public static final String BRIDGE_CONFIG_OPENHAB_PORT = "openHABPort";
-    public static final String BRIDGE_CONFIG_OPENHAB_PROTOCOL = "openHABProtocol";
     public static final String BRIDGE_CONFIG_ZWAY_SERVER_IP_ADDRESS = "zwayServerIpAddress";
     public static final String BRIDGE_CONFIG_ZWAY_SERVER_PORT = "zwayServerPort";
     public static final String BRIDGE_CONFIG_ZWAY_SERVER_PROTOCOL = "zwayServerProtocol";
     public static final String BRIDGE_CONFIG_ZWAY_SERVER_USERNAME = "zwayServerUsername";
     public static final String BRIDGE_CONFIG_ZWAY_SERVER_PASSWORD = "zwayServerPassword";
     public static final String BRIDGE_CONFIG_POLLING_INTERVAL = "pollingInterval";
-    public static final String BRIDGE_CONFIG_OBSERVER_MECHANISM_ENABLED = "observerMechanismEnabled";
 
     public static final String DEVICE_CONFIG_NODE_ID = "nodeId";
     public static final String DEVICE_CONFIG_VIRTUAL_DEVICE_ID = "deviceId";
