@@ -483,6 +483,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
             requestPlayerUpdate(playerId);
         } else if ("Player.OnPause".equals(method)) {
             updateState(KodiState.Pause);
+        } else if ("Player.OnResume".equals(method)) {
+            updateState(KodiState.Play);
         } else if ("Player.OnStop".equals(method)) {
             // get the end parameter and send an End state if true
             JsonObject data = json.get("data").getAsJsonObject();
@@ -507,7 +509,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 updateState(KodiState.FastForward);
             }
         } else {
-            logger.debug("Unknown event from Kodi {}: {}", method, json.toString());
+            logger.debug("Unknown event from Kodi {}: {}", method, json);
         }
         listener.updateConnectionState(true);
     }
@@ -528,7 +530,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
             this.volume = volume;
         } else {
-            logger.debug("Unknown event from Kodi {}: {}", method, json.toString());
+            logger.debug("Unknown event from Kodi {}: {}", method, json);
         }
         listener.updateConnectionState(true);
     }
@@ -539,27 +541,19 @@ public class KodiConnection implements KodiClientSocketEventListener {
         } else if ("System.OnWake".equals(method)) {
             listener.updateConnectionState(true);
         } else {
-            logger.debug("Unknown event from Kodi {}: {}", method, json.toString());
+            logger.debug("Unknown event from Kodi {}: {}", method, json);
         }
     }
 
     private void processScreensaverStateChanged(String method, JsonObject json) {
         if ("GUI.OnScreensaverDeactivated".equals(method)) {
-            updateScreenSaverStatus(false);
+            listener.updateScreenSaverState(false);
         } else if ("GUI.OnScreensaverActivated".equals(method)) {
-            updateScreenSaverStatus(true);
+            listener.updateScreenSaverState(true);
         } else {
-            logger.debug("Unknown event from Kodi {}: {}", method, json.toString());
+            logger.debug("Unknown event from Kodi {}: {}", method, json);
         }
         listener.updateConnectionState(true);
-    }
-
-    private void updateScreenSaverStatus(boolean screenSaverActive) {
-        try {
-            listener.updateScreenSaverState(screenSaverActive);
-        } catch (Exception e) {
-            logger.error("Event listener invoking error", e);
-        }
     }
 
     public synchronized void close() {
