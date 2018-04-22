@@ -18,13 +18,12 @@ import org.osgi.framework.Bundle;
  * Utility class to translate strings (i18n).
  *
  * @author Patrik Gfeller
- *
  */
 public class ICloudTextTranslator {
 
-    private Bundle bundle;
-    private TranslationProvider i18nProvider;
-    private LocaleProvider localeProvider;
+    final private Bundle bundle;
+    final private TranslationProvider i18nProvider;
+    final private LocaleProvider localeProvider;
 
     public ICloudTextTranslator(Bundle bundle, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
         this.bundle = bundle;
