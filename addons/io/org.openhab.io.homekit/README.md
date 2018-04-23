@@ -39,68 +39,19 @@ org.openhab.homekit:maximumTemperature=100
 
 ### Overview of all settings
 
-<table>
- <tr>
-  <th>Setting</th>
-  <th>Description</th>
-  <th>Default value</th>
- </tr>
- <tr>
-  <td>networkInterface</td>
-  <td>IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the addon tries to determine the IP address from the local hostname. </td>
-  <td>(none)</td>  
- </tr>
- <tr>
-  <td>port</td>
-  <td>Port under which the HomeKit bridge can be reached. </td>
-  <td>9123</td>  
- </tr>
- <tr>
-  <td>pin</td>
-  <td>Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code <em>031-45-154</em> is used in sample applications and known to work.</td>
-  <td>031-45-154</td>  
- </tr>
- <tr>
-  <td>useFahrenheitTemperature</td>
-  <td>Set to <em>true</em> to use Fahrenheit degrees, or <em>false</em> to use Celsius degrees.</td>
-  <td>false</td>  
- </tr>
- <tr>
-  <td>thermostatCoolMode</td>
-  <td>Word used for activating the cooling mode of the device (if applicable).</td>
-  <td>CoolOn</td>  
- </tr>
- <tr>
-  <td>thermostatHeatMode</td>
-  <td>Word used for activating the heating mode of the device (if applicable).</td>
-  <td>HeatOn</td>  
- </tr>
- <tr>
-  <td>thermostatAutoMode</td>
-  <td>Word used for activating the automatic mode of the device (if applicable).</td>
-  <td>Auto</td>  
- </tr>
- <tr>
-  <td>thermostatOffMode</td>
-  <td>Word used for turning thermostat mode of the device to off (if applicable).</td>
-  <td>Off</td>  
- </tr>
- <tr>
-  <td>minimumTemperature</td>
-  <td>Lower bound of possible temperatures, used in the user interface of the iOS device to display the allowed temperature range. Note that this setting applies to all devices in HomeKit. </td>
-  <td>-100</td>  
- </tr>
- <tr>
-  <td>maximumTemperature</td>
-  <td>Upper bound of possible temperatures, used in the user interface of the iOS device to display the allowed temperature range. Note that this setting applies to all devices in HomeKit. </td>
-  <td>100</td>  
- </tr>
- <tr>
-  <td>name</td>
-  <td>Name under which this HomeKit bridge is announced in the network and which is displayed on the iOS device when searching for available bridges. </td>
-  <td>openHAB</td>  
- </tr>
-</table> 
+| Setting                   | Description                                                                                                                                                                                                                               | Default value     |
+|-------------------------- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------  |---------------    |
+| networkInterface          | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the addon tries to determine the IP address from the local hostname.                                                                  | (none)            |
+| port                      | Port under which the HomeKit bridge can be reached.                                                                                                                                                                                       | 9123              |
+| pin                       | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work.   | 031-45-154        |
+| useFahrenheitTemperature  | Set to true to use Fahrenheit degrees, or false to use Celsius degrees.                                                                                                                                                                   | false             |
+| thermostatCoolMode        | Word used for activating the cooling mode of the device (if applicable).                                                                                                                                                                  | CoolOn            |
+| thermostatHeatMode        | Word used for activating the heating mode of the device (if applicable).                                                                                                                                                                  | HeatOn            |
+| thermostatAutoMode        | Word used for activating the automatic mode of the device (if applicable).                                                                                                                                                                | Auto              |
+| thermostatOffMode         | Word used for turning thermostat mode of the device to off (if applicable).                                                                                                                                                               | Off               |
+| minimumTemperature        | Lower bound of possible temperatures, used in the user interface of the iOS device to display the allowed temperature range. Note that this setting applies to all devices in HomeKit.                                                    | -100              |
+| maximumTemperature        | Upper bound of possible temperatures, used in the user interface of the iOS device to display the allowed temperature range. Note that this setting applies to all devices in HomeKit.                                                    | 100               |
+| name                      | Name under which this HomeKit bridge is announced in the network and which is displayed on the iOS device when searching for available bridges.                                                                                           | openHAB           |
 
 ## Item Configuration
 
@@ -113,62 +64,16 @@ Complex accessories require a tag on a Group indicating the accessory type, as w
 
 A full list of supported accessory types can be found in the table below.
 
-<table>
- <tr>
-  <td><b>tag</b></td>
-  <td><b>child tag</b></td>
-  <td><b>supported items</b></td>
-  <td><b>description</b></td>
- </tr>
- <tr>
-  <td>Lighting</td>
-  <td>&nbsp;</td>
-  <td>Switch, Dimmer, Color</td>
-  <td>A lightbulb, switchable, dimmable or rgb</td>
- </tr>
- <tr>
-  <td>Switchable</td>
-  <td>&nbsp;</td>
-  <td>Switch, Dimmer, Color</td>
-  <td>An accessory that can be turned off and on. While similar to a lightbulb, this will be presented differently in the Siri grammar and iOS apps</td>
- </tr>
- <tr>
-  <td>CurrentTemperature</td>
-  <td>&nbsp;</td>
-  <td>Number</td>
-  <td>An accessory that provides a single read-only temperature value. The units default to celsius but can be overridden globally using the useFahrenheitTemperature global property</td>
- </tr>
- <tr>
-  <td>CurrentHumidity</td>
-  <td>&nbsp;</td>
-  <td>Number</td>
-  <td>An accessory that provides a single read-only value indicating the relative humidity.</td>
- </tr>
- <tr>
-  <td>Thermostat</td>
-  <td>&nbsp;</td>
-  <td>Group</td>
-  <td>A thermostat requires all child tags defined below</td>
- </tr>
- <tr>
-  <td>&nbsp;</td>
-  <td>CurrentTemperature</td>
-  <td>Number</td>
-  <td>The current temperature, same as above</td>
- </tr>
- <tr>
-  <td>&nbsp;</td>
-  <td>homekit:HeatingCoolingMode</td>
-  <td>String</td>
-  <td>Indicates the current mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties. This is a homekit-specific term and therefore the tags needs to be prefixed with "homekit:"</td>
- </tr>
- <tr>
-  <td>&nbsp;</td>
-  <td>TargetTemperature</td>
-  <td>Number</td>
-  <td>A target temperature that will engage the thermostat's heating and cooling actions as necessary, depending on the heatingCoolingMode</td>
- </tr>
-</table>
+| Tag                   | Child tag                     | Supported items           | Description                                                                                                                                                                                                                                   |
+|--------------------   |----------------------------   |-----------------------    |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------  |
+| Lighting              |                               | Switch, Dimmer, Color     | A lightbulb, switchable, dimmable or rgb                                                                                                                                                                                                      |
+| Switchable            |                               | Switch, Dimmer, Color     | An accessory that can be turned off and on. While similar to a lightbulb, this will be presented differently in the Siri grammar and iOS apps                                                                                                 |
+| CurrentTemperature    |                               | Number                    | An accessory that provides a single read-only temperature value. The units default to celsius but can be overridden globally using the useFahrenheitTemperature global property                                                               |
+| CurrentHumidity       |                               | Number                    | An accessory that provides a single read-only value indicating the relative humidity.                                                                                                                                                         |
+| Thermostat            |                               | Group                     | A thermostat requires all child tags defined below                                                                                                                                                                                            |
+|                       | CurrentTemperature            | Number                    | The current temperature, same as above                                                                                                                                                                                                        |
+|                       | homekit:HeatingCoolingMode    | String                    | Indicates the current mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties. This is a homekit-specific term and therefore the tags needs to be prefixed with "homekit:"   |
+|                       | TargetTemperature             | Number                    | A target temperature that will engage the thermostat's heating and cooling actions as necessary, depending on the heatingCoolingMode                                                                                                          |
 
 See the sample below for example items:
 
