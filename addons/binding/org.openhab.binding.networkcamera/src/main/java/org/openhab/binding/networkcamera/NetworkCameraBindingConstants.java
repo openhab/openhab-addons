@@ -26,4 +26,5 @@ public class NetworkCameraBindingConstants {
     // List of all Channel ids
     public final static String IMAGE = "image";
     public final static String MOTION_TRIGGER = "motion-trigger";
+
 }
