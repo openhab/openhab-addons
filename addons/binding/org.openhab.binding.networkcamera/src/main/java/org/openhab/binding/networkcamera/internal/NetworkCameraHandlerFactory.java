@@ -19,9 +19,11 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.networkcamera.handler.NetworkCameraHandler;
 import org.openhab.binding.networkcamera.internal.ftp.FtpServer;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link NetworkCameraHandlerFactory} is responsible for creating things and thing
@@ -29,6 +31,7 @@ import org.osgi.service.component.ComponentContext;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.networkcamera")
 public class NetworkCameraHandlerFactory extends BaseThingHandlerFactory {
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
