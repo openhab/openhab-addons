@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="kodi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="kodi"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -30,6 +31,7 @@
 			<channel id="thumbnail" typeId="thumbnail" />
 			<channel id="fanart" typeId="fanart" />
 			<channel id="playfavorite" typeId="playfavorite" />
+			<channel id="playnotification" typeId="playnotification" />
 		</channels>
 
 		<properties>
@@ -51,6 +53,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Volume of your device</description>
+		<category>SoundVolume</category>
 		<state min="0" max="100" step="1" pattern="%d %%" />
 	</channel-type>
 	<channel-type id="control">
@@ -389,5 +392,10 @@
 		<label>Fanart</label>
 		<description>The current fanart</description>
 		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="playnotification" advanced="true">
+		<item-type>String</item-type>
+		<label>Play Notification</label>
+		<description>Plays a notification sound by a given URI</description>
 	</channel-type>
 </thing:thing-descriptions>
