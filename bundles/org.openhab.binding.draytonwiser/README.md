@@ -1,10 +1,12 @@
 # Drayton Wiser Binding
 
-This binding integrates the [Drayton Wiser Smart Heating System](https://wiser.draytoncontrols.co.uk/). The integration happens through the HeatHub, which acts as an IP gateway to the ZigBee devices (thermostats and TRVs).
+This binding integrates the [Drayton Wiser Smart Heating System](https://wiser.draytoncontrols.co.uk/).
+The integration happens through the HeatHub, which acts as an IP gateway to the ZigBee devices (thermostats and TRVs).
 
 ## Supported Things
 
 The Drayton Wiser binding supports the following things:
+
 * Bridge - The network device in the controller that allows us to interact with the other devices in the system
 * Controller - The _HeatHub_ attached to the boiler. This also acts as the hub device.
 * Rooms - Virtual groups of _Room Thermostats_ and _TRVs_ that can have temperatures and schedules
@@ -14,7 +16,8 @@ The Drayton Wiser binding supports the following things:
 
 ## Discovery
 
-The HeatHub can be discovered automatically via mDNS, however the `SECRET` cannot be determined automatically. Once the `SECRET` has been configured, all other devices can be discovered by triggering device discovery again.
+The HeatHub can be discovered automatically via mDNS, however the `SECRET` cannot be determined automatically.
+Once the `SECRET` has been configured, all other devices can be discovered by triggering device discovery again.
 
 ## Binding Configuration
 
@@ -24,7 +27,8 @@ None required
 
 ### HeatHub Configuration
 
-Once discovered, the HeatHub `AUTHTOKEN` needs to be configured. There are a few ways to obtain this, assuming you have already configured the system using the Wiser App.
+Once discovered, the HeatHub `AUTHTOKEN` needs to be configured.
+There are a few ways to obtain this, assuming you have already configured the system using the Wiser App.
 
 1. Temporarily install a packet sniffing tool on your mobile device. Every request made includes the `SECRET` in the header.
 2. Enable setup mode on the HeatHub. Connect a machine temporarily to the `WiserHeat_XXXXX` network and browse to `http://192.168.8.1/secret` to obtain the `AUTHTOKEN`.
@@ -48,7 +52,9 @@ Bridge draytonwiser:heathub:HeatHub [ ADDR="192.168.1.X", REFRESH=60, AUTHTOKEN=
 }
 ```
 
-The `roomName` corresponds to the room name configured in the Wiser App. It is not case sensitive. The `serialNumber` corresponds to the device serial number which can be found on a sticker inside the battery compartment of the Smart Valves/TRVs, and behind the wall mount of the Room Thermostats.
+The `roomName` corresponds to the room name configured in the Wiser App.
+It is not case sensitive.
+The `serialNumber` corresponds to the device serial number which can be found on a sticker inside the battery compartment of the Smart Valves/TRVs, and behind the wall mount of the Room Thermostats.
 
 ## Channels
 
@@ -148,7 +154,8 @@ The `roomName` corresponds to the room name configured in the Wiser App. It is n
 | `windowStateDetection` | Detect whether windows are open                |
 | `masterSchedule`       | The current schedule JSON for the room         |
 
-When updating the `masterSchedule` state, only the schedule portion of the JSON that is returned when querying the state is required. The `id`, `Type`, `CurrentSetPoint`, `NextEventTime` and `NextEventSetpoint` should not be sent.
+When updating the `masterSchedule` state, only the schedule portion of the JSON that is returned when querying the state is required.
+The `id`, `Type`, `CurrentSetPoint`, `NextEventTime` and `NextEventSetpoint` should not be sent.
 
 #### Known string responses for specific channels:
 
