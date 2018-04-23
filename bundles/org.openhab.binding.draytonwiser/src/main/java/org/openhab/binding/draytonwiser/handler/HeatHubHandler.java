@@ -142,8 +142,7 @@ public class HeatHubHandler extends BaseBridgeHandler {
     }
 
     public @Nullable Domain getDomain() {
-        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.DOMAIN_ENDPOINT, HttpMethod.GET,
-                "");
+        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.DOMAIN_ENDPOINT, HttpMethod.GET);
 
         if (response == null) {
             return null;
@@ -269,8 +268,7 @@ public class HeatHubHandler extends BaseBridgeHandler {
 
     public @Nullable Station getStation() {
         Station station = null;
-        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.STATION_ENDPOINT, HttpMethod.GET,
-                "");
+        ContentResponse response = sendMessageToHeatHub(DraytonWiserBindingConstants.STATION_ENDPOINT, HttpMethod.GET);
 
         if (response == null) {
             return null;
@@ -466,6 +464,10 @@ public class HeatHubHandler extends BaseBridgeHandler {
         refresh();
     }
 
+    private @Nullable ContentResponse sendMessageToHeatHub(String path, HttpMethod method) {
+        return sendMessageToHeatHub(path, method.asString(), "");
+    }
+
     private @Nullable ContentResponse sendMessageToHeatHub(String path, HttpMethod method, String content) {
         return sendMessageToHeatHub(path, method.asString(), content);
     }
@@ -493,6 +495,7 @@ public class HeatHubHandler extends BaseBridgeHandler {
             e.printStackTrace();
             updateStatus(ThingStatus.OFFLINE);
         }
+
         return null;
     }
 
