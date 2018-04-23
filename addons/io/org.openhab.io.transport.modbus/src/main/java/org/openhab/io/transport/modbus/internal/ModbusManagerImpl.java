@@ -200,6 +200,8 @@ public class ModbusManagerImpl implements ModbusManager {
     }
 
     private final Logger logger = LoggerFactory.getLogger(ModbusManagerImpl.class);
+    private final Logger pollMonitorLogger = LoggerFactory
+            .getLogger(ModbusManagerImpl.class.getName() + ".PollMonitor");
 
     /**
      * Time to wait between connection passive+borrow, i.e. time to wait between
@@ -238,7 +240,7 @@ public class ModbusManagerImpl implements ModbusManager {
      * Presumably slow callbacks can increase queue size with callbackThreadPool
      */
     private static final long WARN_QUEUE_SIZE = 500;
-    private static final long MONITOR_QUEUE_INTERVAL_MILLIS = 30000;
+    private static final long MONITOR_QUEUE_INTERVAL_MILLIS = 10000;
 
     private final PollOperation pollOperation = new PollOperation();
     private final WriteOperation writeOperation = new WriteOperation();
@@ -835,44 +837,48 @@ public class ModbusManagerImpl implements ModbusManager {
     }
 
     private void logTaskQueueInfo() {
-        if (scheduledThreadPoolExecutor == null || callbackThreadPool == null) {
-            return;
-        }
-        // Avoid excessive spamming with queue monitor when many tasks are executed
-        if (System.currentTimeMillis() - lastQueueMonitorLog < MONITOR_QUEUE_INTERVAL_MILLIS) {
-            return;
-        }
-        lastQueueMonitorLog = System.currentTimeMillis();
-        logger.trace("<POLL MONITOR>");
-        logger.trace("POLL MONITOR: scheduledThreadPoolExecutor queue size: {}, remaining space {}. Active threads {}",
-                scheduledThreadPoolExecutor.getQueue().size(),
-                scheduledThreadPoolExecutor.getQueue().remainingCapacity(),
-                scheduledThreadPoolExecutor.getActiveCount());
-        this.scheduledPollTasks.forEach((task, future) -> {
-            logger.trace(
-                    "POLL MONITOR: scheduled poll task. FC: {}, start {}, length {}, done: {}, canceled: {}, delay: {}. Full task {}",
-                    task.getRequest().getFunctionCode(), task.getRequest().getReference(),
-                    task.getRequest().getDataLength(), future.isDone(), future.isCancelled(),
-                    future.getDelay(TimeUnit.MILLISECONDS), task);
-        });
-        if (scheduledThreadPoolExecutor.getQueue().size() >= WARN_QUEUE_SIZE) {
-            logger.warn(
-                    "Many ({}) tasks queued in scheduledThreadPoolExecutor! This might be sign of bad design or bug in the binding code.",
-                    scheduledThreadPoolExecutor.getQueue().size());
-        }
-        if (callbackThreadPool instanceof QueueingThreadPoolExecutor) {
-            QueueingThreadPoolExecutor callbackPool = ((QueueingThreadPoolExecutor) callbackThreadPool);
-            logger.trace("POLL MONITOR: callbackThreadPool queue size: {}, remaining space {}. Active threads {}",
-                    callbackPool.getQueue().size(), callbackPool.getQueue().remainingCapacity(),
-                    callbackPool.getActiveCount());
-            if (callbackPool.getQueue().size() >= WARN_QUEUE_SIZE) {
-                logger.warn(
-                        "Many ({}) tasks queued in callbackThreadPool! This might be sign of bad design or bug in the binding code.",
-                        callbackPool.getQueue().size());
+        synchronized (pollMonitorLogger) {
+            if (scheduledThreadPoolExecutor == null || callbackThreadPool == null) {
+                return;
             }
-        }
+            // Avoid excessive spamming with queue monitor when many tasks are executed
+            if (System.currentTimeMillis() - lastQueueMonitorLog < MONITOR_QUEUE_INTERVAL_MILLIS) {
+                return;
+            }
+            lastQueueMonitorLog = System.currentTimeMillis();
+            pollMonitorLogger.trace("<POLL MONITOR>");
+            pollMonitorLogger.trace(
+                    "POLL MONITOR: scheduledThreadPoolExecutor queue size: {}, remaining space {}. Active threads {}",
+                    scheduledThreadPoolExecutor.getQueue().size(),
+                    scheduledThreadPoolExecutor.getQueue().remainingCapacity(),
+                    scheduledThreadPoolExecutor.getActiveCount());
+            this.scheduledPollTasks.forEach((task, future) -> {
+                pollMonitorLogger.trace(
+                        "POLL MONITOR: scheduled poll task. FC: {}, start {}, length {}, done: {}, canceled: {}, delay: {}. Full task {}",
+                        task.getRequest().getFunctionCode(), task.getRequest().getReference(),
+                        task.getRequest().getDataLength(), future.isDone(), future.isCancelled(),
+                        future.getDelay(TimeUnit.MILLISECONDS), task);
+            });
+            if (scheduledThreadPoolExecutor.getQueue().size() >= WARN_QUEUE_SIZE) {
+                pollMonitorLogger.warn(
+                        "Many ({}) tasks queued in scheduledThreadPoolExecutor! This might be sign of bad design or bug in the binding code.",
+                        scheduledThreadPoolExecutor.getQueue().size());
+            }
+            if (callbackThreadPool instanceof QueueingThreadPoolExecutor) {
+                QueueingThreadPoolExecutor callbackPool = ((QueueingThreadPoolExecutor) callbackThreadPool);
+                pollMonitorLogger.trace(
+                        "POLL MONITOR: callbackThreadPool queue size: {}, remaining space {}. Active threads {}",
+                        callbackPool.getQueue().size(), callbackPool.getQueue().remainingCapacity(),
+                        callbackPool.getActiveCount());
+                if (callbackPool.getQueue().size() >= WARN_QUEUE_SIZE) {
+                    pollMonitorLogger.warn(
+                            "Many ({}) tasks queued in callbackThreadPool! This might be sign of bad design or bug in the binding code.",
+                            callbackPool.getQueue().size());
+                }
+            }
 
-        logger.trace("</POLL MONITOR>");
+            pollMonitorLogger.trace("</POLL MONITOR>");
+        }
     }
 
 }
