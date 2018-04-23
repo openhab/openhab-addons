@@ -10,7 +10,6 @@ package org.openhab.binding.networkcamera.handler;
 
 import static org.openhab.binding.networkcamera.NetworkCameraBindingConstants.*;
 
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -81,7 +80,6 @@ public class NetworkCameraHandler extends BaseThingHandler implements FtpServerE
         if (configuration.userName.equals(userName)) {
             updateStatus(ThingStatus.ONLINE);
             updateState(IMAGE, new RawType(data, guessMimeTypeFromData(data)));
-            updateState(MOTION, OnOffType.ON);
             triggerChannel(MOTION_TRIGGER, "MOTION_DETECTED");
         }
     }

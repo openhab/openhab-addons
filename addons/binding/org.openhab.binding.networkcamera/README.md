@@ -24,7 +24,6 @@ This binding currently supports following channels:
 | Channel Type ID | Item Type    | Description                                                                            |
 |-----------------|--------------|----------------------------------------------------------------------------------------|
 | image           | Image        | Image received from network camera.                                                    |
-| motion          | Switch       | Motion detection sensor state. Updated to ON state when image is received from camera. |
 
 
 ### Trigger Channels
@@ -57,14 +56,6 @@ when
     Channel 'networkcamera:motiondetection:garage:motion-trigger' triggered MOTION_DETECTED 
 then
     logInfo("Test","MOTION DETECTED trigger example")
-end
-
-rule "example rule"
-when
-    Item Garage_NetworkCamera_Motion received update ON
-then
-    logInfo("Test", "motion detected item example")
-    NetworkCamera_Motion.postUpdate(OFF)
 end
 ```
 
