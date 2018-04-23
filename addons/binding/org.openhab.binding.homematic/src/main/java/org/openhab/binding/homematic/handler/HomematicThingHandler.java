@@ -498,4 +498,25 @@ public class HomematicThingHandler extends BaseThingHandler {
             logger.error("Error setting thing properties: {}", ex.getMessage(), ex);
         }
     }
+
+    /**
+     * Called by the bridgeHandler when this device has been removed from the gateway.
+     */
+    public void deviceRemoved() {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
+    }
+
+    /**
+     * Called by the bridgeHandler when the device for this thing has been added to the gateway.
+     * This is used to reconnect a device that was previously unpaired.
+     */
+    public void deviceLoaded(HmDevice device) {
+        try {
+            updateStatus(device);
+        } catch (BridgeHandlerNotAvailableException ex) {
+            // ignore
+        } catch (IOException ex) {
+            logger.error("{}", ex.getMessage(), ex);
+        }
+    }
 }

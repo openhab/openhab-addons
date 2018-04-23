@@ -286,6 +286,11 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     public void onDeviceDeleted(HmDevice device) {
         discoveryService.deviceRemoved(device);
         updateThing(device);
+
+        Thing hmThing = getThingByUID(UidUtils.generateThingUID(device, getThing()));
+        if (hmThing != null && hmThing.getHandler() != null) {
+            ((HomematicThingHandler) hmThing.getHandler()).deviceRemoved();
+        }
     }
 
     @Override
@@ -304,6 +309,11 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         typeGenerator.generate(device);
         if (discoveryService != null) {
             discoveryService.deviceDiscovered(device);
+        }
+
+        Thing hmThing = getThingByUID(UidUtils.generateThingUID(device, getThing())); // check if necessary
+        if (hmThing != null && hmThing.getHandler() != null) {
+            ((HomematicThingHandler) hmThing.getHandler()).deviceLoaded(device);
         }
     }
 
