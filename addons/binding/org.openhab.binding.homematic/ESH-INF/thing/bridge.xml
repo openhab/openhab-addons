@@ -44,6 +44,12 @@
 				<advanced>true</advanced>
 				<default>15</default>
 			</parameter>
+			<parameter name="discoveryTimeToLive" type="integer">
+				<label>Discovery Time To Live</label>
+				<description>The time to live for discovery results of a Homematic gateway in seconds. (default = -1 -> infinite)</description>
+				<advanced>true</advanced>
+				<default>-1</default>
+			</parameter>
 			<parameter name="socketMaxAlive" type="integer">
 				<label>Socket maxAlive</label>
 				<description>The maximum lifetime of a pooled socket connection to the Homematic gateway in seconds (default = 900)</description>
