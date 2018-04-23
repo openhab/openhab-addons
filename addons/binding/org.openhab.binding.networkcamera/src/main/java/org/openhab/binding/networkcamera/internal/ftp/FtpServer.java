@@ -82,17 +82,17 @@ public class FtpServer {
         }
     }
 
-    public synchronized void addAuthenticationCredentials(String username, String password) throws RuntimeException {
+    public synchronized void addAuthenticationCredentials(String username, String password)
+            throws IllegalArgumentException {
 
         if (authenticationData.containsKey(username)) {
-            throw new RuntimeException("Crerentials for user '" + username + "' already exists!");
+            throw new IllegalArgumentException("Credentials for user '" + username + "' already exists!");
         }
 
         authenticationData.put(username, new UsernamePassword(username, password));
     }
 
-    public synchronized void removeAuthenticationCredentials(String username) throws RuntimeException {
-
+    public synchronized void removeAuthenticationCredentials(String username) {
         authenticationData.remove(username);
     }
 
@@ -100,7 +100,7 @@ public class FtpServer {
         listeners.remove(listener);
     }
 
-    void sendMsgToListeners(String userName, byte[] data) {
+    private void sendMsgToListeners(String userName, byte[] data) {
         try {
             Iterator<FtpServerEventListener> iterator = listeners.iterator();
 
@@ -109,7 +109,7 @@ public class FtpServer {
             }
 
         } catch (Exception e) {
-            logger.debug("Event listener invoking error: ", e.getMessage());
+            logger.debug("Event listener invoking error: {}", e.getMessage());
         }
     }
 
@@ -158,7 +158,7 @@ public class FtpServer {
         try {
             server.start();
         } catch (FtpException e) {
-            e.printStackTrace();
+            logger.warn("FTP server starting failed, reason: {}", e.getMessage());
         }
     }
 
@@ -527,8 +527,8 @@ public class FtpServer {
                 byte[] d = DatatypeConverter.parseHexBinary(data.toString());
                 logger.debug("File len: {}", d.length);
                 return d;
-            } catch (Exception e) {
-                logger.debug("Exception occured during data conversion: ", e.getMessage());
+            } catch (IllegalArgumentException e) {
+                logger.debug("Exception occured during data conversion: {}", e.getMessage());
             }
             return null;
         }

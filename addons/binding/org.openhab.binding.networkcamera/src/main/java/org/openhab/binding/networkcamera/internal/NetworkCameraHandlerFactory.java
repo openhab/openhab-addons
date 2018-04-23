@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.networkcamera.internal;
 
-import static org.openhab.binding.networkcamera.NetworkCameraBindingConstants.THING_TYPE_SAMPLE;
+import static org.openhab.binding.networkcamera.NetworkCameraBindingConstants.THING_TYPE_MOTIONDETECTION;
 
 import java.util.Collections;
 import java.util.Dictionary;
@@ -22,8 +22,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.networkcamera.handler.NetworkCameraHandler;
 import org.openhab.binding.networkcamera.internal.ftp.FtpServer;
 import org.osgi.service.component.ComponentContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NetworkCameraHandlerFactory} is responsible for creating things and thing
@@ -33,9 +31,8 @@ import org.slf4j.LoggerFactory;
  */
 public class NetworkCameraHandlerFactory extends BaseThingHandlerFactory {
 
-    private Logger logger = LoggerFactory.getLogger(NetworkCameraHandlerFactory.class);
-
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .singleton(THING_TYPE_MOTIONDETECTION);
 
     private final int DEFAULT_PORT = 2121;
     private final int DEFAULT_IDLE_TIMEOUT = 60;
@@ -52,7 +49,7 @@ public class NetworkCameraHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SAMPLE)) {
+        if (thingTypeUID.equals(THING_TYPE_MOTIONDETECTION)) {
             return new NetworkCameraHandler(thing, ftpServer);
         }
 
@@ -90,10 +87,6 @@ public class NetworkCameraHandlerFactory extends BaseThingHandlerFactory {
             idleTimeout = Integer.valueOf(strIdleTimeout);
         }
 
-        try {
-            ftpServer.startServer(port, idleTimeout);
-        } catch (Exception e) {
-            logger.error("FTP server starting failed, reason: " + e.getMessage());
-        }
+        ftpServer.startServer(port, idleTimeout);
     }
 }

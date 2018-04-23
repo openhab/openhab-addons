@@ -15,6 +15,7 @@ import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -57,10 +58,15 @@ public class NetworkCameraHandler extends BaseThingHandler implements FtpServerE
     public void initialize() {
         logger.debug("Initializing handler for Network Camera Binding");
         configuration = getConfigAs(NetworkCameraConfig.class);
-        logger.info("Using configuration: {}", configuration.toString());
+        logger.debug("Using configuration: {}", configuration.toString());
 
         ftpServer.addEventListener(this);
-        ftpServer.addAuthenticationCredentials(configuration.userName, configuration.password);
+        try {
+            ftpServer.addAuthenticationCredentials(configuration.userName, configuration.password);
+        } catch (IllegalArgumentException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        }
+
         updateStatus(ThingStatus.ONLINE);
     }
 

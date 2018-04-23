@@ -1,6 +1,8 @@
 # Network Camera Binding
 
-This binding integrates large number of network cameras which can send image to FTP server when motion or sound is detected. Binding acts as a FTP server. Images stored to FTP server are not saved to the file system, therefore binding shouldn't cause any problems on flash based openHAB installations.
+This binding integrates large number of network cameras which can send images to a FTP server when motion or sound is detected.
+Binding acts as a FTP server.
+Images stored on the FTP server are not saved to the file system, therefore the binding shouldn't cause any problems on flash based openHAB installations.
 
 
 ## Supported Things
@@ -43,7 +45,8 @@ Thing networkcamera:motiondetection:garage [ userName="garage", password="12345"
 Items:
 
 ```
-Switch Garage_NetworkCamera_Motion { channel="networkcamera:motiondetection:garage:motion" } 
+Switch Garage_NetworkCamera_Motion       { channel="networkcamera:motiondetection:garage:motion" } 
+Image  Garage_NetworkCamera_Motion_Image { channel="networkcamera:motiondetection:garage:image" } 
 ```
 
 Rules:
@@ -65,6 +68,14 @@ then
 end
 ```
 
+Sitemap:
+
+```
+Frame label="Garage network camera" icon="camera" {
+    Image item=Garage_Motion_Image
+}
+```
+        
 ## Logging and problem solving
 
 For problem solving, if binding logging is not enough, Apache FTP server logging can also be enabled by the following command in the karaf console:

@@ -5,14 +5,15 @@ Bundle-Name: Network Camera Binding
 Bundle-SymbolicName: org.openhab.binding.networkcamera;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.3.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/ftplet-api-1.1.0.jar,
  lib/ftpserver-core-1.1.0.jar,
  lib/mina-core-2.0.16.jar
+Export-Package: 
+ org.openhab.binding.networkcamera,
+ org.openhab.binding.networkcamera.handler
 Import-Package: 
- com.google.common.io,
- org.apache.commons.io,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
@@ -23,7 +24,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
- org.openhab.core.library.types,
  org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
