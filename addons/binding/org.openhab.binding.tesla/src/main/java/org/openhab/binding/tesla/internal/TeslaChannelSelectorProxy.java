@@ -690,7 +690,7 @@ public class TeslaChannelSelectorProxy {
                 return super.getState(s);
             }
         },
-        SEAT_HEATER_LEFT("seat_heater_left", "leftseatheater", DecimalType.class, false) {
+        SEAT_HEATER_LEFT("seat_heater_left", "leftseatheater", OnOffType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 if (s.equals("true") || s.equals("1")) {
