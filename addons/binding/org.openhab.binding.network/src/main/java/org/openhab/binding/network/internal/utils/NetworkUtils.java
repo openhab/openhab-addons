@@ -274,8 +274,7 @@ public class NetworkUtils {
             return false;
         }
 
-        try{
-            BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+        try (BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
             String line = r.readLine();
             if (line == null) {
                 logger.trace("Received no output from ping process.");
@@ -283,16 +282,15 @@ public class NetworkUtils {
             }
             do {
                 logger.trace("Examining ping process line: '{}'", line);
-                if (line.contains("host unreachable") ||
-                    line.contains("timed out") ||
-                    line.contains("could not find host")) {
+                if (line.contains("host unreachable") || line.contains("timed out")
+                        || line.contains("could not find host")) {
                     return false;
                 }
                 line = r.readLine();
-            }while(line != null);
+            } while (line != null);
 
             return true;
-        }catch(IOException e) {
+        } catch (IOException e) {
             logger.warn("Failed while reading the output of the ping process", e);
             return false;
         }
