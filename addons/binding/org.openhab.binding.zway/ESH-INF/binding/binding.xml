@@ -10,8 +10,7 @@
 		Z-Way is a home automation software to configure and control a Z-Wave network. The ZAutomation interface provides 
 		all Z-Wave devices and handles incoming commands. The Z-Way Binding uses this HTTP interface to load all device 
 		and make them available during the discovery process.<br>
-		Besides a continuous polling the opportunity to register items in Z-Way as observer is possible (for that function
-		the related Z-Way App is currently required).
+		Currently only a continuous polling is available!
 		]]>
 	</description>
 	<author>Patrick Hecker</author>

@@ -15,11 +15,9 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -46,7 +44,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.fh_zwickau.informatik.sensor.model.devices.Device;
-import de.fh_zwickau.informatik.sensor.model.devices.DeviceCommand;
 import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
 import de.fh_zwickau.informatik.sensor.model.devices.types.Battery;
 import de.fh_zwickau.informatik.sensor.model.devices.types.Doorlock;
@@ -66,7 +63,7 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  * The {@link ZWayDeviceHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Patrick Hecker - Initial contribution
+ * @author Patrick Hecker - Initial contribution, remove observer mechanism
  * @author Johannes Einig - Now uses the bridge handler cached device list
  */
 public abstract class ZWayDeviceHandler extends BaseThingHandler {
@@ -79,7 +76,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
     protected abstract void refreshLastUpdate();
 
     /**
-     * Initialize polling job and register all linked item in openHAB connector as observer
+     * Initialize polling job
      */
     private class Initializer implements Runnable {
 
@@ -107,24 +104,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                     // Called when thing or bridge updated ...
                     logger.debug("Polling is allready active");
                 }
-
-                // Register all linked items on server start
-                if (zwayBridgeHandler.getZWayBridgeConfiguration().getObserverMechanismEnabled()) {
-                    for (Channel channel : getThing().getChannels()) {
-                        if (isLinked(channel.getUID().getId())) {
-                            String deviceId = channel.getProperties().get("deviceId");
-                            if (deviceId != null) {
-                                Set<Item> items = linkRegistry.getLinkedItems(channel.getUID());
-                                for (Item item : items) {
-                                    logger.debug("Linked item found - starting register command for openHAB item: {}",
-                                            item);
-                                    zwayRegisterOpenHabItem(item, deviceId);
-                                }
-                            } // else - no channel for virtual device, channels for command classes can't register as
-                              // observer
-                        }
-                    }
-                }
             } catch (Throwable t) {
                 if (t instanceof Exception) {
                     logger.error("{}", t.getMessage());
@@ -135,15 +114,12 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 }
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                            "Error occurred when starting polling and registering item as observer.");
+                            "Error occurred when starting polling.");
                 }
             }
         }
     };
 
-    /**
-     * Remove all linked items from openHAB connector observer list
-     */
     private class Disposer implements Runnable {
 
         @Override
@@ -157,19 +133,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.REMOVED);
 
                 return;
-            }
-
-            // Remove all linked items in Z-Way server
-            if (zwayBridgeHandler.getZWayBridgeConfiguration().getObserverMechanismEnabled()) {
-                for (Channel channel : getThing().getChannels()) {
-                    if (isLinked(channel.getUID().getId())) {
-                        Set<Item> items = linkRegistry.getLinkedItems(channel.getUID());
-                        for (Item item : items) {
-                            logger.debug("Linked item found - starting remove command for openHAB item: {}", item);
-                            zwayUnsubscribeOpenHabItem(item);
-                        }
-                    }
-                }
             }
 
             // status update will remove finally
@@ -375,20 +338,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
 
         // Method called when channel linked and not when server started!!!
 
-        if (zwayBridgeHandler.getZWayBridgeConfiguration().getObserverMechanismEnabled()) {
-            // Load device id from channel's properties for the compatibility of ZAutomation and ZWave devices
-            Channel channel = thing.getChannel(channelUID.getId());
-            String deviceId = channel.getProperties().get("deviceId");
-
-            if (deviceId != null) {
-                Set<Item> items = linkRegistry.getLinkedItems(channelUID);
-                for (Item item : items) {
-                    logger.debug("Linked item found - starting register command for openHAB item: {}", item);
-                    zwayRegisterOpenHabItem(item, deviceId);
-                }
-            } // else - no channel for virtual device, channels for command classes can't register as observer
-        }
-
         super.channelLinked(channelUID); // performs a refresh command
     }
 
@@ -402,66 +351,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             return;
         }
 
-        if (zwayBridgeHandler.getZWayBridgeConfiguration().getObserverMechanismEnabled()) {
-            // Load device id from channel's properties for the compatibility of ZAutomation and ZWave devices
-            Channel channel = thing.getChannel(channelUID.getId());
-            String deviceId = channel.getProperties().get("deviceId");
-
-            if (deviceId != null) {
-                // TODO no items for this channel available at this point!
-                // before method called by system the item removed
-                Set<Item> items = linkRegistry.getLinkedItems(channelUID);
-                for (Item item : items) {
-                    logger.debug("Linked item found - starting remove command for openHAB item: {}", item);
-                    zwayUnsubscribeOpenHabItem(item);
-                }
-            } // else - no channel for virtual device, channels for command classes can't register as observer
-        }
-
         super.channelUnlinked(channelUID);
-    }
-
-    private void zwayRegisterOpenHabItem(Item openHABItem, String deviceId) {
-        ZWayBridgeHandler zwayBridgeHandler = getZWayBridgeHandler();
-        if (zwayBridgeHandler == null || !zwayBridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            logger.debug("Z-Way bridge handler not found or not ONLINE.");
-            return;
-        }
-
-        // Preconditions are OK, starting registration ...
-        Map<String, String> params = new HashMap<>();
-        params.put("openHabAlias", zwayBridgeHandler.getZWayBridgeConfiguration().getOpenHabAlias());
-        params.put("openHabItemName", openHABItem.getName());
-        params.put("vDevName", deviceId);
-        DeviceCommand command = new DeviceCommand("OpenHabConnector", "registerOpenHabItem", params);
-
-        String message = zwayBridgeHandler.getZWayApi().getDeviceCommand(command);
-        if (message != null) {
-            logger.debug("Device registration finished successfully: {}", message);
-        } else {
-            logger.warn("Device registration failed");
-        }
-    }
-
-    private void zwayUnsubscribeOpenHabItem(Item openHABItem) {
-        ZWayBridgeHandler zwayBridgeHandler = getZWayBridgeHandler();
-        if (zwayBridgeHandler == null || !zwayBridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            logger.debug("Z-Way bridge handler not found or not ONLINE.");
-            return;
-        }
-
-        // Preconditions are OK, starting unsubscribing ...
-        Map<String, String> params = new HashMap<>();
-        params.put("openHabAlias", zwayBridgeHandler.getZWayBridgeConfiguration().getOpenHabAlias());
-        params.put("openHabItemName", openHABItem.getName());
-        DeviceCommand command = new DeviceCommand("OpenHabConnector", "removeOpenHabItem", params);
-
-        String message = zwayBridgeHandler.getZWayApi().getDeviceCommand(command);
-        if (message != null) {
-            logger.debug("Device unsubscribing finished successfully: {}", message);
-        } else {
-            logger.warn("Device unsubscribing failed");
-        }
     }
 
     @Override

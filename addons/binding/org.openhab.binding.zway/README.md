@@ -63,27 +63,21 @@ But the configuration and properties of things are changed at runtime and channe
 
 ### Z-Way Server (Bridge)
 
-The information about accessing openHAB are needed so that the Observer mechanism works.
 Besides the username and password all required Z-Way information are found during discovery.
 
 | Configuration Name       | Mandatory | Default   | Desciption                                                                                                                                                                                   |
 |--------------------------|-----------|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| openHABAlias             |           |           | By default, the alias is generated during initialization or configuration update of thing handler.                                                                                           |
-| openHABIpAddress         |           | localhost | The IP address or hostname of the openHAB server. If Z-Way and openHAB are running on the same machine, the default value can be used.                                                       |
-| openHABPort              |           | 8080      | The port of the openHAB server (0 to 65335)                                                                                                                                                  |
-| openHABProtocol          |           | http      | Protocol to connect to the openHAB server (http or https)                                                                                                                                    |
 | zwayServerIpAddress      |           | localhost | The IP address or hostname of the Z-Way server. If Z-Way and openHAB are running on the same machine, the default value can be used.                                                         |
 | zwayServerPort           |           | 8083      | The port of the Z-Way server (0 to 65335)                                                                                                                                                    |
 | zwayServerProtocol       |           | http      | Protocol to connect to the Z-Way server (http or https)                                                                                                                                      |
 | zwayServerUsername       |           | admin     | Username to access the Z-Way server.                                                                                                                                                         |
 | zwayServerPassword       | X         |           | Password to access the Z-Way server.                                                                                                                                                         |
 | pollingInterval          |           | 3600      | Refresh device states and registration from Z-Way server in seconds (at least 60).                                                                                                           |
-| observerMechanismEnabled |           | true      | The observer functionality is responsible for the item registration as observer in Z-Way. Attention: if disable this option, you have to setup an other synchronization mechanism like MQTT. |
 
-Only the Z-Way server can be configured textual (Attention! *openHABAlias* has to be set because the bridge configuration can not be changed at runtime):
+Only the Z-Way server can be configured textual:
 
 ```
-Bridge zway:zwayServer:192_168_2_42 [ openHABAlias="development", openHABIpAddress="localhost", openHABPort=8080, openHABProtocol="http", zwayServerIpAddress="localhost", zwayServerPort=8083, zwayServerProtocol="http", zwayServerUsername="admin", zwayServerPassword="admin", pollingInterval=3600, observerMechanismEnabled=true ] {
+Bridge zway:zwayServer:192_168_2_42 [ zwayServerIpAddress="localhost", zwayServerPort=8083, zwayServerProtocol="http", zwayServerUsername="admin", zwayServerPassword="admin", pollingInterval=3600 ] {
     // associated things have to be created with the Paper UI
 }
 ```
@@ -157,22 +151,12 @@ Unsupported Z-Way device types: Camera, SensorMultiline, Text. The integration o
 
 ### Channels for the Z-Way Server (Bridge)
 
-
-Markdown Table Formatter
-
-This tool formats basic MultiMarkdown style tables for easier plain text reading.
-It adds padding to all the cells to line up the pipe separators when using a mono-space font.
-
-To see what it's all about, try one of these examples, or format your own.
-
-Load: Example 1 - Example 2 - Example 3
-
-For more information:
-I'm on Twitter as @TheIdOfAlan
-I sometimes post on my personal site alanwsmith.com
-This is an Open Source GitHub Project.
-It has a Jasmine Test Suite.
-What to show your appreciation? Buy me a book
+-| Channel Type ID | Item Type | Category | Description |
+-| --------------- | --------- | -------- | ----------- |
+-| actions         | String | -      | It is currently possible to update all devices. |
+-| secureInclusion | Switch | Switch | Change inclusion type for further inclusions. |
+-| inclusion       | Switch | Switch | Start inclusion mode (after a timeout the inclusion will be automatically finished). |
+-| exclusion       | Switch | Switch | Start exclusion mode (after a timeout the exclusion will be automatically finished). ||
 
 ## Locations
 
@@ -203,7 +187,7 @@ Because textual configuration isn't useful, follow the instructions in the [Gett
 
 -   Z-Way device types (especially the probe types) supported by openHAB channels with detailed information (scale types and so on) are not complete.
 -   Configuration of the Z-Wave network by the binding is currently not possible (physical device configuration)
--   Z-Way App "openHAB Connector" is required. Further versions will contain other mechanisms under usage of the WebSocket implementation of Z-Way or MQTT.
+-   Only polling is available. Further versions will contain other mechanisms under usage of the WebSocket implementation of Z-Way or MQTT.
 
 <br>
 <img src="doc/BMWi_4C_Gef_en.jpg" width="200">

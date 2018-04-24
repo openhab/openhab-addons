@@ -5,11 +5,6 @@
 		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd"
 >
 	<config-description uri="binding:zway:zwayServer">
-		<parameter-group name="openhab">
-			<label>openHAB</label>
-			<description>The Z-Way server requires this information to notify the openHAB server. If Z-Way and openHAB are running on the same machine, the default value can be used.</description>
-		</parameter-group>
-
 		<parameter-group name="zwayServer">
 			<label>Z-Way server</label>
 			<description>The configuration of the Z-Way server. Except for the username and password all the information detected during the discovery.</description>
@@ -19,34 +14,6 @@
 			<label>Options</label>
 			<description>These settings affect functions of the binding.</description>
 		</parameter-group>
-
-		<parameter name="openHABAlias" groupName="openhab" type="text" required="false">
-			<label>Alias</label>
-			<description>Alias used in openHAB connector. By default, the alias is generated.</description>
-		</parameter>
-
-		<parameter name="openHABIpAddress" groupName="openhab" type="text">
-			<context>network-address</context>
-			<label>IP address</label>
-			<description>The IP address or hostname of the openHAB server. If Z-Way and openHAB are running on the same machine, the default value can be used.</description>
-			<default>localhost</default>
-		</parameter>
-
-		<parameter name="openHABPort" groupName="openhab" type="integer" required="false" min="0" max="65335">
-			<label>Port</label>
-			<description>The port of the openHAB server.</description>
-			<default>8080</default>
-		</parameter>
-
-		<parameter name="openHABProtocol" groupName="openhab" type="text" required="false">
-			<label>Protocol</label>
-			<description>Protocol to connect to the openHAB server (http or https).</description>
-			<default>http</default>
-			<options>
-				<option value="http">HTTP</option>
-				<option value="https">HTTPS</option>
-			</options>
-		</parameter>
 
 		<parameter name="zwayServerIpAddress" groupName="zwayServer" type="text">
 			<context>network-address</context>
@@ -88,12 +55,6 @@
 			<description>Refresh device states and registration from Z-Way server.</description>
 			<unitLabel>Seconds</unitLabel>
 			<default>3600</default>
-		</parameter>
-
-		<parameter name="observerMechanismEnabled" groupName="binding" type="boolean" required="false">
-			<label>Observer mechanism enabled</label>
-			<description>The observer functionality is responsible for the item registration as observer in Z-Way. Attention: if disable this option, you have to setup an other synchronization mechanism like MQTT.</description>
-			<default>true</default>
 		</parameter>
 	</config-description>
 

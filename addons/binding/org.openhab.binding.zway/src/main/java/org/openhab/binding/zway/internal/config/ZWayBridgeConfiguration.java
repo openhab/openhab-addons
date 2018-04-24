@@ -15,15 +15,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 /**
  * The {@link ZWayBridgeConfiguration} class defines the model for a bridge configuration.
  *
- * @author Patrick Hecker - Initial contribution
+ * @author Patrick Hecker - Initial contribution, remove openHAB configuration
  */
 public class ZWayBridgeConfiguration {
-    private String openHABAlias;
-
-    private String openHABIpAddress;
-    private Integer openHABPort;
-    private String openHABProtocol;
-
     private String zwayServerIpAddress;
     private Integer zwayServerPort;
     private String zwayServerProtocol;
@@ -32,39 +26,6 @@ public class ZWayBridgeConfiguration {
     private String zwayServerPassword;
 
     private Integer pollingInterval;
-    private Boolean observerMechanismEnabled;
-
-    public String getOpenHabAlias() {
-        return openHABAlias;
-    }
-
-    public void setOpenHabAlias(String openHabAlias) {
-        this.openHABAlias = openHabAlias;
-    }
-
-    public String getOpenHabIpAddress() {
-        return openHABIpAddress;
-    }
-
-    public void setOpenHabIpAddress(String ipAddress) {
-        this.openHABIpAddress = ipAddress;
-    }
-
-    public Integer getOpenHabPort() {
-        return openHABPort;
-    }
-
-    public void setOpenHabPort(Integer port) {
-        this.openHABPort = port;
-    }
-
-    public String getOpenHabProtocol() {
-        return openHABProtocol;
-    }
-
-    public void setOpenHabProtocol(String protocol) {
-        this.openHABProtocol = protocol;
-    }
 
     public String getZWayIpAddress() {
         return zwayServerIpAddress;
@@ -114,26 +75,13 @@ public class ZWayBridgeConfiguration {
         this.pollingInterval = pollingInterval;
     }
 
-    public Boolean getObserverMechanismEnabled() {
-        return observerMechanismEnabled;
-    }
-
-    public void setObserverMechanismEnabled(Boolean observerMechanismEnabled) {
-        this.observerMechanismEnabled = observerMechanismEnabled;
-    }
-
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append(BRIDGE_CONFIG_OPENHAB_ALIAS, this.getOpenHabAlias())
-                .append(BRIDGE_CONFIG_OPENHAB_IP_ADDRESS, this.getOpenHabIpAddress())
-                .append(BRIDGE_CONFIG_OPENHAB_PORT, this.getOpenHabPort())
-                .append(BRIDGE_CONFIG_OPENHAB_PROTOCOL, this.getOpenHabProtocol())
-                .append(BRIDGE_CONFIG_ZWAY_SERVER_IP_ADDRESS, this.getZWayIpAddress())
+        return new ToStringBuilder(this).append(BRIDGE_CONFIG_ZWAY_SERVER_IP_ADDRESS, this.getZWayIpAddress())
                 .append(BRIDGE_CONFIG_ZWAY_SERVER_PORT, this.getZWayPort())
                 .append(BRIDGE_CONFIG_ZWAY_SERVER_PROTOCOL, this.getZWayProtocol())
                 .append(BRIDGE_CONFIG_ZWAY_SERVER_USERNAME, this.getZWayUsername())
                 .append(BRIDGE_CONFIG_ZWAY_SERVER_PASSWORD, this.getZWayPassword())
-                .append(BRIDGE_CONFIG_POLLING_INTERVAL, this.getPollingInterval())
-                .append(BRIDGE_CONFIG_OBSERVER_MECHANISM_ENABLED, this.getObserverMechanismEnabled()).toString();
+                .append(BRIDGE_CONFIG_POLLING_INTERVAL, this.getPollingInterval()).toString();
     }
 }
