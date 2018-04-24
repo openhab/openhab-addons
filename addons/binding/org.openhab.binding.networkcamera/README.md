@@ -44,7 +44,6 @@ Thing networkcamera:motiondetection:garage [ userName="garage", password="12345"
 Items:
 
 ```
-Switch Garage_NetworkCamera_Motion       { channel="networkcamera:motiondetection:garage:motion" } 
 Image  Garage_NetworkCamera_Motion_Image { channel="networkcamera:motiondetection:garage:image" } 
 ```
 

@@ -15,6 +15,7 @@ import java.util.Dictionary;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.ftpserver.ftplet.FtpException;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -24,6 +25,8 @@ import org.openhab.binding.networkcamera.handler.NetworkCameraHandler;
 import org.openhab.binding.networkcamera.internal.ftp.FtpServer;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NetworkCameraHandlerFactory} is responsible for creating things and thing
@@ -33,6 +36,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.networkcamera")
 public class NetworkCameraHandlerFactory extends BaseThingHandlerFactory {
+    private Logger logger = LoggerFactory.getLogger(NetworkCameraHandlerFactory.class);
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(THING_TYPE_MOTIONDETECTION);
@@ -83,13 +87,25 @@ public class NetworkCameraHandlerFactory extends BaseThingHandlerFactory {
         String strIdleTimeout = (String) componentContext.getProperties().get("idleTimeout");
 
         if (StringUtils.isNotEmpty(strPort)) {
-            port = Integer.valueOf(strPort);
+            try {
+                port = Integer.valueOf(strPort);
+            } catch (NumberFormatException e) {
+                logger.warn("Invalid port number '{}', using default port {}", strPort, port);
+            }
         }
 
         if (StringUtils.isNotEmpty(strPort)) {
-            idleTimeout = Integer.valueOf(strIdleTimeout);
+            try {
+                idleTimeout = Integer.valueOf(strIdleTimeout);
+            } catch (NumberFormatException e) {
+                logger.warn("Invalid idle timeout '{}', using default timeout {}", strIdleTimeout, idleTimeout);
+            }
         }
 
-        ftpServer.startServer(port, idleTimeout);
+        try {
+            ftpServer.startServer(port, idleTimeout);
+        } catch (FtpException e) {
+            logger.warn("FTP server starting failed, reason: {}", e.getMessage());
+        }
     }
 }

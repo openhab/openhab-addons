@@ -55,7 +55,7 @@ public class FtpServer {
         FTPUserManager = new FTPUserManager();
     }
 
-    public void startServer(int port, int idleTimeout) {
+    public void startServer(int port, int idleTimeout) throws FtpException {
         stopServer();
         this.port = port;
         this.idleTimeout = idleTimeout;
@@ -116,7 +116,7 @@ public class FtpServer {
         logger.debug("CurrentLoginNumber: {}", ftpStats.getCurrentLoginNumber());
     }
 
-    private void initServer() {
+    private void initServer() throws FtpException {
         logger.info("Starting FTP server, port={}, idleTimeout={}", port, idleTimeout);
 
         FtpServerFactory serverFactory = new FtpServerFactory();
@@ -145,11 +145,7 @@ public class FtpServer {
         // set the user manager
         serverFactory.setUserManager(FTPUserManager);
         server = serverFactory.createServer();
-        try {
-            server.start();
-        } catch (FtpException e) {
-            logger.warn("FTP server starting failed, reason: {}", e.getMessage());
-        }
+        server.start();
     }
 
     private class MyFTPLet extends DefaultFtplet {

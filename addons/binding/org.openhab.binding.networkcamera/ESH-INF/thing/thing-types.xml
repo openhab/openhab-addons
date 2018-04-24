@@ -10,7 +10,6 @@
 
 		<channels>
 			<channel id="image" typeId="image-channel" />
-			<channel id="motion" typeId="motion-channel" />
 			<channel id="motion-trigger" typeId="motion-trigger" />
 		</channels>
 
@@ -31,12 +30,6 @@
 		<item-type>Image</item-type>
 		<label>Camera image</label>
 		<description>Image from network camera</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="motion-channel">
-		<item-type>Switch</item-type>
-		<label>Motion detected channel</label>
-		<description>Motion detected</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="motion-trigger">
