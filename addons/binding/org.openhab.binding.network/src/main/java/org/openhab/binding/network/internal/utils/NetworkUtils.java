@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff <david.graeff@web.de>
  */
 public class NetworkUtils {
-    private Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
+    private final Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
 
     /**
      * Gets every IPv4 Address on each Interface except the loopback
