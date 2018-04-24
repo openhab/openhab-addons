@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="yeelight" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="Stripe">
+		<label>Yeelight Color LED Stripe</label>
+		<description>Yeelight Color LED Stripe</description>
+
+		<channels>
+			<channel id="brightness" typeId="brightness" />
+			<channel id="color" typeId="color" />
+			<channel id="colorTemperature" typeId="colorTemperature" />
+		</channels>
+	</thing-type>
+
+	<!-- Brightness Channel -->
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>The brightness channel allows to control the brightness of a light.
+            It is also possible to switch the light on and off.
+        </description>
+		<category>DimmableLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<!-- Color Channel -->
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>The color channel allows to control the color of a light.</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<!-- Color Temperature Channel -->
+	<channel-type id="colorTemperature">
+		<item-type>Dimmer</item-type>
+		<label>ColorTemperature</label>
+		<description>The CT channel allows to control the CT of a light.</description>
+		<category>DimmableCT</category>
+		<tags>
+			<tag>ColorTemperature</tag>
+		</tags>
+	</channel-type>
+</thing:thing-descriptions>
