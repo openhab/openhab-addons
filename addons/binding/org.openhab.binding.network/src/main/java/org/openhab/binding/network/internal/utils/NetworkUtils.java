@@ -163,10 +163,9 @@ public class NetworkUtils {
         SocketAddress socketAddress = new InetSocketAddress(host, port);
         try (Socket socket = new Socket()) {
             socket.connect(socketAddress, timeout);
-            logger.info("Sucessful socket connect for {} on port: {}", host, port);
             return true;
         } catch (ConnectException | SocketTimeoutException | NoRouteToHostException ignored) {
-            logger.info("Failed socket connect for {} on port: {}", host, port, ignored);
+            logger.trace("Failed socket connect for {} on port: {}", host, port, ignored);
             return false;
         }
     }
