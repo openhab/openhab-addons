@@ -16,34 +16,62 @@ No binding configuration required.
 
 ## Thing Configuration
 
-The thing mandatory configuration is the selection of the mill.
-Optional configuration is the number of wind shares ("Winddelen") and the refresh interval.
+| Configuration Parameter | Required | Default | Description                                         |
+|-------------------------|----------|---------|-----------------------------------------------------|
+| millId                  | X        | 131     | Identifies the windmill (see table below)           |
+| wd                      |          | 1       | Number of wind shares ("Winddelen")                 |
+| refreshInterval         |          | 30      | Refresh interval for refreshing the data in seconds |
+
+| millId | Windmill name     |
+|--------|-------------------|
+| 1      | De Grote Geert    |
+| 2      | De Jonge Held     |
+| 31     | Het Rode Hert     |
+| 41     | De Ranke Zwaan    |
+| 51     | De Witte Juffer   |
+| 111    | De Bonte Hen      |
+| 121    | De Trouwe Wachter |
+| 131    | De Blauwe Reiger  |
+| 141    | De Vier Winden    |
+| 201    | De Boerenzwaluw   |
 
 ## Channels
 
--   **windSpeed** Measured current wind speed
--   **windDirection** Current wind direction
--   **powerAbsTot** Total power
--   **powerAbsWd** Power provided for your wind shares
--   **powerRel** Relative power
--   **kwh** Current energy
--   **kwhForecast** Energy forecast
--   **runPercentage** Run percentage this year
--   **timestamp** Timestamp of the last update
-
+| Channel Type ID | Item Type            | Description                         |
+|-----------------|----------------------|-------------------------------------|
+| kwh             | Number:Energy        | Current energy                      |
+| kwhForecast     | Number:Energy        | Energy forecast                     |
+| powerAbsTot     | Number:Power         | Total power                         |
+| powerAbsWd      | Number:Power         | Power provided for your wind shares |
+| powerRel        | Number:Dimensionless | Relative power                      |
+| runPercentage   | Number:Dimensionless | Run percentage this year            |
+| runTime         | Number:Time          | Run time this year                  |
+| timestamp       | DateTime             | Timestamp of the last update        |
+| windDirection   | String               | Current wind direction              |
+| windSpeed       | Number               | Measured current wind speed (Bft)   |
 
 ## Example
 
-```
-Group   gReiger "Windcentrale Reiger"   <wind>
+### demo.things
 
-Number  ReigerWindSpeed         "Windsnelheid [%1.0f Bft]"        <wind>    (gReiger) {channel="windcentrale:mill:reiger:windSpeed")
-String  ReigerWindDirection     "Windrichting [%s]"               <wind>    (gReiger) {channel="windcentrale:mill:reiger:windDirection")
-Number  ReigerPowerAbsTot       "Productie molen [%1.0f kW]"      <wind>    (gReiger) {channel="windcentrale:mill:reiger:powerAbsTot")
-Number  ReigerPowerAbsWd        "WD power [%1.0f W]"              <wind>    (gReiger) {channel="windcentrale:mill:reiger:powerAbsWd")
-Number  ReigerPowerRel          "Productie vermogen [%1.0f %%]"   <wind>    (gReiger) {channel="windcentrale:mill:reiger:powerRel")
-Number  ReigerKwh               "kwh [%1.0f]"                     <wind>    (gReiger) {channel="windcentrale:mill:reiger:kwh")
-Number  ReigerKwhForecast       "Productie forecast [%1.0f]"      <wind>    (gReiger) {channel="windcentrale:mill:reiger:kwhForecast")
-Number  ReigerRunPercentage     "Run percentage [%1.0f %%]"       <wind>    (gReiger) {channel="windcentrale:mill:reiger:runPercentage")
-Number  ReigerTimestamp         "Update timestamp [%1$ta %1$tR]"  <wind>    (gReiger) {channel="windcentrale:mill:reiger:timestamp")
+```
+Thing windcentrale:mill:geert  [ millId=1 ]
+Thing windcentrale:mill:reiger [ millId=131, wd=3, refreshInterval=60 ]
+```
+
+### demo.items
+
+```
+Group                 gReiger                 "Windcentrale Reiger"              <wind>
+
+Number                ReigerWindSpeed         "Wind speed [%d Bft]"              <wind>  (gReiger) { channel="windcentrale:mill:reiger:windSpeed" }
+String                ReigerWindDirection     "Wind direction [%s]"              <wind>  (gReiger) { channel="windcentrale:mill:reiger:windDirection" }
+Number:Power          ReigerPowerAbsTot       "Total mill power [%.1f %unit%]"   <wind>  (gReiger) { channel="windcentrale:mill:reiger:powerAbsTot" }
+Number:Power          ReigerPowerAbsWd        "Wind shares power [%.1f %unit%]"  <wind>  (gReiger) { channel="windcentrale:mill:reiger:powerAbsWd" }
+Number:Dimensionless  ReigerPowerRel          "Relative power [%.1f %unit%]"     <wind>  (gReiger) { channel="windcentrale:mill:reiger:powerRel" }
+Number:Energy         ReigerKwh               "Current energy [%.0f %unit%]"     <wind>  (gReiger) { channel="windcentrale:mill:reiger:kwh" }
+Number:Energy         ReigerKwhForecast       "Energy forecast [%.0f %unit%]"    <wind>  (gReiger) { channel="windcentrale:mill:reiger:kwhForecast" }
+Number:Dimensionless  ReigerRunPercentage     "Run percentage [%.1f %unit%]"     <wind>  (gReiger) { channel="windcentrale:mill:reiger:runPercentage" }
+Number:Time           ReigerRunTime           "Run time [%.0f %unit%]"           <wind>  (gReiger) { channel="windcentrale:mill:reiger:runTime" }
+DateTime              ReigerTimestamp         "Update timestamp [%1$ta %1$tR]"   <wind>  (gReiger) { channel="windcentrale:mill:reiger:timestamp" }
 ```

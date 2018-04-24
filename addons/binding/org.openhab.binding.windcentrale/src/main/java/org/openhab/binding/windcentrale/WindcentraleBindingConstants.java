@@ -38,7 +38,7 @@ public final class WindcentraleBindingConstants {
     public static final String CHANNEL_POWER_RELATIVE = "powerRel";
     public static final String CHANNEL_ENERGY = "kwh";
     public static final String CHANNEL_ENERGY_FC = "kwhForecast";
-    public static final String CHANNEL_RUNTIME = "hoursRunThisYear";
+    public static final String CHANNEL_RUNTIME = "runTime";
     public static final String CHANNEL_RUNTIME_PER = "runPercentage";
     public static final String CHANNEL_LAST_UPDATE = "timestamp";
 

@@ -15,6 +15,7 @@
 			<channel id="kwh" typeId="kwh" />
 			<channel id="kwhForecast" typeId="kwhForecast" />
 			<channel id="runPercentage" typeId="runPercentage" />
+			<channel id="runTime" typeId="runTime" />
 			<channel id="timestamp" typeId="timestamp" />
 		</channels>
 
@@ -35,7 +36,7 @@
 					<option value="121">De Trouwe Wachter</option>
 					<option value="131">De Blauwe Reiger</option>
 					<option value="141">De Vier Winden</option>
-					<option value="191">De Boerenzwaluw</option>
+					<option value="201">De Boerenzwaluw</option>
 				</options>
 				<default>131</default>
 			</parameter>
@@ -57,7 +58,7 @@
 		<item-type>Number</item-type>
 		<label>Wind speed</label>
 		<category>Wind</category>
-		<state pattern="%.1d Bft" readOnly="true" />
+		<state pattern="%d Bft" readOnly="true" />
 	</channel-type>
 	<channel-type id="windDirection">
 		<item-type>String</item-type>
@@ -65,41 +66,47 @@
 		<state pattern="%s" readOnly="true" />
 	</channel-type>
 	<channel-type id="powerRel">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Relative power</label>
 		<category>Energy</category>
-		<state pattern="%.1f %%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="runPercentage">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Run percentage</label>
 		<description>Run percentage this year</description>
 		<category>Energy</category>
-		<state pattern="%.1f %%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true" />
+	</channel-type>
+	<channel-type id="runTime">
+		<item-type>Number:Time</item-type>
+		<label>Run time</label>
+		<description>Run time this year</description>
+		<state pattern="%.0f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="powerAbsWd">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Wind shares power</label>
 		<category>Energy</category>
-		<state pattern="%.1f W" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="powerAbsTot">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Total power</label>
 		<category>Energy</category>
-		<state pattern="%.1f kW" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="kwh">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Energy</label>
 		<category>Energy</category>
-		<state pattern="%.0f kWh" readOnly="true" />
+		<state pattern="%.0f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="kwhForecast">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Energy forecast</label>
 		<category>Energy</category>
-		<state pattern="%.0f kWh" readOnly="true" />
+		<state pattern="%.0f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
