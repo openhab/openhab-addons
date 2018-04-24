@@ -12,10 +12,13 @@ The binding has the following configuration options:
 -   **arpPingToolPath:** If the arp ping tool is not called `arping` and cannot be found in the PATH environment variable, the absolute path can be configured here. Default is `arping`.
 -   **cacheDeviceStateTimeInMS:** The result of a device presence detection is cached for a small amount of time. Set this time here in milliseconds. Be aware that no new pings will be issued within this time frame, even if explicitly requested. Default is 2000.
 
-Create a file named *org.openHAB.binding.network.cfg* in your openHAB/etc directory and use the above options like this:
+Create a `<openHAB-conf>/services/network.cfg` file and use the above options like this:
 
 ```
-allowSystemPings=false
+binding.network:allowSystemPings=true
+binding.network:allowDHCPlisten=false
+binding.network:arpPingToolPath=arping
+binding.network:cacheDeviceStateTimeInMS=2000
 ```
 
 ## Supported Things
