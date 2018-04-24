@@ -16,7 +16,7 @@ Requirements beyond this are not clear, and Apple enforces limitations on eligib
 At the very least, you cannot use repeating (111-11-111) or sequential (123-45-678) pin codes.
 If your home network is secure, a good starting point is the pin code used in most sample applications: 031-45-154.
 
-Other settings, such as using Fahrenheit temperatures, customizing the thermostat heat/cool/auto modes, and specifying the interface to advertise the Homekit bridge, which can be edited in PaperUI in standard mode, on are also illustrated in the following sample:
+Other settings, such as using Fahrenheit temperatures, customizing the thermostat heat/cool/auto modes, and specifying the interface to advertise the Homekit bridge (which can be edited in PaperUI standard mode) are also illustrated in the following sample:
 
 ```
 org.openhab.homekit:port=9124
@@ -48,10 +48,10 @@ org.openhab.homekit:maximumTemperature=100
 | thermostatCoolMode        | Word used for activating the cooling mode of the device (if applicable).                                                                                                                                                                  | CoolOn            |
 | thermostatHeatMode        | Word used for activating the heating mode of the device (if applicable).                                                                                                                                                                  | HeatOn            |
 | thermostatAutoMode        | Word used for activating the automatic mode of the device (if applicable).                                                                                                                                                                | Auto              |
-| thermostatOffMode         | Word used for turning thermostat mode of the device to off (if applicable).                                                                                                                                                               | Off               |
+| thermostatOffMode         | Word used to set the thermostat mode of the device to off (if applicable).                                                                                                                                                               | Off               |
 | minimumTemperature        | Lower bound of possible temperatures, used in the user interface of the iOS device to display the allowed temperature range. Note that this setting applies to all devices in HomeKit.                                                    | -100              |
 | maximumTemperature        | Upper bound of possible temperatures, used in the user interface of the iOS device to display the allowed temperature range. Note that this setting applies to all devices in HomeKit.                                                    | 100               |
-| name                      | Name under which this HomeKit bridge is announced in the network and which is displayed on the iOS device when searching for available bridges.                                                                                           | openHAB           |
+| name                      | Name under which this HomeKit bridge is announced on the network. This is also the name displayed on the iOS device when searching for available bridges.                                                                                           | openHAB           |
 
 ## Item Configuration
 
