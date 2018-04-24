@@ -286,20 +286,10 @@ public class ModbusDataHandlerTest {
     }
 
     private void hookLinkRegistry(ThingHandler thingHandler) {
-        Field linkRegistryField;
-        try {
-            linkRegistryField = BaseThingHandler.class.getDeclaredField("linkRegistry");
-            linkRegistryField.setAccessible(true);
-            linkRegistryField.set(thingHandler, linkRegistry);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        } catch (SecurityException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        Mockito.doAnswer(invocation -> {
+            ChannelUID channelUID = invocation.getArgumentAt(0, ChannelUID.class);
+            return !linkRegistry.getLinks(channelUID).isEmpty();
+        }).when(thingCallback).isChannelLinked(any());
     }
 
     @SuppressWarnings("null")
@@ -308,6 +298,7 @@ public class ModbusDataHandlerTest {
             thing.setStatusInfo(invocation.getArgumentAt(1, ThingStatusInfo.class));
             return null;
         }).when(thingCallback).statusUpdated(Matchers.same(thing), Matchers.any());
+
     }
 
     @SuppressWarnings("null")
