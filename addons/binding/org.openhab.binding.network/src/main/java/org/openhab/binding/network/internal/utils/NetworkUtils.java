@@ -155,11 +155,14 @@ public class NetworkUtils {
      * @throws IOException
      */
     public boolean servicePing(String host, int port, int timeout) throws IOException {
+        logger.trace("Prepare servicePing for {} on port: {}", host, port);
         SocketAddress socketAddress = new InetSocketAddress(host, port);
         try (Socket socket = new Socket()) {
             socket.connect(socketAddress, timeout);
+            logger.info("Sucessful socket connect for {} on port: {}", host, port);
             return true;
         } catch (ConnectException | SocketTimeoutException | NoRouteToHostException ignored) {
+            logger.info("Failed socket connect for {} on port: {}", host, port, ignored);
             return false;
         }
     }
