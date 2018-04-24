@@ -228,6 +228,40 @@ To get instead of the id fields an selection box, use the Selection element and 
 ```
         Selection item=Echo_Living_Room_RadioStationId mappings=[ ''='Off', 's1139'='Antenne Steiermark', 's8007'='Hitradio Ö3', 's16793'='Radio 10', 's8235'='FM4' ]
 ```
+## Tutorials
+
+**Playing an alarm sound for 15 seconds with an openHAB rule if an door contact was opened:**
+
+1) Open the PaperUI
+2) Navigate to the Control Section
+3) Open the Drop-Dow
+4) Select the Sound you want to here
+5) Write down the text in the square brackets. e.g. ECHO:system_alerts_repetitive01 for the nightstand sound
+6) Create a rule for start playing the sound:
+
+
+```php
+var Timer stopAlarmTimer = null
+
+rule "Turn on alarm sound for 15 seconds if door opens"
+when
+    Item Door_Contact changed to OPEN
+then
+    Echo_Living_Room_PlayAlarmSound.sendCommand('ECHO:system_alerts_repetitive01')
+    if (stopAlarmTimer === null)
+    {
+        stopAlarmTimer = createTimer(now.plusSeconds(15)) [|
+            stopAlarmTimer.cancel()
+            stopAlarmTimer = null
+            Echo_Living_Room_PlayAlarmSound.sendCommand('')
+        ]
+    }
+end
+```
+
+Note 1: Do not use a to short time for playing the sound, because alexa needs some time to start playing the sound. I recommend, that you to not use a time below 10 seconds.
+
+Note 2: The rule have no effect for your default alarm sound used in the alexa app.
 
 ## Credits
 

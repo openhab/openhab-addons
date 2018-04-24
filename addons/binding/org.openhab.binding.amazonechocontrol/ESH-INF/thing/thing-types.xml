@@ -13,10 +13,11 @@
                     <option value="amazon.com">amazon.com</option>
                     <option value="amazon.ca">amazon.ca</option>
                     <option value="amazon.it">amazon.it</option>
+                    <option value="amazon.in">amazon.in</option>
                     <option value="amazon.fr">amazon.fr</option>
                     <option value="amazon.co.uk">amazon.co.uk</option>
                 </options>
-                <description>Select the site where your amazon account is created.</description>
+                <description>Select or type in the site where your amazon account is created.</description>
             </parameter>
             <parameter name="email" type="text" required="true">
                 <default />
