@@ -91,15 +91,15 @@ public class FtpServer {
     }
 
     private void sendMsgToListeners(String userName, byte[] data) {
-        try {
-            Iterator<FtpServerEventListener> iterator = listeners.iterator();
+        Iterator<FtpServerEventListener> iterator = listeners.iterator();
 
-            while (iterator.hasNext()) {
+        while (iterator.hasNext()) {
+            try {
                 iterator.next().fileReceived(userName, data);
+            } catch (Exception e) {
+                // catch all exceptions give all handlers a fair chance of handling the messages
+                logger.debug("Event listener invoking error: {}", e.getMessage());
             }
-
-        } catch (Exception e) {
-            logger.debug("Event listener invoking error: {}", e.getMessage());
         }
     }
 
