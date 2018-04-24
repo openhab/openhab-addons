@@ -332,7 +332,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     }
 
     @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+    public synchronized void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("bridgeStatusChanged for {}. Reseting handler", this.getThing().getUID());
         this.dispose();
         this.initialize();

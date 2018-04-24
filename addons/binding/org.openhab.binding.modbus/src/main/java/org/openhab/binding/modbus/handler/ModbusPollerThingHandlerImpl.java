@@ -206,7 +206,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
     }
 
     @Override
-    public void initialize() {
+    public synchronized void initialize() {
         disposed = false;
         logger.trace("Initializing {} from status {}", this.getThing().getUID(), this.getThing().getStatus());
         try {
@@ -297,7 +297,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
     }
 
     @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+    public synchronized void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("bridgeStatusChanged for {}. Reseting handler", this.getThing().getUID());
         this.dispose();
         this.initialize();
