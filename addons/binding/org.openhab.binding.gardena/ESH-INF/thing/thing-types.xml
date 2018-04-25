@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="gardena" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="gardena"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -17,6 +18,7 @@
 			<channel-group id="battery" typeId="rechargeableBattery" />
 			<channel-group id="radio" typeId="radio" />
 			<channel-group id="mower" typeId="mower" />
+			<channel-group id="mower_stats" typeId="mowerStats" />
 			<channel-group id="firmware" typeId="firmware" />
 		</channel-groups>
 		<properties>
@@ -285,6 +287,45 @@
 		<label>Available version</label>
 		<description>Available firmware version</description>
 		<state readOnly="true" />
+	</channel-type>
+
+	<channel-group-type id="mowerStats">
+		<label>Robotic Mower Statistics</label>
+		<description>Statistics about the robotic mower</description>
+		<channels>
+			<channel id="cutting_time" typeId="cuttingTime" />
+			<channel id="charging_cycles" typeId="chargingCycles" />
+			<channel id="collisions" typeId="collisions" />
+			<channel id="running_time" typeId="runningTime" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="cuttingTime" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cutting Time</label>
+		<description>The cutting time</description>
+		<state readOnly="true" pattern="%d h" />
+	</channel-type>
+
+	<channel-type id="chargingCycles" advanced="true">
+		<item-type>Number</item-type>
+		<label>Charging Cycles</label>
+		<description>The charging cycles</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="collisions" advanced="true">
+		<item-type>Number</item-type>
+		<label>Collisions</label>
+		<description>The number of collisions</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="runningTime" advanced="true">
+		<item-type>Number</item-type>
+		<label>Running Time</label>
+		<description>Running time</description>
+		<state readOnly="true" pattern="%d h" />
 	</channel-type>
 
 	<!-- ############################### Watering Computer ############################### -->
