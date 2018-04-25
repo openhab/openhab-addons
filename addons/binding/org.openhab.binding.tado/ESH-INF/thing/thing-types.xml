@@ -57,19 +57,19 @@
                 <label>Zone Id</label>
                 <description>Id of the zone</description>
             </parameter>
-            <parameter name="refreshInterval" type="integer" required="false">
+            <parameter name="refreshInterval" type="integer">
                 <label>Refresh interval</label>
                 <description>Refresh interval of home data</description>
                 <default>60</default>
                 <advanced>true</advanced>
             </parameter>
-            <parameter name="fallbackTimerDuration" type="integer" required="false">
+            <parameter name="fallbackTimerDuration" type="integer">
                 <label>Fallback timer duration</label>
                 <description>Timer duration used if no other duration can be determined</description>
                 <default>30</default>
                 <advanced>true</advanced>
             </parameter>
-            <parameter name="hvacChangeDebounce" type="integer" required="false">
+            <parameter name="hvacChangeDebounce" type="integer">
                 <label>HVAC Change debounce delay</label>
                 <description>Duration in seconds to combine multiple HVAC changes into one.</description>
                 <default>5</default>
@@ -99,7 +99,7 @@
                 <label>Mobile Device Id</label>
                 <description>Id of the mobile device</description>
             </parameter>
-            <parameter name="refreshInterval" type="integer" required="false">
+            <parameter name="refreshInterval" type="integer">
                 <label>Refresh interval</label>
                 <description>Refresh interval of location state</description>
                 <default>60</default>
