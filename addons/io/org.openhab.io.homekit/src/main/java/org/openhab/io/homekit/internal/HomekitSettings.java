@@ -32,8 +32,8 @@ public class HomekitSettings {
     private int port = 9123;
     private String pin = "031-45-154";
     private boolean useFahrenheitTemperature = false;
-    private double minimumTemperature = -100;
-    private double maximumTemperature = 100;
+    private double minimumTemperature = -30;
+    private double maximumTemperature = 95;
     private String thermostatHeatMode = "HeatOn";
     private String thermostatCoolMode = "CoolOn";
     private String thermostatAutoMode = "Auto";
