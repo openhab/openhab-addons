@@ -50,9 +50,9 @@ demo.things:
 Bridge irtrans:ethernet:kitchen [ ipAddress="192.168.0.56", portNumber=21000, bufferSize=1024, responseTimeOut=100, pingTimeOut=2000, reconnectInterval=10 ]
 {
 Channels:
-Receiver : any [remote="*", command="*"]
-Receiver : telenet_power [remote="telenet", command="power"]
-Blaster : samsung [led="E", remote="samsung", command="*"]
+Type receiver : any [remote="*", command="*"]
+Type receiver : telenet_power [remote="telenet", command="power"]
+Type blaster : samsung [led="E", remote="samsung", command="*"]
 }
 ```
 
@@ -62,10 +62,10 @@ In the above example, the first channel will be updated when any IR command from
 Bridge irtrans:ethernet:technicalfacilities [ ipAddress="192.168.0.58", portNumber=21000, bufferSize=1024, responseTimeOut=100, pingTimeOut=2000, reconnectInterval=10 ]
 {
 Channels:
-Receiver : any [remote="*", command="*"]
-Blaster : telenet1 [led="2", remote="telenet", command="*"]
-Blaster : telenet2 [led="1", remote="telenet", command="*"]
-Blaster : appletv [led="3", remote="appletv", command="*"]
+Type receiver : any [remote="*", command="*"]
+Type blaster : telenet1 [led="2", remote="telenet", command="*"]
+Type blaster : telenet2 [led="1", remote="telenet", command="*"]
+Type blaster : appletv [led="3", remote="appletv", command="*"]
 }
 ```
 
