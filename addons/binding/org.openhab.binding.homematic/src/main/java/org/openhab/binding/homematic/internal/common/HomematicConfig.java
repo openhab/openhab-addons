@@ -50,6 +50,7 @@ public class HomematicConfig {
     private int socketMaxAlive = 900;
     private int timeout = 15;
     private int installModeDuration = DEFAULT_INSTALL_MODE_DURATION;
+    private long discoveryTimeToLive = -1;
 
     private HmGatewayInfo gatewayInfo;
 
@@ -159,6 +160,20 @@ public class HomematicConfig {
      */
     public void setTimeout(int timeout) {
         this.timeout = timeout;
+    }
+
+    /**
+     * Returns the time to live for discovery results of a Homematic gateway in seconds.
+     */
+    public long getDiscoveryTimeToLive() {
+        return discoveryTimeToLive;
+    }
+
+    /**
+     * Sets the time to live for discovery results of a Homematic gateway in seconds.
+     */
+    public void setDiscoveryTimeToLive(long discoveryTimeToLive) {
+        this.discoveryTimeToLive = discoveryTimeToLive;
     }
 
     /**
@@ -321,8 +336,8 @@ public class HomematicConfig {
                 .append("xmlCallbackPort", xmlCallbackPort).append("binCallbackPort", binCallbackPort)
                 .append("gatewayType", gatewayType).append("rfPort", getRfPort()).append("wiredPort", getWiredPort())
                 .append("hmIpPort", getHmIpPort()).append("cuxdPort", getCuxdPort()).append("groupPort", getGroupPort())
-                .append("timeout", timeout).append("installModeDuration", installModeDuration)
-                .append("socketMaxAlive", socketMaxAlive);
+                .append("timeout", timeout).append("discoveryTimeToLive", discoveryTimeToLive)
+                .append("installModeDuration", installModeDuration).append("socketMaxAlive", socketMaxAlive);
         return tsb.toString();
     }
 }

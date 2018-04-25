@@ -119,6 +119,9 @@ Think in hours when configuring (one hour = 3600)
 -   **timeout**  
 The timeout in seconds for connections to a Homematic gateway (default = 15)
 
+-   **discoveryTimeToLive**  
+The time to live in seconds for discovery results of a Homematic gateway (default = -1, which means infinite)
+
 -   **socketMaxAlive**  
 The maximum lifetime of a pooled socket connection to the Homematic gateway in seconds (default = 900)
 
