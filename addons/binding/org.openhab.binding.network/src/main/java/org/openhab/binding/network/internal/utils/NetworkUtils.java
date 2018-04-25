@@ -284,8 +284,6 @@ public class NetworkUtils {
             } while (line != null);
 
             return true;
-        } catch (IOException e) {
-            throw e;
         }
     }
 
