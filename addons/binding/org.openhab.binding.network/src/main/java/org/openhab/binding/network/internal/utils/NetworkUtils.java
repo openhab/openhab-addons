@@ -34,8 +34,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.smarthome.io.net.exec.ExecUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Network utility functions for pinging and for determining all interfaces and assigned IP addresses.
@@ -43,8 +41,6 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff <david.graeff@web.de>
  */
 public class NetworkUtils {
-    private final Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
-
     /**
      * Gets every IPv4 Address on each Interface except the loopback
      * The Address format is ip/subnet
@@ -277,11 +273,9 @@ public class NetworkUtils {
         try (BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
             String line = r.readLine();
             if (line == null) {
-                logger.trace("Received no output from ping process.");
-                return false;
+                throw new IOException("Received no output from ping process.");
             }
             do {
-                logger.trace("Examining ping process line: '{}'", line);
                 if (line.contains("host unreachable") || line.contains("timed out")
                         || line.contains("could not find host")) {
                     return false;
@@ -291,8 +285,7 @@ public class NetworkUtils {
 
             return true;
         } catch (IOException e) {
-            logger.warn("Failed while reading the output of the ping process", e);
-            return false;
+            throw e;
         }
     }
 
