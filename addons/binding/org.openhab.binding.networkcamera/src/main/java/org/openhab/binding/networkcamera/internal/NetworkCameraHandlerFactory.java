@@ -105,7 +105,7 @@ public class NetworkCameraHandlerFactory extends BaseThingHandlerFactory {
         try {
             ftpServer.startServer(port, idleTimeout);
         } catch (FtpException e) {
-            logger.warn("FTP server starting failed, reason: {}", e.getMessage());
+            throw new RuntimeException("Failed to start FTP server", e);
         }
     }
 }
