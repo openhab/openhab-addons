@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.amazonechocontrol.handler;
 
-import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
+import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.CHANNEL_DIMMER;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -47,14 +47,12 @@ public class SmartHomeDimmerHandler extends SmartHomeBaseHandler {
     public void handleCommand(Connection connection, String entityId, String channelId, Command command)
             throws IOException, URISyntaxException {
 
-        if (channelId.equals(CHANNEL_SWITCH) || channelId.equals(CHANNEL_DIMMER)) {
+        if (channelId.equals(CHANNEL_DIMMER)) {
             if (command == OnOffType.ON) {
                 connection.sendSmartHomeDeviceCommand(entityId, "turnOn", null, null);
-                updateState(CHANNEL_SWITCH, OnOffType.ON);
             }
             if (command == OnOffType.OFF) {
                 connection.sendSmartHomeDeviceCommand(entityId, "turnOff", null, null);
-                updateState(CHANNEL_SWITCH, OnOffType.OFF);
             }
         }
         if (channelId.equals(CHANNEL_DIMMER)) {

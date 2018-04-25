@@ -34,5 +34,4 @@ public class JsonNotificationRequest {
     public @Nullable String id = "createReminder";
     public boolean isRecurring = false;
     public long createdDate;
-
 }

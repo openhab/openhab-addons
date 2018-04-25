@@ -270,7 +270,6 @@
         <label>Dimmer</label>
         <description>Smart Home Dimmer</description>
         <channels>
-            <channel id="switch" typeId="switch" />
             <channel id="dimmer" typeId="dimmer" />
         </channels>
         <representation-property>entityId</representation-property>
@@ -365,7 +364,7 @@
     <channel-type id="amazonMusicPlayListIdLastUsed">
         <item-type>String</item-type>
         <label>Amazon music last selected playlist id</label>
-        <description>Is of the playlist which was started with openHAB</description>
+        <description>Id of the playlist which was started with openHAB</description>
     </channel-type>
     <channel-type id="providerDisplayName">
         <item-type>String</item-type>

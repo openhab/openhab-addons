@@ -2,7 +2,7 @@
 
 This binding can control Amazon Echo devices (Alexa) from openhab.
 
-It provide features to control and view the current state of echo dot devices:
+It provide features to control and view the current state of echo devices:
 
 - volume
 - pause/continue/next track/previous track
@@ -81,7 +81,7 @@ The Amazon Account thing need the following configurations:
 
 2 factor authentication is not supported!
 
-** HINT ** IMPORTANT: If the Account thing does not go online and reports and login error, open the url YOUR_OPENHAP/amazonechocontrol/ID_OF_ACCOUNT_THING (Replace YOUR_OPENHAB and ID_OF_ACCOUNT_THING with your configuration) in your browser (e.g. http://openhab:8080/amazonechocontrol/account) and try to login.
+** HINT ** IMPORTANT: If the Account thing does not go online and reports a login error, open the url YOUR_OPENHAP/amazonechocontrol/ID_OF_ACCOUNT_THING (Replace YOUR_OPENHAB and ID_OF_ACCOUNT_THING with your configuration) in your browser (e.g. http://openhab:8080/amazonechocontrol/account) and try to login.
 
 ### Amazon devices
 

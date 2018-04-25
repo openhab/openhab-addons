@@ -19,5 +19,4 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class JsonNetworkDetails {
     public @Nullable String networkDetail;
-
 }
