@@ -214,9 +214,10 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService {
         ThingTypeUID typeUid = UidUtils.generateThingTypeUID(device);
         ThingUID thingUID = new ThingUID(typeUid, bridgeUID, device.getAddress());
         String label = device.getName() != null ? device.getName() : device.getAddress();
+        long timeToLive = bridgeHandler.getThing().getConfiguration().as(HomematicConfig.class).getDiscoveryTimeToLive();
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(label)
-                .build();
+                .withTTL(timeToLive).build();
         thingDiscovered(discoveryResult);
     }
 
