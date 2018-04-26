@@ -55,6 +55,7 @@ All alarm zone channels have a type. With the alarm zone types you can define th
 
 
 You can send these commands to the controller:
+
 | Commands  | Description |
 |-|-|
 | ```ARM_INTERNALLY``` | Activates the internal armed mode |
@@ -65,6 +66,7 @@ You can send these commands to the controller:
 | | |
 
 Available status:
+
 | Status  | Description |
 |-|-|
 | ```DISARMED``` | Disarmed, watching only alarm zones with type ```SABOTAGE```, ```ALWAYS``` and ```ALWAYS_IMMEDIATELY``` |
