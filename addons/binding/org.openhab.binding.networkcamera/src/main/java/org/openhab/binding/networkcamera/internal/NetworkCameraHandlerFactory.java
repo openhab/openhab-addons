@@ -15,8 +15,12 @@ import java.util.Dictionary;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.ftpserver.FtpServerConfigurationException;
 import org.apache.ftpserver.ftplet.FtpException;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -57,6 +61,10 @@ public class NetworkCameraHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_MOTIONDETECTION)) {
+            if (ftpServer.getStartUpErrorReason() != null) {
+                thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        ftpServer.getStartUpErrorReason()));
+            }
             return new NetworkCameraHandler(thing, ftpServer);
         }
 
@@ -104,8 +112,8 @@ public class NetworkCameraHandlerFactory extends BaseThingHandlerFactory {
 
         try {
             ftpServer.startServer(port, idleTimeout);
-        } catch (FtpException e) {
-            throw new RuntimeException("Failed to start FTP server", e);
+        } catch (FtpException | FtpServerConfigurationException e) {
+            logger.warn("FTP server starting failed, reason: {}", e.getMessage());
         }
     }
 }

@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ftpserver.FtpServerConfigurationException;
 import org.apache.ftpserver.FtpServerFactory;
 import org.apache.ftpserver.ftplet.DefaultFtplet;
 import org.apache.ftpserver.ftplet.FileSystemFactory;
@@ -49,6 +50,7 @@ public class FtpServer {
     private static List<FtpServerEventListener> listeners;
     private MyFTPLet myFTPLet;
     private FTPUserManager FTPUserManager;
+    private String ftpStartUpErrorReason;
 
     public FtpServer() {
         listeners = new ArrayList<FtpServerEventListener>();
@@ -68,6 +70,10 @@ public class FtpServer {
             logger.info("Stopping FTP server");
             server.stop();
         }
+    }
+
+    public String getStartUpErrorReason() {
+        return ftpStartUpErrorReason;
     }
 
     public synchronized void addEventListener(FtpServerEventListener listener) {
@@ -145,7 +151,17 @@ public class FtpServer {
         // set the user manager
         serverFactory.setUserManager(FTPUserManager);
         server = serverFactory.createServer();
-        server.start();
+
+        try {
+            server.start();
+            ftpStartUpErrorReason = null;
+        } catch (FtpException | FtpServerConfigurationException e) {
+            ftpStartUpErrorReason = "Failed to start FTP server";
+            if (!e.getMessage().isEmpty()) {
+                ftpStartUpErrorReason += ": " + e.getMessage();
+            }
+            throw (e);
+        }
     }
 
     private class MyFTPLet extends DefaultFtplet {
