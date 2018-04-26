@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+    http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:alarm:config">
+		<parameter name="alarmZones" type="integer" min="1" max="1000" required="true">
+			<label>Alarmzones</label>
+			<description>The number of alarm zones the controller should handle</description>
+			<default>10</default>
+		</parameter>
+		<parameter name="entryTime" type="integer" min="0">
+			<label>Entry time</label>
+			<description>The time in seconds until alarm at entry</description>
+			<default>30</default>
+		</parameter>
+		<parameter name="exitTime" type="integer" min="0">
+			<label>Exit time</label>
+			<description>The time in seconds until arming at exit</description>
+			<default>30</default>
+		</parameter>
+		<parameter name="passthroughTime" type="integer" min="0">
+			<label>Passthrough time</label>
+			<description>The time in seconds to passthrough a exit/entry alarm zone on internally armed</description>
+			<default>30</default>
+		</parameter>
+		<parameter name="alarmDelay" type="integer" min="0">
+			<label>Alarm delay</label>
+			<description>The time in seconds the alarm is delayed</description>
+			<default>30</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:alarm:config">
+		<parameter name="type" type="text">
+			<label>Type</label>
+			<description>The type of the alarm zone</description>
+			<options>
+				<option value="DISABLED">DISABLED</option>
+				<option value="ACTIVE">ACTIVE</option>
+				<option value="INTERN_ACTIVE">INTERN_ACTIVE</option>
+				<option value="EXIT_ENTRY">EXIT_ENTRY</option>
+				<option value="IMMEDIATELY">IMMEDIATELY</option>
+				<option value="SABOTAGE">SABOTAGE</option>
+				<option value="ALWAYS">ALWAYS</option>
+				<option value="ALWAYS_IMMEDIATELY">ALWAYS_IMMEDIATELY</option>
+			</options>
+			<default>ACTIVE</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
+		

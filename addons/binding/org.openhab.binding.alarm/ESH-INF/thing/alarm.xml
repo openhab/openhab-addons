@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="alarm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="controller">
+		<label>Alarm controller</label>
+		<description>Provides alarming functions</description>
+
+		<channels>
+			<channel id="status" typeId="status" />
+			<channel id="command" typeId="command" />
+			<channel id="countdown" typeId="countdown" />
+			<channel id="internalArmingPossible" typeId="internalArmingPossible" />
+			<channel id="externalArmingPossible" typeId="externalArmingPossible" />
+			<channel id="passthroughPossible" typeId="passthroughPossible" />
+		</channels>
+		<config-description-ref uri="thing-type:alarm:config" />
+	</thing-type>
+
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>The current status of the alarm controller</description>
+		<state readOnly="true">
+			<options>
+				<option value="DISARMED">DISARMED</option>
+				<option value="INTERNALLY_ARMED">INTERNALLY_ARMED</option>
+				<option value="EXTERNALLY_ARMED">EXTERNALLY_ARMED</option>
+				<option value="ENTRY">ENTRY</option>
+				<option value="EXIT">EXIT</option>
+				<option value="PASSTHROUGH">PASSTHROUGH</option>
+				<option value="PREALARM">PREALARM</option>
+				<option value="ALARM">ALARM</option>
+				<option value="SABOTAGE_ALARM">SABOTAGE_ALARM</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Send commands to the alarm controller</description>
+		<state>
+			<options>
+				<option value="ARM_EXTERNALLY">ARM_EXTERNALLY</option>
+				<option value="ARM_INTERNALLY">ARM_INTERNALLY</option>
+				<option value="DISARM">DISARM</option>
+				<option value="FORCE_ALARM">FORCE_ALARM</option>
+				<option value="PASSTHROUGH">PASSTHROUGH</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="internalArmingPossible">
+		<item-type>Switch</item-type>
+		<label>Internal arming possible</label>
+		<description>Wheather internal arming is possible or not</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="externalArmingPossible">
+		<item-type>Switch</item-type>
+		<label>External arming possible</label>
+		<description>Wheather external arming is possible or not</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="passthroughPossible">
+		<item-type>Switch</item-type>
+		<label>Passthrough possible</label>
+		<description>Wheather passthrough is possible or not</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="countdown">
+		<item-type>Number</item-type>
+		<label>Countdown</label>
+		<description>Countdown</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="alarmZone">
+		<item-type>Contact</item-type>
+		<label>Alarm zone</label>
+		<description>The alarm zone to attach a contact</description>
+		<config-description-ref uri="channel-type:alarm:config" />
+	</channel-type>
+
+</thing:thing-descriptions>
+            
