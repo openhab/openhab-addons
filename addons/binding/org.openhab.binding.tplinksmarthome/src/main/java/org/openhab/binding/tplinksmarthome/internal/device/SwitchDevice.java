@@ -22,10 +22,9 @@ import org.openhab.binding.tplinksmarthome.internal.Commands;
 import org.openhab.binding.tplinksmarthome.internal.Connection;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeConfiguration;
 import org.openhab.binding.tplinksmarthome.internal.model.HasErrorResponse;
-import org.openhab.binding.tplinksmarthome.internal.model.SetRelayState;
 
 /**
- * TP-Link Smart Home device with a switch, like Smart Plugs.
+ * TP-Link Smart Home device with a switch, like Smart Plugs and Switches.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
@@ -72,7 +71,7 @@ public class SwitchDevice extends SmartHomeDevice {
      * @param onOff command to the send
      * @return state returned by the device
      */
-    protected @Nullable SetRelayState setOnOffState(Connection connection, OnOffType onOff) throws IOException {
+    protected @Nullable HasErrorResponse setOnOffState(Connection connection, OnOffType onOff) throws IOException {
         return commands.setRelayStateResponse(connection.sendCommand(commands.setRelayState(onOff)));
     }
 

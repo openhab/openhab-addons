@@ -9,7 +9,7 @@
 package org.openhab.binding.tplinksmarthome.handler;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants.*;
@@ -100,7 +100,6 @@ public class SmartHomeHandlerTest {
 
     @Test
     public void testHandleCommandRefreshType() {
-        handler.initialize();
         assertHandleCommandRefreshType(-53);
     }
 
@@ -108,7 +107,6 @@ public class SmartHomeHandlerTest {
     public void testHandleCommandRefreshTypeRangeExtender() throws IOException {
         when(connection.sendCommand(Commands.getSysinfo()))
                 .thenReturn(ModelTestUtil.readJson("rangeextender_get_sysinfo_response"));
-        handler.initialize();
         assertHandleCommandRefreshType(-70);
     }
 

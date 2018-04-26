@@ -118,6 +118,9 @@ public class Sysinfo extends ErrorResponse {
     private double latitude;
     private double longitude;
 
+    // dimmer specific system info
+    private int brightness;
+
     // bulb specific system info
     private boolean isFactory;
     private String discoVer;
@@ -181,6 +184,10 @@ public class Sysinfo extends ErrorResponse {
 
     public OnOffType getRelayState() {
         return relayState == 1 ? OnOffType.ON : OnOffType.OFF;
+    }
+
+    public int getBrightness() {
+        return brightness;
     }
 
     public long getOnTime() {
@@ -264,10 +271,10 @@ public class Sysinfo extends ErrorResponse {
         return "Sysinfo [swVer=" + swVer + ", hwVer=" + hwVer + ", model=" + model + ", deviceId=" + deviceId
                 + ", hwId=" + hwId + ", oemId=" + oemId + ", alias=" + alias + ", activeMode=" + activeMode + ", rssi="
                 + rssi + ", type=" + type + ", mac=" + mac + ", fwId=" + fwId + ", devName=" + devName + ", iconHash="
-                + iconHash + ", relayState=" + relayState + ", onTime=" + onTime + ", feature=" + feature + ", ledOff="
-                + ledOff + ", latitude=" + latitude + ", longitude=" + longitude + ", isFactory=" + isFactory
-                + ", discoVer=" + discoVer + ", ctrlProtocols=" + ctrlProtocols + ", lightState=" + lightState
-                + ", ledStatus=" + ledStatus + ", plug=" + plug + ", system=" + system + ", reWireless=" + reWireless
-                + "]";
+                + iconHash + ", relayState=" + relayState + ", brightness=" + brightness + ", onTime=" + onTime
+                + ", feature=" + feature + ", ledOff=" + ledOff + ", latitude=" + latitude + ", longitude=" + longitude
+                + ", isFactory=" + isFactory + ", discoVer=" + discoVer + ", ctrlProtocols=" + ctrlProtocols
+                + ", lightState=" + lightState + ", ledStatus=" + ledStatus + ", plug=" + plug + ", system=" + system
+                + ", reWireless=" + reWireless + "]";
     }
 }

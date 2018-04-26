@@ -46,6 +46,9 @@ enum TPLinkSmartHomeThingType {
     HS200("hs200", DeviceType.SWITCH),
     HS210("hs210", DeviceType.SWITCH),
 
+    // Dimmer Thing Type UIDs
+    HS220("hs220", DeviceType.DIMMER),
+
     // Range Extender Thing Type UIDs
     RE270K("re270", DeviceType.RANGE_EXTENDER),
     RE370K("re370", DeviceType.RANGE_EXTENDER);
@@ -129,6 +132,10 @@ enum TPLinkSmartHomeThingType {
          * Light Bulb device.
          */
         BULB,
+        /**
+         * Dimmer device.
+         */
+        DIMMER,
         /**
          * Plug device.
          */
