@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class AlarmThingHandler extends BaseThingHandler implements AlarmListener {
-    private Logger logger = LoggerFactory.getLogger(AlarmThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AlarmThingHandler.class);
     private AlarmController alarm;
     private AlarmControllerConfig controllerConfig;
 
@@ -96,7 +96,7 @@ public class AlarmThingHandler extends BaseThingHandler implements AlarmListener
 
             updateStatus(ThingStatus.ONLINE);
         } catch (AlarmException | NumberFormatException ex) {
-            logger.error(ex.getMessage());
+            logger.error("{}", ex.getMessage());
             updateStatus(ThingStatus.OFFLINE);
         }
     }
@@ -115,7 +115,7 @@ public class AlarmThingHandler extends BaseThingHandler implements AlarmListener
                 updateStateIfLinked(channelUID.getId(),
                         alarmZone.isClosed() ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
             } catch (AlarmException ex) {
-                logger.warn(ex.getMessage());
+                logger.warn("{}", ex.getMessage());
             }
         } else {
             switch (channelUID.getId()) {
@@ -144,7 +144,7 @@ public class AlarmThingHandler extends BaseThingHandler implements AlarmListener
             try {
                 alarm.alarmZoneChanged(channelUID.getId(), newState == OpenClosedType.CLOSED ? true : false);
             } catch (AlarmException ex) {
-                logger.warn(ex.getMessage());
+                logger.warn("{}", ex.getMessage());
             }
         }
     }
@@ -155,7 +155,7 @@ public class AlarmThingHandler extends BaseThingHandler implements AlarmListener
             try {
                 alarm.doCommand(AlarmCommand.parse(command.toString()));
             } catch (AlarmException ex) {
-                logger.warn(ex.getMessage());
+                logger.warn("{}", ex.getMessage());
             }
         }
     }
