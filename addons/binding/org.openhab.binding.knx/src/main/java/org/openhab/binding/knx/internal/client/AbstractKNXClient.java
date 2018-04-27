@@ -248,7 +248,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         GroupAddress destination = event.getDestination();
         IndividualAddress source = event.getSourceAddr();
         byte[] asdu = event.getASDU();
-        logger.trace("Received a {} telegram from '{}' to '{}'", task, source, destination);
+        // logger.trace("Received a {} telegram from '{}' to '{}'", task, source, destination);
         for (GroupAddressListener listener : groupAddressListeners) {
             if (listener.listensTo(destination)) {
                 knxScheduler.schedule(() -> action.apply(listener, source, destination, asdu), 0, TimeUnit.SECONDS);

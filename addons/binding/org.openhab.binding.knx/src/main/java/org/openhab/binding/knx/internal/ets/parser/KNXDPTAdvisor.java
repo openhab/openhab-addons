@@ -676,12 +676,12 @@ public class KNXDPTAdvisor {
             String expression, boolean keepSeeds) throws KNXException {
         Set<KNXDPTContext> advise = new HashSet<KNXDPTContext>();
 
-        logger.debug("Seeking advice for '{}'/'{}'/'{}'/'{}'", dpts, manufacturer, device, expression);
+        logger.trace("Seeking advice for '{}'/'{}'/'{}'/'{}'", dpts, manufacturer, device, expression);
 
         for (AdvisoryFunction advisory : advisorySet) {
             KNXDPTContext partialAdvice = advisory.apply(dpts, GA, manufacturer, device, expression);
             if (partialAdvice != null) {
-                logger.debug("Positive advise for '{}'/'{}'/'{}'/'{}' : '{}'", dpts, manufacturer, device, expression,
+                logger.trace("Positive advise for '{}'/'{}'/'{}'/'{}' : '{}'", dpts, manufacturer, device, expression,
                         partialAdvice);
                 advise.add(partialAdvice);
             }
@@ -691,7 +691,7 @@ public class KNXDPTAdvisor {
             advise.addAll(dpts);
         }
 
-        logger.debug("Advise is '{}'", advise);
+        logger.trace("Advise is '{}'", advise);
         return advise;
     }
 

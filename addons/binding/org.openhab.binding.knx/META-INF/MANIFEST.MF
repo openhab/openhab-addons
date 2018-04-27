@@ -33,6 +33,7 @@ Import-Package: com.google.common.collect,
  org.openhab.binding.knx.handler,
  org.openhab.binding.knx.ets,
  org.osgi.framework,
+ org.osgi.framework.wiring,
  org.osgi.service.cm,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

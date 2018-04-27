@@ -56,6 +56,7 @@ import org.openhab.binding.knx.ets.KNXProjectProvider;
 import org.openhab.binding.knx.internal.dpt.KNXCoreTypeMapper;
 import org.openhab.binding.knx.internal.ets.config.ETSBridgeConfiguration;
 import org.openhab.binding.knx.internal.ets.parser.KNXProject13Parser;
+import org.openhab.binding.knx.internal.ets.parser.KNXProject14Parser;
 import org.openhab.binding.knx.internal.factory.KNXHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -218,10 +219,16 @@ public class KNXProjectThingProvider implements ThingProvider, KNXProjectProvide
                                 logger.warn("ETS4 project files are not supported");
                                 break;
                             }
-                            case KNXBindingConstants.KNX_PROJECT_13:
+                            case KNXBindingConstants.KNX_PROJECT_13: {
                                 // ETS5
                                 knxParser = new KNXProject13Parser();
                                 break;
+                            }
+                            case KNXBindingConstants.KNX_PROJECT_14: {
+                                // ETS5.5
+                                knxParser = new KNXProject14Parser();
+                                break;
+                            }
                         }
                     }
                 }

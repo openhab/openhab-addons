@@ -95,6 +95,7 @@ public class KNXBindingConstants {
     // List of all KNX ETS knxproj Namespace Identifierss
     public static final String KNX_PROJECT_12 = "http://knx.org/xml/project/12";
     public static final String KNX_PROJECT_13 = "http://knx.org/xml/project/13";
+    public static final String KNX_PROJECT_14 = "http://knx.org/xml/project/14";
 
     // List of KNX ETS Constants
     public static final String UPDATE = "update";
