@@ -21,10 +21,10 @@ Import-Package: com.google.gson;resolution:=optional,
  org.eclipse.smarthome.core.types,
  org.openhab.binding.icloud,
  org.openhab.binding.icloud.handler,
+ org.openhab.io.net.http,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.icloud,
  org.openhab.binding.icloud.handler
 Bundle-ActivationPolicy: lazy
-Require-Bundle: org.eclipse.smarthome.io.net

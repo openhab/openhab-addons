@@ -16,10 +16,9 @@ import java.net.URL;
 import java.util.Base64;
 import java.util.Properties;
 
-import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.icloud.internal.json.request.ICloudAccountDataRequest;
 import org.openhab.binding.icloud.internal.json.request.ICloudFindMyDeviceRequest;
-
+import org.openhab.io.net.http.HttpUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
