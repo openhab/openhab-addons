@@ -35,12 +35,17 @@ import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.smarthome.io.net.exec.ExecUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Network utility functions for pinging and for determining all interfaces and assigned IP addresses.
  *
  * @author David Graeff <david.graeff@web.de>
  */
 public class NetworkUtils {
+    private Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
+    
     /**
      * Gets every IPv4 Address on each Interface except the loopback
      * The Address format is ip/subnet
@@ -152,16 +157,17 @@ public class NetworkUtils {
      * @param host The IP or hostname
      * @param port The tcp port. Must be not 0.
      * @param timeout Timeout in ms
-     * @param logger A slf4j logger instance to log IOException
      * @return
      * @throws IOException
      */
     public boolean servicePing(String host, int port, int timeout) throws IOException {
+        logger.trace("Prepare servicePing for {} on port: {}", host, port);
         SocketAddress socketAddress = new InetSocketAddress(host, port);
         try (Socket socket = new Socket()) {
             socket.connect(socketAddress, timeout);
             return true;
         } catch (ConnectException | SocketTimeoutException | NoRouteToHostException ignored) {
+            logger.trace("Failed socket connect for {} on port: {}", host, port, ignored);
             return false;
         }
     }
