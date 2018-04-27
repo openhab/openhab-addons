@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:ephemeris:holiday">
+		<parameter name="country" type="text">
+			<label>Country code</label>
+			<description>ISO3166 Code of country for this holiday calendar.</description>
+			<required>false</required>
+		</parameter>
+		
+        <parameter name="region" type="text">
+            <label>Region code</label>
+            <description>Region code within the country (optional).</description>
+            <required>false</required>
+        </parameter>
+        
+        <parameter name="city" type="text">
+            <label>City code</label>
+            <description>City code within the region (optional).</description>
+            <required>false</required>
+        </parameter>        		
+		
+        <parameter name="offset" type="integer">
+            <label>Offset</label>
+            <description>Offset with today (in days)</description>
+            <required>true</required>
+            <default>0</default>
+        </parameter>
+	</config-description>
+	
+    <config-description uri="thing-type:ephemeris:userfile">
+        <parameter name="filename" type="text">
+            <label>Path to file</label>
+            <description>Path to the user defined Holiday file.</description>
+            <required>true</required>
+        </parameter>
+        
+        <parameter name="offset" type="integer">
+            <label>Offset</label>
+            <description>Offset with today (in days)</description>
+            <required>true</required>
+            <default>0</default>
+        </parameter>
+    </config-description>	
+
+</config-description:config-descriptions>

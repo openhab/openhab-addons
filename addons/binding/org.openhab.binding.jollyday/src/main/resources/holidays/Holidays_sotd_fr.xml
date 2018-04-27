@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:Configuration hierarchy="fr" description="France"
+    xmlns:tns="http://www.example.org/Holiday" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.example.org/Holiday /Holiday.xsd">
+    <tns:Holidays>
+        <tns:Fixed month="JANUARY" day="1" descriptionPropertiesKey="Jour de l'AN" />
+        <tns:Fixed month="JANUARY" day="2" descriptionPropertiesKey="Basile" />
+        <tns:Fixed month="JANUARY" day="3" descriptionPropertiesKey="Ginette, Geneviève" />
+        <tns:Fixed month="JANUARY" day="4" descriptionPropertiesKey="Odilon" />
+        <tns:Fixed month="JANUARY" day="5" descriptionPropertiesKey="Edouard" />
+        <tns:Fixed month="JANUARY" day="6" descriptionPropertiesKey="Mélaine" />
+        <tns:Fixed month="JANUARY" day="7" descriptionPropertiesKey="Cédric, Raymond" />
+        <tns:Fixed month="JANUARY" day="8" descriptionPropertiesKey="Lucien" />
+        <tns:Fixed month="JANUARY" day="9" descriptionPropertiesKey="Alix" />
+        <tns:Fixed month="JANUARY" day="10" descriptionPropertiesKey="Guillaume" />
+        <tns:Fixed month="JANUARY" day="11" descriptionPropertiesKey="Paulin" />
+        <tns:Fixed month="JANUARY" day="12" descriptionPropertiesKey="Tatiana" />
+        <tns:Fixed month="JANUARY" day="13" descriptionPropertiesKey="Yvette" />
+        <tns:Fixed month="JANUARY" day="14" descriptionPropertiesKey="Nina" />
+        <tns:Fixed month="JANUARY" day="15" descriptionPropertiesKey="Rémi, Rachel" />
+        <tns:Fixed month="JANUARY" day="16" descriptionPropertiesKey="Marcel" />
+        <tns:Fixed month="JANUARY" day="17" descriptionPropertiesKey="Roseline" />
+        <tns:Fixed month="JANUARY" day="18" descriptionPropertiesKey="Prisca" />
+        <tns:Fixed month="JANUARY" day="19" descriptionPropertiesKey="Marius" />
+        <tns:Fixed month="JANUARY" day="20" descriptionPropertiesKey="Fabien(ne), Sébastien" />
+        <tns:Fixed month="JANUARY" day="21" descriptionPropertiesKey="Agnès" />
+        <tns:Fixed month="JANUARY" day="22" descriptionPropertiesKey="Vincent" />
+        <tns:Fixed month="JANUARY" day="23" descriptionPropertiesKey="Barnard" />
+        <tns:Fixed month="JANUARY" day="24" descriptionPropertiesKey="François de Sales" />
+        <tns:Fixed month="JANUARY" day="25" descriptionPropertiesKey="Conversion Saint Paul" />
+        <tns:Fixed month="JANUARY" day="26" descriptionPropertiesKey="Paule" />
+        <tns:Fixed month="JANUARY" day="27" descriptionPropertiesKey="Angèle" />
+        <tns:Fixed month="JANUARY" day="28" descriptionPropertiesKey="Thomas d'Aquin" />
+        <tns:Fixed month="JANUARY" day="29" descriptionPropertiesKey="Gildas" />
+        <tns:Fixed month="JANUARY" day="30" descriptionPropertiesKey="Martine" />
+        <tns:Fixed month="JANUARY" day="31" descriptionPropertiesKey="Marcelle" />
+        <tns:Fixed month="FEBRUARY" day="1" descriptionPropertiesKey="Ella" />
+        <tns:Fixed month="FEBRUARY" day="2" descriptionPropertiesKey="Présentation du Seigneur" />
+        <tns:Fixed month="FEBRUARY" day="3" descriptionPropertiesKey="Blaise" />
+        <tns:Fixed month="FEBRUARY" day="4" descriptionPropertiesKey="Véronique" />
+        <tns:Fixed month="FEBRUARY" day="5" descriptionPropertiesKey="Agathe" />
+        <tns:Fixed month="FEBRUARY" day="6" descriptionPropertiesKey="Dorothée, Gaston" />
+        <tns:Fixed month="FEBRUARY" day="7" descriptionPropertiesKey="Eugénie" />
+        <tns:Fixed month="FEBRUARY" day="8" descriptionPropertiesKey="Jacqueline" />
+        <tns:Fixed month="FEBRUARY" day="9" descriptionPropertiesKey="Apolline" />
+        <tns:Fixed month="FEBRUARY" day="10" descriptionPropertiesKey="Arnaud" />
+        <tns:Fixed month="FEBRUARY" day="11" descriptionPropertiesKey="Notre-Dame de Lourde" />
+        <tns:Fixed month="FEBRUARY" day="12" descriptionPropertiesKey="Félix" />
+        <tns:Fixed month="FEBRUARY" day="13" descriptionPropertiesKey="Béatrice" />
+        <tns:Fixed month="FEBRUARY" day="14" descriptionPropertiesKey="Valentin" />
+        <tns:Fixed month="FEBRUARY" day="15" descriptionPropertiesKey="Claude" />
+        <tns:Fixed month="FEBRUARY" day="16" descriptionPropertiesKey="Julienne" />
+        <tns:Fixed month="FEBRUARY" day="17" descriptionPropertiesKey="Alexis" />
+        <tns:Fixed month="FEBRUARY" day="18" descriptionPropertiesKey="Bernadette" />
+        <tns:Fixed month="FEBRUARY" day="19" descriptionPropertiesKey="Gabin" />
+        <tns:Fixed month="FEBRUARY" day="20" descriptionPropertiesKey="Aimée" />
+        <tns:Fixed month="FEBRUARY" day="21" descriptionPropertiesKey="Pierre-Damien" />
+        <tns:Fixed month="FEBRUARY" day="22" descriptionPropertiesKey="Isabelle" />
+        <tns:Fixed month="FEBRUARY" day="23" descriptionPropertiesKey="Lazare" />
+        <tns:Fixed month="FEBRUARY" day="24" descriptionPropertiesKey="Modeste" />
+        <tns:Fixed month="FEBRUARY" day="25" descriptionPropertiesKey="Roméo" />
+        <tns:Fixed month="FEBRUARY" day="26" descriptionPropertiesKey="Nestor" />
+        <tns:Fixed month="FEBRUARY" day="27" descriptionPropertiesKey="Honorine" />
+        <tns:Fixed month="FEBRUARY" day="28" descriptionPropertiesKey="Romain" />
+        <tns:Fixed month="FEBRUARY" day="29" descriptionPropertiesKey="Auguste" validFrom="2008" every="4_YEARS" />       
+        <tns:Fixed month="MARCH" day="1" descriptionPropertiesKey="Aubin" />
+        <tns:Fixed month="MARCH" day="2" descriptionPropertiesKey="Charles le Bon" />
+        <tns:Fixed month="MARCH" day="3" descriptionPropertiesKey="Guénolé" />
+        <tns:Fixed month="MARCH" day="4" descriptionPropertiesKey="Casimir" />
+        <tns:Fixed month="MARCH" day="5" descriptionPropertiesKey="Olive" />
+        <tns:Fixed month="MARCH" day="6" descriptionPropertiesKey="Colette" />
+        <tns:Fixed month="MARCH" day="7" descriptionPropertiesKey="Félicité" />
+        <tns:Fixed month="MARCH" day="8" descriptionPropertiesKey="Jean de Dieu" />
+        <tns:Fixed month="MARCH" day="9" descriptionPropertiesKey="Françoise" />
+        <tns:Fixed month="MARCH" day="10" descriptionPropertiesKey="Vivien" />
+        <tns:Fixed month="MARCH" day="11" descriptionPropertiesKey="Rosine" />
+        <tns:Fixed month="MARCH" day="12" descriptionPropertiesKey="Justine" />
+        <tns:Fixed month="MARCH" day="13" descriptionPropertiesKey="Rodrigue" />
+        <tns:Fixed month="MARCH" day="14" descriptionPropertiesKey="Mathilde" />
+        <tns:Fixed month="MARCH" day="15" descriptionPropertiesKey="Louise" />
+        <tns:Fixed month="MARCH" day="16" descriptionPropertiesKey="Bénédicte" />
+        <tns:Fixed month="MARCH" day="17" descriptionPropertiesKey="Patrice" />
+        <tns:Fixed month="MARCH" day="18" descriptionPropertiesKey="Cyrille" />
+        <tns:Fixed month="MARCH" day="19" descriptionPropertiesKey="Joseph" />
+        <tns:Fixed month="MARCH" day="20" descriptionPropertiesKey="Herbert" />
+        <tns:Fixed month="MARCH" day="21" descriptionPropertiesKey="Clémence" />
+        <tns:Fixed month="MARCH" day="22" descriptionPropertiesKey="Léa" />
+        <tns:Fixed month="MARCH" day="23" descriptionPropertiesKey="Victorien" />
+        <tns:Fixed month="MARCH" day="24" descriptionPropertiesKey="Catherine de Suèz" />
+        <tns:Fixed month="MARCH" day="25" descriptionPropertiesKey="Annonciation" />
+        <tns:Fixed month="MARCH" day="26" descriptionPropertiesKey="Larissa" />
+        <tns:Fixed month="MARCH" day="27" descriptionPropertiesKey="Habib" />
+        <tns:Fixed month="MARCH" day="28" descriptionPropertiesKey="Gontran" />
+        <tns:Fixed month="MARCH" day="29" descriptionPropertiesKey="Gwladys" />
+        <tns:Fixed month="MARCH" day="30" descriptionPropertiesKey="Amédée" />
+        <tns:Fixed month="MARCH" day="31" descriptionPropertiesKey="Benjamin" />
+        <tns:Fixed month="APRIL" day="1" descriptionPropertiesKey="Hugues" />
+        <tns:Fixed month="APRIL" day="2" descriptionPropertiesKey="Sandrine" />
+        <tns:Fixed month="APRIL" day="3" descriptionPropertiesKey="Richard" />
+        <tns:Fixed month="APRIL" day="4" descriptionPropertiesKey="Isidore" />
+        <tns:Fixed month="APRIL" day="5" descriptionPropertiesKey="Irène" />
+        <tns:Fixed month="APRIL" day="6" descriptionPropertiesKey="Marcellin" />
+        <tns:Fixed month="APRIL" day="7" descriptionPropertiesKey="Jean-Baptiste de la salle" />
+        <tns:Fixed month="APRIL" day="8" descriptionPropertiesKey="Julie" />
+        <tns:Fixed month="APRIL" day="9" descriptionPropertiesKey="Gautier" />
+        <tns:Fixed month="APRIL" day="10" descriptionPropertiesKey="Fulbert" />
+        <tns:Fixed month="APRIL" day="11" descriptionPropertiesKey="Stanislas" />
+        <tns:Fixed month="APRIL" day="12" descriptionPropertiesKey="Jules" />
+        <tns:Fixed month="APRIL" day="13" descriptionPropertiesKey="Ida" />
+        <tns:Fixed month="APRIL" day="14" descriptionPropertiesKey="Maxime" />
+        <tns:Fixed month="APRIL" day="15" descriptionPropertiesKey="Paterne" />
+        <tns:Fixed month="APRIL" day="16" descriptionPropertiesKey="Benoît-Joseph" />
+        <tns:Fixed month="APRIL" day="17" descriptionPropertiesKey="Anicet" />
+        <tns:Fixed month="APRIL" day="18" descriptionPropertiesKey="Parfait" />
+        <tns:Fixed month="APRIL" day="19" descriptionPropertiesKey="Emma" />
+        <tns:Fixed month="APRIL" day="20" descriptionPropertiesKey="Odette" />
+        <tns:Fixed month="APRIL" day="21" descriptionPropertiesKey="Anselme" />
+        <tns:Fixed month="APRIL" day="22" descriptionPropertiesKey="Alexandre" />
+        <tns:Fixed month="APRIL" day="23" descriptionPropertiesKey="Georges" />
+        <tns:Fixed month="APRIL" day="24" descriptionPropertiesKey="Fidèle" />
+        <tns:Fixed month="APRIL" day="25" descriptionPropertiesKey="Marc" />
+        <tns:Fixed month="APRIL" day="26" descriptionPropertiesKey="Alida" />
+        <tns:Fixed month="APRIL" day="27" descriptionPropertiesKey="Zita" />
+        <tns:Fixed month="APRIL" day="28" descriptionPropertiesKey="Valérie" />
+        <tns:Fixed month="APRIL" day="29" descriptionPropertiesKey="Catherine de Sienne" />
+        <tns:Fixed month="APRIL" day="30" descriptionPropertiesKey="Robert" />
+        <tns:Fixed month="MAY" day="1" descriptionPropertiesKey="Fête DU TRAVAIL" />
+        <tns:Fixed month="MAY" day="2" descriptionPropertiesKey="Boris" />
+        <tns:Fixed month="MAY" day="3" descriptionPropertiesKey="Jacques, Philippe" />
+        <tns:Fixed month="MAY" day="4" descriptionPropertiesKey="Sylvain" />
+        <tns:Fixed month="MAY" day="5" descriptionPropertiesKey="Judith" />
+        <tns:Fixed month="MAY" day="6" descriptionPropertiesKey="Prudence" />
+        <tns:Fixed month="MAY" day="7" descriptionPropertiesKey="Gisèle" />
+        <tns:Fixed month="MAY" day="8" descriptionPropertiesKey="Désiré" />
+        <tns:Fixed month="MAY" day="9" descriptionPropertiesKey="Pacôme" />
+        <tns:Fixed month="MAY" day="10" descriptionPropertiesKey="Solange" />
+        <tns:Fixed month="MAY" day="11" descriptionPropertiesKey="Estelle" />
+        <tns:Fixed month="MAY" day="12" descriptionPropertiesKey="Achille" />
+        <tns:Fixed month="MAY" day="13" descriptionPropertiesKey="Rolande" />
+        <tns:Fixed month="MAY" day="14" descriptionPropertiesKey="Matthias" />
+        <tns:Fixed month="MAY" day="15" descriptionPropertiesKey="Denise" />
+        <tns:Fixed month="MAY" day="16" descriptionPropertiesKey="Honoré" />
+        <tns:Fixed month="MAY" day="17" descriptionPropertiesKey="Pascal" />
+        <tns:Fixed month="MAY" day="18" descriptionPropertiesKey="Corinne, Eric" />
+        <tns:Fixed month="MAY" day="19" descriptionPropertiesKey="Yves" />
+        <tns:Fixed month="MAY" day="20" descriptionPropertiesKey="Bernardin" />
+        <tns:Fixed month="MAY" day="21" descriptionPropertiesKey="Constantin" />
+        <tns:Fixed month="MAY" day="22" descriptionPropertiesKey="Emile" />
+        <tns:Fixed month="MAY" day="23" descriptionPropertiesKey="Didier" />
+        <tns:Fixed month="MAY" day="24" descriptionPropertiesKey="Donatien" />
+        <tns:Fixed month="MAY" day="25" descriptionPropertiesKey="Sophie" />
+        <tns:Fixed month="MAY" day="26" descriptionPropertiesKey="Bérenger" />
+        <tns:Fixed month="MAY" day="27" descriptionPropertiesKey="Augustin de C." />
+        <tns:Fixed month="MAY" day="28" descriptionPropertiesKey="Germain" />
+        <tns:Fixed month="MAY" day="29" descriptionPropertiesKey="Aymard" />
+        <tns:Fixed month="MAY" day="30" descriptionPropertiesKey="Ferdinand" />
+        <tns:Fixed month="MAY" day="31" descriptionPropertiesKey="Visitation" />
+        <tns:Fixed month="JUNE" day="1" descriptionPropertiesKey="Justin" />
+        <tns:Fixed month="JUNE" day="2" descriptionPropertiesKey="Blandine" />
+        <tns:Fixed month="JUNE" day="3" descriptionPropertiesKey="Kévin" />
+        <tns:Fixed month="JUNE" day="4" descriptionPropertiesKey="Clotilde" />
+        <tns:Fixed month="JUNE" day="5" descriptionPropertiesKey="lgor" />
+        <tns:Fixed month="JUNE" day="6" descriptionPropertiesKey="Norbert" />
+        <tns:Fixed month="JUNE" day="7" descriptionPropertiesKey="Gilbert" />
+        <tns:Fixed month="JUNE" day="8" descriptionPropertiesKey="Médard" />
+        <tns:Fixed month="JUNE" day="9" descriptionPropertiesKey="Diane, Félicien" />
+        <tns:Fixed month="JUNE" day="10" descriptionPropertiesKey="Landry" />
+        <tns:Fixed month="JUNE" day="11" descriptionPropertiesKey="Barnabé" />
+        <tns:Fixed month="JUNE" day="12" descriptionPropertiesKey="Guy" />
+        <tns:Fixed month="JUNE" day="13" descriptionPropertiesKey="Antoine de Padoue" />
+        <tns:Fixed month="JUNE" day="14" descriptionPropertiesKey="Elisée" />
+        <tns:Fixed month="JUNE" day="15" descriptionPropertiesKey="Germaine" />
+        <tns:Fixed month="JUNE" day="16" descriptionPropertiesKey="Régis" />
+        <tns:Fixed month="JUNE" day="17" descriptionPropertiesKey="Hervé" />
+        <tns:Fixed month="JUNE" day="18" descriptionPropertiesKey="Léonce" />
+        <tns:Fixed month="JUNE" day="19" descriptionPropertiesKey="Micheline, Romuald" />
+        <tns:Fixed month="JUNE" day="20" descriptionPropertiesKey="Silvère" />
+        <tns:Fixed month="JUNE" day="21" descriptionPropertiesKey="Rodolphe" />
+        <tns:Fixed month="JUNE" day="22" descriptionPropertiesKey="Alban" />
+        <tns:Fixed month="JUNE" day="23" descriptionPropertiesKey="Audrey" />
+        <tns:Fixed month="JUNE" day="24" descriptionPropertiesKey="Baptiste, Jean-Baptiste" />
+        <tns:Fixed month="JUNE" day="25" descriptionPropertiesKey="Prosper" />
+        <tns:Fixed month="JUNE" day="26" descriptionPropertiesKey="Anthelme" />
+        <tns:Fixed month="JUNE" day="27" descriptionPropertiesKey="Fernand" />
+        <tns:Fixed month="JUNE" day="28" descriptionPropertiesKey="Irénée" />
+        <tns:Fixed month="JUNE" day="29" descriptionPropertiesKey="Paul, Pierre" />
+        <tns:Fixed month="JUNE" day="30" descriptionPropertiesKey="Adolphe, Martial" />
+        <tns:Fixed month="JULY" day="1" descriptionPropertiesKey="Thierry" />
+        <tns:Fixed month="JULY" day="2" descriptionPropertiesKey="Martinien" />
+        <tns:Fixed month="JULY" day="3" descriptionPropertiesKey="Thomas" />
+        <tns:Fixed month="JULY" day="4" descriptionPropertiesKey="Florent" />
+        <tns:Fixed month="JULY" day="5" descriptionPropertiesKey="Antoine" />
+        <tns:Fixed month="JULY" day="6" descriptionPropertiesKey="Mariette" />
+        <tns:Fixed month="JULY" day="7" descriptionPropertiesKey="Raoul" />
+        <tns:Fixed month="JULY" day="8" descriptionPropertiesKey="Edgar, Thibaut" />
+        <tns:Fixed month="JULY" day="9" descriptionPropertiesKey="Amandine, Mariane" />
+        <tns:Fixed month="JULY" day="10" descriptionPropertiesKey="Ulrich" />
+        <tns:Fixed month="JULY" day="11" descriptionPropertiesKey="Benoît, Olga" />
+        <tns:Fixed month="JULY" day="12" descriptionPropertiesKey="Olivier" />
+        <tns:Fixed month="JULY" day="13" descriptionPropertiesKey="Eugène, Henri, Joel" />
+        <tns:Fixed month="JULY" day="14" descriptionPropertiesKey="Camille" />
+        <tns:Fixed month="JULY" day="15" descriptionPropertiesKey="Donald" />
+        <tns:Fixed month="JULY" day="16" descriptionPropertiesKey="N.-D. du Mt Carmel" />
+        <tns:Fixed month="JULY" day="17" descriptionPropertiesKey="Charlotte" />
+        <tns:Fixed month="JULY" day="18" descriptionPropertiesKey="Frédéric" />
+        <tns:Fixed month="JULY" day="19" descriptionPropertiesKey="Arsène" />
+        <tns:Fixed month="JULY" day="20" descriptionPropertiesKey="Marina" />
+        <tns:Fixed month="JULY" day="21" descriptionPropertiesKey="Victor" />
+        <tns:Fixed month="JULY" day="22" descriptionPropertiesKey="Marie-Madeleine" />
+        <tns:Fixed month="JULY" day="23" descriptionPropertiesKey="Brigitte" />
+        <tns:Fixed month="JULY" day="24" descriptionPropertiesKey="Christine" />
+        <tns:Fixed month="JULY" day="25" descriptionPropertiesKey="Jacques" />
+        <tns:Fixed month="JULY" day="26" descriptionPropertiesKey="Anaïs, Anne, Joachim" />
+        <tns:Fixed month="JULY" day="27" descriptionPropertiesKey="Nathalie" />
+        <tns:Fixed month="JULY" day="28" descriptionPropertiesKey="Samson" />
+        <tns:Fixed month="JULY" day="29" descriptionPropertiesKey="Marthe" />
+        <tns:Fixed month="JULY" day="30" descriptionPropertiesKey="Juliette" />
+        <tns:Fixed month="JULY" day="31" descriptionPropertiesKey="Ignace de Loyola" />
+        <tns:Fixed month="AUGUST" day="1" descriptionPropertiesKey="Alphonse" />
+        <tns:Fixed month="AUGUST" day="2" descriptionPropertiesKey="Julien-Eymard" />
+        <tns:Fixed month="AUGUST" day="3" descriptionPropertiesKey="Lydie" />
+        <tns:Fixed month="AUGUST" day="4" descriptionPropertiesKey="Jean-Marie Vianney" />
+        <tns:Fixed month="AUGUST" day="5" descriptionPropertiesKey="Abel" />
+        <tns:Fixed month="AUGUST" day="6" descriptionPropertiesKey="Transfiguration" />
+        <tns:Fixed month="AUGUST" day="7" descriptionPropertiesKey="Gaétan" />
+        <tns:Fixed month="AUGUST" day="8" descriptionPropertiesKey="Dominique" />
+        <tns:Fixed month="AUGUST" day="9" descriptionPropertiesKey="Amour" />
+        <tns:Fixed month="AUGUST" day="10" descriptionPropertiesKey="Laurent" />
+        <tns:Fixed month="AUGUST" day="11" descriptionPropertiesKey="Claire, Gilberte" />
+        <tns:Fixed month="AUGUST" day="12" descriptionPropertiesKey="Clarisse" />
+        <tns:Fixed month="AUGUST" day="13" descriptionPropertiesKey="Hippolyte" />
+        <tns:Fixed month="AUGUST" day="14" descriptionPropertiesKey="Evrard" />
+        <tns:Fixed month="AUGUST" day="15" descriptionPropertiesKey="Marie, Mireille" />
+        <tns:Fixed month="AUGUST" day="16" descriptionPropertiesKey="Armel" />
+        <tns:Fixed month="AUGUST" day="17" descriptionPropertiesKey="Hyacinthe" />
+        <tns:Fixed month="AUGUST" day="18" descriptionPropertiesKey="Hélène" />
+        <tns:Fixed month="AUGUST" day="19" descriptionPropertiesKey="Jean-Eudes" />
+        <tns:Fixed month="AUGUST" day="20" descriptionPropertiesKey="Bernard, Philibe" />
+        <tns:Fixed month="AUGUST" day="21" descriptionPropertiesKey="Christophe" />
+        <tns:Fixed month="AUGUST" day="22" descriptionPropertiesKey="Fabrice" />
+        <tns:Fixed month="AUGUST" day="23" descriptionPropertiesKey="Rose de Lima" />
+        <tns:Fixed month="AUGUST" day="24" descriptionPropertiesKey="Barthélemy" />
+        <tns:Fixed month="AUGUST" day="25" descriptionPropertiesKey="Louis" />
+        <tns:Fixed month="AUGUST" day="26" descriptionPropertiesKey="Natacha" />
+        <tns:Fixed month="AUGUST" day="27" descriptionPropertiesKey="Monique" />
+        <tns:Fixed month="AUGUST" day="28" descriptionPropertiesKey="Augustin" />
+        <tns:Fixed month="AUGUST" day="29" descriptionPropertiesKey="Sabine" />
+        <tns:Fixed month="AUGUST" day="30" descriptionPropertiesKey="Fiacre" />
+        <tns:Fixed month="AUGUST" day="31" descriptionPropertiesKey="Aristide" />
+        <tns:Fixed month="SEPTEMBER" day="1" descriptionPropertiesKey="Gilles" />
+        <tns:Fixed month="SEPTEMBER" day="2" descriptionPropertiesKey="Ingrid" />
+        <tns:Fixed month="SEPTEMBER" day="3" descriptionPropertiesKey="Grégoire" />
+        <tns:Fixed month="SEPTEMBER" day="4" descriptionPropertiesKey="Irma, Rosalie" />
+        <tns:Fixed month="SEPTEMBER" day="5" descriptionPropertiesKey="Raïssa" />
+        <tns:Fixed month="SEPTEMBER" day="6" descriptionPropertiesKey="Betrand, Evelyne" />
+        <tns:Fixed month="SEPTEMBER" day="7" descriptionPropertiesKey="Réjane, Reine" />
+        <tns:Fixed month="SEPTEMBER" day="8" descriptionPropertiesKey="Nativite N.D." />
+        <tns:Fixed month="SEPTEMBER" day="9" descriptionPropertiesKey="Alain" />
+        <tns:Fixed month="SEPTEMBER" day="10" descriptionPropertiesKey="Inès" />
+        <tns:Fixed month="SEPTEMBER" day="11" descriptionPropertiesKey="Adelphe" />
+        <tns:Fixed month="SEPTEMBER" day="12" descriptionPropertiesKey="Apollinaire" />
+        <tns:Fixed month="SEPTEMBER" day="13" descriptionPropertiesKey="Aimé" />
+        <tns:Fixed month="SEPTEMBER" day="14" descriptionPropertiesKey="La Sainte Croix" />
+        <tns:Fixed month="SEPTEMBER" day="15" descriptionPropertiesKey="Roland" />
+        <tns:Fixed month="SEPTEMBER" day="16" descriptionPropertiesKey="Edith" />
+        <tns:Fixed month="SEPTEMBER" day="17" descriptionPropertiesKey="Renaud" />
+        <tns:Fixed month="SEPTEMBER" day="18" descriptionPropertiesKey="Nadège" />
+        <tns:Fixed month="SEPTEMBER" day="19" descriptionPropertiesKey="Amélie, Emilie" />
+        <tns:Fixed month="SEPTEMBER" day="20" descriptionPropertiesKey="Davy" />
+        <tns:Fixed month="SEPTEMBER" day="21" descriptionPropertiesKey="Matthieu" />
+        <tns:Fixed month="SEPTEMBER" day="22" descriptionPropertiesKey="Maurice" />
+        <tns:Fixed month="SEPTEMBER" day="23" descriptionPropertiesKey="Constant" />
+        <tns:Fixed month="SEPTEMBER" day="24" descriptionPropertiesKey="Thècle" />
+        <tns:Fixed month="SEPTEMBER" day="25" descriptionPropertiesKey="Hermann" />
+        <tns:Fixed month="SEPTEMBER" day="26" descriptionPropertiesKey="Côme, Damien" />
+        <tns:Fixed month="SEPTEMBER" day="27" descriptionPropertiesKey="Vincent de Paul" />
+        <tns:Fixed month="SEPTEMBER" day="28" descriptionPropertiesKey="Vinceslas" />
+        <tns:Fixed month="SEPTEMBER" day="29" descriptionPropertiesKey="Gabrielle, Michel" />
+        <tns:Fixed month="SEPTEMBER" day="30" descriptionPropertiesKey="Jérôme" />
+        <tns:Fixed month="OCTOBER" day="1" descriptionPropertiesKey="Thérèse E.-J." />
+        <tns:Fixed month="OCTOBER" day="2" descriptionPropertiesKey="Léger" />
+        <tns:Fixed month="OCTOBER" day="3" descriptionPropertiesKey="Gérard" />
+        <tns:Fixed month="OCTOBER" day="4" descriptionPropertiesKey="François d'Assise" />
+        <tns:Fixed month="OCTOBER" day="5" descriptionPropertiesKey="Fleur" />
+        <tns:Fixed month="OCTOBER" day="6" descriptionPropertiesKey="Bruno" />
+        <tns:Fixed month="OCTOBER" day="7" descriptionPropertiesKey="Gustave, Serge" />
+        <tns:Fixed month="OCTOBER" day="8" descriptionPropertiesKey="Pélagie" />
+        <tns:Fixed month="OCTOBER" day="9" descriptionPropertiesKey="Denis" />
+        <tns:Fixed month="OCTOBER" day="10" descriptionPropertiesKey="Ghislain" />
+        <tns:Fixed month="OCTOBER" day="11" descriptionPropertiesKey="Firmin" />
+        <tns:Fixed month="OCTOBER" day="12" descriptionPropertiesKey="Alfred, Wilfried" />
+        <tns:Fixed month="OCTOBER" day="13" descriptionPropertiesKey="Géraud" />
+        <tns:Fixed month="OCTOBER" day="14" descriptionPropertiesKey="Juste" />
+        <tns:Fixed month="OCTOBER" day="15" descriptionPropertiesKey="Aurélie, Thérèse" />
+        <tns:Fixed month="OCTOBER" day="16" descriptionPropertiesKey="Edwige" />
+        <tns:Fixed month="OCTOBER" day="17" descriptionPropertiesKey="Baudouin" />
+        <tns:Fixed month="OCTOBER" day="18" descriptionPropertiesKey="Luc" />
+        <tns:Fixed month="OCTOBER" day="19" descriptionPropertiesKey="René" />
+        <tns:Fixed month="OCTOBER" day="20" descriptionPropertiesKey="Adeline, Aline" />
+        <tns:Fixed month="OCTOBER" day="21" descriptionPropertiesKey="Céline" />
+        <tns:Fixed month="OCTOBER" day="22" descriptionPropertiesKey="Elodie, Salomé" />
+        <tns:Fixed month="OCTOBER" day="23" descriptionPropertiesKey="Jean de Capistran." />
+        <tns:Fixed month="OCTOBER" day="24" descriptionPropertiesKey="Florentin" />
+        <tns:Fixed month="OCTOBER" day="25" descriptionPropertiesKey="Crépin" />
+        <tns:Fixed month="OCTOBER" day="26" descriptionPropertiesKey="Dimitri" />
+        <tns:Fixed month="OCTOBER" day="27" descriptionPropertiesKey="Emeline" />
+        <tns:Fixed month="OCTOBER" day="28" descriptionPropertiesKey="Simon, Jude" />
+        <tns:Fixed month="OCTOBER" day="29" descriptionPropertiesKey="Narcisse" />
+        <tns:Fixed month="OCTOBER" day="30" descriptionPropertiesKey="Bienvenue" />
+        <tns:Fixed month="OCTOBER" day="31" descriptionPropertiesKey="Quentin" />
+        <tns:Fixed month="NOVEMBER" day="1" descriptionPropertiesKey="TOUSSAINT" />
+        <tns:Fixed month="NOVEMBER" day="2" descriptionPropertiesKey="Défunts" />
+        <tns:Fixed month="NOVEMBER" day="3" descriptionPropertiesKey="Hubert" />
+        <tns:Fixed month="NOVEMBER" day="4" descriptionPropertiesKey="Charles" />
+        <tns:Fixed month="NOVEMBER" day="5" descriptionPropertiesKey="Sylviane, Sylvie" />
+        <tns:Fixed month="NOVEMBER" day="6" descriptionPropertiesKey="Bertille" />
+        <tns:Fixed month="NOVEMBER" day="7" descriptionPropertiesKey="Carine, Ernest" />
+        <tns:Fixed month="NOVEMBER" day="8" descriptionPropertiesKey="Geoffroy" />
+        <tns:Fixed month="NOVEMBER" day="9" descriptionPropertiesKey="Théodore" />
+        <tns:Fixed month="NOVEMBER" day="10" descriptionPropertiesKey="Léon" />
+        <tns:Fixed month="NOVEMBER" day="11" descriptionPropertiesKey="ARMISTICE 1918" />
+        <tns:Fixed month="NOVEMBER" day="12" descriptionPropertiesKey="Christian" />
+        <tns:Fixed month="NOVEMBER" day="13" descriptionPropertiesKey="Brice" />
+        <tns:Fixed month="NOVEMBER" day="14" descriptionPropertiesKey="Sidoine" />
+        <tns:Fixed month="NOVEMBER" day="15" descriptionPropertiesKey="Albert, Arthur" />
+        <tns:Fixed month="NOVEMBER" day="16" descriptionPropertiesKey="Marguerite" />
+        <tns:Fixed month="NOVEMBER" day="17" descriptionPropertiesKey="Elisabeth" />
+        <tns:Fixed month="NOVEMBER" day="18" descriptionPropertiesKey="Aude" />
+        <tns:Fixed month="NOVEMBER" day="19" descriptionPropertiesKey="Tanguy" />
+        <tns:Fixed month="NOVEMBER" day="20" descriptionPropertiesKey="Edmond" />
+        <tns:Fixed month="NOVEMBER" day="21" descriptionPropertiesKey="Present. de Marie" />
+        <tns:Fixed month="NOVEMBER" day="22" descriptionPropertiesKey="Cécile" />
+        <tns:Fixed month="NOVEMBER" day="23" descriptionPropertiesKey="Clément" />
+        <tns:Fixed month="NOVEMBER" day="24" descriptionPropertiesKey="Flora" />
+        <tns:Fixed month="NOVEMBER" day="25" descriptionPropertiesKey="Catherine" />
+        <tns:Fixed month="NOVEMBER" day="26" descriptionPropertiesKey="Delphine" />
+        <tns:Fixed month="NOVEMBER" day="27" descriptionPropertiesKey="Séverin" />
+        <tns:Fixed month="NOVEMBER" day="28" descriptionPropertiesKey="Jacques de la Marche" />
+        <tns:Fixed month="NOVEMBER" day="29" descriptionPropertiesKey="Saturnin" />
+        <tns:Fixed month="NOVEMBER" day="30" descriptionPropertiesKey="André" />
+        <tns:Fixed month="DECEMBER" day="1" descriptionPropertiesKey="Florence" />
+        <tns:Fixed month="DECEMBER" day="2" descriptionPropertiesKey="Viviane" />
+        <tns:Fixed month="DECEMBER" day="3" descriptionPropertiesKey="François-Xavier" />
+        <tns:Fixed month="DECEMBER" day="4" descriptionPropertiesKey="Barbara" />
+        <tns:Fixed month="DECEMBER" day="5" descriptionPropertiesKey="Gérald" />
+        <tns:Fixed month="DECEMBER" day="6" descriptionPropertiesKey="Nicolas" />
+        <tns:Fixed month="DECEMBER" day="7" descriptionPropertiesKey="Ambroise" />
+        <tns:Fixed month="DECEMBER" day="8" descriptionPropertiesKey="Imaculée Conception" />
+        <tns:Fixed month="DECEMBER" day="9" descriptionPropertiesKey="Pierre Fourier" />
+        <tns:Fixed month="DECEMBER" day="10" descriptionPropertiesKey="Romaric" />
+        <tns:Fixed month="DECEMBER" day="11" descriptionPropertiesKey="Daniel" />
+        <tns:Fixed month="DECEMBER" day="12" descriptionPropertiesKey="Jeanne F. C." />
+        <tns:Fixed month="DECEMBER" day="13" descriptionPropertiesKey="Lucie" />
+        <tns:Fixed month="DECEMBER" day="14" descriptionPropertiesKey="Odile" />
+        <tns:Fixed month="DECEMBER" day="15" descriptionPropertiesKey="Ninon" />
+        <tns:Fixed month="DECEMBER" day="16" descriptionPropertiesKey="Alice" />
+        <tns:Fixed month="DECEMBER" day="17" descriptionPropertiesKey="Gaël, Judicaël" />
+        <tns:Fixed month="DECEMBER" day="18" descriptionPropertiesKey="Gatien" />
+        <tns:Fixed month="DECEMBER" day="19" descriptionPropertiesKey="Urbain" />
+        <tns:Fixed month="DECEMBER" day="20" descriptionPropertiesKey="Abraham, Théophile" />
+        <tns:Fixed month="DECEMBER" day="21" descriptionPropertiesKey="Pierre Canisius" />
+        <tns:Fixed month="DECEMBER" day="22" descriptionPropertiesKey="Francoise-Xavière" />
+        <tns:Fixed month="DECEMBER" day="23" descriptionPropertiesKey="Armand" />
+        <tns:Fixed month="DECEMBER" day="24" descriptionPropertiesKey="Adèle" />
+        <tns:Fixed month="DECEMBER" day="25" descriptionPropertiesKey="NOËL" />
+        <tns:Fixed month="DECEMBER" day="26" descriptionPropertiesKey="Etienne, Stéphane" />
+        <tns:Fixed month="DECEMBER" day="27" descriptionPropertiesKey="Jean l'Apôtre" />
+        <tns:Fixed month="DECEMBER" day="28" descriptionPropertiesKey="Innocents" />
+        <tns:Fixed month="DECEMBER" day="29" descriptionPropertiesKey="David" />
+        <tns:Fixed month="DECEMBER" day="30" descriptionPropertiesKey="Roger" />
+        <tns:Fixed month="DECEMBER" day="31" descriptionPropertiesKey="Sylvestre" />
+    </tns:Holidays>
+</tns:Configuration>
