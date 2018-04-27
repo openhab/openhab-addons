@@ -48,4 +48,8 @@ public class ICloudBindingConstants {
     // Device properties
     public static final String DEVICE_PROPERTY_IDHASH = "deviceIdHash";
     public static final String DEVICE_PROPERTY_ID = "deviceId";
+
+    // i18n
+    public static final String DEVICE_PROPERTY_ID_LABEL = "icloud.device-thing.parameter.id.label";
+    public static final String DEVICE_PROPERTY_OWNER_LABEL = "icloud.account-thing.property.owner";
 }
