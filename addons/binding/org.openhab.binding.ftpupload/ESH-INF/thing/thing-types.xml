@@ -4,8 +4,8 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="filereceiver" extensible="custom-image-channel, custom-image-trigger">
-		<label>File Receiver</label>
+	<thing-type id="imagereceiver" extensible="custom-image-channel, custom-image-trigger">
+		<label>Image Receiver</label>
 		<description>Receive image files via FTP.</description>
 
 		<channels>
