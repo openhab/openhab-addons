@@ -12,6 +12,6 @@
   <artifactId>org.openhab.io.azureiothub</artifactId>
   <packaging>eclipse-plugin</packaging>
 
-  <name>azure IOT Hub Connector</name>
+  <name>Azure IoT Hub Connector</name>
 
 </project>
