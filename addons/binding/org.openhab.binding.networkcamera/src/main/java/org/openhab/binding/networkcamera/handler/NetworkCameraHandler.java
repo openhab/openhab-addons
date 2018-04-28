@@ -10,7 +10,12 @@ package org.openhab.binding.networkcamera.handler;
 
 import static org.openhab.binding.networkcamera.NetworkCameraBindingConstants.*;
 
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.RawType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -76,11 +81,13 @@ public class NetworkCameraHandler extends BaseThingHandler implements FtpServerE
     }
 
     @Override
-    public void fileReceived(String userName, byte[] data) {
+    public void fileReceived(@NonNull String userName, @NonNull String filename, byte[] data) {
         if (configuration.userName.equals(userName)) {
             updateStatus(ThingStatus.ONLINE);
-            updateState(IMAGE, new RawType(data, guessMimeTypeFromData(data)));
-            triggerChannel(MOTION_TRIGGER, "MOTION_DETECTED");
+            ChannelUID channel = findCustomChannelByFilename(filename);
+            updateState(channel != null ? channel.getId() : IMAGE, new RawType(data, guessMimeTypeFromData(data)));
+            channel = findCustomTriggerByFilename(filename);
+            triggerChannel(channel != null ? channel.getId() : MOTION_TRIGGER, "MOTION_DETECTED");
         }
     }
 
@@ -92,5 +99,42 @@ public class NetworkCameraHandler extends BaseThingHandler implements FtpServerE
         }
         logger.debug("Mime type: {}", mimeType);
         return mimeType;
+    }
+
+    private ChannelUID findCustomChannelByFilename(@NonNull String filename) {
+        for (Channel channel : thing.getChannels()) {
+            String channelConf = (String) channel.getConfiguration().get(PARAM_FILENAME_PATTERN);
+            if (channelConf != null) {
+                if (filenameMatch(filename, channelConf)) {
+                    if ("Image".equals(channel.getAcceptedItemType())) {
+                        return channel.getUID();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private ChannelUID findCustomTriggerByFilename(@NonNull String filename) {
+        for (Channel channel : thing.getChannels()) {
+            String channelConf = (String) channel.getConfiguration().get(PARAM_FILENAME_PATTERN);
+            if (channelConf != null) {
+                if (filenameMatch(filename, channelConf)) {
+                    if ("TRIGGER".equals(channel.getKind().toString())) {
+                        return channel.getUID();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean filenameMatch(@NonNull String filename, @NonNull String pattern) {
+        try {
+            return Pattern.compile(pattern).matcher(filename).find();
+        } catch(PatternSyntaxException e) {
+            logger.warn("Invalid filename pattern '{}', reason: {}", pattern, e.getMessage());
+        }
+        return false;
     }
 }

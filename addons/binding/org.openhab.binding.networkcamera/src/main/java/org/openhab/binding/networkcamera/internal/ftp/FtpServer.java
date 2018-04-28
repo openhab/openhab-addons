@@ -96,12 +96,12 @@ public class FtpServer {
         listeners.remove(listener);
     }
 
-    private void sendMsgToListeners(String userName, byte[] data) {
+    private void sendMsgToListeners(String userName, String filename, byte[] data) {
         Iterator<FtpServerEventListener> iterator = listeners.iterator();
 
         while (iterator.hasNext()) {
             try {
-                iterator.next().fileReceived(userName, data);
+                iterator.next().fileReceived(userName, filename, data);
             } catch (Exception e) {
                 // catch all exceptions give all handlers a fair chance of handling the messages
                 logger.debug("Event listener invoking error: {}", e.getMessage());
@@ -195,12 +195,12 @@ public class FtpServer {
             String currDir = session.getFileSystemView().getWorkingDirectory().getAbsolutePath();
             String fileName = request.getArgument();
 
-            logger.debug("File {} upload to FTP server", userRoot + currDir + fileName);
+            logger.debug("File {} upload to FTP server", userRoot + currDir + "/" + fileName);
 
             SimpleFtpFile file = (SimpleFtpFile) session.getFileSystemView().getFile(fileName);
             byte[] data = file.getData();
 
-            sendMsgToListeners(session.getUser().getName(), data);
+            sendMsgToListeners(session.getUser().getName(), fileName, data);
             return FtpletResult.SKIP;
         }
     }

@@ -25,6 +25,12 @@ This binding currently supports following channels:
 |-----------------|--------------|----------------------------------------------------------------------------------------|
 | image           | Image        | Image received from network camera.                                                    |
 
+Binding also support custom Image channels, where matching filename can be configured.
+When image file is uploaded to FTP server, binding tries to find channel which filename match to upload image filename.
+If any direct match isn't found, the default image channel is updated.
+filename parameter support regular expression patterns.
+See more details from Things example. 
+
 
 ### Trigger Channels
 
@@ -32,6 +38,11 @@ This binding currently supports following channels:
 |-----------------|------------------------|----------------------------------------------------|
 | motion-trigger  | MOTION_DETECTED        | Triggered when image received from network camera. |
 
+Binding also support custom trigger channels, where matching filename can be configured.
+When image file is uploaded to FTP server, binding tries to find trigger channel which filename match to upload image filename.
+If any direct match isn't found, the default trigger channel is called.
+filename parameter support regular expression patterns.
+See more details from Things example. 
 
 ## Full Example
 
@@ -39,12 +50,29 @@ Things:
 
 ```
 Thing networkcamera:motiondetection:garage [ userName="garage", password="12345" ]
+
+Thing networkcamera:motiondetection:test [ userName="test", password="12345" ] {
+   Channels:
+        Type image-channel : my_image1 "My Image channel 1" [
+            filename="test12[0-9]{2}.png" // match to filename test12xx.png, where xx can be numbers between 00-99
+        ]
+        Type image-channel : my_image2 "My Image channel 2" [
+            filename="test.jpg"
+        ]
+        Trigger String : my_image_trigger1 [
+            filename="test12[0-9]{2}.png"
+        ]
+        Trigger String : my_image_trigger2 [
+            filename="test.jpg"
+        ]
+}    
 ```
 
 Items:
 
 ```
-Image  Garage_NetworkCamera_Motion_Image { channel="networkcamera:motiondetection:garage:image" } 
+Image  Garage_NetworkCamera_Motion_Image { channel="networkcamera:motiondetection:garage:image" }
+Image  Test_Image { channel="networkcamera:motiondetection:test:my_image1" }
 ```
 
 Rules:

@@ -27,4 +27,6 @@ public class NetworkCameraBindingConstants {
     public final static String IMAGE = "image";
     public final static String MOTION_TRIGGER = "motion-trigger";
 
+    // List of all channel parameters
+    public final static String PARAM_FILENAME_PATTERN = "filename";
 }

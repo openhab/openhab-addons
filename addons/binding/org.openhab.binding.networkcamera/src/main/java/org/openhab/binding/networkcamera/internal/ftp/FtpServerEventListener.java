@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.networkcamera.internal.ftp;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 /**
  * This interface defines interface to receive data from FTP server.
  *
@@ -20,9 +22,11 @@ public interface FtpServerEventListener {
      *
      * @param userName
      *            User name.
+     * @param filename
+     *            Received filename.
      * @param data
      *            Received raw data.
      */
-    void fileReceived(String userName, byte[] data);
+    void fileReceived(@NonNull String userName, @NonNull String filename, byte[] data);
 
 }
