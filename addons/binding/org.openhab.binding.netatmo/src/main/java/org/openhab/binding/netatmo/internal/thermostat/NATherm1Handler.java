@@ -69,7 +69,8 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                 return module != null ? module.getThermRelayCmd() == 100 ? OnOffType.ON : OnOffType.OFF
                         : UnDefType.UNDEF;
             case CHANNEL_TEMPERATURE:
-                return module != null ? toDecimalType(module.getMeasured().getTemperature()) : UnDefType.UNDEF;
+                return module != null ? toQuantityType(module.getMeasured().getTemperature(), API_TEMPERATURE_UNIT)
+                        : UnDefType.UNDEF;
             case CHANNEL_SETPOINT_TEMP:
                 return module != null ? toDecimalType(module.getMeasured().getSetpointTemp()) : UnDefType.UNDEF;
             case CHANNEL_TIMEUTC:

@@ -109,31 +109,31 @@ Number Netatmo_Indoor_CO2 "CO2" <carbondioxide> { channel = "netatmo:NAMain:home
 
 **Supported channels for the main indoor module:**
 
-| Channel ID          | Item Type | Description                                              |
-|---------------------|-----------|----------------------------------------------------------|
-| Co2                 | Number    | Air Quality in ppm                                       |
-| Temperature         | Number    | Current temperature                                      |
-| TempTrend           | String    | Temperature Evolution Trend (up, down, stable)           |
-| Noise               | Number    | Current Noise Level in dB                                |
-| Pressure            | Number    | Current pressure in hPa                                  |
-| PressTrend          | String    | Pressure evolution trend for last 12h (up, down, stable) |
-| AbsolutePressure    | Number    | Absolute pressure in hPa                                 |
-| Humidity            | Number    | Current humidity in %                                    |
-| Humidex             | Number    | Computed Humidex index                                   |
-| HeatIndex           | Number    | Computed Heat Index                                      |
-| Dewpoint            | Number    | Computed Dewpoint Temperature                            |
-| DewpointDepression  | Number    | Computed Dewpoint Depression                             |
-| MinTemp             | Number    | Minimum Temperature on current day                       |
-| MaxTemp             | Number    | Maximum Temperature on current day                       |
-| DateMinTemp         | DateTime  | Date when minimum temperature was reached on current day |
-| DateMaxTemp         | DateTime  | Date when maximum temperature was reached on current day |
-| TimeStamp           | DateTime  | Timestamp when data was measured                         |
-| LastStatusStore     | DateTime  | Last Status Store                                        |
-| WifiStatus          | Number    | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
-| Location            | Location  | Location of the device                                   |
-| Unit                | Number    | Unit system used to provide values (0 for metric or 1 for imperial |
-| WindUnit            | Number    | Unit used to report Wind speeds (0 for km/h, 1 for miles/H, 2 for m/s, 3 for Beaufort or 4 for Knot) |
-| PressureUnit        | Number    | Unit used to report Pressure values (0 for mbar, 1 for inHg or 2 for mmHg) |
+| Channel ID          | Item Type            | Description                                              |
+|---------------------|----------------------|----------------------------------------------------------|
+| Co2                 | Number:Dimensionless | Air Quality in ppm                                       |
+| Temperature         | Number:Temperature   | Current temperature                                      |
+| TempTrend           | String               | Temperature Evolution Trend (up, down, stable)           |
+| Noise               | Number:Dimensionless | Current Noise Level in dB                                |
+| Pressure            | Number:Pressure      | Current pressure in hPa                                  |
+| PressTrend          | String               | Pressure evolution trend for last 12h (up, down, stable) |
+| AbsolutePressure    | Number:Pressure      | Absolute pressure in hPa                                 |
+| Humidity            | Number:Dimensionless | Current humidity in %                                    |
+| Humidex             | Number               | Computed Humidex index                                   |
+| HeatIndex           | Number:Temperature   | Computed Heat Index                                      |
+| Dewpoint            | Number:Temperature   | Computed Dewpoint Temperature                            |
+| DewpointDepression  | Number               | Computed Dewpoint Depression                             |
+| MinTemp             | Number:Temperature   | Minimum Temperature on current day                       |
+| MaxTemp             | Number:Temperature   | Maximum Temperature on current day                       |
+| DateMinTemp         | DateTime             | Date when minimum temperature was reached on current day |
+| DateMaxTemp         | DateTime             | Date when maximum temperature was reached on current day |
+| TimeStamp           | DateTime             | Timestamp when data was measured                         |
+| LastStatusStore     | DateTime             | Last Status Store                                        |
+| WifiStatus          | Number               | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| Location            | Location             | Location of the device                                   |
+| Unit                | Number               | Unit system used to provide values (0 for metric or 1 for imperial |
+| WindUnit            | Number               | Unit used to report Wind speeds (0 for km/h, 1 for miles/H, 2 for m/s, 3 for Beaufort or 4 for Knot) |
+| PressureUnit        | Number               | Unit used to report Pressure values (0 for mbar, 1 for inHg or 2 for mmHg) |
 
 All these channels are read only.
 
@@ -148,24 +148,24 @@ Number Netatmo_Outdoor_Temperature "Temperature" { channel = "netatmo:NAModule1:
 
 **Supported channels for the outdoor module:**
 
-| Channel ID          | Item Type | Description                                              |
-|---------------------|-----------|----------------------------------------------------------|
-| Temperature         | Number    | Current temperature                                      |
-| TempTrend           | String    | Temperature Evolution Trend (up, down, stable)           |
-| Humidity            | Number    | Current humidity in %                                    |
-| Humidex             | Number    | Computed Humidex index                                   |
-| HeatIndex           | Number    | Computed Heat Index                                      |
-| Dewpoint            | Number    | Computed Dewpoint Temperature                            |
-| DewpointDepression  | Number    | Computed Dewpoint Depression                             |
-| MinTemp             | Number    | Minimum Temperature on current day                       |
-| MaxTemp             | Number    | Maximum Temperature on current day                       |
-| DateMinTemp         | DateTime  | Date when minimum temperature was reached on current day |
-| DateMaxTemp         | DateTime  | Date when maximum temperature was reached on current day |
-| TimeStamp           | DateTime  | Timestamp when data was measured                         |
-| LastMessage         | DateTime  | Last Message emitted by the module                       |
-| LowBattery          | Switch    | Low Battery                                              |
-| BatteryVP           | Number    | Battery Level                                            |
-| RfStatus            | Number    | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| Channel ID          | Item Type            | Description                                              |
+|---------------------|----------------------|----------------------------------------------------------|
+| Temperature         | Number:Temperature   | Current temperature                                      |
+| TempTrend           | String               | Temperature Evolution Trend (up, down, stable)           |
+| Humidity            | Number:Dimensionless | Current humidity in %                                    |
+| Humidex             | Number               | Computed Humidex index                                   |
+| HeatIndex           | Number:Temperature   | Computed Heat Index                                      |
+| Dewpoint            | Number:Temperature   | Computed Dewpoint Temperature                            |
+| DewpointDepression  | Number               | Computed Dewpoint Depression                             |
+| MinTemp             | Number:Temperature   | Minimum Temperature on current day                       |
+| MaxTemp             | Number:Temperature   | Maximum Temperature on current day                       |
+| DateMinTemp         | DateTime             | Date when minimum temperature was reached on current day |
+| DateMaxTemp         | DateTime             | Date when maximum temperature was reached on current day |
+| TimeStamp           | DateTime             | Timestamp when data was measured                         |
+| LastMessage         | DateTime             | Last Message emitted by the module                       |
+| LowBattery          | Switch               | Low Battery                                              |
+| BatteryVP           | Number               | Battery Level                                            |
+| RfStatus            | Number               | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 
 All these channels are read only.
 
@@ -180,25 +180,25 @@ Number Netatmo_Indoor2_Temperature "Temperature" { channel = "netatmo:NAModule4:
 
 **Supported channels for the additional indoor module:**
 
-| Channel ID          | Item Type | Description                                              |
-|---------------------|-----------|----------------------------------------------------------|
-| Co2                 | Number    | Air Quality in ppm                                       |
-| Temperature         | Number    | Current temperature                                      |
-| TempTrend           | String    | Temperature Evolution Trend (up, down, stable)           |
-| Humidity            | Number    | Current humidity in %                                    |
-| Humidex             | Number    | Computed Humidex index                                   |
-| HeatIndex           | Number    | Computed Heat Index                                      |
-| Dewpoint            | Number    | Computed Dewpoint Temperature                            |
-| DewpointDepression  | Number    | Computed Dewpoint Depression                             |
-| MinTemp             | Number    | Minimum Temperature on current day                       |
-| MaxTemp             | Number    | Maximum Temperature on current day                       |
-| DateMinTemp         | DateTime  | Date when minimum temperature was reached on current day |
-| DateMaxTemp         | DateTime  | Date when maximum temperature was reached on current day |
-| TimeStamp           | DateTime  | Timestamp when data was measured                         |
-| LastMessage         | DateTime  | Last Message emitted by the module                       |
-| LowBattery          | Switch    | Low Battery                                              |
-| BatteryVP           | Number    | Battery Level                                            |
-| RfStatus            | Number    | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| Channel ID          | Item Type            | Description                                              |
+|---------------------|----------------------|----------------------------------------------------------|
+| Co2                 | Number:Dimensionless | Air Quality in ppm                                       |
+| Temperature         | Number:Temperature   | Current temperature                                      |
+| TempTrend           | String               | Temperature Evolution Trend (up, down, stable)           |
+| Humidity            | Number:Dimensionless | Current humidity in %                                    |
+| Humidex             | Number               | Computed Humidex index                                   |
+| HeatIndex           | Number:Temperature   | Computed Heat Index                                      |
+| Dewpoint            | Number:Temperature   | Computed Dewpoint Temperature                            |
+| DewpointDepression  | Number               | Computed Dewpoint Depression                             |
+| MinTemp             | Number:Temperature   | Minimum Temperature on current day                       |
+| MaxTemp             | Number:Temperature   | Maximum Temperature on current day                       |
+| DateMinTemp         | DateTime             | Date when minimum temperature was reached on current day |
+| DateMaxTemp         | DateTime             | Date when maximum temperature was reached on current day |
+| TimeStamp           | DateTime             | Timestamp when data was measured                         |
+| LastMessage         | DateTime             | Last Message emitted by the module                       |
+| LowBattery          | Switch               | Low Battery                                              |
+| BatteryVP           | Number               | Battery Level                                            |
+| RfStatus            | Number               | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 
 All these channels are read only.
 
@@ -213,16 +213,16 @@ Number Netatmo_Rain_Current "Rain [%.1f mm]" { channel = "netatmo:NAModule3:home
 
 **Supported channels for the rain guage:**
 
-| Channel ID          | Item Type | Description                                              |
-|---------------------|-----------|----------------------------------------------------------|
-| Rain                | Number    | Quantity of water                                        |
-| SumRain1            | Number    | Quantity of water on last hour                           |
-| SumRain24           | Number    | Quantity of water on last day                            |
-| TimeStamp           | DateTime  | Timestamp when data was measured                         |
-| LastMessage         | DateTime  | Last Message emitted by the module                       |
-| LowBattery          | Switch    | Low Battery                                              |
-| BatteryVP           | Number    | Battery Level                                            |
-| RfStatus            | Number    | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| Channel ID          | Item Type     | Description                                              |
+|---------------------|---------------|----------------------------------------------------------|
+| Rain                | Number:Length | Quantity of water                                        |
+| SumRain1            | Number:Length | Quantity of water on last hour                           |
+| SumRain24           | Number:Length | Quantity of water on last day                            |
+| TimeStamp           | DateTime      | Timestamp when data was measured                         |
+| LastMessage         | DateTime      | Last Message emitted by the module                       |
+| LowBattery          | Switch        | Low Battery                                              |
+| BatteryVP           | Number        | Battery Level                                            |
+| RfStatus            | Number        | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 
 All these channels are read only.
 
@@ -237,17 +237,17 @@ Number Netatmo_Wind_Strength "Wind Strength [%.0f KPH]" { channel = "netatmo:NAM
 
 **Supported channels for the wind module:**
 
-| Channel ID          | Item Type | Description                                              |
-|---------------------|-----------|----------------------------------------------------------|
-| WindAngle           | Number    | Current 5 minutes average wind direction                 |
-| WindStrength        | Number    | Current 5 minutes average wind speed                     |
-| GustAngle           | Number    | Direction of the last 5 minutes highest gust wind        |
-| GustStrength        | Number    | Speed of the last 5 minutes highest gust wind            |
-| TimeStamp           | DateTime  | Timestamp when data was measured                         |
-| LastMessage         | DateTime  | Last Message emitted by the module                       |
-| LowBattery          | Switch    | Low Battery                                              |
-| BatteryVP           | Number    | Battery Level                                            |
-| RfStatus            | Number    | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| Channel ID          | Item Type    | Description                                              |
+|---------------------|--------------|----------------------------------------------------------|
+| WindAngle           | Number:Angle | Current 5 minutes average wind direction                 |
+| WindStrength        | Number:Speed | Current 5 minutes average wind speed                     |
+| GustAngle           | Number:Angle | Direction of the last 5 minutes highest gust wind        |
+| GustStrength        | Number:Speed | Speed of the last 5 minutes highest gust wind            |
+| TimeStamp           | DateTime     | Timestamp when data was measured                         |
+| LastMessage         | DateTime     | Last Message emitted by the module                       |
+| LowBattery          | Switch       | Low Battery                                              |
+| BatteryVP           | Number       | Battery Level                                            |
+| RfStatus            | Number       | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 
 All these channels are read only.
 
@@ -262,28 +262,28 @@ String Netatmo_LivingRoom_HomeCoach_HealthIndex "Climate" { channel = "netatmo:N
 
 **Supported channels for the healthy home coach device:**
 
-| Channel ID          | Item Type | Description                                              |
-|---------------------|-----------|----------------------------------------------------------|
-| HealthIndex         | String    | Health Index (healthy, fine, fair, poor, unhealthy)      |
-| Co2                 | Number    | Air Quality in ppm                                       |
-| Temperature         | Number    | Current temperature                                      |
-| TempTrend           | String    | Temperature Evolution Trend (up, down, stable)           |
-| Noise               | Number    | Current Noise Level in dB                                |
-| Pressure            | Number    | Current pressure in hPa                                  |
-| PressTrend          | String    | Pressure evolution trend for last 12h (up, down, stable) |
-| AbsolutePressure    | Number    | Absolute pressure in hPa                                 |
-| Humidity            | Number    | Current humidity in %                                    |
-| MinTemp             | Number    | Minimum Temperature on current day                       |
-| MaxTemp             | Number    | Maximum Temperature on current day                       |
-| DateMinTemp         | DateTime  | Date when minimum temperature was reached on current day |
-| DateMaxTemp         | DateTime  | Date when maximum temperature was reached on current day |
-| TimeStamp           | DateTime  | Timestamp when data was measured                         |
-| LastStatusStore     | DateTime  | Last Status Store                                        |
-| WifiStatus          | Number    | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
-| Location            | Location  | Location of the device                                   |
-| Unit                | Number    | Unit system used to provide values (0 for metric or 1 for imperial |
-| WindUnit            | Number    | Unit used to report Wind speeds (0 for km/h, 1 for miles/H, 2 for m/s, 3 for Beaufort or 4 for Knot) |
-| PressureUnit        | Number    | Unit used to report Pressure values (0 for mbar, 1 for inHg or 2 for mmHg) |
+| Channel ID          | Item Type            | Description                                              |
+|---------------------|----------------------|----------------------------------------------------------|
+| HealthIndex         | String               | Health Index (healthy, fine, fair, poor, unhealthy)      |
+| Co2                 | Number:Dimensionless | Air Quality in ppm                                       |
+| Temperature         | Number:Temperature   | Current temperature                                      |
+| TempTrend           | String               | Temperature Evolution Trend (up, down, stable)           |
+| Noise               | Number:Dimensionless | Current Noise Level in dB                                |
+| Pressure            | Number:Pressure      | Current pressure in hPa                                  |
+| PressTrend          | String               | Pressure evolution trend for last 12h (up, down, stable) |
+| AbsolutePressure    | Number:Pressure      | Absolute pressure in hPa                                 |
+| Humidity            | Number:Dimensionless | Current humidity in %                                    |
+| MinTemp             | Number:Temperature   | Minimum Temperature on current day                       |
+| MaxTemp             | Number:Temperature   | Maximum Temperature on current day                       |
+| DateMinTemp         | DateTime             | Date when minimum temperature was reached on current day |
+| DateMaxTemp         | DateTime             | Date when maximum temperature was reached on current day |
+| TimeStamp           | DateTime             | Timestamp when data was measured                         |
+| LastStatusStore     | DateTime             | Last Status Store                                        |
+| WifiStatus          | Number               | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| Location            | Location             | Location of the device                                   |
+| Unit                | Number               | Unit system used to provide values (0 for metric or 1 for imperial |
+| WindUnit            | Number               | Unit used to report Wind speeds (0 for km/h, 1 for miles/H, 2 for m/s, 3 for Beaufort or 4 for Knot) |
+| PressureUnit        | Number               | Unit used to report Pressure values (0 for mbar, 1 for inHg or 2 for mmHg) |
 
 All these channels are read only.
 
@@ -309,21 +309,21 @@ All these channels are read only.
 
 **Supported channels for the thermostat module:**
 
-| Channel ID          | Item Type | Description                                                |
-|---------------------|-----------|------------------------------------------------------------|
-| Temperature         | Number    | Current temperature                                        |
-| Sp_Temperature      | Number    | Thermostat temperature setpoint                            |
-| BoilerOn            | Number    | Duration, since the previous data point, during which the boiler has been on (in seconds) |
-| BoilerOff           | Number    | Duration, since the previous data point, during which the boiler has been off (in seconds) |
-| SetpointMode        | String    | Chosen setpoint_mode (program, away, hg, manual, off, max) |
-| ThermRelayCmd       | Switch    | Indicates whether the furnace is heating or not            |
-| ThermOrientation    | Number    | Physical orientation of the thermostat module              |
-| TimeStamp           | DateTime  | Timestamp when data was measured                           |
-| SetpointEndTime     | DateTime  | Thermostat goes back to schedule after that timestamp      |
-| LastMessage         | DateTime  | Last Message emitted by the module                         |
-| LowBattery          | Switch    | Low Battery                                                |
-| BatteryVP           | Number    | Battery Level                                              |
-| RfStatus            | Number    | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| Channel ID          | Item Type          | Description                                                |
+|---------------------|--------------------|------------------------------------------------------------|
+| Temperature         | Number:Temperature | Current temperature                                        |
+| Sp_Temperature      | Number             | Thermostat temperature setpoint                            |
+| BoilerOn            | Number             | Duration, since the previous data point, during which the boiler has been on (in seconds) |
+| BoilerOff           | Number             | Duration, since the previous data point, during which the boiler has been off (in seconds) |
+| SetpointMode        | String             | Chosen setpoint_mode (program, away, hg, manual, off, max) |
+| ThermRelayCmd       | Switch             | Indicates whether the furnace is heating or not            |
+| ThermOrientation    | Number             | Physical orientation of the thermostat module              |
+| TimeStamp           | DateTime           | Timestamp when data was measured                           |
+| SetpointEndTime     | DateTime           | Thermostat goes back to schedule after that timestamp      |
+| LastMessage         | DateTime           | Last Message emitted by the module                         |
+| LowBattery          | Switch             | Low Battery                                                |
+| BatteryVP           | Number             | Battery Level                                              |
+| RfStatus            | Number             | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 
 All these channels except Sp_Temperature and SetpointMode are read only.
 
@@ -447,16 +447,16 @@ Bridge netatmo:netatmoapi:home "Netatmo API" [ clientId="*********", clientSecre
 
 ```
 # Indoor Module
-Number Netatmo_Indoor_Temperature         "Temperature [%.2f °C]"          <temperature>      { channel = "netatmo:NAMain:home:inside:Temperature" }
-Number Netatmo_Indoor_Humidity            "Humidity [%d %%]"               <humidity>         { channel = "netatmo:NAMain:home:inside:Humidity" }
+Number:Temperature Netatmo_Indoor_Temperature         "Temperature [%.1f %unit%]"          <temperature>      { channel = "netatmo:NAMain:home:inside:Temperature" }
+Number:Dimensionless Netatmo_Indoor_Humidity            "Humidity [%d %unit%]"               <humidity>         { channel = "netatmo:NAMain:home:inside:Humidity" }
 Number Netatmo_Indoor_Humidex             "Humidex [%.1f °C]"              <temperature_hot>  { channel = "netatmo:NAMain:home:inside:Humidex" }
-Number Netatmo_Indoor_HeatIndex           "HeatIndex [%.1f °C]"            <temperature_hot>  { channel = "netatmo:NAMain:home:inside:HeatIndex" }
-Number Netatmo_Indoor_Dewpoint            "Dewpoint [%.1f °C]"             <temperature_cold> { channel = "netatmo:NAMain:home:inside:Dewpoint" }
+Number:Temperature Netatmo_Indoor_HeatIndex           "HeatIndex [%.1f %unit%]"            <temperature_hot>  { channel = "netatmo:NAMain:home:inside:HeatIndex" }
+Number:Temperature Netatmo_Indoor_Dewpoint            "Dewpoint [%.1f %unit%]"             <temperature_cold> { channel = "netatmo:NAMain:home:inside:Dewpoint" }
 Number Netatmo_Indoor_DewpointDepression  "DewpointDepression [%.1f °C]"   <temperature_cold> { channel = "netatmo:NAMain:home:inside:DewpointDepression" }
-Number Netatmo_Indoor_Co2                 "Co2 [%.0f ppm]"                 <carbondioxide>    { channel = "netatmo:NAMain:home:inside:Co2" }
-Number Netatmo_Indoor_Pressure            "Pressure [%.1f mbar]"           <pressure>         { channel = "netatmo:NAMain:home:inside:Pressure" }
-Number Netatmo_Indoor_AbsolutePressure    "AbsolutePressure [%.1f mbar]"   <pressure>         { channel = "netatmo:NAMain:home:inside:AbsolutePressure" }
-Number Netatmo_Indoor_Noise               "Noise [%.0f db]"                <soundvolume>      { channel = "netatmo:NAMain:home:inside:Noise" }
+Number:Dimensionless Netatmo_Indoor_Co2                 "Co2 [%d %unit%]"                 <carbondioxide>    { channel = "netatmo:NAMain:home:inside:Co2" }
+Number:Pressure Netatmo_Indoor_Pressure            "Pressure [%.1f %unit%]"           <pressure>         { channel = "netatmo:NAMain:home:inside:Pressure" }
+Number:Pressure Netatmo_Indoor_AbsolutePressure    "AbsolutePressure [%.1f %unit%]"   <pressure>         { channel = "netatmo:NAMain:home:inside:AbsolutePressure" }
+Number:Dimensionless Netatmo_Indoor_Noise               "Noise [%d %unit%]"                <soundvolume>      { channel = "netatmo:NAMain:home:inside:Noise" }
 Number Netatmo_Indoor_WifiStatus          "WifiStatus [%s]"                <signal>           { channel = "netatmo:NAMain:home:inside:WifiStatus" }
 DateTime Netatmo_Indoor_TimeStamp         "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"  <calendar>  { channel = "netatmo:NAMain:home:inside:TimeStamp" }
 Location Netatmo_Indoor_Location          "Location"                       <movecontrol>      { channel = "netatmo:NAMain:home:inside:Location" }
@@ -466,12 +466,12 @@ Number Netatmo_Indoor_WindUnit            "WindUnit [MAP(netatmo_windunit.map):%
 Number Netatmo_Indoor_PressureUnit        "PressureUnit [MAP(netatmo_pressureunit.map):%s]"  <pressure>  { channel = "netatmo:NAMain:home:inside:PressureUnit" }
 
 # Outdoor Module
-Number Netatmo_Outdoor_Temperature        "Temperature [%.2f °C]"          <temperature>      { channel = "netatmo:NAModule1:home:outside:Temperature" }
+Number:Temperature Netatmo_Outdoor_Temperature        "Temperature [%.1f %unit%]"          <temperature>      { channel = "netatmo:NAModule1:home:outside:Temperature" }
 String Netatmo_Outdoor_TempTrend          "TempTrend [%s]"                 <line>             { channel = "netatmo:NAModule1:home:outside:TempTrend" }
-Number Netatmo_Outdoor_Humidity           "Humidity [%d %%]"               <humidity>         { channel = "netatmo:NAModule1:home:outside:Humidity" }
+Number:Dimensionless Netatmo_Outdoor_Humidity           "Humidity [%d %unit%]"               <humidity>         { channel = "netatmo:NAModule1:home:outside:Humidity" }
 Number Netatmo_Outdoor_Humidex            "Humidex [%.1f °C]"              <temperature_hot>  { channel = "netatmo:NAModule1:home:outside:Humidex" }
-Number Netatmo_Outdoor_HeatIndex          "HeatIndex [%.1f °C]"            <temperature_hot>  { channel = "netatmo:NAModule1:home:outside:HeatIndex" }
-Number Netatmo_Outdoor_Dewpoint           "Dewpoint [%.1f °C]"             <temperature_cold> { channel = "netatmo:NAModule1:home:outside:Dewpoint" }
+Number:Temperature Netatmo_Outdoor_HeatIndex          "HeatIndex [%.1f %unit%]"            <temperature_hot>  { channel = "netatmo:NAModule1:home:outside:HeatIndex" }
+Number:Temperature Netatmo_Outdoor_Dewpoint           "Dewpoint [%.1f %unit%]"             <temperature_cold> { channel = "netatmo:NAModule1:home:outside:Dewpoint" }
 Number Netatmo_Outdoor_DewpointDepression "DewpointDepression [%.1f °C]"   <temperature_cold> { channel = "netatmo:NAModule1:home:outside:DewpointDepression" }
 Number Netatmo_Outdoor_RfStatus           "RfStatus [%.0f / 5]"            <signal>           { channel = "netatmo:NAModule1:home:outside:RfStatus" }
 Switch Netatmo_Outdoor_LowBattery         "LowBattery [%s]"                <siren>            { channel = "netatmo:NAModule1:home:outside:LowBattery" }

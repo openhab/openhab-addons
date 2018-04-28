@@ -51,25 +51,25 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
             NADashboardData dashboardData = device.getDashboardData();
             switch (channelId) {
                 case CHANNEL_CO2:
-                    return toDecimalType(dashboardData.getCO2());
+                    return toQuantityType(dashboardData.getCO2(), API_CO2_UNIT);
                 case CHANNEL_TEMPERATURE:
-                    return toDecimalType(dashboardData.getTemperature());
+                    return toQuantityType(dashboardData.getTemperature(), API_TEMPERATURE_UNIT);
                 case CHANNEL_HEALTH_INDEX:
                     return toStringType(toHealthIndexString(dashboardData.getHealthIdx()));
                 case CHANNEL_MIN_TEMP:
-                    return toDecimalType(dashboardData.getMinTemp());
+                    return toQuantityType(dashboardData.getMinTemp(), API_TEMPERATURE_UNIT);
                 case CHANNEL_MAX_TEMP:
-                    return toDecimalType(dashboardData.getMaxTemp());
+                    return toQuantityType(dashboardData.getMaxTemp(), API_TEMPERATURE_UNIT);
                 case CHANNEL_TEMP_TREND:
                     return toStringType(dashboardData.getTempTrend());
                 case CHANNEL_NOISE:
-                    return toDecimalType(dashboardData.getNoise());
+                    return toQuantityType(dashboardData.getNoise(), API_NOISE_UNIT);
                 case CHANNEL_PRESSURE:
-                    return toDecimalType(dashboardData.getPressure());
+                    return toQuantityType(dashboardData.getPressure(), API_PRESSURE_UNIT);
                 case CHANNEL_PRESS_TREND:
                     return toStringType(dashboardData.getPressureTrend());
                 case CHANNEL_ABSOLUTE_PRESSURE:
-                    return toDecimalType(dashboardData.getAbsolutePressure());
+                    return toQuantityType(dashboardData.getAbsolutePressure(), API_PRESSURE_UNIT);
                 case CHANNEL_TIMEUTC:
                     return toDateTimeType(dashboardData.getTimeUtc());
                 case CHANNEL_DATE_MIN_TEMP:
@@ -77,7 +77,7 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
                 case CHANNEL_DATE_MAX_TEMP:
                     return toDateTimeType(dashboardData.getDateMaxTemp());
                 case CHANNEL_HUMIDITY:
-                    return toDecimalType(dashboardData.getHumidity());
+                    return toQuantityType(dashboardData.getHumidity(), API_HUMIDITY_UNIT);
                 case CHANNEL_WIND_UNIT:
                     return new DecimalType(userAdministrative.getWindunit());
                 case CHANNEL_PRESSURE_UNIT:
