@@ -38,6 +38,7 @@
     <module>org.openhab.binding.folding</module>
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.fronius</module>
+    <module>org.openhab.binding.ftpupload</module>
     <module>org.openhab.binding.gardena</module>
     <module>org.openhab.binding.harmonyhub</module>
     <module>org.openhab.binding.hdanywhere</module>
@@ -71,7 +72,6 @@
     <module>org.openhab.binding.netatmo</module>
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.network.test</module>
-    <module>org.openhab.binding.networkcamera</module>
     <module>org.openhab.binding.nest</module>
     <module>org.openhab.binding.nest.test</module>
     <module>org.openhab.binding.nibeheatpump</module>
