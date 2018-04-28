@@ -8,8 +8,11 @@
  */
 package org.openhab.binding.alarm.internal;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 
 /**
  * Handles a countdown for the different alarm controller delays.
@@ -17,15 +20,16 @@ import java.util.TimerTask;
  * @author Gerhard Riegler - Initial contribution
  */
 public class Countdown {
-    private Timer timer;
+    private static final String ALARM_POOL_NAME = "alarm";
+    private ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(ALARM_POOL_NAME);
+    private ScheduledFuture<?> future;
 
     /**
      * Starts a countdown and gives feedback via the callback.
      */
     public void start(final int startFrom, CountdownCallback callback) {
         stop();
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
+        future = scheduler.scheduleWithFixedDelay(new Runnable() {
             private int countdownValue = startFrom;
 
             @Override
@@ -37,25 +41,24 @@ public class Countdown {
                     callback.countdownChanged(countdownValue--);
                 }
             }
-        }, 0, 1000);
-
+        }, 0, 1, TimeUnit.SECONDS);
     }
 
     /**
      * Stops a countdown.
      */
     public void stop() {
-        if (timer != null) {
-            timer.cancel();
+        if (future != null) {
+            future.cancel(true);
         }
-        timer = null;
+        future = null;
     }
 
     /**
      * Returns true, if a countdown is active.
      */
     public boolean isActive() {
-        return timer != null;
+        return future != null;
     }
 
     /**
