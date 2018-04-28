@@ -506,7 +506,7 @@
 
     <!-- misc -->
 
-    <feature name="openhab-misc-azureiothub" description="azure IOT hub Connector" version="${project.version}">
+    <feature name="openhab-misc-azureiothub" description="Azure IoT Hub Connector" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.azureiothub/${project.version}</bundle>
     </feature>
