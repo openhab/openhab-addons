@@ -8,8 +8,11 @@
  */
 package org.openhab.binding.knx.internal.ets.parser;
 
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.knx.internal.ets.parser.knxproj13.GroupAddress;
@@ -621,32 +624,44 @@ public class KNXDPTAdvisor {
             return null;
         });
         advisorySet.add((AdvisoryFunction) (dpts, GA, manufacturer, device, expression) -> {
+            // return the ost frequent DPT, and if not a single DPT is most frequent, then return the DPT wit the
+            // highest subnumber
             if (dpts != null && dpts.size() > 1) {
-                String adviseContext = "";
-                int mainNumber = -1;
-                boolean sameMainNumber = true;
 
-                for (KNXDPTContext context : dpts) {
-                    if (mainNumber == -1) {
-                        mainNumber = getMainNumber(context.getDpt());
-                    } else {
-                        if (mainNumber != getMainNumber(context.getDpt())) {
-                            sameMainNumber = false;
-                        }
-                    }
-                }
+                if (!(dpts.stream().filter(k -> !"MOSTFREQUENT".equals(k.getContext())).map(k -> k.getDpt()).sorted()
+                        .collect(Collectors.groupingBy(w -> w, Collectors.counting())).values().stream().distinct()
+                        .count() == 1)) {
+                    String mostFrequent = dpts.stream().filter(k -> !"MOSTFREQUENT".equals(k.getContext()))
+                            .map(k -> k.getDpt()).sorted().collect(Collectors.groupingBy(w -> w, Collectors.counting()))
+                            .entrySet().stream().max(Comparator.comparing(Entry::getValue)).get().getKey();
+                    return new KNXDPTContext(mostFrequent, "MOSTFREQUENT");
+                } else {
+                    String adviseContext = "";
+                    int mainNumber = -1;
+                    boolean sameMainNumber = true;
 
-                if (sameMainNumber && mainNumber != -1) {
-                    int subNumber = -1;
                     for (KNXDPTContext context : dpts) {
-                        if (getSubNumber(context.getDpt()) > subNumber) {
-                            subNumber = getSubNumber(context.getDpt());
-                            adviseContext = context.getContext();
+                        if (mainNumber == -1) {
+                            mainNumber = getMainNumber(context.getDpt());
+                        } else {
+                            if (mainNumber != getMainNumber(context.getDpt())) {
+                                sameMainNumber = false;
+                            }
                         }
                     }
-                    if (subNumber != -1) {
-                        return new KNXDPTContext(String.valueOf(mainNumber) + "." + String.format("%03d", subNumber),
-                                adviseContext);
+
+                    if (sameMainNumber && mainNumber != -1) {
+                        int subNumber = -1;
+                        for (KNXDPTContext context : dpts) {
+                            if (getSubNumber(context.getDpt()) > subNumber) {
+                                subNumber = getSubNumber(context.getDpt());
+                                adviseContext = context.getContext();
+                            }
+                        }
+                        if (subNumber != -1) {
+                            return new KNXDPTContext(
+                                    String.valueOf(mainNumber) + "." + String.format("%03d", subNumber), adviseContext);
+                        }
                     }
                 }
             }
