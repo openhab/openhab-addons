@@ -71,12 +71,14 @@ public class EchoHandler extends BaseThingHandler {
     private @Nullable String lastKnownRadioStationId;
     private @Nullable String lastKnownBluetoothId;
     private @Nullable String lastKnownAmazonMusicId;
+    private String musicProviderId = "";
     private int lastKnownVolume = 25;
     private @Nullable BluetoothState bluetoothState;
     private boolean disableUpdate = false;
     private boolean updateRemind = true;
     private boolean updateAlarm = true;
     private boolean updateRoutine = true;
+    private boolean updatePlayMusicVoiceCommand = true;
     private @Nullable JsonNotificationResponse currentNotification;
     private @Nullable ScheduledFuture<?> currentNotifcationUpdateTimer;
 
@@ -226,6 +228,24 @@ public class EchoHandler extends BaseThingHandler {
 
                     connection.command(device, "{\"type\":\"ShuffleCommand\",\"shuffle\":\""
                             + (value == OnOffType.ON ? "true" : "false") + "\"}");
+                }
+            }
+
+            // play music command
+            if (channelId.equals(CHANNEL_PLAY_MUSIC_PROVIDER)) {
+                if (command instanceof StringType) {
+                    this.musicProviderId = ((StringType) command).toFullString();
+                    waitForUpdate = 0;
+                }
+            }
+            if (channelId.equals(CHANNEL_PLAY_MUSIC_VOICE_COMMAND)) {
+                if (command instanceof StringType) {
+                    String voiceCommand = ((StringType) command).toFullString();
+                    if (!this.musicProviderId.isEmpty()) {
+                        connection.playMusicVoiceCommand(device, this.musicProviderId, voiceCommand);
+                        waitForUpdate = 2000;
+                        updatePlayMusicVoiceCommand = true;
+                    }
                 }
             }
 
@@ -681,6 +701,11 @@ public class EchoHandler extends BaseThingHandler {
             updateRoutine = false;
             updateState(CHANNEL_START_ROUTINE, new StringType(""));
         }
+        if (updatePlayMusicVoiceCommand) {
+            updatePlayMusicVoiceCommand = false;
+            updateState(CHANNEL_PLAY_MUSIC_VOICE_COMMAND, new StringType(""));
+        }
+        updateState(CHANNEL_PLAY_MUSIC_PROVIDER, new StringType(musicProviderId));
         updateState(CHANNEL_PLAY_FLASH_BRIEFING, OnOffType.OFF);
         updateState(CHANNEL_PLAY_WEATER_REPORT, OnOffType.OFF);
         updateState(CHANNEL_PLAY_TRAFFIC_NEWS, OnOffType.OFF);

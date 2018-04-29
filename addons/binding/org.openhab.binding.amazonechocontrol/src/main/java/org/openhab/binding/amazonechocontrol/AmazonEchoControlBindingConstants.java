@@ -73,6 +73,8 @@ public class AmazonEchoControlBindingConstants {
     public static final String CHANNEL_PLAY_WEATER_REPORT = "playWeatherReport";
     public static final String CHANNEL_PLAY_TRAFFIC_NEWS = "playTrafficNews";
     public static final String CHANNEL_START_ROUTINE = "startRoutine";
+    public static final String CHANNEL_PLAY_MUSIC_PROVIDER = "playMusicProvider";
+    public static final String CHANNEL_PLAY_MUSIC_VOICE_COMMAND = "playMusicVoiceCommand";
 
     public static final String CHANNEL_SAVE = "save";
     public static final String CHANNEL_ACTIVE = "active";
@@ -87,16 +89,15 @@ public class AmazonEchoControlBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_AMAZON_MUSIC_PLAY_LIST_ID = new ChannelTypeUID(BINDING_ID,
             "amazonMusicPlayListId");
     public static final ChannelTypeUID CHANNEL_TYPE_PLAY_ALARM_SOUND = new ChannelTypeUID(BINDING_ID, "playAlarmSound");
-
     public static final ChannelTypeUID CHANNEL_TYPE_CHANNEL_PLAY_ON_DEVICE = new ChannelTypeUID(BINDING_ID,
             "playOnDevice");
+    public static final ChannelTypeUID CHANNEL_TYPE_PLAY_MUSIC_PROVIDER = new ChannelTypeUID(BINDING_ID,
+            "playMusicProvider");
 
     // List of all Properties
     public static final String DEVICE_PROPERTY_SERIAL_NUMBER = "serialNumber";
     public static final String DEVICE_PROPERTY_FAMILY = "deviceFamily";
-
     public static final String DEVICE_PROPERTY_ENTITY_ID = "entityId";
-
     public static final String DEVICE_PROPERTY_FLASH_BRIEFING_PROFILE = "configurationJson";
 
 }

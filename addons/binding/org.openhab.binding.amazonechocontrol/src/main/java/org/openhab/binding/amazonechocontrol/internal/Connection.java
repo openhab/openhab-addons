@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -45,11 +46,14 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonEnabledFeeds;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMusicProvider;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNetworkDetails;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationRequest;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSounds;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaySearchPhraseOperationPayload;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayValidationResult;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevice;
@@ -60,6 +64,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -267,17 +272,17 @@ public class Connection {
     }
 
     public String makeRequestAndReturnString(String url) throws IOException, URISyntaxException {
-        return makeRequestAndReturnString("GET", url, null, null, false);
+        return makeRequestAndReturnString("GET", url, null, false, null);
     }
 
-    private String makeRequestAndReturnString(String verb, String url, @Nullable String referer,
-            @Nullable String postData, boolean json) throws IOException, URISyntaxException {
-        HttpsURLConnection connection = makeRequest(verb, url, referer, postData, json, true);
+    private String makeRequestAndReturnString(String verb, String url, @Nullable String postData, boolean json,
+            @Nullable Map<String, String> customHeaders) throws IOException, URISyntaxException {
+        HttpsURLConnection connection = makeRequest(verb, url, postData, json, true, customHeaders);
         return convertStream(connection.getInputStream());
     }
 
-    public HttpsURLConnection makeRequest(String verb, String url, @Nullable String referer, @Nullable String postData,
-            boolean json, boolean autoredirect) throws IOException, URISyntaxException {
+    public HttpsURLConnection makeRequest(String verb, String url, @Nullable String postData, boolean json,
+            boolean autoredirect, @Nullable Map<String, String> customHeaders) throws IOException, URISyntaxException {
         String currentUrl = url;
         for (int i = 0; i < 30; i++) // loop for handling redirect, using automatic redirect is not possible, because
                                      // all response headers must be catched
@@ -292,10 +297,14 @@ public class Connection {
                 connection.setRequestProperty("User-Agent", "Mozilla/5.0");
                 connection.setRequestProperty("DNT", "1");
                 connection.setRequestProperty("Upgrade-Insecure-Requests", "1");
-                connection.setInstanceFollowRedirects(false);
-                if (referer != null) {
-                    connection.setRequestProperty("Referer", referer);
+                if (customHeaders != null) {
+                    for (String key : customHeaders.keySet()) {
+                        String value = customHeaders.get(key);
+                        connection.setRequestProperty(key, value);
+                    }
                 }
+                connection.setInstanceFollowRedirects(false);
+
                 // add cookies
                 URI uri = connection.getURL().toURI();
 
@@ -483,10 +492,12 @@ public class Connection {
 
         // build referer link
         String referer = "https://www." + amazonSite + "/ap/signin?" + queryParameters;
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Referer", referer);
 
         // make the request
-        URLConnection request = makeRequest("POST", "https://www." + amazonSite + "/ap/signin", referer, postData,
-                false, true);
+        URLConnection request = makeRequest("POST", "https://www." + amazonSite + "/ap/signin", postData, false, true,
+                headers);
 
         String response = convertStream(request.getInputStream());
         logger.debug("Received content after login {}", response);
@@ -594,7 +605,7 @@ public class Connection {
     public void command(Device device, String command) throws IOException, URISyntaxException {
         String url = alexaServer + "/api/np/command?deviceSerialNumber=" + device.serialNumber + "&deviceType="
                 + device.deviceType;
-        makeRequest("POST", url, null, command, true, true);
+        makeRequest("POST", url, command, true, true, null);
 
     }
 
@@ -602,12 +613,12 @@ public class Connection {
         if (StringUtils.isEmpty(address)) {
             // disconnect
             makeRequest("POST",
-                    alexaServer + "/api/bluetooth/disconnect-sink/" + device.deviceType + "/" + device.serialNumber,
-                    null, "", true, true);
+                    alexaServer + "/api/bluetooth/disconnect-sink/" + device.deviceType + "/" + device.serialNumber, "",
+                    true, true, null);
         } else {
             makeRequest("POST",
-                    alexaServer + "/api/bluetooth/pair-sink/" + device.deviceType + "/" + device.serialNumber, null,
-                    "{\"bluetoothDeviceAddress\":\"" + address + "\"}", true, true);
+                    alexaServer + "/api/bluetooth/pair-sink/" + device.deviceType + "/" + device.serialNumber,
+                    "{\"bluetoothDeviceAddress\":\"" + address + "\"}", true, true, null);
         }
     }
 
@@ -619,7 +630,7 @@ public class Connection {
                     alexaServer + "/api/tunein/queue-and-play?deviceSerialNumber=" + device.serialNumber
                             + "&deviceType=" + device.deviceType + "&guideId=" + stationId
                             + "&contentType=station&callSign=&mediaOwnerCustomerId=" + device.deviceOwnerCustomerId,
-                    null, "", true, true);
+                    "", true, true, null);
         }
     }
 
@@ -632,7 +643,7 @@ public class Connection {
                     alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
                             + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
                             + device.deviceOwnerCustomerId + "&shuffle=false",
-                    null, command, true, true);
+                    command, true, true, null);
         }
     }
 
@@ -646,7 +657,7 @@ public class Connection {
                     alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
                             + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
                             + device.deviceOwnerCustomerId + "&shuffle=false",
-                    null, command, true, true);
+                    command, true, true, null);
         }
     }
 
@@ -658,7 +669,7 @@ public class Connection {
                 + "\\\",\\\"deviceSerialNumber\\\":\\\"" + device.serialNumber + "\\\",\\\"customerId\\\":\\\""
                 + device.deviceOwnerCustomerId + "\\\",\\\"locale\\\":\\\"\\\"}}}\",\n" + " \"status\": \"ENABLED\" }";
 
-        makeRequest("POST", alexaServer + "/api/behaviors/preview", null, json, true, true);
+        makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null);
     }
 
     public void startRoutine(Device device, String utterance) throws IOException, URISyntaxException {
@@ -720,21 +731,20 @@ public class Connection {
             request.sequenceJson = sequenceJson;
 
             String requestJson = gson.toJson(request);
-            makeRequest("POST", alexaServer + "/api/behaviors/preview", null, requestJson, true, true);
+            makeRequest("POST", alexaServer + "/api/behaviors/preview", requestJson, true, true, null);
         } else {
             logger.warn("Routine {} not found", utterance);
         }
     }
 
     public JsonAutomation[] getRoutines() throws IOException, URISyntaxException {
-        String json = makeRequestAndReturnString("GET", alexaServer + "/api/behaviors/automations", null, null, true);
+        String json = makeRequestAndReturnString(alexaServer + "/api/behaviors/automations");
         JsonAutomation[] result = parseJson(json, JsonAutomation[].class);
         return result;
     }
 
     public JsonFeed[] getEnabledFlashBriefings() throws IOException, URISyntaxException {
-        String json = makeRequestAndReturnString("GET", alexaServer + "/api/content-skills/enabled-feeds", null, null,
-                true);
+        String json = makeRequestAndReturnString(alexaServer + "/api/content-skills/enabled-feeds");
         JsonEnabledFeeds result = parseJson(json, JsonEnabledFeeds.class);
         JsonFeed[] enabledFeeds = result.enabledFeeds;
         if (enabledFeeds != null) {
@@ -750,14 +760,13 @@ public class Connection {
         gsonBuilder.serializeNulls();
         Gson gson = gsonBuilder.create();
         String json = gson.toJson(enabled);
-        makeRequest("POST", alexaServer + "/api/content-skills/enabled-feeds", null, json, true, true);
+        makeRequest("POST", alexaServer + "/api/content-skills/enabled-feeds", json, true, true, null);
     }
 
     public JsonNotificationSound[] getNotificationSounds(Device device) throws IOException, URISyntaxException {
         String json = makeRequestAndReturnString(
-                "GET", alexaServer + "/api/notification/sounds?deviceSerialNumber=" + device.serialNumber
-                        + "&deviceType=" + device.deviceType + "&softwareVersion=" + device.softwareVersion,
-                null, null, true);
+                alexaServer + "/api/notification/sounds?deviceSerialNumber=" + device.serialNumber + "&deviceType="
+                        + device.deviceType + "&softwareVersion=" + device.softwareVersion);
         JsonNotificationSounds result = parseJson(json, JsonNotificationSounds.class);
         JsonNotificationSound[] notificationSounds = result.notificationSounds;
         if (notificationSounds != null) {
@@ -792,27 +801,95 @@ public class Connection {
         Gson gson = gsonBuilder.create();
 
         String data = gson.toJson(request);
-        String response = makeRequestAndReturnString("PUT", alexaServer + "/api/notifications/createReminder", null,
-                data, true);
+        String response = makeRequestAndReturnString("PUT", alexaServer + "/api/notifications/createReminder", data,
+                true, null);
         JsonNotificationResponse result = parseJson(response, JsonNotificationResponse.class);
         return result;
     }
 
     public void stopNotification(JsonNotificationResponse notification) throws IOException, URISyntaxException {
-        makeRequestAndReturnString("DELETE", alexaServer + "/api/notifications/" + notification.id, null, null, true);
+        makeRequestAndReturnString("DELETE", alexaServer + "/api/notifications/" + notification.id, null, true, null);
     }
 
     public JsonNotificationResponse getNotificationState(JsonNotificationResponse notification)
             throws IOException, URISyntaxException {
         String response = makeRequestAndReturnString("GET", alexaServer + "/api/notifications/" + notification.id, null,
-                null, true);
+                true, null);
         JsonNotificationResponse result = parseJson(response, JsonNotificationResponse.class);
         return result;
     }
 
+    public List<JsonMusicProvider> getMusicProviders() {
+        String response;
+        try {
+            Map<String, String> headers = new HashMap<String, String>();
+            headers.put("Routines-Version", "1.1.201102");
+            response = makeRequestAndReturnString("GET",
+                    alexaServer + "/api/behaviors/entities?skillId=amzn1.ask.1p.music", null, true, headers);
+        } catch (IOException | URISyntaxException e) {
+            logger.warn("getMusicProviders fails: {}", e.getMessage());
+            return new ArrayList<>();
+        }
+        if (StringUtils.isEmpty(response)) {
+            return new ArrayList<>();
+        }
+        JsonMusicProvider[] result = parseJson(response, JsonMusicProvider[].class);
+        return Arrays.asList(result);
+    }
+
+    public void playMusicVoiceCommand(Device device, String providerId, String voiceCommand)
+            throws IOException, URISyntaxException {
+        JsonPlaySearchPhraseOperationPayload payload = new JsonPlaySearchPhraseOperationPayload();
+        payload.customerId = device.deviceOwnerCustomerId;
+        payload.locale = "ALEXA_CURRENT_LOCALE";
+        payload.musicProviderId = providerId;
+        payload.searchPhrase = voiceCommand;
+
+        Gson gson = new Gson();
+        String playloadString = gson.toJson(payload);
+
+        JsonObject postValidataionJson = new JsonObject();
+
+        postValidataionJson.addProperty("type", "Alexa.Music.PlaySearchPhrase");
+        postValidataionJson.addProperty("operationPayload", playloadString);
+
+        String postDataValidate = postValidataionJson.toString();
+
+        String validateResultJson = makeRequestAndReturnString("POST",
+                alexaServer + "/api/behaviors/operation/validate", postDataValidate, true, null);
+
+        if (StringUtils.isNotEmpty(validateResultJson)) {
+            JsonPlayValidationResult validationResult = parseJson(validateResultJson, JsonPlayValidationResult.class);
+            JsonPlaySearchPhraseOperationPayload validatedOperationPayload = validationResult.operationPayload;
+            if (validatedOperationPayload != null) {
+                payload.sanitizedSearchPhrase = validatedOperationPayload.sanitizedSearchPhrase;
+                payload.searchPhrase = validatedOperationPayload.searchPhrase;
+            }
+        }
+
+        payload.locale = null;
+        payload.deviceSerialNumber = device.serialNumber;
+        payload.deviceType = device.deviceType;
+
+        JsonObject sequenceJson = new JsonObject();
+        sequenceJson.addProperty("@type", "com.amazon.alexa.behaviors.model.Sequence");
+        JsonObject startNodeJson = new JsonObject();
+        startNodeJson.addProperty("@type", "com.amazon.alexa.behaviors.model.OpaquePayloadOperationNode");
+        startNodeJson.addProperty("type", "Alexa.Music.PlaySearchPhrase");
+        startNodeJson.add("operationPayload", gson.toJsonTree(payload));
+        sequenceJson.add("startNode", startNodeJson);
+
+        JsonStartRoutineRequest startRoutineRequest = new JsonStartRoutineRequest();
+        startRoutineRequest.sequenceJson = sequenceJson.toString();
+        startRoutineRequest.status = null;
+
+        String postData = gson.toJson(startRoutineRequest);
+        makeRequest("POST", alexaServer + "/api/behaviors/preview", postData, true, true, null);
+    }
+
     public List<JsonSmartHomeDevice> getSmartHomeDevices() throws IOException, URISyntaxException {
         try {
-            String json = makeRequestAndReturnString("GET", alexaServer + "/api/phoenix", null, null, true);
+            String json = makeRequestAndReturnString(alexaServer + "/api/phoenix");
             logger.debug("getSmartHomeDevices result: {}", json);
 
             JsonNetworkDetails networkDetails = parseJson(json, JsonNetworkDetails.class);
@@ -853,7 +930,7 @@ public class Connection {
                 + (parameterName != null ? ", \"" + parameterName + "\": \"" + parameter + "\"" : "") + "   }" + "}]"
                 + "}";
 
-        String json = makeRequestAndReturnString("PUT", alexaServer + "/api/phoenix/state", null, command, true);
+        String json = makeRequestAndReturnString("PUT", alexaServer + "/api/phoenix/state", command, true, null);
         json.toString();
     }
 }

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,6 +31,7 @@ import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.PairedDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMusicProvider;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists.PlayList;
@@ -193,7 +195,36 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                     originalStateDescription.getMaximum(), originalStateDescription.getStep(),
                     originalStateDescription.getPattern(), originalStateDescription.isReadOnly(), options);
             return result;
+        } else if (CHANNEL_TYPE_PLAY_MUSIC_PROVIDER.equals(channel.getChannelTypeUID())) {
+            EchoHandler handler = EchoHandler.find(channel.getUID().getThingUID());
+            if (handler == null) {
+                return originalStateDescription;
+            }
+            Connection connection = handler.findConnection();
+            if (connection == null) {
+                return originalStateDescription;
+            }
+            List<JsonMusicProvider> musicProviders = connection.getMusicProviders();
+
+            ArrayList<StateOption> options = new ArrayList<StateOption>();
+            for (JsonMusicProvider musicProvider : musicProviders) {
+                @Nullable
+                List<@Nullable String> properties = musicProvider.supportedProperties;
+                String providerId = musicProvider.id;
+                String displayName = musicProvider.displayName;
+                if (properties != null && properties.contains("Alexa.Music.PlaySearchPhrase")
+                        && StringUtils.isNotEmpty(providerId)
+                        && StringUtils.equals(musicProvider.availability, "AVAILABLE")
+                        && StringUtils.isNotEmpty(displayName)) {
+                    options.add(new StateOption(providerId, String.format("%s [%s]", displayName, providerId)));
+                }
+            }
+            StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
+                    originalStateDescription.getMaximum(), originalStateDescription.getStep(),
+                    originalStateDescription.getPattern(), originalStateDescription.isReadOnly(), options);
+            return result;
         }
         return originalStateDescription;
     }
+
 }

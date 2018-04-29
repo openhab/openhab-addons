@@ -85,7 +85,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
 
     @Override
     public void initialize() {
-        logger.debug("amazon account bridge starting handler ...");
+        logger.debug("amazon account bridge starting...");
 
         AccountConfiguration config = getConfigAs(AccountConfiguration.class);
 

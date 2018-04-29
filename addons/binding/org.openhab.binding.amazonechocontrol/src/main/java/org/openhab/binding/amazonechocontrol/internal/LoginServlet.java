@@ -13,6 +13,7 @@ import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingCons
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -189,7 +190,13 @@ public class LoginServlet extends HttpServlet {
             @Nullable String postData) throws IOException {
         HttpsURLConnection urlConnection;
         try {
-            urlConnection = connection.makeRequest(verb, url, referer, postData, false, false);
+            Map<String, String> headers = null;
+            if (referer != null) {
+                headers = new HashMap<String, String>();
+                headers.put("Referer", referer);
+            }
+
+            urlConnection = connection.makeRequest(verb, url, postData, false, false, headers);
             if (urlConnection.getResponseCode() == 302) {
                 {
                     String location = urlConnection.getHeaderField("location");

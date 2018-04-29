@@ -18,6 +18,7 @@ It provide features to control and view the current state of echo devices:
 - start weather report
 - start automation routine
 - activate multiple configurations of flash briefings
+- start playing music by providing the voice command as text (Works with all music providers)
 
 Some ideas what you can do in your home by using rules and other openHAB controlled devices:
 
@@ -125,6 +126,8 @@ The flashbriefingprofile thing has no configuration parameters. It will be confi
 | playWeatherReport          | Switch    | W         | echo, echoshow, echospot, unknown      | Write Only! Starts the weather report
 | playTrafficNews            | Switch    | W         | echo, echoshow, echospot, unknown      | Write Only! Starts the traffic news
 | startRoutine               | Switch    | W         | echo, echoshow, echospot, unknown      | Write Only! Type in what you normally say to Alexa without the preceding "Alexa," 
+| playMusicProvider          | String    | W         | echo, echoshow, echospot, unknown      | Write Only! Music provider used for 'Start music voice command' 
+| playMusicVoiceCommand      | String    | W         | echo, echoshow, echospot, unknown      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles' 
 | save            | Switch    | W         | flashbriefingprofile     | Write Only! Stores the current configuration of flash briefings within the thing
 | active          | Switch    | R/W       | flashbriefingprofile     | Active the profile
 | playOnDevice    | String    | W         | flashbriefingprofile     | Specify the echo serial number or name to start the flash briefing. 
@@ -178,6 +181,8 @@ Switch Echo_Living_Room_PlayFlashBriefing         "Play Flash Briefing"         
 Switch Echo_Living_Room_PlayWeatherReport         "Play Weather Report"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playWeatherReport"}
 Switch Echo_Living_Room_PlayTrafficNews        "Play Traffic News"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playTrafficNews"}
 String Echo_Living_Room_StartRoutine         "Start Routine"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:startRoutine"}
+String Echo_Living_Room_PlayMusicProvider    "Music Provider (Write Only)"             (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playMusicProvider"}
+String Echo_Living_Room_PlayMusicCommand     "Play music voice command (Write Only)"    (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playMusicVoiceCommand"}
 
 Switch FlashBriefing_Technical_Save  "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"} 
 Switch FlashBriefing_Technical_Active "Active" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:active"}

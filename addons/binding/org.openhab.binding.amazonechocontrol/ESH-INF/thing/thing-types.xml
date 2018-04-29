@@ -76,6 +76,8 @@
             <channel id="playTrafficNews" typeId="playTrafficNews" />
             <channel id="playWeatherReport" typeId="playWeatherReport" />
             <channel id="startRoutine" typeId="startRoutine" />
+            <channel id="playMusicProvider" typeId="playMusicProvider" />
+            <channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
         </channels>
         <representation-property>serialNumber</representation-property>
         <config-description>
@@ -116,6 +118,8 @@
             <channel id="playTrafficNews" typeId="playTrafficNews" />
             <channel id="playWeatherReport" typeId="playWeatherReport" />
             <channel id="startRoutine" typeId="startRoutine" />
+            <channel id="playMusicProvider" typeId="playMusicProvider" />
+            <channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
         </channels>
         <representation-property>serialNumber</representation-property>
         <config-description>
@@ -156,6 +160,8 @@
             <channel id="playTrafficNews" typeId="playTrafficNews" />
             <channel id="playWeatherReport" typeId="playWeatherReport" />
             <channel id="startRoutine" typeId="startRoutine" />
+            <channel id="playMusicProvider" typeId="playMusicProvider" />
+            <channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
         </channels>
         <representation-property>serialNumber</representation-property>
         <config-description>
@@ -225,6 +231,8 @@
             <channel id="playTrafficNews" typeId="playTrafficNews" />
             <channel id="playWeatherReport" typeId="playWeatherReport" />
             <channel id="startRoutine" typeId="startRoutine" />
+            <channel id="playMusicProvider" typeId="playMusicProvider" />
+            <channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
         </channels>
         <representation-property>serialNumber</representation-property>
         <config-description>
@@ -358,7 +366,7 @@
     </channel-type>
     <channel-type id="amazonMusicPlayListId">
         <item-type>String</item-type>
-        <label>Amazon music play list id (Write only)</label>
+        <label>Amazon music play list id</label>
         <description>Amazon Music play list id (Write only, no current state)</description>
     </channel-type>
     <channel-type id="amazonMusicPlayListIdLastUsed">
@@ -435,5 +443,15 @@
         <item-type>Dimmer</item-type>
         <label>Volume</label>
         <description>Volume of the sound</description>
+    </channel-type>
+    <channel-type id="playMusicProvider">
+        <item-type>String</item-type>
+        <label>Music provider for the start music voice command</label>
+        <description>Music provider used for 'Start music voice command' (Write only)</description>
+    </channel-type>
+    <channel-type id="playMusicVoiceCommand">
+        <item-type>String</item-type>
+        <label>Start music voice command</label>
+        <description>Voice command as text. E.g. 'Yesterday from the Beatles' (Write only)</description>
     </channel-type>
 </thing:thing-descriptions>

@@ -12,13 +12,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link JsonStartRoutineRequest} encapsulate the GSON for starting a routine
+ * The {@link JsonPlayValidationResult} encapsulate the GSON for validation result
  *
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
-public class JsonStartRoutineRequest {
-    public @Nullable String behaviorId = "PREVIEW";
-    public @Nullable String sequenceJson;
-    public @Nullable String status = "ENABLED";
+public class JsonPlayValidationResult {
+    public @Nullable JsonPlaySearchPhraseOperationPayload operationPayload;
 }

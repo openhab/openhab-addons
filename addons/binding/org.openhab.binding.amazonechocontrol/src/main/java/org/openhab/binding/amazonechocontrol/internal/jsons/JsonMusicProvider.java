@@ -8,17 +8,23 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link JsonStartRoutineRequest} encapsulate the GSON for starting a routine
+ * The {@link JsonMusicProvider} encapsulate the GSON returned for a music provider
  *
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
-public class JsonStartRoutineRequest {
-    public @Nullable String behaviorId = "PREVIEW";
-    public @Nullable String sequenceJson;
-    public @Nullable String status = "ENABLED";
+public class JsonMusicProvider {
+    public @Nullable String displayName;
+    public @Nullable List<@Nullable Object> @Nullable [] supportedTriggers;
+    public @Nullable String icon;
+    public @Nullable List<@Nullable String> supportedProperties;
+    public @Nullable String id;
+    public @Nullable String availability;
+    public @Nullable String description;
 }
