@@ -12,6 +12,7 @@ import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.List;
 
@@ -148,20 +149,20 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                         break;
                     }
                     case CHANNEL_SETPOINT_TEMP: {
-                        QuantityType<Temperature> targetTemp;
+                        BigDecimal spTemp;
                         if (command instanceof QuantityType) {
-                            targetTemp = ((QuantityType<Temperature>) command).toUnit(API_TEMPERATURE_UNIT);
+                            spTemp = ((QuantityType<Temperature>) command).toUnit(API_TEMPERATURE_UNIT)
+                                    .toBigDecimal().setScale(1, RoundingMode.HALF_UP);
                         } else {
-                            targetTemp = new QuantityType<Temperature>(new BigDecimal(command.toString()),
-                                    API_TEMPERATURE_UNIT);
+                            spTemp = new BigDecimal(command.toString()).setScale(1, RoundingMode.HALF_UP);
                         }
-                        if (targetTemp != null) {
+                        if (spTemp != null) {
                             // Switch the thermostat to manual mode on the desired setpoint for given duration
                             Calendar cal = Calendar.getInstance();
                             cal.add(Calendar.MINUTE, getSetPointDefaultDuration());
                             getBridgeHandler().getThermostatApi().setthermpoint(getParentId(), getId(), "manual",
-                                    (int) (cal.getTimeInMillis() / 1000), targetTemp.floatValue());
-                            updateState(channelUID, targetTemp);
+                                    (int) (cal.getTimeInMillis() / 1000), spTemp.floatValue());
+                            updateState(channelUID, new QuantityType<Temperature>(spTemp, API_TEMPERATURE_UNIT));
                             requestParentRefresh();
                         }
                         break;
