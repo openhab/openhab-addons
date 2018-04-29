@@ -230,14 +230,14 @@
 		<description>The controller's runstate. 1 = Not Connected, 2-7 = Startup Initialization Sequence, 8 = Connected and
 			Ready, 9-12 = Connected and Busy Executing Command
 		</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="system-model" advanced="true">
 		<item-type>Number</item-type>
 		<label>Model</label>
 		<description>The model number of the Aqualink® controller</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="system-dip" advanced="true">
@@ -246,14 +246,14 @@
 		<description>The current state of the Aqualink® controller's dip switches. Possible values: 8 binary digits
 			representing S1-S8 from left to right
 		</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="system-opmode">
 		<item-type>Number</item-type>
 		<label>Operation Mode</label>
 		<description>The current state of the Aqualink® controller</description>
-		<state pattern="%d">
+		<state>
 			<options>
 				<option value="0">Auto</option>
 				<option value="1">Service</option>
@@ -265,14 +265,14 @@
 		<item-type>Number</item-type>
 		<label>Battery Voltage</label>
 		<description>The voltage of the Aqualink® controller's battery</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="system-lowbat">
 		<item-type>Number</item-type>
 		<label>Battery State</label>
 		<description>The current state of the Aqualink® controller's battery</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 			<options>
 				<option value="0">Normal</option>
 				<option value="1">Low</option>
@@ -301,7 +301,7 @@
 		<item-type>Number</item-type>
 		<label>Heater</label>
 		<description>The current state of the heater</description>
-		<state pattern="%d">
+		<state pattern="%s">
 			<options>
 				<option value="0">Off</option>
 				<option value="1">Enabled</option>
@@ -313,14 +313,14 @@
 		<item-type>Number</item-type>
 		<label>Auxiliary</label>
 		<description>The current state of auxiliary channel</description>
-		<state pattern="%d">
+		<state pattern="%s">
 			<options>
 				<option value="0">Off</option>
 				<option value="1">On</option>
-				<option value="25">25% (Only if Aux is Dimmer)</option>
-				<option value="50">50% (Only if Aux is Dimmer)</option>
-				<option value="75">75% (Only if Aux is Dimmer)</option>
-				<option value="100">100% (Only if Aux is Dimmer)</option>
+				<option value="25">25%</option>
+				<option value="50">50%</option>
+				<option value="75">75%</option>
+				<option value="100">100%</option>
 			</options>
 		</state>
 	</channel-type>
@@ -346,14 +346,14 @@
 		<label>Air Temperature</label>
 		<description>The current air temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true" pattern="%d°">
 		</state>
 	</channel-type>
 	<channel-type id="temp-tempunits" advanced="true">
 		<item-type>String</item-type>
 		<label>Temperature Units</label>
 		<description>The selected units for temperature</description>
-		<state pattern="%s">
+		<state>
 			<options>
 				<option value="F">Fahrenheit</option>
 				<option value="C">Celsius</option>
@@ -367,29 +367,21 @@
 		<item-type>String</item-type>
 		<label>Pump 1</label>
 		<description>Pump 1</description>
-		<state pattern="%s">
-		</state>
 	</channel-type>
 	<channel-type id="pumps-vsp2">
 		<item-type>String</item-type>
 		<label>Pump 2</label>
 		<description>Pump 2</description>
-		<state pattern="%s">
-		</state>
 	</channel-type>
 	<channel-type id="pumps-vsp3">
 		<item-type>String</item-type>
 		<label>Pump 3</label>
 		<description>Pump 3</description>
-		<state pattern="%s">
-		</state>
 	</channel-type>
 	<channel-type id="pumps-vsp4">
 		<item-type>String</item-type>
 		<label>Pump 4</label>
 		<description>Pump 4</description>
-		<state pattern="%s">
-		</state>
 	</channel-type>
 
 	<!-- Chem Channels -->
@@ -398,91 +390,87 @@
 		<item-type>Number</item-type>
 		<label>Equipment is Available</label>
 		<description>Indicates what equipment is available</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="chem-chlrp" advanced="true">
 		<item-type>Number</item-type>
 		<label>Pool Chlorination Setpoint</label>
 		<description>Pool chlorination setpoint</description>
-		<state pattern="%d">
-		</state>
 	</channel-type>
 	<channel-type id="chem-saltp" advanced="true">
 		<item-type>Number</item-type>
 		<label>Pool Salt Level</label>
 		<description>Pool salt level</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="chem-chlrs" advanced="true">
 		<item-type>Number</item-type>
 		<label>Spa Chlorination Setpoint</label>
 		<description>Spa chlorination setpoint</description>
-		<state pattern="%d">
-		</state>
 	</channel-type>
 	<channel-type id="chem-salts" advanced="true">
 		<item-type>Number</item-type>
 		<label>Spa Salt Level</label>
 		<description>Spa salt level</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="chem-orp1" advanced="true">
 		<item-type>Number</item-type>
 		<label>ORP Unit 1</label>
 		<description>ORP reading from unit 1</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="chem-orp2" advanced="true">
 		<item-type>Number</item-type>
 		<label>ORP Unit 2</label>
 		<description>ORP reading from unit 2</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="chem-ph1" advanced="true">
 		<item-type>Number</item-type>
 		<label>PH Unit 1</label>
 		<description>PH reading from unit 1</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="chem-ph2" advanced="true">
 		<item-type>Number</item-type>
 		<label>PH Unit 2</label>
 		<description>PH reading from unit 2</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="chem-orpfd1" advanced="true">
 		<item-type>Number</item-type>
 		<label>ORP Feed Unit 1</label>
 		<description>ORP feed from unit 1</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="chem-orpfd2" advanced="true">
 		<item-type>Number</item-type>
 		<label>ORP Feed Unit 2</label>
 		<description>ORP feed from unit 2</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="chem-phfd1" advanced="true">
 		<item-type>Number</item-type>
 		<label>PH Feed Unit 1</label>
 		<description>PH feed from unit 1</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="chem-phfd2" advanced="true">
 		<item-type>Number</item-type>
 		<label>PH Feed Unit 2</label>
 		<description>PH feed from unit 2</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 

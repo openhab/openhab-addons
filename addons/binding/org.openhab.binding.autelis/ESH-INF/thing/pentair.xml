@@ -207,28 +207,28 @@
 		<item-type>Number</item-type>
 		<label>Runstate</label>
 		<description>The controller's runstate. 1 = Starting Up, 2-49 = Getting Data, 50 = Ready</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="system-model" advanced="true">
 		<item-type>Number</item-type>
 		<label>Model</label>
 		<description>The model of the Intellitouch® controller</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="system-haddr" advanced="true">
 		<item-type>Number</item-type>
 		<label>Hardware Address</label>
 		<description>The controller's harware address</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="system-opmode">
 		<item-type>Number</item-type>
 		<label>Operation Mode</label>
 		<description>The current state of the Intellitouch® controller</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 			<options>
 				<option value="0">Auto</option>
 				<option value="1">Service/Timeout</option>
@@ -239,7 +239,7 @@
 		<item-type>Number</item-type>
 		<label>Freeze State</label>
 		<description>The state of freeze protect</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>
 				<option value="1">On</option>
@@ -250,7 +250,7 @@
 		<item-type>Number</item-type>
 		<label>Sensor</label>
 		<description>The state of a sensor (water sensor)</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 			<options>
 				<option value="0">OK</option>
 				<option value="1">ERROR</option>
@@ -288,7 +288,7 @@
 		<label>Heater Status</label>
 		<description>The current hi-temp heater settings</description>
 		<category>Temperature</category>
-		<state pattern="%d">
+		<state>
 			<options>
 				<option value="0">Off</option>
 				<option value="1">Heater</option>
@@ -301,7 +301,7 @@
 		<item-type>Number</item-type>
 		<label>Heat Status</label>
 		<description>Heat Status</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="temp-poolsp">
@@ -321,7 +321,7 @@
 		<label>Pool Temp</label>
 		<description>The current pool temperature. Note: Only accurate when pool is running</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="temp-spatemp">
@@ -329,7 +329,7 @@
 		<label>Spa Temperature</label>
 		<description>The current spa temperature. Note: Only accurate when spa is running</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="temp-airtemp">
@@ -337,14 +337,14 @@
 		<label>Air Temperature</label>
 		<description>The current air temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="temp-tempunits" advanced="true">
 		<item-type>String</item-type>
 		<label>Temperature Units</label>
 		<description>The selected units for temperature</description>
-		<state readOnly="true" pattern="%s">
+		<state readOnly="true">
 			<options>
 				<option value="F">Fahrenheit</option>
 				<option value="C">Celsius</option>
@@ -355,7 +355,7 @@
 		<item-type>Number</item-type>
 		<label>Heat Pump</label>
 		<description>Heat Pump</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 
@@ -365,49 +365,49 @@
 		<item-type>String</item-type>
 		<label>Pump 1</label>
 		<description>Pump 1 raw value</description>
-		<state readOnly="true" pattern="%s">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="pumps-pump1-watts">
 		<item-type>Number</item-type>
 		<label>Pump 1 Watts</label>
 		<description>Pump 1 watts</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="pumps-pump1-rpm">
 		<item-type>Number</item-type>
 		<label>Pump 1 RPM</label>
 		<description>Pump 1 RPM</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="pumps-pump1-gpm">
 		<item-type>Number</item-type>
 		<label>Pump 1 GPM</label>
 		<description>Pump 1 GPM</description>
-		<state readOnly="true" pattern="%s">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="pumps-pump1-filter">
 		<item-type>Number</item-type>
 		<label>Pump 1 Filter</label>
 		<description>Pump 1</description>
-		<state readOnly="true" pattern="%%%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="pumps-pump1-error">
 		<item-type>Number</item-type>
 		<label>Pump 1 Error</label>
 		<description>Pump 1 error status</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="pumps-pump">
 		<item-type>String</item-type>
 		<label>Pump 2</label>
 		<description>Pump 2</description>
-		<state readOnly="true" pattern="%s">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 
@@ -417,49 +417,45 @@
 		<item-type>Number</item-type>
 		<label>Chlorine</label>
 		<description>Chlorine</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="chlor-poolsp" advanced="true">
 		<item-type>Number</item-type>
 		<label>Chlorine Pool Setpoint</label>
 		<description>Chlorine Pool Setpoint</description>
-		<state pattern="%d">
-		</state>
 	</channel-type>
 	<channel-type id="chlor-spasp" advanced="true">
 		<item-type>Number</item-type>
 		<label>Chlorine Spa Setpoint</label>
 		<description>Chlorine Sap Setpoint</description>
-		<state pattern="%d">
-		</state>
 	</channel-type>
 	<channel-type id="chlor-salt">
 		<item-type>Number</item-type>
 		<label>Chlorine Salt Level</label>
 		<description>Chlorine Salt Level</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="chlor-super" advanced="true">
 		<item-type>Number</item-type>
 		<label>Chlorine Super Level</label>
 		<description>Chlorine Super Level</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="chlor-chlorerr" advanced="true">
 		<item-type>Number</item-type>
 		<label>Chlorine Error</label>
 		<description>Chlorine Error value</description>
-		<state readOnly="true" pattern="%d">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="chlor-chlorname" advanced="true">
 		<item-type>String</item-type>
 		<label>Chlorine Model Name</label>
 		<description>Chlorine Model Name</description>
-		<state readOnly="true" pattern="%s">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="lightscmd">
@@ -467,7 +463,7 @@
 		<label>Lighting Cmd</label>
 		<description>Send A lighting command</description>
 		<category>ColorLight</category>
-		<state readOnly="false" pattern="%s">
+		<state>
 			<options>
 				<option value="alloff">All Off</option>
 				<option value="allon">All On</option>
