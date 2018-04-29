@@ -702,8 +702,8 @@ public class SmokeTest extends IntegrationTestSupport {
 
         float averagePollPeriodMillis = ((float) (end - start)) / (responses - 1);
         assertTrue(String.valueOf(averagePollPeriodMillis), averagePollPeriodMillis > 145);
-        // Sometimes the CI slow, so allow average poll period of 250ms even though it should be 150ms
-        assertTrue(String.valueOf(averagePollPeriodMillis), averagePollPeriodMillis < 250);
+        // Sometimes the CI slow, so allow average poll period of 300ms even though it should be 150ms
+        assertTrue(String.valueOf(averagePollPeriodMillis), averagePollPeriodMillis < 300);
     }
 
     @Test
@@ -761,8 +761,8 @@ public class SmokeTest extends IntegrationTestSupport {
 
         float averagePollPeriodMillis = ((float) (end - start)) / (responses - 1);
         assertTrue(String.valueOf(averagePollPeriodMillis), averagePollPeriodMillis > 145);
-        // Sometimes the CI slow, so allow average poll period of 250ms even though it should be 150ms
-        assertTrue(String.valueOf(averagePollPeriodMillis), averagePollPeriodMillis < 250);
+        // Sometimes the CI slow, so allow average poll period of 300ms even though it should be 150ms
+        assertTrue(String.valueOf(averagePollPeriodMillis), averagePollPeriodMillis < 300);
 
         // Sleep for half a second, well enough time for some more polls
         Thread.sleep(500);
@@ -826,8 +826,8 @@ public class SmokeTest extends IntegrationTestSupport {
 
         float averagePollPeriodMillis = ((float) (end - start)) / (responses - 1);
         assertTrue(String.valueOf(averagePollPeriodMillis), averagePollPeriodMillis > 190);
-        // Sometimes the CI slow, so allow average poll period of 280ms even though it should be 2000ms
-        assertTrue(String.valueOf(averagePollPeriodMillis), averagePollPeriodMillis < 280);
+        // Sometimes the CI slow, so allow average poll period of 400ms even though it should be 200ms
+        assertTrue(String.valueOf(averagePollPeriodMillis), averagePollPeriodMillis < 400);
     }
 
     @SuppressWarnings("null")
