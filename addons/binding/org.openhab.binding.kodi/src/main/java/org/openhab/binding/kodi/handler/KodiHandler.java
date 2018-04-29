@@ -24,9 +24,11 @@ import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -246,6 +248,9 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             case CHANNEL_PVR_CHANNEL:
             case CHANNEL_THUMBNAIL:
             case CHANNEL_FANART:
+            case CHANNEL_CURRENTTIME:
+            case CHANNEL_CURRENTTIMEPERCENTAGE:
+            case CHANNEL_DURATION:
                 if (RefreshType.REFRESH == command) {
                     connection.updatePlayerStatus();
                 }
@@ -658,6 +663,24 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void updateFanart(RawType fanart) {
         updateState(CHANNEL_FANART, createImage(fanart));
+    }
+
+    @Override
+    public void updateCurrentTime(long currentTime) {
+        updateState(CHANNEL_CURRENTTIME,
+                currentTime < 0 ? UnDefType.UNDEF : new QuantityType<>(currentTime, SmartHomeUnits.SECOND));
+    }
+
+    @Override
+    public void updateCurrentTimePercentage(double currentTimePercentage) {
+        updateState(CHANNEL_CURRENTTIMEPERCENTAGE, currentTimePercentage < 0 ? UnDefType.UNDEF
+                : new QuantityType<>(currentTimePercentage, SmartHomeUnits.PERCENT));
+    }
+
+    @Override
+    public void updateDuration(long duration) {
+        updateState(CHANNEL_DURATION,
+                duration < 0 ? UnDefType.UNDEF : new QuantityType<>(duration, SmartHomeUnits.SECOND));
     }
 
     /**

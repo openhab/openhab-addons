@@ -26,6 +26,7 @@ import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.KodiEventListener.KodiPlaylistState;
 import org.openhab.binding.kodi.internal.KodiEventListener.KodiState;
+import org.openhab.binding.kodi.internal.model.KodiDuration;
 import org.openhab.binding.kodi.internal.model.KodiFavorite;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannel;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannelGroup;
@@ -398,7 +399,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     private int getSpeed(int activePlayer) {
-        final String[] properties = { "speed", "position" };
+        final String[] properties = { "speed" };
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
@@ -436,8 +437,13 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     private void requestPlayerUpdate(int activePlayer) {
+        requestPlayerItemUpdate(activePlayer);
+        requestPlayerPropertiesUpdate(activePlayer);
+    }
+
+    private void requestPlayerItemUpdate(int activePlayer) {
         final String[] properties = { "title", "album", "artist", "director", "thumbnail", "file", "fanart",
-                "showtitle", "streamdetails", "channel", "channeltype" };
+                "showtitle", "streamdetails", "channel", "channeltype", "duration", "runtime" };
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
@@ -499,19 +505,56 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     fanart = downloadImage(convertToImageUrl(item.get("fanart")));
                 }
 
-                try {
-                    listener.updateAlbum(album);
-                    listener.updateTitle(title);
-                    listener.updateShowTitle(showTitle);
-                    listener.updateArtist(artist);
-                    listener.updateMediaType(mediaType);
-                    listener.updatePVRChannel(channel);
-                    listener.updateThumbnail(thumbnail);
-                    listener.updateFanart(fanart);
-                } catch (Exception e) {
-                    logger.error("Event listener invoking error", e);
+                // "duration" for audio files/streams and "runtime" for video files/streams
+                long duration = -1;
+                if (item.has("duration")) {
+                    duration = item.get("duration").getAsLong();
+                } else if (item.has("runtime")) {
+                    duration = item.get("runtime").getAsLong();
                 }
+
+                listener.updateAlbum(album);
+                listener.updateTitle(title);
+                listener.updateShowTitle(showTitle);
+                listener.updateArtist(artist);
+                listener.updateMediaType(mediaType);
+                listener.updatePVRChannel(channel);
+                listener.updateThumbnail(thumbnail);
+                listener.updateFanart(fanart);
+                listener.updateDuration(duration);
             }
+        }
+    }
+
+    private void requestPlayerPropertiesUpdate(int activePlayer) {
+        final String[] properties = { "percentage", "time" };
+
+        JsonObject params = new JsonObject();
+        params.addProperty("playerid", activePlayer);
+        params.add("properties", getJsonArray(properties));
+        JsonElement response = socket.callMethod("Player.GetProperties", params);
+
+        if (response instanceof JsonObject) {
+            JsonObject result = response.getAsJsonObject();
+
+            double percentage = -1;
+            if (result.has("percentage")) {
+                percentage = result.get("percentage").getAsDouble();
+            }
+
+            long currentTime = -1;
+            if (result.has("time")) {
+                JsonObject time = result.get("time").getAsJsonObject();
+                KodiDuration duration = new KodiDuration();
+                duration.setHours(time.get("hours").getAsLong());
+                duration.setMinutes(time.get("minutes").getAsLong());
+                duration.setSeconds(time.get("seconds").getAsLong());
+                duration.setMilliseconds(time.get("milliseconds").getAsLong());
+                currentTime = duration.toSeconds();
+            }
+
+            listener.updateCurrentTimePercentage(percentage);
+            listener.updateCurrentTime(currentTime);
         }
     }
 
@@ -580,23 +623,21 @@ public class KodiConnection implements KodiClientSocketEventListener {
         if (currentState.equals(KodiState.Stop) && state.equals(KodiState.Pause)) {
             return;
         }
-        try {
-            listener.updatePlayerState(state);
-            // if this is a Stop then clear everything else
-            if (state == KodiState.Stop) {
-                listener.updateAlbum("");
-                listener.updateTitle("");
-                listener.updateShowTitle("");
-                listener.updateArtist("");
-                listener.updateMediaType("");
-                listener.updatePVRChannel("");
-                listener.updateThumbnail(null);
-                listener.updateFanart(null);
-            }
-        } catch (Exception e) {
-            logger.error("Event listener invoking error", e);
+        listener.updatePlayerState(state);
+        // if this is a Stop then clear everything else
+        if (state == KodiState.Stop) {
+            listener.updateAlbum("");
+            listener.updateTitle("");
+            listener.updateShowTitle("");
+            listener.updateArtist("");
+            listener.updateMediaType("");
+            listener.updatePVRChannel("");
+            listener.updateThumbnail(null);
+            listener.updateFanart(null);
+            listener.updateDuration(-1);
+            listener.updateCurrentTimePercentage(-1);
+            listener.updateCurrentTime(-1);
         }
-
         // keep track of our current state
         currentState = state;
     }
