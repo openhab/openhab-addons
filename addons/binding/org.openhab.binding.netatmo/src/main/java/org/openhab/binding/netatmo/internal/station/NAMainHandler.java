@@ -40,7 +40,7 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
         NAMain result = null;
         NAStationDataBody stationDataBody = getBridgeHandler().getStationsDataBody(getId());
         if (stationDataBody != null) {
-            userAdministrative = stationDataBody.getUser().getAdministrative();
+            // userAdministrative = stationDataBody.getUser().getAdministrative();
             result = stationDataBody.getDevices().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
                     .findFirst().orElse(null);
             if (result != null) {
@@ -95,11 +95,8 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
                 case CHANNEL_DEWPOINTDEP:
                     Double dewPoint = WeatherUtils.getDewPoint(dashboardData.getTemperature(),
                             dashboardData.getHumidity());
-                    return toDecimalType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewPoint));
-                case CHANNEL_WIND_UNIT:
-                    return toDecimalType(userAdministrative.getWindunit());
-                case CHANNEL_PRESSURE_UNIT:
-                    return toDecimalType(userAdministrative.getPressureunit());
+                    return toQuantityType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewPoint),
+                            API_TEMPERATURE_UNIT);
             }
         }
         return super.getNAThingProperty(channelId);

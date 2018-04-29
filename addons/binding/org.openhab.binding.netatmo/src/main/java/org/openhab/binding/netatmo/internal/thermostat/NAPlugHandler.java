@@ -43,8 +43,7 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
         NAPlug result = null;
         NAThermostatDataBody thermostatDataBody = getBridgeHandler().getThermostatsDataBody(getId());
         if (thermostatDataBody != null) {
-            userAdministrative = thermostatDataBody.getUser().getAdministrative();
-
+            // userAdministrative = thermostatDataBody.getUser().getAdministrative();
             result = thermostatDataBody.getDevices().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
                     .findFirst().orElse(null);
             if (result != null) {

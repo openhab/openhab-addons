@@ -111,18 +111,18 @@ Number Netatmo_Indoor_CO2 "CO2" <carbondioxide> { channel = "netatmo:NAMain:home
 
 | Channel ID          | Item Type            | Description                                              |
 |---------------------|----------------------|----------------------------------------------------------|
-| Co2                 | Number:Dimensionless | Air Quality in ppm                                       |
+| Co2                 | Number:Dimensionless | Air Quality                                              |
 | Temperature         | Number:Temperature   | Current temperature                                      |
 | TempTrend           | String               | Temperature Evolution Trend (up, down, stable)           |
-| Noise               | Number:Dimensionless | Current Noise Level in dB                                |
-| Pressure            | Number:Pressure      | Current pressure in hPa                                  |
+| Noise               | Number:Dimensionless | Current Noise Level                                      |
+| Pressure            | Number:Pressure      | Current pressure                                         |
 | PressTrend          | String               | Pressure evolution trend for last 12h (up, down, stable) |
-| AbsolutePressure    | Number:Pressure      | Absolute pressure in hPa                                 |
-| Humidity            | Number:Dimensionless | Current humidity in %                                    |
+| AbsolutePressure    | Number:Pressure      | Absolute pressure                                        |
+| Humidity            | Number:Dimensionless | Current humidity                                         |
 | Humidex             | Number               | Computed Humidex index                                   |
 | HeatIndex           | Number:Temperature   | Computed Heat Index                                      |
 | Dewpoint            | Number:Temperature   | Computed Dewpoint Temperature                            |
-| DewpointDepression  | Number               | Computed Dewpoint Depression                             |
+| DewpointDepression  | Number:Temperature   | Computed Dewpoint Depression                             |
 | MinTemp             | Number:Temperature   | Minimum Temperature on current day                       |
 | MaxTemp             | Number:Temperature   | Maximum Temperature on current day                       |
 | DateMinTemp         | DateTime             | Date when minimum temperature was reached on current day |
@@ -131,9 +131,6 @@ Number Netatmo_Indoor_CO2 "CO2" <carbondioxide> { channel = "netatmo:NAMain:home
 | LastStatusStore     | DateTime             | Last Status Store                                        |
 | WifiStatus          | Number               | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 | Location            | Location             | Location of the device                                   |
-| Unit                | Number               | Unit system used to provide values (0 for metric or 1 for imperial |
-| WindUnit            | Number               | Unit used to report Wind speeds (0 for km/h, 1 for miles/H, 2 for m/s, 3 for Beaufort or 4 for Knot) |
-| PressureUnit        | Number               | Unit used to report Pressure values (0 for mbar, 1 for inHg or 2 for mmHg) |
 
 All these channels are read only.
 
@@ -152,11 +149,11 @@ Number Netatmo_Outdoor_Temperature "Temperature" { channel = "netatmo:NAModule1:
 |---------------------|----------------------|----------------------------------------------------------|
 | Temperature         | Number:Temperature   | Current temperature                                      |
 | TempTrend           | String               | Temperature Evolution Trend (up, down, stable)           |
-| Humidity            | Number:Dimensionless | Current humidity in %                                    |
+| Humidity            | Number:Dimensionless | Current humidity                                         |
 | Humidex             | Number               | Computed Humidex index                                   |
 | HeatIndex           | Number:Temperature   | Computed Heat Index                                      |
 | Dewpoint            | Number:Temperature   | Computed Dewpoint Temperature                            |
-| DewpointDepression  | Number               | Computed Dewpoint Depression                             |
+| DewpointDepression  | Number:Temperature   | Computed Dewpoint Depression                             |
 | MinTemp             | Number:Temperature   | Minimum Temperature on current day                       |
 | MaxTemp             | Number:Temperature   | Maximum Temperature on current day                       |
 | DateMinTemp         | DateTime             | Date when minimum temperature was reached on current day |
@@ -182,14 +179,14 @@ Number Netatmo_Indoor2_Temperature "Temperature" { channel = "netatmo:NAModule4:
 
 | Channel ID          | Item Type            | Description                                              |
 |---------------------|----------------------|----------------------------------------------------------|
-| Co2                 | Number:Dimensionless | Air Quality in ppm                                       |
+| Co2                 | Number:Dimensionless | Air Quality                                              |
 | Temperature         | Number:Temperature   | Current temperature                                      |
 | TempTrend           | String               | Temperature Evolution Trend (up, down, stable)           |
-| Humidity            | Number:Dimensionless | Current humidity in %                                    |
+| Humidity            | Number:Dimensionless | Current humidity                                         |
 | Humidex             | Number               | Computed Humidex index                                   |
 | HeatIndex           | Number:Temperature   | Computed Heat Index                                      |
 | Dewpoint            | Number:Temperature   | Computed Dewpoint Temperature                            |
-| DewpointDepression  | Number               | Computed Dewpoint Depression                             |
+| DewpointDepression  | Number:Temperature   | Computed Dewpoint Depression                             |
 | MinTemp             | Number:Temperature   | Minimum Temperature on current day                       |
 | MaxTemp             | Number:Temperature   | Maximum Temperature on current day                       |
 | DateMinTemp         | DateTime             | Date when minimum temperature was reached on current day |
@@ -265,14 +262,14 @@ String Netatmo_LivingRoom_HomeCoach_HealthIndex "Climate" { channel = "netatmo:N
 | Channel ID          | Item Type            | Description                                              |
 |---------------------|----------------------|----------------------------------------------------------|
 | HealthIndex         | String               | Health Index (healthy, fine, fair, poor, unhealthy)      |
-| Co2                 | Number:Dimensionless | Air Quality in ppm                                       |
+| Co2                 | Number:Dimensionless | Air Quality                                              |
 | Temperature         | Number:Temperature   | Current temperature                                      |
 | TempTrend           | String               | Temperature Evolution Trend (up, down, stable)           |
-| Noise               | Number:Dimensionless | Current Noise Level in dB                                |
-| Pressure            | Number:Pressure      | Current pressure in hPa                                  |
+| Noise               | Number:Dimensionless | Current Noise Level                                      |
+| Pressure            | Number:Pressure      | Current pressure                                         |
 | PressTrend          | String               | Pressure evolution trend for last 12h (up, down, stable) |
-| AbsolutePressure    | Number:Pressure      | Absolute pressure in hPa                                 |
-| Humidity            | Number:Dimensionless | Current humidity in %                                    |
+| AbsolutePressure    | Number:Pressure      | Absolute pressure                                        |
+| Humidity            | Number:Dimensionless | Current humidity                                         |
 | MinTemp             | Number:Temperature   | Minimum Temperature on current day                       |
 | MaxTemp             | Number:Temperature   | Maximum Temperature on current day                       |
 | DateMinTemp         | DateTime             | Date when minimum temperature was reached on current day |
@@ -281,9 +278,6 @@ String Netatmo_LivingRoom_HomeCoach_HealthIndex "Climate" { channel = "netatmo:N
 | LastStatusStore     | DateTime             | Last Status Store                                        |
 | WifiStatus          | Number               | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 | Location            | Location             | Location of the device                                   |
-| Unit                | Number               | Unit system used to provide values (0 for metric or 1 for imperial |
-| WindUnit            | Number               | Unit used to report Wind speeds (0 for km/h, 1 for miles/H, 2 for m/s, 3 for Beaufort or 4 for Knot) |
-| PressureUnit        | Number               | Unit used to report Pressure values (0 for mbar, 1 for inHg or 2 for mmHg) |
 
 All these channels are read only.
 
@@ -300,7 +294,6 @@ All these channels are read only.
 | LastStatusStore     | DateTime  | Last Status Store                                        |
 | WifiStatus          | Number    | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 | Location            | Location  | Location of the device                                   |
-| Unit                | Number    | Unit system used to provide values (0 for metric or 1 for imperial |
 
 All these channels are read only.
 
@@ -312,9 +305,7 @@ All these channels are read only.
 | Channel ID          | Item Type          | Description                                                |
 |---------------------|--------------------|------------------------------------------------------------|
 | Temperature         | Number:Temperature | Current temperature                                        |
-| Sp_Temperature      | Number             | Thermostat temperature setpoint                            |
-| BoilerOn            | Number             | Duration, since the previous data point, during which the boiler has been on (in seconds) |
-| BoilerOff           | Number             | Duration, since the previous data point, during which the boiler has been off (in seconds) |
+| Sp_Temperature      | Number:Temperature | Thermostat temperature setpoint                            |
 | SetpointMode        | String             | Chosen setpoint_mode (program, away, hg, manual, off, max) |
 | ThermRelayCmd       | Switch             | Indicates whether the furnace is heating or not            |
 | ThermOrientation    | Number             | Physical orientation of the thermostat module              |
@@ -403,34 +394,6 @@ Warning : while setting person away using the channel welcomePersonAtHome is fin
 # Configuration Examples
 
 
-## transform/netatmo_unit_en.map
-
-```
-0=Metric
-1=Imperial
-```
-
-
-## transform/netatmo_pressureunit.map
-
-```
-0=mbar
-1=inHg
-2=mmHg
-```
-
-
-## transform/netatmo_windunit.map
-
-```
-0=Km/h
-1=Miles/H
-2=m/s
-3=Beaufort
-4=Knot
-```
-
-
 ## things/netatmo.things
 
 ```
@@ -449,10 +412,10 @@ Bridge netatmo:netatmoapi:home "Netatmo API" [ clientId="*********", clientSecre
 # Indoor Module
 Number:Temperature Netatmo_Indoor_Temperature         "Temperature [%.1f %unit%]"          <temperature>      { channel = "netatmo:NAMain:home:inside:Temperature" }
 Number:Dimensionless Netatmo_Indoor_Humidity            "Humidity [%d %unit%]"               <humidity>         { channel = "netatmo:NAMain:home:inside:Humidity" }
-Number Netatmo_Indoor_Humidex             "Humidex [%.1f °C]"              <temperature_hot>  { channel = "netatmo:NAMain:home:inside:Humidex" }
+Number Netatmo_Indoor_Humidex             "Humidex [%.0f]"              <temperature_hot>  { channel = "netatmo:NAMain:home:inside:Humidex" }
 Number:Temperature Netatmo_Indoor_HeatIndex           "HeatIndex [%.1f %unit%]"            <temperature_hot>  { channel = "netatmo:NAMain:home:inside:HeatIndex" }
 Number:Temperature Netatmo_Indoor_Dewpoint            "Dewpoint [%.1f %unit%]"             <temperature_cold> { channel = "netatmo:NAMain:home:inside:Dewpoint" }
-Number Netatmo_Indoor_DewpointDepression  "DewpointDepression [%.1f °C]"   <temperature_cold> { channel = "netatmo:NAMain:home:inside:DewpointDepression" }
+Number:Temperature Netatmo_Indoor_DewpointDepression  "DewpointDepression [%.1f %unit%]"   <temperature_cold> { channel = "netatmo:NAMain:home:inside:DewpointDepression" }
 Number:Dimensionless Netatmo_Indoor_Co2                 "Co2 [%d %unit%]"                 <carbondioxide>    { channel = "netatmo:NAMain:home:inside:Co2" }
 Number:Pressure Netatmo_Indoor_Pressure            "Pressure [%.1f %unit%]"           <pressure>         { channel = "netatmo:NAMain:home:inside:Pressure" }
 Number:Pressure Netatmo_Indoor_AbsolutePressure    "AbsolutePressure [%.1f %unit%]"   <pressure>         { channel = "netatmo:NAMain:home:inside:AbsolutePressure" }
@@ -461,18 +424,15 @@ Number Netatmo_Indoor_WifiStatus          "WifiStatus [%s]"                <sign
 DateTime Netatmo_Indoor_TimeStamp         "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"  <calendar>  { channel = "netatmo:NAMain:home:inside:TimeStamp" }
 Location Netatmo_Indoor_Location          "Location"                       <movecontrol>      { channel = "netatmo:NAMain:home:inside:Location" }
 DateTime Netatmo_Indoor_LastStatusStore   "LastStatusStore [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"  <text>  { channel = "netatmo:NAMain:home:inside:LastStatusStore" }
-Number Netatmo_Indoor_Unit                "Unit [MAP(netatmo_unit_en.map):%s]"  <text>        { channel = "netatmo:NAMain:home:inside:Unit" }
-Number Netatmo_Indoor_WindUnit            "WindUnit [MAP(netatmo_windunit.map):%s]"  <text>   { channel = "netatmo:NAMain:home:inside:WindUnit" }
-Number Netatmo_Indoor_PressureUnit        "PressureUnit [MAP(netatmo_pressureunit.map):%s]"  <pressure>  { channel = "netatmo:NAMain:home:inside:PressureUnit" }
 
 # Outdoor Module
 Number:Temperature Netatmo_Outdoor_Temperature        "Temperature [%.1f %unit%]"          <temperature>      { channel = "netatmo:NAModule1:home:outside:Temperature" }
 String Netatmo_Outdoor_TempTrend          "TempTrend [%s]"                 <line>             { channel = "netatmo:NAModule1:home:outside:TempTrend" }
 Number:Dimensionless Netatmo_Outdoor_Humidity           "Humidity [%d %unit%]"               <humidity>         { channel = "netatmo:NAModule1:home:outside:Humidity" }
-Number Netatmo_Outdoor_Humidex            "Humidex [%.1f °C]"              <temperature_hot>  { channel = "netatmo:NAModule1:home:outside:Humidex" }
+Number Netatmo_Outdoor_Humidex            "Humidex [%.0f]"              <temperature_hot>  { channel = "netatmo:NAModule1:home:outside:Humidex" }
 Number:Temperature Netatmo_Outdoor_HeatIndex          "HeatIndex [%.1f %unit%]"            <temperature_hot>  { channel = "netatmo:NAModule1:home:outside:HeatIndex" }
 Number:Temperature Netatmo_Outdoor_Dewpoint           "Dewpoint [%.1f %unit%]"             <temperature_cold> { channel = "netatmo:NAModule1:home:outside:Dewpoint" }
-Number Netatmo_Outdoor_DewpointDepression "DewpointDepression [%.1f °C]"   <temperature_cold> { channel = "netatmo:NAModule1:home:outside:DewpointDepression" }
+Number:Temperature Netatmo_Outdoor_DewpointDepression "DewpointDepression [%.1f %unit%]"   <temperature_cold> { channel = "netatmo:NAModule1:home:outside:DewpointDepression" }
 Number Netatmo_Outdoor_RfStatus           "RfStatus [%.0f / 5]"            <signal>           { channel = "netatmo:NAModule1:home:outside:RfStatus" }
 Switch Netatmo_Outdoor_LowBattery         "LowBattery [%s]"                <siren>            { channel = "netatmo:NAModule1:home:outside:LowBattery" }
 Number Netatmo_Outdoor_BatteryVP          "BatteryVP [%.0f %%]"            <battery>          { channel = "netatmo:NAModule1:home:outside:BatteryVP" }
@@ -501,9 +461,6 @@ sitemap netatmo label="Netatmo"
         Text    item=Netatmo_Indoor_TimeStamp
         Text    item=Netatmo_Indoor_Location
         Text    item=Netatmo_Indoor_LastStatusStore
-        Text    item=Netatmo_Indoor_Unit
-        Text    item=Netatmo_Indoor_WindUnit
-        Text    item=Netatmo_Indoor_PressureUnit
     }
     Frame label="Outdoor" {
         Text    item=Netatmo_Outdoor_Temperature

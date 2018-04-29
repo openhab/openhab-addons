@@ -13,7 +13,6 @@ import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
@@ -39,7 +38,7 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
         NAHealthyHomeCoach result = null;
         NAHealthyHomeCoachDataBody homecoachDataBody = getBridgeHandler().getHomecoachDataBody(getId());
         if (homecoachDataBody != null) {
-            userAdministrative = homecoachDataBody.getUser().getAdministrative();
+            // userAdministrative = homecoachDataBody.getUser().getAdministrative();
             result = homecoachDataBody.getDevices().get(0);
         }
         return result;
@@ -78,10 +77,6 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
                     return toDateTimeType(dashboardData.getDateMaxTemp());
                 case CHANNEL_HUMIDITY:
                     return toQuantityType(dashboardData.getHumidity(), API_HUMIDITY_UNIT);
-                case CHANNEL_WIND_UNIT:
-                    return new DecimalType(userAdministrative.getWindunit());
-                case CHANNEL_PRESSURE_UNIT:
-                    return new DecimalType(userAdministrative.getPressureunit());
             }
         }
         return super.getNAThingProperty(channelId);

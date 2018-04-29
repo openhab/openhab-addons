@@ -70,7 +70,8 @@ public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
                 case CHANNEL_DEWPOINTDEP:
                     Double dewpoint = WeatherUtils.getDewPoint(dashboardData.getTemperature(),
                             dashboardData.getHumidity());
-                    return toDecimalType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewpoint));
+                    return toQuantityType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewpoint),
+                            API_TEMPERATURE_UNIT);
             }
         }
         return super.getNAThingProperty(channelId);

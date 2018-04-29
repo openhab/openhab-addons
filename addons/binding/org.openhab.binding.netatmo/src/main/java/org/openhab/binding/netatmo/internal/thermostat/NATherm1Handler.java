@@ -11,12 +11,15 @@ package org.openhab.binding.netatmo.internal.thermostat;
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -72,7 +75,8 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                 return module != null ? toQuantityType(module.getMeasured().getTemperature(), API_TEMPERATURE_UNIT)
                         : UnDefType.UNDEF;
             case CHANNEL_SETPOINT_TEMP:
-                return module != null ? toDecimalType(module.getMeasured().getSetpointTemp()) : UnDefType.UNDEF;
+                return module != null ? toQuantityType(module.getMeasured().getSetpointTemp(), API_TEMPERATURE_UNIT)
+                        : UnDefType.UNDEF;
             case CHANNEL_TIMEUTC:
                 return module != null ? toDateTimeType(module.getMeasured().getTime()) : UnDefType.UNDEF;
             case CHANNEL_SETPOINT_END_TIME: {
@@ -144,13 +148,22 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                         break;
                     }
                     case CHANNEL_SETPOINT_TEMP: {
-                        // Switch the thermostat to manual mode on the desired setpoint for given duration
-                        Calendar cal = Calendar.getInstance();
-                        cal.add(Calendar.MINUTE, getSetPointDefaultDuration());
-                        getBridgeHandler().getThermostatApi().setthermpoint(getParentId(), getId(), "manual",
-                                (int) (cal.getTimeInMillis() / 1000), Float.parseFloat(command.toString()));
-                        updateState(channelUID, new DecimalType(command.toString()));
-                        requestParentRefresh();
+                        QuantityType<Temperature> targetTemp;
+                        if (command instanceof QuantityType) {
+                            targetTemp = ((QuantityType<Temperature>) command).toUnit(API_TEMPERATURE_UNIT);
+                        } else {
+                            targetTemp = new QuantityType<Temperature>(new BigDecimal(command.toString()),
+                                    API_TEMPERATURE_UNIT);
+                        }
+                        if (targetTemp != null) {
+                            // Switch the thermostat to manual mode on the desired setpoint for given duration
+                            Calendar cal = Calendar.getInstance();
+                            cal.add(Calendar.MINUTE, getSetPointDefaultDuration());
+                            getBridgeHandler().getThermostatApi().setthermpoint(getParentId(), getId(), "manual",
+                                    (int) (cal.getTimeInMillis() / 1000), targetTemp.floatValue());
+                            updateState(channelUID, targetTemp);
+                            requestParentRefresh();
+                        }
                         break;
                     }
                 }
