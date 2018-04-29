@@ -38,7 +38,6 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
         NAHealthyHomeCoach result = null;
         NAHealthyHomeCoachDataBody homecoachDataBody = getBridgeHandler().getHomecoachDataBody(getId());
         if (homecoachDataBody != null) {
-            // userAdministrative = homecoachDataBody.getUser().getAdministrative();
             result = homecoachDataBody.getDevices().get(0);
         }
         return result;

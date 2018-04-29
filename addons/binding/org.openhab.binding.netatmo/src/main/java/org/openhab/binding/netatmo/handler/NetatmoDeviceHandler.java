@@ -51,7 +51,6 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     private RefreshStrategy refreshStrategy;
     @Nullable
     protected DEVICE device;
-    // protected NAUserAdministrative userAdministrative;
     protected Map<String, Object> childs = new ConcurrentHashMap<>();
 
     public NetatmoDeviceHandler(@NonNull Thing thing) {

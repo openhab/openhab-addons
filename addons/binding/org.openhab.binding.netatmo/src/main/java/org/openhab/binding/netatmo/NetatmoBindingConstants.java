@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.netatmo;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -164,7 +163,7 @@ public class NetatmoBindingConstants {
             .concat(SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(), Stream.of(APIBRIDGE_THING_TYPE))
             .collect(Collectors.toSet());
 
-    public static final Set<String> MEASURABLE_CHANNELS = Collections.emptySet();
+    public static final Set<String> MEASURABLE_CHANNELS = Stream.of(new String[] {}).collect(Collectors.toSet());
 
     public static final Set<EventTypeEnum> HOME_EVENTS = Stream.of(EventTypeEnum.PERSON_AWAY)
             .collect(Collectors.toSet());

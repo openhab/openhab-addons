@@ -40,7 +40,6 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
         NAMain result = null;
         NAStationDataBody stationDataBody = getBridgeHandler().getStationsDataBody(getId());
         if (stationDataBody != null) {
-            // userAdministrative = stationDataBody.getUser().getAdministrative();
             result = stationDataBody.getDevices().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
                     .findFirst().orElse(null);
             if (result != null) {
