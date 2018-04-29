@@ -16,7 +16,7 @@ import org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector
 /**
  * Configuration class for the Denon Marantz binding.
  *
- * @author Jan-Willem Veldhuis
+ * @author Jan-Willem Veldhuis - Initial contribution
  *
  */
 public class DenonMarantzConfiguration {

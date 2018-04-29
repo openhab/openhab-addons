@@ -27,7 +27,7 @@ import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguratio
 /**
  * Abstract class containing common functionality for the connectors.
  *
- * @author Jan-Willem Veldhuis
+ * @author Jan-Willem Veldhuis - Initial contribution
  */
 public abstract class DenonMarantzConnector {
 

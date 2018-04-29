@@ -17,7 +17,7 @@ import org.openhab.binding.denonmarantz.internal.xml.adapters.StringAdapter;
 /**
  * Contains a string value
  *
- * @author Jeroen Idserda
+ * @author Jeroen Idserda - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class StringType {

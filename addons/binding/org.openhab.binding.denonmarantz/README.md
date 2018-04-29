@@ -58,32 +58,32 @@ The DenonMarantz AVR supports the following channels (some channels are model sp
 
 | Channel Type ID         | Item Type    | Description  |
 |-------------------------|--------------|--------------|
-|  power            | Switch (RW) | Power on/off 
-| Main zone
-|  mainZonePower    | Switch (RW) | Main zone power on/off
-|  mainVolume       | Dimmer (RW) | Main zone volume
-|  mainVolumeDB     | Number (RW) | Main zone volume in dB (-80 offset)
-|  mute             | Switch (RW) | Main zone mute
-|  input            | String (RW) | Main zone input (e.g. TV, TUNER, ..)
-|  surroundProgram  | String (R) | current surround program (e.g. STEREO)
+| General
+|  general#power            | Switch (RW) | Power on/off 
+|  general#surroundProgram  | String (R) | current surround program (e.g. STEREO)
+|  general#artist | String (R) | artist of current track
+|  general#album | String (R) |  album of current track
+|  general#track | String (R) |  title of current track
+|  general#command          | String (W) | Command to send to the AVR (for use in Rules)
 |Now Playing
-|  artist | String (R) | artist of current track
-|  album | String (R) |  album of current track
-|  track | String (R) |  title of current track
+| Main zone
+|  mainZone#power    | Switch (RW) | Main zone power on/off
+|  mainZone#volume       | Dimmer (RW) | Main zone volume
+|  mainZone#volumeDB     | Number (RW) | Main zone volume in dB (-80 offset)
+|  mainZone#mute             | Switch (RW) | Main zone mute
+|  mainZone#input            | String (RW) | Main zone input (e.g. TV, TUNER, ..)
 |  Zone 2
-|  zone2Power | Switch (RW) | Zone 2 power on/off
-|  zone2Volume | Dimmer (RW) | Zone 2 volume
-|  zone2VolumeDB | Number (RW) | Zone 2 volume in dB (-80 offset)
-|  zone2Mute | Switch (RW) | Zone 2 mute
-|  zone2Input | String (RW) | Zone 2 input
+|  zone2#power | Switch (RW) | Zone 2 power on/off
+|  zone2#volume | Dimmer (RW) | Zone 2 volume
+|  zone2#volumeDB | Number (RW) | Zone 2 volume in dB (-80 offset)
+|  zone2#mute | Switch (RW) | Zone 2 mute
+|  zone2#input | String (RW) | Zone 2 input
 |  Zone 3
-|  zone3Power | Switch (RW) | Zone 3 power on/off
-|  zone3Volume | Dimmer (RW) | Zone 3 volume
-|  zone3VolumeDB | Number (RW) | Zone 3 volume in dB (-80 offset)
-|  zone3Mute | Switch (RW) | Zone 3 mute
-|  zone3Input | String (RW) | Zone 3 input
-| Special
-|  command          | String (W) | Command to send to the AVR (for use in Rules)
+|  zone3#power | Switch (RW) | Zone 3 power on/off
+|  zone3#volume | Dimmer (RW) | Zone 3 volume
+|  zone3#volumeDB | Number (RW) | Zone 3 volume in dB (-80 offset)
+|  zone3#mute | Switch (RW) | Zone 3 mute
+|  zone3#input | String (RW) | Zone 3 input
 
 (R) = read-only (no updates possible)
 (RW) = read-write
@@ -94,14 +94,14 @@ The DenonMarantz AVR supports the following channels (some channels are model sp
 Example of usage in `.items` files.
 
 ```
-Switch marantz_power    "Receiver" <switch>         {channel="denonmarantz:avr:0006781d58b1:power"}
-Dimmer marantz_volume   "Volume"   <soundvolume>    {channel="denonmarantz:avr:0006781d58b1:mainVolume"}
-Number marantz_volumeDB "Volume [%.1f dB]"          {channel="denonmarantz:avr:0006781d58b1:mainVolume"}
-Switch marantz_mute     "Mute"     <mute>           {channel="denonmarantz:avr:0006781d58b1:mute"}
-Switch marantz_z2power  "Zone 2"                    {channel="denonmarantz:avr:0006781d58b1:zone2Power"}
-String marantz_input    "Input [%s]"                {channel="denonmarantz:avr:0006781d58b1:input" }
-String marantz_surround "Surround: [%s]"            {channel="denonmarantz:avr:0006781d58b1:surroundProgram"}
-String marantz_command                              {channel="denonmarantz:avr:0006781d58b1:command"}
+Switch marantz_power    "Receiver" <switch>         {channel="denonmarantz:avr:0006781d58b1:general#power"}
+Dimmer marantz_volume   "Volume"   <soundvolume>    {channel="denonmarantz:avr:0006781d58b1:mainZone#volume"}
+Number marantz_volumeDB "Volume [%.1f dB]"          {channel="denonmarantz:avr:0006781d58b1:mainzone#volume"}
+Switch marantz_mute     "Mute"     <mute>           {channel="denonmarantz:avr:0006781d58b1:mainZone#mute"}
+Switch marantz_z2power  "Zone 2"                    {channel="denonmarantz:avr:0006781d58b1:zone2#power"}
+String marantz_input    "Input [%s]"                {channel="denonmarantz:avr:0006781d58b1:mainZone#input" }
+String marantz_surround "Surround: [%s]"            {channel="denonmarantz:avr:0006781d58b1:general#surroundProgram"}
+String marantz_command                              {channel="denonmarantz:avr:0006781d58b1:general#command"}
 ```
 
 ## Sitemap Configuration

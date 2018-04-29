@@ -12,7 +12,7 @@ import org.eclipse.smarthome.core.types.State;
 
 /**
  *
- * @author Jan-Willem Veldhuis
+ * @author Jan-Willem Veldhuis - Initial contribution
  *
  */
 public interface DenonMarantzStateChangedListener {

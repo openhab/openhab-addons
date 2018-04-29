@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Contains information about a Denon/Marantz receiver.
  *
- * @author Jeroen Idserda
+ * @author Jeroen Idserda - Initial contribution
  */
 @XmlRootElement(name = "device_Info")
 @XmlAccessorType(XmlAccessType.FIELD)

@@ -17,7 +17,7 @@ import org.openhab.binding.denonmarantz.internal.xml.adapters.OnOffAdapter;
 /**
  * Contains an On/Off value in the form of a boolean
  *
- * @author Jeroen Idserda
+ * @author Jeroen Idserda - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class OnOffType {

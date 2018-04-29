@@ -50,7 +50,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * @author Jan-Willem Veldhuis
+ * @author Jan-Willem Veldhuis - Initial contribution
  *
  */
 @Component(service = MDNSDiscoveryParticipant.class, immediate = true)

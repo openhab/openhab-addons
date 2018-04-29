@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Manage telnet connection to the Denon/Marantz Receiver
  *
- * @author Jeroen Idserda
- * @author Jan-Willem Veldhuis
+ * @author Jeroen Idserda - Initial contribution (1.x Binding)
+ * @author Jan-Willem Veldhuis - Refactored for 2.x
  */
 public class DenonMarantzTelnetClient implements Runnable {
 

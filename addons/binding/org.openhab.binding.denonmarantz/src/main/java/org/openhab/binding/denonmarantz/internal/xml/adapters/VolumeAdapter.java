@@ -17,7 +17,7 @@ import org.openhab.binding.denonmarantz.DenonMarantzBindingConstants;
 /**
  * Maps Denon volume values in db to percentage
  *
- * @author Jeroen Idserda
+ * @author Jeroen Idserda - Initial contribution
  */
 public class VolumeAdapter extends XmlAdapter<String, BigDecimal> {
 

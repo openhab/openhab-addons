@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * *
  *
  * @author Jeroen Idserda - Initial Contribution (1.x Binding)
- * @author Jan-Willem Veldhuis
+ * @author Jan-Willem Veldhuis - Refactored for 2.x
  */
 public class DenonMarantzTelnetConnector extends DenonMarantzConnector implements DenonMarantzTelnetListener {
 

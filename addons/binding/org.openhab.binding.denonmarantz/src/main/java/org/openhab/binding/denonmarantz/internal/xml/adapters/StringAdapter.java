@@ -15,7 +15,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * Adapter to clean up string values
  *
- * @author Jeroen Idserda
+ * @author Jeroen Idserda - Initial contribution
  */
 public class StringAdapter extends XmlAdapter<String, String> {
 

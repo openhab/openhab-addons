@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlValue;
 /**
  * Individual commands that can be sent to a Denon/Marantz receiver to request specific information.
  *
- * @author Jeroen Idserda
+ * @author Jeroen Idserda - Initial contribution
  */
 @XmlRootElement(name = "cmd")
 @XmlAccessorType(XmlAccessType.FIELD)

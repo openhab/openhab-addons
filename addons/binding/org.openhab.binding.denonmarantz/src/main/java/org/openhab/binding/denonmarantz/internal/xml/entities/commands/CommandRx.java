@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Response to a {@link CommandTx}
  *
- * @author Jeroen Idserda
+ * @author Jeroen Idserda - Initial contribution
  */
 @XmlRootElement(name = "cmd")
 @XmlAccessorType(XmlAccessType.FIELD)

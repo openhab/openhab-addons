@@ -13,7 +13,7 @@ import org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector
 /**
  * Listener interface used to notify the {@link DenonMarantzConnector} about received messages over Telnet
  *
- * @author Jan-Willem Veldhuis
+ * @author Jan-Willem Veldhuis - Initial contribution
  *
  */
 public interface DenonMarantzTelnetListener {

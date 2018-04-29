@@ -19,7 +19,7 @@ import org.openhab.binding.denonmarantz.internal.xml.adapters.VolumeAdapter;
 /**
  * Contains a volume value (percentage)
  *
- * @author Jeroen Idserda
+ * @author Jeroen Idserda - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class VolumeType {

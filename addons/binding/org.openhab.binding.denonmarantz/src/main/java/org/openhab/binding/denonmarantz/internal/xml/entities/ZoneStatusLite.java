@@ -19,7 +19,7 @@ import org.openhab.binding.denonmarantz.internal.xml.entities.types.VolumeType;
 /**
  * Holds limited information about the secondary zones of the receiver
  *
- * @author Jeroen Idserda
+ * @author Jeroen Idserda - Initial contribution
  */
 @XmlRootElement(name = "item")
 @XmlAccessorType(XmlAccessType.FIELD)

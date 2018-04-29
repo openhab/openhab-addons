@@ -17,7 +17,7 @@ import org.openhab.binding.denonmarantz.internal.xml.entities.types.OnOffType;
 /**
  * Holds information about the Main zone of the receiver
  *
- * @author Jeroen Idserda
+ * @author Jeroen Idserda - Initial contribution
  */
 @XmlRootElement(name = "item")
 @XmlAccessorType(XmlAccessType.FIELD)

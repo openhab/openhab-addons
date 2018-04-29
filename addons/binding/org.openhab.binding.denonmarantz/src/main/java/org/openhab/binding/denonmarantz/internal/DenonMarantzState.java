@@ -22,7 +22,7 @@ import org.openhab.binding.denonmarantz.DenonMarantzBindingConstants;
 /**
  * Represents the state of the handled DenonMarantz AVR
  *
- * @author Jan-Willem Veldhuis
+ * @author Jan-Willem Veldhuis - Initial contribution
  *
  */
 public class DenonMarantzState {

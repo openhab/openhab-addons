@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 /**
  * Maps 'On' and 'Off' string values to a boolean
  *
- * @author Jeroen Idserda
+ * @author Jeroen Idserda - Initial contribution
  */
 public class OnOffAdapter extends XmlAdapter<String, Boolean> {
 

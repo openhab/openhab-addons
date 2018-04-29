@@ -176,13 +176,13 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
         boolean channelsUpdated = false;
 
         // construct a set with the existing channel type UIDs, to quickly check
-        HashSet<ChannelTypeUID> currentChannelTypeUIDs = new HashSet<ChannelTypeUID>();
-        channels.forEach(channel -> currentChannelTypeUIDs.add(channel.getChannelTypeUID()));
+        HashSet<String> currentChannels = new HashSet<String>();
+        channels.forEach(channel -> currentChannels.add(channel.getUID().getId()));
 
-        HashSet<Entry<ChannelTypeUID, String>> channelsToRemove = new HashSet<Entry<ChannelTypeUID, String>>();
+        HashSet<Entry<String, ChannelTypeUID>> channelsToRemove = new HashSet<Entry<String, ChannelTypeUID>>();
 
         if (zoneCount > 1) {
-            ArrayList<Entry<ChannelTypeUID, String>> channelsToAdd = new ArrayList<Entry<ChannelTypeUID, String>>(
+            ArrayList<Entry<String, ChannelTypeUID>> channelsToAdd = new ArrayList<Entry<String, ChannelTypeUID>>(
                     DenonMarantzBindingConstants.ZONE2_CHANNEL_TYPES.entrySet());
 
             if (zoneCount > 2) {
@@ -193,15 +193,15 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
             }
 
             // filter out the already existing channels
-            channelsToAdd.removeIf(c -> currentChannelTypeUIDs.contains(c.getKey()));
+            channelsToAdd.removeIf(c -> currentChannels.contains(c.getKey()));
 
             // add the channels that were not yet added
             if (!channelsToAdd.isEmpty()) {
-                for (Entry<ChannelTypeUID, String> entry : channelsToAdd) {
-                    String itemType = DenonMarantzBindingConstants.CHANNEL_ITEM_TYPES.get(entry.getValue());
+                for (Entry<String, ChannelTypeUID> entry : channelsToAdd) {
+                    String itemType = DenonMarantzBindingConstants.CHANNEL_ITEM_TYPES.get(entry.getKey());
                     Channel channel = ChannelBuilder
-                            .create(new ChannelUID(this.getThing().getUID(), entry.getValue()), itemType)
-                            .withType(entry.getKey()).build();
+                            .create(new ChannelUID(this.getThing().getUID(), entry.getKey()), itemType)
+                            .withType(entry.getValue()).build();
                     channels.add(channel);
                 }
                 channelsUpdated = true;
@@ -214,15 +214,15 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
         }
 
         // filter out the non-existing channels
-        channelsToRemove.removeIf(c -> !currentChannelTypeUIDs.contains(c.getKey()));
+        channelsToRemove.removeIf(c -> !currentChannels.contains(c.getKey()));
 
         // remove the channels that were not yet added
         if (!channelsToRemove.isEmpty()) {
-            for (Entry<ChannelTypeUID, String> entry : channelsToRemove) {
-                if (channels.removeIf(c -> (entry.getKey()).equals(c.getChannelTypeUID()))) {
-                    logger.trace("Removed channel {}", entry.getKey().getAsString());
+            for (Entry<String, ChannelTypeUID> entry : channelsToRemove) {
+                if (channels.removeIf(c -> (entry.getKey()).equals(c.getUID().getId()))) {
+                    logger.trace("Removed channel {}", entry.getKey());
                 } else {
-                    logger.trace("Could NOT remove channel {}", entry.getKey().getAsString());
+                    logger.trace("Could NOT remove channel {}", entry.getKey());
                 }
             }
             channelsUpdated = true;

@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Response to an {@link AppCommandRequest}, wraps a list of {@link CommandRx}
  *
- * @author Jeroen Idserda
+ * @author Jeroen Idserda - Initial contribution
  */
 @XmlRootElement(name = "rx")
 @XmlAccessorType(XmlAccessType.FIELD)

@@ -37,49 +37,49 @@ public class DenonMarantzBindingConstants {
     public static final String PARAMETER_POLLING_INTERVAL = "httpPollingInterval";
 
     // List of all Channel ids
-    public static final String CHANNEL_POWER = "power";
-    public static final String CHANNEL_MAIN_ZONE_POWER = "mainZonePower";
-    public static final String CHANNEL_MAIN_VOLUME = "mainVolume";
-    public static final String CHANNEL_MAIN_VOLUME_DB = "mainVolumeDB";
-    public static final String CHANNEL_MUTE = "mute";
-    public static final String CHANNEL_INPUT = "input";
-    public static final String CHANNEL_SURROUND_PROGRAM = "surroundProgram";
-    public static final String CHANNEL_COMMAND = "command";
+    public static final String CHANNEL_POWER = "general#power";
+    public static final String CHANNEL_COMMAND = "general#command";
+    public static final String CHANNEL_NOW_PLAYING_ARTIST = "general#artist";
+    public static final String CHANNEL_NOW_PLAYING_ALBUM = "general#album";
+    public static final String CHANNEL_NOW_PLAYING_TRACK = "general#track";
 
-    public static final String CHANNEL_NOW_PLAYING_ARTIST = "artist";
-    public static final String CHANNEL_NOW_PLAYING_ALBUM = "album";
-    public static final String CHANNEL_NOW_PLAYING_TRACK = "track";
+    public static final String CHANNEL_MAIN_ZONE_POWER = "mainZone#power";
+    public static final String CHANNEL_MAIN_VOLUME = "mainZone#volume";
+    public static final String CHANNEL_MAIN_VOLUME_DB = "mainZone#volumeDB";
+    public static final String CHANNEL_MUTE = "mainZone#mute";
+    public static final String CHANNEL_INPUT = "mainZone#input";
+    public static final String CHANNEL_SURROUND_PROGRAM = "mainZone#surroundProgram";
 
-    public static final String CHANNEL_ZONE2_POWER = "zone2Power";
-    public static final String CHANNEL_ZONE2_VOLUME = "zone2Volume";
-    public static final String CHANNEL_ZONE2_VOLUME_DB = "zone2VolumeDB";
-    public static final String CHANNEL_ZONE2_MUTE = "zone2Mute";
-    public static final String CHANNEL_ZONE2_INPUT = "zone2Input";
+    public static final String CHANNEL_ZONE2_POWER = "zone2#power";
+    public static final String CHANNEL_ZONE2_VOLUME = "zone2#volume";
+    public static final String CHANNEL_ZONE2_VOLUME_DB = "zone2#volumeDB";
+    public static final String CHANNEL_ZONE2_MUTE = "zone2#mute";
+    public static final String CHANNEL_ZONE2_INPUT = "zone2#input";
 
-    public static final String CHANNEL_ZONE3_POWER = "zone3Power";
-    public static final String CHANNEL_ZONE3_VOLUME = "zone3Volume";
-    public static final String CHANNEL_ZONE3_VOLUME_DB = "zone3VolumeDB";
-    public static final String CHANNEL_ZONE3_MUTE = "zone3Mute";
-    public static final String CHANNEL_ZONE3_INPUT = "zone3Input";
+    public static final String CHANNEL_ZONE3_POWER = "zone3#power";
+    public static final String CHANNEL_ZONE3_VOLUME = "zone3#volume";
+    public static final String CHANNEL_ZONE3_VOLUME_DB = "zone3#volumeDB";
+    public static final String CHANNEL_ZONE3_MUTE = "zone3#mute";
+    public static final String CHANNEL_ZONE3_INPUT = "zone3#input";
 
     // HashMap of Zone2 Channel Type UIDs (to be added to Thing later when needed)
-    public static final LinkedHashMap<ChannelTypeUID, String> ZONE2_CHANNEL_TYPES = new LinkedHashMap<ChannelTypeUID, String>();
+    public static final LinkedHashMap<String, ChannelTypeUID> ZONE2_CHANNEL_TYPES = new LinkedHashMap<String, ChannelTypeUID>();
     static {
-        ZONE2_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE2_POWER), CHANNEL_ZONE2_POWER);
-        ZONE2_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE2_VOLUME), CHANNEL_ZONE2_VOLUME);
-        ZONE2_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE2_VOLUME_DB), CHANNEL_ZONE2_VOLUME_DB);
-        ZONE2_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE2_MUTE), CHANNEL_ZONE2_MUTE);
-        ZONE2_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE2_INPUT), CHANNEL_ZONE2_INPUT);
+        ZONE2_CHANNEL_TYPES.put(CHANNEL_ZONE2_POWER, new ChannelTypeUID(BINDING_ID, "zonePower"));
+        ZONE2_CHANNEL_TYPES.put(CHANNEL_ZONE2_VOLUME, new ChannelTypeUID(BINDING_ID, "volume"));
+        ZONE2_CHANNEL_TYPES.put(CHANNEL_ZONE2_VOLUME_DB, new ChannelTypeUID(BINDING_ID, "volumeDB"));
+        ZONE2_CHANNEL_TYPES.put(CHANNEL_ZONE2_MUTE, new ChannelTypeUID(BINDING_ID, "mute"));
+        ZONE2_CHANNEL_TYPES.put(CHANNEL_ZONE2_INPUT, new ChannelTypeUID(BINDING_ID, "input"));
     }
 
     // HashMap of Zone3 Channel Type UIDs (to be added to Thing later when needed)
-    public static final LinkedHashMap<ChannelTypeUID, String> ZONE3_CHANNEL_TYPES = new LinkedHashMap<ChannelTypeUID, String>();
+    public static final LinkedHashMap<String, ChannelTypeUID> ZONE3_CHANNEL_TYPES = new LinkedHashMap<String, ChannelTypeUID>();
     static {
-        ZONE3_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE3_POWER), CHANNEL_ZONE3_POWER);
-        ZONE3_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE3_VOLUME), CHANNEL_ZONE3_VOLUME);
-        ZONE3_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE3_VOLUME_DB), CHANNEL_ZONE3_VOLUME_DB);
-        ZONE3_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE3_MUTE), CHANNEL_ZONE3_MUTE);
-        ZONE3_CHANNEL_TYPES.put(new ChannelTypeUID(BINDING_ID, CHANNEL_ZONE3_INPUT), CHANNEL_ZONE3_INPUT);
+        ZONE3_CHANNEL_TYPES.put(CHANNEL_ZONE3_POWER, new ChannelTypeUID(BINDING_ID, "zonePower"));
+        ZONE3_CHANNEL_TYPES.put(CHANNEL_ZONE3_VOLUME, new ChannelTypeUID(BINDING_ID, "volume"));
+        ZONE3_CHANNEL_TYPES.put(CHANNEL_ZONE3_VOLUME_DB, new ChannelTypeUID(BINDING_ID, "volumeDB"));
+        ZONE3_CHANNEL_TYPES.put(CHANNEL_ZONE3_MUTE, new ChannelTypeUID(BINDING_ID, "mute"));
+        ZONE3_CHANNEL_TYPES.put(CHANNEL_ZONE3_INPUT, new ChannelTypeUID(BINDING_ID, "input"));
     }
 
     /**

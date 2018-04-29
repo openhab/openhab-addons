@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Wrapper for a list of {@link CommandTx}
  *
- * @author Jeroen Idserda
+ * @author Jeroen Idserda - Initial contribution
  */
 @XmlRootElement(name = "tx")
 @XmlAccessorType(XmlAccessType.FIELD)

@@ -10,7 +10,7 @@ package org.openhab.binding.denonmarantz.internal;
 
 /**
  *
- * @author Jan-Willem Veldhuis
+ * @author Jan-Willem Veldhuis - Initial contribution
  *
  */
 public class UnsupportedCommandTypeException extends Exception {

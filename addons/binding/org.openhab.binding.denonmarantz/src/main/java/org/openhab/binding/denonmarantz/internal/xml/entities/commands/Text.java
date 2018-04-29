@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlValue;
 /**
  * Holds text values with a certain id
  *
- * @author Jeroen Idserda
+ * @author Jeroen Idserda - Initial contribution
  */
 @XmlRootElement(name = "text")
 @XmlAccessorType(XmlAccessType.FIELD)
