@@ -65,7 +65,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private KodiClientSocket socket;
 
     private int volume = 0;
-    private KodiState currentState = KodiState.Stop;
+    private KodiState currentState = KodiState.STOP;
     private KodiPlaylistState currentPlaylistState = KodiPlaylistState.CLEAR;
 
     private final KodiEventListener listener;
@@ -421,17 +421,17 @@ public class KodiConnection implements KodiClientSocketEventListener {
             if (activePlayer >= 0) {
                 int speed = getSpeed(activePlayer);
                 if (speed == 0) {
-                    updateState(KodiState.Stop);
+                    updateState(KodiState.STOP);
                 } else if (speed == 1) {
-                    updateState(KodiState.Play);
+                    updateState(KodiState.PLAY);
                 } else if (speed < 0) {
-                    updateState(KodiState.Rewind);
+                    updateState(KodiState.REWIND);
                 } else {
-                    updateState(KodiState.FastForward);
+                    updateState(KodiState.FASTFORWARD);
                 }
                 requestPlayerUpdate(activePlayer);
             } else {
-                updateState(KodiState.Stop);
+                updateState(KodiState.STOP);
             }
         }
     }
@@ -620,12 +620,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private void updateState(KodiState state) {
         // sometimes get a Pause immediately after a Stop - so just ignore
-        if (currentState.equals(KodiState.Stop) && state.equals(KodiState.Pause)) {
+        if (currentState.equals(KodiState.STOP) && state.equals(KodiState.PAUSE)) {
             return;
         }
         listener.updatePlayerState(state);
         // if this is a Stop then clear everything else
-        if (state == KodiState.Stop) {
+        if (state == KodiState.STOP) {
             listener.updateAlbum("");
             listener.updateTitle("");
             listener.updateShowTitle("");
@@ -673,21 +673,21 @@ public class KodiConnection implements KodiClientSocketEventListener {
             JsonObject player = data.get("player").getAsJsonObject();
             Integer playerId = player.get("playerid").getAsInt();
 
-            updateState(KodiState.Play);
+            updateState(KodiState.PLAY);
 
             requestPlayerUpdate(playerId);
         } else if ("Player.OnPause".equals(method)) {
-            updateState(KodiState.Pause);
+            updateState(KodiState.PAUSE);
         } else if ("Player.OnResume".equals(method)) {
-            updateState(KodiState.Play);
+            updateState(KodiState.PLAY);
         } else if ("Player.OnStop".equals(method)) {
             // get the end parameter and send an End state if true
             JsonObject data = json.get("data").getAsJsonObject();
             Boolean end = data.get("end").getAsBoolean();
             if (end) {
-                updateState(KodiState.End);
+                updateState(KodiState.END);
             }
-            updateState(KodiState.Stop);
+            updateState(KodiState.STOP);
         } else if ("Player.OnPropertyChanged".equals(method)) {
             logger.debug("Player.OnPropertyChanged");
         } else if ("Player.OnSpeedChanged".equals(method)) {
@@ -695,13 +695,13 @@ public class KodiConnection implements KodiClientSocketEventListener {
             JsonObject player = data.get("player").getAsJsonObject();
             int speed = player.get("speed").getAsInt();
             if (speed == 0) {
-                updateState(KodiState.Pause);
+                updateState(KodiState.PAUSE);
             } else if (speed == 1) {
-                updateState(KodiState.Play);
+                updateState(KodiState.PLAY);
             } else if (speed < 0) {
-                updateState(KodiState.Rewind);
+                updateState(KodiState.REWIND);
             } else if (speed > 1) {
-                updateState(KodiState.FastForward);
+                updateState(KodiState.FASTFORWARD);
             }
         } else {
             logger.debug("Unknown event from Kodi {}: {}", method, json);
