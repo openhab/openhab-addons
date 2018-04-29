@@ -47,7 +47,6 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonEnabledFeeds;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMusicProvider;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNetworkDetails;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationRequest;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
@@ -56,14 +55,12 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaySearchPhrase
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayValidationResult;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonStartRoutineRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
@@ -885,52 +882,5 @@ public class Connection {
 
         String postData = gson.toJson(startRoutineRequest);
         makeRequest("POST", alexaServer + "/api/behaviors/preview", postData, true, true, null);
-    }
-
-    public List<JsonSmartHomeDevice> getSmartHomeDevices() throws IOException, URISyntaxException {
-        try {
-            String json = makeRequestAndReturnString(alexaServer + "/api/phoenix");
-            logger.debug("getSmartHomeDevices result: {}", json);
-
-            JsonNetworkDetails networkDetails = parseJson(json, JsonNetworkDetails.class);
-            Gson gson = new Gson();
-            Object jsonObject = gson.fromJson(networkDetails.networkDetail, Object.class);
-            List<JsonSmartHomeDevice> result = new ArrayList<JsonSmartHomeDevice>();
-            searchSmartHomeDevicesRecursive(gson, jsonObject, result);
-            return result;
-        } catch (Exception e) {
-            logger.warn("getSmartHomeDevices fails: {}", e.getMessage());
-            throw e;
-        }
-    }
-
-    private void searchSmartHomeDevicesRecursive(Gson gson, @Nullable Object jsonNode,
-            List<JsonSmartHomeDevice> result) {
-        if (jsonNode instanceof Map) {
-            @SuppressWarnings("rawtypes")
-            Map map = (Map) jsonNode;
-            if (map.containsKey("entityId") && map.containsKey("friendlyName") && map.containsKey("actions")) {
-                // device node found, create type element and add it to the results
-                JsonElement element = gson.toJsonTree(jsonNode);
-                JsonSmartHomeDevice device = gson.fromJson(element, JsonSmartHomeDevice.class);
-                result.add(device);
-            } else {
-                for (Object key : map.keySet()) {
-                    Object value = map.get(key);
-                    searchSmartHomeDevicesRecursive(gson, value, result);
-                }
-            }
-        }
-    }
-
-    public void sendSmartHomeDeviceCommand(String entityId, String action, @Nullable String parameterName,
-            @Nullable String parameter) throws IOException, URISyntaxException {
-        String command = "{" + "\"controlRequests\": [{" + "\"entityId\": \"" + entityId + "\", "
-                + "\"entityType\": \"APPLIANCE\", " + "\"parameters\": {" + "\"action\": \"" + action + "\""
-                + (parameterName != null ? ", \"" + parameterName + "\": \"" + parameter + "\"" : "") + "   }" + "}]"
-                + "}";
-
-        String json = makeRequestAndReturnString("PUT", alexaServer + "/api/phoenix/state", command, true, null);
-        json.toString();
     }
 }
