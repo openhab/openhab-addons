@@ -27,10 +27,4 @@ public class AccountConfiguration {
     public String amazonSite;
     @Nullable
     public Integer pollingIntervalInSeconds;
-
-    // The smarthome devices feature is currently not available in the configuration for public use,
-    // because there seems to be a problem in detecting and controlling devices,
-    // there seems to be different smarthome skill versions
-    @Nullable
-    public Boolean discoverSmartHomeDevices;
 }

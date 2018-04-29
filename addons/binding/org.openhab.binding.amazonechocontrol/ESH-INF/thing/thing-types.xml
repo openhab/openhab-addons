@@ -36,13 +36,6 @@
                 <description>Refresh state interval in seconds. Lower time causes more network traffic.</description>
                 <unitLabel>Seconds</unitLabel>
             </parameter>
-            <!-- the smart home support is dropped currently because there are very less skills with work
-            <parameter name="discoverSmartHomeDevices" type="boolean" required="false" >
-            <default></default>
-            <label>Discover smart home devices</label>
-            <description>Discover smart home devices connected with a Smart Home Alexa Skill. The OpenHAB Alexa Smart Home Skill will be ignored.</description>
-            </parameter>
-            -->
         </config-description>
     </bridge-type>
     <thing-type id="echo">
@@ -253,40 +246,6 @@
             <channel id="active" typeId="active" />
             <channel id="playOnDevice" typeId="playOnDevice" />
         </channels>
-    </thing-type>
-    <thing-type id="smarthomeswitch" listed="false">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="account" />
-        </supported-bridge-type-refs>
-        <label>Switch</label>
-        <description>Smart Home Switch</description>
-        <channels>
-            <channel id="switch" typeId="switch" />
-        </channels>
-        <representation-property>entityId</representation-property>
-        <config-description>
-            <parameter name="entityId" type="text" required="true">
-                <label>Entity ID</label>
-                <description>Use the search feature of openHAB to get the id</description>
-            </parameter>
-        </config-description>
-    </thing-type>
-    <thing-type id="smarthomedimmer" listed="false">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="account" />
-        </supported-bridge-type-refs>
-        <label>Dimmer</label>
-        <description>Smart Home Dimmer</description>
-        <channels>
-            <channel id="dimmer" typeId="dimmer" />
-        </channels>
-        <representation-property>entityId</representation-property>
-        <config-description>
-            <parameter name="entityId" type="text" required="true">
-                <label>Entity ID</label>
-                <description>Let discover the device to get the id</description>
-            </parameter>
-        </config-description>
     </thing-type>
     <channel-type id="save">
         <item-type>Switch</item-type>

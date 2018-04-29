@@ -10,7 +10,6 @@ package org.openhab.binding.amazonechocontrol.internal.discovery;
 
 import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,7 +19,6 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -31,9 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.amazonechocontrol.handler.EchoHandler;
 import org.openhab.binding.amazonechocontrol.handler.FlashBriefingProfileHandler;
-import org.openhab.binding.amazonechocontrol.handler.SmartHomeBaseHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevice;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -149,52 +145,6 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
             modified(config);
         }
     };
-
-    public synchronized void setSmartHomeDevices(ThingUID brigdeThingUID,
-            List<JsonSmartHomeDevice> deviceInformations) {
-        Set<String> toRemove = new HashSet<String>(lastSmartHomeDeviceInformations.keySet());
-        for (JsonSmartHomeDevice deviceInformation : deviceInformations) {
-            if (StringUtils.equalsIgnoreCase(deviceInformation.manufacturerName, "openHAB")) {
-                // Ignore devices provided by the openHAB skill
-                continue;
-            }
-            String entityId = deviceInformation.entityId;
-            if (entityId != null) {
-                boolean alreadyfound = toRemove.remove(entityId);
-                String[] actions = deviceInformation.actions;
-                if (!alreadyfound && actions != null) {
-                    List<String> actionList = Arrays.asList(actions);
-                    if (actionList.contains("turnOn") && actionList.contains("turnOff")) {
-
-                        ThingTypeUID thingTypeId;
-                        if (actionList.contains("setPercentage")) {
-                            thingTypeId = THING_TYPE_SMART_HOME_DIMMER;
-                        } else {
-                            thingTypeId = THING_TYPE_SMART_HOME_SWITCH;
-                        }
-
-                        ThingUID thingUID = new ThingUID(thingTypeId, brigdeThingUID, entityId);
-
-                        // Check if already created
-                        if (SmartHomeBaseHandler.find(thingUID) == null) {
-
-                            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                                    .withLabel(deviceInformation.friendlyName)
-                                    .withProperty(DEVICE_PROPERTY_ENTITY_ID, entityId)
-                                    .withRepresentationProperty(DEVICE_PROPERTY_ENTITY_ID).withBridge(brigdeThingUID)
-                                    .build();
-
-                            logger.debug("Device [{}: {}] found. Mapped to thing type {}",
-                                    deviceInformation.friendlyName, entityId, thingTypeId.getAsString());
-
-                            thingDiscovered(result);
-                            lastSmartHomeDeviceInformations.put(entityId, thingUID);
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     public synchronized void setDevices(ThingUID brigdeThingUID, List<Device> deviceList) {
         Set<String> toRemove = new HashSet<String>(lastDeviceInformations.keySet());

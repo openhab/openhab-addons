@@ -44,7 +44,6 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevice;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,15 +62,12 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
     private StateStorage stateStorage;
     private @Nullable Connection connection;
     private final Set<EchoHandler> echoHandlers = new HashSet<>();
-    private final Set<SmartHomeBaseHandler> smartHomeHandlers = new HashSet<>();
     private final Set<FlashBriefingProfileHandler> flashBriefingProfileHandlers = new HashSet<>();
     private final Object synchronizeConnection = new Object();
     private Map<String, Device> jsonSerialNumberDeviceMapping = new HashMap<>();
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> refreshLogin;
-    private boolean updateSmartHomeDeviceList;
     private boolean discoverFlashProfiles;
-    private boolean smartHomeDeviceListEnabled;
     private String currentFlashBriefingJson = "";
     private final HttpService httpService;
     private @Nullable LoginServlet loginServlet;
@@ -109,16 +105,6 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Polling interval not configured");
             return;
         }
-        Boolean discoverSmartHomeDevices = config.discoverSmartHomeDevices;
-        if (discoverSmartHomeDevices != null && discoverSmartHomeDevices) {
-            if (!smartHomeDeviceListEnabled) {
-                updateSmartHomeDeviceList = true;
-            }
-            smartHomeDeviceListEnabled = true;
-        } else {
-            smartHomeDeviceListEnabled = false;
-        }
-
         if (pollingIntervalInSeconds < 10) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Polling interval less than 10 seconds not allowed");
@@ -178,16 +164,6 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
         }
     }
 
-    public void addSmartHomeHandler(SmartHomeBaseHandler smartHomeHandler) {
-        synchronized (smartHomeHandlers) {
-            smartHomeHandlers.add(smartHomeHandler);
-        }
-        Connection connection = this.connection;
-        if (connection != null) {
-            smartHomeHandler.initialize(connection);
-        }
-    }
-
     private void initializeEchoHandler(EchoHandler echoHandler, Connection connection) {
         intializeChildDevice(connection, echoHandler);
 
@@ -239,16 +215,6 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             }
         }
 
-        // check for smart home handler
-        if (childHandler instanceof SmartHomeBaseHandler) {
-            synchronized (smartHomeHandlers) {
-                smartHomeHandlers.remove(childHandler);
-            }
-            AmazonEchoDiscovery instance = AmazonEchoDiscovery.instance;
-            if (instance != null) {
-                instance.removeExistingSmartHomeHandler(childThing.getUID());
-            }
-        }
         super.childHandlerDisposed(childHandler, childThing);
     }
 
@@ -351,7 +317,6 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                             String serializedStorage = currentConnection.serializeLoginData();
                             this.stateStorage.storeState("sessionStorage", serializedStorage);
                         }
-                        updateSmartHomeDeviceList = true;
                         this.connection = currentConnection;
                     } catch (UnknownHostException e) {
                         loginIsValid = false;
@@ -387,7 +352,6 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
         this.connection = connection;
         String serializedStorage = connection.serializeLoginData();
         this.stateStorage.storeState("sessionStorage", serializedStorage);
-        updateSmartHomeDeviceList = true;
         handleValidLogin();
     }
 
@@ -471,7 +435,6 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
     @Override
     public void updateDeviceList(boolean manualScan) {
         if (manualScan) {
-            updateSmartHomeDeviceList = true;
             discoverFlashProfiles = true;
         }
 
@@ -508,26 +471,8 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                 initializeEchoHandler(child, currentConnection);
             }
         }
-        synchronized (smartHomeHandlers) {
-            for (SmartHomeBaseHandler child : smartHomeHandlers) {
-                child.initialize(currentConnection);
-            }
-        }
+
         updateFlashBriefingHandlers(currentConnection);
-
-        if (discoveryService != null && updateSmartHomeDeviceList && smartHomeDeviceListEnabled) {
-            updateSmartHomeDeviceList = false;
-            List<JsonSmartHomeDevice> smartHomeDevices = null;
-            try {
-                smartHomeDevices = currentConnection.getSmartHomeDevices();
-            } catch (IOException | URISyntaxException e) {
-                logger.warn("Update smart home list failed {}", e);
-            }
-            if (smartHomeDevices != null) {
-                discoveryService.setSmartHomeDevices(getThing().getUID(), smartHomeDevices);
-            }
-        }
-
     }
 
     public void setEnabledFlashBriefingsJson(String flashBriefingJson) {
@@ -552,7 +497,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
     }
 
     private void updateFlashBriefingHandlers(Connection currentConnection) {
-        synchronized (smartHomeHandlers) {
+        synchronized (flashBriefingProfileHandlers) {
             if (!flashBriefingProfileHandlers.isEmpty() || currentFlashBriefingJson.isEmpty()) {
                 updateFlashBriefingProfiles(currentConnection);
             }
