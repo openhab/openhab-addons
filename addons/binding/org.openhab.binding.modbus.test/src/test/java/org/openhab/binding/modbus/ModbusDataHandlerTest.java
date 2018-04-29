@@ -207,6 +207,26 @@ public class ModbusDataHandlerTest {
             throw new IllegalStateException();
         }
 
+        @Override
+        public boolean addTag(String itemName, String tag) {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public boolean addTags(String itemName, Collection<String> tags) {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public boolean removeTag(String itemName, String tag) {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public boolean removeTags(String itemName, Collection<String> tags) {
+            throw new IllegalStateException();
+        }
+
     };
 
     private static final Map<String, Class<? extends Item>> channelToItemClass = new HashMap<>();
