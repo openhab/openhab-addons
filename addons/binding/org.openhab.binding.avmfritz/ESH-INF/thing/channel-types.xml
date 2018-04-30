@@ -81,7 +81,7 @@
 		<label>Setpoint Temperature</label>
 		<description>Thermostat Setpoint temperature.</description>
 		<category>Temperature</category>
-		<state min="8" max="28" step="0.5" pattern="%.1f %unit%" />
+		<state pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="eco_temp">
