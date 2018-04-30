@@ -20,10 +20,6 @@
 			</description>
 			<default>1000</default>
 		</parameter>
-		<parameter name="udn" type="text">
-			<label>UPNP UDN</label>
-			<description>UDN (Unique Device Name) of the device</description>
-		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

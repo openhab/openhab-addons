@@ -45,10 +45,9 @@ public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
         if (uid != null) {
             Map<String, Object> properties = new HashMap<>();
             properties.put(HOST_NAME, device.getIdentity().getDescriptorURL().getHost());
-            properties.put(UDN, device.getIdentity().getUdn().getIdentifierString());
 
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel(getLabel(device)).withRepresentationProperty(UDN).build();
+                    .withLabel(getLabel(device)).build();
 
             logger.debug("Created a DiscoveryResult for device '{}' with UDN '{}'",
                     device.getDetails().getModelDetails().getModelName(),
