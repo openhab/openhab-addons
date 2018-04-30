@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="phc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Bridge -->
+	<bridge-type id="bridge">
+		<label>PHC Bridge</label>
+		<description>The serial bridge to the PHC modules. Max 32 modules per model group(thing type) per Bridge, equates one
+			STM.</description>
+
+		<config-description>
+			<parameter name="port" type="text">
+				<label>Serial Port</label>
+				<description>Serial Port the PHC modules are connected to</description>
+				<required>true</required>
+				<context>serial-port</context>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+	<!-- Thing Types -->
+	<thing-type id="AM">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>PHC AM</label>
+		<description>Thing for an AM channel.</description>
+
+		<channel-groups>
+			<channel-group id="am" typeId="amChannels" />
+		</channel-groups>
+
+		<config-description>
+			<parameter name="address" type="text" pattern="[0-1]{5}" min="5" max="5">
+				<label>Address</label>
+				<description>Address of the module as binary, like the DIP switches.</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="EM">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>PHC EM</label>
+		<description>Thing for an EM channel.</description>
+
+		<channel-groups>
+			<channel-group id="em" typeId="emChannels" />
+			<channel-group id="emLed" typeId="amChannels" />
+		</channel-groups>
+
+		<config-description>
+			<parameter name="address" type="text" pattern="[0-1]{5}" min="5" max="5">
+				<label>Address</label>
+				<description>Address of the module as binary, like the DIP switches.</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="JRM">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>PHC JRM</label>
+		<description>Thing for an JRM channel.</description>
+
+		<channel-groups>
+			<channel-group id="jrm" typeId="jrmChannels" />
+			<channel-group id="jrmT" typeId="jrmTimeChannels" />
+		</channel-groups>
+
+		<config-description>
+			<parameter name="address" type="text" pattern="[0-1]{5}" min="5" max="5">
+				<label>Address</label>
+				<description>Address of the module as binary, like the DIP switches.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="upDownTime1" type="integer">
+				<advanced>true</advanced>
+				<label>Time shutter 1</label>
+				<description>The Time which the first shutter needs to move up/down.</description>
+				<required>false</required>
+				<default>30</default>
+			</parameter>
+			<parameter name="upDownTime2" type="integer">
+				<advanced>true</advanced>
+				<label>Time shutter 2</label>
+				<description>The Time which the second shutter needs to move up/down.</description>
+				<required>false</required>
+				<default>30</default>
+			</parameter>
+			<parameter name="upDownTime3" type="integer">
+				<advanced>true</advanced>
+				<label>Time shutter 3</label>
+				<description>The Time which the third shutter needs to move up/down.</description>
+				<required>false</required>
+				<default>30</default>
+			</parameter>
+			<parameter name="upDownTime4" type="integer">
+				<advanced>true</advanced>
+				<label>Time shutter 4</label>
+				<description>The Time which the fourth shutter needs to move up/down.</description>
+				<required>false</required>
+				<default>30</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
