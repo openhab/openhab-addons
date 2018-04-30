@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -57,7 +57,7 @@ import gnu.io.UnsupportedCommOperationException;
 
 public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEventListener {
 
-    private Logger logger = LoggerFactory.getLogger(PHCBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PHCBridgeHandler.class);
 
     private static final int BAUD = 19200;
     private static final int SEND_RETRY_COUNT = 15; // max count to send the same message
@@ -70,13 +70,13 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     byte[] messageFragment;
     RXTXPort serialPort;
 
-    private Map<String, Boolean> toggleMap = new HashMap<String, Boolean>();
-    private ConcurrentNavigableMap<Long, QueueObject> queue = new ConcurrentSkipListMap<Long, QueueObject>();
+    private final Map<String, Boolean> toggleMap = new HashMap<String, Boolean>();
+    private final ConcurrentNavigableMap<Long, QueueObject> queue = new ConcurrentSkipListMap<Long, QueueObject>();
 
-    private byte emLedOutputState[] = new byte[32];
-    private byte amOutputState[] = new byte[32];
+    private final byte emLedOutputState[] = new byte[32];
+    private final byte amOutputState[] = new byte[32];
 
-    private List<Byte> modules = new ArrayList<Byte>();
+    private final List<Byte> modules = new ArrayList<Byte>();
 
     public PHCBridgeHandler(Bridge phcBridge) {
         super(phcBridge);
