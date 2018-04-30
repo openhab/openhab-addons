@@ -11,9 +11,18 @@
         
         <channel-groups>
             <channel-group id="general" typeId="general"/>
-            <channel-group id="mainZone" typeId="mainZone"/>
-            <channel-group id="zone2" typeId="zone2"/>
-            <channel-group id="zone3" typeId="zone3"/>
+            <channel-group id="mainZone" typeId="zone">
+	            <label>Main zone control</label>
+	            <description>Channels for the main zone of this AVR.</description>
+            </channel-group>
+            <channel-group id="zone2" typeId="zone">
+                <label>Zone 2 control</label>
+                <description>Channels for zone2 of this AVR.</description>
+            </channel-group>
+            <channel-group id="zone3" typeId="zone">
+                <label>Zone 3 control</label>
+                <description>Channels for zone2 of this AVR.</description>
+            </channel-group>
         </channel-groups>
 
         <config-description>
@@ -90,9 +99,9 @@
         </channels>
     </channel-group-type>
     
-    <channel-group-type id="mainZone">
-        <label>Main zone control</label>
-        <description>Channels for the main zone of this AVR.</description>
+    <channel-group-type id="zone">
+        <label>Zone control</label>
+        <description>Channels for a zone of this AVR.</description>
         <channels>
             <channel id="power" typeId="zonePower"/>
             <channel id="volume" typeId="volume"/>
@@ -102,30 +111,6 @@
         </channels>
     </channel-group-type>
     
-    <channel-group-type id="zone2">
-        <label>Zone 2 control</label>
-        <description>Channels for zone2 of this AVR.</description>
-        <channels>
-            <channel id="power" typeId="zonePower"/>
-            <channel id="volume" typeId="volume"/>
-            <channel id="volumeDB" typeId="volumeDB"/>
-            <channel id="mute" typeId="mute"/>
-            <channel id="input" typeId="input"/>
-        </channels>
-    </channel-group-type>
-    
-    <channel-group-type id="zone3">
-        <label>Zone 3 control</label>
-        <description>Channels for zone3 of this AVR.</description>
-        <channels>
-            <channel id="power" typeId="zonePower"/>
-            <channel id="volume" typeId="volume"/>
-            <channel id="volumeDB" typeId="volumeDB"/>
-            <channel id="mute" typeId="mute"/>
-            <channel id="input" typeId="input"/>
-        </channels>
-    </channel-group-type>
-
     <channel-type id="mainPower">
         <item-type>Switch</item-type>
         <label>Power</label>
