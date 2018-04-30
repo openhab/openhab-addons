@@ -87,6 +87,7 @@ Please note, if you define the things manually (not in the UI) that the ThingID 
 ## Full Example
 
 .things
+
 ```
 Bridge phc:bridge:demo [port="/dev/ttyUSB0"]{
     // The ThingID have to be the address.
@@ -96,6 +97,7 @@ Bridge phc:bridge:demo [port="/dev/ttyUSB0"]{
 ```
 
 .items
+
 ```
 //AM Module
 Switch Switch_1 {channel="phc:AM:01101:am#00"}

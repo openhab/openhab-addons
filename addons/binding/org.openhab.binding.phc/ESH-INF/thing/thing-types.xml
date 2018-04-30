@@ -14,6 +14,7 @@
 				<label>Serial Port</label>
 				<description>Serial Port the PHC modules are connected to</description>
 				<required>true</required>
+				<context>serial-port</context>
 			</parameter>
 		</config-description>
 
