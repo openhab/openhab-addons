@@ -7,16 +7,39 @@
 	<thing-type id="mower">
 		<label>Mower</label>
 		<description>Mower robot connected via robonect module</description>
-		<channel-groups>
-			<channel-group id="mowerInfo" typeId="mowerInfoType"/>
-			<channel-group id="mowerStatus" typeId="mowerStatusType"/>
-			<channel-group id="timer" typeId="timerType"/>
-			<channel-group id="wlan" typeId="wlanType"/>
-			<channel-group id="job" typeId="jobGroupType"/>
-			<channel-group id="error" typeId="errorGroupType"/>
-			<channel-group id="lastError" typeId="errorGroupType"/>
-			<channel-group id="health" typeId="healthType"/>
-		</channel-groups>
+		<channels>
+			<channel id="name" typeId="nameType"/>
+			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="wlan-signal" typeId="system.signal-strength"/>
+			<channel id="mowing-hours" typeId="hoursType"/>
+
+			<channel id="mode" typeId="modeType"/>
+			<channel id="started" typeId="startedType"/>
+			<channel id="status" typeId="mowerStatusType"/>
+			<channel id="status-duration" typeId="durationType"/>
+			
+			<channel id="timer-status" typeId="timerStatusType"/>
+			<channel id="timer-next" typeId="nextTimerType"/>
+
+			<channel id="job-remote-start" typeId="remoteStartType"/>
+			<channel id="job-after-mode" typeId="modeType"/>
+			<channel id="job-start" typeId="timeStringType"/>
+			<channel id="job-end" typeId="timeStringType"/>
+
+			<channel id="offlineTrigger" typeId="offlineTriggerType"/>
+
+			<channel id="error-code" typeId="errorCodeType"/>
+			<channel id="error-message" typeId="errorMessageType"/>
+			<channel id="error-date" typeId="errorDateType"/>
+
+			<channel id="last-error-code" typeId="errorCodeType"/>
+			<channel id="last-error-message" typeId="errorMessageType"/>
+			<channel id="last-error-date" typeId="errorDateType"/>
+
+			<channel id="health-temperature" typeId="temperatureType"/>
+			<channel id="health-humidity" typeId="humidityType"/>
+		</channels>
+
 		<properties>
 			<property name="vendor">robonect.de</property>
 		</properties>
@@ -49,68 +72,6 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<channel-group-type id="mowerInfoType">
-		<label>Mower Info</label>
-		<channels>
-			<channel id="name" typeId="nameType"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="mowerStatusType">
-		<label>Mower Status</label>
-		<channels>
-			<channel id="battery" typeId="system.battery-level"/>
-			<channel id="duration" typeId="durationType"/>
-			<channel id="hours" typeId="hoursType"/>
-			<channel id="mode" typeId="modeType"/>
-			<channel id="status" typeId="mowerStatusType"/>
-			<channel id="started" typeId="startedType"/>
-			<channel id="offlineTrigger" typeId="offlineTriggerType"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="timerType">
-		<label>Timer Info</label>
-		<channels>
-			<channel id="status" typeId="timerStatusType"/>
-			<channel id="nextTimer" typeId="nextTimerType"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="errorGroupType">
-		<label>Error Info</label>
-		<channels>
-			<channel id="code" typeId="errorCodeType"/>
-			<channel id="message" typeId="errorMessageType"/>
-			<channel id="date" typeId="errorDateType"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="jobGroupType">
-		<label>Job properties</label>
-		<channels>
-			<channel id="remoteStart" typeId="remoteStartType"/>
-			<channel id="afterMode" typeId="modeType"/>
-			<channel id="start" typeId="timeStringType"/>
-			<channel id="end" typeId="timeStringType"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="wlanType">
-		<label>WLAN Info</label>
-		<channels>
-			<channel id="signal" typeId="system.signal-strength"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="healthType">
-		<label>Health Info</label>
-		<channels>
-			<channel id="temperature" typeId="temperatureType"/>
-			<channel id="humidity" typeId="humidityType"/>
-		</channels>
-	</channel-group-type>
 
 	<channel-type id="serialType">
 		<item-type>String</item-type>
