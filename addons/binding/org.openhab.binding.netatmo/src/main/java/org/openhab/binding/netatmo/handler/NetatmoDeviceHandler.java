@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.swagger.client.model.NAPlace;
-import io.swagger.client.model.NAUserAdministrative;
 import retrofit.RetrofitError;
 
 /**
@@ -52,7 +51,6 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     private RefreshStrategy refreshStrategy;
     @Nullable
     protected DEVICE device;
-    protected NAUserAdministrative userAdministrative;
     protected Map<String, Object> childs = new ConcurrentHashMap<>();
 
     public NetatmoDeviceHandler(@NonNull Thing thing) {
@@ -171,8 +169,6 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                     } else {
                         return UnDefType.UNDEF;
                     }
-                case CHANNEL_UNIT:
-                    return new DecimalType(userAdministrative.getUnit());
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             logger.debug("The device has no method to access {} property ", channelId);
