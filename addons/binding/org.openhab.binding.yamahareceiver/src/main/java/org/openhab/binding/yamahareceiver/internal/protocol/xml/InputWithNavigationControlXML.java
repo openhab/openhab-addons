@@ -9,7 +9,6 @@
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
@@ -41,10 +40,7 @@ import org.w3c.dom.Node;
  * @author Dennis Frommknecht - Initial idea and implementaton
  * @author Tomasz Maruszak - Refactor
  */
-public class InputWithNavigationControlXML implements InputWithNavigationControl {
-    protected final WeakReference<AbstractConnection> comReference;
-
-    protected final String inputID;
+public class InputWithNavigationControlXML extends AbstractInputControlXML implements InputWithNavigationControl {
 
     public static final int MAX_PER_PAGE = 8;
     private boolean useAlternativeBackToHomeCmd = false;
@@ -62,21 +58,11 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
      */
     public InputWithNavigationControlXML(NavigationControlState state, String inputID, AbstractConnection com,
             NavigationControlStateListener observer) {
-        this.state = state;
-        this.comReference = new WeakReference<>(com);
-        this.inputID = inputID;
-        this.observer = observer;
-    }
 
-    /**
-     * Wraps the XML message with the inputID tags. Example with inputID=NET_RADIO:
-     * <NETRADIO>message</NETRADIO>.
-     *
-     * @param message XML message
-     * @return
-     */
-    private String wrInput(String message) {
-        return "<" + inputID + ">" + message + "</" + inputID + ">";
+        super(inputID, com);
+
+        this.state = state;
+        this.observer = observer;
     }
 
     /**

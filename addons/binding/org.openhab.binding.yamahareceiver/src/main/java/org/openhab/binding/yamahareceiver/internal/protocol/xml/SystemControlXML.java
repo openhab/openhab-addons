@@ -19,21 +19,38 @@ import org.openhab.binding.yamahareceiver.internal.state.SystemControlStateListe
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.ON;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.POWER_STANDBY;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getNode;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getNodeContentOrDefault;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getNodeContentOrEmpty;
+
 /**
  * The system control protocol class is used to control basic non-zone functionality
  * of a Yamaha receiver with HTTP/xml.
  * No state will be saved in here, but in {@link SystemControlState} instead.
  *
  * @author David Gräff - Initial contribution
- * @author Tomasz Maruszak - refactoring
+ * @author Tomasz Maruszak - refactoring, HTR-xxxx Zone_2 compatibility
+ *
  */
 public class SystemControlXML implements SystemControl {
     private WeakReference<AbstractConnection> comReference;
     private SystemControlStateListener observer;
 
+    protected String setPowerCmd = "<System><Power_Control><Power>%s</Power></Power_Control></System>";
+    protected String setPowerPath = "Power_Control/Power";
+
     public SystemControlXML(AbstractConnection xml, SystemControlStateListener observer) {
         this.comReference = new WeakReference<>(xml);
         this.observer = observer;
+    }
+
+    @Override
+    public void setPower(boolean power) throws IOException, ReceivedMessageParseException {
+        String cmd = String.format(setPowerCmd, power ? ON : POWER_STANDBY);
+        comReference.get().send(cmd);
+        update();
     }
 
     @Override
@@ -42,27 +59,15 @@ public class SystemControlXML implements SystemControl {
             return;
         }
 
-        AbstractConnection xml = comReference.get();
-        String response = xml.sendReceive("<System><Power_Control>GetParam</Power_Control></System>");
-        Document doc = XMLUtils.xml(response);
-        if (doc == null || doc.getFirstChild() == null) {
-            throw new ReceivedMessageParseException("<System><Power_Control>GetParam failed: " + response);
-        }
-
-        Node basicStatus = XMLUtils.getNode(doc.getFirstChild(), "System/Power_Control");
+        Node basicStatus = XMLProtocolService.getResponse(comReference.get(),
+                "<System><Power_Control>GetParam</Power_Control></System>",
+                "System");
 
         SystemControlState state = new SystemControlState();
 
-        String value = XMLUtils.getNodeContentOrDefault(basicStatus, "Power", "");
-        state.power = value.equals("On");
+        String value = getNodeContentOrEmpty(basicStatus, setPowerPath);
+        state.power = ON.equals(value);
 
         observer.systemControlStateChanged(state);
-    }
-
-    @Override
-    public void setPower(boolean power) throws IOException, ReceivedMessageParseException {
-        String str = power ? "On" : "Standby";
-        comReference.get().send("<System><Power_Control><Power>" + str + "</Power></Power_Control></System>");
-        update();
     }
 }

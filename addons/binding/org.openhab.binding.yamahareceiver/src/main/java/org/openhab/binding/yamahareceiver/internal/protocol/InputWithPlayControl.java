@@ -10,16 +10,16 @@ package org.openhab.binding.yamahareceiver.internal.protocol;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
+import static java.util.stream.Collectors.toSet;
+import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.*;
 
 /**
  * The play controls protocol interface
  *
  * @author David Graeff - Initial contribution
- * @author Tomasz Maruszak - Spotify support
+ * @author Tomasz Maruszak - Spotify support, adding Server to supported preset inputs
  */
 
 public interface InputWithPlayControl extends IStateUpdatable {
@@ -27,10 +27,17 @@ public interface InputWithPlayControl extends IStateUpdatable {
      * List all inputs that are compatible with this kind of control
      */
     Set<String> SUPPORTED_INPUTS = Stream
-            .of(YamahaReceiverBindingConstants.INPUT_TUNER, "NET_RADIO", "NET RADIO", "USB", "DOCK", "iPOD_USB", "PC",
-                    "Napster", "Pandora", "SIRIUS", "Rhapsody", YamahaReceiverBindingConstants.INPUT_BLUETOOTH, "iPod",
-                    "HD_RADIO", YamahaReceiverBindingConstants.INPUT_SPOTIFY)
-            .collect(Collectors.toSet());
+            .of(
+                    INPUT_NET_RADIO,
+                    INPUT_NET_RADIO_LEGACY,
+                    INPUT_USB, INPUT_IPOD_USB, INPUT_IPOD,
+                    INPUT_DOCK, INPUT_PC,
+                    INPUT_NAPSTER, INPUT_PANDORA, INPUT_SIRIUS, INPUT_RHAPSODY,
+                    INPUT_BLUETOOTH,
+                    INPUT_SPOTIFY,
+                    INPUT_SERVER,
+                    INPUT_HD_RADIO
+            ).collect(toSet());
 
     /**
      * Start the playback of the content which is usually selected by the means of the Navigation control class or

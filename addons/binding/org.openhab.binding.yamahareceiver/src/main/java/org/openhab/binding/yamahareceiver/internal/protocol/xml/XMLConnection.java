@@ -8,6 +8,11 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
+import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -15,10 +20,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
+import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * All other protocol classes in this directory use this class for communication. An object
@@ -31,12 +38,58 @@ import org.slf4j.LoggerFactory;
 public class XMLConnection extends AbstractConnection {
     private Logger logger = LoggerFactory.getLogger(XMLConnection.class);
 
-    public final static String XML_GET = "<?xml version=\"1.0\" encoding=\"utf-8\"?><YAMAHA_AV cmd=\"GET\">";
-    public final static String XML_PUT = "<?xml version=\"1.0\" encoding=\"utf-8\"?><YAMAHA_AV cmd=\"PUT\">";
-    public final static String XML_END = "</YAMAHA_AV>";
+    private static final String XML_GET = "<?xml version=\"1.0\" encoding=\"utf-8\"?><YAMAHA_AV cmd=\"GET\">";
+    private static final String XML_PUT = "<?xml version=\"1.0\" encoding=\"utf-8\"?><YAMAHA_AV cmd=\"PUT\">";
+    private static final String XML_END = "</YAMAHA_AV>";
+    private static final String HEADER_CHARSET_PART = "charset=";
 
     public XMLConnection(String host) {
         super(host);
+    }
+
+    @FunctionalInterface
+    public interface CheckedConsumer<T, R> {
+        R apply(T t) throws IOException;
+    }
+
+    private <T> T postMessage(String prefix, String message, String suffix, CheckedConsumer<HttpURLConnection, T> responseConsumer) throws IOException {
+        if (message.startsWith("<?xml")) {
+            throw new IOException("No preformatted xml allowed!");
+        }
+        message = prefix + message + suffix;
+
+        writeTraceFile(message);
+
+        URL url = createCrlUrl();
+        logger.debug("Making POST to {} with payload: {}", url, message);
+
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Length", Integer.toString(message.length()));
+
+            connection.setUseCaches(false);
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+
+            // Send request
+            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+                wr.writeBytes(message);
+                wr.flush();
+            }
+
+            if (connection.getResponseCode() != 200) {
+                throw new IOException("Changing a value on the Yamaha AVR failed: " + message);
+            }
+
+            return responseConsumer.apply(connection);
+
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
     }
 
     /**
@@ -47,45 +100,7 @@ public class XMLConnection extends AbstractConnection {
      */
     @Override
     public void send(String message) throws IOException {
-        HttpURLConnection connection = null;
-        if (message.startsWith("<?xml")) {
-            throw new IOException("No preformatted xml allowed!");
-        }
-
-        message = XML_PUT + message + XML_END;
-
-        writeTraceFile(message);
-
-        try {
-            URL url = createCrlUrl();
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Length", "" + Integer.toString(message.length()));
-
-            connection.setUseCaches(false);
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-
-            // Send request
-            DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-            try {
-                wr.writeBytes(message);
-                wr.flush();
-            } finally {
-                wr.close();
-            }
-
-            if (connection.getResponseCode() != 200) {
-                throw new IOException("Changing a value on the Yamaha AVR failed: " + message);
-            }
-
-        } catch (IOException e) {
-            throw e;
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
+        postMessage(XML_PUT, message, XML_END, c -> null);
     }
 
     /**
@@ -96,59 +111,81 @@ public class XMLConnection extends AbstractConnection {
      * @throws IOException
      */
     @Override
-    public String sendReceive(String message) throws IOException {
-        HttpURLConnection connection = null;
-        if (message.startsWith("<?xml")) {
-            throw new IOException("No preformatted xml allowed!");
+    public String sendReceive(final String message) throws IOException {
+        return postMessage(XML_GET, message, XML_END, c -> consumeResponse(c));
+    }
+
+    private String consumeResponse(HttpURLConnection connection) throws IOException {
+        // Read response
+
+        Charset responseCharset = getResponseCharset(connection, StandardCharsets.UTF_8);
+        try (BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream(), responseCharset))) {
+            String line;
+            StringBuilder responseBuffer = new StringBuilder();
+            while ((line = rd.readLine()) != null) {
+                responseBuffer.append(line);
+                responseBuffer.append('\r');
+            }
+            String response = responseBuffer.toString();
+            writeTraceFile(response);
+            return response;
         }
+    }
 
-        message = XML_GET + message + XML_END;
+    public String getResponse(String path) throws IOException {
 
-        writeTraceFile(message);
+        URL url = createBaseUrl(path);
+        logger.debug("Making GET to {}", url);
 
+        HttpURLConnection connection = null;
         try {
-            URL url = createCrlUrl();
             connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Length", "" + Integer.toString(message.length()));
+            connection.setRequestMethod("GET");
 
             connection.setUseCaches(false);
             connection.setDoInput(true);
-            connection.setDoOutput(true);
+            connection.setDoOutput(false);
 
-            // Send request
-            DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-            try {
-                wr.writeBytes(message);
-                wr.flush();
-            } finally {
-                wr.close();
+            if (connection.getResponseCode() != 200) {
+                throw new IOException("Request failed");
             }
 
-            // Read response
-            BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            try {
-                String line;
-                StringBuffer responseBuffer = new StringBuffer();
-                while ((line = rd.readLine()) != null) {
-                    responseBuffer.append(line);
-                    responseBuffer.append('\r');
-                }
-                String response = responseBuffer.toString();
-
-                writeTraceFile(message);
-                return response;
-            } finally {
-                rd.close();
-            }
-        } catch (Exception e) {
-            logger.warn("post failed on: {}", message);
-            throw e;
+            return consumeResponse(connection);
         } finally {
             if (connection != null) {
                 connection.disconnect();
             }
         }
+    }
+
+    private Charset getResponseCharset(HttpURLConnection connection, Charset defaultCharset) {
+
+        // See https://stackoverflow.com/a/3934280/1906057
+
+        Charset charset = defaultCharset;
+
+        String contentType = connection.getContentType();
+        String[] values = contentType.split(";"); // values.length should be 2
+
+        // Example:
+        // Content-Type:text/xml; charset="utf-8"
+
+        Optional<String> charsetName = Arrays.stream(values)
+                .map(x -> x.trim())
+                .filter(x -> x.toLowerCase().startsWith(HEADER_CHARSET_PART))
+                .map(x -> x.substring(HEADER_CHARSET_PART.length() + 1, x.length() - 1))
+                .findFirst();
+
+        if (charsetName.isPresent() && !StringUtils.isEmpty(charsetName.get())) {
+            try {
+                charset = Charset.forName(charsetName.get());
+            } catch (UnsupportedCharsetException | IllegalCharsetNameException e) {
+                logger.warn("The charset {} provided in the response {} is not supported", charsetName, contentType);
+            }
+        }
+
+        logger.trace("The charset {} will be used to parse the response", charset);
+        return charset;
     }
 
     /**
@@ -157,6 +194,15 @@ public class XMLConnection extends AbstractConnection {
      * @throws MalformedURLException
      */
     private URL createCrlUrl() throws MalformedURLException {
-        return new URL("http://" + host + "/YamahaRemoteControl/ctrl");
+        return createBaseUrl("/YamahaRemoteControl/ctrl");
+    }
+
+    /**
+     * Creates an {@link URL} object to Yamaha
+     * @return
+     * @throws MalformedURLException
+     */
+    private URL createBaseUrl(String path) throws MalformedURLException {
+        return new URL("http://" + host + path);
     }
 }

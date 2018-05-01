@@ -10,20 +10,20 @@ package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Collection;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
-import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
-import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
-import org.openhab.binding.yamahareceiver.internal.protocol.ZoneAvailableInputs;
+import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone;
+import org.openhab.binding.yamahareceiver.internal.protocol.*;
 import org.openhab.binding.yamahareceiver.internal.state.AvailableInputState;
 import org.openhab.binding.yamahareceiver.internal.state.AvailableInputStateListener;
 import org.openhab.binding.yamahareceiver.internal.state.ZoneControlState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * The zone protocol class is used to control one zone of a Yamaha receiver with HTTP/xml.
@@ -31,25 +31,32 @@ import org.w3c.dom.NodeList;
  *
  * @author David Gräff - Initial contribution
  * @author Tomasz Maruszak - Refactoring
+ * @author Tomasz Maruszak - Input mapping fix
+ *
  */
 public class ZoneAvailableInputsXML implements ZoneAvailableInputs {
-    private final Logger logger = LoggerFactory.getLogger(ZoneAvailableInputsXML.class);
+    protected Logger logger = LoggerFactory.getLogger(ZoneAvailableInputsXML.class);
 
-    private AvailableInputStateListener observer;
-    private final WeakReference<AbstractConnection> comReference;
-    private final YamahaReceiverBindingConstants.Zone zone;
+    private final WeakReference<AbstractConnection> conReference;
+    private final AvailableInputStateListener observer;
+    private final Supplier<InputConverter> inputConverterSupplier;
+    private final Zone zone;
 
-    public ZoneAvailableInputsXML(AbstractConnection xml, YamahaReceiverBindingConstants.Zone zone,
-            AvailableInputStateListener observer) {
-        this.comReference = new WeakReference<>(xml);
+    public ZoneAvailableInputsXML(AbstractConnection con,
+                                  Zone zone,
+                                  AvailableInputStateListener observer,
+                                  Supplier<InputConverter> inputConverterSupplier) {
+
+        this.conReference = new WeakReference<>(con);
         this.zone = zone;
         this.observer = observer;
+        this.inputConverterSupplier = inputConverterSupplier;
     }
 
     /**
      * Return the zone
      */
-    public YamahaReceiverBindingConstants.Zone getZone() {
+    public Zone getZone() {
         return zone;
     }
 
@@ -58,29 +65,17 @@ public class ZoneAvailableInputsXML implements ZoneAvailableInputs {
             return;
         }
 
-        AbstractConnection com = comReference.get();
-        String response = com
-                .sendReceive(XMLUtils.wrZone(zone, "<Input><Input_Sel_Item>GetParam</Input_Sel_Item></Input>"));
-        Document doc = XMLUtils.xml(response);
-        if (doc.getFirstChild() == null) {
-            throw new ReceivedMessageParseException("<Input><Input_Sel_Item>GetParam failed: " + response);
-        }
-        Node inputSelItem = XMLUtils.getNode(doc.getFirstChild(), zone + "/Input/Input_Sel_Item");
-        NodeList items = inputSelItem.getChildNodes();
+        Collection<XMLProtocolService.InputDto> inputs = XMLProtocolService.getInputs(conReference.get(), zone);
 
         AvailableInputState state = new AvailableInputState();
 
-        for (int i = 0; i < items.getLength(); i++) {
-            Element item = (Element) items.item(i);
-            String name = item.getElementsByTagName("Param").item(0).getTextContent();
-            boolean writable = item.getElementsByTagName("RW").item(0).getTextContent().contains("W");
-            if (writable) {
-                state.availableInputs.put(XMLUtils.convertNameToID(name), name);
-            }
-        }
+        inputs.stream().filter(XMLProtocolService.InputDto::isWritable).forEach(x -> {
+            String inputName = inputConverterSupplier.get().fromStateName(x.getParam());
+            state.availableInputs.put(inputName, x.getParam());
+        });
 
         if (logger.isTraceEnabled()) {
-            logger.trace("Zone {} - available inputs: {}", zone, String.join(", ", state.availableInputs.keySet()));
+            logger.trace("Zone {} - available inputs: {}", getZone(), state.availableInputs.keySet().stream().collect(joining(", ")));
         }
 
         observer.availableInputsChanged(state);

@@ -8,11 +8,9 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.Map;
-
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
+import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Feature;
+import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.DeviceInformation;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
@@ -20,8 +18,15 @@ import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
 import org.openhab.binding.yamahareceiver.internal.state.SystemControlState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.Arrays;
+import java.util.Set;
+
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getNode;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getNodeContentOrEmpty;
 
 /**
  * The system control protocol class is used to control basic non-zone functionality
@@ -29,11 +34,12 @@ import org.w3c.dom.Node;
  * No state will be saved in here, but in {@link SystemControlState} instead.
  *
  * @author David Gräff <david.graeff@tu-dortmund.de>
- * @author Tomasz Maruszak - DAB support, Spotify support
+ * @author Tomasz Maruszak - DAB support, Spotify support, better feature detection
  */
 public class DeviceInformationXML implements DeviceInformation {
-    private Logger logger = LoggerFactory.getLogger(DeviceInformationXML.class);
-    private WeakReference<AbstractConnection> comReference;
+    private final Logger logger = LoggerFactory.getLogger(DeviceInformationXML.class);
+
+    private final WeakReference<AbstractConnection> comReference;
     protected DeviceInformationState state;
 
     public DeviceInformationXML(AbstractConnection com, DeviceInformationState state) {
@@ -42,8 +48,7 @@ public class DeviceInformationXML implements DeviceInformation {
     }
 
     /**
-     * We need that called only once. Will give us name, id, version and
-     * zone information.
+     * We need that called only once. Will give us name, id, version and zone information.
      *
      * Example:
      * <Feature_Existence>
@@ -73,46 +78,74 @@ public class DeviceInformationXML implements DeviceInformation {
      */
     @Override
     public void update() throws IOException, ReceivedMessageParseException {
-        AbstractConnection com = comReference.get();
-        String response = com.sendReceive("<System><Config>GetParam</Config></System>");
-        Document doc = XMLUtils.xml(response);
-        if (doc == null || doc.getFirstChild() == null) {
-            throw new ReceivedMessageParseException("<System><Config>GetParam failed: " + response);
-        }
+        XMLConnection con = (XMLConnection) comReference.get();
 
-        state.host = com.getHost();
+        Node systemConfigNode = XMLProtocolService.getResponse(con, "<System><Config>GetParam</Config></System>", "System/Config");
 
-        Node basicStatus = XMLUtils.getNode(doc.getFirstChild(), "System/Config");
-
-        state.name = XMLUtils.getNodeContentOrDefault(basicStatus, "Model_Name", "");
-        state.id = XMLUtils.getNodeContentOrDefault(basicStatus, "System_ID", "");
-        state.version = XMLUtils.getNodeContentOrDefault(basicStatus, "Version", "");
+        state.host = con.getHost();
+        state.name = getNodeContentOrEmpty(systemConfigNode, "Model_Name");
+        state.id = getNodeContentOrEmpty(systemConfigNode, "System_ID");
+        state.version = getNodeContentOrEmpty(systemConfigNode, "Version");
 
         state.zones.clear();
+        state.features.clear();
+        state.properties.clear();
 
-        Node node = XMLUtils.getNode(basicStatus, "Feature_Existence");
-        if (node == null) {
-            throw new ReceivedMessageParseException("Zone information not provided: " + response);
+        // Get and store the Yamaha Description XML. This will be used to detect proper command naming in other areas.
+        DeviceDescriptorXML descriptor = new DeviceDescriptorXML();
+        descriptor.load(con);
+        descriptor.attach(state);
+
+        Node featureNode = getNode(systemConfigNode, "Feature_Existence");
+        if (featureNode != null) {
+            for (Zone zone : Zone.values()) {
+                checkFeature(featureNode, zone.toString(), zone, state.zones);
+            }
+
+            XMLConstants.FEATURE_BY_YNC_TAG.forEach((name, feature) -> checkFeature(featureNode, name, feature, state.features));
+
+        } else {
+            // on older models (RX-V3900) the Feature_Existence element does not exist
+
+            descriptor.zones.forEach((zone, x) -> state.zones.add(zone));
+            descriptor.features.forEach((feature, x) -> state.features.add(feature));
         }
 
-        for (YamahaReceiverBindingConstants.Zone zone : YamahaReceiverBindingConstants.Zone.values()) {
-            if (isFeatureSupported(node, zone.toString())) {
-                logger.trace("Adding zone: {}", zone);
-                state.zones.add(zone);
+        detectZoneBSupport(con);
+
+        logger.info("Found zones: {}, features: {}", state.zones, state.features);
+    }
+
+    /**
+     * Detect if Zone_B is supported (HTR-4069). This will allow Zone_2 to be emulated by the Zone_B feature.
+     * @param con
+     * @throws IOException
+     * @throws ReceivedMessageParseException
+     */
+    private void detectZoneBSupport(XMLConnection con) throws IOException, ReceivedMessageParseException {
+        if (state.zones.contains(Zone.Main_Zone) && !state.zones.contains(Zone.Zone_2)) {
+            // Detect if Zone_B is supported (HTR-4069). This will allow Zone_2 to be emulated.
+
+            // Retrieve Main_Zone basic status, from which we will know this AVR supports Zone_B feature.
+            Node basicStatusNode = XMLProtocolService.getZoneResponse(con, Zone.Main_Zone, "<Basic_Status>GetParam</Basic_Status>");
+            String power = getNodeContentOrEmpty(basicStatusNode, "Basic_Status/Power_Control/Zone_B_Power_Info");
+            if (StringUtils.isNotEmpty(power)) {
+                logger.info("Zone_2 emulation enabled via Zone_B");
+                state.zones.add(Zone.Zone_2);
+                state.features.add(Feature.ZONE_B);
             }
         }
-
-        state.supportTuner = isFeatureSupported(node, "Tuner");
-        state.supportDAB = isFeatureSupported(node, "DAB");
-        state.supportSpotify = isFeatureSupported(node, "Spotify");
     }
 
     private boolean isFeatureSupported(Node node, String name) {
-        String value = XMLUtils.getNodeContentOrDefault(node, name, "");
+        String value = getNodeContentOrEmpty(node, name);
         boolean supported = value.equals("1") || value.equals("Available");
-        if (supported) {
-            logger.trace("Found feature {}", name);
-        }
         return supported;
+    }
+
+    private <T> void checkFeature(Node node, String name, T value, Set<T> set) {
+        if (isFeatureSupported(node, name)) {
+            set.add(value);
+        }
     }
 }

@@ -10,8 +10,10 @@ package org.openhab.binding.yamahareceiver.internal.protocol;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toSet;
+import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.*;
 
 /**
  * The navigation control protocol interface
@@ -24,8 +26,21 @@ public interface InputWithNavigationControl extends IStateUpdatable {
     /**
      * List all inputs that are compatible with this kind of control
      */
-    Set<String> SUPPORTED_INPUTS = Stream.of("NET_RADIO", "NET RADIO", "USB", "DOCK", "iPOD_USB", "PC", "Napster",
-            "Pandora", "SIRIUS", "Rhapsody", "iPod", "HD_RADIO").collect(Collectors.toSet());
+    Set<String> SUPPORTED_INPUTS = Stream
+            .of(
+                    INPUT_NET_RADIO,
+                    INPUT_NET_RADIO_LEGACY,
+                    INPUT_USB,
+                    INPUT_IPOD_USB,
+                    INPUT_DOCK,
+                    INPUT_PC,
+                    INPUT_NAPSTER,
+                    INPUT_PANDORA,
+                    INPUT_SIRIUS,
+                    INPUT_RHAPSODY,
+                    INPUT_IPOD,
+                    INPUT_HD_RADIO
+            ).collect(toSet());
 
     /**
      * Navigate back
@@ -80,7 +95,6 @@ public interface InputWithNavigationControl extends IStateUpdatable {
      * Navigate to the given page. The Yamaha protocol separates list of items into pages.
      *
      * @param page The page, starting with 1.
-     *
      * @throws IOException
      * @throws ReceivedMessageParseException
      */
