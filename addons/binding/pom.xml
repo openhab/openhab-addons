@@ -111,6 +111,7 @@
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tplinksmarthome.test</module>
     <module>org.openhab.binding.urtsi</module>
+    <module>org.openhab.binding.velbus</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.wifiled</module>
     <module>org.openhab.binding.wifiled.test</module>
