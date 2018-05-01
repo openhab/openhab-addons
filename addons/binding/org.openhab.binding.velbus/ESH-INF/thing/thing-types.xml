@@ -637,9 +637,9 @@
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Current temperature in degrees celsius</description>
+		<description>Current temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C">
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="trigger-channel">

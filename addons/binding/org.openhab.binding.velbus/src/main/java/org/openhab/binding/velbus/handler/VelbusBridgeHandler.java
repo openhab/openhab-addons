@@ -36,7 +36,7 @@ import gnu.io.SerialPortEventListener;
  * {@link VelbusBridgeHandler} is the handler for a Velbus Serial-interface and connects it to
  * the framework.
  *
- * @author Cedric Boon
+ * @author Cedric Boon - Initial contribution
  */
 public class VelbusBridgeHandler extends BaseBridgeHandler implements SerialPortEventListener {
 
