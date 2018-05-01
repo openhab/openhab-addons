@@ -8,22 +8,23 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol;
 
-import com.google.common.collect.Sets;
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
-
 import java.io.IOException;
 import java.util.Set;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toSet;
+import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.INPUT_TUNER;
 
 /**
  * The DAB Band control protocol interface.
  *
- * @author Tomasz Maruszak - [yamaha] Tuner band selection and preset feature for dual band models (RX-S601D)
+ * @author Tomasz Maruszak - Initial contribution.
  */
 public interface InputWithDabBandControl extends IStateUpdatable {
     /**
      * List all inputs that are compatible with this kind of control
      */
-    Set<String> SUPPORTED_INPUTS = Sets.newHashSet(YamahaReceiverBindingConstants.INPUT_TUNER);
+    Set<String> SUPPORTED_INPUTS = Stream.of(INPUT_TUNER).collect(toSet());
 
     /**
      * Select a DAB band by name.
