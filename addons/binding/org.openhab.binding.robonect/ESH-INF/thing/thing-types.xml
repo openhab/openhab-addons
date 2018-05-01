@@ -23,8 +23,8 @@
 
 			<channel id="job-remote-start" typeId="remoteStartType"/>
 			<channel id="job-after-mode" typeId="modeType"/>
-			<channel id="job-start" typeId="timeStringType"/>
-			<channel id="job-end" typeId="timeStringType"/>
+			<channel id="job-start" typeId="startTimeType"/>
+			<channel id="job-end" typeId="endTimeType"/>
 
 			<channel id="offlineTrigger" typeId="offlineTriggerType"/>
 
@@ -160,11 +160,18 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="timeStringType">
-		<item-type>String</item-type>
-		<label>Time in the form hh:mm</label>
-		<description>A time in the current day</description>
-		<state readOnly="false"/>
+	<channel-type id="startTimeType">
+		<item-type>DateTime</item-type>
+		<label>The start time for a mowing job</label>
+		<description>The time to start the job</description>
+		<state readOnly="false" pattern="hh:mm"/>
+	</channel-type>
+
+	<channel-type id="endTimeType">
+		<item-type>DateTime</item-type>
+		<label>The end time for a mowing job</label>
+		<description>The time to job should end</description>
+		<state readOnly="false" pattern="hh:mm"/>
 	</channel-type>
 
 	<channel-type id="timerStatusType">

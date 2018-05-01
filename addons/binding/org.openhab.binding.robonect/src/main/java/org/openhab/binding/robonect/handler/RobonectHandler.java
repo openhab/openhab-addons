@@ -158,16 +158,16 @@ public class RobonectHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_JOB_START:
-                if (command instanceof StringType) {
-                    setStartJobSetting(command);
+                if (command instanceof DateTimeType) {
+                    setStartJobSetting((DateTimeType)command);
                 } else {
                     logger.debug("Got job start update of type {} but StringType is expected.",
                                  command.getClass().getName());
                 }
                 break;
             case CHANNEL_JOB_END:
-                if (command instanceof StringType) {
-                    setEndJobSetting(command);
+                if (command instanceof DateTimeType) {
+                    setEndJobSetting((DateTimeType)command);
                 } else {
                     logger.debug("Got job end update of type {} but StringType is expected.",
                                  command.getClass().getName());
@@ -223,14 +223,14 @@ public class RobonectHandler extends BaseThingHandler {
         updateState(CHANNEL_JOB_AFTER_MODE, new StringType(robonectClient.getJobSettings().getAfter().name()));
     }
 
-    private void setStartJobSetting(Command command) {
-        String start = command.toFullString();
+    private void setStartJobSetting(DateTimeType startTime) {
+        String start = startTime.format("hh:mm");
         robonectClient.getJobSettings().setStart(start);
         updateState(CHANNEL_JOB_START, new StringType(robonectClient.getJobSettings().getStart()));
     }
 
-    private void setEndJobSetting(Command command) {
-        String end = command.toFullString();
+    private void setEndJobSetting(DateTimeType endTime) {
+        String end = endTime.format("hh:mm");
         robonectClient.getJobSettings().setEnd(end);
         updateState(CHANNEL_JOB_END, new StringType(robonectClient.getJobSettings().getEnd()));
     }
