@@ -10,6 +10,9 @@ package org.openhab.binding.robonect.handler;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
@@ -17,11 +20,14 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.google.gson.JsonSyntaxException;
+
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -106,20 +112,17 @@ public class RobonectHandler extends BaseThingHandler {
         } catch (RobonectCommunicationException rce) {
             logger.debug("Failed to communicate with the mower. Taking it offline.", rce);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
-        } catch (Exception e) {
-            logger.error("Unexpected exception. Setting thing offline", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
         }
     }
 
-    private void sendCommand(ChannelUID channelUID, Command command) throws InterruptedException {
+    private void sendCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getId()) {
             case CHANNEL_MOWER_NAME:
                 if (command instanceof StringType) {
                     updateName((StringType) command);
                 } else {
                     logger.debug("Got name update of type {} but StringType is expected.",
-                            command.getClass().getName());
+                                 command.getClass().getName());
                 }
                 break;
             case CHANNEL_STATUS_MODE:
@@ -127,7 +130,7 @@ public class RobonectHandler extends BaseThingHandler {
                     setMowerMode(command);
                 } else {
                     logger.debug("Got job remote start update of type {} but StringType is expected.",
-                            command.getClass().getName());
+                                 command.getClass().getName());
                 }
                 break;
             case CHANNEL_MOWER_STATUS_STARTED:
@@ -135,7 +138,7 @@ public class RobonectHandler extends BaseThingHandler {
                     handleStartStop((OnOffType) command);
                 } else {
                     logger.debug("Got stopped update of type {} but StringType is expected.",
-                            command.getClass().getName());
+                                 command.getClass().getName());
                 }
                 break;
             case CHANNEL_JOB_REMOTE_START:
@@ -143,7 +146,7 @@ public class RobonectHandler extends BaseThingHandler {
                     setRemoteStartJobSetting(command);
                 } else {
                     logger.debug("Got job remote start update of type {} but StringType is expected.",
-                            command.getClass().getName());
+                                 command.getClass().getName());
                 }
                 break;
             case CHANNEL_JOB_AFTER_MODE:
@@ -151,7 +154,7 @@ public class RobonectHandler extends BaseThingHandler {
                     setAfterModeJobSetting(command);
                 } else {
                     logger.debug("Got job after mode update of type {} but StringType is expected.",
-                            command.getClass().getName());
+                                 command.getClass().getName());
                 }
                 break;
             case CHANNEL_JOB_START:
@@ -159,7 +162,7 @@ public class RobonectHandler extends BaseThingHandler {
                     setStartJobSetting(command);
                 } else {
                     logger.debug("Got job start update of type {} but StringType is expected.",
-                            command.getClass().getName());
+                                 command.getClass().getName());
                 }
                 break;
             case CHANNEL_JOB_END:
@@ -167,13 +170,13 @@ public class RobonectHandler extends BaseThingHandler {
                     setEndJobSetting(command);
                 } else {
                     logger.debug("Got job end update of type {} but StringType is expected.",
-                            command.getClass().getName());
+                                 command.getClass().getName());
                 }
                 break;
         }
     }
 
-    private void refreshChannels(ChannelUID channelUID) throws InterruptedException {
+    private void refreshChannels(ChannelUID channelUID) {
         switch (channelUID.getId()) {
             case CHANNEL_MOWER_NAME:
             case CHANNEL_STATUS_BATTERY:
@@ -196,7 +199,7 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
-    private void setMowerMode(Command command) throws InterruptedException {
+    private void setMowerMode(Command command) {
         String modeStr = command.toFullString();
         ModeCommand.Mode newMode = ModeCommand.Mode.valueOf(modeStr.toUpperCase());
         if (robonectClient.setMode(newMode).isSuccessful()) {
@@ -238,7 +241,7 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
-    private void handleStartStop(final OnOffType command) throws InterruptedException {
+    private void handleStartStop(final OnOffType command) {
         RobonectAnswer answer = null;
         boolean currentlyStopped = robonectClient.getMowerInfo().getStatus().isStopped();
         if (command == OnOffType.ON && currentlyStopped) {
@@ -256,7 +259,7 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
-    private void updateName(StringType command) throws InterruptedException {
+    private void updateName(StringType command) {
         String newName = command.toFullString();
         Name name = robonectClient.setName(newName);
         if (name.isSuccessful()) {
@@ -267,7 +270,7 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
-    private void refreshMowerInfo() throws InterruptedException {
+    private void refreshMowerInfo() {
         MowerInfo info = robonectClient.getMowerInfo();
         if (info.isSuccessful()) {
             if (info.getError() != null) {
@@ -279,13 +282,14 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_MOWER_NAME, new StringType(info.getName()));
             updateState(CHANNEL_STATUS_BATTERY, new DecimalType(info.getStatus().getBattery()));
             updateState(CHANNEL_STATUS, new DecimalType(info.getStatus().getStatus().getStatusCode()));
-            updateState(CHANNEL_STATUS_DURATION, new DecimalType(info.getStatus().getDuration()));
-            updateState(CHANNEL_STATUS_HOURS, new DecimalType(info.getStatus().getHours()));
+            updateState(CHANNEL_STATUS_DURATION, new QuantityType<>(info.getStatus().getDuration(), SIUnits.SECOND));
+            updateState(CHANNEL_STATUS_HOURS, new QuantityType<>(info.getStatus().getHours(), SIUnits.HOUR));
             updateState(CHANNEL_STATUS_MODE, new StringType(info.getStatus().getMode().name()));
             updateState(CHANNEL_MOWER_STATUS_STARTED, info.getStatus().isStopped() ? OnOffType.OFF : OnOffType.ON);
             if (info.getHealth() != null) {
-                updateState(CHANNEL_HEALTH_TEMP, new DecimalType(info.getHealth().getTemperature()));
-                updateState(CHANNEL_HEALTH_HUM, new DecimalType(info.getHealth().getHumidity()));
+                updateState(CHANNEL_HEALTH_TEMP,
+                            new QuantityType<>(info.getHealth().getTemperature(), SIUnits.CELSIUS));
+                updateState(CHANNEL_HEALTH_HUM, new QuantityType(info.getHealth().getHumidity(), SIUnits.PERCENT));
             }
             if (info.getTimer() != null) {
                 if (info.getTimer().getNext() != null) {
@@ -314,30 +318,24 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_ERROR_CODE, new DecimalType(error.getErrorCode().intValue()));
         }
         if (error.getDate() != null) {
-            State dateTime = convertDateTimeType(error.getDate(), error.getTime());
+            State dateTime = convertUnixToDateTimeType(error.getUnix());
             updateState(CHANNEL_ERROR_DATE, dateTime);
         }
     }
 
     private void updateNextTimer(MowerInfo info) {
-        State dateTime = convertDateTimeType(info.getTimer().getNext().getDate(), info.getTimer().getNext().getTime());
+        State dateTime = convertUnixToDateTimeType(info.getTimer().getNext().getUnix());
         updateState(CHANNEL_TIMER_NEXT_TIMER, dateTime);
     }
+    
 
-    private State convertDateTimeType(String date, String time) {
-        try {
-            Date nextTimer = new SimpleDateFormat("dd.MM.yy'T'HH:mm:ss").parse(date + "T" + time);
-            GregorianCalendar calendar = new GregorianCalendar();
-            calendar.setTime(nextTimer);
-            return new DateTimeType(calendar);
-        } catch (ParseException e) {
-            logger.debug("Could not parse date: {}T{} with pattern 'dd.MM.yy'T'HH:mm:ss'", date, time, e);
-            return UnDefType.UNDEF;
-
-        }
+    private State convertUnixToDateTimeType(String unixTimeSec) {
+        Instant ns = Instant.ofEpochMilli(Long.valueOf(unixTimeSec) * 1000);
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(ns, ZoneId.of("UTC"));
+        return new DateTimeType(zdt);
     }
 
-    private void refreshVersionInfo() throws InterruptedException {
+    private void refreshVersionInfo() {
         VersionInfo info = robonectClient.getVersionInfo();
         if (info.isSuccessful()) {
             Map<String, String> properties = editProperties();
@@ -348,11 +346,11 @@ public class RobonectHandler extends BaseThingHandler {
             updateProperties(properties);
         } else {
             logger.debug("Could not retrieve mower version info. Robonect error response message: {}",
-                    info.getErrorMessage());
+                         info.getErrorMessage());
         }
     }
 
-    private void refreshLastErrorInfo() throws InterruptedException {
+    private void refreshLastErrorInfo() {
         ErrorList errorList = robonectClient.errorList();
         if (errorList.isSuccessful()) {
             if (errorList.getErrors() != null && errorList.getErrors().size() > 0) {
@@ -361,7 +359,7 @@ public class RobonectHandler extends BaseThingHandler {
             }
         } else {
             logger.debug("Could not retrieve mower error list. Robonect error response message: {}",
-                    errorList.getErrorMessage());
+                         errorList.getErrorMessage());
         }
     }
 
@@ -373,28 +371,28 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_LAST_ERROR_CODE, new DecimalType(error.getErrorCode().intValue()));
         }
         if (error.getDate() != null) {
-            State dateTime = convertDateTimeType(error.getDate(), error.getTime());
+            State dateTime = convertUnixToDateTimeType(error.getUnix());
             updateState(CHANNEL_LAST_ERROR_DATE, dateTime);
         }
     }
 
     @Override
     public void initialize() {
+        RobonectConfig robonectConfig = getConfigAs(RobonectConfig.class);
+        RobonectEndpoint endpoint = new RobonectEndpoint(robonectConfig.getHost(), robonectConfig.getUser(),
+                                                         robonectConfig.getPassword());
+        httpClient = new HttpClient();
         try {
-            RobonectConfig robonectConfig = getConfigAs(RobonectConfig.class);
-            RobonectEndpoint endpoint = new RobonectEndpoint(robonectConfig.getHost(), robonectConfig.getUser(),
-                    robonectConfig.getPassword());
-            httpClient = new HttpClient();
             httpClient.start();
-            robonectClient = new RobonectClient(httpClient, endpoint);
-            refreshVersionInfo();
-            Runnable runnable = new MowerChannelPoller(TimeUnit.SECONDS.toMillis(robonectConfig.getOfflineTimeout()));
-            int pollInterval = robonectConfig.getPollInterval();
-            pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollInterval, TimeUnit.SECONDS);
         } catch (Exception e) {
             logger.error("Exception when trying to initialize", e);
             updateStatus(ThingStatus.OFFLINE);
         }
+        robonectClient = new RobonectClient(httpClient, endpoint);
+        refreshVersionInfo();
+        Runnable runnable = new MowerChannelPoller(TimeUnit.SECONDS.toMillis(robonectConfig.getOfflineTimeout()));
+        int pollInterval = robonectConfig.getPollInterval();
+        pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollInterval, TimeUnit.SECONDS);
 
     }
 
@@ -417,6 +415,7 @@ public class RobonectHandler extends BaseThingHandler {
 
     /**
      * method to inject the robonect client to be used in test cases to allow mocking.
+     *
      * @param robonectClient
      */
     protected void setRobonectClient(RobonectClient robonectClient) {
@@ -457,9 +456,6 @@ public class RobonectHandler extends BaseThingHandler {
                 // the module sporadically sends invalid json responses. As this is usually recovered with the
                 // next poll interval, we just log it to debug here.
                 logger.debug("Failed to parse response.", jse);
-            } catch (InterruptedException e) {
-                logger.debug("Unexpected exception. Setting thing offline", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
             }
         }
     }

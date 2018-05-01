@@ -144,30 +144,30 @@
 	</channel-type>
 
 	<channel-type id="durationType">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Status duration</label>
-		<description>The time the mower is in the current status.</description>
+		<description>The number of seconds the mower is in the current status.</description>
 		<state readOnly="true" pattern="%d seconds"/>
 	</channel-type>
 
 	<channel-type id="hoursType">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Total mowing hours</label>
 		<description>The number of total mowing hours</description>
 		<state readOnly="true" pattern="%d hours"/>
 	</channel-type>
 
 	<channel-type id="temperatureType">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>The temperature inside the mower</description>
 		<state readOnly="true" pattern="%d °C"/>
 	</channel-type>
 
 	<channel-type id="humidityType">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
-		<description>The humidity in the mower</description>
+		<description>The relative humidity in the mower in percent</description>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 

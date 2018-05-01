@@ -199,9 +199,8 @@ public class RobonectClient {
     /**
      * returns general mower information. See {@MowerInfo} for the detailed information.
      * @return - the general mower information including a general success status.
-     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
      */
-    public MowerInfo getMowerInfo() throws InterruptedException {
+    public MowerInfo getMowerInfo()  {
         String responseString = sendCommand(new StatusCommand());
         return parser.parse(responseString, MowerInfo.class);
     }
@@ -209,9 +208,8 @@ public class RobonectClient {
     /**
      * sends a start command to the mower.
      * @return - a general answer with success status.
-     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
      */
-    public RobonectAnswer start() throws InterruptedException {
+    public RobonectAnswer start() {
         String responseString = sendCommand(new StartCommand());
         return parser.parse(responseString, RobonectAnswer.class);
     }
@@ -220,9 +218,8 @@ public class RobonectClient {
      * sends a stop command to the mower.
      *
      * @return - a general answer with success status.
-     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
      */
-    public RobonectAnswer stop() throws InterruptedException {
+    public RobonectAnswer stop() {
         String responseString = sendCommand(new StopCommand());
         return parser.parse(responseString, RobonectAnswer.class);
     }
@@ -230,9 +227,8 @@ public class RobonectClient {
     /**
      * resets the errors on the mower.
      * @return - a general answer with success status.
-     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
      */
-    public RobonectAnswer resetErrors() throws InterruptedException {
+    public RobonectAnswer resetErrors() {
         String responseString = sendCommand(new ErrorCommand().withReset(true));
         return parser.parse(responseString, RobonectAnswer.class);
     }
@@ -240,9 +236,8 @@ public class RobonectClient {
     /**
      * returns the list of all errors happened since last reset.
      * @return - the list of errors.
-     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
      */
-    public ErrorList errorList() throws InterruptedException {
+    public ErrorList errorList() {
         String responseString = sendCommand(new ErrorCommand());
         return parser.parse(responseString, ErrorList.class);
     }
@@ -253,9 +248,8 @@ public class RobonectClient {
      * 
      * @param mode - the desired mower mode.
      * @return - a general answer with success status.
-     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
      */
-    public RobonectAnswer setMode(ModeCommand.Mode mode) throws InterruptedException {
+    public RobonectAnswer setMode(ModeCommand.Mode mode) {
         String responseString = sendCommand(createCommand(mode));
         return parser.parse(responseString, RobonectAnswer.class);
     }
@@ -272,9 +266,8 @@ public class RobonectClient {
     /**
      * Returns the name of the mower.
      * @return - The name including a general answer with success status.
-     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
      */
-    public Name getName() throws InterruptedException {
+    public Name getName() {
         String responseString = sendCommand(new NameCommand());
         return parser.parse(responseString, Name.class);
     }
@@ -283,14 +276,13 @@ public class RobonectClient {
      * Allows to set the name of the mower.
      * @param name - the desired name.
      * @return - The resulting name including a general answer with success status.
-     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
      */
-    public Name setName(String name) throws InterruptedException {
+    public Name setName(String name) {
         String responseString = sendCommand(new NameCommand().withNewName(name));
         return parser.parse(responseString, Name.class);
     }
 
-    private String sendCommand(Command command) throws InterruptedException {
+    private String sendCommand(Command command) {
         try {
             if (logger.isDebugEnabled()) {
                 logger.debug("send HTTP GET to: {} ", command.toCommandURL(baseUrl));
@@ -312,7 +304,7 @@ public class RobonectClient {
                 logger.debug("Response body was: {} ", responseString);
             }
             return responseString;
-        } catch (ExecutionException | TimeoutException e) {
+        } catch (ExecutionException | TimeoutException | InterruptedException e) {
             throw new RobonectCommunicationException("Could not send command " + command.toCommandURL(baseUrl), e);
         }
     }
@@ -320,9 +312,8 @@ public class RobonectClient {
     /**
      * Retrieve the version information of the mower and module. See {@link VersionInfo} for details.
      * @return - the Version Information including the successful status.
-     * @throws InterruptedException - is thrown in case the http client thread was interrupted while sending the command.
      */
-    public VersionInfo getVersionInfo() throws InterruptedException {
+    public VersionInfo getVersionInfo() {
         String versionResponse = sendCommand(new VersionCommand());
         return parser.parse(versionResponse, VersionInfo.class);
     }

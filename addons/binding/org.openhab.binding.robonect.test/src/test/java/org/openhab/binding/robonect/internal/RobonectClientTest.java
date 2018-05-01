@@ -175,7 +175,7 @@ public class RobonectClientTest {
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=status");
     }
 
-    @Test(expected = InterruptedException.class)
+    @Test(expected = RobonectCommunicationException.class)
     public void shouldReceiveErrorAnswerOnInterruptedException()
             throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=status")).thenReturn(requestMock);

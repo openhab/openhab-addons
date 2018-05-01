@@ -13,6 +13,7 @@ import java.util.Calendar;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -234,7 +235,7 @@ public class RobonectHandlerTest {
     }
 
     @Test
-    public void shouldUpdateAllChannels() throws InterruptedException {
+    public void shouldUpdateAllChannels() {
         ArgumentCaptor<State> stateCaptorName = ArgumentCaptor.forClass(State.class);
         ArgumentCaptor<State> stateCaptorBattery = ArgumentCaptor.forClass(State.class);
         ArgumentCaptor<State> stateCaptorStatus = ArgumentCaptor.forClass(State.class);
@@ -286,8 +287,8 @@ public class RobonectHandlerTest {
         assertEquals("Mowy", stateCaptorName.getValue().toFullString());
         assertEquals(99, ((DecimalType)stateCaptorBattery.getValue()).intValue());
         assertEquals(4, ((DecimalType)stateCaptorStatus.getValue()).intValue());
-        assertEquals(55, ((DecimalType)stateCaptorDuration.getValue()).intValue());
-        assertEquals(22, ((DecimalType)stateCaptorHours.getValue()).intValue());
+        assertEquals(55, ((QuantityType)stateCaptorDuration.getValue()).intValue());
+        assertEquals(22, ((QuantityType)stateCaptorHours.getValue()).intValue());
         assertEquals(MowerMode.AUTO.name(), stateCaptorMode.getValue().toFullString());
         assertEquals(OnOffType.ON, stateCaptorStarted.getValue());
         assertEquals(-88, ((DecimalType)stateCaptorWlan.getValue()).intValue());
