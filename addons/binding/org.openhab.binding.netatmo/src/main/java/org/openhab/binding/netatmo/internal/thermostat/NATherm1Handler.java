@@ -149,10 +149,13 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                         break;
                     }
                     case CHANNEL_SETPOINT_TEMP: {
-                        BigDecimal spTemp;
+                        BigDecimal spTemp = null;
                         if (command instanceof QuantityType) {
-                            spTemp = ((QuantityType<Temperature>) command).toUnit(API_TEMPERATURE_UNIT)
-                                    .toBigDecimal().setScale(1, RoundingMode.HALF_UP);
+                            QuantityType<Temperature> quantity = ((QuantityType<Temperature>) command)
+                                    .toUnit(API_TEMPERATURE_UNIT);
+                            if (quantity != null) {
+                                spTemp = quantity.toBigDecimal().setScale(1, RoundingMode.HALF_UP);
+                            }
                         } else {
                             spTemp = new BigDecimal(command.toString()).setScale(1, RoundingMode.HALF_UP);
                         }
