@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="velbus" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>Velbus Binding</name>
+	<description>This is the binding for Velbus.</description>
+	<author>Cedric Boon</author>
+
+</binding:binding>
