@@ -8,12 +8,23 @@
  */
 package org.openhab.binding.netatmo.handler;
 
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
 import java.util.Optional;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Angle;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Length;
+import javax.measure.quantity.Pressure;
+import javax.measure.quantity.Speed;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -39,6 +50,16 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(AbstractNetatmoThingHandler.class);
+
+    // Units of measurement of the data delivered by the API
+    public static final Unit<Temperature> API_TEMPERATURE_UNIT = SIUnits.CELSIUS;
+    public static final Unit<Dimensionless> API_HUMIDITY_UNIT = SmartHomeUnits.PERCENT;
+    public static final Unit<Pressure> API_PRESSURE_UNIT = HECTO(SIUnits.PASCAL);
+    public static final Unit<Speed> API_WIND_SPEED_UNIT = SIUnits.KILOMETRE_PER_HOUR;
+    public static final Unit<Angle> API_WIND_DIRECTION_UNIT = SmartHomeUnits.DEGREE_ANGLE;
+    public static final Unit<Length> API_RAIN_UNIT = MILLI(SIUnits.METRE);
+    public static final Unit<Dimensionless> API_CO2_UNIT = SmartHomeUnits.PARTS_PER_MILLION;
+    public static final Unit<Dimensionless> API_NOISE_UNIT = SmartHomeUnits.DECIBEL;
 
     protected final MeasurableChannels measurableChannels = new MeasurableChannels();
     protected Optional<RadioHelper> radioHelper;

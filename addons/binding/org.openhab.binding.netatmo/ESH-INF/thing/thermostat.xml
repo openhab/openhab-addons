@@ -21,8 +21,6 @@
 			<channel id="LastStatusStore" typeId="lastStatusStore" />
 			<channel id="WifiStatus" typeId="system.signal-strength" />
 			<channel id="Location" typeId="location" />
-			<!--  Global configuration channels -->
-			<channel id="Unit" typeId="unit" />	  
 		</channels>
 
 		<properties>
@@ -45,8 +43,6 @@
 		<channels>
 			<channel id="Temperature" typeId="temperature" />
 			<channel id="Sp_Temperature" typeId="setpointTemp" />
-			<channel id="BoilerOn" typeId="boilerOn" />
-			<channel id="BoilerOff" typeId="boilerOff" />
 			<channel id="SetpointMode" typeId="setpointMode" />
 			<channel id="ThermRelayCmd" typeId="ThermRelayCmd" />
 			<channel id="ThermOrientation" typeId="ThermOrientation"/>

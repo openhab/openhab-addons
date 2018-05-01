@@ -11,7 +11,7 @@ package org.openhab.binding.netatmo.internal;
 /**
  * This class holds various unit/measurement conversion methods
  *
- * @author Gaël L'hopital
+ * @author Gaël L'hopital - Initial contribution
  */
 public class WeatherUtils {
 

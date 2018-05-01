@@ -16,15 +16,16 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import com.squareup.okhttp.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.squareup.okhttp.OkHttpClient;
 
 /**
  * {@link TrustingOkHttpClient} is a OkHttpClient subclass
  * that does clears positively every certificate request
  *
- * @author Gaël L'hopital
+ * @author Gaël L'hopital - Initial contribution
  *
  */
 public class TrustingOkHttpClient extends OkHttpClient {
