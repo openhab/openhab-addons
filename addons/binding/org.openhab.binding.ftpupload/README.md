@@ -28,7 +28,7 @@ This binding currently supports following channels:
 | image           | Image        | Image file received via FTP.                                                           |
 
 Binding also supports custom Image channels, where a matching filename can be configured.
-When an image file is uploaded to FTP server, the binding tries to find the channel whose filename match to the uploaded image filename.
+When an image file is uploaded to FTP server, the binding tries to find the channel whose filename matches the uploaded image filename.
 If any direct match isn't found, the default image channel is updated.
 The filename parameter supports regular expression patterns.
 See more details in the Things example. 
@@ -41,7 +41,7 @@ See more details in the Things example.
 | image-received  | IMAGE_RECEIVED         | Triggered when image file received from FTP client. |
 
 Binding also supports custom trigger channels, where a matching filename can be configured.
-When an image file is uploaded to FTP server, the binding tries to find the trigger channel whose filename match to the upload image filename.
+When an image file is uploaded to FTP server, the binding tries to find the trigger channel whose filename matches the upload image filename.
 If any direct match isn't found, the default trigger channel is called.
 The filename parameter supports regular expression patterns.
 See more details in the Things example. 
