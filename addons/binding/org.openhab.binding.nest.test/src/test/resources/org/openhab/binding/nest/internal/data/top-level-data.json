@@ -300,7 +300,8 @@
 					"name": "Front Yard",
 					"where_id": "z8fK075vJJPPWnXxLx1m3GskRSZQ64iQydB59k-UPsLRu9lIioI47g"
 				}
-			}
+			},
+			"wwn_security_state": "ok"
 		}
 	}
 }

@@ -75,6 +75,8 @@ public class NestBindingConstants {
     public static final String CHANNEL_FAN_TIMER_DURATION = "fan_timer_duration";
 
     // read only channels (thermostat)
+    public static final String CHANNEL_ECO_MAX_SET_POINT = "eco_max_set_point";
+    public static final String CHANNEL_ECO_MIN_SET_POINT = "eco_min_set_point";
     public static final String CHANNEL_LOCKED = "locked";
     public static final String CHANNEL_LOCKED_MAX_SET_POINT = "locked_max_set_point";
     public static final String CHANNEL_LOCKED_MIN_SET_POINT = "locked_min_set_point";
@@ -89,7 +91,7 @@ public class NestBindingConstants {
     public static final String CHANNEL_HAS_LEAF = "has_leaf";
     public static final String CHANNEL_SUNLIGHT_CORRECTION_ENABLED = "sunlight_correction_enabled";
     public static final String CHANNEL_SUNLIGHT_CORRECTION_ACTIVE = "sunlight_correction_active";
-    public static final String CHANNEL_TIME_TO_TARGET_MINS = "time_to_target_mins";
+    public static final String CHANNEL_TIME_TO_TARGET = "time_to_target";
     public static final String CHANNEL_USING_EMERGENCY_HEAT = "using_emergency_heat";
 
     // read/write channels (camera)
@@ -138,4 +140,5 @@ public class NestBindingConstants {
     public static final String CHANNEL_TIME_ZONE = "time_zone";
     public static final String CHANNEL_ETA_BEGIN = "eta_begin";
     public static final String CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT = "rush_hour_rewards_enrollment";
+    public static final String CHANNEL_SECURITY_STATE = "security_state";
 }

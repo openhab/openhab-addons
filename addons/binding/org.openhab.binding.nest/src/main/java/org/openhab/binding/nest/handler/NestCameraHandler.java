@@ -12,6 +12,7 @@ import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.nest.NestBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author David Bennett - initial contribution
  * @author Wouter Born - Handle channel refresh command
  */
+@NonNullByDefault
 public class NestCameraHandler extends NestBaseHandler<Camera> {
     private final Logger logger = LoggerFactory.getLogger(NestCameraHandler.class);
 
@@ -114,8 +116,9 @@ public class NestCameraHandler extends NestBaseHandler<Camera> {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (REFRESH.equals(command)) {
-            if (getLastUpdate() != null) {
-                updateState(channelUID, getChannelState(channelUID, getLastUpdate()));
+            Camera lastUpdate = getLastUpdate();
+            if (lastUpdate != null) {
+                updateState(channelUID, getChannelState(channelUID, lastUpdate));
             }
         } else if (CHANNEL_CAMERA_STREAMING.equals(channelUID.getId())) {
             // Change the mode.
