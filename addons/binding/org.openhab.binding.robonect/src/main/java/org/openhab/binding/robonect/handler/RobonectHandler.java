@@ -8,13 +8,9 @@
  */
 package org.openhab.binding.robonect.handler;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -384,12 +380,11 @@ public class RobonectHandler extends BaseThingHandler {
         httpClient = new HttpClient();
         try {
             httpClient.start();
+            robonectClient = new RobonectClient(httpClient, endpoint);
         } catch (Exception e) {
             logger.error("Exception when trying to initialize", e);
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-        robonectClient = new RobonectClient(httpClient, endpoint);
-        refreshVersionInfo();
         Runnable runnable = new MowerChannelPoller(TimeUnit.SECONDS.toMillis(robonectConfig.getOfflineTimeout()));
         int pollInterval = robonectConfig.getPollInterval();
         pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollInterval, TimeUnit.SECONDS);
@@ -427,6 +422,7 @@ public class RobonectHandler extends BaseThingHandler {
         private long offlineSince;
         private long offlineTriggerDelay;
         private boolean offlineTimeoutTriggered;
+        private boolean loadVersionInfo = true;
 
         public MowerChannelPoller(long offlineTriggerDelay) {
             offlineSince = -1;
@@ -437,6 +433,10 @@ public class RobonectHandler extends BaseThingHandler {
         @Override
         public void run() {
             try {
+                if(loadVersionInfo){
+                    refreshVersionInfo();
+                    loadVersionInfo = false;
+                }
                 refreshMowerInfo();
                 updateStatus(ThingStatus.ONLINE);
                 offlineSince = -1;
@@ -452,6 +452,7 @@ public class RobonectHandler extends BaseThingHandler {
                 }
                 logger.debug("Failed to communicate with the mower. Taking it offline.", rce);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
+                loadVersionInfo = true;
             } catch (JsonSyntaxException jse) {
                 // the module sporadically sends invalid json responses. As this is usually recovered with the
                 // next poll interval, we just log it to debug here.
