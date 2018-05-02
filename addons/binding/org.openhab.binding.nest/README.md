@@ -57,6 +57,10 @@ The account Thing Type does not have any channels.
 
 ### Camera Channels
 
+**Camera group channels**
+
+Information about the camera.
+
 | Channel Type ID       | Item Type | Description                                       | Read Write |
 |-----------------------|-----------|---------------------------------------------------|:----------:|
 | app_url               | String    | The app URL to see the camera                     |      R     |
@@ -68,6 +72,24 @@ The account Thing Type does not have any channels.
 | streaming             | Switch    | If the camera is currently streaming              |     R/W    |
 | video_history_enabled | Switch    | If the video history is currently enabled         |      R     |
 | web_url               | String    | The web URL to see the camera                     |      R     |
+
+**Last event group channels**
+
+Information about the last camera event (requires Nest Aware subscription).
+
+| Channel Type ID    | Item Type | Description                                                                        | Read Write |
+|--------------------|-----------|------------------------------------------------------------------------------------|:----------:|
+| activity_zones     | String    | Identifiers for activity zones that detected the event (comma separated)           |      R     |
+| animated_image_url | String    | The URL showing an animated image for the camera event                             |      R     |
+| app_url            | String    | The app URL for the camera event, allows you to see the camera event in an app     |      R     |
+| end_time           | DateTime  | Timestamp when the camera event ended                                              |      R     |
+| has_motion         | Switch    | If motion was detected in the camera event                                         |      R     |
+| has_person         | Switch    | If a person was detected in the camera event                                       |      R     |
+| has_sound          | Switch    | If sound was detected in the camera event                                          |      R     |
+| image_url          | String    | The URL showing an image for the camera event                                      |      R     |
+| start_time         | DateTime  | Timestamp when the camera event started                                            |      R     |
+| urls_expire_time   | DateTime  | Timestamp when the camera event URLs expire                                        |      R     |
+| web_url            | String    | The web URL for the camera event, allows you to see the camera event in a web page |      R     |
 
 ### Smoke Detector Channels
 
@@ -154,15 +176,26 @@ Bridge nest:account:demo_account [ productId="8fdf9885-ca07-4252-1aa3-f3d5ca9589
 
 ```
 /* Camera */
-String   Cam_App_URL               "App URL [%s]"                                             { channel="nest:camera:demo_account:fish_cam:app_url" }
-Switch   Cam_Audio_Input_Enabled   "Audio Input Enabled"                                      { channel="nest:camera:demo_account:fish_cam:audio_input_enabled" }
-DateTime Cam_Last_Online_Change    "Last Online Change [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]" { channel="nest:camera:demo_account:fish_cam:last_online_change" }
-String   Cam_Snapshot_URL          "Snapshot URL [%s]"                                        { channel="nest:camera:demo_account:fish_cam:snapshot_url" }
-Switch   Cam_Streaming             "Streaming"                                                { channel="nest:camera:demo_account:fish_cam:streaming" }
-Switch   Cam_Public_Share_Enabled  "Public Share Enabled"                                     { channel="nest:camera:demo_account:fish_cam:public_share_enabled" }
-String   Cam_Public_Share_URL      "Public Share URL [%s]"                                    { channel="nest:camera:demo_account:fish_cam:public_share_url" }
-Switch   Cam_Video_History_Enabled "Video History Enabled"                                    { channel="nest:camera:demo_account:fish_cam:video_history_enabled" }
-String   Cam_Web_URL               "Web URL [%s]"                                             { channel="nest:camera:demo_account:fish_cam:web_url" }
+String   Cam_App_URL               "App URL [%s]"                                                      { channel="nest:camera:demo_account:fish_cam:camera#app_url" }
+Switch   Cam_Audio_Input_Enabled   "Audio Input Enabled"                                               { channel="nest:camera:demo_account:fish_cam:camera#audio_input_enabled" }
+DateTime Cam_Last_Online_Change    "Last Online Change [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"          { channel="nest:camera:demo_account:fish_cam:camera#last_online_change" }
+String   Cam_Snapshot_URL          "Snapshot URL [%s]"                                                 { channel="nest:camera:demo_account:fish_cam:camera#snapshot_url" }
+Switch   Cam_Streaming             "Streaming"                                                         { channel="nest:camera:demo_account:fish_cam:camera#streaming" }
+Switch   Cam_Public_Share_Enabled  "Public Share Enabled"                                              { channel="nest:camera:demo_account:fish_cam:camera#public_share_enabled" }
+String   Cam_Public_Share_URL      "Public Share URL [%s]"                                             { channel="nest:camera:demo_account:fish_cam:camera#public_share_url" }
+Switch   Cam_Video_History_Enabled "Video History Enabled"                                             { channel="nest:camera:demo_account:fish_cam:camera#video_history_enabled" }
+String   Cam_Web_URL               "Web URL [%s]"                                                      { channel="nest:camera:demo_account:fish_cam:camera#web_url" }
+String   Cam_LE_Activity_Zones     "Last Event Activity Zones [%s]"                                    { channel="nest:camera:demo_account:fish_cam:last_event#activity_zones" }
+String   Cam_LE_Animated_Image_URL "Last Event Animated Image URL [%s]"                                { channel="nest:camera:demo_account:fish_cam:last_event#animated_image_url" }
+String   Cam_LE_App_URL            "Last Event App URL [%s]"                                           { channel="nest:camera:demo_account:fish_cam:last_event#app_url" }
+DateTime Cam_LE_End_Time           "Last Event End Time [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"         { channel="nest:camera:demo_account:fish_cam:last_event#end_time" }
+Switch   Cam_LE_Has_Motion         "Last Event Has Motion"                                             { channel="nest:camera:demo_account:fish_cam:last_event#has_motion" }
+Switch   Cam_LE_Has_Person         "Last Event Has Person"                                             { channel="nest:camera:demo_account:fish_cam:last_event#has_person" }
+Switch   Cam_LE_Has_Sound          "Last Event Has Sound"                                              { channel="nest:camera:demo_account:fish_cam:last_event#has_sound" }
+String   Cam_LE_Image_URL          "Last Event Image URL [%s]"                                         { channel="nest:camera:demo_account:fish_cam:last_event#image_url" }
+DateTime Cam_LE_Start_Time         "Last Event Start Time [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"       { channel="nest:camera:demo_account:fish_cam:last_event#start_time" }
+DateTime Cam_LE_URLs_Expire_Time   "Last Event URLs Expire Time [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]" { channel="nest:camera:demo_account:fish_cam:last_event#urls_expire_time" }
+String   Cam_LE_Web_URL            "Last Event Web URL [%s]"                                           { channel="nest:camera:demo_account:fish_cam:last_event#web_url" }
 
 /* Smoke Detector */
 String   Smoke_CO_Alarm            "CO Alarm [%s]"                                            { channel="nest:smoke_detector:demo_account:hallway_smoke:co_alarm_state" }

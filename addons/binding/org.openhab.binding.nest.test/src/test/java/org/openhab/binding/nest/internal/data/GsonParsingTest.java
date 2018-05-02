@@ -130,33 +130,23 @@ public class GsonParsingTest {
         assertFalse(camera.isPublicShareEnabled());
         assertFalse(camera.isStreaming());
         assertFalse(camera.isVideoHistoryEnabled());
-        assertEquals("nestmobile://cameras/CjZfTEs4ajlyUlh3Q0tFQk90RG83SnNrTnh6V2ZIQk9JbTNDTG91Q1QzRlFaenJ2b2"
-                + "tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQjc2ejhSWFl3SFFxWXFrSWx2QlpxN1g"
-                + "yeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9ESvlhJF0D7vG8Y0TFV39zX1vIOsWrv"
-                + "8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc", camera.getAppUrl());
+        assertEquals("https://camera_app_url", camera.getAppUrl());
         assertEquals(CAMERA1_DEVICE_ID, camera.getDeviceId());
         assertNull(camera.getLastConnection());
         assertEqualDateTime("2017-01-22T08:19:20.000Z", camera.getLastIsOnlineChange());
         assertNull(camera.getPublicShareUrl());
-        assertEquals("https://www.dropcam.com/api/wwn.get_snapshot/CjZfTEs4ajlyUlh3Q0tFQk90RG83SnNrTnh6V"
-                + "2ZIQk9JbTNDTG91Q1QzRlFaenJ2b2tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQj"
-                + "c2ejhSWFl3SFFxWXFrSWx2QlpxN1gyeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9E"
-                + "SvlhJF0D7vG8Y0TFV39zX1vIOsWrv8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc",
-                camera.getSnapshotUrl());
+        assertEquals("https://camera_snapshot_url", camera.getSnapshotUrl());
         assertEquals("205-600052", camera.getSoftwareVersion());
-        assertEquals("https://home.nest.com/cameras/CjZfTEs4ajlyUlh3Q0tFQk90RG83SnNrTnh6V2ZIQk9JbTNDTG91Q1QzR"
-                + "lFaenJ2b2tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQjc2ejhSWFl3SFFxWXFrSW"
-                + "x2QlpxN1gyeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9ESvlhJF0D7vG8Y0TFV39z"
-                + "X1vIOsWrv8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc", camera.getWebUrl());
-        assertEquals("animeted", camera.getLastEvent().getAnimatedImageUrl());
+        assertEquals("https://camera_web_url", camera.getWebUrl());
+        assertEquals("https://last_event_animated_image_url", camera.getLastEvent().getAnimatedImageUrl());
         assertEquals(2, camera.getLastEvent().getActivityZones().size());
         assertEquals("id1", camera.getLastEvent().getActivityZones().get(0));
-        assertEquals("app_url", camera.getLastEvent().getAppUrl());
+        assertEquals("https://last_event_app_url", camera.getLastEvent().getAppUrl());
         assertEqualDateTime("2017-01-22T07:40:38.680Z", camera.getLastEvent().getEndTime());
-        assertEquals("image_url", camera.getLastEvent().getImageUrl());
+        assertEquals("https://last_event_image_url", camera.getLastEvent().getImageUrl());
         assertEqualDateTime("2017-01-22T07:40:19.020Z", camera.getLastEvent().getStartTime());
-        assertNull(camera.getLastEvent().getUrlsExpireTime());
-        assertEquals("myurl", camera.getLastEvent().getWebUrl());
+        assertEqualDateTime("2017-02-05T07:40:19.020Z", camera.getLastEvent().getUrlsExpireTime());
+        assertEquals("https://last_event_web_url", camera.getLastEvent().getWebUrl());
         assertTrue(camera.getLastEvent().isHasMotion());
         assertFalse(camera.getLastEvent().isHasPerson());
         assertFalse(camera.getLastEvent().isHasSound());

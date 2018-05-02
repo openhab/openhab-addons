@@ -10,9 +10,11 @@ package org.openhab.binding.nest.handler;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -130,6 +132,10 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestDevice
 
     protected State getAsStringTypeOrNull(Object value) {
         return value == null ? UnDefType.NULL : new StringType(value.toString());
+    }
+
+    protected State getAsStringTypeListOrNull(Collection<? extends Object> values) {
+        return values == null || values.isEmpty() ? UnDefType.NULL : new StringType(StringUtils.join(values, ","));
     }
 
     protected boolean isNotHandling(NestIdentifiable nestIdentifiable) {
