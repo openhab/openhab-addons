@@ -110,19 +110,60 @@ java.io.IOException: java.util.concurrent.ExecutionException: javax.net.ssl.SSLH
 ......
 ```
 
-That indicates a missing certificate for the https-connection on the system.
-In order to get the required certificate on a Linux-system one needs to perform these steps:
+This indicates a missing certificate of a certification authority (CA) in the certificate-store of the java jdk under which openHAB is running.
+In most cases, updating to the latest version of jdk solves this because the store of cacerts are maintained and updated in java releases.
 
+Note: You must restart openHAB after a java update.
+
+If you receive the error because you are running an old linux installation which does not have the latest java-versions available in its package-repositories, you may be able to fix the issue using one of the three options below:
+
+   1.) Update the linux-system and install the latest java-versions
+   
+   2.) Download the most recent jdk and install it directly on to your system without using a pre-composed package
+   
+   On debian based systems one can use: http://www.webupd8.org/2012/09/install-oracle-java-8-in-ubuntu-via-ppa.html
+
+   3.) Update the cacerts store by importing the missing certificate
+   
+   Note: Using this version, loaded certificates will expire!
+   If you still want to import the missing certificate, the example below may help:
+   Check which java package you have installed:
+
+```java
+>> sudo dpkg -l | grep java
+>> ii  oracle-java8-jdk                    8u65                             armhf        Java™ Platform, Standard Edition 8 Development Kit
 ```
-sudo wget http://www.startssl.com/certs/ca.crt
-keytool -import -keystore cacerts -alias startssl -file ca.crt
+
+Find the ca-store of your jdk
+
+```java
+>> sudo dpkg -L oracle-java8-jdk | grep cacerts
+>> /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security/cacerts
+```
+    
+Check which CA has validated the certificate
+
+Navigate to https://creativecommons.tankerkoenig.de/
+
+Check which CA has validated the certificate
+
+Export the certificate of the certificate authority
+
+Import the certificate to the CA-store which you have found
+
+```java
+>> cd /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security
+>> keytool -import -keystore cacerts -alias LetsEncrypt -file ca.crt
 ```
 
 The required password is "changeit".
 
+Restart your server
+
+
 -The Station(s) and Webservice go to OFFLINE after being ONLINE
 
-The web-request to Tankerkönig did either return a failure or no valid response was received (which could be caused by a banned API-key).
+Either the web-request to Tankerköng returned a failure or no valid response was received (this could be caused by a banned API-key).
 In both cases the Webservice and the Station(s) go OFFLINE.
 If the Tankerkönig return indicates an error a descriptive message (in German) is added next to the OFFLINE which will be displayed on the Webservice and Station(s) pages on PaperUI.
 On the next receipt of a valid message Webservice and Station(s) will go ONLINE again.

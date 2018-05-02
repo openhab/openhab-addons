@@ -20,7 +20,9 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.core.util,
  org.openhab.binding.regoheatpump,
  org.openhab.binding.regoheatpump.handler,
+ org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

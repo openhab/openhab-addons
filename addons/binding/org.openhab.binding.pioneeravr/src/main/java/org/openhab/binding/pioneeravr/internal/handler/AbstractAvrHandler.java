@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractAvrHandler extends BaseThingHandler
         implements AvrUpdateListener, AvrDisconnectionListener {
 
-    private Logger logger = LoggerFactory.getLogger(AbstractAvrHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractAvrHandler.class);
 
     private AvrConnection connection;
     private ScheduledFuture<?> statusCheckerFuture;
@@ -77,20 +77,17 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
         updateStatus(ThingStatus.ONLINE);
 
         // Start the status checker
-        Runnable statusChecker = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    logger.debug("Checking status of AVR @{}", connection.getConnectionName());
-                    checkStatus();
-                } catch (LinkageError e) {
-                    logger.warn(
-                            "Failed to check the status for AVR @{}. If a Serial link is used to connect to the AVR, please check that the Bundle org.openhab.io.transport.serial is available. Cause: {}",
-                            connection.getConnectionName(), e.getMessage());
-                    // Stop to check the status of this AVR.
-                    if (statusCheckerFuture != null) {
-                        statusCheckerFuture.cancel(false);
-                    }
+        Runnable statusChecker = () -> {
+            try {
+                logger.debug("Checking status of AVR @{}", connection.getConnectionName());
+                checkStatus();
+            } catch (LinkageError e) {
+                logger.warn(
+                        "Failed to check the status for AVR @{}. If a Serial link is used to connect to the AVR, please check that the Bundle org.openhab.io.transport.serial is available. Cause: {}",
+                        connection.getConnectionName(), e.getMessage());
+                // Stop to check the status of this AVR.
+                if (statusCheckerFuture != null) {
+                    statusCheckerFuture.cancel(false);
                 }
             }
         };
@@ -119,7 +116,6 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
         connection.sendVolumeQuery(zone);
         connection.sendMuteQuery(zone);
         connection.sendSourceInputQuery(zone);
-
     }
 
     /**
@@ -131,7 +127,6 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
         updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DB_CHANNEL, zone), UnDefType.UNDEF);
         updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DIMMER_CHANNEL, zone), UnDefType.UNDEF);
         updateState(getChannelUID(PioneerAvrBindingConstants.SET_INPUT_SOURCE_CHANNEL, zone), UnDefType.UNDEF);
-
     }
 
     /**
@@ -158,7 +153,6 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         try {
             boolean commandSent = false;
             boolean unknownCommand = false;
@@ -217,7 +211,6 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
                 default:
                     logger.debug("Unkown response type from AVR @{}. Response discarded: {}", event.getData(),
                             event.getConnection());
-
             }
         } catch (AvrConnectionException e) {
             logger.debug("Unkown response type from AVR @{}. Response discarded: {}", event.getData(),
@@ -264,7 +257,6 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
      * @param response
      */
     private void manageVolumeLevelUpdate(AvrResponse response) {
-
         updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DB_CHANNEL, response.getZone()), new DecimalType(
                 VolumeConverter.convertFromIpControlVolumeToDb(response.getParameterValue(), response.getZone())));
         updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DIMMER_CHANNEL, response.getZone()),

@@ -184,51 +184,51 @@
 
 	<!-- Thermostat -->
 	<channel-type id="Temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Current temperature in degrees Celsius</description>
+		<description>Current temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="SetPoint">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Set Point</label>
-		<description>The set point in degrees Celsius</description>
+		<description>The set point temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °C" step="0.5" />
+		<state pattern="%.1f %unit%" step="0.5" />
 	</channel-type>
 
 	<channel-type id="MaxSetPoint">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Max Set Point</label>
-		<description>The max set point in degrees Celsius</description>
+		<description>The max set point temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °C" step="0.5" />
+		<state pattern="%.1f %unit%" step="0.5" />
 	</channel-type>
 
 	<channel-type id="MinSetPoint">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Min Set Point</label>
-		<description>The min set point in degrees Celsius</description>
+		<description>The min set point temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °C" step="0.5" />
+		<state pattern="%.1f %unit%" step="0.5" />
 	</channel-type>
 
 	<channel-type id="LockedMaxSetPoint" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Locked Max Set Point</label>
-		<description>The locked range max set point in degrees Celsius</description>
+		<description>The locked range max set point temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °C" step="0.5" />
+		<state pattern="%.1f %unit%" step="0.5" />
 	</channel-type>
 
 	<channel-type id="LockedMinSetPoint" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Locked Min Set Point</label>
-		<description>The locked range min set point in degrees Celsius</description>
+		<description>The locked range min set point temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °C" step="0.5" />
+		<state pattern="%.1f %unit%" step="0.5" />
 	</channel-type>
 
 	<channel-type id="Locked" advanced="true">

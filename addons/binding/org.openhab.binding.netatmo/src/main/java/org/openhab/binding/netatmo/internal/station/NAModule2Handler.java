@@ -38,13 +38,13 @@ public class NAModule2Handler extends NetatmoModuleHandler<NAStationModule> {
             NADashboardData dashboardData = module.getDashboardData();
             switch (channelId) {
                 case CHANNEL_WIND_ANGLE:
-                    return toDecimalType(dashboardData.getWindAngle());
+                    return toQuantityType(dashboardData.getWindAngle(), API_WIND_DIRECTION_UNIT);
                 case CHANNEL_WIND_STRENGTH:
-                    return toDecimalType(dashboardData.getWindStrength());
+                    return toQuantityType(dashboardData.getWindStrength(), API_WIND_SPEED_UNIT);
                 case CHANNEL_GUST_ANGLE:
-                    return toDecimalType(dashboardData.getGustAngle());
+                    return toQuantityType(dashboardData.getGustAngle(), API_WIND_DIRECTION_UNIT);
                 case CHANNEL_GUST_STRENGTH:
-                    return toDecimalType(dashboardData.getGustStrength());
+                    return toQuantityType(dashboardData.getGustStrength(), API_WIND_SPEED_UNIT);
                 case CHANNEL_TIMEUTC:
                     return toDateTimeType(dashboardData.getTimeUtc());
             }

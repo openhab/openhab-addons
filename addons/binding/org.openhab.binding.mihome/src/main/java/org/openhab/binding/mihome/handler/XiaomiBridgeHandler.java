@@ -58,7 +58,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private static final JsonParser PARSER = new JsonParser();
     private static final EncryptionHelper CRYPTER = new EncryptionHelper();
-    private static Map<String, JsonObject> retentionBox = new ConcurrentHashMap<>();
+    private static Map<String, JsonObject> retentionInbox = new ConcurrentHashMap<>();
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiBridgeHandler.class);
 
@@ -144,7 +144,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
                 return;
             case "read_ack":
                 logger.debug("Device {} honored read request", sid);
-                retend(sid, message);
+                defer(sid, message);
                 break;
             case "write_ack":
                 logger.debug("Device {} honored write request", sid);
@@ -153,10 +153,10 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
         notifyListeners(command, message);
     }
 
-    private synchronized void retend(String sid, JsonObject message) {
-        synchronized (retentionBox) {
-            retentionBox.remove(sid);
-            retentionBox.put(sid, message);
+    private synchronized void defer(String sid, JsonObject message) {
+        synchronized (retentionInbox) {
+            retentionInbox.remove(sid);
+            retentionInbox.put(sid, message);
         }
         scheduler.schedule(new RemoveRetentionRunnable(sid), READ_ACK_RETENTION_MILLIS, TimeUnit.MILLISECONDS);
     }
@@ -170,17 +170,17 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
 
         @Override
         public synchronized void run() {
-            synchronized (retentionBox) {
-                retentionBox.remove(sid);
+            synchronized (retentionInbox) {
+                retentionInbox.remove(sid);
             }
         }
     }
 
-    public synchronized JsonObject getRetentedMessage(String sid) {
-        synchronized (retentionBox) {
-            JsonObject ret = retentionBox.get(sid);
+    public synchronized JsonObject getDeferredMessage(String sid) {
+        synchronized (retentionInbox) {
+            JsonObject ret = retentionInbox.get(sid);
             if (ret != null) {
-                retentionBox.remove(sid);
+                retentionInbox.remove(sid);
             }
             return ret;
         }
@@ -285,6 +285,10 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
 
         if (key == null) {
             logger.warn("No key set in the gateway settings. Edit it in the configuration.");
+            return "";
+        }
+        if (gatewayToken == null) {
+            logger.warn("No token received from the gateway yet. Unable to encrypt the access key.");
             return "";
         }
         key = CRYPTER.encrypt(gatewayToken, key);

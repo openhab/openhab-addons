@@ -11,11 +11,11 @@ package org.openhab.binding.hdpowerview.internal.config;
 /**
  * Basic configuration for the HD Power View HUB
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public class HDPowerViewHubConfiguration {
 
-    public static String HOST = "host";
+    public static final String HOST = "host";
 
     public String host;
 

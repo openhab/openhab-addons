@@ -24,15 +24,13 @@ import com.google.gson.JsonParseException;
 /***
  * Custom Deserializer for the detail result of tankerkoenigs api response
  *
- * @author Jürgen Baginski
- *
+ * @author Jürgen Baginski - Initial contribution
  */
 public class CustomTankerkoenigDetailResultDeserializer implements JsonDeserializer<TankerkoenigDetailResult> {
 
     @Override
     public TankerkoenigDetailResult deserialize(final JsonElement json, final Type typeOfT,
             final JsonDeserializationContext context) throws JsonParseException {
-
         final JsonObject jsonObject = json.getAsJsonObject();
         final Boolean isOK = jsonObject.get("ok").getAsBoolean();
         TankerkoenigDetailResult result = new TankerkoenigDetailResult();

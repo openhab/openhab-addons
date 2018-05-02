@@ -31,5 +31,6 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.boschindego,
  org.openhab.binding.boschindego.handler,
+ org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

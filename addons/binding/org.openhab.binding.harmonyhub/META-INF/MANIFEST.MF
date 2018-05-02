@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
- lib/harmony-java-client-1.2.1.jar,
+ lib/harmony-java-client-1.2.2.jar,
  lib/jackson-annotations-2.8.0.jar,
  lib/jackson-core-2.8.7.jar,
  lib/jackson-databind-2.8.7.jar,

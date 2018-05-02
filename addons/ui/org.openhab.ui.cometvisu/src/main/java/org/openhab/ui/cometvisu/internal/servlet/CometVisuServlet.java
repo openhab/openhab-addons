@@ -984,8 +984,12 @@ public class CometVisuServlet extends HttpServlet {
                     for (int i = 0, len = nl.getLength(); i < len; i++) {
                         Node node = nl.item(i);
                         DataBean bean = new DataBean();
-                        bean.label = node.getTextContent();
-                        bean.value = node.getTextContent();
+                        String iconName = node.getTextContent();
+                        if (iconName.startsWith("kuf-")) {
+                            iconName = iconName.substring(4);
+                        }
+                        bean.label = iconName;
+                        bean.value = iconName;
                         beans.add(bean);
                     }
                 } catch (SAXException e) {

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nibeheatpump" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="f1x45-udp">
+		<label>UDP connected Nibe F1145 and F1245 Heat Pumps</label>
+		<description></description>
+
+		<channel-groups>
+			<channel-group typeId="f1x45-sensor-group-channels" id="sensor" />
+			<channel-group typeId="f1x45-setting-group-channels" id="setting" />
+		</channel-groups>
+
+		<config-description>
+			<parameter name="hostName" type="text" required="true">
+				<label>Host name</label>
+				<description>Network address of the NibeGW.</description>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>UDP port</label>
+				<description>UDP port to listening data packets from the NibeGW.</description>
+				<default>9999</default>
+			</parameter>
+			<parameter name="readCommandsPort" type="integer">
+				<label>UDP port for read commands</label>
+				<description>UDP port to send read commands to the NibeGW.</description>
+				<default>9999</default>
+			</parameter>
+			<parameter name="writeCommandsPort" type="integer">
+				<label>UDP port for write commands</label>
+				<description>UDP port to send write commands to the NibeGW.</description>
+				<default>10000</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer">
+				<label>Refresh Interval</label>
+				<description>States how often a refresh shall occur in seconds.</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="enableReadCommands" type="boolean">
+				<label>Enable read commands</label>
+				<description>Enable read commands to read additional variable from heat pump which are not included to data readout
+					messages. This is experimental feature, use it at your own risk!</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableWriteCommands" type="boolean">
+				<label>Enable write commands</label>
+				<description>Enable write commands to change heat pump settings. This is experimental feature, use it at your own
+					risk!</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableWriteCommandsToRegisters" type="text">
+				<label>Registers list for write commands</label>
+				<description>Comma separated list of registers, which are allowed to write to heat pump. E.g. 44266, 47004</description>
+				<default></default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="f1x45-serial">
+		<label>Serial port connected F1145 and F1245 Heat Pumps</label>
+		<description></description>
+
+		<channel-groups>
+			<channel-group typeId="f1x45-sensor-group-channels" id="sensor" />
+			<channel-group typeId="f1x45-setting-group-channels" id="setting" />
+		</channel-groups>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<label>Serial port</label>
+				<description>Serial port to connect to the heat pump.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer">
+				<label>Refresh Interval</label>
+				<description>States how often a refresh shall occur in seconds.</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="enableReadCommands" type="boolean">
+				<label>Enable read commands</label>
+				<description>Enable read commands to read additional variable from heat pump which are not included to data readout
+					messages. This is experimental feature, use it at your own risk!</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableWriteCommands" type="boolean">
+				<label>Enable write commands</label>
+				<description>Enable write commands to change heat pump settings. This is experimental feature, use it at your own
+					risk!</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableWriteCommandsToRegisters" type="text">
+				<label>Register list for write commands</label>
+				<description>Comma separated list of registers, which are allowed to write to heat pump. E.g. 44266, 47004</description>
+				<default></default>
+			</parameter>
+			<parameter name="sendAckToMODBUS40" type="boolean">
+				<label>Enable acknowledges to MODBUS40 messages</label>
+				<description>Binding emulates MODBUS40 device and send protocol acknowledges to heat pump.</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="sendAckToRMU40" type="boolean">
+				<label>Enable acknowledges to RMU40 messages</label>
+				<description>Binding emulates RMU40 device and send protocol acknowledges to heat pump.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="sendAckToSMS40" type="boolean">
+				<label>Enable acknowledges to SMS40 messages</label>
+				<description>Binding emulates SMS40 device and send protocol acknowledges to heat pump.</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="f1x45-simulator">
+		<label>Simulator for Nibe F1145 and F1245 Heat Pumps</label>
+		<description></description>
+
+		<channel-groups>
+			<channel-group typeId="f1x45-sensor-group-channels" id="sensor" />
+			<channel-group typeId="f1x45-setting-group-channels" id="setting" />
+		</channel-groups>
+
+		<config-description>
+			<parameter name="refreshInterval" type="integer">
+				<label>Refresh Interval</label>
+				<description>States how often a refresh shall occur in seconds.</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="enableReadCommands" type="boolean">
+				<label>Enable read commands</label>
+				<description>Enable read commands to read additional variable from heat pump which are not included to data readout
+					messages. This is experimental feature, use it at your own risk!</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableWriteCommands" type="boolean">
+				<label>Enable write commands</label>
+				<description>Enable write commands to change heat pump settings. This is experimental feature, use it at your own
+					risk!</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableWriteCommandsToRegisters" type="text">
+				<label>Register list for write commands</label>
+				<description>Comma separated list of registers, which are allowed to write to heat pump. E.g. 44266, 47004</description>
+				<default></default>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

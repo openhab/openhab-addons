@@ -13,6 +13,8 @@ import static org.openhab.binding.mihome.XiaomiGatewayBindingConstants.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -54,6 +56,7 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
             THING_TYPE_ACTOR_AQARA_ZERO2, THING_TYPE_ACTOR_CURTAIN));
 
     private static final long ONLINE_TIMEOUT_MILLIS = 2 * 60 * 60 * 1000; // 2 hours
+    private ScheduledFuture<?> onlineCheckTask;
 
     private JsonParser parser = new JsonParser();
 
@@ -74,7 +77,8 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
     @Override
     public void initialize() {
         setItemId((String) getConfig().get(ITEM_ID));
-        updateThingStatus();
+        onlineCheckTask = scheduler.scheduleWithFixedDelay(this::updateThingStatus, 0, ONLINE_TIMEOUT_MILLIS / 2,
+                TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -87,13 +91,17 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
             }
             setItemId(null);
         }
+        if (!onlineCheckTask.isDone()) {
+            onlineCheckTask.cancel(false);
+        }
+
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Device {} on channel {} received command {}", getItemId(), channelUID, command);
         if (command instanceof RefreshType) {
-            JsonObject message = getXiaomiBridgeHandler().getRetentedMessage(getItemId());
+            JsonObject message = getXiaomiBridgeHandler().getDeferredMessage(getItemId());
             if (message != null) {
                 String cmd = message.get("cmd").getAsString();
                 logger.debug("Update Item {} with retented message", getItemId());
@@ -107,7 +115,9 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
     @Override
     public void onItemUpdate(String sid, String command, JsonObject message) {
         if (getItemId() != null && getItemId().equals(sid)) {
-            updateThingStatus();
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
             logger.debug("Item got update: {}", message);
             try {
                 JsonObject data = parser.parse(message.get("data").getAsString()).getAsJsonObject();

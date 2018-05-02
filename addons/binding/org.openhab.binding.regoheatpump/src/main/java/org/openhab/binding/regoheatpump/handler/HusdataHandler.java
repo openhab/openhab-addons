@@ -40,14 +40,14 @@ import org.slf4j.LoggerFactory;
  */
 abstract class HusdataHandler extends BaseThingHandler {
 
-    private static final Map<Integer, String> mappings;
+    private static final Map<Integer, String> MAPPINGS;
     private final Logger logger = LoggerFactory.getLogger(HusdataHandler.class);
     private RegoConnection connection;
     private ScheduledFuture<?> scheduledRefreshFuture;
     private BufferedReader bufferedReader;
 
     static {
-        mappings = mappings();
+        MAPPINGS = mappings();
     }
 
     protected HusdataHandler(Thing thing) {
@@ -58,7 +58,6 @@ abstract class HusdataHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
         bufferedReader = null;
         connection = createConnection();
 
@@ -88,18 +87,14 @@ abstract class HusdataHandler extends BaseThingHandler {
     }
 
     private synchronized void handleDataFromHusdataInterface() {
-
         RegoConnection connection = this.connection;
         if (connection == null) {
             return;
         }
 
         while (!Thread.interrupted()) {
-
             try {
-
                 if (!connection.isConnected()) {
-
                     bufferedReader = null;
                     connection.connect();
 
@@ -126,14 +121,10 @@ abstract class HusdataHandler extends BaseThingHandler {
                 logger.debug("Got '{}'", line);
 
                 processReceivedData(line);
-
             } catch (SocketTimeoutException e) {
-
                 // Do nothing. Just happen to allow the thread to check if it has to stop.
                 break;
-
             } catch (IOException e) {
-
                 logger.warn("Processing request failed", e);
 
                 bufferedReader = null;
@@ -144,9 +135,7 @@ abstract class HusdataHandler extends BaseThingHandler {
                 }
 
                 break;
-
             } catch (Exception e) {
-
                 logger.warn("Error occurred during message waiting", e);
                 break;
             }
@@ -179,7 +168,7 @@ abstract class HusdataHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
 
         int channel = ((dataType & 0x0f) << 12) | (register & 0x0fff);
-        String channelID = mappings.get(channel);
+        String channelID = MAPPINGS.get(channel);
         if (channelID == null) {
             logger.debug("Unsupported register {}.", register);
             return;

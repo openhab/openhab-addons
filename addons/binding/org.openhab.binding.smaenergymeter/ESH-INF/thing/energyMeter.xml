@@ -47,12 +47,12 @@
 		<category>Energy</category>
 		<state pattern="%.2f W" readOnly="true" />
 	</channel-type>
-    <channel-type id="powerOutType">
-        <item-type>Number</item-type>
-        <label>Grid feed-in power</label>
-        <category>Energy</category>
-        <state pattern="%.2f W" readOnly="true" />
-    </channel-type>
+	<channel-type id="powerOutType">
+		<item-type>Number</item-type>
+		<label>Grid feed-in power</label>
+		<category>Energy</category>
+		<state pattern="%.2f W" readOnly="true" />
+	</channel-type>
 	<channel-type id="energyInType">
 		<item-type>Number</item-type>
 		<label>Purchased energy</label>

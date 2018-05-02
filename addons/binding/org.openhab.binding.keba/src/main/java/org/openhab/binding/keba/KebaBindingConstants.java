@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -20,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class KebaBindingConstants {
 
     public static final String BINDING_ID = "keba";
@@ -71,7 +73,7 @@ public class KebaBindingConstants {
         C('2', '3'),
         X('A', 'B', 'C', 'D');
 
-        private final List<Character> things = new ArrayList<Character>();
+        private final List<Character> things = new ArrayList<>();
 
         KebaSeries(char... e) {
             Character[] cArray = ArrayUtils.toObject(e);

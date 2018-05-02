@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.dscalarm.DSCAlarmBindingConstants;
 import org.openhab.binding.dscalarm.handler.DSCAlarmBaseBridgeHandler;
 import org.openhab.binding.dscalarm.handler.EnvisalinkBridgeHandler;
@@ -38,6 +39,7 @@ import org.openhab.binding.dscalarm.internal.config.IT100BridgeConfiguration;
 import org.openhab.binding.dscalarm.internal.config.TCPServerBridgeConfiguration;
 import org.openhab.binding.dscalarm.internal.discovery.DSCAlarmDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,15 +48,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Russell Stephens - Initial Contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.dscalarm")
 public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
 
-    private Logger logger = LoggerFactory.getLogger(DSCAlarmHandlerFactory.class);
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(DSCAlarmHandlerFactory.class);
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
 
     @Override
     public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
             ThingUID bridgeUID) {
-
         if (DSCAlarmBindingConstants.ENVISALINKBRIDGE_THING_TYPE.equals(thingTypeUID)) {
             ThingUID envisalinkBridgeUID = getEnvisalinkBridgeThingUID(thingTypeUID, thingUID, configuration);
             logger.debug("createThing(): ENVISALINK_BRIDGE: Creating an '{}' type Thing - {}", thingTypeUID,
@@ -238,7 +240,7 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
         discoveryService.activate();
 
         ServiceRegistration<?> discoveryServiceRegistration = bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>());
+                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>());
         discoveryServiceRegistrations.put(dscAlarmBridgeHandler.getThing().getUID(), discoveryServiceRegistration);
 
         logger.debug("registerDSCAlarmDiscoveryService(): Bridge Handler - {}, Class Name - {}, Discovery Service - {}",
@@ -247,7 +249,6 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(DSCAlarmBindingConstants.ENVISALINKBRIDGE_THING_TYPE)) {

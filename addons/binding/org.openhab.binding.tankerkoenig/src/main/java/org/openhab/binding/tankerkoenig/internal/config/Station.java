@@ -13,8 +13,7 @@ package org.openhab.binding.tankerkoenig.internal.config;
  * details.php
  * api
  *
- * @author Dennis Dollinger
- *
+ * @author Dennis Dollinger - Initial contribution
  */
 public class Station {
 

@@ -20,11 +20,13 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.zway.handler.ZWayBridgeHandler;
 import org.openhab.binding.zway.handler.ZWayZAutomationDeviceHandler;
 import org.openhab.binding.zway.handler.ZWayZWaveDeviceHandler;
 import org.openhab.binding.zway.internal.discovery.ZWayDeviceDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -34,13 +36,14 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Patrick Hecker - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.zway")
 public class ZWayHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(
             ZWayBridgeHandler.SUPPORTED_THING_TYPE, ZWayZAutomationDeviceHandler.SUPPORTED_THING_TYPE,
             ZWayZWaveDeviceHandler.SUPPORTED_THING_TYPE);
 
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -76,7 +79,7 @@ public class ZWayHandlerFactory extends BaseThingHandlerFactory {
 
     private void registerDeviceDiscoveryService(ZWayBridgeHandler handler) {
         ZWayDeviceDiscoveryService discoveryService = new ZWayDeviceDiscoveryService(handler);
-        this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(handler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 }

@@ -20,9 +20,11 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.cm11a.handler.Cm11aApplianceHandler;
 import org.openhab.binding.cm11a.handler.Cm11aBridgeHandler;
 import org.openhab.binding.cm11a.handler.Cm11aLampHandler;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,12 +34,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bob Raker - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.cm11a")
 public class Cm11aHandlerFactory extends BaseThingHandlerFactory {
 
-    private Logger logger = LoggerFactory.getLogger(Cm11aHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(Cm11aHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(new HashSet<ThingTypeUID>(Arrays.asList(THING_TYPE_SWITCH, THING_TYPE_DIMMER)));
+            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_SWITCH, THING_TYPE_DIMMER)));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

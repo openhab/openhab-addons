@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="avmfritz"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Channel definitions of all FRITZ! devices -->
@@ -37,27 +38,27 @@
 
 	<!-- Channel definitions of specific FRITZ! devices -->
 	<channel-type id="temperature">
-		<item-type>Number</item-type>
-		<label>Actual Temperature</label>
-		<description>Current measured temperature (in °C).</description>
+		<item-type>Number:Temperature</item-type>
+		<label>Current Temperature</label>
+		<description>Current measured temperature.</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °C" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="energy">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Energy Consumption</label>
-		<description>Accumulated energy consumption (in kWh).</description>
+		<description>Accumulated energy consumption.</description>
 		<category>Energy</category>
 		<state pattern="%.3f kWh" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="power">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Power</label>
-		<description>Current power consumption (in W).</description>
+		<description>Current power consumption.</description>
 		<category>Energy</category>
-		<state pattern="%.2f W" readOnly="true" />
+		<state pattern="%.2f %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="outlet">
@@ -68,35 +69,35 @@
 	</channel-type>
 
 	<channel-type id="actual_temp" advanced="true">
-		<item-type>Number</item-type>
-		<label>Actual Temperature</label>
-		<description>Current measured temperature (in °C).</description>
+		<item-type>Number:Temperature</item-type>
+		<label>Current Temperature</label>
+		<description>Current measured temperature.</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °C" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="set_temp">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Setpoint Temperature</label>
-		<description>Thermostat Setpoint temperature (in °C).</description>
+		<description>Thermostat Setpoint temperature.</description>
 		<category>Temperature</category>
-		<state min="8" max="28" step="0.5" pattern="%.1f °C" />
+		<state pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="eco_temp">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Eco Temperature</label>
-		<description>Thermostat Eco temperature (in °C).</description>
+		<description>Thermostat Eco temperature.</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °C" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="comfort_temp">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Comfort Temperature</label>
-		<description>Thermostat Comfort temperature (in °C).</description>
+		<description>Thermostat Comfort temperature.</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °C" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="radiator_mode">
@@ -124,11 +125,10 @@
 	</channel-type>
 
 	<channel-type id="next_temp" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Next Setpoint Temperature</label>
-		<description>Next Setpoint Temperature (in °C).</description>
+		<description>Next Setpoint Temperature.</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °C" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
-
 </thing:thing-descriptions>

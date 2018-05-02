@@ -15,7 +15,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -36,12 +35,9 @@ import de.fh_zwickau.informatik.sensor.ZWayApiHttp;
 import de.fh_zwickau.informatik.sensor.model.devicehistory.DeviceHistory;
 import de.fh_zwickau.informatik.sensor.model.devicehistory.DeviceHistoryList;
 import de.fh_zwickau.informatik.sensor.model.devices.Device;
-import de.fh_zwickau.informatik.sensor.model.devices.DeviceCommand;
 import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
 import de.fh_zwickau.informatik.sensor.model.instances.Instance;
 import de.fh_zwickau.informatik.sensor.model.instances.InstanceList;
-import de.fh_zwickau.informatik.sensor.model.instances.openhabconnector.OpenHABConnector;
-import de.fh_zwickau.informatik.sensor.model.instances.openhabconnector.OpenHabConnectorZWayServer;
 import de.fh_zwickau.informatik.sensor.model.locations.Location;
 import de.fh_zwickau.informatik.sensor.model.locations.LocationList;
 import de.fh_zwickau.informatik.sensor.model.modules.ModuleList;
@@ -60,15 +56,10 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  * - load and check configuration
  * - instantiate a Z-Way API that used in the whole binding
  * - authenticate to the Z-Way server
- * - check existence of openHAB Connector in Z-Way server and configure openHAB server
- * - after update, perform refresh listener command to openHAB Connector
  * - initialize all containing device things
  *
- * During the removal process the following tasks are performed:
- * - clean up openHAB Connector configuration
- * - important: the configured devices not changed in openHAB Connector!
- *
- * @author Patrick Hecker - Initial contribution
+ * @author Patrick Hecker - Initial contribution, remove observer mechanism
+ * @author Johannes Einig - Bridge now stores DeviceList
  */
 public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCallbacks {
 
@@ -82,8 +73,10 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
     private ResetInclusionExclusion resetInclusionExclusion;
     private ScheduledFuture<?> resetInclusionExclusionJob;
 
-    private ZWayBridgeConfiguration mConfig = null;
-    private IZWayApi mZWayApi = null;
+    private ZWayBridgeConfiguration mConfig;
+    private IZWayApi mZWayApi;
+
+    private DeviceList deviceList;
 
     /**
      * Initializer authenticate the Z-Way API instance with bridge configuration.
@@ -107,11 +100,8 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                 if (mZWayApi.getLogin() != null) {
                     // Thing status set to online in login callback
                     logger.info("Z-Way bridge successfully authenticated");
-
-                    // Register openHAB server to Z-Way if observer mechanism is enabled
-                    if (mConfig.getObserverMechanismEnabled()) {
-                        updateOpenHabConnector(false);
-                    }
+                    // Gets the latest deviceList from zWay during bridge initialization
+                    deviceList = mZWayApi.getDevices();
 
                     // Initialize bridge polling
                     if (pollingJob == null || pollingJob.isCancelled()) {
@@ -170,11 +160,6 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                 } else {
                     logger.warn("Removing device failed (DeviceHandler is null): {}", thing.getLabel());
                 }
-            }
-
-            // Remove openHAB server to Z-Way if observer mechanism is enabled
-            if (mConfig.getObserverMechanismEnabled()) {
-                updateOpenHabConnector(true);
             }
 
             // status update will finally remove the thing
@@ -257,36 +242,14 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
         mConfig = loadAndCheckConfiguration();
 
         if (mConfig != null) {
-            // Check if openHAB alias already set
-            if (mConfig.getOpenHabAlias() == null) {
-                Configuration config = editConfiguration();
-                if (config != null) {
-                    Integer shortUnixTimestamp = (int) (System.currentTimeMillis() / 1000L);
-                    logger.debug("openHAB alias generated: {}", shortUnixTimestamp.toString());
-                    config.put(BRIDGE_CONFIG_OPENHAB_ALIAS, shortUnixTimestamp.toString());
-                    updateConfiguration(config);
+            logger.debug("Configuration complete: {}", mConfig);
 
-                    // update configuration instance
-                    mConfig.setOpenHabAlias(shortUnixTimestamp.toString());
-                } else {
-                    logger.error("Can't generate openHAB alias (editable configuration not available)");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                            "Can't generate openHAB alias (editable configuration not available)");
-                }
-            } else {
-                logger.debug("openHAB alias manually set");
-            }
+            mZWayApi = new ZWayApiHttp(mConfig.getZWayIpAddress(), mConfig.getZWayPort(), mConfig.getZWayProtocol(),
+                    mConfig.getZWayUsername(), mConfig.getZWayPassword(), -1, false, this);
 
-            if (mConfig.getOpenHabAlias() != null) {
-                logger.debug("Configuration complete: {}", mConfig);
-
-                mZWayApi = new ZWayApiHttp(mConfig.getZWayIpAddress(), mConfig.getZWayPort(), mConfig.getZWayProtocol(),
-                        mConfig.getZWayUsername(), mConfig.getZWayPassword(), -1, false, this);
-
-                // Start an extra thread, because it takes sometimes more
-                // than 5000 milliseconds and the handler will suspend (ThingStatus.UNINITIALIZED).
-                scheduler.execute(new Initializer());
-            }
+            // Start an extra thread, because it takes sometimes more
+            // than 5000 milliseconds and the handler will suspend (ThingStatus.UNINITIALIZED).
+            scheduler.execute(new Initializer());
         }
     }
 
@@ -305,33 +268,6 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
         }
 
         super.dispose();
-    }
-
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        logger.debug("Handle Z-Way bridge configuration update ...");
-
-        Boolean observerMechanismEnabledOld = null;
-        Boolean observerMechanismEnabledNew = null;
-
-        if (mConfig != null) {
-            observerMechanismEnabledOld = mConfig.getObserverMechanismEnabled();
-            observerMechanismEnabledNew = (Boolean) configurationParameters
-                    .get(BRIDGE_CONFIG_OBSERVER_MECHANISM_ENABLED);
-        }
-
-        if (observerMechanismEnabledOld != null && observerMechanismEnabledNew != null) {
-            logger.debug("Observer mechanism enabled changed from {} to {}", observerMechanismEnabledOld,
-                    observerMechanismEnabledNew);
-
-            if (observerMechanismEnabledOld == true && observerMechanismEnabledNew == false) {
-                updateOpenHabConnector(true);
-            } else if (observerMechanismEnabledOld == false && observerMechanismEnabledNew == true) {
-                updateOpenHabConnector(false);
-            }
-        } // if no old configuration available it's not an update
-
-        super.handleConfigurationUpdate(configurationParameters);
     }
 
     private class BridgePolling implements Runnable {
@@ -398,83 +334,6 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
         }
     };
 
-    /**
-     * Setup the openHAB server in openHAB Connector depending on configuration
-     *
-     * @param deleteOpenHabServer if true the configured openHAB server will be removed
-     */
-    private synchronized void updateOpenHabConnector(Boolean deleteOpenHabServer) {
-        InstanceList instanceList = mZWayApi.getInstances();
-        if (instanceList != null) {
-            logger.debug("Check existence of openHAB Connector in Z-Way server");
-
-            OpenHABConnector instance = (OpenHABConnector) instanceList.getInstanceByModuleId("OpenHABConnector");
-
-            if (instance != null) {
-                OpenHabConnectorZWayServer configuredServer = new OpenHabConnectorZWayServer(mConfig.getOpenHabAlias(),
-                        mConfig.getOpenHabIpAddress(), mConfig.getOpenHabPort());
-
-                if (deleteOpenHabServer) {
-                    if (instance.getParams().getCommonOptions().removeOpenHabServer(configuredServer)) {
-                        logger.debug("Configured openHAB server updated");
-
-                        Instance updatedInstance = mZWayApi.putInstance(instance);
-                        if (updatedInstance != null) {
-                            logger.debug("openHAB server successfully removed from openHAB Connector");
-
-                            refreshOpenConnector();
-                        } else {
-                            logger.warn("openHAB Connector configuration update failed");
-                        }
-                    } // else - update not necessary, no changes
-                } else {
-                    if (instance.getParams().getCommonOptions().updateOpenHabServer(configuredServer)) {
-                        logger.debug("Configured openHAB server updated");
-
-                        Instance updatedInstance = mZWayApi.putInstance(instance);
-                        if (updatedInstance != null) {
-                            logger.info("openHAB server successfully configured in openHAB Connector");
-
-                            refreshOpenConnector();
-                        } else {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                                    "openHAB Connector configuration update failed");
-
-                            logger.warn("openHAB Connector configuration update failed");
-                        }
-                    } // else - update not necessary, no changes
-                }
-            } else {
-                if (!deleteOpenHabServer) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                            "openHAB Connector doesn't exist in Z-Way server");
-                } // else - error has no impact on the binding
-
-                logger.warn("openHAB Connector doesn't exist in Z-Way server");
-            }
-        } else {
-            if (!deleteOpenHabServer) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Instances not loaded");
-            } // else - error has no impact on the binding
-
-            logger.warn("Instances not loaded");
-        }
-    }
-
-    /**
-     * Refresh listener in Z-Way server (otherwise the listener will only be refreshed at server restart)
-     */
-    private synchronized void refreshOpenConnector() {
-        DeviceCommand command = new DeviceCommand("OpenHabConnector", "refreshListener");
-
-        String message = mZWayApi.getDeviceCommand(command);
-        if (message != null) {
-            logger.debug("Refresh listener finished successfully: {}", message);
-        } else {
-            logger.warn("Refresh listener failed.");
-        }
-    }
-
     @Override
     public void handleRemoval() {
         logger.debug("Handle removal Z-Way bridge ...");
@@ -490,30 +349,34 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
         return mConfig;
     }
 
+    /*******************************
+     ******* DeviceList handling*****
+     ********************************
+     * Updates the deviceList every time a
+     * ChildHandler is initialized or disposed
+     */
+
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        updateDeviceList();
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        updateDeviceList();
+    }
+
+    private void updateDeviceList() {
+        if (mZWayApi != null) {
+            logger.debug("ChildHandler changed. Updating device List");
+            deviceList = mZWayApi.getDevices();
+        } else {
+            logger.debug("Bridge Handler not online. No update of device list performed.");
+        }
+    }
+
     private ZWayBridgeConfiguration loadAndCheckConfiguration() {
         ZWayBridgeConfiguration config = getConfigAs(ZWayBridgeConfiguration.class);
-
-        /***********************************
-         ****** openHAB configuration ******
-         **********************************/
-
-        // openHAB Alias
-        // not required
-
-        // openHAB IP address
-        if (StringUtils.trimToNull(config.getOpenHabIpAddress()) == null) {
-            config.setOpenHabIpAddress("localhost"); // default value
-        }
-
-        // openHAB Port
-        if (config.getOpenHabPort() == null) {
-            config.setOpenHabPort(8080);
-        }
-
-        // openHAB Protocol
-        if (StringUtils.trimToNull(config.getOpenHabProtocol()) == null) {
-            config.setOpenHabProtocol("http");
-        }
 
         /****************************************
          ****** Z-Way server configuration ******
@@ -555,11 +418,6 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
             config.setPollingInterval(3600);
         }
 
-        // Observer mechanism enabled
-        if (config.getObserverMechanismEnabled() == null) {
-            config.setObserverMechanismEnabled(true);
-        }
-
         return config;
     }
 
@@ -568,6 +426,10 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
      */
     public IZWayApi getZWayApi() {
         return mZWayApi;
+    }
+
+    public DeviceList getDeviceList() {
+        return deviceList;
     }
 
     /********************************

@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.homematic;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -15,6 +16,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HomematicBindingConstants {
 
     public static final String BINDING_ID = "homematic";
@@ -51,4 +53,6 @@ public class HomematicBindingConstants {
     public static final String PROPERTY_BATTERY_TYPE = "batteryType";
     public static final String PROPERTY_AES_KEY = "aesKey";
     public static final String PROPERTY_DYNAMIC_FUNCTION_FORMAT = "dynamicFunction-%d";
+    
+    public static final int INSTALL_MODE_NORMAL = 1;
 }

@@ -33,7 +33,7 @@ public class ListBidcosInterfacesParser extends CommonRpcParser<Object[], ListBi
                 if (isDefault) {
                     type = toString(mapMessage.get("TYPE"));
                     firmware = toString(mapMessage.get("FIRMWARE_VERSION"));
-                    gatewayAddress = toString(mapMessage.get("ADDRESS"));
+                    gatewayAddress = getSanitizedAddress(mapMessage.get("ADDRESS"));
                 }
             }
         }

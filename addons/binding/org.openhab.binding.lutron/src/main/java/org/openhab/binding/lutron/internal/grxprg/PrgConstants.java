@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.lutron.internal.grxprg;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.lutron.LutronBindingConstants;
 
@@ -16,6 +17,7 @@ import org.openhab.binding.lutron.LutronBindingConstants;
  *
  * @author Tim Roberts
  */
+@NonNullByDefault
 public class PrgConstants {
 
     public static final ThingTypeUID THING_TYPE_PRGBRIDGE = new ThingTypeUID(LutronBindingConstants.BINDING_ID,

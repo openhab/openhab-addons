@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ManifestVersion: 2
+Bundle-Name: Satel Binding
+Bundle-SymbolicName: org.openhab.binding.satel;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ClassPath: .
+Export-Package: 
+ org.openhab.binding.satel,
+ org.openhab.binding.satel.handler
+Import-Package: 
+ gnu.io,
+ org.apache.commons.lang,
+ org.openhab.binding.satel,
+ org.openhab.binding.satel.handler,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.core.status,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.i18n,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.link,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.core.util,
+ org.osgi.framework,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml

@@ -55,15 +55,11 @@ class KeContactTransceiver {
     private Selector selector;
     private Thread transceiverThread;
     private boolean isStarted = false;
-    private Set<KeContactHandler> handlers = Collections.synchronizedSet(new HashSet<KeContactHandler>());
-    private Map<KeContactHandler, DatagramChannel> datagramChannels = Collections
-            .synchronizedMap(new HashMap<KeContactHandler, DatagramChannel>());
-    private Map<KeContactHandler, ByteBuffer> buffers = Collections
-            .synchronizedMap(new HashMap<KeContactHandler, ByteBuffer>());
-    private Map<KeContactHandler, ReentrantLock> locks = Collections
-            .synchronizedMap(new HashMap<KeContactHandler, ReentrantLock>());
-    private Map<KeContactHandler, Boolean> flags = Collections
-            .synchronizedMap(new HashMap<KeContactHandler, Boolean>());
+    private Set<KeContactHandler> handlers = Collections.synchronizedSet(new HashSet<>());
+    private Map<KeContactHandler, DatagramChannel> datagramChannels = Collections.synchronizedMap(new HashMap<>());
+    private Map<KeContactHandler, ByteBuffer> buffers = Collections.synchronizedMap(new HashMap<>());
+    private Map<KeContactHandler, ReentrantLock> locks = Collections.synchronizedMap(new HashMap<>());
+    private Map<KeContactHandler, Boolean> flags = Collections.synchronizedMap(new HashMap<>());
 
     private final Logger logger = LoggerFactory.getLogger(KeContactTransceiver.class);
 
@@ -215,95 +211,156 @@ class KeContactTransceiver {
         return null;
     }
 
-    public Runnable transceiverRunnable = new Runnable() {
+    public Runnable transceiverRunnable = () -> {
+        while (true) {
+            try {
+                synchronized (selector) {
+                    try {
+                        selector.selectNow();
+                    } catch (IOException e) {
+                        logger.error("An exception occurred while selecting: {}", e.getMessage());
+                    }
 
-        @Override
-        public void run() {
-            while (true) {
-                try {
-                    synchronized (selector) {
-                        try {
-                            selector.selectNow();
-                        } catch (IOException e) {
-                            logger.error("An exception occurred while selecting: {}", e.getMessage());
+                    Iterator<SelectionKey> it = selector.selectedKeys().iterator();
+                    while (it.hasNext()) {
+                        SelectionKey selKey = it.next();
+                        it.remove();
+
+                        if (selKey.isValid() && selKey.isWritable()) {
+                            DatagramChannel theChannel = (DatagramChannel) selKey.channel();
+                            KeContactHandler theHandler = null;
+                            boolean error = false;
+
+                            for (KeContactHandler handler : handlers) {
+                                if (datagramChannels.get(handler).equals(theChannel)) {
+                                    theHandler = handler;
+                                    break;
+                                }
+                            }
+
+                            if (theHandler != null) {
+                                ReentrantLock theLock = locks.get(theHandler);
+                                Boolean theFlag = flags.get(theHandler);
+                                if (theLock != null && theLock.isLocked() && theFlag != null
+                                        && theFlag.equals(Boolean.TRUE)) {
+                                    ByteBuffer theBuffer = buffers.remove(theHandler);
+                                    flags.put(theHandler, Boolean.FALSE);
+
+                                    if (theBuffer != null) {
+                                        try {
+                                            theBuffer.rewind();
+                                            logger.debug("Sending '{}' on the channel '{}'->'{}'",
+                                                    new Object[] { new String(theBuffer.array()),
+                                                            theChannel.getLocalAddress(),
+                                                            theChannel.getRemoteAddress() });
+                                            int byteswritten = theChannel.write(theBuffer);
+                                        } catch (NotYetConnectedException e) {
+                                            theHandler.updateStatus(ThingStatus.OFFLINE,
+                                                    ThingStatusDetail.COMMUNICATION_ERROR,
+                                                    "The remote host is not yet connected");
+                                            error = true;
+                                        } catch (ClosedChannelException e) {
+                                            theHandler.updateStatus(ThingStatus.OFFLINE,
+                                                    ThingStatusDetail.COMMUNICATION_ERROR,
+                                                    "The connection to the remote host is closed");
+                                            error = true;
+                                        } catch (IOException e) {
+                                            theHandler.updateStatus(ThingStatus.OFFLINE,
+                                                    ThingStatusDetail.COMMUNICATION_ERROR, "An IO exception occurred");
+                                            error = true;
+                                        }
+
+                                        if (error) {
+                                            removeConnection(theHandler);
+                                            establishConnection(theHandler);
+                                        }
+                                    }
+                                }
+                            }
                         }
 
-                        Iterator<SelectionKey> it = selector.selectedKeys().iterator();
-                        while (it.hasNext()) {
-                            SelectionKey selKey = it.next();
-                            it.remove();
+                        if (selKey.isValid() && selKey.isReadable()) {
+                            int numberBytesRead = 0;
+                            InetSocketAddress clientAddress = null;
+                            ByteBuffer readBuffer = null;
+                            boolean error = false;
 
-                            if (selKey.isValid() && selKey.isWritable()) {
+                            if (selKey.equals(broadcastKey)) {
+                                try {
+                                    readBuffer = ByteBuffer.allocate(BUFFER_SIZE);
+                                    clientAddress = (InetSocketAddress) broadcastChannel.receive(readBuffer);
+                                    logger.debug("Received {} from {} on the transceiver listener port ",
+                                            new String(readBuffer.array()), clientAddress);
+                                    numberBytesRead = readBuffer.position();
+                                } catch (IOException e) {
+                                    logger.error(
+                                            "An exception occurred while receiving data on the transceiver listener port: '{}'",
+                                            e.getMessage(), e);
+                                    error = true;
+                                }
+
+                                if (numberBytesRead == -1) {
+                                    error = true;
+                                }
+
+                                if (!error) {
+                                    readBuffer.flip();
+                                    if (readBuffer.remaining() > 0) {
+                                        for (KeContactHandler handler : handlers) {
+                                            if (clientAddress != null && handler.getIPAddress()
+                                                    .equals(clientAddress.getAddress().getHostAddress())) {
+                                                ReentrantLock theLock = locks.get(handler);
+                                                if (theLock != null && theLock.isLocked()) {
+                                                    buffers.put(handler, readBuffer);
+                                                    synchronized (theLock) {
+                                                        if (logger.isTraceEnabled()) {
+                                                            logger.trace("{} notifyall on handerLock {}",
+                                                                    Thread.currentThread().getName(),
+                                                                    theLock.toString());
+                                                        }
+                                                        theLock.notifyAll();
+                                                    }
+                                                } else {
+                                                    handler.onData(readBuffer);
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    handlers.forEach(listener -> listener.updateStatus(ThingStatus.OFFLINE,
+                                            ThingStatusDetail.COMMUNICATION_ERROR, "The transceiver is offline"));
+                                    reset();
+                                }
+                            } else {
                                 DatagramChannel theChannel = (DatagramChannel) selKey.channel();
                                 KeContactHandler theHandler = null;
-                                boolean error = false;
 
-                                for (KeContactHandler handler : handlers) {
-                                    if (datagramChannels.get(handler).equals(theChannel)) {
-                                        theHandler = handler;
+                                for (KeContactHandler handlers : handlers) {
+                                    if (datagramChannels.get(handlers).equals(theChannel)) {
+                                        theHandler = handlers;
                                         break;
                                     }
                                 }
 
                                 if (theHandler != null) {
-                                    ReentrantLock theLock = locks.get(theHandler);
-                                    Boolean theFlag = flags.get(theHandler);
-                                    if (theLock != null && theLock.isLocked() && theFlag != null
-                                            && theFlag.equals(Boolean.TRUE)) {
-                                        ByteBuffer theBuffer = buffers.remove(theHandler);
-                                        flags.put(theHandler, Boolean.FALSE);
-
-                                        if (theBuffer != null) {
-                                            try {
-                                                theBuffer.rewind();
-                                                logger.debug("Sending '{}' on the channel '{}'->'{}'",
-                                                        new Object[] { new String(theBuffer.array()),
-                                                                theChannel.getLocalAddress(),
-                                                                theChannel.getRemoteAddress() });
-                                                int byteswritten = theChannel.write(theBuffer);
-                                            } catch (NotYetConnectedException e) {
-                                                theHandler.updateStatus(ThingStatus.OFFLINE,
-                                                        ThingStatusDetail.COMMUNICATION_ERROR,
-                                                        "The remote host is not yet connected");
-                                                error = true;
-                                            } catch (ClosedChannelException e) {
-                                                theHandler.updateStatus(ThingStatus.OFFLINE,
-                                                        ThingStatusDetail.COMMUNICATION_ERROR,
-                                                        "The connection to the remote host is closed");
-                                                error = true;
-                                            } catch (IOException e) {
-                                                theHandler.updateStatus(ThingStatus.OFFLINE,
-                                                        ThingStatusDetail.COMMUNICATION_ERROR,
-                                                        "An IO exception occurred");
-                                                error = true;
-                                            }
-
-                                            if (error) {
-                                                removeConnection(theHandler);
-                                                establishConnection(theHandler);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (selKey.isValid() && selKey.isReadable()) {
-                                int numberBytesRead = 0;
-                                InetSocketAddress clientAddress = null;
-                                ByteBuffer readBuffer = null;
-                                boolean error = false;
-
-                                if (selKey.equals(broadcastKey)) {
                                     try {
                                         readBuffer = ByteBuffer.allocate(BUFFER_SIZE);
-                                        clientAddress = (InetSocketAddress) broadcastChannel.receive(readBuffer);
+                                        numberBytesRead = theChannel.read(readBuffer);
                                         logger.debug("Received {} from {} on the transceiver listener port ",
-                                                new String(readBuffer.array()), clientAddress);
-                                        numberBytesRead = readBuffer.position();
+                                                new String(readBuffer.array()), theChannel.getRemoteAddress());
+                                    } catch (NotYetConnectedException e) {
+                                        theHandler.updateStatus(ThingStatus.OFFLINE,
+                                                ThingStatusDetail.COMMUNICATION_ERROR,
+                                                "The remote host is not yet connected");
+                                        error = true;
+                                    } catch (PortUnreachableException e) {
+                                        theHandler.updateStatus(ThingStatus.OFFLINE,
+                                                ThingStatusDetail.CONFIGURATION_ERROR,
+                                                "The remote host is probably not a KEBA KeContact");
+                                        error = true;
                                     } catch (IOException e) {
-                                        logger.error(
-                                                "An exception occurred while receiving data on the transceiver listener port: '{}'",
-                                                e.getMessage(), e);
+                                        theHandler.updateStatus(ThingStatus.OFFLINE,
+                                                ThingStatusDetail.COMMUNICATION_ERROR, "An IO exception occurred");
                                         error = true;
                                     }
 
@@ -314,98 +371,32 @@ class KeContactTransceiver {
                                     if (!error) {
                                         readBuffer.flip();
                                         if (readBuffer.remaining() > 0) {
-                                            for (KeContactHandler handler : handlers) {
-                                                if (clientAddress != null && handler.getIPAddress()
-                                                        .equals(clientAddress.getAddress().getHostAddress())) {
-                                                    ReentrantLock theLock = locks.get(handler);
-                                                    if (theLock != null && theLock.isLocked()) {
-                                                        buffers.put(handler, readBuffer);
-                                                        synchronized (theLock) {
-                                                            if (logger.isTraceEnabled()) {
-                                                                logger.trace("{} notifyall on handerLock {}",
-                                                                        Thread.currentThread().getName(),
-                                                                        theLock.toString());
-                                                            }
-                                                            theLock.notifyAll();
-                                                        }
-                                                    } else {
-                                                        handler.onData(readBuffer);
-                                                    }
+                                            ReentrantLock theLock = locks.get(theHandler);
+                                            if (theLock != null && theLock.isLocked()) {
+                                                buffers.put(theHandler, readBuffer);
+                                                synchronized (theLock) {
+                                                    theLock.notifyAll();
                                                 }
                                             }
                                         }
                                     } else {
-                                        handlers.forEach(listener -> listener.updateStatus(ThingStatus.OFFLINE,
-                                                ThingStatusDetail.COMMUNICATION_ERROR, "The transceiver is offline"));
-                                        reset();
-                                    }
-                                } else {
-                                    DatagramChannel theChannel = (DatagramChannel) selKey.channel();
-                                    KeContactHandler theHandler = null;
-
-                                    for (KeContactHandler handlers : handlers) {
-                                        if (datagramChannels.get(handlers).equals(theChannel)) {
-                                            theHandler = handlers;
-                                            break;
-                                        }
-                                    }
-
-                                    if (theHandler != null) {
-                                        try {
-                                            readBuffer = ByteBuffer.allocate(BUFFER_SIZE);
-                                            numberBytesRead = theChannel.read(readBuffer);
-                                            logger.debug("Received {} from {} on the transceiver listener port ",
-                                                    new String(readBuffer.array()), theChannel.getRemoteAddress());
-                                        } catch (NotYetConnectedException e) {
-                                            theHandler.updateStatus(ThingStatus.OFFLINE,
-                                                    ThingStatusDetail.COMMUNICATION_ERROR,
-                                                    "The remote host is not yet connected");
-                                            error = true;
-                                        } catch (PortUnreachableException e) {
-                                            theHandler.updateStatus(ThingStatus.OFFLINE,
-                                                    ThingStatusDetail.CONFIGURATION_ERROR,
-                                                    "The remote host is probably not a KEBA KeContact");
-                                            error = true;
-                                        } catch (IOException e) {
-                                            theHandler.updateStatus(ThingStatus.OFFLINE,
-                                                    ThingStatusDetail.COMMUNICATION_ERROR, "An IO exception occurred");
-                                            error = true;
-                                        }
-
-                                        if (numberBytesRead == -1) {
-                                            error = true;
-                                        }
-
-                                        if (!error) {
-                                            readBuffer.flip();
-                                            if (readBuffer.remaining() > 0) {
-                                                ReentrantLock theLock = locks.get(theHandler);
-                                                if (theLock != null && theLock.isLocked()) {
-                                                    buffers.put(theHandler, readBuffer);
-                                                    synchronized (theLock) {
-                                                        theLock.notifyAll();
-                                                    }
-                                                }
-                                            }
-                                        } else {
-                                            removeConnection(theHandler);
-                                            establishConnection(theHandler);
-                                        }
+                                        removeConnection(theHandler);
+                                        establishConnection(theHandler);
                                     }
                                 }
                             }
                         }
                     }
+                }
 
-                    if (!Thread.currentThread().isInterrupted()) {
-                        Thread.sleep(LISTENING_INTERVAL);
-                    } else {
-                        return;
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+                if (!Thread.currentThread().isInterrupted()) {
+                    Thread.sleep(LISTENING_INTERVAL);
+                } else {
                     return;
                 }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
             }
         }
     };

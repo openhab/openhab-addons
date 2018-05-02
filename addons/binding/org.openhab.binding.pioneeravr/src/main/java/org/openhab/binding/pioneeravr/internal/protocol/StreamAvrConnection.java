@@ -20,14 +20,13 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.pioneeravr.internal.protocol.ParameterizedCommand.ParameterizedCommandType;
 import org.openhab.binding.pioneeravr.internal.protocol.SimpleCommand.SimpleCommandType;
 import org.openhab.binding.pioneeravr.protocol.AvrCommand;
@@ -48,9 +47,10 @@ import org.slf4j.LoggerFactory;
  * see {@link http ://www.pioneerelectronics.com/StaticFiles/PUSA/Files/Home%20Custom %20Install/VSX-1120-K-RS232.PDF}
  * for the protocol specs
  *
- * @author Antoine Besnard
- * @author Rainer Ostendorf
- * @author based on the Onkyo binding by Pauli Anttila and others
+ * Based on the Onkyo binding by Pauli Anttila and others.
+ *
+ * @author Antoine Besnard - Initial contribution
+ * @author Rainer Ostendorf - Initial contribution
  */
 public abstract class StreamAvrConnection implements AvrConnection {
 
@@ -86,7 +86,6 @@ public abstract class StreamAvrConnection implements AvrConnection {
 
     @Override
     public boolean connect() {
-
         if (!isConnected()) {
             try {
                 openConnection();
@@ -97,11 +96,9 @@ public abstract class StreamAvrConnection implements AvrConnection {
 
                 // Get Output stream
                 outputStream = new DataOutputStream(getOutputStream());
-
             } catch (IOException ioException) {
                 logger.debug("Can't connect to {}. Cause: {}", getConnectionName(), ioException.getMessage());
             }
-
         }
         return isConnected();
     }
@@ -151,13 +148,11 @@ public abstract class StreamAvrConnection implements AvrConnection {
             String command = ipControlCommand.getCommand();
             try {
                 if (logger.isTraceEnabled()) {
-                    logger.trace("Sending {} bytes: {}", command.length(),
-                            DatatypeConverter.printHexBinary(command.getBytes()));
+                    logger.trace("Sending {} bytes: {}", command.length(), HexUtils.bytesToHex(command.getBytes()));
                 }
                 outputStream.writeBytes(command);
                 outputStream.flush();
                 isSent = true;
-
             } catch (IOException ioException) {
                 logger.error("Error occurred when sending command", ioException);
                 // If an error occurs, close the connection
@@ -207,7 +202,6 @@ public abstract class StreamAvrConnection implements AvrConnection {
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
-
         } else if (command == OnOffType.OFF) {
             commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.POWER_OFF, zone);
         } else {
@@ -292,7 +286,7 @@ public abstract class StreamAvrConnection implements AvrConnection {
      */
     private class IpControlInputStreamReader extends Thread {
 
-        private BufferedReader bufferedReader = null;
+        private BufferedReader bufferedReader;
 
         private volatile boolean stopReader;
 
@@ -316,9 +310,7 @@ public abstract class StreamAvrConnection implements AvrConnection {
         @Override
         public void run() {
             try {
-
                 while (!stopReader && !Thread.currentThread().isInterrupted()) {
-
                     String receivedData = null;
                     try {
                         receivedData = bufferedReader.readLine();
@@ -336,7 +328,6 @@ public abstract class StreamAvrConnection implements AvrConnection {
                         }
                     }
                 }
-
             } catch (IOException e) {
                 logger.warn("The AVR @{} is disconnected.", getConnectionName(), e);
                 AvrDisconnectionEvent event = new AvrDisconnectionEvent(StreamAvrConnection.this, e);

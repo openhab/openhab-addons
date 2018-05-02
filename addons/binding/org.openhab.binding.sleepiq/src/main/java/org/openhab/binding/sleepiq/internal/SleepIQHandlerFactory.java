@@ -20,10 +20,12 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.sleepiq.handler.SleepIQCloudHandler;
 import org.openhab.binding.sleepiq.handler.SleepIQDualBedHandler;
 import org.openhab.binding.sleepiq.internal.discovery.SleepIQBedDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +36,7 @@ import com.google.common.collect.Sets;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.sleepiq")
 public class SleepIQHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Sets
             .union(SleepIQCloudHandler.SUPPORTED_THING_TYPE_UIDS, SleepIQDualBedHandler.SUPPORTED_THING_TYPE_UIDS);
@@ -52,14 +55,11 @@ public class SleepIQHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SleepIQCloudHandler.SUPPORTED_THING_TYPE_UIDS.contains(thingTypeUID)) {
-
             logger.debug("Creating SleepIQ cloud thing handler");
             SleepIQCloudHandler cloudHandler = new SleepIQCloudHandler((Bridge) thing);
             registerBedDiscoveryService(cloudHandler);
             return cloudHandler;
-
         } else if (SleepIQDualBedHandler.SUPPORTED_THING_TYPE_UIDS.contains(thingTypeUID)) {
-
             logger.debug("Creating SleepIQ dual bed thing handler");
             return new SleepIQDualBedHandler(thing);
         }
@@ -86,8 +86,8 @@ public class SleepIQHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerBedDiscoveryService(final SleepIQCloudHandler cloudHandler) {
         logger.debug("Registering bed discovery service");
         SleepIQBedDiscoveryService discoveryService = new SleepIQBedDiscoveryService(cloudHandler);
-        discoveryServiceReg.put(cloudHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        discoveryServiceReg.put(cloudHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     /**

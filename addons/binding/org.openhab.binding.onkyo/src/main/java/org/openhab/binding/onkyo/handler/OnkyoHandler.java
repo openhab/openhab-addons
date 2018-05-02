@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventListener {
 
-    private Logger logger = LoggerFactory.getLogger(OnkyoHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(OnkyoHandler.class);
 
     private OnkyoDeviceConfiguration configuration;
 
@@ -70,7 +70,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
     private OnkyoAlbumArt onkyoAlbumArt = new OnkyoAlbumArt();
 
-    private final int NET_USB_ID = 43;
+    private static final int NET_USB_ID = 43;
 
     public OnkyoHandler(Thing thing, UpnpIOService upnpIOService, AudioHTTPServer audioHTTPServer, String callbackUrl) {
         super(thing, upnpIOService, audioHTTPServer, callbackUrl);
@@ -88,35 +88,26 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         connection = new OnkyoConnection(configuration.ipAddress, configuration.port);
         connection.addEventListener(this);
 
-        scheduler.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                logger.debug("Open connection to Onkyo Receiver @{}", connection.getConnectionName());
-                connection.openConnection();
-                if (connection.isConnected()) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
+        scheduler.execute(() -> {
+            logger.debug("Open connection to Onkyo Receiver @{}", connection.getConnectionName());
+            connection.openConnection();
+            if (connection.isConnected()) {
+                updateStatus(ThingStatus.ONLINE);
             }
         });
 
         if (configuration.refreshInterval > 0) {
             // Start resource refresh updater
-            resourceUpdaterFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        logger.debug("Send resource update requests to Onkyo Receiver @{}",
-                                connection.getConnectionName());
-                        checkStatus();
-                    } catch (LinkageError e) {
-                        logger.warn("Failed to send resource update requests to Onkyo Receiver @{}. Cause: {}",
-                                connection.getConnectionName(), e.getMessage());
-                    } catch (Exception ex) {
-                        logger.warn("Exception in resource refresh Thread Onkyo Receiver @{}. Cause: {}",
-                                connection.getConnectionName(), ex.getMessage());
-                    }
+            resourceUpdaterFuture = scheduler.scheduleWithFixedDelay(() -> {
+                try {
+                    logger.debug("Send resource update requests to Onkyo Receiver @{}", connection.getConnectionName());
+                    checkStatus();
+                } catch (LinkageError e) {
+                    logger.warn("Failed to send resource update requests to Onkyo Receiver @{}. Cause: {}",
+                            connection.getConnectionName(), e.getMessage());
+                } catch (Exception ex) {
+                    logger.warn("Exception in resource refresh Thread Onkyo Receiver @{}. Cause: {}",
+                            connection.getConnectionName(), ex.getMessage());
                 }
             }, configuration.refreshInterval, configuration.refreshInterval, TimeUnit.SECONDS);
         }
@@ -138,7 +129,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand for channel {}: {}", channelUID.getId(), command.toString());
         switch (channelUID.getId()) {
-
             /*
              * ZONE 1
              */
@@ -336,7 +326,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             logger.debug("Received command {}", receivedCommand);
 
             switch (receivedCommand) {
-
                 /*
                  * ZONE 1
                  */
@@ -442,15 +431,15 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             }
 
         } catch (Exception ex) {
-            logger.error("Exception in statusUpdateReceived for Onkyo Receiver @{}. Cause: {}, data received: {}",
+            logger.warn("Exception in statusUpdateReceived for Onkyo Receiver @{}. Cause: {}, data received: {}",
                     connection.getConnectionName(), ex.getMessage(), data);
         }
     }
 
     @Override
-    public void connectionError(String ip) {
+    public void connectionError(String ip, String errorMsg) {
         logger.debug("Connection error occurred to Onkyo Receiver @{}", ip);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
     }
 
     private State convertDeviceValueToOpenHabState(String data, Class<?> classToConvert) {
@@ -679,7 +668,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
     private void sendCommand(EiscpCommand deviceCommand, Command command) {
         if (connection != null) {
-
             final String cmd = deviceCommand.getCommand();
             String valTemplate = deviceCommand.getValue();
             String val;
@@ -716,7 +704,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         sendCommand(EiscpCommand.POWER_QUERY);
 
         if (connection != null && connection.isConnected()) {
-
             sendCommand(EiscpCommand.VOLUME_QUERY);
             sendCommand(EiscpCommand.SOURCE_QUERY);
             sendCommand(EiscpCommand.MUTE_QUERY);

@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -57,16 +58,19 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     private HomematicConfig config;
     private HomematicGateway gateway;
     private HomematicTypeGenerator typeGenerator;
+    private HttpClient httpClient;
 
     private HomematicDeviceDiscoveryService discoveryService;
     private ServiceRegistration<?> discoveryServiceRegistration;
 
     private String ipv4Address;
 
-    public HomematicBridgeHandler(@NonNull Bridge bridge, HomematicTypeGenerator typeGenerator, String ipv4Address) {
+    public HomematicBridgeHandler(@NonNull Bridge bridge, HomematicTypeGenerator typeGenerator, String ipv4Address,
+            HttpClient httpClient) {
         super(bridge);
         this.typeGenerator = typeGenerator;
         this.ipv4Address = ipv4Address;
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -77,12 +81,15 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         scheduler.execute(() -> {
             try {
                 String id = getThing().getUID().getId();
-                gateway = HomematicGatewayFactory.createGateway(id, config, instance);
+                gateway = HomematicGatewayFactory.createGateway(id, config, instance, httpClient);
                 configureThingProperties();
                 gateway.initialize();
 
+                // scan for already known devices (new devices will not be discovered, 
+                // since installMode==true is only achieved if the bridge is online
                 discoveryService.startScan(null);
                 discoveryService.waitForScanFinishing();
+                
                 updateStatus(ThingStatus.ONLINE);
                 if (!config.getGatewayInfo().isHomegear()) {
                     try {
@@ -95,6 +102,8 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                 gateway.startWatchdogs();
             } catch (IOException ex) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                logger.error("Homematic bridge was set to OFFLINE-COMMUNICATION_ERROR due to the following exception: {}",
+                        ex.getMessage(), ex);
                 dispose();
                 scheduleReinitialize();
             }

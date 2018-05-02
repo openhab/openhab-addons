@@ -10,24 +10,22 @@ package org.openhab.binding.netatmo.handler;
 
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import com.squareup.okhttp.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.squareup.okhttp.OkHttpClient;
 
 /**
  * {@link TrustingOkHttpClient} is a OkHttpClient subclass
  * that does clears positively every certificate request
  *
- * @author Gaël L'hopital
+ * @author Gaël L'hopital - Initial contribution
  *
  */
 public class TrustingOkHttpClient extends OkHttpClient {

@@ -24,7 +24,7 @@ import com.google.gson.JsonObject;
  * Handles the Xiaomi smart plug device
  *
  * @author Patrick Boos - Initial contribution
- * @author Dieter Schmidt -Refactor
+ * @author Dieter Schmidt - Refactor
  */
 public class XiaomiActorPlugHandler extends XiaomiActorBaseHandler {
 

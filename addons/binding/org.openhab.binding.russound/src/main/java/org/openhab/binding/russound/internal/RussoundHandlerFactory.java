@@ -17,12 +17,14 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.russound.internal.discovery.RioSystemDeviceDiscoveryService;
 import org.openhab.binding.russound.internal.rio.RioConstants;
 import org.openhab.binding.russound.internal.rio.controller.RioControllerHandler;
 import org.openhab.binding.russound.internal.rio.source.RioSourceHandler;
 import org.openhab.binding.russound.internal.rio.system.RioSystemHandler;
 import org.openhab.binding.russound.internal.rio.zone.RioZoneHandler;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +34,9 @@ import com.google.common.collect.ImmutableSet;
  * The {@link RussoundHandlerFactory} is responsible for creating bridge and thing
  * handlers.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.russound")
 public class RussoundHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(RussoundHandlerFactory.class);
 
@@ -47,7 +50,6 @@ public class RussoundHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(RioConstants.BRIDGE_TYPE_RIO)) {
@@ -75,9 +77,7 @@ public class RussoundHandlerFactory extends BaseThingHandlerFactory {
         logger.trace("Try to register Discovery service on BundleID: {} Service: {}",
                 bundleContext.getBundle().getBundleId(), DiscoveryService.class.getName());
 
-        final Hashtable<String, String> prop = new Hashtable<String, String>();
-
-        bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, prop);
+        bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>());
         discoveryService.activate();
     }
 

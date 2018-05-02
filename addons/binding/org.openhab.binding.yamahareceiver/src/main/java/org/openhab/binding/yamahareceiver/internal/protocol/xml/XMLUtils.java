@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import com.google.common.collect.Sets;
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
 import org.slf4j.Logger;
@@ -23,14 +21,16 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
-import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * Utility methods for XML handling
  *
  * @author David Graeff - Initial contribution
- * @author Tomasz Maruszak - DAB support, Spotify support, refactoring, input name conversion fix
+ * @author Tomasz Maruszak - DAB support, Spotify support, refactoring, input name conversion fix, Input mapping fix
  *
  */
 public class XMLUtils {
@@ -56,6 +56,27 @@ public class XMLUtils {
         return getNode(root, nodePathArr, 0);
     }
 
+    static Stream<Element> getChildElementsWhere(Node node, Function<Element, Boolean> filter) {
+        Stream.Builder<Element> stream = Stream.builder();
+
+        if (node != null) {
+            for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+                Node childNode = node.getChildNodes().item(i);
+
+                if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element childElement = (Element) childNode;
+
+                    if (filter.apply(childElement)) {
+                        stream.accept(childElement);
+                    }
+                }
+            }
+        }
+
+        return stream.build();
+    }
+
+
     /**
      * Retrieves the child node according to the xpath expression.
      *
@@ -72,7 +93,6 @@ public class XMLUtils {
         return node;
     }
 
-
     /**
      * Finds the node starting with the root and following the path. If the node is found it's inner text is returned,
      * otherwise the default provided value.
@@ -87,6 +107,17 @@ public class XMLUtils {
             return node.getTextContent();
         }
         return defaultValue;
+    }
+
+    /**
+     * Finds the node starting with the root and following the path. If the node is found it's inner text is returned,
+     * otherwise the default provided value.
+     * @param root
+     * @param nodePath
+     * @return
+     */
+    public static String getNodeContentOrEmpty(Node root, String nodePath) {
+        return getNodeContentOrDefault(root, nodePath, "");
     }
 
     /**
@@ -113,54 +144,23 @@ public class XMLUtils {
     /**
      * Parse the given xml message into a xml document node.
      *
-     * @param message XML formatted message excluding <?xml> or <YAMAHA_AV> tags.
+     * @param message XML formatted message.
      * @return Return the response as xml node or throws an exception if response is not xml.
      * @throws IOException
      */
     public static Document xml(String message) throws IOException, ReceivedMessageParseException {
-        String response = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + message;
+
+        // Ensure the message contains XML declaration
+        String response = message.startsWith("<?xml")
+                ? message
+                : "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + message;
+
         try {
             return XMLUtils.dbf.newDocumentBuilder().parse(new InputSource(new StringReader(response)));
         } catch (SAXException | ParserConfigurationException e) {
             throw new ReceivedMessageParseException(e);
         }
     }
-
-    /**
-     * The xml protocol expects HDMI_1, NET_RADIO as xml nodes, while the actual input IDs are
-     * HDMI 1, Net Radio. We offer this conversion method therefore.
-     *
-     * Certain known inputs (e.g. Spotify, Bluetooth) will NOT be transformed (see {@link #INPUTS_NO_CONVERSION}).
-     *
-     * @param name The inputID like "Net Radio".
-     * @return An xml node / xml protocol compatible name like NET_RADIO.
-     */
-    public static String convertNameToID(String name) {
-        // Inputs such as 'Spotify' or 'Bluetooth' should NOT be transformed to upper case
-        // as the AVR does not understand them (SPOTIFY != Spotify).
-        if (INPUTS_NO_CONVERSION.contains(name)) {
-            // return input name without transformation
-            return name;
-        }
-
-        // Replace whitespace with an underscore. The ID is what is used for xml tags and the AVR doesn't like
-        // whitespace in xml tags.
-        name = name.replace(" ", "_").toUpperCase();
-        // Workaround if the receiver returns "HDMI2" instead of "HDMI_2". We can't really change the input IDs in the
-        // thing type description, because we still need to send "HDMI_2" for an input change to the receiver.
-        if (name.length() >= 5 && name.startsWith("HDMI") && name.charAt(4) != '_') {
-            // Adds the missing underscore.
-            name = name.replace("HDMI", "HDMI_");
-        }
-        return name;
-    }
-
-    /**
-     * Holds a list of all the inputs names that should NOT be transformed by the {@link #convertNameToID(String)} method.
-     */
-    private static final Set<String> INPUTS_NO_CONVERSION = Sets.newHashSet(
-            YamahaReceiverBindingConstants.INPUT_SPOTIFY,
-            YamahaReceiverBindingConstants.INPUT_BLUETOOTH);
 
     /**
      * Wraps the XML message with the zone tags. Example with zone=Main_Zone:

@@ -11,7 +11,7 @@ package org.openhab.binding.hdpowerview.internal.api;
 /**
  * The position of a shade, as returned by the HD Power View HUB.
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public class ShadePosition {
 
@@ -37,7 +37,6 @@ public class ShadePosition {
     }
 
     ShadePosition() {
-
     }
 
     public int getPosition() {

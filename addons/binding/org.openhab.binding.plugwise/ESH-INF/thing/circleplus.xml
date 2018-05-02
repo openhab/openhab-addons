@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="plugwise" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="circleplus">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="stick" />
-        </supported-bridge-type-refs>
-        <label>Plugwise Circle+</label>
-        <description>A special Circle that coordinates the ZigBee network and acts as network gateway</description>
-        <channels>
-            <channel id="clock" typeId="clock" />
-            <channel id="energy" typeId="energy" />
-            <channel id="energystamp" typeId="energystamp" />
-            <channel id="lastseen" typeId="lastseen" />
-            <channel id="power" typeId="power" />
-            <channel id="realtimeclock" typeId="realtimeclock" />
-            <channel id="state" typeId="state" />
-        </channels>
-        <representation-property>macAddress</representation-property>
-        <config-description-ref uri="thing-type:plugwise:relay" />
-    </thing-type>
+	<thing-type id="circleplus">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="stick" />
+		</supported-bridge-type-refs>
+		<label>Plugwise Circle+</label>
+		<description>A special Circle that coordinates the ZigBee network and acts as network gateway</description>
+		<channels>
+			<channel id="clock" typeId="clock" />
+			<channel id="energy" typeId="energy" />
+			<channel id="energystamp" typeId="energystamp" />
+			<channel id="lastseen" typeId="lastseen" />
+			<channel id="power" typeId="power" />
+			<channel id="realtimeclock" typeId="realtimeclock" />
+			<channel id="state" typeId="state" />
+		</channels>
+		<representation-property>macAddress</representation-property>
+		<config-description-ref uri="thing-type:plugwise:relay" />
+	</thing-type>
 
 </thing:thing-descriptions>

@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.hdanywhere;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class HDanywhereBindingConstants {
 
     public static final String BINDING_ID = "hdanywhere";
@@ -53,7 +55,6 @@ public class HDanywhereBindingConstants {
         }
 
         public static Port get(int valueSelectorNumber) throws IllegalArgumentException {
-
             for (Port c : Port.values()) {
                 if (c.number == valueSelectorNumber) {
                     return c;
@@ -64,7 +65,6 @@ public class HDanywhereBindingConstants {
         }
 
         public static Port get(String valueSelectorText) throws IllegalArgumentException {
-
             for (Port c : Port.values()) {
                 if (c.id.equals(valueSelectorText)) {
                     return c;

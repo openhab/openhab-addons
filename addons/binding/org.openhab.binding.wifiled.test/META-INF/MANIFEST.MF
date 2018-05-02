@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: WifiLED Binding Tests
+Bundle-SymbolicName: org.openhab.binding.wifiled.test;singleton:=true
+Bundle-Vendor: openHAB
+Fragment-Host: org.openhab.binding.wifiled
+Bundle-Version: 2.3.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: 
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.core.events,
+ org.eclipse.smarthome.core.items,
+ org.eclipse.smarthome.core.library.items,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.link,
+ org.eclipse.smarthome.test,
+ org.eclipse.smarthome.test.storage,
+ org.hamcrest;core=split,
+ org.junit;version="4.0.0",
+ org.junit.experimental.categories,
+ org.junit.matchers,
+ org.junit.runner,
+ org.osgi.framework,
+ org.osgi.service.http,
+ org.osgi.service.event

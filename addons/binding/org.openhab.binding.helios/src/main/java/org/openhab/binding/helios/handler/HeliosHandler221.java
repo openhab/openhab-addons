@@ -183,7 +183,6 @@ public class HeliosHandler221 extends BaseThingHandler {
             try {
                 response = systemTarget.resolveTemplate("ip", ipAddress).resolveTemplate("cmd", INFO)
                         .request(MediaType.APPLICATION_JSON_TYPE).get();
-
             } catch (NullPointerException e) {
                 logger.debug("An exception occurred while fetching system info of the Helios IP Vario '{}' : '{}'",
                         getThing().getUID().toString(), e.getMessage(), e);
@@ -707,293 +706,278 @@ public class HeliosHandler221 extends BaseThingHandler {
         return null;
     }
 
-    protected Runnable configureRunnable = new Runnable() {
+    protected Runnable resetRunnable = () -> {
+        logger.debug("Resetting the Helios IP Vario handler for '{}'", getThing().getUID());
+        dispose();
+        initialize();
+    };
 
-        @Override
-        public void run() {
-            logger.debug("Fetching the configuration of the Helios IP Vario '{}' ", getThing().getUID().toString());
+    protected Runnable configureRunnable = () -> {
+        logger.debug("Fetching the configuration of the Helios IP Vario '{}' ", getThing().getUID().toString());
 
-            Response response = null;
-            try {
-                response = systemTarget.resolveTemplate("ip", ipAddress).resolveTemplate("cmd", INFO)
-                        .request(MediaType.APPLICATION_JSON_TYPE).get();
-            } catch (NullPointerException e) {
-                logger.error("An exception occurred while fetching system info of the Helios IP Vario '{}' : '{}'",
-                        getThing().getUID().toString(), e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-                scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
-                return;
-            }
+        Response response = null;
+        try {
+            response = systemTarget.resolveTemplate("ip", ipAddress).resolveTemplate("cmd", INFO)
+                    .request(MediaType.APPLICATION_JSON_TYPE).get();
+        } catch (NullPointerException e) {
+            logger.error("An exception occurred while fetching system info of the Helios IP Vario '{}' : '{}'",
+                    getThing().getUID().toString(), e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
+            return;
+        }
 
-            if (response != null) {
-                JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+        if (response != null) {
+            JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
 
-                if (logger.isTraceEnabled()) {
-                    logger.trace("configureRunnable Request : {}", systemTarget.resolveTemplate("ip", ipAddress)
-                            .resolveTemplate("cmd", INFO).getUri().toASCIIString());
-                    if (jsonObject.get("success").toString().equals("true")) {
-                        logger.trace("configureRunnable Response: {}", jsonObject.get("result"));
-                    }
-                    if (jsonObject.get("success").toString().equals("false")) {
-                        logger.trace("configureRunnable Response: {}", jsonObject.get("error"));
-                    }
+            if (logger.isTraceEnabled()) {
+                logger.trace("configureRunnable Request : {}", systemTarget.resolveTemplate("ip", ipAddress)
+                        .resolveTemplate("cmd", INFO).getUri().toASCIIString());
+                if (jsonObject.get("success").toString().equals("true")) {
+                    logger.trace("configureRunnable Response: {}", jsonObject.get("result"));
                 }
-
-                RESTSystemInfo systemInfo = gson.fromJson(jsonObject.get("result").toString(), RESTSystemInfo.class);
-
-                Map<String, String> properties = editProperties();
-                properties.put(VARIANT, systemInfo.variant);
-                properties.put(SERIAL_NUMBER, systemInfo.serialNumber);
-                properties.put(HW_VERSION, systemInfo.hwVersion);
-                properties.put(SW_VERSION, systemInfo.swVersion);
-                properties.put(BUILD_TYPE, systemInfo.buildType);
-                properties.put(DEVICE_NAME, systemInfo.deviceName);
-                updateProperties(properties);
-            }
-
-            List<RESTSwitch> switches = getSwitches();
-
-            if (switches != null) {
-                for (RESTSwitch aSwitch : switches) {
-                    if (aSwitch.enabled.equals("true")) {
-                        logger.debug("Adding a channel to the Helios IP Vario '{}' for the switch with id '{}'",
-                                getThing().getUID().toString(), aSwitch.id);
-                        ThingBuilder thingBuilder = editThing();
-                        ChannelTypeUID enablerUID = new ChannelTypeUID(BINDING_ID, SWITCH_ENABLER);
-                        ChannelTypeUID triggerUID = new ChannelTypeUID(BINDING_ID, SWITCH_TRIGGER);
-
-                        Channel channel = ChannelBuilder
-                                .create(new ChannelUID(getThing().getUID(), "switch" + aSwitch.id + "active"), "Switch")
-                                .withType(enablerUID).build();
-                        thingBuilder.withChannel(channel);
-                        channel = ChannelBuilder
-                                .create(new ChannelUID(getThing().getUID(), "switch" + aSwitch.id), "Switch")
-                                .withType(triggerUID).build();
-                        thingBuilder.withChannel(channel);
-                        updateThing(thingBuilder.build());
-                    }
+                if (jsonObject.get("success").toString().equals("false")) {
+                    logger.trace("configureRunnable Response: {}", jsonObject.get("error"));
                 }
             }
 
-            List<RESTPort> ports = getPorts();
+            RESTSystemInfo systemInfo = gson.fromJson(jsonObject.get("result").toString(), RESTSystemInfo.class);
 
-            if (ports != null) {
-                for (RESTPort aPort : ports) {
-                    logger.debug("Adding a channel to the Helios IP Vario '{}' for the IO port with id '{}'",
-                            getThing().getUID().toString(), aPort.port);
+            Map<String, String> properties = editProperties();
+            properties.put(VARIANT, systemInfo.variant);
+            properties.put(SERIAL_NUMBER, systemInfo.serialNumber);
+            properties.put(HW_VERSION, systemInfo.hwVersion);
+            properties.put(SW_VERSION, systemInfo.swVersion);
+            properties.put(BUILD_TYPE, systemInfo.buildType);
+            properties.put(DEVICE_NAME, systemInfo.deviceName);
+            updateProperties(properties);
+        }
+
+        List<RESTSwitch> switches = getSwitches();
+
+        if (switches != null) {
+            for (RESTSwitch aSwitch : switches) {
+                if (aSwitch.enabled.equals("true")) {
+                    logger.debug("Adding a channel to the Helios IP Vario '{}' for the switch with id '{}'",
+                            getThing().getUID().toString(), aSwitch.id);
                     ThingBuilder thingBuilder = editThing();
-                    ChannelTypeUID triggerUID = new ChannelTypeUID(BINDING_ID, IO_TRIGGER);
-
-                    Map<String, String> channelProperties = new HashMap<String, String>();
-                    channelProperties.put("type", aPort.type);
+                    ChannelTypeUID enablerUID = new ChannelTypeUID(BINDING_ID, SWITCH_ENABLER);
+                    ChannelTypeUID triggerUID = new ChannelTypeUID(BINDING_ID, SWITCH_TRIGGER);
 
                     Channel channel = ChannelBuilder
-                            .create(new ChannelUID(getThing().getUID(), "io" + aPort.port), "Switch")
-                            .withType(triggerUID).withProperties(channelProperties).build();
+                            .create(new ChannelUID(getThing().getUID(), "switch" + aSwitch.id + "active"), "Switch")
+                            .withType(enablerUID).build();
+                    thingBuilder.withChannel(channel);
+                    channel = ChannelBuilder
+                            .create(new ChannelUID(getThing().getUID(), "switch" + aSwitch.id), "Switch")
+                            .withType(triggerUID).build();
                     thingBuilder.withChannel(channel);
                     updateThing(thingBuilder.build());
                 }
             }
         }
-    };
 
-    protected Runnable resetRunnable = new Runnable() {
-        @Override
-        public void run() {
-            logger.debug("Resetting the Helios IP Vario handler for '{}'", getThing().getUID());
-            dispose();
-            initialize();
+        List<RESTPort> ports = getPorts();
+
+        if (ports != null) {
+            for (RESTPort aPort : ports) {
+                logger.debug("Adding a channel to the Helios IP Vario '{}' for the IO port with id '{}'",
+                        getThing().getUID().toString(), aPort.port);
+                ThingBuilder thingBuilder = editThing();
+                ChannelTypeUID triggerUID = new ChannelTypeUID(BINDING_ID, IO_TRIGGER);
+
+                Map<String, String> channelProperties = new HashMap<>();
+                channelProperties.put("type", aPort.type);
+
+                Channel channel = ChannelBuilder
+                        .create(new ChannelUID(getThing().getUID(), "io" + aPort.port), "Switch").withType(triggerUID)
+                        .withProperties(channelProperties).build();
+                thingBuilder.withChannel(channel);
+                updateThing(thingBuilder.build());
+            }
         }
     };
 
-    protected Runnable logRunnable = new Runnable() {
+    protected Runnable logRunnable = () -> {
+        if (getThing().getStatus() == ThingStatus.ONLINE) {
+            if (logSubscriptionID == 0) {
+                logSubscriptionID = subscribe();
+            }
 
-        @Override
-        public void run() {
-            if (getThing().getStatus() == ThingStatus.ONLINE) {
-                if (logSubscriptionID == 0) {
-                    logSubscriptionID = subscribe();
-                }
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
-                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            while (logSubscriptionID != 0) {
+                try {
+                    List<RESTEvent> events = pullLog(logSubscriptionID);
 
-                while (logSubscriptionID != 0) {
-                    try {
-                        List<RESTEvent> events = pullLog(logSubscriptionID);
+                    if (events != null) {
+                        for (RESTEvent event : events) {
+                            Date date = new Date(Long.valueOf(event.utcTime));
+                            DateTimeType stampType = new DateTimeType(dateFormatter.format(date));
 
-                        if (events != null) {
-                            for (RESTEvent event : events) {
-                                Date date = new Date(Long.valueOf(event.utcTime));
-                                DateTimeType stampType = new DateTimeType(dateFormatter.format(date));
+                            logger.debug("Received the event for Helios IP Vario '{}' with ID '{}' of type '{}' on {}",
+                                    getThing().getUID().toString(), event.id, event.event, dateFormatter.format(date));
 
-                                logger.debug(
-                                        "Received the event for Helios IP Vario '{}' with ID '{}' of type '{}' on {}",
-                                        getThing().getUID().toString(), event.id, event.event,
-                                        dateFormatter.format(date));
-
-                                switch (event.event) {
-                                    case DEVICESTATE: {
-                                        StringType valueType = new StringType(event.params.get("state").getAsString());
-                                        updateState(DEVICE_STATE, valueType);
-                                        updateState(DEVICE_STATE_STAMP, stampType);
-                                        break;
+                            switch (event.event) {
+                                case DEVICESTATE: {
+                                    StringType valueType = new StringType(event.params.get("state").getAsString());
+                                    updateState(DEVICE_STATE, valueType);
+                                    updateState(DEVICE_STATE_STAMP, stampType);
+                                    break;
+                                }
+                                case AUDIOLOOPTEST: {
+                                    if (event.params.get("result").getAsString().equals("passed")) {
+                                        updateState(AUDIO_LOOP_TEST, OnOffType.ON);
+                                    } else if (event.params.get("result").getAsString().equals("failed")) {
+                                        updateState(AUDIO_LOOP_TEST, OnOffType.OFF);
+                                    } else {
+                                        updateState(AUDIO_LOOP_TEST, UnDefType.UNDEF);
                                     }
-                                    case AUDIOLOOPTEST: {
-                                        if (event.params.get("result").getAsString().equals("passed")) {
-                                            updateState(AUDIO_LOOP_TEST, OnOffType.ON);
-                                        } else if (event.params.get("result").getAsString().equals("failed")) {
-                                            updateState(AUDIO_LOOP_TEST, OnOffType.OFF);
-                                        } else {
-                                            updateState(AUDIO_LOOP_TEST, UnDefType.UNDEF);
-                                        }
 
-                                        updateState(AUDIO_LOOP_TEST_STAMP, stampType);
-                                        break;
+                                    updateState(AUDIO_LOOP_TEST_STAMP, stampType);
+                                    break;
+                                }
+                                case MOTIONDETECTED: {
+                                    if (event.params.get("state").getAsString().equals("in")) {
+                                        updateState(MOTION, OnOffType.ON);
+                                    } else if (event.params.get("state").getAsString().equals("out")) {
+                                        updateState(MOTION, OnOffType.OFF);
+                                    } else {
+                                        updateState(MOTION, UnDefType.UNDEF);
                                     }
-                                    case MOTIONDETECTED: {
-                                        if (event.params.get("state").getAsString().equals("in")) {
-                                            updateState(MOTION, OnOffType.ON);
-                                        } else if (event.params.get("state").getAsString().equals("out")) {
-                                            updateState(MOTION, OnOffType.OFF);
-                                        } else {
-                                            updateState(MOTION, UnDefType.UNDEF);
-                                        }
 
-                                        updateState(MOTION_STAMP, stampType);
-                                        break;
+                                    updateState(MOTION_STAMP, stampType);
+                                    break;
+                                }
+                                case NOISEDETECTED: {
+                                    if (event.params.get("state").getAsString().equals("in")) {
+                                        updateState(NOISE, OnOffType.ON);
+                                    } else if (event.params.get("state").getAsString().equals("out")) {
+                                        updateState(NOISE, OnOffType.OFF);
+                                    } else {
+                                        updateState(NOISE, UnDefType.UNDEF);
                                     }
-                                    case NOISEDETECTED: {
-                                        if (event.params.get("state").getAsString().equals("in")) {
-                                            updateState(NOISE, OnOffType.ON);
-                                        } else if (event.params.get("state").getAsString().equals("out")) {
-                                            updateState(NOISE, OnOffType.OFF);
-                                        } else {
-                                            updateState(NOISE, UnDefType.UNDEF);
-                                        }
 
-                                        updateState(NOISE_STAMP, stampType);
-                                        break;
+                                    updateState(NOISE_STAMP, stampType);
+                                    break;
+                                }
+                                case KEYPRESSED: {
+                                    triggerChannel(KEY_PRESSED, event.params.get("key").getAsString());
+
+                                    updateState(KEY_PRESSED_STAMP, stampType);
+                                    break;
+                                }
+                                case KEYRELEASED: {
+                                    triggerChannel(KEY_RELEASED, event.params.get("key").getAsString());
+
+                                    updateState(KEY_RELEASED_STAMP, stampType);
+                                    break;
+                                }
+                                case CODEENTERED: {
+                                    triggerChannel(CODE, event.params.get("code").getAsString());
+
+                                    if (event.params.get("valid").getAsString().equals("true")) {
+                                        updateState(CODE_VALID, OnOffType.ON);
+                                    } else if (event.params.get("valid").getAsString().equals("false")) {
+                                        updateState(CODE_VALID, OnOffType.OFF);
+                                    } else {
+                                        updateState(CODE_VALID, UnDefType.UNDEF);
                                     }
-                                    case KEYPRESSED: {
-                                        triggerChannel(KEY_PRESSED, event.params.get("key").getAsString());
 
-                                        updateState(KEY_PRESSED_STAMP, stampType);
-                                        break;
+                                    updateState(CODE_STAMP, stampType);
+                                    break;
+                                }
+                                case CARDENTERED: {
+                                    triggerChannel(CARD, event.params.get("uid").getAsString());
+
+                                    if (event.params.get("valid").getAsString().equals("true")) {
+                                        updateState(CARD_VALID, OnOffType.ON);
+                                    } else if (event.params.get("valid").getAsString().equals("false")) {
+                                        updateState(CARD_VALID, OnOffType.OFF);
+                                    } else {
+                                        updateState(CARD_VALID, UnDefType.UNDEF);
                                     }
-                                    case KEYRELEASED: {
-                                        triggerChannel(KEY_RELEASED, event.params.get("key").getAsString());
 
-                                        updateState(KEY_RELEASED_STAMP, stampType);
-                                        break;
+                                    updateState(CARD_STAMP, stampType);
+                                    break;
+                                }
+                                case INPUTCHANGED: {
+                                    ChannelUID inputChannel = new ChannelUID(getThing().getUID(),
+                                            "io" + event.params.get("port").getAsString());
+
+                                    if (event.params.get("state").getAsString().equals("true")) {
+                                        updateState(inputChannel, OnOffType.ON);
+                                    } else if (event.params.get("state").getAsString().equals("false")) {
+                                        updateState(inputChannel, OnOffType.OFF);
+                                    } else {
+                                        updateState(inputChannel, UnDefType.UNDEF);
                                     }
-                                    case CODEENTERED: {
-                                        triggerChannel(CODE, event.params.get("code").getAsString());
+                                    break;
+                                }
+                                case OUTPUTCHANGED: {
+                                    ChannelUID inputChannel = new ChannelUID(getThing().getUID(),
+                                            "io" + event.params.get("port").getAsString());
 
-                                        if (event.params.get("valid").getAsString().equals("true")) {
-                                            updateState(CODE_VALID, OnOffType.ON);
-                                        } else if (event.params.get("valid").getAsString().equals("false")) {
-                                            updateState(CODE_VALID, OnOffType.OFF);
-                                        } else {
-                                            updateState(CODE_VALID, UnDefType.UNDEF);
-                                        }
-
-                                        updateState(CODE_STAMP, stampType);
-                                        break;
+                                    if (event.params.get("state").getAsString().equals("true")) {
+                                        updateState(inputChannel, OnOffType.ON);
+                                    } else if (event.params.get("state").getAsString().equals("false")) {
+                                        updateState(inputChannel, OnOffType.OFF);
+                                    } else {
+                                        updateState(inputChannel, UnDefType.UNDEF);
                                     }
-                                    case CARDENTERED: {
-                                        triggerChannel(CARD, event.params.get("uid").getAsString());
+                                    break;
+                                }
+                                case CALLSTATECHANGED: {
+                                    StringType valueType = new StringType(event.params.get("state").getAsString());
+                                    updateState(CALL_STATE, valueType);
 
-                                        if (event.params.get("valid").getAsString().equals("true")) {
-                                            updateState(CARD_VALID, OnOffType.ON);
-                                        } else if (event.params.get("valid").getAsString().equals("false")) {
-                                            updateState(CARD_VALID, OnOffType.OFF);
-                                        } else {
-                                            updateState(CARD_VALID, UnDefType.UNDEF);
-                                        }
+                                    valueType = new StringType(event.params.get("direction").getAsString());
+                                    updateState(CALL_DIRECTION, valueType);
 
-                                        updateState(CARD_STAMP, stampType);
-                                        break;
+                                    updateState(CALL_STATE_STAMP, stampType);
+                                    break;
+                                }
+                                case REGISTRATIONSTATECHANGED: {
+                                    break;
+                                }
+                                case SWITCHSTATECHANGED: {
+                                    if (event.params.get("state").getAsString().equals("true")) {
+                                        updateState(SWITCH_STATE, OnOffType.ON);
+                                    } else if (event.params.get("state").getAsString().equals("false")) {
+                                        updateState(SWITCH_STATE, OnOffType.OFF);
+                                    } else {
+                                        updateState(SWITCH_STATE, UnDefType.UNDEF);
                                     }
-                                    case INPUTCHANGED: {
-                                        ChannelUID inputChannel = new ChannelUID(getThing().getUID(),
-                                                "io" + event.params.get("port").getAsString());
 
-                                        if (event.params.get("state").getAsString().equals("true")) {
-                                            updateState(inputChannel, OnOffType.ON);
-                                        } else if (event.params.get("state").getAsString().equals("false")) {
-                                            updateState(inputChannel, OnOffType.OFF);
-                                        } else {
-                                            updateState(inputChannel, UnDefType.UNDEF);
-                                        }
-                                        break;
-
+                                    if (event.params.get("originator") != null) {
+                                        StringType originatorType = new StringType(
+                                                event.params.get("originator").getAsString());
+                                        updateState(SWITCH_STATE_ORIGINATOR, originatorType);
                                     }
-                                    case OUTPUTCHANGED: {
-                                        ChannelUID inputChannel = new ChannelUID(getThing().getUID(),
-                                                "io" + event.params.get("port").getAsString());
 
-                                        if (event.params.get("state").getAsString().equals("true")) {
-                                            updateState(inputChannel, OnOffType.ON);
-                                        } else if (event.params.get("state").getAsString().equals("false")) {
-                                            updateState(inputChannel, OnOffType.OFF);
-                                        } else {
-                                            updateState(inputChannel, UnDefType.UNDEF);
-                                        }
-                                        break;
-                                    }
-                                    case CALLSTATECHANGED: {
-                                        StringType valueType = new StringType(event.params.get("state").getAsString());
-                                        updateState(CALL_STATE, valueType);
+                                    DecimalType switchType = new DecimalType(event.params.get("switch").getAsString());
+                                    updateState(SWITCH_STATE_SWITCH, switchType);
 
-                                        valueType = new StringType(event.params.get("direction").getAsString());
-                                        updateState(CALL_DIRECTION, valueType);
-
-                                        updateState(CALL_STATE_STAMP, stampType);
-                                        break;
-                                    }
-                                    case REGISTRATIONSTATECHANGED: {
-                                        break;
-                                    }
-                                    case SWITCHSTATECHANGED: {
-                                        if (event.params.get("state").getAsString().equals("true")) {
-                                            updateState(SWITCH_STATE, OnOffType.ON);
-                                        } else if (event.params.get("state").getAsString().equals("false")) {
-                                            updateState(SWITCH_STATE, OnOffType.OFF);
-                                        } else {
-                                            updateState(SWITCH_STATE, UnDefType.UNDEF);
-                                        }
-
-                                        if (event.params.get("originator") != null) {
-                                            StringType originatorType = new StringType(
-                                                    event.params.get("originator").getAsString());
-                                            updateState(SWITCH_STATE_ORIGINATOR, originatorType);
-                                        }
-
-                                        DecimalType switchType = new DecimalType(
-                                                event.params.get("switch").getAsString());
-                                        updateState(SWITCH_STATE_SWITCH, switchType);
-
-                                        updateState(SWITCH_STATE_STAMP, stampType);
-                                        break;
-                                    }
-                                    default: {
-                                        logger.debug("Unrecognised event type : '{}'", event.event);
-                                        Set<Map.Entry<String, JsonElement>> entrySet = event.params.entrySet();
-                                        for (Map.Entry<String, JsonElement> entry : entrySet) {
-                                            logger.debug("Key '{}', Value '{}'", entry.getKey(),
-                                                    event.params.get(entry.getKey()).getAsString().replace("\"", ""));
-                                        }
+                                    updateState(SWITCH_STATE_STAMP, stampType);
+                                    break;
+                                }
+                                default: {
+                                    logger.debug("Unrecognised event type : '{}'", event.event);
+                                    Set<Map.Entry<String, JsonElement>> entrySet = event.params.entrySet();
+                                    for (Map.Entry<String, JsonElement> entry : entrySet) {
+                                        logger.debug("Key '{}', Value '{}'", entry.getKey(),
+                                                event.params.get(entry.getKey()).getAsString().replace("\"", ""));
                                     }
                                 }
                             }
-                        } else {
-                            if (logger.isTraceEnabled()) {
-                                logger.trace("No events were retrieved");
-                            }
                         }
-                    } catch (Exception e) {
-                        logger.error("An exception occurred while processing an event : '{}'", e.getMessage(), e);
+                    } else {
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("No events were retrieved");
+                        }
                     }
+                } catch (Exception e) {
+                    logger.error("An exception occurred while processing an event : '{}'", e.getMessage(), e);
                 }
             }
         }

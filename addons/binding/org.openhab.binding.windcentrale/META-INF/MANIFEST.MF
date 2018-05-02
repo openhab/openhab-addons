@@ -13,6 +13,7 @@ Export-Package:
 Import-Package: 
  com.google.common.collect,
  com.google.gson,
+ javax.measure.quantity,
  org.apache.commons.io,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
@@ -22,6 +23,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.core.library.unit,
  org.eclipse.smarthome.io.net.http,
  org.openhab.binding.windcentrale,
  org.openhab.binding.windcentrale.handler,

@@ -45,7 +45,7 @@ public class ListDevicesParser extends CommonRpcParser<Object[], Collection<HmDe
             boolean isDevice = !StringUtils.contains(toString(data.get("ADDRESS")), ":");
 
             if (isDevice) {
-                String address = getAddress(data.get("ADDRESS"));
+                String address = getSanitizedAddress(data.get("ADDRESS"));
                 String type = MiscUtils.validateCharacters(toString(data.get("TYPE")), "Device type", "-");
                 String id = toString(data.get("ID"));
                 String firmware = toString(data.get("FIRMWARE"));
@@ -54,7 +54,7 @@ public class ListDevicesParser extends CommonRpcParser<Object[], Collection<HmDe
                         new HmDevice(address, hmInterface, type, config.getGatewayInfo().getId(), id, firmware));
             } else {
                 // channel
-                String deviceAddress = getAddress(data.get("PARENT"));
+                String deviceAddress = getSanitizedAddress(data.get("PARENT"));
                 HmDevice device = devices.get(deviceAddress);
 
                 String type = toString(data.get("TYPE"));

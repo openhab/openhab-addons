@@ -33,23 +33,13 @@ public class XmlRpcClient extends RpcClient<String> {
     private final Logger logger = LoggerFactory.getLogger(XmlRpcClient.class);
     private HttpClient httpClient;
 
-    public XmlRpcClient(HomematicConfig config) throws IOException {
+    public XmlRpcClient(HomematicConfig config, HttpClient httpClient) throws IOException {
         super(config);
-        httpClient = new HttpClient();
-        httpClient.setConnectTimeout(config.getTimeout() * 1000L);
-
-        try {
-            httpClient.start();
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage(), ex);
-        }
+        this.httpClient = httpClient;
     }
 
     @Override
     public void dispose() {
-        if (httpClient != null) {
-            httpClient.destroy();
-        }
     }
 
     @Override

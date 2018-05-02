@@ -15,9 +15,9 @@ package org.openhab.binding.milight.internal.protocol;
 public class QueueItem {
     static final int INVALID = -1;
     byte[] data;
-    int unique_command_id;
+    int uniqueCommandId;
     boolean repeatable;
-    int custom_delay_time;
+    int customDelayTime;
 
     private QueueItem root, last = null;
     QueueItem next = null;
@@ -28,44 +28,44 @@ public class QueueItem {
      * Items can be repeatable, in the sense that they do not cause side effects if they are send multiple times
      * (e.g. absolute values).
      *
-     * @param unique_command_id A unique command id. A later command with the same id as previous ones will
+     * @param uniqueCommandId A unique command id. A later command with the same id as previous ones will
      *            overwrite those. 0 means a non categorised entry.
      * @param data Data to be send
      *
      * @param repeatable A repeatable command should not cause side effects by sending it multiple times.
-     * @param custom_delay_time A delay time that is used instead of the default delay time between commands for all
+     * @param customDelayTime A delay time that is used instead of the default delay time between commands for all
      *            added byte sequences.
      */
-    QueueItem(int unique_command_id, byte[] data, boolean repeatable, int custom_delay_time) {
+    QueueItem(int uniqueCommandId, byte[] data, boolean repeatable, int customDelayTime) {
         this.data = data;
-        this.unique_command_id = unique_command_id;
+        this.uniqueCommandId = uniqueCommandId;
         this.repeatable = repeatable;
-        this.custom_delay_time = custom_delay_time;
+        this.customDelayTime = customDelayTime;
         this.root = this;
     }
 
     /**
      * Used for animations. A custom delay time is used before advancing to the next queued command.
      *
-     * @param unique_command_id A command id.
+     * @param uniqueCommandId A command id.
      * @param data Command data to be send.
-     * @param custom_delay_time Custom delay time in ms.
+     * @param customDelayTime Custom delay time in ms.
      * @return Returns a QueuedItem for being used with the {@see QueuedSend.queue()} method.
      */
-    public static QueueItem createRepeatable(int unique_command_id, byte[] data, int custom_delay_time) {
-        return new QueueItem(unique_command_id, data, true, custom_delay_time);
+    public static QueueItem createRepeatable(int uniqueCommandId, byte[] data, int customDelayTime) {
+        return new QueueItem(uniqueCommandId, data, true, customDelayTime);
     }
 
-    public static QueueItem createRepeatable(int unique_command_id, byte[] data) {
-        return new QueueItem(unique_command_id, data, true, 0);
+    public static QueueItem createRepeatable(int uniqueCommandId, byte[] data) {
+        return new QueueItem(uniqueCommandId, data, true, 0);
     }
 
     public static QueueItem createRepeatable(byte[] data) {
         return new QueueItem(QueuedSend.NO_CATEGORY, data, true, 0);
     }
 
-    public static QueueItem createNonRepeatable(int unique_command_id, byte[] data) {
-        return new QueueItem(unique_command_id, data, false, 0);
+    public static QueueItem createNonRepeatable(int uniqueCommandId, byte[] data) {
+        return new QueueItem(uniqueCommandId, data, false, 0);
     }
 
     /**
@@ -97,7 +97,7 @@ public class QueueItem {
         QueueItem lastInChain = root.last != null ? root.last : root;
 
         // Create new item and set the pointer to the root element
-        QueueItem newItem = new QueueItem(this.unique_command_id, data, false, this.custom_delay_time);
+        QueueItem newItem = new QueueItem(this.uniqueCommandId, data, false, this.customDelayTime);
         newItem.root = root;
 
         // The the next pointer of the last element in the chain to the new item

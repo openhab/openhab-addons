@@ -14,14 +14,14 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 /**
  * This abstract class should be the base class for any Atlona product line handler.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public abstract class AtlonaHandler<C extends AtlonaCapabilities> extends BaseThingHandler {
 
     /**
      * The model specific capabilities
      */
-    private final C _capabilities;
+    private final C capabilities;
 
     /**
      * Constructs the handler from the specified thing and capabilities
@@ -35,7 +35,7 @@ public abstract class AtlonaHandler<C extends AtlonaCapabilities> extends BaseTh
         if (capabilities == null) {
             throw new IllegalArgumentException("capabilities cannot be null");
         }
-        _capabilities = capabilities;
+        this.capabilities = capabilities;
     }
 
     /**
@@ -44,6 +44,6 @@ public abstract class AtlonaHandler<C extends AtlonaCapabilities> extends BaseTh
      * @return a non-null {@link org.openhab.binding.atlona.handler.AtlonaCapabilities}
      */
     protected C getCapabilities() {
-        return _capabilities;
+        return capabilities;
     }
 }

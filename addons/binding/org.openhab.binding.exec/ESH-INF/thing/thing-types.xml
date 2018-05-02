@@ -1,78 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="exec"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="command">
-        <label>Command</label>
-        <description>The Command encapsulates a shell command to be executed</description>
+	<thing-type id="command">
+		<label>Command</label>
+		<description>The Command encapsulates a shell command to be executed</description>
 
-        <channels>
-            <channel id="output" typeId="output"/>
-            <channel id="input" typeId="input"/>
-            <channel id="exit" typeId="exit"/>
-            <channel id="run" typeId="run"/>
-            <channel id="lastexecution" typeId="lastexecution" />
-        </channels>
-        
-        <config-description>
-            <parameter name="command" type="text" required="true">
-                <label>Command</label>
-                <description>The command to execute</description>
-            </parameter>
-            <parameter name="transform" type="text" required="false">
-                <label>Transform</label>
-                <description>The transformation to apply on the execution result, e.g. REGEX((.*))</description>
-                <default>REGEX((.*))</default>
-            </parameter>
-            <parameter name="interval" type="integer"  required="false">
-                <label>Interval</label>
-                <description>Interval, in seconds, the command will be repeatedly executed</description>
-                <default>60</default>
-            </parameter>
-            <parameter name="timeout" type="integer"  required="false">
-                <label>Timeout</label>
-                <description>Time out, in seconds, the execution of the command will time out</description>
-                <default>15</default>
-            </parameter>
-            <parameter name="autorun" type="boolean"  required="false">
-                <label>Autorun</label>
-                <description>When true, the command will execute each time the state of the input channel changes</description>
-                <default>false</default>
-            </parameter>         
-        </config-description>
-        
-    </thing-type>
+		<channels>
+			<channel id="output" typeId="output"/>
+			<channel id="input" typeId="input"/>
+			<channel id="exit" typeId="exit"/>
+			<channel id="run" typeId="run"/>
+			<channel id="lastexecution" typeId="lastexecution" />
+		</channels>
 
-    <channel-type id="output">
-        <item-type>String</item-type>        
-        <label>Output</label>
-        <description>Output of the last execution of the command</description>
-        <state readOnly="true"></state>  
-    </channel-type>
-    <channel-type id="input">
-        <item-type>String</item-type>        
-        <label>Input</label>
-        <description>Input that will be passed as second parameter to the command</description>
-        <state readOnly="false"></state>  
-    </channel-type>
-    <channel-type id="exit">
-        <item-type>Number</item-type>
-        <label>Exit Value</label>
-        <description>The exit value of the last execution of the command</description>
-        <state readOnly="true"></state>  
-    </channel-type>
-     <channel-type id="run">
-        <item-type>Switch</item-type>
-        <label>Running</label>
-        <description>Send ON to execute the command and the current state tells whether it is running or not</description>
-        <state readOnly="true"></state>  
-    </channel-type>
-    <channel-type id="lastexecution">
-        <item-type>DateTime</item-type>
-        <label>Last Execution</label>
-        <description>Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format</description>
-        <state readOnly="true"></state>  
-    </channel-type>
+		<config-description>
+			<parameter name="command" type="text" required="true">
+				<label>Command</label>
+				<description>The command to execute</description>
+			</parameter>
+			<parameter name="transform" type="text" required="false">
+				<label>Transform</label>
+				<description>The transformation to apply on the execution result, e.g. REGEX((.*))</description>
+				<default>REGEX((.*))</default>
+			</parameter>
+			<parameter name="interval" type="integer"  required="false">
+				<label>Interval</label>
+				<description>Interval, in seconds, the command will be repeatedly executed</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="timeout" type="integer"  required="false">
+				<label>Timeout</label>
+				<description>Time out, in seconds, the execution of the command will time out</description>
+				<default>15</default>
+			</parameter>
+			<parameter name="autorun" type="boolean"  required="false">
+				<label>Autorun</label>
+				<description>When true, the command will execute each time the state of the input channel changes</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="output">
+		<item-type>String</item-type>
+		<label>Output</label>
+		<description>Output of the last execution of the command</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="input">
+		<item-type>String</item-type>
+		<label>Input</label>
+		<description>Input that will be passed as second parameter to the command</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="exit">
+		<item-type>Number</item-type>
+		<label>Exit Value</label>
+		<description>The exit value of the last execution of the command</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="run">
+		<item-type>Switch</item-type>
+		<label>Running</label>
+		<description>Send ON to execute the command and the current state tells whether it is running or not</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="lastexecution">
+		<item-type>DateTime</item-type>
+		<label>Last Execution</label>
+		<description>Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format</description>
+		<state readOnly="true"></state>
+	</channel-type>
 </thing:thing-descriptions>

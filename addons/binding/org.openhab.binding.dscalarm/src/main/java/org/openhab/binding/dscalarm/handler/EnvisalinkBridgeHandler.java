@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
 
-    private Logger logger = LoggerFactory.getLogger(EnvisalinkBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(EnvisalinkBridgeHandler.class);
 
     /**
      * Constructor.
@@ -58,7 +58,6 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
         EnvisalinkBridgeConfiguration configuration = getConfigAs(EnvisalinkBridgeConfiguration.class);
 
         if (configuration.ipAddress != null) {
-
             ipAddress = configuration.ipAddress;
             tcpPort = configuration.port.intValue();
             setPassword(configuration.password);

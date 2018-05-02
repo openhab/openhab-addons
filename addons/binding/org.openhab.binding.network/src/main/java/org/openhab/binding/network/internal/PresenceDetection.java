@@ -381,7 +381,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     }
 
     protected void performServicePing(int tcpPort) {
-        logger.trace("Perform TCP presence detection for {} on port: {}", hostname, tcpPorts);
+        logger.trace("Perform TCP presence detection for {} on port: {}", hostname, tcpPort);
         try {
             double pingTime = System.nanoTime();
             if (networkUtils.servicePing(destination.getHostAddress(), tcpPort, timeoutInMS)) {

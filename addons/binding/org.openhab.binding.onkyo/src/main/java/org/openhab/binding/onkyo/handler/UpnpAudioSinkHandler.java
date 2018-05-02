@@ -37,13 +37,12 @@ import org.slf4j.LoggerFactory;
  * implements the AudioSink interface.
  * This will allow to register the derived ThingHandler to be registered as a AudioSink in the framework.
  *
- * @author pail
- *
+ * @author Paul Frank - Initial contribution
  */
 public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements AudioSink, UpnpIOParticipant {
 
-    private static final HashSet<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
-    private static final HashSet<Class<? extends AudioStream>> SUPPORTED_STREAMS = new HashSet<>();
+    private static final Set<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
+    private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = new HashSet<>();
 
     static {
         SUPPORTED_FORMATS.add(AudioFormat.WAV);
@@ -70,7 +69,6 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
 
     protected void handlePlayUri(Command command) {
         if (command != null && command instanceof StringType) {
-
             try {
                 playMedia(command.toString());
 
@@ -104,7 +102,7 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
     }
 
     private void stop() {
-        Map<String, String> inputs = new HashMap<String, String>();
+        Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", "0");
 
         Map<String, String> result = service.invokeAction(this, "AVTransport", "Stop", inputs);
@@ -115,8 +113,7 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
     }
 
     private void play() {
-
-        Map<String, String> inputs = new HashMap<String, String>();
+        Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", "0");
         inputs.put("Speed", "1");
         Map<String, String> result = service.invokeAction(this, "AVTransport", "Play", inputs);
@@ -127,7 +124,7 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
     }
 
     private void removeAllTracksFromQueue() {
-        Map<String, String> inputs = new HashMap<String, String>();
+        Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", "0");
 
         Map<String, String> result = service.invokeAction(this, "AVTransport", "RemoveAllTracksFromQueue", inputs);
@@ -137,15 +134,14 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
         }
     }
 
-    private void setCurrentURI(String URI, String URIMetaData) {
-        if (URI != null && URIMetaData != null) {
-
-            Map<String, String> inputs = new HashMap<String, String>();
+    private void setCurrentURI(String uri, String uriMetaData) {
+        if (uri != null && uriMetaData != null) {
+            Map<String, String> inputs = new HashMap<>();
 
             try {
                 inputs.put("InstanceID", "0");
-                inputs.put("CurrentURI", URI);
-                inputs.put("CurrentURIMetaData", URIMetaData);
+                inputs.put("CurrentURI", uri);
+                inputs.put("CurrentURIMetaData", uriMetaData);
             } catch (NumberFormatException ex) {
                 logger.error("Action Invalid Value Format Exception {}", ex.getMessage());
             }
@@ -192,7 +188,6 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
             }
         }
         playMedia(url);
-
     }
 
     @Override
@@ -212,6 +207,5 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
 
     @Override
     public void onStatusChanged(boolean status) {
-
     }
 }

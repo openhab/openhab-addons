@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="lutron" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="lutron"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="ipbridge">
 		<label>Lutron IP Access Point</label>
@@ -27,14 +28,14 @@
 
 	<thing-type id="dimmer">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ipbridge" />
+			<bridge-type-ref id="ipbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Maestro Dimmer</label>
 		<description>Controls dimmable loads</description>
 
 		<channels>
-			<channel id="lightlevel" typeId="lightDimmer" />
+			<channel id="lightlevel" typeId="lightDimmer"/>
 		</channels>
 
 		<config-description>
@@ -55,14 +56,14 @@
 
 	<thing-type id="switch">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ipbridge" />
+			<bridge-type-ref id="ipbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Maestro Switch</label>
 		<description>On/off switch</description>
 
 		<channels>
-			<channel id="switchstatus" typeId="switchState" />
+			<channel id="switchstatus" typeId="switchState"/>
 		</channels>
 
 		<config-description>
@@ -75,14 +76,14 @@
 
 	<thing-type id="occupancysensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ipbridge" />
+			<bridge-type-ref id="ipbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Radio Powr Savr Sensor</label>
 		<description>Motion sensor to detect occupancy status</description>
 
 		<channels>
-			<channel id="occupancystatus" typeId="occupiedState" />
+			<channel id="occupancystatus" typeId="occupiedState"/>
 		</channels>
 
 		<config-description>
@@ -95,7 +96,7 @@
 
 	<thing-type id="keypad">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ipbridge" />
+			<bridge-type-ref id="ipbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>seeTouch Keypad</label>
@@ -171,7 +172,7 @@
 		<description>Ethernet access point to Lutron Grafik Eye 3x/4x Systems</description>
 
 		<channels>
-			<channel id="buttonpress" typeId="buttonpress" />
+			<channel id="buttonpress" typeId="buttonpress"/>
 			<channel id="zonelowerstop" typeId="button">
 				<label>All zone lower stop</label>
 				<description>Stopping all ramping down on all Control Units</description>
@@ -180,8 +181,8 @@
 				<label>All zone raise stop</label>
 				<description>Stopping all ramping up on all Control Units</description>
 			</channel>
-			<channel id="timeclock" typeId="timeclock" />
-			<channel id="schedule" typeId="schedule" />
+			<channel id="timeclock" typeId="timeclock"/>
+			<channel id="schedule" typeId="schedule"/>
 			<channel id="sunrise" typeId="sunrisesunset">
 				<label>Sunrise</label>
 				<description>Today's sunrise</description>
@@ -202,7 +203,7 @@
 				<label>Super Schedule Resume</label>
 				<description>Resume the super schedule</description>
 			</channel>
-			<channel id="ssstatus" typeId="superschedulestatus" />
+			<channel id="ssstatus" typeId="superschedulestatus"/>
 			<channel id="ssnextstep" typeId="superscheduleinfo">
 				<label>Super Schedule Next Step</label>
 				<description>The next step number in the Super Schedule</description>
@@ -225,8 +226,7 @@
 			</parameter>
 			<parameter name="userName" type="text">
 				<label>User Name</label>
-				<description>The user name to log in to the PRG access point (typically "nwk" for connection 1 or "nwk2" for
-					connection 2)</description>
+				<description>The user name to log in to the PRG access point (typically "nwk" for connection 1 or "nwk2" for connection 2)</description>
 				<default>nwk</default>
 			</parameter>
 			<parameter name="retryPolling" type="integer">
@@ -239,17 +239,17 @@
 
 	<thing-type id="grafikeye">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="prgbridge" />
+			<bridge-type-ref id="prgbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Grafik Eye</label>
 		<description>Controls a Grafik Eye</description>
 
 		<channels>
-			<channel id="scene" typeId="scene" />
-			<channel id="scenelock" typeId="scenelock" />
-			<channel id="sceneseq" typeId="sceneseq" />
-			<channel id="zonelock" typeId="zonelock" />
+			<channel id="scene" typeId="scene"/>
+			<channel id="scenelock" typeId="scenelock"/>
+			<channel id="sceneseq" typeId="sceneseq"/>
+			<channel id="zonelock" typeId="zonelock"/>
 			<channel id="zonelower1" typeId="zonerampdown">
 				<label>Ramps Zone 1 Down</label>
 				<description>Starts the ramping of Zone 1 down (in zonefade seconds)</description>
@@ -314,7 +314,7 @@
 				<label>Ramps Zone 8 Up</label>
 				<description>Starts the ramping of Zone 8 up (in zonefade seconds)</description>
 			</channel>
-			<channel id="zonefade" typeId="zonefade" />
+			<channel id="zonefade" typeId="zonefade"/>
 			<channel id="zoneintensity1" typeId="zoneintensity">
 				<label>Zone 1 Intensity</label>
 				<description>The intensity level of zone 1</description>
@@ -509,13 +509,13 @@
 
 	<thing-type id="ra-dimmer">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ra-rs232" />
+			<bridge-type-ref id="ra-rs232"/>
 		</supported-bridge-type-refs>
 		<label>RadioRA Dimmer</label>
 		<description>RadioRA Dimmer</description>
 
 		<channels>
-			<channel id="lightlevel" typeId="lightDimmer" />
+			<channel id="lightlevel" typeId="lightDimmer"/>
 		</channels>
 
 		<config-description>
@@ -536,13 +536,13 @@
 
 	<thing-type id="ra-switch">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ra-rs232" />
+			<bridge-type-ref id="ra-rs232"/>
 		</supported-bridge-type-refs>
 		<label>RadioRA Switch</label>
 		<description>RadioRA Switch</description>
 
 		<channels>
-			<channel id="switchstatus" typeId="switchState" />
+			<channel id="switchstatus" typeId="switchState"/>
 		</channels>
 
 		<config-description>
@@ -555,13 +555,13 @@
 
 	<thing-type id="ra-phantomButton">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ra-rs232" />
+			<bridge-type-ref id="ra-rs232"/>
 		</supported-bridge-type-refs>
 		<label>RadioRA Phantom Button</label>
 		<description>RadioRA Phantom Button</description>
 
 		<channels>
-			<channel id="switchstatus" typeId="switchState" />
+			<channel id="switchstatus" typeId="switchState"/>
 		</channels>
 
 		<config-description>
@@ -577,7 +577,7 @@
 		<label>Light Level</label>
 		<description>Increase/decrease the light level</description>
 		<category>DimmableLight</category>
-		<state min="0" max="100" pattern="%d %%" />
+		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="switchState">
@@ -592,7 +592,7 @@
 		<label>Occupied State</label>
 		<description>Occupancy status</description>
 		<category>Motion</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="button">
@@ -613,7 +613,7 @@
 		<item-type>Text</item-type>
 		<label>Last Button Press</label>
 		<description>Last button pressed</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="timeclock">
@@ -628,7 +628,7 @@
 		<label>Schedule Number</label>
 		<description>The schedule set on the PRG (0=suspend, 1=weekday, 2=weekend)</description>
 		<category>Schedule</category>
-		<state min="0" max="2" />
+		<state min="0" max="2"/>
 	</channel-type>
 
 	<channel-type id="sunrisesunset">
@@ -636,7 +636,7 @@
 		<label>Sunrise</label>
 		<description>Today's sunrise</description>
 		<category>Schedule</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="superschedulebutton">
@@ -651,15 +651,15 @@
 		<label>Super Schedule Status</label>
 		<description>Status of the Super Schedule</description>
 		<category>Super Schedule</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="superscheduleinfo">
 		<item-type>Number</item-type>
 		<label>Super Schedule Number</label>
 		<description>Somenumber</description>
-		<state readOnly="true" />
-		<!--<category>Super Schedule</category> -->
+		<state readOnly="true"/>
+		<!--<category>Super Schedule</category>-->
 	</channel-type>
 
 	<channel-type id="scene">
@@ -667,7 +667,7 @@
 		<label>Scene Selection</label>
 		<description>Scene selection</description>
 		<category>Super Schedule</category>
-		<state min="0" max="16" />
+		<state min="0" max="16"/>
 	</channel-type>
 
 	<channel-type id="scenelock">
@@ -708,10 +708,9 @@
 	<channel-type id="zonefade">
 		<item-type>Number</item-type>
 		<label>Zone Fade (in seconds)</label>
-		<description>Specifies the fade (in seconds [truncated to nearest minute if more than 60 seconds]) when applying
-			intensity changes</description>
+		<description>Specifies the fade (in seconds [truncated to nearest minute if more than 60 seconds]) when applying intensity changes</description>
 		<category>Zone</category>
-		<state min="1" max="3600" />
+		<state min="1" max="3600"/>
 	</channel-type>
 
 	<channel-type id="zoneintensity">
@@ -719,7 +718,7 @@
 		<label>Zone Intensity</label>
 		<description>Specifies the intensity of the zone</description>
 		<category>Zone</category>
-		<state min="0" max="100" />
+		<state min="0" max="100"/>
 	</channel-type>
 
 	<channel-type id="zoneshade">
@@ -727,6 +726,7 @@
 		<label>Zone Shade</label>
 		<description>Specifies the QED shade for the zone</description>
 		<category>Zone</category>
-		<state min="0" max="5" />
+		<state min="0" max="5"/>
 	</channel-type>
+
 </thing:thing-descriptions>

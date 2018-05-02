@@ -20,7 +20,7 @@ import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
  */
 public class ChannelMapper {
 
-    private static final Map<String, String> SYSTEM_BUTTON_MAP = new HashMap<String, String>();
+    private static final Map<String, String> SYSTEM_BUTTON_MAP = new HashMap<>();
     static {
         // Alphabetical order
         SYSTEM_BUTTON_MAP.put("CLICK", CommonTriggerEvents.SHORT_PRESSED);

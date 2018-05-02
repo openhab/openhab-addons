@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -20,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Patrik Gfeller - Initial contribution
  */
+@NonNullByDefault
 public class BindingConstants {
 
     private static final String BINDING_ID = "icloud";

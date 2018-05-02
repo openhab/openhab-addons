@@ -18,24 +18,24 @@ import org.openhab.binding.atlona.handler.AtlonaCapabilities;
  * The capabilities class for the Atlona PRO3 line. Each PRO3 model differs in the number of (output) ports that can be
  * powered, the number of audio ports there are and which (output) ports are HDMI ports.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class AtlonaPro3Capabilities extends AtlonaCapabilities {
 
     /**
      * Number of power ports
      */
-    private final int _nbrPowerPorts;
+    private final int nbrPowerPorts;
 
     /**
      * Number of audio ports
      */
-    private final int _nbrAudioPorts;
+    private final int nbrAudioPorts;
 
     /**
      * The set of output ports that are HDMI ports
      */
-    private final Set<Integer> _hdmiPorts;
+    private final Set<Integer> hdmiPorts;
 
     /**
      * Constructs the capabilities from the parms
@@ -63,9 +63,9 @@ public class AtlonaPro3Capabilities extends AtlonaCapabilities {
             throw new IllegalArgumentException("hdmiPorts cannot be empty");
         }
 
-        _nbrPowerPorts = nbrPowerPorts;
-        _nbrAudioPorts = nbrAudioPorts;
-        _hdmiPorts = Collections.unmodifiableSet(new HashSet<Integer>(hdmiPorts));
+        this.nbrPowerPorts = nbrPowerPorts;
+        this.nbrAudioPorts = nbrAudioPorts;
+        this.hdmiPorts = Collections.unmodifiableSet(new HashSet<>(hdmiPorts));
     }
 
     /**
@@ -74,7 +74,7 @@ public class AtlonaPro3Capabilities extends AtlonaCapabilities {
      * @return a greater than 0 number of power ports
      */
     int getNbrPowerPorts() {
-        return _nbrPowerPorts;
+        return nbrPowerPorts;
     }
 
     /**
@@ -83,7 +83,7 @@ public class AtlonaPro3Capabilities extends AtlonaCapabilities {
      * @return a greater than 0 number of audio ports
      */
     int getNbrAudioPorts() {
-        return _nbrAudioPorts;
+        return nbrAudioPorts;
     }
 
     /**
@@ -92,6 +92,6 @@ public class AtlonaPro3Capabilities extends AtlonaCapabilities {
      * @return a non-null, non-empty immutable set of hdmi ports
      */
     Set<Integer> getHdmiPorts() {
-        return _hdmiPorts;
+        return hdmiPorts;
     }
 }

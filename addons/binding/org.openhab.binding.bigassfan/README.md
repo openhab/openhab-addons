@@ -1,20 +1,20 @@
 # BigAssFan Binding
 
-The [BigAssFan](http://www.bigassfans.com/) binding is used to enable communication between openHAB and Big Ass Fans'  Haiku family of residential fans that implement the SenseME technology.
+The [BigAssFan](http://www.bigassfans.com/) binding is used to enable communication between openHAB and Big Ass Fans'  Haiku family of residential fans and lights that implement the SenseME technology.
 
 ## Overview
 
-Fans are discovered dynamically.
-There is a single thing created for each fan connected to the network.
-Each thing has channels that allow control of the fan and the optional LED light, as well as to monitor the status of the fan.
-When the fan is controlled from the remote control, Wall Controller, or smartphone app, the openHAB items linked to the fan's channels will be updated to reflect the fan's status.
+Fans and lights are discovered dynamically.
+There is a single thing created for each fan and/or connected to the network.
+Each thing has channels that allow control of the fan and light, as well as to monitor the status.
+When a fan or light is controlled from the remote control, Wall Controller, or smartphone app, the openHAB items linked to the device's channels will be updated to reflect the status.
 
 ## Device Discovery
 
-The BigAssFan binding discovers Haiku fans on the network, and creates an inbox entry for each discovered device.
-Once added as a thing, the user can control the fan and optional LED light kit, similarly to how the fan is controlled using the remote, Wall Controller, or smartphone app.
+The BigAssFan binding discovers Haiku fans and lights on the network, and creates an inbox entry for each discovered device.
+Once added as a thing, the user can control the fan and light, similarly to how the device is controlled using the remote, Wall Controller, or smartphone app.
 
-Background discovery polls the network every few minutes for fans.
+Background discovery polls the network every few minutes for devices.
 Background discovery is **enabled** by default.
 To **disable** background discovery, add the following line to the *conf/services/runtime.cfg* file:
 
@@ -24,12 +24,12 @@ discovery.bigassfan:background=false
 
 ## Thing Configuration
 
-The fan's IP address, MAC address, and name is set at time of discovery.
-However, in the event that any of this information changes, the fan's configuration must be updated.
+The device's IP address, MAC address, and name is set at time of discovery.
+However, in the event that any of this information changes, the configuration must be updated.
 
 ### Manual Thing Creation
 
-Fans can be manually created in the *PaperUI* or *HABmin*, or by placing a *.things* file in the *conf/things* directory.
+Fans and lights can be manually created in the *PaperUI* or *HABmin*, or by placing a *.things* file in the *conf/things* directory.
 See example below.
 
 ## Channels
@@ -49,8 +49,8 @@ The following channels are supported for fans:
 | fan-wintermode          | Switch       | Enable/disable fan winter mode                        |
 | fan-speed-min           | Dimmer       | Set minimum fan speed                                 |
 | fan-speed-max           | Dimmer       | Set maximum fan speed                                 |
-| light-power             | Switch       | Power on/off the fan                                  |
-| light-level             | Dimmer       | Adjust the brightness of the light from               |
+| light-power             | Switch       | Power on/off the light                                |
+| light-level             | Dimmer       | Adjust the brightness of the light                    |
 | light-auto              | Switch       | Enable/disable light auto mode                        |
 | light-smarter           | String       | Enable/disable Smarter Lighting                       |
 | light-level-min         | Dimmer       | Set minimum light level for Smarter Lighting          |
@@ -58,6 +58,18 @@ The following channels are supported for fans:
 | light-present           | String       | Indicates is a light is installed in the fan          |
 | motion                  | Switch       | Motion was detected                                   |
 | time                    | DateTime     | Fan's date and time                                   |
+
+The following channels are supported for lights:
+
+| Channel Name            | Item Type    | Description                                           |
+|-------------------------|--------------|-------------------------------------------------------|
+| light-power             | Switch       | Power on/off the light                                |
+| light-level             | Dimmer       | Adjust the brightness of the light                    |
+| light-hue               | Dimmer       | Adjust the color temperature of the light             |
+| light-present           | String       | Indicates if a light is installed                     |
+| light-color             | String       | Indicates if the light supports hue adjustment        |
+| motion                  | Switch       | Motion was detected                                   |
+| time                    | DateTime     | Light's date and time                                 |
 
 The following channels are supported for wall controllers:
 
@@ -89,17 +101,36 @@ Switch PorchFanLightAuto            { channel="bigassfan:fan:20F85EDAA56A:light-
 Switch PorchFanLightSmarter         { channel="bigassfan:fan:20F85EDAA56A:light-smarter" }
 Dimmer PorchFanLightLevelMin        { channel="bigassfan:fan:20F85EDAA56A:light-level-min" }
 Dimmer PorchFanLightLevelMax        { channel="bigassfan:fan:20F85EDAA56A:light-level-max" }
-String PorchFanLightPresent         { channel="bigassfan:fan:20F85EDAA56A:light-present" }
 ```
 
-The following readonly items are provided by the fan.
+The following read-only items are provided by the fan.
 
 ```java
+String PorchFanLightPresent         { channel="bigassfan:fan:20F85EDAA56A:light-present" }
 Switch PorchFanMotionSensor         { channel="bigassfan:fan:20F85EDAA56A:motion" }
 DateTime PorchFanTime               { channel="bigassfan:fan:20F85EDAA56A:time" }
 ```
 
+## Light Items
+
+```java
+Switch KitchenLightPower            { channel="bigassfan:light:20F85EDA87A0:light-power" }
+Dimmer KitchenLightLevel            { channel="bigassfan:light:20F85EDA87A0:light-level" }
+Switch KitchenLightHue              { channel="bigassfan:light:20F85EDA87A0:light-hue" }
+```
+
+The following read-only items are provided by the light.
+
+```java
+String KitchenLightPresent          { channel="bigassfan:light:20F85EDA87A0:light-present" }
+String KitchenLightColor            { channel="bigassfan:light:20F85EDA87A0:light-color" }
+Switch KitchenLightMotionSensor     { channel="bigassfan:light:20F85EDA87A0:motion" }
+DateTime KitchenLightTime           { channel="bigassfan:light:20F85EDA87A0:time" }
+```
+
 ## Wall Controller Items
+
+The following read-only items are provided by the wall controller.
 
 ```java
 Switch PorchControllerMotionSensor  { channel="bigassfan:controller:20F85ED87F01:motion" }
@@ -116,6 +147,11 @@ Frame label="Control My BigAssFan" {
     Slider item=PorchFanSpeed label="Fan Speed [%s %%]"
     Switch item=PorchFanLightPower label="Light Power [%s]"
     Slider item=PorchFanLightLevel label="Light Brightness [%s %%]"
+}
+Frame label="Control My Light" {
+    Switch item=KitchenLightPower label="Light Power [%s]"
+    Slider item=KitchenLightLevel label="Light Level [%s %%]"
+    Slider item=KitchenLightHue label="Light Hue [%s]"
 }
 ```
 

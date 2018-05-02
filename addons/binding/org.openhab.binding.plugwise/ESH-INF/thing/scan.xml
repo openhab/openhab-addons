@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="plugwise" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="scan">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="stick" />
-        </supported-bridge-type-refs>
-        <label>Plugwise Scan</label>
-        <description>A wireless motion (PIR) and light sensor</description>
-        <channels>
-            <channel id="triggered" typeId="triggered" />
-            <channel id="lastseen" typeId="lastseen" />
-        </channels>
-        <representation-property>macAddress</representation-property>
-        <config-description-ref uri="thing-type:plugwise:scan" />
-    </thing-type>
+	<thing-type id="scan">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="stick" />
+		</supported-bridge-type-refs>
+		<label>Plugwise Scan</label>
+		<description>A wireless motion (PIR) and light sensor</description>
+		<channels>
+			<channel id="triggered" typeId="triggered" />
+			<channel id="lastseen" typeId="lastseen" />
+		</channels>
+		<representation-property>macAddress</representation-property>
+		<config-description-ref uri="thing-type:plugwise:scan" />
+	</thing-type>
 
 </thing:thing-descriptions>

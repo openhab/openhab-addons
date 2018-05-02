@@ -34,10 +34,6 @@
 			<channel id="LastStatusStore" typeId="lastStatusStore" />
 			<channel id="WifiStatus" typeId="system.signal-strength" />
 			<channel id="Location" typeId="location" />	 
-			<!--  Global configuration channels -->
-			<channel id="Unit" typeId="unit" />
-			<channel id="WindUnit" typeId="windUnit" />
-			<channel id="PressureUnit" typeId="pressureUnit" />
 		</channels>
 
 		<properties>
@@ -116,7 +112,7 @@
 		<config-description-ref uri="thing-type:netatmo:module" />
 	</thing-type>
 
-	 <thing-type id="NAModule3">
+	<thing-type id="NAModule3">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="netatmoapi" />
 		</supported-bridge-type-refs>
@@ -177,7 +173,7 @@
 		<properties>
 			<property name="signalLevels">90,80,70,60</property>
 			<property name="batteryLevels">4200,4920,6000</property>
-		</properties>		  
+		</properties>
 
 		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:netatmo:module" />

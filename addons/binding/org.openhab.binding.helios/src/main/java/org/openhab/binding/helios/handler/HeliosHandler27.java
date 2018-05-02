@@ -148,7 +148,7 @@ public class HeliosHandler27 extends BaseThingHandler implements NotificationCon
     @Override
     public void initialize() {
         logger.debug("Initializing Helios IP handler.");
-        List<Handler> handlerChain = new ArrayList<Handler>();
+        List<Handler> handlerChain = new ArrayList<>();
         handlerChain.add(new SOAPActionHandler());
 
         try {
@@ -200,7 +200,7 @@ public class HeliosHandler27 extends BaseThingHandler implements NotificationCon
             subscription = subscriptionService.getPort(new W3CEndpointReferenceBuilder().address(heliosAddress).build(),
                     PausableSubscriptionManager.class);
 
-            handlerChain = new ArrayList<Handler>();
+            handlerChain = new ArrayList<>();
             handlerChain.add(new SOAPSubscriptionActionHandler(this));
             ((BindingProvider) subscription).getBinding().setHandlerChain(handlerChain);
         } catch (WebServiceException e1) {

@@ -18,7 +18,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant;
+import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
@@ -31,13 +31,12 @@ import org.slf4j.LoggerFactory;
 /**
  * An UpnpDiscoveryParticipant which allows to discover Onkyo AVRs.
  *
- * @author Paul Frank
- *
+ * @author Paul Frank - Initial contribution
  */
 @Component(service = UpnpDiscoveryParticipant.class, immediate = true)
 public class OnkyoUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
-    private Logger logger = LoggerFactory.getLogger(OnkyoUpnpDiscoveryParticipant.class);
+    private final Logger logger = LoggerFactory.getLogger(OnkyoUpnpDiscoveryParticipant.class);
 
     private boolean isAutoDiscoveryEnabled;
     private Set<ThingTypeUID> supportedThingTypes;
@@ -60,7 +59,7 @@ public class OnkyoUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
             }
         }
-        supportedThingTypes = isAutoDiscoveryEnabled ? SUPPORTED_THING_TYPES_UIDS : new HashSet<ThingTypeUID>();
+        supportedThingTypes = isAutoDiscoveryEnabled ? SUPPORTED_THING_TYPES_UIDS : new HashSet<>();
     }
 
     @Override
@@ -73,7 +72,6 @@ public class OnkyoUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
         DiscoveryResult result = null;
         ThingUID thingUid = getThingUID(device);
         if (thingUid != null) {
-
             String label = StringUtils.isEmpty(device.getDetails().getFriendlyName()) ? device.getDisplayString()
                     : device.getDetails().getFriendlyName();
             Map<String, Object> properties = new HashMap<>(2, 1);
@@ -90,7 +88,6 @@ public class OnkyoUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
     public ThingUID getThingUID(RemoteDevice device) {
         ThingUID result = null;
         if (isAutoDiscoveryEnabled) {
-
             if (StringUtils.containsIgnoreCase(device.getDetails().getManufacturerDetails().getManufacturer(),
                     MANUFACTURER)) {
                 logger.debug("Manufacturer matched: search: {}, device value: {}.", MANUFACTURER,
@@ -100,7 +97,8 @@ public class OnkyoUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
                             device.getType().getType());
 
                     String deviceModel = device.getDetails().getModelDetails() != null
-                            ? device.getDetails().getModelDetails().getModelName() : null;
+                            ? device.getDetails().getModelDetails().getModelName()
+                            : null;
 
                     logger.debug("Device model: {}.", deviceModel);
 
