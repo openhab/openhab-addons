@@ -37,7 +37,7 @@ import org.openhab.binding.nest.internal.config.NestDeviceConfiguration;
 public class NestCameraHandlerTest extends NestThingHandlerOSGiTest {
 
     private static final ThingUID CAMERA_UID = new ThingUID(THING_TYPE_CAMERA, "camera1");
-    private static final int CHANNEL_COUNT = 9;
+    private static final int CHANNEL_COUNT = 20;
 
     public NestCameraHandlerTest() {
         super(NestCameraHandler.class);
@@ -62,18 +62,30 @@ public class NestCameraHandlerTest extends NestThingHandlerOSGiTest {
         putStreamingEventData(fromFile(COMPLETE_DATA_FILE_NAME));
         waitForAssert(() -> assertThat(thing.getStatus(), is(ThingStatus.ONLINE)));
 
-        assertThatItemHasState(CHANNEL_APP_URL, new StringType(
-                "nestmobile://cameras/CjZfTEs4ajlyUlh3Q0tFQk90RG83SnNrTnh6V2ZIQk9JbTNDTG91Q1QzRlFaenJ2b2tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQjc2ejhSWFl3SFFxWXFrSWx2QlpxN1gyeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9ESvlhJF0D7vG8Y0TFV39zX1vIOsWrv8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc"));
-        assertThatItemHasState(CHANNEL_AUDIO_INPUT_ENABLED, ON);
-        assertThatItemHasState(CHANNEL_LAST_ONLINE_CHANGE, parseDateTimeType("2017-01-22T08:19:20.000Z"));
-        assertThatItemHasState(CHANNEL_PUBLIC_SHARE_ENABLED, OFF);
-        assertThatItemHasState(CHANNEL_PUBLIC_SHARE_URL, new StringType("https://video.nest.com/live/Ya2NJ8GQRE"));
-        assertThatItemHasState(CHANNEL_SNAPSHOT_URL, new StringType(
-                "https://www.dropcam.com/api/wwn.get_snapshot/CjZfTEs4ajlyUlh3Q0tFQk90RG83SnNrTnh6V2ZIQk9JbTNDTG91Q1QzRlFaenJ2b2tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQjc2ejhSWFl3SFFxWXFrSWx2QlpxN1gyeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9ESvlhJF0D7vG8Y0TFV39zX1vIOsWrv8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc"));
-        assertThatItemHasState(CHANNEL_STREAMING, OFF);
-        assertThatItemHasState(CHANNEL_VIDEO_HISTORY_ENABLED, OFF);
-        assertThatItemHasState(CHANNEL_WEB_URL, new StringType(
-                "https://home.nest.com/cameras/CjZfTEs4ajlyUlh3Q0tFQk90RG83SnNrTnh6V2ZIQk9JbTNDTG91Q1QzRlFaenJ2b2tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQjc2ejhSWFl3SFFxWXFrSWx2QlpxN1gyeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9ESvlhJF0D7vG8Y0TFV39zX1vIOsWrv8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc"));
+        // Camera channel group
+        assertThatItemHasState(CHANNEL_CAMERA_APP_URL, new StringType("https://camera_app_url"));
+        assertThatItemHasState(CHANNEL_CAMERA_AUDIO_INPUT_ENABLED, ON);
+        assertThatItemHasState(CHANNEL_CAMERA_LAST_ONLINE_CHANGE, parseDateTimeType("2017-01-22T08:19:20.000Z"));
+        assertThatItemHasState(CHANNEL_CAMERA_PUBLIC_SHARE_ENABLED, OFF);
+        assertThatItemHasState(CHANNEL_CAMERA_PUBLIC_SHARE_URL, new StringType("https://camera_public_share_url"));
+        assertThatItemHasState(CHANNEL_CAMERA_SNAPSHOT_URL, new StringType("https://camera_snapshot_url"));
+        assertThatItemHasState(CHANNEL_CAMERA_STREAMING, OFF);
+        assertThatItemHasState(CHANNEL_CAMERA_VIDEO_HISTORY_ENABLED, OFF);
+        assertThatItemHasState(CHANNEL_CAMERA_WEB_URL, new StringType("https://camera_web_url"));
+
+        // Last event channel group
+        assertThatItemHasState(CHANNEL_LAST_EVENT_ACTIVITY_ZONES, new StringType("id1,id2"));
+        assertThatItemHasState(CHANNEL_LAST_EVENT_ANIMATED_IMAGE_URL,
+                new StringType("https://last_event_animated_image_url"));
+        assertThatItemHasState(CHANNEL_LAST_EVENT_APP_URL, new StringType("https://last_event_app_url"));
+        assertThatItemHasState(CHANNEL_LAST_EVENT_END_TIME, parseDateTimeType("2017-01-22T07:40:38.680Z"));
+        assertThatItemHasState(CHANNEL_LAST_EVENT_HAS_MOTION, ON);
+        assertThatItemHasState(CHANNEL_LAST_EVENT_HAS_PERSON, OFF);
+        assertThatItemHasState(CHANNEL_LAST_EVENT_HAS_SOUND, OFF);
+        assertThatItemHasState(CHANNEL_LAST_EVENT_IMAGE_URL, new StringType("https://last_event_image_url"));
+        assertThatItemHasState(CHANNEL_LAST_EVENT_START_TIME, parseDateTimeType("2017-01-22T07:40:19.020Z"));
+        assertThatItemHasState(CHANNEL_LAST_EVENT_URLS_EXPIRE_TIME, parseDateTimeType("2017-02-05T07:40:19.020Z"));
+        assertThatItemHasState(CHANNEL_LAST_EVENT_WEB_URL, new StringType("https://last_event_web_url"));
 
         assertThatAllItemStatesAreNotNull();
     }
@@ -120,13 +132,13 @@ public class NestCameraHandlerTest extends NestThingHandlerOSGiTest {
 
     @Test
     public void handleStreamingCommands() throws IOException {
-        handleCommand(CHANNEL_STREAMING, ON);
+        handleCommand(CHANNEL_CAMERA_STREAMING, ON);
         assertNestApiPropertyState(CAMERA1_DEVICE_ID, "is_streaming", "true");
 
-        handleCommand(CHANNEL_STREAMING, OFF);
+        handleCommand(CHANNEL_CAMERA_STREAMING, OFF);
         assertNestApiPropertyState(CAMERA1_DEVICE_ID, "is_streaming", "false");
 
-        handleCommand(CHANNEL_STREAMING, ON);
+        handleCommand(CHANNEL_CAMERA_STREAMING, ON);
         assertNestApiPropertyState(CAMERA1_DEVICE_ID, "is_streaming", "true");
     }
 }
