@@ -49,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Handles the connection to the amazon server.
@@ -546,8 +547,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             }
             Gson gson = new Gson();
             this.currentFlashBriefingJson = gson.toJson(forSerializer);
-
-        } catch (IOException | URISyntaxException e) {
+        } catch (JsonSyntaxException | IOException | URISyntaxException e) {
             logger.warn("get flash briefing profiles fails {}", e);
         }
 

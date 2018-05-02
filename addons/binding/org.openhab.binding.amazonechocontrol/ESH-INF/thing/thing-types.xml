@@ -68,6 +68,7 @@
             <channel id="playFlashBriefing" typeId="playFlashBriefing" />
             <channel id="playTrafficNews" typeId="playTrafficNews" />
             <channel id="playWeatherReport" typeId="playWeatherReport" />
+            <channel id="playGoodMorning" typeId="playGoodMorning" />
             <channel id="startRoutine" typeId="startRoutine" />
             <channel id="playMusicProvider" typeId="playMusicProvider" />
             <channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
@@ -110,6 +111,7 @@
             <channel id="playFlashBriefing" typeId="playFlashBriefing" />
             <channel id="playTrafficNews" typeId="playTrafficNews" />
             <channel id="playWeatherReport" typeId="playWeatherReport" />
+            <channel id="playGoodMorning" typeId="playGoodMorning" />
             <channel id="startRoutine" typeId="startRoutine" />
             <channel id="playMusicProvider" typeId="playMusicProvider" />
             <channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
@@ -152,6 +154,7 @@
             <channel id="playFlashBriefing" typeId="playFlashBriefing" />
             <channel id="playTrafficNews" typeId="playTrafficNews" />
             <channel id="playWeatherReport" typeId="playWeatherReport" />
+            <channel id="playGoodMorning" typeId="playGoodMorning" />
             <channel id="startRoutine" typeId="startRoutine" />
             <channel id="playMusicProvider" typeId="playMusicProvider" />
             <channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
@@ -223,6 +226,7 @@
             <channel id="playFlashBriefing" typeId="playFlashBriefing" />
             <channel id="playTrafficNews" typeId="playTrafficNews" />
             <channel id="playWeatherReport" typeId="playWeatherReport" />
+            <channel id="playGoodMorning" typeId="playGoodMorning" />
             <channel id="startRoutine" typeId="startRoutine" />
             <channel id="playMusicProvider" typeId="playMusicProvider" />
             <channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
@@ -302,6 +306,11 @@
         <item-type>Switch</item-type>
         <label>Traffic News</label>
         <description>Starts the traffic news (Write Only)</description>
+    </channel-type>
+    <channel-type id="playGoodMorning">
+        <item-type>Switch</item-type>
+        <label>Good Morning</label>
+        <description>Starts good moring news (Write Only)</description>
     </channel-type>
     <channel-type id="startRoutine">
         <item-type>String</item-type>

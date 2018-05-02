@@ -68,6 +68,7 @@ public class AmazonEchoControlBindingConstants {
     public static final String CHANNEL_PLAY_FLASH_BRIEFING = "playFlashBriefing";
     public static final String CHANNEL_PLAY_WEATER_REPORT = "playWeatherReport";
     public static final String CHANNEL_PLAY_TRAFFIC_NEWS = "playTrafficNews";
+    public static final String CHANNEL_PLAY_GOOD_MORNING = "playGoodMorning";
     public static final String CHANNEL_START_ROUTINE = "startRoutine";
     public static final String CHANNEL_PLAY_MUSIC_PROVIDER = "playMusicProvider";
     public static final String CHANNEL_PLAY_MUSIC_VOICE_COMMAND = "playMusicVoiceCommand";

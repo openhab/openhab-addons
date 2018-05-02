@@ -537,13 +537,13 @@ public class Connection {
     }
 
     // parser
-    private <T> T parseJson(String json, Class<T> type) {
+    private <T> T parseJson(String json, Class<T> type) throws JsonSyntaxException {
         try {
             Gson gson = new Gson();
             return gson.fromJson(json, type);
         } catch (JsonSyntaxException e) {
             logger.warn("Parsing json failed {}", e);
-            logger.warn("{}", json);
+            logger.warn("Illegal json: {}", json);
             throw e;
         }
     }
@@ -658,7 +658,8 @@ public class Connection {
         }
     }
 
-    // commands: Alexa.Weather.Play, Alexa.Traffic.Play, Alexa.FlashBriefing.Play
+    // commands: Alexa.Weather.Play, Alexa.Traffic.Play, Alexa.FlashBriefing.Play, Alexa.GoodMorning.Play,
+    // Alexa.SingASong.Play, Alexa.TellStory.Play
     public void executeSequenceCommand(Device device, String command) throws IOException, URISyntaxException {
         String json = "{ \"behaviorId\": \"amzn1.alexa.automation.00000000-0000-0000-0000-000000000000\", "
                 + "    \"sequenceJson\": \"{\\\"@type\\\":\\\"com.amazon.alexa.behaviors.model.Sequence\\\",\\\"startNode\\\":{\\\"@type\\\":\\\"com.amazon.alexa.behaviors.model.OpaquePayloadOperationNode\\\",\\\"type\\\":\\\""

@@ -10,6 +10,7 @@ package org.openhab.binding.amazonechocontrol.internal.discovery;
 
 import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -56,6 +57,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
 
     @Nullable
     ScheduledFuture<?> startScanStateJob;
+    long activateTimeStamp;
 
     public static void addDiscoveryHandler(IAmazonEchoDiscovery discoveryService) {
         synchronized (discoveryServices) {
@@ -93,6 +95,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
 
     void startScan(boolean manual) {
         stopScanJob();
+        removeOlderResults(activateTimeStamp);
         if (discoverAccount) {
 
             discoverAccount = false;
@@ -144,6 +147,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
         if (config != null) {
             modified(config);
         }
+        activateTimeStamp = new Date().getTime();
     };
 
     public synchronized void setDevices(ThingUID brigdeThingUID, List<Device> deviceList) {

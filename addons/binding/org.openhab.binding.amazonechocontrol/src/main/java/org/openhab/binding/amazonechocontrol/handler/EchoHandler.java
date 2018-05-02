@@ -243,7 +243,7 @@ public class EchoHandler extends BaseThingHandler {
                     String voiceCommand = ((StringType) command).toFullString();
                     if (!this.musicProviderId.isEmpty()) {
                         connection.playMusicVoiceCommand(device, this.musicProviderId, voiceCommand);
-                        waitForUpdate = 2000;
+                        waitForUpdate = 3000;
                         updatePlayMusicVoiceCommand = true;
                     }
                 }
@@ -409,6 +409,13 @@ public class EchoHandler extends BaseThingHandler {
                 if (command == OnOffType.ON) {
                     waitForUpdate = 1000;
                     connection.executeSequenceCommand(device, "Alexa.Weather.Play");
+                }
+            }
+            if (channelId.equals(CHANNEL_PLAY_GOOD_MORNING)) {
+
+                if (command == OnOffType.ON) {
+                    waitForUpdate = 1000;
+                    connection.executeSequenceCommand(device, "Alexa.GoodMorning.Play");
                 }
             }
             if (channelId.equals(CHANNEL_START_ROUTINE)) {
@@ -709,6 +716,7 @@ public class EchoHandler extends BaseThingHandler {
         updateState(CHANNEL_PLAY_FLASH_BRIEFING, OnOffType.OFF);
         updateState(CHANNEL_PLAY_WEATER_REPORT, OnOffType.OFF);
         updateState(CHANNEL_PLAY_TRAFFIC_NEWS, OnOffType.OFF);
+        updateState(CHANNEL_PLAY_GOOD_MORNING, OnOffType.OFF);
         updateState(CHANNEL_AMAZON_MUSIC_TRACK_ID, new StringType(amazonMusicTrackId));
         updateState(CHANNEL_AMAZON_MUSIC, playing && amazonMusic ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID, new StringType(amazonMusicPlayListId));

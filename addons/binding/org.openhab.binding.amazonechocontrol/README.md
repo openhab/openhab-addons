@@ -16,6 +16,7 @@ It provide features to control and view the current state of echo devices:
 - start traffic news
 - start daily briefing
 - start weather report
+- start good moring report
 - start automation routine
 - activate multiple configurations of flash briefings
 - start playing music by providing the voice command as text (Works with all music providers)
@@ -125,6 +126,7 @@ The flashbriefingprofile thing has no configuration parameters. It will be confi
 | playFlashBriefing          | Switch    | W         | echo, echoshow, echospot, unknown      | Write Only! Starts the flash briefing
 | playWeatherReport          | Switch    | W         | echo, echoshow, echospot, unknown      | Write Only! Starts the weather report
 | playTrafficNews            | Switch    | W         | echo, echoshow, echospot, unknown      | Write Only! Starts the traffic news
+| playGoodMorning            | Switch    | W         | echo, echoshow, echospot, unknown      | Write Only! Starts the good moring report
 | startRoutine               | Switch    | W         | echo, echoshow, echospot, unknown      | Write Only! Type in what you normally say to Alexa without the preceding "Alexa," 
 | playMusicProvider          | String    | W         | echo, echoshow, echospot, unknown      | Write Only! Music provider used for 'Start music voice command' 
 | playMusicVoiceCommand      | String    | W         | echo, echoshow, echospot, unknown      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles' 
@@ -180,6 +182,7 @@ String Echo_Living_Room_PlayAlarmSound         "Play Alarm Sound"               
 Switch Echo_Living_Room_PlayFlashBriefing         "Play Flash Briefing"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playFlashBriefing"}
 Switch Echo_Living_Room_PlayWeatherReport         "Play Weather Report"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playWeatherReport"}
 Switch Echo_Living_Room_PlayTrafficNews        "Play Traffic News"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playTrafficNews"}
+Switch Echo_Living_Room_PlayGoodMoring        "Play Good Morning News"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playGoodMorning"}
 String Echo_Living_Room_StartRoutine         "Start Routine"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:startRoutine"}
 String Echo_Living_Room_PlayMusicProvider    "Music Provider (Write Only)"             (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playMusicProvider"}
 String Echo_Living_Room_PlayMusicCommand     "Play music voice command (Write Only)"    (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playMusicVoiceCommand"}
@@ -217,6 +220,7 @@ sitemap amzonechocontrol label="Echo Devices"
             Switch  item=Echo_Living_Room_PlayFlashBriefing
             Switch  item=Echo_Living_Room_PlayWeatherReport
             Switch  item=Echo_Living_Room_PlayTrafficNews
+            Switch  item=Echo_Living_Room_PlayGoodMoring
             Text    item=Echo_Living_Room_StartRoutine
         }
         
@@ -239,7 +243,7 @@ To get instead of the id fields an selection box, use the Selection element and 
 
 1) Open the PaperUI
 2) Navigate to the Control Section
-3) Open the Drop-Dow
+3) Open the Drop-Down of the 'Alarm Sound' channel
 4) Select the Sound you want to here
 5) Write down the text in the square brackets. e.g. ECHO:system_alerts_repetitive01 for the nightstand sound
 6) Create a rule for start playing the sound:
@@ -267,6 +271,28 @@ end
 Note 1: Do not use a to short time for playing the sound, because alexa needs some time to start playing the sound. I recommend, that you to not use a time below 10 seconds.
 
 Note 2: The rule have no effect for your default alarm sound used in the alexa app.
+
+**Play a spotify playlist if a switch was changed to on:**
+
+1) Open the PaperUI
+2) Navigate to the Control Section
+3) Open the Drop-Down of the 'Music provider for the start music voice command' channel
+4) Select the Provider you want to use
+5) Write down the text in the square brackets. e.g. SPOTIFY for the spotify music provider
+6) Create a rule for start playing a song or playlist:
+
+
+```php
+rule "Play a playlist on spotify if a switch was changed"
+when
+    Item Spotify_Playlist_Switch changed to ON
+then
+    Echo_Living_Room_PlayMusicProvider.sendCommand('SPOTIFY')
+    Echo_Living_Room_PlayMusicCommand.sendCommand('Playlist Party')
+end
+```
+
+Note: I recommend, that you test the command send to play music command first with your voice on your alexa device. E.g. say 'Alexa, Playlist Party'
 
 ## Credits
 
