@@ -51,7 +51,7 @@
 		<config-description>
 			<parameter name="filename" type="text" required="true">
 				<label>Filename</label>
-				<description>Filename to match received files. Support regular expression patterns.</description>
+				<description>Filename to match received files. Supports regular expression patterns.</description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -67,7 +67,7 @@
 		<config-description>
 			<parameter name="filename" type="text" required="true">
 				<label>Filename</label>
-				<description>Filename to match received files. Support regular expression patterns.</description>
+				<description>Filename to match received files. Supports regular expression patterns.</description>
 			</parameter>
 		</config-description>
 	</channel-type>

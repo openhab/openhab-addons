@@ -6,7 +6,9 @@ Images stored on the FTP server are not saved to the file system, therefore the 
 
 ## Supported Things
 
-This binding supports ```ftpupload``` Thing. Every thing is identified by FTP user name. Therefore, every thing should use unique user name to login FTP server.
+This binding supports ```ftpupload``` Thing.
+Every thing is identified by FTP user name.
+Therefore, every thing should use unique user name to login FTP server.
 
 ## Discovery
 
@@ -14,7 +16,8 @@ Automatic discovery is not supported.
 
 ## Binding Configuration
 
-Bindings FTP server listening 2121 TCP port by default, but port can be configured. Also idle timeout can be configured.
+Bindings FTP server listening 2121 TCP port by default, but port can be configured.
+Also idle timeout can be configured.
 
 ## Channels
 
@@ -24,11 +27,11 @@ This binding currently supports following channels:
 |-----------------|--------------|----------------------------------------------------------------------------------------|
 | image           | Image        | Image file received via FTP.                                                           |
 
-Binding also support custom Image channels, where matching filename can be configured.
-When image file is uploaded to FTP server, binding tries to find channel which filename match to upload image filename.
+Binding also supports custom Image channels, where a matching filename can be configured.
+When an image file is uploaded to FTP server, the binding tries to find the channel whose filename match to the uploaded image filename.
 If any direct match isn't found, the default image channel is updated.
-filename parameter support regular expression patterns.
-See more details from Things example. 
+The filename parameter supports regular expression patterns.
+See more details in the Things example. 
 
 
 ### Trigger Channels
@@ -37,11 +40,11 @@ See more details from Things example.
 |-----------------|------------------------|-----------------------------------------------------|
 | image-received  | IMAGE_RECEIVED         | Triggered when image file received from FTP client. |
 
-Binding also support custom trigger channels, where matching filename can be configured.
-When image file is uploaded to FTP server, binding tries to find trigger channel which filename match to upload image filename.
+Binding also supports custom trigger channels, where a matching filename can be configured.
+When an image file is uploaded to FTP server, the binding tries to find the trigger channel whose filename match to the upload image filename.
 If any direct match isn't found, the default trigger channel is called.
-filename parameter support regular expression patterns.
-See more details from Things example. 
+The filename parameter supports regular expression patterns.
+See more details in the Things example. 
 
 ## Full Example
 
@@ -151,5 +154,7 @@ and set back to default level:
 log:set DEFAULT org.apache.ftpserver
 ```
 
-If you meet any problems to receive images from the network cameras, you could test connection to binding with any FTP client. You can send image files via FTP client and thing channels should be updated accordingly.
+If you meet any problems to receive images from the network cameras, you could test connection to binding with any FTP client.
+You can send image files via FTP client and thing channels should be updated accordingly.
+
  

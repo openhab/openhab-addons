@@ -13,7 +13,6 @@ import static org.openhab.binding.ftpupload.FtpUploadBindingConstants.*;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -81,7 +80,7 @@ public class FtpUploadHandler extends BaseThingHandler implements FtpServerEvent
     }
 
     @Override
-    public void fileReceived(@NonNull String userName, @NonNull String filename, byte[] data) {
+    public void fileReceived(String userName, String filename, byte[] data) {
         if (configuration.userName.equals(userName)) {
             updateStatus(ThingStatus.ONLINE);
             ChannelUID channel = findCustomChannelByFilename(filename);
@@ -101,7 +100,7 @@ public class FtpUploadHandler extends BaseThingHandler implements FtpServerEvent
         return mimeType;
     }
 
-    private ChannelUID findCustomChannelByFilename(@NonNull String filename) {
+    private ChannelUID findCustomChannelByFilename(String filename) {
         for (Channel channel : thing.getChannels()) {
             String channelConf = (String) channel.getConfiguration().get(PARAM_FILENAME_PATTERN);
             if (channelConf != null) {
@@ -115,7 +114,7 @@ public class FtpUploadHandler extends BaseThingHandler implements FtpServerEvent
         return null;
     }
 
-    private ChannelUID findCustomTriggerByFilename(@NonNull String filename) {
+    private ChannelUID findCustomTriggerByFilename(String filename) {
         for (Channel channel : thing.getChannels()) {
             String channelConf = (String) channel.getConfiguration().get(PARAM_FILENAME_PATTERN);
             if (channelConf != null) {
@@ -129,7 +128,7 @@ public class FtpUploadHandler extends BaseThingHandler implements FtpServerEvent
         return null;
     }
 
-    private boolean filenameMatch(@NonNull String filename, @NonNull String pattern) {
+    private boolean filenameMatch(String filename, String pattern) {
         try {
             return Pattern.compile(pattern).matcher(filename).find();
         } catch (PatternSyntaxException e) {
