@@ -24,6 +24,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -32,6 +34,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -62,6 +65,7 @@ import org.slf4j.LoggerFactory;
  * @author Martin van Wingerden - Use listeners not only for discovery but for all data processing
  * @author Wouter Born - Improve exception and URL redirect handling
  */
+@NonNullByDefault
 public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamingDataListener {
     private static final int REQUEST_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(30);
 
@@ -70,12 +74,12 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
     private final List<NestDeviceDataListener> listeners = new CopyOnWriteArrayList<>();
     private final List<NestUpdateRequest> nestUpdateRequests = new CopyOnWriteArrayList<>();
 
-    private NestAuthorizer authorizer;
-    private NestBridgeConfiguration config;
-    private ScheduledFuture<?> initializeJob;
-    private ScheduledFuture<?> transmitJob;
-    private NestRedirectUrlSupplier redirectUrlSupplier;
-    private NestStreamingRestClient streamingRestClient;
+    private @Nullable NestAuthorizer authorizer;
+    private @Nullable NestBridgeConfiguration config;
+    private @Nullable ScheduledFuture<?> initializeJob;
+    private @Nullable ScheduledFuture<?> transmitJob;
+    private @Nullable NestRedirectUrlSupplier redirectUrlSupplier;
+    private @Nullable NestStreamingRestClient streamingRestClient;
 
     /**
      * Creates the bridge handler to connect to Nest.
@@ -119,11 +123,20 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         return new NestRedirectUrlSupplier(getHttpHeaders());
     }
 
+    private NestRedirectUrlSupplier getOrCreateRedirectUrlSupplier() throws InvalidAccessTokenException {
+        NestRedirectUrlSupplier localRedirectUrlSupplier = redirectUrlSupplier;
+        if (localRedirectUrlSupplier == null) {
+            localRedirectUrlSupplier = createRedirectUrlSupplier();
+            redirectUrlSupplier = localRedirectUrlSupplier;
+        }
+        return localRedirectUrlSupplier;
+    }
+
     private void startStreamingUpdates() {
         synchronized (this) {
             try {
-                streamingRestClient = new NestStreamingRestClient(getExistingOrNewAccessToken(), redirectUrlSupplier,
-                        scheduler);
+                streamingRestClient = new NestStreamingRestClient(getExistingOrNewAccessToken(),
+                        getOrCreateRedirectUrlSupplier(), scheduler);
                 streamingRestClient.addStreamingDataListener(this);
                 streamingRestClient.start();
             } catch (InvalidAccessTokenException e) {
@@ -186,8 +199,12 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
     }
 
     public void broadcastLastReceivedTopLevelData() {
-        if (streamingRestClient != null && streamingRestClient.getLastReceivedTopLevelData() != null) {
-            broadcastTopLevelData(streamingRestClient.getLastReceivedTopLevelData());
+        NestStreamingRestClient localStreamingRestClient = streamingRestClient;
+        if (localStreamingRestClient != null) {
+            TopLevelData data = localStreamingRestClient.getLastReceivedTopLevelData();
+            if (data != null) {
+                broadcastTopLevelData(data);
+            }
         }
     }
 
@@ -412,10 +429,13 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         }
 
         for (Thing thing : getThing().getThings()) {
-            String id = ((NestIdentifiable) thing.getHandler()).getId();
-            if (!identifiers.contains(id)) {
-                thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
-                        "Missing from streaming updates"));
+            ThingHandler handler = thing.getHandler();
+            if (handler != null) {
+                String id = ((NestIdentifiable) handler).getId();
+                if (!identifiers.contains(id)) {
+                    thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                            "Missing from streaming updates"));
+                }
             }
         }
     }

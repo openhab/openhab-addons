@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.nest.internal.listener;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nest.internal.data.Camera;
 import org.openhab.binding.nest.internal.data.SmokeDetector;
 import org.openhab.binding.nest.internal.data.Structure;
@@ -19,6 +20,7 @@ import org.openhab.binding.nest.internal.data.Thermostat;
  * @author David Bennett - Initial Contribution
  * @author Martin van Wingerden - Separated listeners to also use them for the handlers
  */
+@NonNullByDefault
 public interface NestDeviceDataListener {
 
     /**

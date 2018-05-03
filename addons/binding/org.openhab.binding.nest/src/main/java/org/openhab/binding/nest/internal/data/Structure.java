@@ -40,6 +40,7 @@ public class Structure implements NestIdentifiable {
     private HomeAwayState away;
     private String name;
     private ETA eta;
+    private SecurityState wwnSecurityState;
 
     @Override
     public String getId() {
@@ -114,16 +115,12 @@ public class Structure implements NestIdentifiable {
         return eta;
     }
 
-    public void setEta(ETA eta) {
-        this.eta = eta;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public SecurityState getWwnSecurityState() {
+        return wwnSecurityState;
     }
 
     /**
@@ -182,6 +179,13 @@ public class Structure implements NestIdentifiable {
         UNKNOWN
     }
 
+    public enum SecurityState {
+        @SerializedName("ok")
+        OK,
+        @SerializedName("deter")
+        DETER
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -192,7 +196,8 @@ public class Structure implements NestIdentifiable {
                 .append(peakPeriodEndTime).append(", timeZone=").append(timeZone).append(", etaBegin=").append(etaBegin)
                 .append(", coAlarmState=").append(coAlarmState).append(", smokeAlarmState=").append(smokeAlarmState)
                 .append(", rhrEnrollment=").append(rhrEnrollment).append(", wheres=").append(wheres).append(", away=")
-                .append(away).append(", name=").append(name).append(", eta=").append(eta).append("]");
+                .append(away).append(", name=").append(name).append(", eta=").append(eta).append(", wwnSecurityState=")
+                .append(wwnSecurityState).append("]");
         return builder.toString();
     }
 

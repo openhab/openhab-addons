@@ -11,6 +11,7 @@ package org.openhab.binding.nest.internal.rest;
 import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.internal.NestUtils;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author David Bennett - Initial contribution
  * @author Wouter Born - Improve exception handling
  */
+@NonNullByDefault
 public class NestAuthorizer {
     private final Logger logger = LoggerFactory.getLogger(NestAuthorizer.class);
 
