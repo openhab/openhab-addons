@@ -7,6 +7,7 @@
 	<bridge-type id="bridge">
 		<label>Homematic Bridge</label>
 		<description>The Homematic bridge represents a Homematic gateway</description>
+		<representation-property>serialNumber</representation-property>
 
 		<config-description>
 			<parameter name="gatewayAddress" type="text" required="true">
