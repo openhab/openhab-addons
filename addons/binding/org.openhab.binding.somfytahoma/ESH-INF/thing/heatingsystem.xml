@@ -3,13 +3,16 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="screen">
+	<thing-type id="heatingsystem">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
         </supported-bridge-type-refs>
-		<label>Somfy Screen</label>
+		<label>Somfy Heating System</label>
 		<channels>
-			<channel id="control" typeId="control"></channel>
+			<channel id="current_temperature" typeId="current_temperature"></channel>
+			<channel id="current_state" typeId="current_state"></channel>
+			<channel id="target_temperature" typeId="target_temperature"></channel>
+			<channel id="battery_level" typeId="battery_level"></channel>
 		</channels>
 	<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>

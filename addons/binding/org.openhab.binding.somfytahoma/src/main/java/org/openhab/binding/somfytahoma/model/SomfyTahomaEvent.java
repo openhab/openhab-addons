@@ -11,16 +11,25 @@ package org.openhab.binding.somfytahoma.model;
 import java.util.ArrayList;
 
 /**
- * The {@link SomfyTahomaVersionResponse} holds information about
- * response to getting gateway's firmware version.
+ * The {@link SomfyTahomaEvent} holds information about Tahoma
+ * event.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaVersionResponse {
+public class SomfyTahomaEvent {
+    private String name;
+    private String deviceURL;
+    private ArrayList<SomfyTahomaState> deviceStates;
 
-    private String result;
+    public String getName() {
+        return name;
+    }
 
-    public String getResult() {
-        return result;
+    public String getDeviceUrl() {
+        return deviceURL;
+    }
+
+    public ArrayList<SomfyTahomaState> getDeviceStates() {
+        return deviceStates;
     }
 }

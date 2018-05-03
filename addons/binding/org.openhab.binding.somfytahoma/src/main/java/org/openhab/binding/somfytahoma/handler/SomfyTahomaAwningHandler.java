@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -36,7 +36,6 @@ public class SomfyTahomaAwningHandler extends SomfyTahomaBaseThingHandler {
     @Override
     public Hashtable<String, String> getStateNames() {
         return new Hashtable<String, String>() {{
-            put(POSITION, "core:DeploymentState");
             put(CONTROL, "core:DeploymentState");
         }};
     }
@@ -44,29 +43,26 @@ public class SomfyTahomaAwningHandler extends SomfyTahomaBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (!channelUID.getId().equals(POSITION) && !channelUID.getId().equals(CONTROL)) {
+        if (!channelUID.getId().equals(CONTROL)) {
             return;
         }
 
-        String url = getURL();
         if (command.equals(RefreshType.REFRESH)) {
-            //sometimes refresh is sent sooner than bridge initialized...
-            if (getBridgeHandler() != null) {
-                getBridgeHandler().updateChannelState(this, channelUID, url);
-            }
+            updateChannelState(channelUID);
         } else {
             String cmd = getTahomaCommand(command.toString());
             //Check if the rollershutter is not moving
-            String executionId = getBridgeHandler().getCurrentExecutions(url);
+            //String executionId = getBridgeHandler().getCurrentExecutions(url);
+            String executionId = getCurrentExecutions();
             if (executionId != null) {
                 //STOP command should be interpreted if rollershutter moving
                 //otherwise do nothing
                 if (cmd.equals(COMMAND_MY)) {
-                    getBridgeHandler().cancelExecution(executionId);
+                    cancelExecution(executionId);
                 }
             } else {
                 String param = cmd.equals(COMMAND_SET_DEPLOYMENT) ? "[" + command.toString() + "]" : "[]";
-                getBridgeHandler().sendCommand(url, cmd, param);
+                sendCommand(cmd, param);
             }
         }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -37,22 +37,19 @@ public class SomfyTahomaOnOffHandler extends SomfyTahomaBaseThingHandler {
 
     @Override
     public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {{ put(SWITCH, "core:OnOffState"); }};
+        return new Hashtable<String, String>() {{
+            put(SWITCH, "core:OnOffState");
+        }};
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String url = getURL();
 
         if (channelUID.getId().equals(SomfyTahomaBindingConstants.SWITCH) && command instanceof OnOffType) {
-            //getBridgeHandler().sendCommand(url, "setOnOff", "[\"" + command.toString().toLowerCase() + "\"]");
-            getBridgeHandler().sendCommand(url, command.toString().toLowerCase(), "[]");
+            sendCommand(command.toString().toLowerCase(), "[]");
         }
         if (command.equals(RefreshType.REFRESH)) {
-            //sometimes refresh is sent sooner than bridge initialized...
-            if (getBridgeHandler() != null) {
-                getBridgeHandler().updateChannelState(this, channelUID, url);
-            }
+            updateChannelState(channelUID);
         }
     }
 }

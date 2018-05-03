@@ -8,22 +8,19 @@
  */
 package org.openhab.binding.somfytahoma.model;
 
+import java.util.ArrayList;
+
 /**
- * The {@link SomfyTahomaLoginResponse} holds information about login
- * response to your TahomaLink account.
+ * The {@link SomfyTahomaGetEventsResponse} holds information about response to getEvents
+ * command of your TahomaLink account.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaLoginResponse {
+public class SomfyTahomaGetEventsResponse {
 
-    private boolean success;
-    private String version;
+    ArrayList<SomfyTahomaEvent> events;
 
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public String getVersion() {
-        return version;
+    public ArrayList<SomfyTahomaEvent> getEvents() {
+        return events;
     }
 }

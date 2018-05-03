@@ -9,7 +9,6 @@
 		</supported-bridge-type-refs>
 		<label>Somfy Awning</label>
 		<channels>
-			<channel id="position" typeId="position"></channel>
  			<channel id="control" typeId="control"></channel>
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>

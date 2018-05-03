@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,10 +8,6 @@
  */
 package org.openhab.binding.somfytahoma.handler;
 
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
-
-import java.util.Hashtable;
-
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -19,6 +15,11 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Hashtable;
+
+import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.STATUS;
+import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.VERSION;
 
 /**
  * The {@link SomfyTahomaGatewayHandler} is responsible for handling commands,
@@ -35,6 +36,11 @@ public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
     }
 
     @Override
+    public void initialize() {
+        updateStatus(getBridge().getStatus());
+    }
+
+    @Override
     public Hashtable<String, String> getStateNames() {
         return null;
     }
@@ -42,15 +48,11 @@ public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command.equals(RefreshType.REFRESH)) {
-            // sometimes refresh is sent sooner than bridge initialized...
-            if (getBridgeHandler() != null) {
-                String id = getThing().getConfiguration().get("id").toString();
-                if (channelUID.getId().equals(VERSION)) {
-                    updateState(channelUID, new StringType(getBridgeHandler().getTahomaVersion(id)));
-                } else if (channelUID.getId().equals(STATUS)) {
-                    updateState(channelUID, new StringType(getBridgeHandler().getTahomaStatus(id)));
-                }
-
+            String id = getThing().getConfiguration().get("id").toString();
+            if (channelUID.getId().equals(VERSION)) {
+                updateState(channelUID, new StringType(getTahomaVersion(id)));
+            } else if (channelUID.getId().equals(STATUS)) {
+                updateState(channelUID, new StringType(getTahomaStatus(id)));
             }
         }
     }

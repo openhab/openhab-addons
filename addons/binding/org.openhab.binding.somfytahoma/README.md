@@ -20,6 +20,8 @@ Currently supports these things
 - occupancy sensors (OPEN/CLOSE contact)
 - smoke sensors (OPEN/CLOSE contact)
 - contact sensors (OPEN/CLOSE contact)
+- door locks (LOCK/UNLOCK, OPEN/CLOSE commands)
+- heating systems (control temperature, set heating level)
 - alarms (both interior/external)
 - pods
 - action groups (scenarios which can execute predefined Tahoma group of steps, e.g. send to all roller shutters DOWN command, one by one)
@@ -47,60 +49,40 @@ Please see the example below.
 
 ## Channels
 
-A bridge does not expose any channel.
+| Thing         | Channel      | Note  |
+| ------------- |:-------------:| -----:|
+| bridge        | N.A |  bridge does not expose any channel |
+| gateway       | version | firmware version of your Tahoma gateway |
+| gateway       | status  | status of your Tahoma gateway |
+| roller shutter, screen, venetian blind, garage door, awning & window | control |  device controller which reacts to commands UP/DOWN/STOP + closuse 0-100 |
+| venetian blind | orientation | percentual orientation of the blind's slats, it can have value 0-100). For IO Homecontrol devices only (non RTS)|
+| action group | execute_action | switch which reacts to ON command and triggers the predefined Tahoma action |
+| onoff, light | switch | reacts to standard ON/OFF commands |
+| smoke sensor, occupancy sensor & contact sensor | contact | normal value is CLOSE, changes to OPEN when detection triggered |
+| light sensor | luminance | light luminance value in luxes |
+| pod | cyclic_button_state | pod cyclic button state |
+| pod | battery_status_state | pod battery status state |
+| pod | lighting_led_pod_mod_state | lighting led pod mod state |
+| interior alarm | alarm_command | used for sending commands to Somfy alarm device |
+| interior alarm | intrusion_control | used for alarm external intrusion controlling |
+| interior alarm | alarm_state | state of the Somfy alarm |
+| interior alarm | target_alarm_state | target state of the Somfy alarm |
+| interior alarm | intrusion_state | intrusion state of the Somfy alarm |
+| external alarm | active_zones_state | state of external alarm active zones |
+| door lock | lock | switch representing unlocked/locked state |
+| door lock | open | switch representing open/close state |
+| on/off heating system | switch | switch representing the On/Off state. Can be set only to OFF. On value is set by target level |
+| on/off heating system | target_heating_level | target heating level (off, eco, comfort, frostprotection) |
+| heating system | current_temperature | current temperature of the heating system |
+| heating system | current_state | current state of the heating system|
+| heating system | target_temperature | target temperature of the heating system |
+| heating system | battery_level | battery level of the heating system | 
 
-Gateways expose this read only channel:
-
-- version (this is a firmware version of your Tahoma gateway)
-- status (this is a status of your Tahoma gateway)
-
-Roller shutters, screens, blinds, garage doors, awnings & windows expose these channels:
-
-- position (a percentual position of the device, it can have value 0-100). For IO Homecontrol devices only (non RTS)!
-- control (a device controller which reacts to commands UP/DOWN/STOP)
-
-Blinds expose on top of position and control channels
-
-- orientation (a percentual orientation of the blind's slats, it can have value 0-100). For IO Homecontrol devices only (non RTS)!
-
-When STOP command received two possible behaviours are possible
+When rolleshutter-like thing receives STOP command two possible behaviours are possible
 
 - when the roller shutter is idle then MY command is interpreted (the roller shutter/exterior screen/awning goes to your favourite position)
 - when the roller shutter is moving then STOP command is interpreted (the roller shutter/exterior screen/awning stops)
 
-An action group thing has this channel:
-
-- trigger (a switch which reacts to ON command and triggers the predefined Tahoma action)
-
-An on/off and light things have this channel:
-
-- switch (reacts to standard ON/OFF commands)
-
-A smoke sensor, occupancy sensor and contact sensor things have this channel:
-
-- contact (normal value is CLOSE, changes to OPEN when detection triggered)
-
-A light sensors thing exposes this channel:
-
-- luminance (light luminance value in luxes) 
-
-A pod exposes these channels:
-
-- cyclic_button_state (pod cyclic button state)
-- battery_status_state (pod battery status state)
-- lighting_led_pod_mod_state (lighting led pod mod state)
-
-An interior alarm exposes these channels:
-
-- alarm_command (used for sending commands to Somfy alarm device)
-- intrusion_control (used for alarm external intrusion controlling)
-- alarm_state (a state of the Somfy alarm)
-- target_alarm_state (a target state of the Somfy alarm)
-- intrusion_state (an intrusion state of the Somfy alarm)
-
-An external alarm exposes this channel:
-
-- active_zones_state (a state of external alarm active zones)
 
 ## Full Example
 
@@ -131,19 +113,19 @@ Awnings, garage doors, screens, blinds, and windows things have the same notatio
 ```
 String TahomaVersion "Tahoma version [%s]" { channel="somfytahoma:gateway:237dbae7:1214-4519-8041:version" }
 Rollershutter RollerShutterBedroom "Roller shutter [%d %%]"  {channel="somfytahoma:rollershutter:237dbae7:31da8dac-8e09-455a-bc7a-6ed70f740001:control"}
-Dimmer RollerShutterBedroomD "Roller shutter dimmer [%.1f]"  {channel="somfytahoma:rollershutter:237dbae7:31da8dac-8e09-455a-bc7a-6ed70f740001:position"}
+Dimmer RollerShutterBedroomD "Roller shutter dimmer [%.1f]"  {channel="somfytahoma:rollershutter:237dbae7:31da8dac-8e09-455a-bc7a-6ed70f740001:control"}
 Rollershutter RollerShutterLiving "Roller shutter [%d %%]"  {channel="somfytahoma:rollershutter:237dbae7:87bf0403-a45d-4037-b874-28f4ece30004:control" }
-Dimmer RollerShutterLivingD "Roller shutter dimmer [%.1f]"  {channel="somfytahoma:rollershutter:237dbae7:87bf0403-a45d-4037-b874-28f4ece30004:position"}
+Dimmer RollerShutterLivingD "Roller shutter dimmer [%.1f]"  {channel="somfytahoma:rollershutter:237dbae7:87bf0403-a45d-4037-b874-28f4ece30004:control"}
 Rollershutter RollerShutterHall "Roller shutter [%d %%]"  {channel="somfytahoma:rollershutter:237dbae7:68bee082-63ab-421d-9830-3ea561601234:control"}
-Dimmer RollerShutterHallD "Roller shutter dimmer [%.1f]"  {channel="somfytahoma:rollershutter:237dbae7:68bee082-63ab-421d-9830-3ea561601234:position"}
+Dimmer RollerShutterHallD "Roller shutter dimmer [%.1f]"  {channel="somfytahoma:rollershutter:237dbae7:68bee082-63ab-421d-9830-3ea561601234:control"}
 
 Rollershutter AwningTerrace "Terrace awning [%d %%]"  {channel="somfytahoma:awning:237dbae7:24cee082-63ab-421d-9830-3ea561601234:control"}
-Dimmer AwningTerraceD "Terrace awning dimmer [%.1f]"  {channel="somfytahoma:awning:237dbae7:24cee082-63ab-421d-9830-3ea561601234:position"}
+Dimmer AwningTerraceD "Terrace awning dimmer [%.1f]"  {channel="somfytahoma:awning:237dbae7:24cee082-63ab-421d-9830-3ea561601234:control"}
 
-Switch Rollers1UP "Rollers 1st floor UP" {channel="somfytahoma:actiongroup:237dbae7:2104c46f-478d-6543-956a-10bd93b5dc54:trigger", autoupdate="false"}
-Switch Rollers1DOWN "Rollers 1st floor DOWN" {channel="somfytahoma:actiongroup:237dbae7:0b5f195a-5223-5432-b1af-f5fa1d59074f:trigger", autoupdate="false"}
-Switch Rollers2UP "Rollers 2nd floor UP" {channel="somfytahoma:actiongroup:237dbae7:712c0019-b422-1234-b4da-208e249c571b:trigger", autoupdate="false"}
-Switch Rollers2DOWN "Rollers 2nd floor DOWN" {channel="somfytahoma:actiongroup:237dbae7:e201637b-de3b-1234-b7af-5693811a953b:trigger", autoupdate="false"}
+Switch Rollers1UP "Rollers 1st floor UP" {channel="somfytahoma:actiongroup:237dbae7:2104c46f-478d-6543-956a-10bd93b5dc54:execute_action", autoupdate="false"}
+Switch Rollers1DOWN "Rollers 1st floor DOWN" {channel="somfytahoma:actiongroup:237dbae7:0b5f195a-5223-5432-b1af-f5fa1d59074f:execute_action", autoupdate="false"}
+Switch Rollers2UP "Rollers 2nd floor UP" {channel="somfytahoma:actiongroup:237dbae7:712c0019-b422-1234-b4da-208e249c571b:execute_action", autoupdate="false"}
+Switch Rollers2DOWN "Rollers 2nd floor DOWN" {channel="somfytahoma:actiongroup:237dbae7:e201637b-de3b-1234-b7af-5693811a953b:execute_action", autoupdate="false"}
 
 Switch TahomaZwaveSwitch "Switch" { channel="somfytahoma:onoff:237dbae7:095d6c49-9712-4220-a4c3-d3bb7a6cc5f0:switch" }
 Switch TahomaLightSwitch "Light Switch" { channel="somfytahoma:light:237dbae7:1b8e7d29-bf1e-4ae1-9432-3dfef52ef14d:switch" }
@@ -153,6 +135,13 @@ Number LightSensor "Light Sensor [%.1f lux]" { channel="somfytahoma:lightsensor:
 Contact OccupancySensor "Occupancy Sensor is [%s]" { channel="somfytahoma:occupancysensor:237dbae7:995e16ca-07c4-4111-9cda-504cb5120f82:contact" }
 Contact SmokeSensor "Smoke Sensor is [%s]" { channel="somfytahoma:smokesensor:237dbae7:9438e6ff-c17e-40d7-a4b4-3e797eca5bf7:contact" }
 Contact ContactSensor "Contact Sensor is [%s]" { channel="somfytahoma:contactsensor:237dbae7:6612f2e3-d23d-21dd-b3a6-13ef7abcd134:contact" }
+
+Switch HeatingSystemOnOff "Heating On/Off" { channel="somfytahoma:onoffheatingsystem:237dbae7:6612f2e3-abcd-21dd-b3a6-13ef7abcd134:switch" }
+String HeatingSystemLevel "Heating level [%s]" { channel="somfytahoma:onoffheatingsystem:237dbae7:6612f2e3-abcd-21dd-b3a6-13ef7abcd134:target_heating_level"}
+
+Switch DoorLock "Lock" { channel="somfytahoma:doorlock:237dbae7:6612f2e3-bcde-21dd-b3a6-13ef7abcd134:lock" }
+Switch DoorLockOpenClose "Open/Close" { channel="somfytahoma:doorlock:237dbae7:6612f2e3-bcde-21dd-b3a6-13ef7abcd134:open" }
+
 ```
 
 ## Alexa compatibility

@@ -20,35 +20,42 @@ import java.util.Hashtable;
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 
 /**
- * The {@link SomfyTahomaContactSensorHandler} is responsible for handling commands,
- * which are sent to one of the channels of the contact sensors.
+ * The {@link SomfyTahomaHeatingSystemHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the heating system thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaContactSensorHandler extends SomfyTahomaBaseThingHandler  {
+public class SomfyTahomaHeatingSystemHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaContactSensorHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaHeatingSystemHandler.class);
 
-    public SomfyTahomaContactSensorHandler(Thing thing) {
+    public SomfyTahomaHeatingSystemHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {{
-            put(CONTACT, "core:ContactState");
-        }};
+        return new Hashtable<String, String>() {
+            {
+                put(TARGET_TEMPERATURE, "core:TargetTemperatureState");
+                put(CURRENT_TEMPERATURE, "zwave:SetPointHeatingValueState");
+                put(BATTERY_LEVEL, "core:BatteryLevelState");
+                put(CURRENT_STATE, "zwave:SetPointTypeState");
+            }
+        };
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {} for channel {}", command, channelUID);
-        if (!channelUID.getId().equals(CONTACT)) {
-            return;
-        }
 
         if (command.equals(RefreshType.REFRESH)) {
             updateChannelState(channelUID);
+        } else {
+            if (channelUID.getId().equals(TARGET_TEMPERATURE)) {
+                String param = "[" + command.toString() + "]";
+                sendCommand("setTargetTemperature", param);
+            }
         }
+
     }
 }

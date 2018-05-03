@@ -9,7 +9,6 @@
         </supported-bridge-type-refs>
 		<label>Somfy Exterior Venetian Blind</label>
 		<channels>
-			<channel id="position" typeId="position"></channel>
 			<channel id="control" typeId="control"></channel>
 			<channel id="orientation" typeId="orientation"></channel>
 		</channels>

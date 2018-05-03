@@ -9,8 +9,7 @@
         </supported-bridge-type-refs>
 		<label>Somfy Silent Roller Shutter</label>
 		<channels>
-			<channel id="position" typeId="position"></channel>
-			<channel id="position_silent" typeId="position_silent"></channel>
+			<channel id="control_silent" typeId="control_silent"></channel>
 			<channel id="control" typeId="control"></channel>
 		</channels>
 	<config-description-ref uri="thing-type:somfytahoma:device"/>

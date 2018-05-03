@@ -9,15 +9,14 @@
 		</supported-bridge-type-refs>
 		<label>Somfy Action Group</label>
 		<channels>
-			<channel id="trigger" typeId="trigger"></channel>
+			<channel id="execute_action" typeId="execute_action"></channel>
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
     
-	<channel-type id="trigger">
+	<channel-type id="execute_action">
 		<item-type>Switch</item-type>
 		<label>Somfy Action Group Trigger</label>
 		<description>Trigger of the action group</description>
-		<state readOnly="false"></state>
 	</channel-type>
 </thing:thing-descriptions>
