@@ -11,30 +11,14 @@ package org.openhab.binding.knx.internal.ets.folder;
 import static java.nio.file.StandardWatchEventKinds.*;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchEvent.Kind;
 import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.service.AbstractWatchService;
 import org.openhab.binding.knx.ets.KNXProjectProvider;
-import org.osgi.service.cm.ManagedService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -49,186 +33,66 @@ import org.slf4j.LoggerFactory;
  * @author Karel Goderis - Initial contribution
  *
  */
-@Component(property = { "service.pid=org.openhab.binding.knx.folder" })
-public class KNXFolderObserver extends AbstractWatchService implements ManagedService {
+@Component(immediate = true)
+public class KNXFolderObserver extends AbstractWatchService {
 
     private final Logger logger = LoggerFactory.getLogger(KNXFolderObserver.class);
 
     private ArrayList<KNXProjectProvider> knxProjectProviders = new ArrayList<KNXProjectProvider>();
 
-    private static Map<String, String[]> folderFileExtMap = new ConcurrentHashMap<String, String[]>();
-    private static Set<File> ignoredFiles = new HashSet<>();
+    private static final String FILE_DIRECTORY = "knx";
+    private static final String FILE_EXTENSION = "knxproj";
 
     public KNXFolderObserver() {
-        super(ConfigConstants.getConfigFolder());
+        super(ConfigConstants.getConfigFolder() + File.separator + FILE_DIRECTORY);
+        logger.trace("KNXFolderObserver::KNXFolderObserver()");
     }
 
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
     protected void addKNXProjectProvider(KNXProjectProvider provider) {
+        logger.trace("KNXFolderObserver::addKNXProjectProvider");
         knxProjectProviders.add(provider);
-        notifyUpdateToknxThingProvider(folderFileExtMap);
+        importProjects(provider, new File(pathToWatch));
     }
 
     protected void removeKNXProjectProvider(KNXProjectProvider provider) {
+        logger.trace("KNXFolderObserver::removeKNXProjectProvider");
         knxProjectProviders.remove(provider);
     }
 
     @Override
-    public void activate() {
-    }
-
-    @Override
     protected boolean watchSubDirectories() {
+        logger.trace("KNXFolderObserver::watchSubDirectories");
         return true;
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
-    public synchronized void updated(Dictionary config) {
-        if (config != null) {
-            // necessary to check removed models
-            Map<String, String[]> previousFolderFileExtMap = new ConcurrentHashMap<String, String[]>(folderFileExtMap);
-
-            // make sure to clear the caches first
-            folderFileExtMap.clear();
-
-            Enumeration keys = config.keys();
-            while (keys.hasMoreElements()) {
-                String foldername = (String) keys.nextElement();
-                if (foldername.equals("service.pid")) {
-                    continue;
-                }
-
-                String[] fileExts = ((String) config.get(foldername)).split(",");
-
-                File folder = getFile(foldername);
-                if (folder.exists() && folder.isDirectory()) {
-                    folderFileExtMap.put(foldername, fileExts);
-                } else {
-                    logger.warn("Directory '{}' does not exist in '{}'. Please check your configuration settings!",
-                            foldername, ConfigConstants.getConfigFolder());
-                }
-            }
-
-            notifyUpdateToknxThingProvider(previousFolderFileExtMap);
-            deactivate();
-            super.activate();
-        }
+    protected Kind<?>[] getWatchEventKinds(Path subDir) {
+        logger.trace("KNXFolderObserver::getWatchEventKinds");
+        return new Kind<?>[] { ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY };
     }
 
-    private void notifyUpdateToknxThingProvider(Map<String, String[]> previousFolderFileExtMap) {
-        checkDeletedProjects(previousFolderFileExtMap);
-
-        if (MapUtils.isNotEmpty(folderFileExtMap)) {
-            Iterator<String> iterator = folderFileExtMap.keySet().iterator();
-            while (iterator.hasNext()) {
-                String folderName = iterator.next();
-
-                final String[] validExtension = folderFileExtMap.get(folderName);
-                if (validExtension != null && validExtension.length > 0) {
-                    File folder = getFile(folderName);
-                    File[] files = folder.listFiles(new FileExtensionsFilter(validExtension));
-
-                    if (files != null && files.length > 0) {
-                        for (File file : files) {
-                            for (KNXProjectProvider aProvider : knxProjectProviders) {
-                                checkFile(aProvider, file, ENTRY_CREATE);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void checkDeletedProjects(Map<String, String[]> previousFolderFileExtMap) {
-        if (MapUtils.isNotEmpty(previousFolderFileExtMap)) {
+    @Override
+    protected void processWatchEvent(WatchEvent<?> event, Kind<?> kind, Path path) {
+        logger.trace("KNXFolderObserver::processWatchEvent");
+        File file = path.toFile();
+        if (!file.isHidden()) {
             for (KNXProjectProvider aProvider : knxProjectProviders) {
-                List<File> projectsToRemove = new LinkedList<File>();
-
-                if (MapUtils.isNotEmpty(folderFileExtMap)) {
-                    Set<String> folders = previousFolderFileExtMap.keySet();
-
-                    for (String folder : folders) {
-                        if (!folderFileExtMap.containsKey(folder)) {
-                            // Iterable<String> projects = aProvider.getAllProjectsOfFolder(folder);
-                            Iterable<File> projects = aProvider.getAllProjects();
-                            ArrayList<File> toDelete = new ArrayList<File>();
-                            for (File aProject : projects) {
-                                if (aProject.getPath().equals(folder)) {
-                                    toDelete.add(aProject);
-                                }
-                            }
-                            if (toDelete != null) {
-                                projectsToRemove.addAll(toDelete);
-                            }
-                        }
-                    }
-                } else {
-                    Set<String> folders = previousFolderFileExtMap.keySet();
-
-                    for (String folder : folders) {
-                        synchronized (KNXFolderObserver.class) {
-                            // Iterable<String> projects = aProvider.getAllProjectsOfFolder(folder);
-                            Iterable<File> projects = aProvider.getAllProjects();
-                            ArrayList<File> toDelete = new ArrayList<File>();
-                            for (File aProject : projects) {
-                                if (aProject.getPath().equals(folder)) {
-                                    toDelete.add(aProject);
-                                }
-                            }
-                            if (toDelete != null) {
-                                projectsToRemove.addAll(toDelete);
-                            }
-                        }
-                    }
-                }
-
-                if (CollectionUtils.isNotEmpty(projectsToRemove)) {
-                    for (File projectToRemove : projectsToRemove) {
-                        synchronized (KNXFolderObserver.class) {
-                            aProvider.removeProject(projectToRemove);
-                        }
-                    }
-                }
+                checkProject(aProvider, file, kind);
             }
-        }
-    }
-
-    protected class FileExtensionsFilter implements FilenameFilter {
-
-        private String[] validExtensions;
-
-        public FileExtensionsFilter(String[] validExtensions) {
-            this.validExtensions = validExtensions;
-        }
-
-        @Override
-        public boolean accept(File dir, String name) {
-            if (validExtensions != null && validExtensions.length > 0) {
-                for (String extension : validExtensions) {
-                    if (name.toLowerCase().endsWith("." + extension)) {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
         }
     }
 
     @SuppressWarnings("rawtypes")
-    private static void checkFile(KNXProjectProvider knxProjectProvider, final File file, Kind kind) {
+    private void checkProject(KNXProjectProvider knxProjectProvider, final File file, Kind kind) {
+        logger.trace("KNXFolderObserver::checkProject");
         if (knxProjectProvider != null && file != null) {
             try {
                 synchronized (KNXFolderObserver.class) {
-                    if ((kind == ENTRY_CREATE || kind == ENTRY_MODIFY) && file != null) {
-                        if (checkExtension(folderFileExtMap, file.getName())) {
-                            knxProjectProvider.addOrRefreshProject(file);
-                        } else {
-                            ignoredFiles.add(file);
-                        }
-                    } else if (kind == ENTRY_DELETE && file != null) {
+                    if ((kind == ENTRY_CREATE || kind == ENTRY_MODIFY)
+                            && FILE_EXTENSION.equals(getExtension(file.getName()))) {
+                        knxProjectProvider.addOrRefreshProject(file);
+                    } else if (kind == ENTRY_DELETE) {
                         knxProjectProvider.removeProject(file);
                     }
                 }
@@ -239,89 +103,23 @@ public class KNXFolderObserver extends AbstractWatchService implements ManagedSe
         }
     }
 
-    private static boolean checkExtension(Map<String, String[]> folderFileExtMap, String filename) {
-        if (StringUtils.isNotBlank(filename) && MapUtils.isNotEmpty(folderFileExtMap)) {
-            String extension = getExtension(filename);
-
-            if (StringUtils.isNotBlank(extension)) {
-                Set<Entry<String, String[]>> entries = folderFileExtMap.entrySet();
-                Iterator<Entry<String, String[]>> iterator = entries.iterator();
-                while (iterator.hasNext()) {
-                    Entry<String, String[]> entry = iterator.next();
-
-                    if (ArrayUtils.contains(entry.getValue(), extension)) {
-                        return true;
+    private void importProjects(KNXProjectProvider knxProjectProvider, File file) {
+        logger.trace("KNXFolderObserver::importProjects");
+        if (file.exists()) {
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (!f.isHidden()) {
+                        importProjects(knxProjectProvider, f);
                     }
                 }
+            } else {
+                checkProject(knxProjectProvider, file, ENTRY_CREATE);
             }
         }
-
-        return false;
     }
 
-    private static File getFileByFileExtMap(Map<String, String[]> folderFileExtMap, String filename) {
-        if (StringUtils.isNotBlank(filename) && MapUtils.isNotEmpty(folderFileExtMap)) {
-            String extension = getExtension(filename);
-
-            if (StringUtils.isNotBlank(extension)) {
-                Set<Entry<String, String[]>> entries = folderFileExtMap.entrySet();
-                Iterator<Entry<String, String[]>> iterator = entries.iterator();
-                while (iterator.hasNext()) {
-                    Entry<String, String[]> entry = iterator.next();
-
-                    if (ArrayUtils.contains(entry.getValue(), extension)) {
-                        return new File(getFile(entry.getKey()) + File.separator + filename);
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns the {@link File} object for the given filename. <br />
-     * It must be contained in the configuration folder
-     *
-     * @param filename
-     *            the file name to get the {@link File} for
-     * @return the corresponding {@link File}
-     */
-    private static File getFile(String filename) {
-        return new File(ConfigConstants.getConfigFolder() + File.separator + filename);
-    }
-
-    /**
-     * Returns the extension of the given file
-     *
-     * @param filename
-     *            the file name to get the extension
-     * @return the file's extension
-     */
-    public static String getExtension(String filename) {
-        String fileExt = filename.substring(filename.lastIndexOf(".") + 1);
-
-        return fileExt;
-    }
-
-    @Override
-    protected Kind<?>[] getWatchEventKinds(Path directory) {
-        if (directory != null && MapUtils.isNotEmpty(folderFileExtMap)) {
-            String folderName = directory.getFileName().toString();
-            if (folderFileExtMap.containsKey(folderName)) {
-                return new Kind<?>[] { ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY };
-            }
-        }
-        return null;
-    }
-
-    @Override
-    protected void processWatchEvent(WatchEvent<?> event, Kind<?> kind, Path path) {
-        File toCheck = getFileByFileExtMap(folderFileExtMap, path.getFileName().toString());
-        if (toCheck != null) {
-            for (KNXProjectProvider aProvider : knxProjectProviders) {
-                checkFile(aProvider, toCheck, kind);
-            }
-        }
+    public String getExtension(String filename) {
+        return filename.substring(filename.lastIndexOf(".") + 1);
     }
 }
