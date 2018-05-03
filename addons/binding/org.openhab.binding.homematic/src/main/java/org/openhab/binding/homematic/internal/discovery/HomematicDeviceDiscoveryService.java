@@ -217,6 +217,8 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService {
         long timeToLive = bridgeHandler.getThing().getConfiguration().as(HomematicConfig.class).getDiscoveryTimeToLive();
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(label)
+                .withProperty(Thing.PROPERTY_SERIAL_NUMBER, device.getAddress())
+                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
                 .withTTL(timeToLive).build();
         thingDiscovered(discoveryResult);
     }

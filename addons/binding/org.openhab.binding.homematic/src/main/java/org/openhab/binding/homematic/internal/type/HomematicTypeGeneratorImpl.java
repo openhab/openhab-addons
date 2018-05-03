@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -124,7 +123,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     public void generate(HmDevice device) {
         if (thingTypeProvider != null) {
             ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);
-            ThingType tt = thingTypeProvider.getThingType(thingTypeUID, Locale.getDefault());
+            ThingType tt = thingTypeProvider.getInternalThingType(thingTypeUID);
+            
             if (tt == null || device.isGatewayExtras()) {
                 logger.debug("Generating ThingType for device '{}' with {} datapoints", device.getType(),
                         device.getDatapointCount());
@@ -139,8 +139,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                         for (HmDatapoint dp : channel.getDatapoints()) {
                             if (!isIgnoredDatapoint(dp) && dp.getParamsetType() == HmParamsetType.VALUES) {
                                 ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
-                                ChannelType channelType = channelTypeProvider.getChannelType(channelTypeUID,
-                                        Locale.getDefault());
+                                ChannelType channelType = channelTypeProvider.getInternalChannelType(channelTypeUID);
                                 if (channelType == null) {
                                     channelType = createChannelType(dp, channelTypeUID);
                                     channelTypeProvider.addChannelType(channelType);
@@ -155,8 +154,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
 
                     // generate group
                     ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(channel);
-                    ChannelGroupType groupType = channelTypeProvider.getChannelGroupType(groupTypeUID,
-                            Locale.getDefault());
+                    ChannelGroupType groupType = channelTypeProvider.getInternalChannelGroupType(groupTypeUID);
                     if (groupType == null || device.isGatewayExtras()) {
                         String groupLabel = String.format("%s",
                                 WordUtils.capitalizeFully(StringUtils.replace(channel.getType(), "_", " ")));
@@ -219,7 +217,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         properties.put(Thing.PROPERTY_MODEL_ID, device.getType());
 
         URI configDescriptionURI = getConfigDescriptionURI(device);
-        if (configDescriptionProvider.getConfigDescription(configDescriptionURI, null) == null) {
+        if (configDescriptionProvider.getInternalConfigDescription(configDescriptionURI) == null) {
             generateConfigDescription(device, configDescriptionURI);
         }
 
@@ -231,7 +229,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
 
         return ThingTypeBuilder.instance(thingTypeUID, label).withSupportedBridgeTypeUIDs(supportedBridgeTypeUids)
                 .withDescription(description).withChannelGroupDefinitions(groupDefinitions).withProperties(properties)
-                .withConfigDescriptionURI(configDescriptionURI).build();
+                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withConfigDescriptionURI(configDescriptionURI)
+                .build();
     }
 
     /**
@@ -345,7 +344,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
 
     private URI getConfigDescriptionURI(HmDevice device) {
         try {
-            return new URI(String.format("%s:%s", CONFIG_DESCRIPTION_URI_THING, UidUtils.generateThingTypeUID(device)));
+            return new URI(String.format("%s:%s", CONFIG_DESCRIPTION_URI_THING_PREFIX, UidUtils.generateThingTypeUID(device)));
         } catch (URISyntaxException ex) {
             logger.warn("Can't create configDescriptionURI for device type {}", device.getType());
             return null;
