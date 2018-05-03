@@ -37,7 +37,7 @@ import org.openhab.binding.nest.internal.config.NestStructureConfiguration;
 public class NestStructureHandlerTest extends NestThingHandlerOSGiTest {
 
     private static final ThingUID STRUCTURE_UID = new ThingUID(THING_TYPE_STRUCTURE, "structure1");
-    private static final int CHANNEL_COUNT = 10;
+    private static final int CHANNEL_COUNT = 11;
 
     public NestStructureHandlerTest() {
         super(NestStructureHandler.class);
@@ -70,6 +70,7 @@ public class NestStructureHandlerTest extends NestThingHandlerOSGiTest {
         assertThatItemHasState(CHANNEL_PEAK_PERIOD_START_TIME, parseDateTimeType("2017-06-01T13:31:10.870Z"));
         assertThatItemHasState(CHANNEL_POSTAL_CODE, new StringType("98056"));
         assertThatItemHasState(CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT, OFF);
+        assertThatItemHasState(CHANNEL_SECURITY_STATE, new StringType("OK"));
         assertThatItemHasState(CHANNEL_SMOKE_ALARM_STATE, new StringType("OK"));
         assertThatItemHasState(CHANNEL_TIME_ZONE, new StringType("America/Los_Angeles"));
 

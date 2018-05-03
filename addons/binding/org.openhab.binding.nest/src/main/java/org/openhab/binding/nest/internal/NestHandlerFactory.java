@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -41,12 +43,13 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author David Bennett - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.nest")
 public class NestHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_THERMOSTAT,
             THING_TYPE_CAMERA, THING_TYPE_BRIDGE, THING_TYPE_STRUCTURE, THING_TYPE_SMOKE_DETECTOR).collect(toSet());
 
-    private Map<ThingUID, ServiceRegistration<?>> discoveryService = new HashMap<>();
+    private Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryService = new HashMap<>();
 
     /**
      * The things this factory supports creating.
@@ -61,7 +64,7 @@ public class NestHandlerFactory extends BaseThingHandlerFactory {
      * when the bridge is created.
      */
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_THERMOSTAT.equals(thingTypeUID)) {

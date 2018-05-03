@@ -15,11 +15,15 @@ import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Inserts Authorization and Cache-Control headers for requests on the streaming REST API.
  *
  * @author Wouter Born - Replace polling with REST streaming
  */
+@NonNullByDefault
 public class NestStreamingRequestFilter implements ClientRequestFilter {
     private final String accessToken;
 
@@ -28,9 +32,11 @@ public class NestStreamingRequestFilter implements ClientRequestFilter {
     }
 
     @Override
-    public void filter(ClientRequestContext requestContext) throws IOException {
-        MultivaluedMap<String, Object> headers = requestContext.getHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
-        headers.add(HttpHeaders.CACHE_CONTROL, "no-cache");
+    public void filter(@Nullable ClientRequestContext requestContext) throws IOException {
+        if (requestContext != null) {
+            MultivaluedMap<String, Object> headers = requestContext.getHeaders();
+            headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+            headers.add(HttpHeaders.CACHE_CONTROL, "no-cache");
+        }
     }
 }

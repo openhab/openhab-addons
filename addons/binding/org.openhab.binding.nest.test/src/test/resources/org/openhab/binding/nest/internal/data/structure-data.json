@@ -18,6 +18,7 @@
 	"co_alarm_state": "ok",
 	"smoke_alarm_state": "ok",
 	"eta_begin": "2017-02-02T03:10:08.000Z",
+	"wwn_security_state": "ok",
 	"wheres": {
 		"z8fK075vJJPPWnXxLx1m3GskRSZQ64iQydB59k-UPsIYpqdaXnYjUg": {
 			"where_id": "z8fK075vJJPPWnXxLx1m3GskRSZQ64iQydB59k-UPsIYpqdaXnYjUg",

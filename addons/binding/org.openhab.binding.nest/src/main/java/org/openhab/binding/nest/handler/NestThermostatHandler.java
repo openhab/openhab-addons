@@ -18,11 +18,14 @@ import java.math.RoundingMode;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -41,6 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author David Bennett - Initial contribution
  * @author Wouter Born - Handle channel refresh command
  */
+@NonNullByDefault
 public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
     private final Logger logger = LoggerFactory.getLogger(NestThermostatHandler.class);
 
@@ -55,10 +59,14 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
                 return getAsOnOffTypeOrNull(thermostat.isCanCool());
             case CHANNEL_CAN_HEAT:
                 return getAsOnOffTypeOrNull(thermostat.isCanHeat());
+            case CHANNEL_ECO_MAX_SET_POINT:
+                return getAsQuantityTypeOrNull(thermostat.getEcoTemperatureHigh(), thermostat.getTemperatureUnit());
+            case CHANNEL_ECO_MIN_SET_POINT:
+                return getAsQuantityTypeOrNull(thermostat.getEcoTemperatureLow(), thermostat.getTemperatureUnit());
             case CHANNEL_FAN_TIMER_ACTIVE:
                 return getAsOnOffTypeOrNull(thermostat.isFanTimerActive());
             case CHANNEL_FAN_TIMER_DURATION:
-                return getAsDecimalTypeOrNull(thermostat.getFanTimerDuration());
+                return getAsQuantityTypeOrNull(thermostat.getFanTimerDuration(), SmartHomeUnits.MINUTE);
             case CHANNEL_FAN_TIMER_TIMEOUT:
                 return getAsDateTimeTypeOrNull(thermostat.getFanTimerTimeout());
             case CHANNEL_HAS_FAN:
@@ -66,19 +74,19 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
             case CHANNEL_HAS_LEAF:
                 return getAsOnOffTypeOrNull(thermostat.isHasLeaf());
             case CHANNEL_HUMIDITY:
-                return getAsDecimalTypeOrNull(thermostat.getHumidity());
+                return getAsQuantityTypeOrNull(thermostat.getHumidity(), SmartHomeUnits.PERCENT);
             case CHANNEL_LAST_CONNECTION:
                 return getAsDateTimeTypeOrNull(thermostat.getLastConnection());
             case CHANNEL_LOCKED:
                 return getAsOnOffTypeOrNull(thermostat.isLocked());
             case CHANNEL_LOCKED_MAX_SET_POINT:
-                return getAsTemperatureOrNull(thermostat.getLockedTempMax(), thermostat.getTemperatureUnit());
+                return getAsQuantityTypeOrNull(thermostat.getLockedTempMax(), thermostat.getTemperatureUnit());
             case CHANNEL_LOCKED_MIN_SET_POINT:
-                return getAsTemperatureOrNull(thermostat.getLockedTempMin(), thermostat.getTemperatureUnit());
+                return getAsQuantityTypeOrNull(thermostat.getLockedTempMin(), thermostat.getTemperatureUnit());
             case CHANNEL_MAX_SET_POINT:
-                return getAsTemperatureOrNull(thermostat.getTargetTemperatureHigh(), thermostat.getTemperatureUnit());
+                return getAsQuantityTypeOrNull(thermostat.getTargetTemperatureHigh(), thermostat.getTemperatureUnit());
             case CHANNEL_MIN_SET_POINT:
-                return getAsTemperatureOrNull(thermostat.getTargetTemperatureLow(), thermostat.getTemperatureUnit());
+                return getAsQuantityTypeOrNull(thermostat.getTargetTemperatureLow(), thermostat.getTemperatureUnit());
             case CHANNEL_MODE:
                 return getAsStringTypeOrNull(thermostat.getMode());
             case CHANNEL_PREVIOUS_MODE:
@@ -88,28 +96,21 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
             case CHANNEL_STATE:
                 return getAsStringTypeOrNull(thermostat.getHvacState());
             case CHANNEL_SET_POINT:
-                return getAsTemperatureOrNull(thermostat.getTargetTemperature(), thermostat.getTemperatureUnit());
+                return getAsQuantityTypeOrNull(thermostat.getTargetTemperature(), thermostat.getTemperatureUnit());
             case CHANNEL_SUNLIGHT_CORRECTION_ACTIVE:
                 return getAsOnOffTypeOrNull(thermostat.isSunlightCorrectionActive());
             case CHANNEL_SUNLIGHT_CORRECTION_ENABLED:
                 return getAsOnOffTypeOrNull(thermostat.isSunlightCorrectionEnabled());
             case CHANNEL_TEMPERATURE:
-                return getAsTemperatureOrNull(thermostat.getAmbientTemperature(), thermostat.getTemperatureUnit());
-            case CHANNEL_TIME_TO_TARGET_MINS:
-                return getAsDecimalTypeOrNull(thermostat.getTimeToTarget());
+                return getAsQuantityTypeOrNull(thermostat.getAmbientTemperature(), thermostat.getTemperatureUnit());
+            case CHANNEL_TIME_TO_TARGET:
+                return getAsQuantityTypeOrNull(thermostat.getTimeToTarget(), SmartHomeUnits.MINUTE);
             case CHANNEL_USING_EMERGENCY_HEAT:
                 return getAsOnOffTypeOrNull(thermostat.isUsingEmergencyHeat());
             default:
                 logger.error("Unsupported channelId '{}'", channelUID.getId());
                 return UnDefType.UNDEF;
         }
-    }
-
-    private State getAsTemperatureOrNull(Double temperature, Unit<Temperature> unit) {
-        if (temperature == null) {
-            return UnDefType.NULL;
-        }
-        return new QuantityType<>(temperature, unit);
     }
 
     /**
@@ -120,8 +121,9 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
     @SuppressWarnings("unchecked")
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (REFRESH.equals(command)) {
-            if (getLastUpdate() != null) {
-                updateState(channelUID, getChannelState(channelUID, getLastUpdate()));
+            Thermostat lastUpdate = getLastUpdate();
+            if (lastUpdate != null) {
+                updateState(channelUID, getChannelState(channelUID, lastUpdate));
             }
         } else if (CHANNEL_FAN_TIMER_ACTIVE.equals(channelUID.getId())) {
             if (command instanceof OnOffType) {
@@ -129,9 +131,12 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
                 addUpdateRequest("fan_timer_active", command == OnOffType.ON);
             }
         } else if (CHANNEL_FAN_TIMER_DURATION.equals(channelUID.getId())) {
-            if (command instanceof DecimalType) {
+            if (command instanceof QuantityType) {
                 // Update fan timer duration to the command value
-                addUpdateRequest("fan_timer_duration", ((DecimalType) command).intValue());
+                QuantityType<Time> minuteQuantity = ((QuantityType<Time>) command).toUnit(SmartHomeUnits.MINUTE);
+                if (minuteQuantity != null) {
+                    addUpdateRequest("fan_timer_duration", minuteQuantity.intValue());
+                }
             }
         } else if (CHANNEL_MAX_SET_POINT.equals(channelUID.getId())) {
             if (command instanceof QuantityType) {
@@ -152,7 +157,7 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
             }
         } else if (CHANNEL_SET_POINT.equals(channelUID.getId())) {
             if (command instanceof QuantityType) {
-                // Update maximum set point to the command value
+                // Update set point to the command value
                 addTemperatureUpdateRequest("target_temperature_c", "target_temperature_f",
                         (QuantityType<Temperature>) command);
             }
@@ -167,18 +172,25 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
             QuantityType<Temperature> quantity) {
         Unit<Temperature> unit = getTemperatureUnit();
         BigDecimal value = quantityToRoundedTemperature(quantity, unit);
-        addUpdateRequest(NEST_THERMOSTAT_UPDATE_PATH, unit == CELSIUS ? celsiusField : fahrenheitField, value);
+        if (value != null) {
+            addUpdateRequest(NEST_THERMOSTAT_UPDATE_PATH, unit == CELSIUS ? celsiusField : fahrenheitField, value);
+        }
     }
 
     private Unit<Temperature> getTemperatureUnit() {
-        return getLastUpdate() != null && getLastUpdate().getTemperatureUnit() != null
-                ? getLastUpdate().getTemperatureUnit()
+        Thermostat lastUpdate = getLastUpdate();
+        return lastUpdate != null && lastUpdate.getTemperatureUnit() != null ? lastUpdate.getTemperatureUnit()
                 : CELSIUS;
     }
 
-    private BigDecimal quantityToRoundedTemperature(QuantityType<Temperature> quantity, Unit<Temperature> unit)
-            throws IllegalArgumentException {
-        BigDecimal value = quantity.toUnit(unit).toBigDecimal();
+    private @Nullable BigDecimal quantityToRoundedTemperature(QuantityType<Temperature> quantity,
+            Unit<Temperature> unit) throws IllegalArgumentException {
+        QuantityType<Temperature> temparatureQuantity = quantity.toUnit(unit);
+        if (temparatureQuantity == null) {
+            return null;
+        }
+
+        BigDecimal value = temparatureQuantity.toBigDecimal();
         BigDecimal increment = CELSIUS == unit ? new BigDecimal("0.5") : new BigDecimal("1");
         BigDecimal divisor = value.divide(increment, 0, RoundingMode.HALF_UP);
         return divisor.multiply(increment);

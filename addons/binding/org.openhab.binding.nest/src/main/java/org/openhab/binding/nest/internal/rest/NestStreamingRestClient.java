@@ -20,6 +20,8 @@ import javax.net.ssl.SSLContext;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.glassfish.jersey.SslConfigurator;
 import org.glassfish.jersey.media.sse.EventSource;
 import org.glassfish.jersey.media.sse.InboundEvent;
@@ -38,6 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wouter Born - Replace polling with REST streaming
  */
+@NonNullByDefault
 public class NestStreamingRestClient {
 
     // Assume connection timeout when 2 keep alive message should have been received
@@ -55,12 +58,12 @@ public class NestStreamingRestClient {
     private final ScheduledExecutorService scheduler;
 
     private String accessToken;
-    private ScheduledFuture<?> checkConnectionJob;
+    private @Nullable ScheduledFuture<?> checkConnectionJob;
     private boolean connected;
     private boolean openingEventSource;
-    private EventSource eventSource;
+    private @Nullable EventSource eventSource;
     private long lastEventTimestamp;
-    private TopLevelData lastReceivedTopLevelData;
+    private @Nullable TopLevelData lastReceivedTopLevelData;
     private NestRedirectUrlSupplier redirectUrlSupplier;
 
     public NestStreamingRestClient(String accessToken, NestRedirectUrlSupplier redirectUrlSupplier,
@@ -166,7 +169,7 @@ public class NestStreamingRestClient {
         return listeners.remove(listener);
     }
 
-    public TopLevelData getLastReceivedTopLevelData() {
+    public @Nullable TopLevelData getLastReceivedTopLevelData() {
         return lastReceivedTopLevelData;
     }
 
@@ -197,8 +200,9 @@ public class NestStreamingRestClient {
                 logger.debug("Event stream opened");
             } else if (PUT.equals(name)) {
                 logger.debug("Data has changed (or initial data sent)");
-                lastReceivedTopLevelData = NestUtils.fromJson(data, TopLevelStreamingData.class).getData();
-                listeners.forEach(listener -> listener.onNewTopLevelData(lastReceivedTopLevelData));
+                TopLevelData topLevelData = NestUtils.fromJson(data, TopLevelStreamingData.class).getData();
+                lastReceivedTopLevelData = topLevelData;
+                listeners.forEach(listener -> listener.onNewTopLevelData(topLevelData));
             } else {
                 logger.debug("Received unhandled event with name '{}' and data '{}'", name, data);
             }

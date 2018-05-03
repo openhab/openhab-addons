@@ -83,6 +83,8 @@ public class GsonParsingTest {
         assertEquals(Integer.valueOf(15), thermostat.getFanTimerDuration());
         assertEqualDateTime("2017-02-02T21:00:06.000Z", thermostat.getLastConnection());
         assertEqualDateTime("1970-01-01T00:00:00.000Z", thermostat.getFanTimerTimeout());
+        assertEquals(Double.valueOf(24.0), thermostat.getEcoTemperatureHigh());
+        assertEquals(Double.valueOf(12.5), thermostat.getEcoTemperatureLow());
         assertEquals(Double.valueOf(22.0), thermostat.getLockedTempMax());
         assertEquals(Double.valueOf(20.0), thermostat.getLockedTempMin());
         assertEquals(Thermostat.Mode.HEAT, thermostat.getMode());

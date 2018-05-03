@@ -45,6 +45,10 @@ public class Thermostat extends BaseNestDevice {
     private Mode hvacMode;
     private Mode previousHvacMode;
     private State hvacState;
+    private Double ecoTemperatureHighC;
+    private Double ecoTemperatureHighF;
+    private Double ecoTemperatureLowC;
+    private Double ecoTemperatureLowF;
     private Boolean isLocked;
     private Double lockedTempMaxC;
     private Double lockedTempMaxF;
@@ -98,6 +102,26 @@ public class Thermostat extends BaseNestDevice {
 
     public Mode getMode() {
         return hvacMode;
+    }
+
+    public Double getEcoTemperatureHigh() {
+        if (getTemperatureUnit() == CELSIUS) {
+            return ecoTemperatureHighC;
+        } else if (getTemperatureUnit() == FAHRENHEIT) {
+            return ecoTemperatureHighF;
+        } else {
+            return null;
+        }
+    }
+
+    public Double getEcoTemperatureLow() {
+        if (getTemperatureUnit() == CELSIUS) {
+            return ecoTemperatureLowC;
+        } else if (getTemperatureUnit() == FAHRENHEIT) {
+            return ecoTemperatureLowF;
+        } else {
+            return null;
+        }
     }
 
     public Boolean isLocked() {
@@ -242,13 +266,15 @@ public class Thermostat extends BaseNestDevice {
                 .append(targetTemperatureHighF).append(", targetTemperatureLowC=").append(targetTemperatureLowC)
                 .append(", targetTemperatureLowF=").append(targetTemperatureLowF).append(", hvacMode=").append(hvacMode)
                 .append(", previousHvacMode=").append(previousHvacMode).append(", hvacState=").append(hvacState)
-                .append(", isLocked=").append(isLocked).append(", lockedTempMaxC=").append(lockedTempMaxC)
-                .append(", lockedTempMaxF=").append(lockedTempMaxF).append(", lockedTempMinC=").append(lockedTempMinC)
-                .append(", lockedTempMinF=").append(lockedTempMinF).append(", sunlightCorrectionEnabled=")
-                .append(sunlightCorrectionEnabled).append(", sunlightCorrectionActive=")
-                .append(sunlightCorrectionActive).append(", fanTimerDuration=").append(fanTimerDuration)
-                .append(", timeToTarget=").append(timeToTarget).append(", whereName=").append(whereName)
-                .append(", getId()=").append(getId()).append(", getName()=").append(getName())
+                .append(", ecoTemperatureHighC=").append(ecoTemperatureHighC).append(", ecoTemperatureHighF=")
+                .append(ecoTemperatureHighF).append(", ecoTemperatureLowC=").append(ecoTemperatureLowC)
+                .append(", ecoTemperatureLowF=").append(ecoTemperatureLowF).append(", isLocked=").append(isLocked)
+                .append(", lockedTempMaxC=").append(lockedTempMaxC).append(", lockedTempMaxF=").append(lockedTempMaxF)
+                .append(", lockedTempMinC=").append(lockedTempMinC).append(", lockedTempMinF=").append(lockedTempMinF)
+                .append(", sunlightCorrectionEnabled=").append(sunlightCorrectionEnabled)
+                .append(", sunlightCorrectionActive=").append(sunlightCorrectionActive).append(", fanTimerDuration=")
+                .append(fanTimerDuration).append(", timeToTarget=").append(timeToTarget).append(", whereName=")
+                .append(whereName).append(", getId()=").append(getId()).append(", getName()=").append(getName())
                 .append(", getDeviceId()=").append(getDeviceId()).append(", getLastConnection()=")
                 .append(getLastConnection()).append(", isOnline()=").append(isOnline()).append(", getNameLong()=")
                 .append(getNameLong()).append(", getSoftwareVersion()=").append(getSoftwareVersion())
