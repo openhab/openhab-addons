@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 public class GardenaThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(GardenaThingHandler.class);
+    private final Calendar VALID_DATE_START = DateUtils.parseToCalendar("1970-01-02T00:00Z");
 
     public GardenaThingHandler(Thing thing) {
         super(thing);
@@ -134,8 +135,7 @@ public class GardenaThingHandler extends BaseThingHandler {
         try {
             String value = device.getAbility(abilityName).getProperty(propertyName).getValue();
 
-            if (StringUtils.trimToNull(value) == null || StringUtils.equals(value, "N/A")
-                    || StringUtils.startsWith(value, "1970-01-01")) {
+            if (StringUtils.trimToNull(value) == null || StringUtils.equals(value, "N/A")) {
                 return null;
             }
 
@@ -160,7 +160,7 @@ public class GardenaThingHandler extends BaseThingHandler {
                     return Boolean.TRUE.toString().equalsIgnoreCase(value) ? OnOffType.ON : OnOffType.OFF;
                 case "DateTime":
                     Calendar cal = DateUtils.parseToCalendar(value);
-                    if (cal != null) {
+                    if (cal != null && !cal.before(VALID_DATE_START)) {
                         return new DateTimeType(cal);
                     }
             }
