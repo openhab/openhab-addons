@@ -135,7 +135,7 @@ public class GardenaThingHandler extends BaseThingHandler {
             String value = device.getAbility(abilityName).getProperty(propertyName).getValue();
 
             if (StringUtils.trimToNull(value) == null || StringUtils.equals(value, "N/A")
-                    || StringUtils.startsWith(value, "1970-01-01")) {
+                    || StringUtils.startsWith(value, "1970-01-01") || StringUtils.startsWith(value, "1969-12-31")) {
                 return null;
             }
 
