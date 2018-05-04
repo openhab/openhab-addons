@@ -134,8 +134,7 @@ public class GardenaThingHandler extends BaseThingHandler {
         try {
             String value = device.getAbility(abilityName).getProperty(propertyName).getValue();
 
-            if (StringUtils.trimToNull(value) == null || StringUtils.equals(value, "N/A")
-                    || StringUtils.startsWith(value, "1970-01-01") || StringUtils.startsWith(value, "1969-12-31")) {
+            if (StringUtils.trimToNull(value) == null || StringUtils.equals(value, "N/A")) {
                 return null;
             }
 
@@ -160,7 +159,7 @@ public class GardenaThingHandler extends BaseThingHandler {
                     return Boolean.TRUE.toString().equalsIgnoreCase(value) ? OnOffType.ON : OnOffType.OFF;
                 case "DateTime":
                     Calendar cal = DateUtils.parseToCalendar(value);
-                    if (cal != null) {
+                    if (cal != null && cal.get(Calendar.YEAR) > 1970) {
                         return new DateTimeType(cal);
                     }
             }
