@@ -28,6 +28,8 @@ public class NetatmoBindingConstants {
 
     private static final String BINDING_ID = "netatmo";
 
+    public static final String VENDOR = "Netatmo";
+
     // Configuration keys
     public static final String EQUIPMENT_ID = "id";
     public static final String PARENT_ID = "parentId";

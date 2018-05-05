@@ -134,7 +134,7 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService {
             properties.put(PARENT_ID, parentId);
         }
         if (firmwareVersion != null) {
-            properties.put(Thing.PROPERTY_VENDOR, "Netatmo");
+            properties.put(Thing.PROPERTY_VENDOR, VENDOR);
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
             properties.put(Thing.PROPERTY_MODEL_ID, type);
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, id);

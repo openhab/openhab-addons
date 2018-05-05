@@ -40,6 +40,11 @@ public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
     }
 
     @Override
+    protected void updateProperties(NAWelcomeCamera moduleData) {
+        updateProperties(null, moduleData.getType());
+    }
+
+    @Override
     protected State getNAThingProperty(String chanelId) {
         switch (chanelId) {
             case CHANNEL_WELCOME_CAMERA_STATUS:
