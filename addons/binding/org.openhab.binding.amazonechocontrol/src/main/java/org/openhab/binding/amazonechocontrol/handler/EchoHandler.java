@@ -88,7 +88,7 @@ public class EchoHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.info("Amazon Echo Control Binding initialized");
+        logger.debug("Amazon Echo Control Binding initialized");
 
         synchronized (instances) {
             instances.put(this.getThing().getUID(), this);

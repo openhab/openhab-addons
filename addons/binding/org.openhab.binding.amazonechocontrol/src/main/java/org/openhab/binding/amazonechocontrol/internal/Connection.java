@@ -395,7 +395,7 @@ public class Connection {
                 throw new HttpException(code, verb + " url '" + url + "' failed: " + connection.getResponseMessage());
             }
         }
-        throw new ConnectionException("To many redirects");
+        throw new ConnectionException("Too many redirects");
     }
 
     public boolean getIsLoggedIn() {
