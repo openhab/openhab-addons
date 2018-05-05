@@ -14,11 +14,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.logreader.internal.filereader.api.FileReaderException;
 import org.openhab.binding.logreader.internal.filereader.api.LogFileReader;
-import org.openhab.binding.logreader.internal.tailer.Tailer;
-import org.openhab.binding.logreader.internal.tailer.TailerListener;
-import org.openhab.binding.logreader.internal.tailer.TailerListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import tailer.Tailer;
+import tailer.TailerListener;
+import tailer.TailerListenerAdapter;
 
 /**
  * Apache Tailer based log file reader implementation.
