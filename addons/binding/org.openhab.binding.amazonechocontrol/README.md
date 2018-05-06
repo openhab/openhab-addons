@@ -95,7 +95,7 @@ All Amazon devices (echo, echospot, echoshow, wha, unknown) needs the following 
 
 You will find the serial number in the alexa app.
 
-### Flash briefing profile
+### Flash Briefing Profile
 
 The flashbriefingprofile thing has no configuration parameters. It will be configured at runtime by using the save channel to store the current flash briefing configuration in the thing.
 
@@ -237,11 +237,12 @@ To get instead of the id fields an selection box, use the Selection element and 
 ```
         Selection item=Echo_Living_Room_RadioStationId mappings=[ ''='Off', 's1139'='Antenne Steiermark', 's8007'='Hitradio Ö3', 's16793'='Radio 10', 's8235'='FM4' ]
 ```
+
 ## Tutorials
 
 **Playing an alarm sound for 15 seconds with an openHAB rule if an door contact was opened:**
 
-1) Open the PaperUI
+1) Open the Paper UI
 2) Navigate to the Control Section
 3) Open the Drop-Down of the 'Alarm Sound' channel
 4) Select the Sound you want to here
@@ -274,7 +275,7 @@ Note 2: The rule have no effect for your default alarm sound used in the alexa a
 
 **Play a spotify playlist if a switch was changed to on:**
 
-1) Open the PaperUI
+1) Open the Paper UI
 2) Navigate to the Control Section
 3) Open the Drop-Down of the 'Music provider for the start music voice command' channel
 4) Select the Provider you want to use

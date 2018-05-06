@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simple http proxy to forwards the login dialog from amazon to the user through the binding
+ * Simple http proxy to forward the login dialog from amazon to the user through the binding
  * so the user can enter a captcha or other extended login information
  *
  * @author Michael Geramb - Initial Contribution
