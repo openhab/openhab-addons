@@ -44,7 +44,6 @@ consYieldMonth      | Wh | 113 Total consumption for the month; all of the consu
 consYieldYear       | Wh | 114 Total consumption for the year; all of the consumption meters
 consYieldTotal      | Wh | 115 Accumulated total consumption, all Consumption meter
 totalPower          | Wp | 116 Installed generator power
-------------------- | --------------------- | -----------------   
 
 ## More information
 
