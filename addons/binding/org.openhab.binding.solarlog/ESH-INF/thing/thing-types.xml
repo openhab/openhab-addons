@@ -107,7 +107,7 @@
 	<channel-type id="consyieldday">
 		<item-type>Number</item-type>
 		<label>Consumption Today</label>
-		<description>Total consumption from all of the con- sumption meters</description>
+		<description>Total consumption from all of the consumption meters</description>
 		<state readOnly="true" pattern="%d Wh"></state>
 	</channel-type>
 	<channel-type id="consyieldyesterday">
