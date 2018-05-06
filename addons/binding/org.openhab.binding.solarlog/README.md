@@ -27,22 +27,22 @@ The following table is taken from the official manual and contains all available
 
 Data point          | Unit                  | Index Description
 ------------------- | --------------------- | -----------------   
-lastUpdateTime      | Time in the format dd.mm.yy; hh.minmin, secsec | 100 Time
-Pac                 | W  | 101 Total output PAC from all of the inverters and meters in inverter mode
-Pdc                 | W  | 102 Total output PAC from all of the inverters
-Uac                 | V  | 103 Average voltage UAC from the inverter
-Udc                 | V  | 104 Average voltage UDC from the inverter
-yieldDay            | Wh | 105 Total yield for the day from all of the inverters
-yieldYesterday      | Wh | 106 Total yield for the previous day from all of the inverters
-yieldMonth          | Wh | 107 Total yield for the month from all of the inverters
-yieldYear           | Wh | 108 Total yield for the year from all of the inverters
-yieldTotal          | Wh | 109 Total yield from all of the inverters
-consPac             | W  | 110 Current total consumption PAC from all of the consumption meters
-consYieldDay        | Wh | 111 Total consumption from all of the consumption meters
-consYieldYesterday  | Wh | 112 Total consumption for the previous day; all of the consumption meters
-consYieldMonth      | Wh | 113 Total consumption for the month; all of the consumption meters
-consYieldYear       | Wh | 114 Total consumption for the year; all of the consumption meters
-consYieldTotal      | Wh | 115 Accumulated total consumption, all Consumption meter
+lastupdate          | Time in the format dd.mm.yy; hh.minmin, secsec | 100 Time
+pac                 | W  | 101 Total output PAC from all of the inverters and meters in inverter mode
+pdc                 | W  | 102 Total output PAC from all of the inverters
+uac                 | V  | 103 Average voltage UAC from the inverter
+udc                 | V  | 104 Average voltage UDC from the inverter
+yieldday            | Wh | 105 Total yield for the day from all of the inverters
+yieldyesterday      | Wh | 106 Total yield for the previous day from all of the inverters
+yieldmonth          | Wh | 107 Total yield for the month from all of the inverters
+yieldyear           | Wh | 108 Total yield for the year from all of the inverters
+yieldtotal          | Wh | 109 Total yield from all of the inverters
+conspac             | W  | 110 Current total consumption PAC from all of the consumption meters
+consyieldday        | Wh | 111 Total consumption from all of the consumption meters
+consyieldyesterday  | Wh | 112 Total consumption for the previous day; all of the consumption meters
+consyieldmonth      | Wh | 113 Total consumption for the month; all of the consumption meters
+consyieldyear       | Wh | 114 Total consumption for the year; all of the consumption meters
+consyieldtotal      | Wh | 115 Accumulated total consumption, all Consumption meter
 totalPower          | Wp | 116 Installed generator power
 
 ## More information

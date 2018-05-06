@@ -46,25 +46,25 @@
 	</channel-type>
 	<channel-type id="pac">
 		<item-type>Number</item-type>
-		<label>Pac</label>
+		<label>PAC</label>
 		<description>Total output PAC from all of the inverters</description>
 		<state readOnly="true" pattern="%d W"></state>
 	</channel-type>
 	<channel-type id="pdc">
 		<item-type>Number</item-type>
-		<label>Pdc</label>
+		<label>PDC</label>
 		<description>Total output PDC from all of the inverters</description>
 		<state readOnly="true" pattern="%d W"></state>
 	</channel-type>
 	<channel-type id="uac">
 		<item-type>Number</item-type>
-		<label>Uac</label>
+		<label>UAC</label>
 		<description>Average voltage UAC from the inverter</description>
 		<state readOnly="true" pattern="%d V"></state>
 	</channel-type>
 	<channel-type id="udc">
 		<item-type>Number</item-type>
-		<label>Udc</label>
+		<label>UDC</label>
 		<description>Average voltage UDC from the inverter</description>
 		<state readOnly="true" pattern="%d V"></state>
 	</channel-type>
