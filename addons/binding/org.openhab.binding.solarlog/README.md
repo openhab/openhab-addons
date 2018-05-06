@@ -17,7 +17,7 @@ The parameters to be used are simple:
 * `url` denotes the URL of your SolarLog. If you have not changed anything, this defaults to `http://solar-log`.
 * `refreshInterval` is the interval to fetch new data. SolarLog updates its data every 15 - 60 seconds. `15` is the default value. Values lower than this will return the result from the last 15 seconds period. No value lower than this can be set in the UI.
 
-Currently, the binding does not support authenticated access to the SolarLog JSON API (which was iuntroduced with newer firmwares). If must set the API access to `Open` in the SolarLog configuration in order for the binding to work.
+Currently, the binding does not support authenticated access to the SolarLog JSON API (which was introduced with newer firmwares). If must set the API access to `Open` in the SolarLog configuration in order for the binding to work.
 
 ## Available channels
 
