@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,7 +34,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.airquality.AirQualityBindingConstants;
 import org.openhab.binding.airquality.internal.AirQualityConfiguration;
-import org.openhab.binding.airquality.internal.json.AirQualityJsonResponse;
+import org.openhab.binding.airquality.json.AirQualityJsonResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ import com.google.gson.JsonSyntaxException;
  * sent to one of the channels.
  *
  * @author Kuba Wolanin - Initial contribution
- * @author Łukasz Dywicki
+ * @author Łukasz Dywicki - Initial contribution
  */
 public class AirQualityHandler extends BaseThingHandler {
 
@@ -58,7 +58,7 @@ public class AirQualityHandler extends BaseThingHandler {
 
     private ScheduledFuture<?> refreshJob;
 
-    AirQualityJsonResponse aqiResponse;
+    private AirQualityJsonResponse aqiResponse;
 
     private Gson gson;
 
@@ -70,7 +70,6 @@ public class AirQualityHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Air Quality handler.");
-        super.initialize();
 
         AirQualityConfiguration config = getConfigAs(AirQualityConfiguration.class);
         logger.debug("config apikey = (omitted from logging)");
@@ -95,6 +94,7 @@ public class AirQualityHandler extends BaseThingHandler {
         }
 
         if (validConfig) {
+            updateStatus(ThingStatus.ONLINE);
             startAutomaticRefresh();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
@@ -106,20 +106,17 @@ public class AirQualityHandler extends BaseThingHandler {
      */
     private void startAutomaticRefresh() {
         if (refreshJob == null || refreshJob.isCancelled()) {
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        // Request new air quality data to the aqicn.org service
-                        aqiResponse = updateAirQualityData();
+            Runnable runnable = () -> {
+                try {
+                    // Request new air quality data to the aqicn.org service
+                    aqiResponse = updateAirQualityData();
 
-                        // Update all channels from the updated AQI data
-                        for (Channel channel : getThing().getChannels()) {
-                            updateChannel(channel.getUID().getId(), aqiResponse);
-                        }
-                    } catch (Exception e) {
-                        logger.error("Exception occurred during execution: {}", e.getMessage(), e);
+                    // Update all channels from the updated AQI data
+                    for (Channel channel : getThing().getChannels()) {
+                        updateChannel(channel.getUID().getId(), aqiResponse);
                     }
+                } catch (Exception e) {
+                    logger.error("Exception occurred during execution: {}", e.getMessage(), e);
                 }
             };
 
@@ -203,7 +200,6 @@ public class AirQualityHandler extends BaseThingHandler {
      *
      * @param location geo-coordinates from config
      * @param stationId station ID from config
-     *
      * @return the air quality data object mapping the JSON response or null in case of error
      */
     private AirQualityJsonResponse getAirQualityData(String location, Integer stationId) {
@@ -212,7 +208,6 @@ public class AirQualityHandler extends BaseThingHandler {
         String errorMsg = null;
 
         try {
-
             // Build a valid URL for the aqicn.org service
             AirQualityConfiguration config = getConfigAs(AirQualityConfiguration.class);
 
@@ -254,7 +249,6 @@ public class AirQualityHandler extends BaseThingHandler {
             if (!resultOk) {
                 logger.warn("Error in aqicn.org (Air Quality) response: {}", errorMsg);
             }
-
         } catch (MalformedURLException e) {
             errorMsg = e.getMessage();
             logger.warn("Constructed url is not valid: {}", errorMsg);

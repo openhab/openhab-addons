@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,15 +20,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
-import org.eclipse.smarthome.core.net.NetUtil;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.allplay.AllPlayBindingConstants;
 import org.openhab.binding.allplay.handler.AllPlayHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +44,7 @@ import de.kaizencode.tchaikovsky.exception.AllPlayException;
  *
  * @author Dominic Lerbs - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.allplay")
 public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(AllPlayHandlerFactory.class);
@@ -52,6 +56,7 @@ public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
     private AllPlayBindingProperties bindingProperties;
 
     private AudioHTTPServer audioHTTPServer;
+    private NetworkAddressService networkAddressService;
     private String callbackUrl;
 
     @Override
@@ -118,6 +123,7 @@ public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
         super.deactivate(componentContext);
     }
 
+    @Reference
     protected void setAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
         this.audioHTTPServer = audioHTTPServer;
     }
@@ -126,10 +132,19 @@ public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
         this.audioHTTPServer = null;
     }
 
+    @Reference
+    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = networkAddressService;
+    }
+
+    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = null;
+    }
+
     private String assembleCallbackUrl() {
         String callbackUrl = bindingProperties.getCallbackUrl();
         if (callbackUrl == null) {
-            String ipAddress = NetUtil.getLocalIpv4HostAddress();
+            String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
             if (ipAddress == null) {
                 logger.warn("No network interface could be found.");
                 return null;

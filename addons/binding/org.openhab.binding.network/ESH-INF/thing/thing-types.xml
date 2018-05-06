@@ -1,73 +1,119 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="network"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd"><!--Network Binding-->
-    <thing-type id="device">
-        <label>Network Device</label>
-        <description>Device which must be connected to the same network</description>
+<thing:thing-descriptions bindingId="network" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd"><!--Network Binding -->
+	<thing-type id="pingdevice">
+		<label>Pingable network device</label>
+		<description>The presence detection is performed by using ICMP and, if available, ARP pings.
+		You can change the arping tool path in the binding configuration.
+		DHCP sniffing is performed for faster network reentry discovery.</description>
 
-        <channels>
-            <channel id="online" typeId="online"></channel>
-            <channel id="time" typeId="time"></channel>
-        </channels>
-        <config-description>
+		<channels>
+			<channel id="online" typeId="online" />
+			<channel id="latency" typeId="latency" />
+			<channel id="lastseen" typeId="lastseen" />
+		</channels>
+
+		<properties>
+			<property name="uses_arp_pings">no</property>
+			<property name="uses_dhcp_listen">no</property>
+			<property name="uses_ios_wakeup">no</property>
+			<property name="presence_detection_type"></property>
+		</properties>
+
+		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>Hostname or IP</label>
 				<description>Hostname or IP of the device</description>
 			</parameter>
 
-			<parameter name="port" type="integer">
-				<label>Port</label>
-				<description>The port on which the device can be accessed</description>
-				<default>0</default>
+			<parameter name="refresh_interval" type="integer">
+				<label>Refresh Interval</label>
+				<description>States how long to wait after a device state update before the next refresh shall occur (in ms)</description>
+				<default>60000</default>
 			</parameter>
 
 			<parameter name="retry" type="integer">
 				<label>Retry</label>
-				<description>Defines how many times a ping shall occur, before the device is stated as offline</description>
+				<description>How many refresh interval cycles should a presence detection should take place, before the device is stated as offline</description>
+				<default>1</default>
+			</parameter>
+
+			<parameter name="timeout" type="integer">
+				<label>Timeout in ms</label>
+				<description>States how long to wait for a response (in MS), before if a device is stated as offline</description>
+				<default>5000</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="servicedevice">
+		<label>Network device with running service</label>
+		<description>A device which reachable state is detected by connecting to a TCP port.
+		DHCP sniffing is performed for faster network reentry discovery.</description>
+
+		<channels>
+			<channel id="online" typeId="online" />
+			<channel id="latency" typeId="latency" />
+			<channel id="lastseen" typeId="lastseen" />
+		</channels>
+
+		<properties>
+			<property name="uses_arp_pings">no</property>
+			<property name="uses_dhcp_listen">no</property>
+			<property name="uses_ios_wakeup">no</property>
+			<property name="presence_detection_type"></property>
+		</properties>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname or IP</label>
+				<description>Hostname or IP of the device</description>
+			</parameter>
+
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>The port on which the device can be accessed. Windows systems usually have the 445 port open. Webservers are on port 80.</description>
+				<default>80</default>
+			</parameter>
+
+			<parameter name="retry" type="integer">
+				<label>Retry</label>
+				<description>Defines how many times a connection attempt shall occur, before the device is stated as offline</description>
 				<default>1</default>
 			</parameter>
 
 			<parameter name="timeout" type="integer">
 				<label>Timeout</label>
-				<description>States how long to wait (in ms), if a connection can not be established. If system ping is used, only full seconds are valid.</description>
+				<description>States how long to wait for a response (in MS), before if a device is stated as offline</description>
 				<default>5000</default>
 			</parameter>
 
 			<parameter name="refresh_interval" type="integer">
 				<label>Refresh Interval</label>
-				<description>States how often a refresh shall occur (in ms)</description>
+				<description>States how long to wait after a device state update before the next refresh shall occur (in ms)</description>
 				<default>60000</default>
-			</parameter>	
-			
-			<parameter name="use_system_ping" type="boolean">
-				<label>Use System Ping</label>
-				<description>Uses the ping program from the system</description>
-				<default>false</default>
-			</parameter>		
-
-            <parameter name="dhcplisten" type="boolean">
-                <label>Listen for DHCP requests</label>
-                <description>Whether to use DHCP listen or not (may require running as root)</description>
-                <default>false</default>
-            </parameter>
-
+			</parameter>
 		</config-description>
-    </thing-type>
-    <channel-type id="online">
-        <item-type>Switch</item-type>
-        <label>Online</label>
-        <description>States whether a device is online or not</description>
-        <category>Switch</category>
-	    <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="time">
-        <item-type>Number</item-type>
-        <label>Time</label>
-        <description>States the Ping time</description>
-        <category>Number</category>
-	    <state readOnly="true"></state>
-    </channel-type>
+	</thing-type>
 
+	<channel-type id="online">
+		<item-type>Switch</item-type>
+		<label>Online</label>
+		<description>States whether a device is online or offline</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="latency">
+		<item-type>Number</item-type>
+		<label>Latency (ms)</label>
+		<description>States the latency time in milliseconds</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="lastseen">
+		<item-type>DateTime</item-type>
+		<label>Last seen</label>
+		<description>States the last seen date/time</description>
+		<state readOnly="true"></state>
+	</channel-type>
 </thing:thing-descriptions>

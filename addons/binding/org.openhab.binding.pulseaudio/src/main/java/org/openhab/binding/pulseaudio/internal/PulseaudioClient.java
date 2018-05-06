@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.pulseaudio.PulseaudioBindingConstants;
 import org.openhab.binding.pulseaudio.internal.cli.Parser;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig.State;
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * On the pulseaudio server the module-cli-protocol-tcp has to be loaded.
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  * @since 1.2.0
  */
 public class PulseaudioClient {
@@ -54,62 +55,62 @@ public class PulseaudioClient {
     /**
      * corresponding name to execute actions on sink items
      */
-    private static String ITEM_SINK = "sink";
+    private static final String ITEM_SINK = "sink";
 
     /**
      * corresponding name to execute actions on source items
      */
-    private static String ITEM_SOURCE = "source";
+    private static final String ITEM_SOURCE = "source";
 
     /**
      * corresponding name to execute actions on sink-input items
      */
-    private static String ITEM_SINK_INPUT = "sink-input";
+    private static final String ITEM_SINK_INPUT = "sink-input";
 
     /**
      * corresponding name to execute actions on source-output items
      */
-    private static String ITEM_SOURCE_OUTPUT = "source-output";
+    private static final String ITEM_SOURCE_OUTPUT = "source-output";
 
     /**
      * command to list the loaded modules
      */
-    private static String CMD_LIST_MODULES = "list-modules";
+    private static final String CMD_LIST_MODULES = "list-modules";
 
     /**
      * command to list the sinks
      */
-    private static String CMD_LIST_SINKS = "list-sinks";
+    private static final String CMD_LIST_SINKS = "list-sinks";
 
     /**
      * command to list the sources
      */
-    private static String CMD_LIST_SOURCES = "list-sources";
+    private static final String CMD_LIST_SOURCES = "list-sources";
 
     /**
      * command to list the sink-inputs
      */
-    private static String CMD_LIST_SINK_INPUTS = "list-sink-inputs";
+    private static final String CMD_LIST_SINK_INPUTS = "list-sink-inputs";
 
     /**
      * command to list the source-outputs
      */
-    private static String CMD_LIST_SOURCE_OUTPUTS = "list-source-outputs";
+    private static final String CMD_LIST_SOURCE_OUTPUTS = "list-source-outputs";
 
     /**
      * command to load a module
      */
-    private static String CMD_LOAD_MODULE = "load-module";
+    private static final String CMD_LOAD_MODULE = "load-module";
 
     /**
      * command to unload a module
      */
-    private static String CMD_UNLOAD_MODULE = "unload-module";
+    private static final String CMD_UNLOAD_MODULE = "unload-module";
 
     /**
      * name of the module-combine-sink
      */
-    private static String MODULE_COMBINE_SINK = "module-combine-sink";
+    private static final String MODULE_COMBINE_SINK = "module-combine-sink";
 
     public PulseaudioClient() throws IOException {
         this("localhost", 4712);
@@ -119,8 +120,8 @@ public class PulseaudioClient {
         this.host = host;
         this.port = port;
 
-        items = new ArrayList<AbstractAudioDeviceConfig>();
-        modules = new ArrayList<Module>();
+        items = new ArrayList<>();
+        modules = new ArrayList<>();
 
         connect();
         update();
@@ -138,32 +139,45 @@ public class PulseaudioClient {
         modules.addAll(Parser.parseModules(listModules()));
 
         items.clear();
-        items.addAll(Parser.parseSinks(listSinks(), this));
-        items.addAll(Parser.parseSources(listSources(), this));
-        items.addAll(Parser.parseSinkInputs(listSinkInputs(), this));
-        items.addAll(Parser.parseSourceOutputs(listSourceOutputs(), this));
-
+        if (PulseaudioBindingConstants.TYPE_FILTERS.get(PulseaudioBindingConstants.SINK_THING_TYPE.getId()) == true) {
+            logger.debug("reading sinks");
+            items.addAll(Parser.parseSinks(listSinks(), this));
+        }
+        if (PulseaudioBindingConstants.TYPE_FILTERS.get(PulseaudioBindingConstants.SOURCE_THING_TYPE.getId()) == true) {
+            logger.debug("reading sources");
+            items.addAll(Parser.parseSources(listSources(), this));
+        }
+        if (PulseaudioBindingConstants.TYPE_FILTERS
+                .get(PulseaudioBindingConstants.SINK_INPUT_THING_TYPE.getId()) == true) {
+            logger.debug("reading sink-inputs");
+            items.addAll(Parser.parseSinkInputs(listSinkInputs(), this));
+        }
+        if (PulseaudioBindingConstants.TYPE_FILTERS
+                .get(PulseaudioBindingConstants.SOURCE_OUTPUT_THING_TYPE.getId()) == true) {
+            logger.debug("reading source-outputs");
+            items.addAll(Parser.parseSourceOutputs(listSourceOutputs(), this));
+        }
         logger.debug("Pulseaudio server {}: {} modules and {} items updated", host, modules.size(), items.size());
     }
 
     private String listModules() {
-        return this._sendRawRequest(CMD_LIST_MODULES);
+        return this.sendRawRequest(CMD_LIST_MODULES);
     }
 
     private String listSinks() {
-        return this._sendRawRequest(CMD_LIST_SINKS);
+        return this.sendRawRequest(CMD_LIST_SINKS);
     }
 
     private String listSources() {
-        return this._sendRawRequest(CMD_LIST_SOURCES);
+        return this.sendRawRequest(CMD_LIST_SOURCES);
     }
 
     private String listSinkInputs() {
-        return this._sendRawRequest(CMD_LIST_SINK_INPUTS);
+        return this.sendRawRequest(CMD_LIST_SINK_INPUTS);
     }
 
     private String listSourceOutputs() {
-        return this._sendRawRequest(CMD_LIST_SOURCE_OUTPUTS);
+        return this.sendRawRequest(CMD_LIST_SOURCE_OUTPUTS);
     }
 
     /**
@@ -189,7 +203,7 @@ public class PulseaudioClient {
      * @param command
      */
     public void sendCommand(String command) {
-        _sendRawCommand(command);
+        sendRawCommand(command);
     }
 
     /**
@@ -337,7 +351,7 @@ public class PulseaudioClient {
             return;
         }
         String muteString = mute ? "1" : "0";
-        _sendRawCommand("set-" + itemCommandName + "-mute " + item.getId() + " " + muteString);
+        sendRawCommand("set-" + itemCommandName + "-mute " + item.getId() + " " + muteString);
         // update internal data
         item.setMuted(mute);
     }
@@ -357,7 +371,7 @@ public class PulseaudioClient {
         if (itemCommandName == null) {
             return;
         }
-        _sendRawCommand("set-" + itemCommandName + "-volume " + item.getId() + " " + vol);
+        sendRawCommand("set-" + itemCommandName + "-volume " + item.getId() + " " + vol);
         item.setVolume(Math.round(100f / 65536f * vol));
     }
 
@@ -417,14 +431,14 @@ public class PulseaudioClient {
         if (combinedSink == null || !combinedSink.isCombinedSink()) {
             return;
         }
-        List<String> slaves = new ArrayList<String>();
+        List<String> slaves = new ArrayList<>();
         for (Sink sink : sinks) {
             slaves.add(sink.getPaName());
         }
         // 1. delete old combined-sink
-        _sendRawCommand(CMD_UNLOAD_MODULE + " " + combinedSink.getModule().getId());
+        sendRawCommand(CMD_UNLOAD_MODULE + " " + combinedSink.getModule().getId());
         // 2. add new combined-sink with same name and all slaves
-        _sendRawCommand(CMD_LOAD_MODULE + " " + MODULE_COMBINE_SINK + " sink_name=" + combinedSink.getPaName()
+        sendRawCommand(CMD_LOAD_MODULE + " " + MODULE_COMBINE_SINK + " sink_name=" + combinedSink.getPaName()
                 + " slaves=" + StringUtils.join(slaves, ","));
         // 3. update internal data structure because the combined sink has a new number + other slaves
         update();
@@ -440,7 +454,7 @@ public class PulseaudioClient {
         if (sinkInput == null || sink == null) {
             return;
         }
-        _sendRawCommand("move-sink-input " + sinkInput.getId() + " " + sink.getId());
+        sendRawCommand("move-sink-input " + sinkInput.getId() + " " + sink.getId());
         sinkInput.setSink(sink);
     }
 
@@ -454,7 +468,7 @@ public class PulseaudioClient {
         if (sourceOutput == null || source == null) {
             return;
         }
-        _sendRawCommand("move-sink-input " + sourceOutput.getId() + " " + source.getId());
+        sendRawCommand("move-sink-input " + sourceOutput.getId() + " " + source.getId());
         sourceOutput.setSource(source);
     }
 
@@ -469,10 +483,10 @@ public class PulseaudioClient {
             return;
         }
         if (suspend) {
-            _sendRawCommand("suspend-source " + source.getId() + " 1");
+            sendRawCommand("suspend-source " + source.getId() + " 1");
             source.setState(State.SUSPENDED);
         } else {
-            _sendRawCommand("suspend-source " + source.getId() + " 0");
+            sendRawCommand("suspend-source " + source.getId() + " 0");
             // unsuspending the source could result in different states (RUNNING,IDLE,...)
             // update to get the new state
             update();
@@ -490,10 +504,10 @@ public class PulseaudioClient {
             return;
         }
         if (suspend) {
-            _sendRawCommand("suspend-sink " + sink.getId() + " 1");
+            sendRawCommand("suspend-sink " + sink.getId() + " 1");
             sink.setState(State.SUSPENDED);
         } else {
-            _sendRawCommand("suspend-sink " + sink.getId() + " 0");
+            sendRawCommand("suspend-sink " + sink.getId() + " 0");
             // unsuspending the sink could result in different states (RUNNING,IDLE,...)
             // update to get the new state
             update();
@@ -510,18 +524,18 @@ public class PulseaudioClient {
         if (getSink(combinedSinkName) != null) {
             return;
         }
-        List<String> slaves = new ArrayList<String>();
+        List<String> slaves = new ArrayList<>();
         for (Sink sink : sinks) {
             slaves.add(sink.getPaName());
         }
         // add new combined-sink with same name and all slaves
-        _sendRawCommand(CMD_LOAD_MODULE + " " + MODULE_COMBINE_SINK + " sink_name=" + combinedSinkName + " slaves="
+        sendRawCommand(CMD_LOAD_MODULE + " " + MODULE_COMBINE_SINK + " sink_name=" + combinedSinkName + " slaves="
                 + StringUtils.join(slaves, ","));
         // update internal data structure because the combined sink is new
         update();
     }
 
-    private void _sendRawCommand(String command) {
+    private void sendRawCommand(String command) {
         checkConnection();
         try {
             PrintStream out = new PrintStream(client.getOutputStream(), true);
@@ -534,7 +548,7 @@ public class PulseaudioClient {
         }
     }
 
-    private String _sendRawRequest(String command) {
+    private String sendRawRequest(String command) {
         logger.trace("_sendRawRequest({})", command);
         checkConnection();
         String result = "";
@@ -546,13 +560,13 @@ public class PulseaudioClient {
 
             try {
                 byte[] buff = new byte[1024];
-                int ret_read = 0;
+                int retRead = 0;
                 int lc = 0;
                 do {
-                    ret_read = instr.read(buff);
+                    retRead = instr.read(buff);
                     lc++;
-                    if (ret_read > 0) {
-                        String line = new String(buff, 0, ret_read);
+                    if (retRead > 0) {
+                        String line = new String(buff, 0, retRead);
                         // System.out.println("'"+line+"'");
                         if (line.endsWith(">>> ") && lc > 1) {
                             result += line.substring(0, line.length() - 4);
@@ -560,12 +574,12 @@ public class PulseaudioClient {
                         }
                         result += line.trim();
                     }
-                } while (ret_read > 0);
+                } while (retRead > 0);
             } catch (SocketTimeoutException e) {
                 // Timeout -> as newer PA versions (>=5.0) do not send the >>> we have no chance
                 // to detect the end of the answer, except by this timeout
             } catch (IOException e) {
-                System.err.println("Exception while reading socket:" + e.getMessage());
+                logger.error("Exception while reading socket: {}", e.getMessage());
             }
             instr.close();
             out.close();

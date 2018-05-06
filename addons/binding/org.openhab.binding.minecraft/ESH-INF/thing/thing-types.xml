@@ -144,20 +144,20 @@
 		<description>The speed of player.</description>
 		<state min="0" max="1" step="0.05" pattern="%.2f" />
 	</channel-type>
-	
+
 	<channel-type id="playerGameMode" advanced="true">
-        <item-type>String</item-type>
-        <label>Game Mode</label>
-        <description>The players current game mode.</description>
-        <state readOnly="false">
-            <options>
-                <option value="CREATIVE">creative</option>
-                <option value="SURVIVAL">survival</option>
-                <option value="ADVENTURE">adventure</option>
-                <option value="SPECTATOR">spectator</option>
-            </options>
-        </state>
-    </channel-type>
+		<item-type>String</item-type>
+		<label>Game Mode</label>
+		<description>The players current game mode.</description>
+		<state readOnly="false">
+			<options>
+				<option value="CREATIVE">creative</option>
+				<option value="SURVIVAL">survival</option>
+				<option value="ADVENTURE">adventure</option>
+				<option value="SPECTATOR">spectator</option>
+			</options>
+		</state>
+	</channel-type>
 
 	<channel-type id="signActive">
 		<item-type>Switch</item-type>

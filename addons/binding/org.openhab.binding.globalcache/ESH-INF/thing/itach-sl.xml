@@ -24,6 +24,18 @@
 				<label>Map File</label>
 				<description>Enter namer of file containing mapping of commands to IR and Serial codes</description>
 			</parameter>
+
+			<parameter name="enableTwoWay1" type="boolean">
+				<label>Enable Two Way</label>
+				<description>Enable two-way serial communication</description>
+				<default>false</default>
+			</parameter>
+
+			<parameter name="eomDelimiter1" type="text">
+				<label>End-of-message Delimiter</label>
+				<description>URL encoded end-of-message delimiter string for receiving messages</description>
+				<default>%0A</default>
+			</parameter>
 		</config-description>
 
 	</thing-type>

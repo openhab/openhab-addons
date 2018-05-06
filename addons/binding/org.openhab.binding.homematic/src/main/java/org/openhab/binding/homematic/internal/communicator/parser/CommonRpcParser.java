@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,9 +14,12 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
 import org.openhab.binding.homematic.internal.model.HmValueType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract base class for all parsers with common methods.
@@ -24,6 +27,8 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  * @author Gerhard Riegler - Initial contribution
  */
 public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
+
+    private final Logger logger = LoggerFactory.getLogger(CommonRpcParser.class);
 
     /**
      * Converts the object to a string.
@@ -42,6 +47,22 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
         try {
             return Double.valueOf(ObjectUtils.toString(object)).intValue();
         } catch (NumberFormatException ex) {
+            logger.debug("Failed converting {} to a Double", object, ex);
+            return null;
+        }
+    }
+
+    /**
+     * Converts the object to a double.
+     */
+    protected Double toDouble(Object object) {
+        if (object == null || object instanceof Double) {
+            return (Double) object;
+        }
+        try {
+            return Double.valueOf(ObjectUtils.toString(object));
+        } catch (NumberFormatException ex) {
+            logger.debug("Failed converting {} to a Double", object, ex);
             return null;
         }
     }
@@ -53,7 +74,12 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
         if (object == null || object instanceof Number) {
             return (Number) object;
         }
-        return NumberUtils.createNumber(ObjectUtils.toString(object));
+        try {
+            return NumberUtils.createNumber(ObjectUtils.toString(object));
+        } catch (NumberFormatException ex) {
+            logger.debug("Failed converting {} to a Number", object, ex);
+            return null;
+        }
     }
 
     /**
@@ -82,10 +108,11 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     }
 
     /**
-     * Returns the address of a device, replacing group address identifier.
+     * Returns the address of a device, replacing group address identifier and illegal characters.
      */
-    protected String getAddress(Object object) {
-        return StringUtils.replaceOnce(toString(object), "*", "T-");
+    protected String getSanitizedAddress(Object object) {
+        String address = StringUtils.trimToNull(StringUtils.replaceOnce(toString(object), "*", "T-"));
+        return MiscUtils.validateCharacters(address, "Address", "_");
     }
 
     /**
@@ -112,7 +139,9 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
      * Converts the value to the correct type if necessary.
      */
     protected Object convertToType(HmDatapoint dp, Object value) {
-        if (dp.isBooleanType()) {
+        if (value == null) {
+            return null;
+        } else if (dp.isBooleanType()) {
             return toBoolean(value);
         } else if (dp.isIntegerType()) {
             return toInteger(value);

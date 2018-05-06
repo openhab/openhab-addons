@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,12 +19,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.amazondashbutton.internal.capturing.PacketCapturingHandler;
 import org.openhab.binding.amazondashbutton.internal.capturing.PacketCapturingService;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceListener;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceService;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceWrapper;
+import org.osgi.service.component.annotations.Component;
 import org.pcap4j.core.PcapNetworkInterface;
 import org.pcap4j.util.MacAddress;
 import org.slf4j.Logger;
@@ -38,7 +40,7 @@ import com.google.common.collect.Sets;
  *
  * While scanning the user has to press the button in order to send an ARP and BOOTP request packet. The
  * {@link AmazonDashButtonDiscoveryService} captures this packet and checks the device's MAC address which sent the
- * request against a static list of vendor prefixes ({@link #vendorPrefixes}).
+ * request against a static list of vendor prefixes ({@link #VENDOR_PREFIXES}).
  *
  * If an Amazon MAC address is detected a {@link DiscoveryResult} is built and passed to
  * {@link #thingDiscovered(DiscoveryResult)}.
@@ -46,6 +48,7 @@ import com.google.common.collect.Sets;
  * @author Oliver Libutzki - Initial contribution
  *
  */
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.amazondashbutton")
 public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService implements PcapNetworkInterfaceListener {
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
@@ -56,20 +59,32 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
      * The Amazon Dash button vendor prefixes
      */
     // @formatter:off
-    private static final Set<String> vendorPrefixes = Sets.newHashSet(
-            "44:65:0D",
-            "50:F5:DA",
-            "84:D6:D0",
-            "34:D2:70",
+    private static final Set<String> VENDOR_PREFIXES = Sets.newHashSet(
             "F0:D2:F1",
             "88:71:E5",
+            "FC:A1:83",
+            "F0:27:2D",
             "74:C2:46",
-            // This is an Amazon MAC address, but it has been used by my Fire TV...
-            // "F0:27:2D",
-            "0C:47:C9",
+            "68:37:E9",
+            "78:E1:03",
+            "38:F7:3D",
+            "50:DC:E7",
             "A0:02:DC",
+            "0C:47:C9",
             "74:75:48",
-            "AC:63:BE"
+            "AC:63:BE",
+            "FC:A6:67",
+            "18:74:2E",
+            "00:FC:8B",
+            "FC:65:DE",
+            "6C:56:97",
+            "44:65:0D",
+            "50:F5:DA",
+            "68:54:FD",
+            "40:B4:CD",
+            "84:D6:D0",
+            "34:D2:70",
+            "B4:7C:9C"
         );
     // @formatter:on
 
@@ -81,7 +96,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
      */
     private static boolean isAmazonVendor(String macAddress) {
         String vendorPrefix = macAddress.substring(0, 8).toUpperCase();
-        return vendorPrefixes.contains(vendorPrefix);
+        return VENDOR_PREFIXES.contains(vendorPrefix);
     }
 
     private final Map<PcapNetworkInterfaceWrapper, PacketCapturingService> packetCapturingServices = new ConcurrentHashMap<>();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -70,8 +70,8 @@ public class FeedHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         checkConfiguration();
+        updateStatus(ThingStatus.UNKNOWN);
         startAutomaticRefresh();
-        super.initialize();
     }
 
     /**
@@ -95,19 +95,11 @@ public class FeedHandler extends BaseThingHandler {
                     DEFAULT_REFRESH_TIME, e.getMessage());
             refreshTime = DEFAULT_REFRESH_TIME;
         }
-
     }
 
     private void startAutomaticRefresh() {
-
-        Runnable refresher = new Runnable() {
-            @Override
-            public void run() {
-                refreshFeedState();
-            }
-        };
-
-        refreshTask = scheduler.scheduleAtFixedRate(refresher, 0, refreshTime.intValue(), TimeUnit.MINUTES);
+        refreshTask = scheduler.scheduleWithFixedDelay(this::refreshFeedState, 0, refreshTime.intValue(),
+                TimeUnit.MINUTES);
         logger.debug("Start automatic refresh at {} minutes", refreshTime.intValue());
     }
 
@@ -124,8 +116,8 @@ public class FeedHandler extends BaseThingHandler {
     }
 
     private void publishChannelIfLinked(ChannelUID channelUID) {
+        String channelID = channelUID.getId();
         if (currentFeedState != null) {
-            String channelID = channelUID.getId();
             if (isLinked(channelID)) {
                 State state = null;
                 switch (channelID) {
@@ -174,7 +166,7 @@ public class FeedHandler extends BaseThingHandler {
             }
         } else {
             // This will happen if the binding could not download data from the server
-            logger.info("Can not update channel with ID: {}, no data has been downloaded from the server! ");
+            logger.info("Can not update channel with ID: {}, no data has been downloaded from the server!", channelID);
         }
     }
 
@@ -204,7 +196,7 @@ public class FeedHandler extends BaseThingHandler {
      * {@link ThingStatusDetail#CONFIGURATION_ERROR} or
      * {@link ThingStatusDetail#COMMUNICATION_ERROR} and adequate message.
      *
-     * @param urlString - URL of the Feed
+     * @param urlString URL of the Feed
      * @return {@link SyndFeed} instance with the feed data, if the connection attempt was successful and
      *         <code>null</code> otherwise
      */
@@ -249,7 +241,6 @@ public class FeedHandler extends BaseThingHandler {
         }
 
         return feed;
-
     }
 
     /**
@@ -273,7 +264,6 @@ public class FeedHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof RefreshType) {
             // safeguard for multiple REFRESH commands for different channels in a row
             if (isMinimumRefreshTimeExceeded()) {

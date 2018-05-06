@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,11 +9,11 @@
 package org.openhab.io.openhabcloud.internal;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.net.MalformedURLException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -594,18 +594,14 @@ public class CloudClient {
              * can receive responseFinished before the headers or content are received and I
              * cannot find another workaround to prevent it.
              */
-            ThreadPoolManager.getScheduledPool(THREADPOOL_OPENHABCLOUD).schedule(new Runnable() {
-
-                @Override
-                public void run() {
-                    JSONObject responseJson = new JSONObject();
-                    try {
-                        responseJson.put("id", mRequestId);
-                        socket.emit("responseFinished", responseJson);
-                        logger.debug("Finished responding to request {}", mRequestId);
-                    } catch (JSONException e) {
-                        logger.error("{}", e.getMessage());
-                    }
+            ThreadPoolManager.getScheduledPool(THREADPOOL_OPENHABCLOUD).schedule(() -> {
+                JSONObject responseJson = new JSONObject();
+                try {
+                    responseJson.put("id", mRequestId);
+                    socket.emit("responseFinished", responseJson);
+                    logger.debug("Finished responding to request {}", mRequestId);
+                } catch (JSONException e) {
+                    logger.error("{}", e.getMessage());
                 }
             }, 1, TimeUnit.MILLISECONDS);
         }

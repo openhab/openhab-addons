@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="satel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="int-rs">
+		<label>INT-RS</label>
+		<description>RS-232 communication module</description>
+
+		<config-description>
+			<parameter name="port" type="text" required="true">
+				<label>Serial port</label>
+				<description>Serial port connected to the module.</description>
+				<context>serial-port</context>
+			</parameter>
+			<parameter name="timeout" type="integer" unit="ms">
+				<label>Timeout</label>
+				<description>Timeout value in milliseconds for connect, read and write operations.</description>
+				<default>5000</default>
+				<unitLabel>Milliseconds</unitLabel>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="ms">
+				<label>Refresh interval</label>
+				<description>Current state polling interval, in milliseconds.</description>
+				<default>5000</default>
+				<unitLabel>Milliseconds</unitLabel>
+			</parameter>
+			<parameter name="userCode" type="text" pattern="[0-9]{4,8}">
+				<label>User code</label>
+				<description>Security code of the user in behalf of all operations will be executed.</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="encoding" type="text">
+				<label>Encoding</label>
+				<description>Encoding for all the texts received from the module.</description>
+				<default>windows-1250</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

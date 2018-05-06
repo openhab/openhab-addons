@@ -4,7 +4,7 @@
         <major>1</major>
         <minor>0</minor>
     </specVersion>
-    <URLBase>http://%s:%s/</URLBase>
+    <URLBase>http://%s:%d/</URLBase>
     <device>
         <deviceType>urn:schemas-upnp-org:device:Basic:1</deviceType>
         <friendlyName>openHAB Hue Emulation</friendlyName>

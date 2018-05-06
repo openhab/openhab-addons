@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,12 +8,8 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.List;
-
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
-import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
 /**
@@ -23,11 +19,10 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
-
     private byte[] data = new byte[14];
 
-
-    public RFXComInterfaceControlMessage(RFXComInterfaceMessage.TransceiverType transceiverType, RFXComBridgeConfiguration configuration) {
+    public RFXComInterfaceControlMessage(RFXComInterfaceMessage.TransceiverType transceiverType,
+            RFXComBridgeConfiguration configuration) {
         data[0] = 0x0D;
         data[1] = RFXComBaseMessage.PacketType.INTERFACE_CONTROL.toByte();
         data[2] = 0;
@@ -51,7 +46,7 @@ public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
               (configuration.enableBlindsT1T2T3T4   ? 0x80 : 0x00)
             | (configuration.enableBlindsT0         ? 0x40 : 0x00)
             | (configuration.enableProGuard         ? 0x20 : 0x00)
-         // | (configuration.enableFS20Packets      ? 0x10 : 0x00)
+            | (configuration.enableFS20             ? 0x10 : 0x00)
             | (configuration.enableLaCrosse         ? 0x08 : 0x00)
             | (configuration.enableHidekiUPM        ? 0x04 : 0x00)
             | (configuration.enableADLightwaveRF    ? 0x02 : 0x00)
@@ -69,7 +64,10 @@ public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
             | (configuration.enableX10              ? 0x01 : 0x00)
         );
 
-        data[10] = 0;
+        data[10] = (byte)(
+              (configuration.enableHomeConfort      ? 0x02 : 0x00)
+            | (configuration.enableKEELOQ           ? 0x01 : 0x00)
+        );
         data[11] = 0;
         data[12] = 0;
         data[13] = 0;
@@ -77,7 +75,7 @@ public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
 
     public RFXComInterfaceControlMessage(byte[] data) throws RFXComException {
         // We should never receive control messages
-        throw new RFXComException("Not supported");
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -87,41 +85,11 @@ public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-        throw new RFXComException("Not supported");
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void setSubType(Object subType) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public Object convertSubType(String subType) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void convertFromState(String channelId, Type type) {
+        throw new UnsupportedOperationException();
     }
 }

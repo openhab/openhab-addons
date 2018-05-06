@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,6 +18,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.dscalarm.internal.DSCAlarmCode;
 import org.openhab.binding.dscalarm.internal.DSCAlarmEvent;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage;
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(ZoneThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ZoneThingHandler.class);
 
     /**
      * Constructor.
@@ -44,9 +45,6 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
         setDSCAlarmThingType(DSCAlarmThingType.ZONE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void updateChannel(ChannelUID channelUID, int state, String description) {
         logger.debug("updateChannel(): Zone Channel UID: {}", channelUID);
@@ -95,31 +93,24 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (dscAlarmBridgeHandler == null) {
-            logger.warn("DSC Alarm bridge handler not available. Cannot handle command without bridge.");
+        logger.debug("handleCommand(): Command Received - {} {}.", channelUID, command);
+
+        if (command instanceof RefreshType) {
             return;
         }
 
-        if (dscAlarmBridgeHandler.isConnected()) {
-            switch (channelUID.getId()) {
-                case ZONE_BYPASS_MODE:
-                    if (command == OnOffType.OFF) {
-                        String data = String.valueOf(getPartitionNumber()) + "*1"
-                                + String.format("%02d", getZoneNumber()) + "#";
-                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
-                    } else if (command == OnOffType.ON) {
-                        String data = String.valueOf(getPartitionNumber()) + "*1"
-                                + String.format("%02d", getZoneNumber()) + "#";
-                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
-                    }
-                    break;
-                default:
-                    break;
+        if (dscAlarmBridgeHandler != null && dscAlarmBridgeHandler.isConnected()
+                && channelUID.getId() == ZONE_BYPASS_MODE) {
+            if (command == OnOffType.OFF) {
+                String data = String.valueOf(getPartitionNumber()) + "*1" + String.format("%02d", getZoneNumber())
+                        + "#";
+                dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
+            } else if (command == OnOffType.ON) {
+                String data = String.valueOf(getPartitionNumber()) + "*1" + String.format("%02d", getZoneNumber())
+                        + "#";
+                dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
             }
         }
     }
@@ -133,12 +124,8 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
         updateState(new ChannelUID(getThing().getUID(), ZONE_MESSAGE), new StringType(message));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dscAlarmEventReceived(EventObject event, Thing thing) {
-
         if (thing != null) {
             if (getThing().equals(thing)) {
                 DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;

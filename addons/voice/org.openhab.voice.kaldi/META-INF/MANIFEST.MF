@@ -1,15 +1,18 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: 
+ .,
+ lib/net-speech-api-0.2.0.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: Kaldi Voice Integration
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.voice.kaldi;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .,
- lib/net-speech-api-0.2.0.jar
-Import-Package: org.eclipse.smarthome.core.voice,
+Import-Package: 
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.core.audio,
+ org.eclipse.smarthome.core.voice,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Bundle-ActivationPolicy: lazy

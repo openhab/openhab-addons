@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,7 +10,7 @@ package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 
 import java.math.BigDecimal;
 
-import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
+import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,9 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class FritzAhaSetHeatingTemperatureCallback extends FritzAhaReauthCallback {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final Logger logger = LoggerFactory.getLogger(FritzAhaSetHeatingTemperatureCallback.class);
+
     /**
      * Item to update
      */
@@ -35,11 +37,12 @@ public class FritzAhaSetHeatingTemperatureCallback extends FritzAhaReauthCallbac
      * @param ain AIN of the device that should be switched
      * @param temperature New temperature
      */
-    public FritzAhaSetHeatingTemperatureCallback(FritzahaWebInterface webIface, String ain, BigDecimal temperature) {
+    public FritzAhaSetHeatingTemperatureCallback(FritzAhaWebInterface webIface, String ain, BigDecimal temperature) {
         super(WEBSERVICE_PATH, "ain=" + ain + "&switchcmd=sethkrtsoll&param=" + temperature, webIface, Method.GET, 1);
         itemName = ain;
     }
 
+    @Override
     public void execute(int status, String response) {
         super.execute(status, response);
         if (isValidRequest()) {

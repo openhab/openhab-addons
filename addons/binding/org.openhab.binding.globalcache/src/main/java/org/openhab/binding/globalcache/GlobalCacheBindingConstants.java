@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,6 +10,7 @@ package org.openhab.binding.globalcache;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.ImmutableSet;
@@ -20,12 +21,10 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Mark Hilbush - Initial contribution
  */
+@NonNullByDefault
 public class GlobalCacheBindingConstants {
 
     public static final String BINDING_ID = "globalcache";
-
-    // Maximum number of GC devices supported by the binding
-    public static final int MAX_GC_DEVICES = 10;
 
     /*
      * GlobalCache thing definitions
@@ -63,6 +62,12 @@ public class GlobalCacheBindingConstants {
     public static final String ACTIVE_CABLE_SERIAL = "FLEX_SERIAL";
     public static final String ACTIVE_CABLE_RELAY = "FLEX_RELAY";
 
+    // Serial readers
+    public static final String CONFIG_ENABLE_TWO_WAY_PORT_1 = "enableTwoWay1";
+    public static final String CONFIG_END_OF_MESSAGE_DELIMITER_PORT_1 = "eomDelimiter1";
+    public static final String CONFIG_ENABLE_TWO_WAY_PORT_2 = "enableTwoWay2";
+    public static final String CONFIG_END_OF_MESSAGE_DELIMITER_PORT_2 = "eomDelimiter2";
+
     // Indicates TCP connection over which the command will be sent
     public enum CommandType {
         COMMAND,
@@ -78,6 +83,11 @@ public class GlobalCacheBindingConstants {
     public static final String CHANNEL_TYPE_CC = "channel-type-cc";
     public static final String CHANNEL_TYPE_SL = "channel-type-sl";
     public static final String CHANNEL_TYPE_SL_DIRECT = "channel-type-sl-direct";
+    public static final String CHANNEL_TYPE_SL_FEEDBACK = "channel-type-sl-receive";
+
+    // Channels for handing feedback from serial devices
+    public static final String CHANNEL_SL_M1_RECEIVE = "sl-m1#c1-receive";
+    public static final String CHANNEL_SL_M2_RECEIVE = "sl-m2#c1-receive";
 
     // Channel properties that are used to specify module number and connector number
     public static final String CHANNEL_PROPERTY_MODULE = "module";

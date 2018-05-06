@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,7 +13,7 @@ import org.openhab.binding.onkyo.internal.eiscp.EiscpMessage;
 /**
  * This interface defines interface to receive status updates from Onkyo receiver.
  *
- * @author Pauli Anttila
+ * @author Pauli Anttila - Initial contribution
  */
 public interface OnkyoEventListener {
 
@@ -28,6 +28,8 @@ public interface OnkyoEventListener {
     /**
      * Procedure for connection error events from Onkyo AV receiver.
      *
+     * @param errorMsg
+     *            Reason for error.
      */
-    void connectionError(String ip);
+    void connectionError(String ip, String errorMsg);
 }

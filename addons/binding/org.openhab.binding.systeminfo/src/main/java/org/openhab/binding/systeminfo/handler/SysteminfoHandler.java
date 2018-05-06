@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -30,9 +31,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.systeminfo.model.DeviceNotFoundException;
-import org.openhab.binding.systeminfo.model.OshiSysteminfo;
-import org.openhab.binding.systeminfo.model.SysteminfoInterface;
+import org.openhab.binding.systeminfo.internal.model.DeviceNotFoundException;
+import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
  * (CPU, Memory, Storage, Display and others).
  *
  * @author Svilen Valkanov - Initial contribution
+ * @author Lyubomir Papzov - Separate the creation of the systeminfo object and its initialization
  */
 
 public class SysteminfoHandler extends BaseThingHandler {
@@ -79,17 +80,22 @@ public class SysteminfoHandler extends BaseThingHandler {
      * Wait time for the creation of Item-Channel links in seconds. This delay is needed, because the Item-Channel
      * links have to be created before the thing state is updated, otherwise item state will not be updated.
      */
-    private static final int WAIT_TIME_CHANNEL_ITEM_LINK_INIT = 1;
+    public static final int WAIT_TIME_CHANNEL_ITEM_LINK_INIT = 1;
 
-    private OshiSysteminfo systeminfo;
+    private SysteminfoInterface systeminfo;
 
     ScheduledFuture<?> highPriorityTasks;
     ScheduledFuture<?> mediumPriorityTasks;
 
     private Logger logger = LoggerFactory.getLogger(SysteminfoHandler.class);
 
-    public SysteminfoHandler(Thing thing) {
+    public SysteminfoHandler(@NonNull Thing thing, SysteminfoInterface systeminfo) {
         super(thing);
+        if (systeminfo != null) {
+            this.systeminfo = systeminfo;
+        } else {
+            throw new IllegalArgumentException("No systeminfo service was provided");
+        }
     }
 
     @Override
@@ -110,8 +116,8 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     private boolean instantiateSysteminfoLibrary() {
         try {
-            this.systeminfo = new OshiSysteminfo();
-            logger.debug("OSHI Systeminfo library is instatiated!");
+            systeminfo.initializeSysteminfo();
+            logger.debug("Systeminfo implementation is instantiated!");
             return true;
         } catch (Exception e) {
             logger.error("Can not instantate Systeminfo object!", e);
@@ -211,28 +217,18 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     private void scheduleUpdates() {
         logger.debug("Schedule high priority tasks at fixed rate {} s.", refreshIntervalHighPriority);
-        highPriorityTasks = scheduler.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                publishData(highPriorityChannels);
-            }
+        highPriorityTasks = scheduler.scheduleWithFixedDelay(() -> {
+            publishData(highPriorityChannels);
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalHighPriority.intValue(), TimeUnit.SECONDS);
 
         logger.debug("Schedule medium priority tasks at fixed rate {} s.", refreshIntervalMediumPriority);
-        mediumPriorityTasks = scheduler.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                systeminfo.updateStaticObjects();
-                publishData(mediumPriorityChannels);
-            }
+        mediumPriorityTasks = scheduler.scheduleWithFixedDelay(() -> {
+            publishData(mediumPriorityChannels);
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalMediumPriority.intValue(), TimeUnit.SECONDS);
 
         logger.debug("Schedule one time update for low priority tasks.");
-        scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                publishData(lowPriorityChannels);
-            }
+        scheduler.schedule(() -> {
+            publishData(lowPriorityChannels);
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, TimeUnit.SECONDS);
 
     }
@@ -260,12 +256,24 @@ public class SysteminfoHandler extends BaseThingHandler {
         }
     }
 
+    public Set<ChannelUID> getHighPriorityChannels() {
+        return highPriorityChannels;
+    }
+
+    public Set<ChannelUID> getMediumPriorityChannels() {
+        return mediumPriorityChannels;
+    }
+
+    public Set<ChannelUID> getLowPriorityChannels() {
+        return lowPriorityChannels;
+    }
+
     /**
      * This method gets the information for specific channel through the {@link SysteminfoInterface}. It uses the
      * channel ID to call the correct method from the {@link SysteminfoInterface} with deviceIndex parameter (in case of
      * multiple devices, for reference see {@link #getDeviceIndex(String)}})
      *
-     * @param channelUID - the UID of the channel
+     * @param channelUID the UID of the channel
      * @return State object or null, if there is no information for the device with this index
      */
     private State getInfoForChannel(ChannelUID channelUID) {
@@ -449,7 +457,7 @@ public class SysteminfoHandler extends BaseThingHandler {
      * first will have deviceIndex=0, the second deviceIndex=1 ant etc).
      * When no device index is specified, default value of 0 (first device in the list) is returned.
      *
-     * @param channelID - the ID of the channel
+     * @param channelID the ID of the channel
      * @return natural number (number >=0)
      */
     private int getDeviceIndex(ChannelUID channelUID) {
@@ -474,7 +482,7 @@ public class SysteminfoHandler extends BaseThingHandler {
     /**
      * This method gets the process identifier (PID) for specific process
      *
-     * @param channelUID - channel unique identifier
+     * @param channelUID channel unique identifier
      * @return natural number
      */
     private int getPID(ChannelUID channelUID) {

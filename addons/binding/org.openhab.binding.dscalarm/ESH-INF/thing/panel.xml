@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="dscalarm"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="dscalarm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="panel">
-
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="envisalink" />
 			<bridge-type-ref id="it100" />
-            <bridge-type-ref id="tcpserver" />
+			<bridge-type-ref id="tcpserver" />
 		</supported-bridge-type-refs>
 
 		<label>DSC Alarm Panel</label>
@@ -22,7 +20,7 @@
 			</channel>
 			<channel id="panel_command" typeId="panel_command">
 				<label>Panel Command</label>
-				<description>Send Command</description>
+				<description>Send Selected Command</description>
 			</channel>
 			<channel id="panel_system_error" typeId="message">
 				<label>Panel System Error</label>
@@ -99,65 +97,18 @@
 		</channels>
 
 		<config-description>
-
 			<parameter name="userCode" type="text" required="false">
 				<label>User Code</label>
 				<description>The User Code.</description>
 				<default>1234</default>
 			</parameter>
 
-			<parameter name="suppressAcknowledgementMsgs" type="boolean"
-				required="false">
+			<parameter name="suppressAcknowledgementMsgs" type="boolean" required="false">
 				<label>Suppress Acknowledgement Messages</label>
 				<description>Suppress Acknowledgement Messages When Received.</description>
 				<default>false</default>
 			</parameter>
-
 		</config-description>
-
 	</thing-type>
-
-	<channel-type id="message">
-		<item-type>String</item-type>
-		<label>Message</label>
-		<description>Message Received</description>
-		<state pattern="%s" readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="panel_command">
-		<item-type>Number</item-type>
-		<label>Panel Command</label>
-		<description>Send Command</description>
-		<state pattern="%d">
-			<options>
-				<option value="-1">None</option>
-				<option value="0">Poll</option>
-				<option value="1">Status Report</option>
-				<option value="2">Labels Request (Serial Only)</option>
-				<option value="8">Dump Zone Timers (TCP Only)</option>
-				<option value="10">Set Time/Date</option>
-				<option value="200">Send User Code</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="status">
-		<item-type>Switch</item-type>
-		<label>Status</label>
-		<description>Status</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="time">
-		<item-type>DateTime</item-type>
-		<label>Time</label>
-		<description>Time</description>
-	</channel-type>
-
-	<channel-type id="state">
-		<item-type>Switch</item-type>
-		<label>State</label>
-		<description>State (On/Off)</description>
-	</channel-type>
 
 </thing:thing-descriptions>

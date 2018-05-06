@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.sensebox;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Hakan Tandogan - Initial contribution
  */
+@NonNullByDefault
 public class SenseBoxBindingConstants {
 
     public static final String BINDING_ID = "sensebox";
@@ -55,4 +57,10 @@ public class SenseBoxBindingConstants {
 
     // Minimum timeslice between API requests in seconds
     public static final int MINIMUM_UPDATE_INTERVAL = 5 * 60;
+
+    // How long do we want each cache entry to be available?
+    public static final int CACHE_EXPIRY = 10 * 1000; // 10s
+
+    // 67108860 is an invalid reading which the API sends us nevertheless
+    public static final String INVALID_BRIGHTNESS = "67108860";
 }

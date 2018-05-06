@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -29,29 +29,26 @@ import org.slf4j.LoggerFactory;
  */
 public final class QueueChannelThrottler extends AbstractMultiRateChannelThrottler {
 
-    private Logger logger = LoggerFactory.getLogger(QueueChannelThrottler.class);
+    private final Logger logger = LoggerFactory.getLogger(QueueChannelThrottler.class);
 
     private static final int MAX_QUEUE_LENGTH = 150;
     private BlockingQueue<FutureTask<?>> tasks;
     private final Rate overallRate;
 
-    private final Runnable processQueueTask = new Runnable() {
-        @Override
-        public void run() {
-            FutureTask<?> task = tasks.poll();
-            if (task != null && !task.isCancelled()) {
-                task.run();
-            }
+    private final Runnable processQueueTask = () -> {
+        FutureTask<?> task = tasks.poll();
+        if (task != null && !task.isCancelled()) {
+            task.run();
         }
     };
 
     public QueueChannelThrottler(Rate someRate) {
-        this(someRate, Executors.newScheduledThreadPool(1), new HashMap<Object, Rate>(), TimeProvider.SYSTEM_PROVIDER,
+        this(someRate, Executors.newScheduledThreadPool(1), new HashMap<>(), TimeProvider.SYSTEM_PROVIDER,
                 MAX_QUEUE_LENGTH);
     }
 
     public QueueChannelThrottler(Rate someRate, ScheduledExecutorService scheduler) {
-        this(someRate, scheduler, new HashMap<Object, Rate>(), TimeProvider.SYSTEM_PROVIDER, MAX_QUEUE_LENGTH);
+        this(someRate, scheduler, new HashMap<>(), TimeProvider.SYSTEM_PROVIDER, MAX_QUEUE_LENGTH);
     }
 
     public QueueChannelThrottler(Rate someRate, ScheduledExecutorService scheduler, Map<Object, Rate> channels) {
@@ -66,8 +63,7 @@ public final class QueueChannelThrottler extends AbstractMultiRateChannelThrottl
             TimeProvider timeProvider, int queueLength) {
         super(someRate, scheduler, channels, timeProvider);
         overallRate = someRate;
-        tasks = new LinkedBlockingQueue<FutureTask<?>>(queueLength);
-
+        tasks = new LinkedBlockingQueue<>(queueLength);
     }
 
     @Override

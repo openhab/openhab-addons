@@ -3,7 +3,7 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Thing Type for BigAssFan -->
+	<!-- Thing Type for BigAssFan fan -->
 	<thing-type id="fan">
 		<label>BigAssFan</label>
 		<description>Big Ass Fan</description>
@@ -12,12 +12,15 @@
 			<!-- Channels related to fan functions -->
 			<channel id="fan-power" typeId="fan-power" />
 			<channel id="fan-speed" typeId="fan-speed" />
-			<channel id="fan-direction" typeId="fan-direction" />
+			<channel id="fan-direction" typeId="fan-direction"></channel>
 			<channel id="fan-auto" typeId="fan-auto" />
 			<channel id="fan-whoosh" typeId="fan-whoosh" />
 			<channel id="fan-smartmode" typeId="fan-smartmode" />
+			<channel id="fan-learn-speed-min" typeId="fan-learn-speed-min" />
+			<channel id="fan-learn-speed-max" typeId="fan-learn-speed-max" />
 			<channel id="fan-speed-min" typeId="fan-speed-min" />
-			<channel id="fan-speed-max" typeId="fan-speed-min" />
+			<channel id="fan-speed-max" typeId="fan-speed-max" />
+			<channel id="fan-wintermode" typeId="fan-wintermode" />
 
 			<!-- Channels related to light functions -->
 			<channel id="light-power" typeId="light-power" />
@@ -26,6 +29,7 @@
 			<channel id="light-smarter" typeId="light-smarter" />
 			<channel id="light-level-min" typeId="light-level-min" />
 			<channel id="light-level-max" typeId="light-level-max" />
+			<channel id="light-present" typeId="light-present" />
 
 			<!-- Channels related to motion sensor -->
 			<channel id="motion" typeId="motion" />
@@ -34,21 +38,43 @@
 			<channel id="time" typeId="time" />
 		</channels>
 
-		<config-description>
-			<parameter name="label" type="text" required="true">
-				<label>Name of Device</label>
-				<description>Enter the name you've given to the device</description>
-			</parameter>
-			<parameter name="ipAddress" type="text" required="true">
-				<label>Network Address</label>
-				<description>Enter the IP address of the fan</description>
-				<context>network-address</context>
-			</parameter>
-			<parameter name="macAddress" type="text" required="true">
-				<label>MAC Address</label>
-				<description>Enter the MAC address of the fan</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:bigassfan:device" />
+	</thing-type>
+
+	<!-- Thing Type for BigAssFan light -->
+	<thing-type id="light">
+		<label>Light</label>
+		<description>Light</description>
+
+		<channels>
+			<!-- Channels related to light functions -->
+			<channel id="light-power" typeId="light-power" />
+			<channel id="light-level" typeId="light-level" />
+			<channel id="light-hue" typeId="light-hue" />
+			<channel id="light-present" typeId="light-present" />
+			<channel id="light-color" typeId="light-color" />
+
+			<!-- Channels related to motion sensor -->
+			<channel id="motion" typeId="motion" />
+
+			<!-- Miscellaneous channels -->
+			<channel id="time" typeId="time" />
+		</channels>
+
+		<config-description-ref uri="thing-type:bigassfan:device" />
+	</thing-type>
+
+	<!-- Thing Type for BigAssFan controller -->
+	<thing-type id="controller">
+		<label>Controller</label>
+		<description>Wall controller for Big Ass Fan</description>
+
+		<channels>
+			<channel id="motion" typeId="motion" />
+			<channel id="time" typeId="time" />
+		</channels>
+
+		<config-description-ref uri="thing-type:bigassfan:device" />
 	</thing-type>
 
 	<!-- Channel types -->
@@ -64,10 +90,10 @@
 		<description>Control the speed of the fan</description>
 	</channel-type>
 	<channel-type id="fan-direction">
-		<item-type>Switch</item-type>
+		<item-type>String</item-type>
 		<label>Fan Direction</label>
 		<description>Forward or reverse</description>
-		<state>
+		<state readOnly="true">
 			<options>
 				<option value="FWD">Forward</option>
 				<option value="REV">Reverse</option>
@@ -98,17 +124,32 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="fan-speed-min">
+	<channel-type id="fan-learn-speed-min">
 		<item-type>Dimmer</item-type>
 		<label>Minimum Fan Speed</label>
 		<description>Set the minimum fan speed when in Smart Cooling mode</description>
 	</channel-type>
-	<channel-type id="fan-speed-max">
+	<channel-type id="fan-learn-speed-max">
 		<item-type>Dimmer</item-type>
 		<label>Maximum Fan Speed</label>
 		<description>Set the maximum fan speed when in Smart Cooling mode</description>
 	</channel-type>
-
+	<channel-type id="fan-speed-min">
+		<item-type>Dimmer</item-type>
+		<label>Minimum Fan Speed</label>
+		<description>Set the minimum fan speed</description>
+	</channel-type>
+	<channel-type id="fan-speed-max">
+		<item-type>Dimmer</item-type>
+		<label>Maximum Fan Speed</label>
+		<description>Set the maximum fan speed</description>
+	</channel-type>
+	<channel-type id="fan-wintermode">
+		<item-type>Switch</item-type>
+		<label>Fan Winter Mode</label>
+		<description>Enable or disable fan winter mode</description>
+		<category>Switch</category>
+	</channel-type>
 	<channel-type id="light-power">
 		<item-type>Switch</item-type>
 		<label>Light Power</label>
@@ -143,7 +184,33 @@
 		<label>Maximum Brightness</label>
 		<description>Set the maximum brightness level when using Smarter Lighting</description>
 	</channel-type>
-
+	<channel-type id="light-hue">
+		<item-type>Dimmer</item-type>
+		<label>Hue</label>
+		<description>Set the hue of the light</description>
+	</channel-type>
+	<channel-type id="light-present">
+		<item-type>String</item-type>
+		<label>Light Present</label>
+		<description>Fan has the integrated light installed</description>
+		<state readOnly="true">
+			<options>
+				<option value="PRESENT">Present</option>
+				<option value="NOTPRESENT">Not Present</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="light-color">
+		<item-type>String</item-type>
+		<label>Light Color</label>
+		<description>Light allows hue to be adjusted</description>
+		<state readOnly="true">
+			<options>
+				<option value="COLOR">Color</option>
+				<option value="NOCOLOR">No Color</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="motion">
 		<item-type>Switch</item-type>
 		<label>Motion Sensor</label>
@@ -155,7 +222,6 @@
 			</options>
 		</state>
 	</channel-type>
-
 	<channel-type id="time" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Time</label>

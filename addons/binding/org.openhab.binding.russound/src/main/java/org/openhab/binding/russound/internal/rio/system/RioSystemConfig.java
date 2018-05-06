@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,29 +11,29 @@ package org.openhab.binding.russound.internal.rio.system;
 /**
  * Configuration class for the {@link RioSystemHandler}
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class RioSystemConfig {
 
     /**
      * Constant defined for the "ipAddress" configuration field
      */
-    public static final String IpAddress = "ipAddress";
+    public static final String IP_ADDRESS = "ipAddress";
 
     /**
      * Constant defined for the "ping" configuration field
      */
-    public static final String Ping = "ping";
+    public static final String PING = "ping";
 
     /**
      * Constant defined for the "retryPolling" configuration field
      */
-    public static final String RetryPolling = "retryPolling";
+    public static final String RETRY_POLLING = "retryPolling";
 
     /**
      * Constant defined for the "scanDevice" configuration field
      */
-    public static final String ScanDevice = "scanDevice";
+    public static final String SCAN_DEVICE = "scanDevice";
 
     /**
      * IP Address (or host name) of system

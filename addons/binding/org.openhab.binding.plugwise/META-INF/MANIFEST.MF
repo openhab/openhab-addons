@@ -1,0 +1,35 @@
+Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-ManifestVersion: 2
+Bundle-Name: Plugwise Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.plugwise;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Export-Package: 
+ org.openhab.binding.plugwise,
+ org.openhab.binding.plugwise.handler
+Import-Package: 
+ com.google.common.base,
+ com.google.common.collect,
+ gnu.io,
+ javax.measure.quantity,
+ org.apache.commons.io,
+ org.apache.commons.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.common,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.openhab.binding.plugwise,
+ org.openhab.binding.plugwise.handler,
+ org.osgi.framework,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml

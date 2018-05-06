@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,13 +9,12 @@
 package org.openhab.binding.rfxcom.internal.connector;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-
-import javax.xml.bind.DatatypeConverter;
+import java.net.SocketTimeoutException;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +28,6 @@ import org.slf4j.LoggerFactory;
 public class RFXComTcpConnector extends RFXComBaseConnector {
     private final Logger logger = LoggerFactory.getLogger(RFXComTcpConnector.class);
 
-    private InputStream in;
     private OutputStream out;
     private Socket socket;
 
@@ -48,7 +46,7 @@ public class RFXComTcpConnector extends RFXComBaseConnector {
             in.reset();
         }
 
-        readerThread = new RFXComStreamReader(this, in);
+        readerThread = new RFXComStreamReader(this);
         readerThread.start();
     }
 
@@ -61,7 +59,8 @@ public class RFXComTcpConnector extends RFXComBaseConnector {
             readerThread.interrupt();
             try {
                 readerThread.join();
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
         }
 
         if (out != null) {
@@ -88,8 +87,20 @@ public class RFXComTcpConnector extends RFXComBaseConnector {
 
     @Override
     public void sendMessage(byte[] data) throws IOException {
-        logger.trace("Send data (len={}): {}", data.length, DatatypeConverter.printHexBinary(data));
+        if (logger.isTraceEnabled()) {
+            logger.trace("Send data (len={}): {}", data.length, HexUtils.bytesToHex(data));
+        }
         out.write(data);
         out.flush();
+    }
+
+    @Override
+    int read(byte[] buffer, int offset, int length) throws IOException {
+        try {
+            return super.read(buffer, offset, length);
+        } catch (SocketTimeoutException ignore) {
+            // ignore this exception, instead return 0 to behave like the serial read
+            return 0;
+        }
     }
 }

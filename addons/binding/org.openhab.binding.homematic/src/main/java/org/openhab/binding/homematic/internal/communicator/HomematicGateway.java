@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -60,6 +60,11 @@ public interface HomematicGateway {
     public void loadChannelValues(HmChannel channel) throws IOException;
 
     /**
+     * Reenumerates the set of VALUES datapoints for the given channel.
+     */
+    public void updateChannelValueDatapoints(HmChannel channel) throws IOException;
+
+    /**
      * Prepares the device for reloading all values from the gateway.
      */
     public void triggerDeviceValuesReload(HmDevice device);
@@ -74,6 +79,27 @@ public interface HomematicGateway {
      * Returns the id of the HomematicGateway.
      */
     public String getId();
+    
+    /**
+     * Set install mode of homematic controller. During install mode the
+     * controller will accept any device (normal mode)
+     * 
+     * @param enable <i>true</i> will start install mode, whereas <i>false</i>
+     *         will stop it
+     * @param seconds specify how long the install mode should last
+     * @throws IOException if RpcClient fails to propagate command
+     */
+    public void setInstallMode(boolean enable, int seconds) throws IOException;
+
+    /**
+     * Get current install mode of homematic contoller
+     * 
+     * @return the current time in seconds that the controller remains in
+     *         <i>install_mode==true</i>, respectively <i>0</i> in case of
+     *         <i>install_mode==false</i>
+     * @throws IOException if RpcClient fails to propagate command
+     */
+    public int getInstallMode() throws IOException;
 
     /**
      * Loads all rssi values from the gateway.

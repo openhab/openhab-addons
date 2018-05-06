@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,8 +7,6 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.pioneeravr.internal.protocol.serial;
-
-import gnu.io.NRSerialPort;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,11 +16,12 @@ import org.openhab.binding.pioneeravr.internal.protocol.StreamAvrConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gnu.io.NRSerialPort;
+
 /**
- * 
  * A class that wraps the communication to a Pioneer AVR devices through a serial port
- * 
- * @author Antoine Besnard
+ *
+ * @author Antoine Besnard - Initial contribution
  */
 public class SerialAvrConnection extends StreamAvrConnection {
 
@@ -41,7 +40,6 @@ public class SerialAvrConnection extends StreamAvrConnection {
     @Override
     protected void openConnection() throws IOException {
         if (isPortNameExist(portName)) {
-
             serialPort = new NRSerialPort(portName, LINK_SPEED);
 
             boolean isConnected = serialPort.connect();
@@ -59,7 +57,7 @@ public class SerialAvrConnection extends StreamAvrConnection {
 
     /**
      * Check if the Serial with the given name exist.
-     * 
+     *
      * @param portName
      * @return
      */

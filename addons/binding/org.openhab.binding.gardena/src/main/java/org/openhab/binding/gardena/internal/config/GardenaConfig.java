@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,9 +26,9 @@ public class GardenaConfig {
     private String email;
     private String password;
 
-    private transient Integer sessionTimeout = DEFAULT_SESSION_TIMEOUT;
-    private transient Integer connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
-    private transient Integer refresh = DEFAULT_REFRESH;
+    private Integer sessionTimeout = DEFAULT_SESSION_TIMEOUT;
+    private Integer connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
+    private Integer refresh = DEFAULT_REFRESH;
 
     public GardenaConfig() {
     }
@@ -115,9 +115,6 @@ public class GardenaConfig {
         return StringUtils.isNotBlank(email) && StringUtils.isNotBlank(password);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("email", email)

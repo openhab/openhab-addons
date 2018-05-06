@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mcp23017" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Input Group Type -->
+	<channel-group-type id="inputgroup">
+		<label>Input pins</label>
+		<description>MCP 23017 pins working in DIGITAL_INPUT mode (contact)</description>
+		<channels>
+			<channel id="A0" typeId="input_pin" />
+			<channel id="A1" typeId="input_pin" />
+			<channel id="A2" typeId="input_pin" />
+			<channel id="A3" typeId="input_pin" />
+			<channel id="A4" typeId="input_pin" />
+			<channel id="A5" typeId="input_pin" />
+			<channel id="A6" typeId="input_pin" />
+			<channel id="A7" typeId="input_pin" />
+			<channel id="B0" typeId="input_pin" />
+			<channel id="B1" typeId="input_pin" />
+			<channel id="B2" typeId="input_pin" />
+			<channel id="B3" typeId="input_pin" />
+			<channel id="B4" typeId="input_pin" />
+			<channel id="B5" typeId="input_pin" />
+			<channel id="B6" typeId="input_pin" />
+			<channel id="B7" typeId="input_pin" />
+		</channels>
+	</channel-group-type>
+
+	<!-- Output Group Type -->
+	<channel-group-type id="outputgroup">
+		<label>Output pins</label>
+		<description>MCP 23017 pins working in DIGITAL_OUTPUT mode (switch)</description>
+		<channels>
+			<channel id="A0" typeId="output_pin" />
+			<channel id="A1" typeId="output_pin" />
+			<channel id="A2" typeId="output_pin" />
+			<channel id="A3" typeId="output_pin" />
+			<channel id="A4" typeId="output_pin" />
+			<channel id="A5" typeId="output_pin" />
+			<channel id="A6" typeId="output_pin" />
+			<channel id="A7" typeId="output_pin" />
+			<channel id="B0" typeId="output_pin" />
+			<channel id="B1" typeId="output_pin" />
+			<channel id="B2" typeId="output_pin" />
+			<channel id="B3" typeId="output_pin" />
+			<channel id="B4" typeId="output_pin" />
+			<channel id="B5" typeId="output_pin" />
+			<channel id="B6" typeId="output_pin" />
+			<channel id="B7" typeId="output_pin" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="input_pin">
+		<item-type>Contact</item-type>
+		<label>Input pin</label>
+		<description>channel type for MCP23017 pin in DIGITAL_INPUT mode (contact)</description>
+		<category>Contact</category>
+		<state readOnly="false" />
+		<config-description-ref uri="channel-type:input_pin:config" />
+	</channel-type>
+
+	<channel-type id="output_pin">
+		<item-type>Switch</item-type>
+		<label>Output pin</label>
+		<description>channel type for MCP23017 pin in DIGITAL_INPUT mode (switch)</description>
+		<category>Switch</category>
+		<state readOnly="true" />
+		<config-description-ref uri="channel-type:output_pin:config" />
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.SocketTimeoutException;
 import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -89,18 +88,17 @@ import com.google.gson.JsonParser;
  */
 public class TeslaHandler extends BaseThingHandler {
 
-    public static final int EVENT_REFRESH_INTERVAL = 200;
-    public static final int FAST_STATUS_REFRESH_INTERVAL = 15000;
-    public static final int SLOW_STATUS_REFRESH_INTERVAL = 60000;
-    public static final int EVENT_RETRY_INTERVAL = 5000;
-    public static final int EVENT_RECOVERY_INTERVAL = 180000;
-    public static final int EVENT_MISSING_WHILE_STATIONARY_INTERVAL = 305000;
-    public static final int EVENT_MISSING_WHILE_MOVING_INTERVAL = 3000;
-    public static final int CONNECT_RETRY_INTERVAL = 15000;
-    public static final int MAXIMUM_ERRORS_IN_INTERVAL = 2;
-    public static final int ERROR_INTERVAL_SECONDS = 15;
+    private static final int EVENT_STREAM_CONNECT_TIMEOUT = 3000;
+    private static final int EVENT_STREAM_READ_TIMEOUT = 200000;
+    private static final int EVENT_TIMESTAMP_AGE_LIMIT = 3000;
+    private static final int EVENT_TIMESTAMP_MAX_DELTA = 10000;
+    private static final int FAST_STATUS_REFRESH_INTERVAL = 15000;
+    private static final int SLOW_STATUS_REFRESH_INTERVAL = 60000;
+    private static final int CONNECT_RETRY_INTERVAL = 15000;
+    private static final int MAXIMUM_ERRORS_IN_INTERVAL = 2;
+    private static final int ERROR_INTERVAL_SECONDS = 15;
 
-    private Logger logger = LoggerFactory.getLogger(TeslaHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(TeslaHandler.class);
 
     // Vehicle state variables
     protected Vehicle vehicle;
@@ -124,11 +122,12 @@ public class TeslaHandler extends BaseThingHandler {
 
     // Threading and Job related variables
     protected ScheduledFuture<?> connectJob;
-    protected ScheduledFuture<?> eventJob;
+    protected Thread eventThread;
     protected ScheduledFuture<?> fastStateJob;
     protected ScheduledFuture<?> slowStateJob;
     protected QueueChannelThrottler stateThrottler;
 
+    protected boolean allowWakeUp = true;
     protected long lastTimeStamp;
     protected long intervalTimestamp = 0;
     protected int intervalErrors = 0;
@@ -146,7 +145,6 @@ public class TeslaHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
         logger.trace("Initializing the Tesla handler for {}", this.getStorageKey());
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -160,12 +158,10 @@ public class TeslaHandler extends BaseThingHandler {
                         TimeUnit.MILLISECONDS);
             }
 
-            if (eventJob == null || eventJob.isCancelled()) {
-                eventJob = scheduler.scheduleWithFixedDelay(eventRunnable, 0, EVENT_REFRESH_INTERVAL,
-                        TimeUnit.MILLISECONDS);
-            }
+            eventThread = new Thread(eventRunnable, "ESH-Tesla-Event Stream-" + getThing().getUID());
+            eventThread.start();
 
-            Map<Object, Rate> channels = new HashMap<Object, Rate>();
+            Map<Object, Rate> channels = new HashMap<>();
             channels.put(TESLA_DATA_THROTTLE, new Rate(1, 1, TimeUnit.SECONDS));
             channels.put(TESLA_COMMAND_THROTTLE, new Rate(20, 1, TimeUnit.MINUTES));
 
@@ -190,7 +186,6 @@ public class TeslaHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-
         logger.trace("Disposing the Tesla handler for {}", getThing().getUID());
 
         lock.lock();
@@ -205,9 +200,9 @@ public class TeslaHandler extends BaseThingHandler {
                 slowStateJob = null;
             }
 
-            if (eventJob != null && !eventJob.isCancelled()) {
-                eventJob.cancel(true);
-                eventJob = null;
+            if (!eventThread.isInterrupted()) {
+                eventThread.interrupt();
+                eventThread = null;
             }
 
             if (connectJob != null && !connectJob.isCancelled()) {
@@ -217,12 +212,10 @@ public class TeslaHandler extends BaseThingHandler {
         } finally {
             lock.unlock();
         }
-
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         String channelID = channelUID.getId();
         TeslaChannelSelector selector = TeslaChannelSelector.getValueSelectorFromChannelID(channelID);
 
@@ -355,6 +348,37 @@ public class TeslaHandler extends BaseThingHandler {
                             }
                             break;
                         }
+                        case WAKEUP: {
+                            if (command instanceof OnOffType) {
+                                if (((OnOffType) command) == OnOffType.ON) {
+                                    wakeUp();
+                                }
+                            }
+                            break;
+                        }
+                        case ALLOWWAKEUP: {
+                            if (command instanceof OnOffType) {
+                                allowWakeUp = (((OnOffType) command) == OnOffType.ON);
+                            }
+                            break;
+                        }
+                        case ENABLEEVENTS: {
+                            if (command instanceof OnOffType) {
+                                if (((OnOffType) command) == OnOffType.ON) {
+                                    if (eventThread == null) {
+                                        eventThread = new Thread(eventRunnable,
+                                                "ESH-Tesla-Event Stream-" + getThing().getUID());
+                                        eventThread.start();
+                                    }
+                                } else {
+                                    if (eventThread != null) {
+                                        eventThread.interrupt();
+                                        eventThread = null;
+                                    }
+                                }
+                            }
+                            break;
+                        }
                         default:
                             break;
                     }
@@ -410,7 +434,6 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     protected String invokeAndParse(String command, String payLoad, WebTarget target) {
-
         logger.debug("Invoking: {}", command);
 
         if (vehicle.id != null) {
@@ -453,7 +476,7 @@ public class TeslaHandler extends BaseThingHandler {
                         new Object[] { command, (response != null) ? response.getStatus() : "",
                                 (response != null) ? response.getStatusInfo() : "No Response" });
 
-                if (intervalErrors == 0 && response.getStatus() == 401) {
+                if (intervalErrors == 0 && response != null && response.getStatus() == 401) {
                     authenticate();
                 }
 
@@ -478,7 +501,6 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     public void parseAndUpdate(String request, String payLoad, String result) {
-
         JsonParser parser = new JsonParser();
         JsonObject jsonObject = null;
 
@@ -560,8 +582,6 @@ public class TeslaHandler extends BaseThingHandler {
                         boolean proceed = true;
                         if (resultTimeStamp < lastTimeStamp && request == TESLA_DRIVE_STATE) {
                             proceed = false;
-                        } else {
-                            lastTimeStamp = resultTimeStamp;
                         }
 
                         if (proceed) {
@@ -606,7 +626,11 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     protected boolean isAwake() {
-        return (vehicle != null) ? (!"asleep".equals(vehicle.state) && vehicle.vehicle_id != null) : false;
+        return vehicle != null && !"asleep".equals(vehicle.state) && vehicle.vehicle_id != null;
+    }
+
+    protected boolean isOnline() {
+        return vehicle != null && "online".equals(vehicle.state) && vehicle.vehicle_id != null;
     }
 
     protected boolean isInMotion() {
@@ -698,8 +722,11 @@ public class TeslaHandler extends BaseThingHandler {
         requestData(TESLA_CLIMATE_STATE);
     }
 
-    protected Vehicle queryVehicle() {
+    public void wakeUp() {
+        sendCommand(TESLA_COMMAND_WAKE_UP);
+    }
 
+    protected Vehicle queryVehicle() {
         // get a list of vehicles
         Response response = vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", "Bearer " + logonToken.access_token).get();
@@ -728,7 +755,6 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     private ThingStatusDetail authenticate() {
-
         Storage<Object> storage = storageService.getStorage(TeslaBindingConstants.BINDING_ID);
 
         String storedToken = (String) storage.get(getStorageKey());
@@ -781,7 +807,6 @@ public class TeslaHandler extends BaseThingHandler {
             logger.debug("Authenticating : Response : {}:{}", response.getStatus(), response.getStatusInfo());
 
             if (response.getStatus() == 200 && response.hasEntity()) {
-
                 String responsePayLoad = response.readEntity(String.class);
                 TokenResponse tokenResponse = gson.fromJson(responsePayLoad.trim(), TokenResponse.class);
 
@@ -792,9 +817,13 @@ public class TeslaHandler extends BaseThingHandler {
                 }
 
                 return ThingStatusDetail.NONE;
-
             } else if (response.getStatus() == 401) {
-                return ThingStatusDetail.CONFIGURATION_ERROR;
+                if (!StringUtils.isEmpty(username)) {
+                    String password = (String) getConfig().get(PASSWORD);
+                    return authenticate(username, password);
+                } else {
+                    return ThingStatusDetail.CONFIGURATION_ERROR;
+                }
             } else if (response.getStatus() == 503 || response.getStatus() == 502) {
                 return ThingStatusDetail.COMMUNICATION_ERROR;
             }
@@ -803,7 +832,6 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     private ThingStatusDetail authenticate(String username, String password) {
-
         TokenRequest token = null;
         try {
             token = new TokenRequestPassword(username, password);
@@ -820,7 +848,6 @@ public class TeslaHandler extends BaseThingHandler {
                 logger.debug("Authenticating : Response : {}:{}", response.getStatus(), response.getStatusInfo());
 
                 if (response.getStatus() == 200 && response.hasEntity()) {
-
                     String responsePayLoad = response.readEntity(String.class);
                     TokenResponse tokenResponse = gson.fromJson(responsePayLoad.trim(), TokenResponse.class);
 
@@ -830,7 +857,6 @@ public class TeslaHandler extends BaseThingHandler {
                         this.logonToken = tokenResponse;
                         return ThingStatusDetail.NONE;
                     }
-
                 } else if (response.getStatus() == 401) {
                     return ThingStatusDetail.CONFIGURATION_ERROR;
                 } else if (response.getStatus() == 503 || response.getStatus() == 502) {
@@ -841,100 +867,96 @@ public class TeslaHandler extends BaseThingHandler {
         return ThingStatusDetail.CONFIGURATION_ERROR;
     }
 
-    protected Runnable fastStateRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            if (getThing().getStatus() == ThingStatus.ONLINE) {
-                if (isAwake()) {
-                    requestData(TESLA_DRIVE_STATE);
-                    requestData(TESLA_VEHICLE_STATE);
+    protected Runnable fastStateRunnable = () -> {
+        if (getThing().getStatus() == ThingStatus.ONLINE) {
+            if (isAwake()) {
+                requestData(TESLA_DRIVE_STATE);
+                requestData(TESLA_VEHICLE_STATE);
+            } else {
+                if (vehicle != null && allowWakeUp) {
+                    wakeUp();
                 } else {
-                    if (vehicle != null) {
-                        sendCommand(TESLA_COMMAND_WAKE_UP);
-                    } else {
-                        vehicle = queryVehicle();
-                    }
+                    vehicle = queryVehicle();
+                }
+            }
+        }
+
+        if (allowWakeUp) {
+            updateState(CHANNEL_ALLOWWAKEUP, OnOffType.ON);
+        } else {
+            updateState(CHANNEL_ALLOWWAKEUP, OnOffType.OFF);
+        }
+
+        if (eventThread != null) {
+            updateState(CHANNEL_ENABLEEVENTS, OnOffType.ON);
+        } else {
+            updateState(CHANNEL_ENABLEEVENTS, OnOffType.OFF);
+        }
+    };
+
+    protected Runnable slowStateRunnable = () -> {
+        if (getThing().getStatus() == ThingStatus.ONLINE) {
+            if (isAwake()) {
+                requestData(TESLA_CHARGE_STATE);
+                requestData(TESLA_CLIMATE_STATE);
+                requestData(TESLA_GUI_STATE);
+                queryVehicle(TESLA_MOBILE_ENABLED_STATE);
+                parseAndUpdate("queryVehicle", null, vehicleJSON);
+            } else {
+                if (vehicle != null && allowWakeUp) {
+                    wakeUp();
+                } else {
+                    vehicle = queryVehicle();
                 }
             }
         }
     };
 
-    protected Runnable slowStateRunnable = new Runnable() {
+    protected Runnable connectRunnable = () -> {
+        try {
+            lock.lock();
 
-        @Override
-        public void run() {
-            if (getThing().getStatus() == ThingStatus.ONLINE) {
-                if (isAwake()) {
-                    requestData(TESLA_CHARGE_STATE);
-                    requestData(TESLA_CLIMATE_STATE);
-                    requestData(TESLA_GUI_STATE);
-                    queryVehicle(TESLA_MOBILE_ENABLED_STATE);
-                    parseAndUpdate("queryVehicle", null, vehicleJSON);
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                logger.debug("Setting up an authenticated connection to the Tesla back-end");
+
+                ThingStatusDetail authenticationResult = authenticate();
+
+                if (authenticationResult != ThingStatusDetail.NONE) {
+                    updateStatus(ThingStatus.OFFLINE, authenticationResult);
                 } else {
-                    if (vehicle != null) {
-                        sendCommand(TESLA_COMMAND_WAKE_UP);
-                    } else {
-                        vehicle = queryVehicle();
-                    }
-                }
-            }
-        }
-    };
+                    // get a list of vehicles
+                    Response response = vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
+                            .header("Authorization", "Bearer " + logonToken.access_token).get();
 
-    protected Runnable connectRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-
-            try {
-                lock.lock();
-
-                if (getThing().getStatus() != ThingStatus.ONLINE) {
-
-                    logger.debug("Setting up an authenticated connection to the Tesla back-end");
-
-                    ThingStatusDetail authenticationResult = authenticate();
-
-                    if (authenticationResult != ThingStatusDetail.NONE) {
-                        updateStatus(ThingStatus.OFFLINE, authenticationResult);
-                    } else {
-                        // get a list of vehicles
-                        Response response = vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
-                                .header("Authorization", "Bearer " + logonToken.access_token).get();
-
-                        if (response != null && response.getStatus() == 200 && response.hasEntity()) {
-                            if ((vehicle = queryVehicle()) != null) {
-                                logger.debug("Found the vehicle with VIN '{}' in the list of vehicles you own",
-                                        getConfig().get(VIN));
-                                updateStatus(ThingStatus.ONLINE);
-                                intervalErrors = 0;
-                                intervalTimestamp = System.currentTimeMillis();
-                            } else {
-                                logger.warn("Unable to find the vehicle with VIN '{}' in the list of vehicles you own",
-                                        getConfig().get(VIN));
-                                updateStatus(ThingStatus.OFFLINE);
-                            }
+                    if (response != null && response.getStatus() == 200 && response.hasEntity()) {
+                        if ((vehicle = queryVehicle()) != null) {
+                            logger.debug("Found the vehicle with VIN '{}' in the list of vehicles you own",
+                                    getConfig().get(VIN));
+                            updateStatus(ThingStatus.ONLINE);
+                            intervalErrors = 0;
+                            intervalTimestamp = System.currentTimeMillis();
                         } else {
-                            if (response != null) {
-                                logger.error("Error fetching the list of vehicles : {}:{}", response.getStatus(),
-                                        response.getStatusInfo());
-                                updateStatus(ThingStatus.OFFLINE);
-                            }
+                            logger.warn("Unable to find the vehicle with VIN '{}' in the list of vehicles you own",
+                                    getConfig().get(VIN));
+                            updateStatus(ThingStatus.OFFLINE);
+                        }
+                    } else {
+                        if (response != null) {
+                            logger.error("Error fetching the list of vehicles : {}:{}", response.getStatus(),
+                                    response.getStatusInfo());
+                            updateStatus(ThingStatus.OFFLINE);
                         }
                     }
                 }
-            } catch (Exception e) {
-                logger.error("An exception occurred while connecting to the Tesla back-end: '{}'", e.getMessage());
-            } finally {
-                lock.unlock();
             }
-
+        } catch (Exception e) {
+            logger.error("An exception occurred while connecting to the Tesla back-end: '{}'", e.getMessage());
+        } finally {
+            lock.unlock();
         }
     };
 
     protected Runnable eventRunnable = new Runnable() {
-
         Response eventResponse;
         BufferedReader eventBufferedReader;
         InputStreamReader eventInputStreamReader;
@@ -945,12 +967,9 @@ public class TeslaHandler extends BaseThingHandler {
                 if (!isEstablished) {
                     eventBufferedReader = null;
 
-                    if (eventResponse != null) {
-                        eventResponse.close();
-                    }
-
-                    eventClient = ClientBuilder.newClient().property(ClientProperties.CONNECT_TIMEOUT, 3000)
-                            .property(ClientProperties.READ_TIMEOUT, (2 * 60 + 5) * 1000)
+                    eventClient = ClientBuilder.newClient()
+                            .property(ClientProperties.CONNECT_TIMEOUT, EVENT_STREAM_CONNECT_TIMEOUT)
+                            .property(ClientProperties.READ_TIMEOUT, EVENT_STREAM_READ_TIMEOUT)
                             .register(new Authenticator((String) getConfig().get(USERNAME), vehicle.tokens[0]));
                     eventTarget = eventClient.target(TESLA_EVENT_URI).path(vehicle.vehicle_id + "/").queryParam(
                             "values", StringUtils.join(EventKeys.values(), ',', 1, EventKeys.values().length));
@@ -965,7 +984,6 @@ public class TeslaHandler extends BaseThingHandler {
                         eventBufferedReader = new BufferedReader(eventInputStreamReader);
                         isEstablished = true;
                     } else if (eventResponse.getStatus() == 401) {
-                        updateStatus(ThingStatus.OFFLINE);
                         isEstablished = false;
                     } else {
                         isEstablished = false;
@@ -983,114 +1001,119 @@ public class TeslaHandler extends BaseThingHandler {
 
         @Override
         public void run() {
-            try {
-                if (getThing().getStatus() == ThingStatus.ONLINE) {
-                    if (isAwake()) {
-                        if (establishEventStream()) {
+            while (true) {
+                try {
+                    if (getThing().getStatus() == ThingStatus.ONLINE) {
+                        if (isAwake()) {
+                            if (establishEventStream()) {
+                                String line = eventBufferedReader.readLine();
 
-                            String line = null;
-                            try {
-                                line = eventBufferedReader.readLine();
-                            } catch (Exception e) {
-                                logger.error("Event Stream : An exception occurred while reading events : '{}'",
-                                        e.getMessage());
-                                isEstablished = false;
-                            }
-
-                            Date date = new Date();
-
-                            while (line != null) {
-                                try {
+                                while (line != null) {
                                     logger.debug("Event Stream : Received an event: '{}'", line);
                                     String vals[] = line.split(",");
-                                    try {
-                                        lock.lock();
-                                        if (Long.valueOf(vals[0]) > lastTimeStamp) {
+                                    long currentTimeStamp = Long.valueOf(vals[0]);
+                                    long systemTimeStamp = System.currentTimeMillis();
+                                    if (logger.isDebugEnabled()) {
+                                        SimpleDateFormat dateFormatter = new SimpleDateFormat(
+                                                "yyyy-MM-dd'T'HH:mm:ss.SSS");
+                                        logger.debug("STS {} CTS {} Delta {}",
+                                                dateFormatter.format(new Date(systemTimeStamp)),
+                                                dateFormatter.format(new Date(currentTimeStamp)),
+                                                systemTimeStamp - currentTimeStamp);
+                                    }
+                                    if (systemTimeStamp - currentTimeStamp < EVENT_TIMESTAMP_AGE_LIMIT) {
+                                        if (currentTimeStamp > lastTimeStamp) {
                                             lastTimeStamp = Long.valueOf(vals[0]);
-                                            if (logger.isTraceEnabled()) {
-                                                date.setTime(lastTimeStamp);
+                                            if (logger.isDebugEnabled()) {
                                                 SimpleDateFormat dateFormatter = new SimpleDateFormat(
                                                         "yyyy-MM-dd'T'HH:mm:ss.SSS");
-                                                logger.trace("Event Stream : Event stamp is {}",
-                                                        dateFormatter.format(date));
+                                                logger.debug("Event Stream : Event stamp is {}",
+                                                        dateFormatter.format(new Date(lastTimeStamp)));
                                             }
                                             for (int i = 0; i < EventKeys.values().length; i++) {
-                                                try {
-                                                    TeslaChannelSelector selector = TeslaChannelSelector
-                                                            .getValueSelectorFromRESTID(
-                                                                    (EventKeys.values()[i]).toString());
-                                                    if (!selector.isProperty()) {
-                                                        State newState = teslaChannelSelectorProxy.getState(vals[i],
-                                                                selector, editProperties());
-                                                        if (newState != null && !"".equals(vals[i])) {
-                                                            updateState(selector.getChannelID(), newState);
-                                                        } else {
-                                                            updateState(selector.getChannelID(), UnDefType.UNDEF);
-
-                                                        }
+                                                TeslaChannelSelector selector = TeslaChannelSelector
+                                                        .getValueSelectorFromRESTID((EventKeys.values()[i]).toString());
+                                                if (!selector.isProperty()) {
+                                                    State newState = teslaChannelSelectorProxy.getState(vals[i],
+                                                            selector, editProperties());
+                                                    if (newState != null && !"".equals(vals[i])) {
+                                                        updateState(selector.getChannelID(), newState);
                                                     } else {
-                                                        Map<String, String> properties = editProperties();
-                                                        properties.put(selector.getChannelID(),
-                                                                (selector.getState(vals[i])).toString());
-                                                        updateProperties(properties);
+                                                        updateState(selector.getChannelID(), UnDefType.UNDEF);
                                                     }
-                                                } catch (Exception e) {
-                                                    logger.warn(
-                                                            "Event Stream : An exception occurred while processing an event received from the vehicle; '{}'",
-                                                            e.getMessage());
+                                                } else {
+                                                    Map<String, String> properties = editProperties();
+                                                    properties.put(selector.getChannelID(),
+                                                            (selector.getState(vals[i])).toString());
+                                                    updateProperties(properties);
                                                 }
                                             }
                                         } else {
-                                            logger.debug(
-                                                    "Event Stream : Discarding an event with an out of sync timestamp");
+                                            if (logger.isDebugEnabled()) {
+                                                SimpleDateFormat dateFormatter = new SimpleDateFormat(
+                                                        "yyyy-MM-dd'T'HH:mm:ss.SSS");
+                                                logger.debug(
+                                                        "Event Stream : Discarding an event with an out of sync timestamp {} (last is {})",
+                                                        dateFormatter.format(new Date(currentTimeStamp)),
+                                                        dateFormatter.format(new Date(lastTimeStamp)));
+                                            }
                                         }
-                                    } finally {
-                                        lock.unlock();
+                                    } else {
+                                        if (logger.isDebugEnabled()) {
+                                            SimpleDateFormat dateFormatter = new SimpleDateFormat(
+                                                    "yyyy-MM-dd'T'HH:mm:ss.SSS");
+                                            logger.debug(
+                                                    "Event Stream : Discarding an event that differs {} ms from the system time: {} (system is {})",
+                                                    systemTimeStamp - currentTimeStamp,
+                                                    dateFormatter.format(currentTimeStamp),
+                                                    dateFormatter.format(systemTimeStamp));
+                                        }
+                                        if (systemTimeStamp - currentTimeStamp > EVENT_TIMESTAMP_MAX_DELTA) {
+                                            if (logger.isTraceEnabled()) {
+                                                logger.trace("Event Stream : The event stream will be reset");
+                                            }
+                                            isEstablished = false;
+                                        }
                                     }
 
-                                } catch (Exception e) {
-                                    logger.error(
-                                            "Event Stream : An exception occurred while reading event inputs from vehicle '{}' : {}",
-                                            vehicle.vin, e.getMessage());
-                                }
-
-                                Thread.sleep(100);
-
-                                try {
-                                    line = null;
                                     line = eventBufferedReader.readLine();
-                                } catch (SocketTimeoutException s) {
-                                    logger.error("Event Stream : An timeout occurred while reading events : '{}'",
-                                            s.getMessage());
-                                    isEstablished = false;
-                                    // Nothing to do here - we move on
-                                } catch (Exception e) {
-                                    logger.error("Event Stream : An exception occurred while reading events : '{}'",
-                                            e.getMessage());
+                                }
+
+                                if (line == null) {
+                                    if (logger.isTraceEnabled()) {
+                                        logger.trace("Event Stream : The end of stream was reached");
+                                    }
                                     isEstablished = false;
                                 }
-                            }
-
-                            if (line == null) {
-                                logger.trace(
-                                        "Event Stream : The end of stream was reached, or an exception just occurred");
-                                isEstablished = false;
                             }
                         } else {
                             logger.debug("Event stream : The vehicle is not awake");
-                            if (vehicle != null) {
+                            if (vehicle != null && allowWakeUp) {
                                 // wake up the vehicle until streaming token <> 0
                                 logger.debug("Event stream : Waking up the vehicle");
-                                sendCommand(TESLA_COMMAND_WAKE_UP);
+                                wakeUp();
                             } else {
                                 logger.debug("Event stream : Querying the vehicle");
                                 vehicle = queryVehicle();
                             }
                         }
+                    } else {
+                        Thread.sleep(250);
                     }
+                } catch (IOException | NumberFormatException e) {
+                    if (logger.isErrorEnabled()) {
+                        logger.error("Event Stream : An exception occurred while reading events : '{}'",
+                                e.getMessage());
+                    }
+                    isEstablished = false;
+                } catch (InterruptedException e) {
+                    isEstablished = false;
                 }
-            } catch (Exception t) {
-                logger.error("Event Stream : An exception ocurred in the event stream thread: '{}'", t.getMessage());
+
+                if (Thread.interrupted()) {
+                    logger.debug("Event Stream : the Event Stream was interrupted");
+                    return;
+                }
             }
         }
     };
@@ -1110,7 +1133,6 @@ public class TeslaHandler extends BaseThingHandler {
         @Override
         public void run() {
             try {
-
                 String result = "";
 
                 if (isAwake() && getThing().getStatus() == ThingStatus.ONLINE) {
@@ -1127,7 +1149,6 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     protected class Authenticator implements ClientRequestFilter {
-
         private final String user;
         private final String password;
 

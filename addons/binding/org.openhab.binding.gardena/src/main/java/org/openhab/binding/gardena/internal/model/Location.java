@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,7 +26,7 @@ public class Location {
     private String id;
     private String name;
     @SerializedName("devices")
-    public List<String> deviceIds = new ArrayList<String>();
+    public List<String> deviceIds = new ArrayList<>();
 
     /**
      * Returns the id of the location.
@@ -49,17 +49,11 @@ public class Location {
         return deviceIds;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id).toHashCode();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof Location)) {

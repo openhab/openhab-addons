@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,6 +11,7 @@ package org.openhab.binding.rfxcom;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 
@@ -23,6 +24,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class RFXComBindingConstants {
 
     public static final String BINDING_ID = "rfxcom";
@@ -56,12 +58,19 @@ public class RFXComBindingConstants {
     public static final String CHANNEL_RAW_MESSAGE = "rawMessage";
     public static final String CHANNEL_RAW_PAYLOAD = "rawPayload";
     public static final String CHANNEL_SHUTTER = "shutter";
+    public static final String CHANNEL_VENETIAN_BLIND = "venetianBlind";
+    public static final String CHANNEL_SUN_WIND_DETECTOR = "sunWindDetector";
     public static final String CHANNEL_COMMAND = "command";
+    public static final String CHANNEL_PROGRAM = "program";
     public static final String CHANNEL_COMMAND_ID = "commandId";
     public static final String CHANNEL_MOOD = "mood";
     public static final String CHANNEL_SIGNAL_LEVEL = "signalLevel";
     public static final String CHANNEL_DIMMING_LEVEL = "dimmingLevel";
+    public static final String CHANNEL_UV = "uv";
     public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_FOOD_TEMPERATURE = "foodTemperature";
+    public static final String CHANNEL_BBQ_TEMPERATURE = "bbqTemperature";
+    public static final String CHANNEL_CHILL_TEMPERATURE = "chillTemperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_HUMIDITY_STATUS = "humidityStatus";
     public static final String CHANNEL_BATTERY_LEVEL = "batteryLevel";
@@ -72,8 +81,7 @@ public class RFXComBindingConstants {
     public static final String CHANNEL_RAIN_TOTAL = "rainTotal";
     public static final String CHANNEL_WIND_DIRECTION = "windDirection";
     public static final String CHANNEL_WIND_SPEED = "windSpeed";
-    public static final String CHANNEL_GUST = "gust";
-    public static final String CHANNEL_CHILL_FACTOR = "chillFactor";
+    public static final String CHANNEL_AVG_WIND_SPEED = "avgWindSpeed";
     public static final String CHANNEL_INSTANT_POWER = "instantPower";
     public static final String CHANNEL_TOTAL_USAGE = "totalUsage";
     public static final String CHANNEL_INSTANT_AMPS = "instantAmp";
@@ -84,6 +92,9 @@ public class RFXComBindingConstants {
     public static final String CHANNEL_STATUS = "status";
     public static final String CHANNEL_MOTION = "motion";
     public static final String CHANNEL_CONTACT = "contact";
+    public static final String CHANNEL_CONTACT_1 = "contact1";
+    public static final String CHANNEL_CONTACT_2 = "contact2";
+    public static final String CHANNEL_CONTACT_3 = "contact3";
     public static final String CHANNEL_VOLTAGE = "voltage";
     public static final String CHANNEL_SET_POINT = "setpoint";
     public static final String CHANNEL_DATE_TIME = "dateTime";
@@ -155,9 +166,9 @@ public class RFXComBindingConstants {
      * Map RFXCOM packet types to RFXCOM Thing types and vice versa.
      */
     public static final Map<PacketType, ThingTypeUID> PACKET_TYPE_THING_TYPE_UID_MAP = ImmutableMap
-            .<PacketType, ThingTypeUID>builder()
+            .<PacketType, ThingTypeUID> builder()
             .put(PacketType.BAROMETRIC, RFXComBindingConstants.THING_TYPE_BAROMETRIC)
-            .put(PacketType.BBQ1, RFXComBindingConstants.THING_TYPE_BBQ_TEMPERATURE)
+            .put(PacketType.BBQ, RFXComBindingConstants.THING_TYPE_BBQ_TEMPERATURE)
             .put(PacketType.BLINDS1, RFXComBindingConstants.THING_TYPE_BLINDS1)
             .put(PacketType.CAMERA1, RFXComBindingConstants.THING_TYPE_CAMERA1)
             .put(PacketType.CHIME, RFXComBindingConstants.THING_TYPE_CHIME)
