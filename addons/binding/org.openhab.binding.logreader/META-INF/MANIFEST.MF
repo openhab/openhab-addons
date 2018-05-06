@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
- lib/tailer.jar
+ lib/commons-io-2.7-20180506.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: LogReader Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -12,7 +12,6 @@ Export-Package:
  org.openhab.binding.logreader,
  org.openhab.binding.logreader.handler
 Import-Package: 
- org.apache.commons.io,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
