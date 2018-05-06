@@ -12,12 +12,14 @@ The SolarLog is exposed as one thing with a number of channels that can be used 
 
 You can either configure the Thing via the openHAB UI or via a `*.things` file, according to the following example:
 
-`Thing solarlog:datalogger:pv "SolarLog 300" @ "Utility Room" [ url="http://solar-log" refreshInterval="15" ]`
+`Thing solarlog:meter:pv "SolarLog 300" @ "Utility Room" [ url="http://solar-log" ]`
 
 The parameters to be used are simple:
 
 * `url` denotes the URL of your SolarLog. If you have not changed anything, this defaults to `http://solar-log`.
 * `refreshInterval` is the interval to fetch new data. SolarLog updates its data every 15 - 60 seconds. `15` is the default value. Values lower than this will return the result from the last 15 seconds period. No value lower than this can be set in the UI.
+
+Currently, the binding does not support authenticated access to the SolarLog JSON API (which was iuntroduced with newer firmwares). If must set the API access to `Open` in the SolarLog configuration in order for the binding to work.
 
 ## More information
 

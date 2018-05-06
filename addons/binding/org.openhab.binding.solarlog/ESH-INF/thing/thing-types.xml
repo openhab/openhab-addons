@@ -2,9 +2,9 @@
 <thing:thing-descriptions bindingId="solarlog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-	<thing-type id="datalogger">
-		<label>SolarLog Binding Thing</label>
-		<description>Sample thing for SolarLog Binding</description>
+	<thing-type id="meter">
+		<label>SolarLog Meter</label>
+		<description>Basic thing for the SolarLog Binding</description>
 
 		<channels>
 			<channel id="lastupdate" typeId="lastupdate"></channel>
@@ -33,14 +33,14 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="15">
 				<label>Refresh Interval</label>
-				<description>States how often a refresh shall occur (in s). SolarLog Updates Data all 15s</description>
+				<description>States how often a refresh shall occur (in s).</description>
 				<default>15</default>
 			</parameter>
 		</config-description>
 	</thing-type>
 	<channel-type id="lastupdate">
 		<item-type>DateTime</item-type>
-		<label>Last Update Time</label>
+		<label>Last Update</label>
 		<description>Last Update Time</description>
 		<state readOnly="true"></state>
 	</channel-type>
