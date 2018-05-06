@@ -12,10 +12,10 @@ import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingCons
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -24,7 +24,6 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -44,7 +43,6 @@ import org.slf4j.LoggerFactory;
 public class FlashBriefingProfileHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FlashBriefingProfileHandler.class);
-    private static HashMap<ThingUID, FlashBriefingProfileHandler> instances = new HashMap<ThingUID, FlashBriefingProfileHandler>();
 
     @Nullable
     AccountHandler accountHandler;
@@ -62,30 +60,10 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
         return this.accountHandler;
     }
 
-    public static @Nullable FlashBriefingProfileHandler find(ThingUID uid) {
-        synchronized (instances) {
-            return instances.get(uid);
-        }
-    }
-
-    public static boolean exist(String profileJson) {
-        synchronized (instances) {
-            for (FlashBriefingProfileHandler handler : instances.values()) {
-                if (handler.currentConfigurationJson.equals(profileJson)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     @Override
     public void initialize() {
         updatePlayOnDevice = true;
         logger.info("{} initialized", getClass().getSimpleName());
-        synchronized (instances) {
-            instances.put(this.getThing().getUID(), this);
-        }
         if (!this.currentConfigurationJson.isEmpty()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
@@ -102,9 +80,6 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        synchronized (instances) {
-            instances.remove(getThing().getUID(), this);
-        }
         ScheduledFuture<?> updateStateJob = this.updateStateJob;
         this.updateStateJob = null;
         if (updateStateJob != null) {
@@ -187,7 +162,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
         }
     }
 
-    public void initialize(AccountHandler handler, String currentConfigurationJson) {
+    public boolean initialize(AccountHandler handler, String currentConfigurationJson) {
         updateState(CHANNEL_SAVE, OnOffType.OFF);
         if (updatePlayOnDevice) {
             updateState(CHANNEL_PLAY_ON_DEVICE, new StringType(""));
@@ -213,6 +188,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
         } else {
             updateState(CHANNEL_ACTIVE, OnOffType.OFF);
         }
+        return StringUtils.equals(this.currentConfigurationJson, currentConfigurationJson);
     }
 
     private String saveCurrentProfile(AccountHandler connection) {

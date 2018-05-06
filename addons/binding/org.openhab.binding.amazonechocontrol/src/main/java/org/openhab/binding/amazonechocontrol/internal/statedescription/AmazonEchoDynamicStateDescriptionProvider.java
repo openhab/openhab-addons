@@ -21,6 +21,9 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingRegistry;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
@@ -36,6 +39,9 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSoun
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists.PlayList;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +57,28 @@ import org.slf4j.LoggerFactory;
 public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
 
     private final Logger logger = LoggerFactory.getLogger(AmazonEchoDynamicStateDescriptionProvider.class);
+    private @Nullable ThingRegistry thingRegistry;
+
+    @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.DYNAMIC)
+    protected void setThingRegistry(ThingRegistry thingRegistry) {
+        this.thingRegistry = thingRegistry;
+    }
+
+    protected void unsetThingRegistry(ThingRegistry thingRegistry) {
+        this.thingRegistry = thingRegistry;
+    }
+
+    public @Nullable ThingHandler findHandler(Channel channel) {
+        ThingRegistry thingRegistry = this.thingRegistry;
+        if (thingRegistry == null) {
+            return null;
+        }
+        Thing thing = thingRegistry.get(channel.getUID().getThingUID());
+        if (thing == null) {
+            return null;
+        }
+        return thing.getHandler();
+    }
 
     @Override
     public @Nullable StateDescription getStateDescription(Channel channel,
@@ -58,17 +86,19 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
         if (originalStateDescription == null) {
             return null;
         }
+        ThingRegistry thingRegistry = this.thingRegistry;
+        if (thingRegistry == null) {
+            return originalStateDescription;
+        }
         if (CHANNEL_TYPE_BLUETHOOTH_ID_SELECTION.equals(channel.getChannelTypeUID())) {
-            EchoHandler handler = EchoHandler.find(channel.getUID().getThingUID());
+            EchoHandler handler = (EchoHandler) findHandler(channel);
             if (handler == null) {
                 return originalStateDescription;
             }
-
             BluetoothState bluetoothState = handler.findBluetoothState();
             if (bluetoothState == null) {
                 return originalStateDescription;
             }
-
             PairedDevice[] pairedDeviceList = bluetoothState.pairedDeviceList;
             if (pairedDeviceList == null) {
                 return originalStateDescription;
@@ -90,8 +120,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             return result;
 
         } else if (CHANNEL_TYPE_AMAZON_MUSIC_PLAY_LIST_ID.equals(channel.getChannelTypeUID())) {
-
-            EchoHandler handler = EchoHandler.find(channel.getUID().getThingUID());
+            EchoHandler handler = (EchoHandler) findHandler(channel);
             if (handler == null) {
                 return originalStateDescription;
             }
@@ -130,7 +159,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                     originalStateDescription.getPattern(), originalStateDescription.isReadOnly(), options);
             return result;
         } else if (CHANNEL_TYPE_PLAY_ALARM_SOUND.equals(channel.getChannelTypeUID())) {
-            EchoHandler handler = EchoHandler.find(channel.getUID().getThingUID());
+            EchoHandler handler = (EchoHandler) findHandler(channel);
             if (handler == null) {
                 return originalStateDescription;
             }
@@ -163,17 +192,15 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
 
                 }
             }
-
             StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
                     originalStateDescription.getMaximum(), originalStateDescription.getStep(),
                     originalStateDescription.getPattern(), originalStateDescription.isReadOnly(), options);
             return result;
         } else if (CHANNEL_TYPE_CHANNEL_PLAY_ON_DEVICE.equals(channel.getChannelTypeUID())) {
-            FlashBriefingProfileHandler handler = FlashBriefingProfileHandler.find(channel.getUID().getThingUID());
+            FlashBriefingProfileHandler handler = (FlashBriefingProfileHandler) findHandler(channel);
             if (handler == null) {
                 return originalStateDescription;
             }
-
             AccountHandler accountHandler = handler.findAccountHandler();
             if (accountHandler == null) {
                 return originalStateDescription;
@@ -196,7 +223,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                     originalStateDescription.getPattern(), originalStateDescription.isReadOnly(), options);
             return result;
         } else if (CHANNEL_TYPE_PLAY_MUSIC_PROVIDER.equals(channel.getChannelTypeUID())) {
-            EchoHandler handler = EchoHandler.find(channel.getUID().getThingUID());
+            EchoHandler handler = (EchoHandler) findHandler(channel);
             if (handler == null) {
                 return originalStateDescription;
             }
@@ -226,5 +253,4 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
         }
         return originalStateDescription;
     }
-
 }

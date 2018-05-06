@@ -12,6 +12,7 @@ import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingCons
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -21,8 +22,11 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.amazonechocontrol.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.handler.EchoHandler;
 import org.openhab.binding.amazonechocontrol.handler.FlashBriefingProfileHandler;
+import org.openhab.binding.amazonechocontrol.internal.discovery.AmazonEchoDiscovery;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.http.HttpService;
 
 /**
@@ -38,6 +42,9 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
     @Nullable
     HttpService httpService;
 
+    @Nullable
+    AmazonEchoDiscovery amazonEchoDiscovery;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -51,8 +58,13 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
         if (httpService == null) {
             return null;
         }
+        AmazonEchoDiscovery amazonEchoDiscovery = this.amazonEchoDiscovery;
+        if (amazonEchoDiscovery == null) {
+            return null;
+        }
+
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
-            AccountHandler bridgeHandler = new AccountHandler((Bridge) thing, httpService);
+            AccountHandler bridgeHandler = new AccountHandler((Bridge) thing, httpService, amazonEchoDiscovery);
             return bridgeHandler;
         }
         if (thingTypeUID.equals(THING_TYPE_FLASH_BRIEFING_PROFILE)) {
@@ -64,7 +76,20 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    @Reference
+    @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.DYNAMIC)
+    protected void setDiscoverService(DiscoveryService discoverService) {
+        if (discoverService instanceof AmazonEchoDiscovery) {
+            amazonEchoDiscovery = (AmazonEchoDiscovery) discoverService;
+        }
+    }
+
+    protected void unsetDiscoverService(DiscoveryService discoverService) {
+        if (discoverService == amazonEchoDiscovery) {
+            amazonEchoDiscovery = null;
+        }
+    }
+
+    @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.DYNAMIC)
     protected void setHttpService(HttpService httpService) {
         this.httpService = httpService;
     }

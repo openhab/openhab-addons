@@ -9,10 +9,10 @@
 package org.openhab.binding.amazonechocontrol.internal.discovery;
 
 /**
- * The {@link AmazonEcIAmazonEchoDiscoveryhoDiscovery} is responsible connection between account and discovery service
+ * The {@link IAmazonAccountHandler} is responsible connection between account and discovery service
  *
  * @author Michael Geramb - Initial contribution
  */
-public interface IAmazonEchoDiscovery {
+public interface IAmazonAccountHandler {
     void updateDeviceList(boolean manual);
 }

@@ -39,7 +39,7 @@ import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.LoginServlet;
 import org.openhab.binding.amazonechocontrol.internal.StateStorage;
 import org.openhab.binding.amazonechocontrol.internal.discovery.AmazonEchoDiscovery;
-import org.openhab.binding.amazonechocontrol.internal.discovery.IAmazonEchoDiscovery;
+import org.openhab.binding.amazonechocontrol.internal.discovery.IAmazonAccountHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
@@ -57,7 +57,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Michael Geramb - Initial Contribution
  */
 @NonNullByDefault
-public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDiscovery {
+public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private StateStorage stateStorage;
@@ -71,13 +71,15 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
     private boolean discoverFlashProfiles;
     private String currentFlashBriefingJson = "";
     private final HttpService httpService;
+    private final AmazonEchoDiscovery amazonEchoDiscovery;
     private @Nullable LoginServlet loginServlet;
 
-    public AccountHandler(Bridge bridge, HttpService httpService) {
+    public AccountHandler(Bridge bridge, HttpService httpService, AmazonEchoDiscovery amazonEchoDiscovery) {
         super(bridge);
         this.httpService = httpService;
+        this.amazonEchoDiscovery = amazonEchoDiscovery;
+        this.amazonEchoDiscovery.resetDiscoverAccount();
         stateStorage = new StateStorage(bridge);
-        AmazonEchoDiscovery.setHandlerExist();
     }
 
     @Override
@@ -226,7 +228,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             loginServlet.dispose();
         }
         this.loginServlet = null;
-        AmazonEchoDiscovery.removeDiscoveryHandler(this);
+        this.amazonEchoDiscovery.removeAccountHandler(this);
         cleanup();
         super.dispose();
     }
@@ -345,7 +347,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
     private void handleValidLogin() {
         updateDeviceList(false);
         updateStatus(ThingStatus.ONLINE);
-        AmazonEchoDiscovery.addDiscoveryHandler(this);
+        this.amazonEchoDiscovery.addAccountHandler(this);
     }
 
     // used to set a valid connection from the web proxy login
@@ -503,8 +505,9 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
                 updateFlashBriefingProfiles(currentConnection);
             }
 
+            boolean flashBriefingProfileFound = false;
             for (FlashBriefingProfileHandler child : flashBriefingProfileHandlers) {
-                child.initialize(this, currentFlashBriefingJson);
+                flashBriefingProfileFound |= child.initialize(this, currentFlashBriefingJson);
             }
             if (flashBriefingProfileHandlers.isEmpty()) {
                 discoverFlashProfiles = true; // discover at least one device
@@ -513,7 +516,10 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonEchoDisc
             if (discoveryService != null) {
                 if (discoverFlashProfiles) {
                     discoverFlashProfiles = false;
-                    discoveryService.discoverFlashBriefingProfiles(getThing().getUID(), this.currentFlashBriefingJson);
+                    if (!flashBriefingProfileFound) {
+                        discoveryService.discoverFlashBriefingProfiles(getThing().getUID(),
+                                this.currentFlashBriefingJson);
+                    }
                 }
             }
         }

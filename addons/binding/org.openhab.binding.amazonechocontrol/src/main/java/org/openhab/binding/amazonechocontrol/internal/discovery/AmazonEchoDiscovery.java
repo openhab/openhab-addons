@@ -26,13 +26,15 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.amazonechocontrol.handler.EchoHandler;
-import org.openhab.binding.amazonechocontrol.handler.FlashBriefingProfileHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,26 +48,39 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.amazonechocontrol")
 public class AmazonEchoDiscovery extends AbstractDiscoveryService {
 
-    private static boolean discoverAccount = true;
-    private final static Set<IAmazonEchoDiscovery> discoveryServices = new HashSet<>();
+    private @Nullable ThingRegistry thingRegistry;
+    private boolean discoverAccount = true;
+    private final Set<IAmazonAccountHandler> discoveryServices = new HashSet<>();
     public @Nullable static AmazonEchoDiscovery instance;
 
     private final Logger logger = LoggerFactory.getLogger(AmazonEchoDiscovery.class);
     private final Map<String, ThingUID> lastDeviceInformations = new HashMap<>();
-    private final Map<String, ThingUID> lastSmartHomeDeviceInformations = new HashMap<>();
     private final HashSet<String> discoverdFlashBriefings = new HashSet<String>();
 
     @Nullable
     ScheduledFuture<?> startScanStateJob;
     long activateTimeStamp;
 
-    public static void addDiscoveryHandler(IAmazonEchoDiscovery discoveryService) {
+    @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.DYNAMIC)
+    protected void setThingRegistry(ThingRegistry thingRegistry) {
+        this.thingRegistry = thingRegistry;
+    }
+
+    protected void unsetThingRegistry(ThingRegistry thingRegistry) {
+        this.thingRegistry = thingRegistry;
+    }
+
+    public void resetDiscoverAccount() {
+        this.discoverAccount = false;
+    }
+
+    public void addAccountHandler(IAmazonAccountHandler discoveryService) {
         synchronized (discoveryServices) {
             discoveryServices.add(discoveryService);
         }
     }
 
-    public static void removeDiscoveryHandler(IAmazonEchoDiscovery discoveryService) {
+    public void removeAccountHandler(IAmazonAccountHandler discoveryService) {
         synchronized (discoveryServices) {
             discoveryServices.remove(discoveryService);
         }
@@ -78,10 +93,6 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
     @Override
     public void deactivate() {
         super.deactivate();
-    }
-
-    public static void setHandlerExist() {
-        discoverAccount = false;
     }
 
     @Override
@@ -107,13 +118,13 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
             thingDiscovered(result);
         }
 
-        IAmazonEchoDiscovery[] accounts;
+        IAmazonAccountHandler[] accounts;
         synchronized (discoveryServices) {
-            accounts = new IAmazonEchoDiscovery[discoveryServices.size()];
+            accounts = new IAmazonAccountHandler[discoveryServices.size()];
             accounts = discoveryServices.toArray(accounts);
         }
 
-        for (IAmazonEchoDiscovery discovery : accounts) {
+        for (IAmazonAccountHandler discovery : accounts) {
             discovery.updateDeviceList(manual);
         }
     }
@@ -151,6 +162,11 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
     };
 
     public synchronized void setDevices(ThingUID brigdeThingUID, List<Device> deviceList) {
+        ThingRegistry thingRegistry = this.thingRegistry;
+        if (thingRegistry == null) {
+            return;
+        }
+
         Set<String> toRemove = new HashSet<String>(lastDeviceInformations.keySet());
         for (Device device : deviceList) {
             String serialNumber = device.serialNumber;
@@ -173,10 +189,8 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
                     }
 
                     ThingUID thingUID = new ThingUID(thingTypeId, brigdeThingUID, serialNumber);
-
                     // Check if already created
-                    if (EchoHandler.find(thingUID) == null) {
-
+                    if (thingRegistry.get(thingUID) == null) {
                         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel(device.accountName)
                                 .withProperty(DEVICE_PROPERTY_SERIAL_NUMBER, serialNumber)
                                 .withProperty(DEVICE_PROPERTY_FAMILY, deviceFamily)
@@ -201,20 +215,19 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
         if (discoverdFlashBriefings.contains(currentFlashBriefingJson)) {
             return;
         }
-        if (!FlashBriefingProfileHandler.exist(currentFlashBriefingJson)) {
-            if (!discoverdFlashBriefings.contains(currentFlashBriefingJson)) {
 
-                String id = UUID.randomUUID().toString();
-                ThingUID thingUID = new ThingUID(THING_TYPE_FLASH_BRIEFING_PROFILE, brigdeThingUID, id);
+        if (!discoverdFlashBriefings.contains(currentFlashBriefingJson)) {
 
-                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel("FlashBriefing")
-                        .withProperty(DEVICE_PROPERTY_FLASH_BRIEFING_PROFILE, currentFlashBriefingJson)
-                        .withBridge(brigdeThingUID).build();
-                logger.debug("Flash Briefing {} discovered", currentFlashBriefingJson);
+            String id = UUID.randomUUID().toString();
+            ThingUID thingUID = new ThingUID(THING_TYPE_FLASH_BRIEFING_PROFILE, brigdeThingUID, id);
 
-                thingDiscovered(result);
-                discoverdFlashBriefings.add(currentFlashBriefingJson);
-            }
+            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel("FlashBriefing")
+                    .withProperty(DEVICE_PROPERTY_FLASH_BRIEFING_PROFILE, currentFlashBriefingJson)
+                    .withBridge(brigdeThingUID).build();
+            logger.debug("Flash Briefing {} discovered", currentFlashBriefingJson);
+
+            thingDiscovered(result);
+            discoverdFlashBriefings.add(currentFlashBriefingJson);
         }
     }
 
@@ -222,14 +235,6 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
         for (String id : lastDeviceInformations.keySet()) {
             if (lastDeviceInformations.get(id).equals(uid)) {
                 lastDeviceInformations.remove(id);
-            }
-        }
-    }
-
-    public synchronized void removeExistingSmartHomeHandler(ThingUID uid) {
-        for (String id : lastSmartHomeDeviceInformations.keySet()) {
-            if (lastSmartHomeDeviceInformations.get(id).equals(uid)) {
-                lastSmartHomeDeviceInformations.remove(id);
             }
         }
     }

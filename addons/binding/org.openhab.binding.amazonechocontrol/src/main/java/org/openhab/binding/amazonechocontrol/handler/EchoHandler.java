@@ -12,7 +12,6 @@ import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingCons
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -30,7 +29,6 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -64,7 +62,6 @@ public class EchoHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
 
-    private final static HashMap<ThingUID, EchoHandler> instances = new HashMap<ThingUID, EchoHandler>();
     private @Nullable Device device;
     private @Nullable Connection connection;
     private @Nullable ScheduledFuture<?> updateStateJob;
@@ -90,9 +87,6 @@ public class EchoHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Amazon Echo Control Binding initialized");
 
-        synchronized (instances) {
-            instances.put(this.getThing().getUID(), this);
-        }
         if (this.connection != null) {
             updateStatus(ThingStatus.ONLINE);
         } else {
@@ -115,9 +109,6 @@ public class EchoHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        synchronized (instances) {
-            instances.remove(this.getThing().getUID());
-        }
         stopCurrentNotification();
         ScheduledFuture<?> updateStateJob = this.updateStateJob;
         this.updateStateJob = null;
@@ -125,12 +116,6 @@ public class EchoHandler extends BaseThingHandler {
             updateStateJob.cancel(false);
         }
         super.dispose();
-    }
-
-    public static @Nullable EchoHandler find(ThingUID uid) {
-        synchronized (instances) {
-            return instances.get(uid);
-        }
     }
 
     public @Nullable BluetoothState findBluetoothState() {
