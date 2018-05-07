@@ -341,7 +341,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private void setVolumeInternal(int volume) {
         JsonObject params = new JsonObject();
-        params.addProperty("volume", this.volume);
+        params.addProperty("volume", volume);
         socket.callMethod("Application.SetVolume", params);
     }
 
