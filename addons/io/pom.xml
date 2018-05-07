@@ -9,7 +9,7 @@
     <version>2.3.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.openhab.addons.io</groupId>
+  <groupId>org.openhab.io</groupId>
   <artifactId>pom</artifactId>
 
   <packaging>pom</packaging>
