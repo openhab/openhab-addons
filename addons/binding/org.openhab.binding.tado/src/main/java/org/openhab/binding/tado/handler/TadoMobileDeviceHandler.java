@@ -99,21 +99,24 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
     }
 
     private MobileDevice getMobileDevice() throws IOException, TadoClientException {
-        try {
-            MobileDevice device = getApi().getMobileDeviceDetails(getHomeId(), configuration.id);
-            if (device == null) {
-                String message = "Mobile device with id " + configuration.id + " unknown or does not belong to home "
-                        + getHomeId();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
-                throw new IOException(message);
-            }
+        MobileDevice device = null;
 
-            return device;
+        try {
+            device = getApi().getMobileDeviceDetails(getHomeId(), configuration.id);
         } catch (IOException | TadoClientException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to server due to " + e.getMessage());
             throw e;
         }
+
+        if (device == null) {
+            String message = "Mobile device with id " + configuration.id + " unknown or does not belong to home "
+                    + getHomeId();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+            throw new IOException(message);
+        }
+
+        return device;
     }
 
     private void scheduleZoneStateUpdate() {
