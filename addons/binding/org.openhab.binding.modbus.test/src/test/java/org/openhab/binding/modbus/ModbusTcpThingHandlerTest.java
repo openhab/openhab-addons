@@ -21,11 +21,11 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.binding.builder.BridgeBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.openhab.binding.modbus.handler.ModbusTcpThingHandler;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
@@ -66,9 +66,9 @@ public class ModbusTcpThingHandlerTest {
         Bridge thing = createTcpThingBuilder("tcpendpoint").withConfiguration(thingConfig).build();
         ThingHandlerCallback thingCallback = Mockito.mock(ThingHandlerCallback.class);
         Mockito.doAnswer(invocation -> {
-            thing.setStatusInfo(invocation.getArgumentAt(1, ThingStatusInfo.class));
+            thing.setStatusInfo((ThingStatusInfo) invocation.getArgument(1));
             return null;
-        }).when(thingCallback).statusUpdated(Matchers.same(thing), Matchers.any());
+        }).when(thingCallback).statusUpdated(ArgumentMatchers.same(thing), ArgumentMatchers.any());
 
         ModbusTcpThingHandler thingHandler = new ModbusTcpThingHandler(thing, () -> modbusManager);
         thingHandler.setCallback(thingCallback);
@@ -98,9 +98,9 @@ public class ModbusTcpThingHandlerTest {
         final Bridge thing = createTcpThingBuilder("tcpendpoint").withConfiguration(thingConfig).build();
         ThingHandlerCallback thingCallback = Mockito.mock(ThingHandlerCallback.class);
         Mockito.doAnswer(invocation -> {
-            thing.setStatusInfo(invocation.getArgumentAt(1, ThingStatusInfo.class));
+            thing.setStatusInfo((ThingStatusInfo) invocation.getArgument(1));
             return null;
-        }).when(thingCallback).statusUpdated(Matchers.same(thing), Matchers.any());
+        }).when(thingCallback).statusUpdated(ArgumentMatchers.same(thing), ArgumentMatchers.any());
 
         ModbusTcpThingHandler thingHandler = new ModbusTcpThingHandler(thing, () -> modbusManager);
         thingHandler.setCallback(thingCallback);
@@ -126,9 +126,9 @@ public class ModbusTcpThingHandlerTest {
         final Bridge thing = createTcpThingBuilder("tcpendpoint").withConfiguration(thingConfig).build();
         ThingHandlerCallback thingCallback = Mockito.mock(ThingHandlerCallback.class);
         Mockito.doAnswer(invocation -> {
-            thing.setStatusInfo(invocation.getArgumentAt(1, ThingStatusInfo.class));
+            thing.setStatusInfo((ThingStatusInfo) invocation.getArgument(1));
             return null;
-        }).when(thingCallback).statusUpdated(Matchers.same(thing), Matchers.any());
+        }).when(thingCallback).statusUpdated(ArgumentMatchers.same(thing), ArgumentMatchers.any());
 
         ModbusTcpThingHandler thingHandler = new ModbusTcpThingHandler(thing, () -> modbusManager);
         thingHandler.setCallback(thingCallback);
@@ -155,9 +155,9 @@ public class ModbusTcpThingHandlerTest {
         final Bridge thing = createTcpThingBuilder("tcpendpoint").withConfiguration(thingConfig).build();
         ThingHandlerCallback thingCallback = Mockito.mock(ThingHandlerCallback.class);
         Mockito.doAnswer(invocation -> {
-            thing.setStatusInfo(invocation.getArgumentAt(1, ThingStatusInfo.class));
+            thing.setStatusInfo((ThingStatusInfo) invocation.getArgument(1));
             return null;
-        }).when(thingCallback).statusUpdated(Matchers.same(thing), Matchers.any());
+        }).when(thingCallback).statusUpdated(ArgumentMatchers.same(thing), ArgumentMatchers.any());
 
         ModbusTcpThingHandler thingHandler = new ModbusTcpThingHandler(thing, () -> modbusManager);
         thingHandler.setCallback(thingCallback);

@@ -10,8 +10,9 @@ package org.openhab.binding.modbus;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -38,10 +39,10 @@ import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.openhab.binding.modbus.handler.ModbusPollerThingHandlerImpl;
 import org.openhab.binding.modbus.handler.ModbusTcpThingHandler;
 import org.openhab.io.transport.modbus.ModbusManager;
@@ -99,8 +100,8 @@ public class ModbusPollerThingHandlerTest {
     @SuppressWarnings("null")
     @Before
     public void setUp() {
-        Mockito.when(thingRegistry.get(Matchers.any())).then(invocation -> {
-            ThingUID uid = invocation.getArgumentAt(0, ThingUID.class);
+        Mockito.when(thingRegistry.get(ArgumentMatchers.any())).then(invocation -> {
+            ThingUID uid = (ThingUID) invocation.getArgument(0);
             for (Thing thing : things) {
                 if (thing.getUID().equals(uid)) {
                     return thing;
@@ -139,9 +140,9 @@ public class ModbusPollerThingHandlerTest {
     @SuppressWarnings("null")
     private void hookStatusUpdates(Thing thing) {
         Mockito.doAnswer(invocation -> {
-            thing.setStatusInfo(invocation.getArgumentAt(1, ThingStatusInfo.class));
+            thing.setStatusInfo((ThingStatusInfo) invocation.getArgument(1));
             return null;
-        }).when(thingCallback).statusUpdated(Matchers.same(thing), Matchers.any());
+        }).when(thingCallback).statusUpdated(ArgumentMatchers.same(thing), ArgumentMatchers.any());
     }
 
     @SuppressWarnings("null")

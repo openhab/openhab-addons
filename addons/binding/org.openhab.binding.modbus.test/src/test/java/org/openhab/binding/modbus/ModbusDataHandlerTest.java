@@ -10,7 +10,7 @@ package org.openhab.binding.modbus;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Field;
@@ -77,10 +77,10 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.openhab.binding.modbus.handler.ModbusDataThingHandler;
 import org.openhab.binding.modbus.handler.ModbusPollerThingHandlerImpl;
 import org.openhab.binding.modbus.handler.ModbusTcpThingHandler;
@@ -307,7 +307,7 @@ public class ModbusDataHandlerTest {
 
     private void hookLinkRegistry(ThingHandler thingHandler) {
         Mockito.doAnswer(invocation -> {
-            ChannelUID channelUID = invocation.getArgumentAt(0, ChannelUID.class);
+            ChannelUID channelUID = (ChannelUID) invocation.getArgument(0);
             return !linkRegistry.getLinks(channelUID).isEmpty();
         }).when(thingCallback).isChannelLinked(any());
     }
@@ -315,17 +315,17 @@ public class ModbusDataHandlerTest {
     @SuppressWarnings("null")
     private void hookStatusUpdates(Thing thing) {
         Mockito.doAnswer(invocation -> {
-            thing.setStatusInfo(invocation.getArgumentAt(1, ThingStatusInfo.class));
+            thing.setStatusInfo((ThingStatusInfo) invocation.getArgument(1));
             return null;
-        }).when(thingCallback).statusUpdated(Matchers.same(thing), Matchers.any());
+        }).when(thingCallback).statusUpdated(ArgumentMatchers.same(thing), ArgumentMatchers.any());
 
     }
 
     @SuppressWarnings("null")
     private void hookStateUpdates(Thing thing) {
         Mockito.doAnswer(invocation -> {
-            ChannelUID channelUID = invocation.getArgumentAt(0, ChannelUID.class);
-            State state = invocation.getArgumentAt(1, State.class);
+            ChannelUID channelUID = (ChannelUID) invocation.getArgument(0);
+            State state = (State) invocation.getArgument(1);
             stateUpdates.putIfAbsent(channelUID, new ArrayList<>());
             stateUpdates.get(channelUID).add(state);
             return null;
@@ -446,8 +446,8 @@ public class ModbusDataHandlerTest {
 
     @Before
     public void setUp() {
-        Mockito.when(thingRegistry.get(Matchers.any())).then(invocation -> {
-            ThingUID uid = invocation.getArgumentAt(0, ThingUID.class);
+        Mockito.when(thingRegistry.get(ArgumentMatchers.any())).then(invocation -> {
+            ThingUID uid = (ThingUID) invocation.getArgument(0);
             for (Thing thing : things) {
                 if (thing.getUID().equals(uid)) {
                     return thing;
@@ -457,7 +457,8 @@ public class ModbusDataHandlerTest {
         });
 
         Mockito.when(manager.submitOneTimeWrite(any())).then(invocation -> {
-            WriteTask task = invocation.getArgumentAt(0, WriteTask.class);
+            WriteTask task = (WriteTask) invocation.getArgument(0);
+
             writeTasks.add(task);
             return Mockito.mock(ScheduledFuture.class);
         });
