@@ -53,16 +53,18 @@ public class TerminationConditionBuilder {
         return this;
     }
 
-    public OverlayTerminationCondition build(ZoneState zoneState) throws IOException, TadoClientException {
+    public OverlayTerminationCondition build(ZoneStateProvider zoneStateProvider)
+            throws IOException, TadoClientException {
         OverlayTerminationCondition terminationCondition = null;
 
         if (terminationType != null) {
             if (terminationType != OverlayTerminationConditionType.TIMER || timerDurationInSeconds != null) {
                 terminationCondition = getTerminationCondition(terminationType, timerDurationInSeconds);
             } else {
-                terminationCondition = getCurrentOrDefaultTimerTermination(zoneState);
+                terminationCondition = getCurrentOrDefaultTimerTermination(zoneStateProvider);
             }
         } else {
+            ZoneState zoneState = zoneStateProvider.getZoneState();
             if (zoneState.getOverlay() != null) {
                 terminationCondition = cleanTerminationCondition(zoneState.getOverlay().getTermination());
             } else {
@@ -78,9 +80,12 @@ public class TerminationConditionBuilder {
         return defaultTerminationCondition != null ? defaultTerminationCondition : manualTermination();
     }
 
-    private TimerTerminationCondition getCurrentOrDefaultTimerTermination(ZoneState zoneState) throws IOException {
+    private TimerTerminationCondition getCurrentOrDefaultTimerTermination(ZoneStateProvider zoneStateProvider)
+            throws IOException, TadoClientException {
         // Timer without duration
         int duration = zoneHandler.getFallbackTimerDuration() * 60;
+
+        ZoneState zoneState = zoneStateProvider.getZoneState();
 
         // If timer is currently running, use its time
         if (zoneState.getOverlay() != null

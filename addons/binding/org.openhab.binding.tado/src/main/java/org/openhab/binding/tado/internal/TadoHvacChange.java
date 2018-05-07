@@ -20,9 +20,9 @@ import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
 import org.openhab.binding.tado.internal.api.model.Overlay;
 import org.openhab.binding.tado.internal.api.model.OverlayTerminationCondition;
 import org.openhab.binding.tado.internal.api.model.OverlayTerminationConditionType;
-import org.openhab.binding.tado.internal.api.model.ZoneState;
 import org.openhab.binding.tado.internal.builder.TerminationConditionBuilder;
 import org.openhab.binding.tado.internal.builder.ZoneSettingsBuilder;
+import org.openhab.binding.tado.internal.builder.ZoneStateProvider;
 
 /**
  * Builder for incremental creation of zone overlays.
@@ -121,9 +121,9 @@ public class TadoHvacChange {
     }
 
     private Overlay buildOverlay() throws IOException, TadoClientException {
-        ZoneState zoneState = getZoneState(); // TODO: encapsulate in Provider class to get only if required and cache
-        OverlayTerminationCondition terminationCondition = terminationConditionBuilder.build(zoneState);
-        GenericZoneSetting setting = settingsBuilder.build(zoneState, zoneHandler.getZoneCapabilities());
+        ZoneStateProvider zoneStateProvider = new ZoneStateProvider(zoneHandler);
+        OverlayTerminationCondition terminationCondition = terminationConditionBuilder.build(zoneStateProvider);
+        GenericZoneSetting setting = settingsBuilder.build(zoneStateProvider, zoneHandler.getZoneCapabilities());
 
         Overlay overlay = new Overlay();
         overlay.setTermination(terminationCondition);
@@ -131,11 +131,5 @@ public class TadoHvacChange {
         overlay.setType(terminationCondition.getType());
 
         return overlay;
-    }
-
-    private ZoneState getZoneState() throws IOException, TadoClientException {
-        ZoneState zoneState = zoneHandler.getZoneState();
-        // empty zone state behaves like a NULL object
-        return zoneState != null ? zoneState : new ZoneState();
     }
 }

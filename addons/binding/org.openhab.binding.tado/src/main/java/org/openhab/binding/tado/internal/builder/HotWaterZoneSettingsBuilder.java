@@ -10,8 +10,11 @@ package org.openhab.binding.tado.internal.builder;
 
 import static org.openhab.binding.tado.internal.api.TadoApiTypeUtils.temperature;
 
+import java.io.IOException;
+
 import org.openhab.binding.tado.TadoBindingConstants.FanSpeed;
 import org.openhab.binding.tado.TadoBindingConstants.HvacMode;
+import org.openhab.binding.tado.internal.api.TadoClientException;
 import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
 import org.openhab.binding.tado.internal.api.model.HotWaterCapabilities;
@@ -19,7 +22,6 @@ import org.openhab.binding.tado.internal.api.model.HotWaterZoneSetting;
 import org.openhab.binding.tado.internal.api.model.Power;
 import org.openhab.binding.tado.internal.api.model.TadoSystemType;
 import org.openhab.binding.tado.internal.api.model.TemperatureObject;
-import org.openhab.binding.tado.internal.api.model.ZoneState;
 
 /**
  * Builder for incremental creation of hot water zone settings.
@@ -41,7 +43,8 @@ public class HotWaterZoneSettingsBuilder extends ZoneSettingsBuilder {
     }
 
     @Override
-    public GenericZoneSetting build(ZoneState zoneState, GenericZoneCapabilities capabilities) {
+    public GenericZoneSetting build(ZoneStateProvider zoneStateProvider, GenericZoneCapabilities capabilities)
+            throws IOException, TadoClientException {
         if (mode == HvacMode.OFF) {
             return hotWaterSetting(false);
         }
@@ -52,22 +55,23 @@ public class HotWaterZoneSettingsBuilder extends ZoneSettingsBuilder {
             setting.setTemperature(temperature(temperature, temperatureUnit));
         }
 
-        addMissingSettingParts(setting, zoneState, (HotWaterCapabilities) capabilities);
+        addMissingSettingParts(setting, zoneStateProvider, (HotWaterCapabilities) capabilities);
 
         return setting;
     }
 
-    private void addMissingSettingParts(HotWaterZoneSetting setting, ZoneState zoneState,
-            HotWaterCapabilities capabilities) {
+    private void addMissingSettingParts(HotWaterZoneSetting setting, ZoneStateProvider zoneStateProvider,
+            HotWaterCapabilities capabilities) throws IOException, TadoClientException {
 
         if (capabilities.isCanSetTemperature() && setting.getTemperature() == null) {
-            TemperatureObject temperatureObject = getCurrentOrDefaultTemperature(zoneState);
+            TemperatureObject temperatureObject = getCurrentOrDefaultTemperature(zoneStateProvider);
             setting.setTemperature(temperatureObject);
         }
     }
 
-    private TemperatureObject getCurrentOrDefaultTemperature(ZoneState zoneState) {
-        HotWaterZoneSetting zoneSetting = (HotWaterZoneSetting) zoneState.getSetting();
+    private TemperatureObject getCurrentOrDefaultTemperature(ZoneStateProvider zoneStateProvider)
+            throws IOException, TadoClientException {
+        HotWaterZoneSetting zoneSetting = (HotWaterZoneSetting) zoneStateProvider.getZoneState().getSetting();
 
         if (zoneSetting != null && zoneSetting.getTemperature() != null) {
             return truncateTemperature(zoneSetting.getTemperature());

@@ -10,10 +10,12 @@ package org.openhab.binding.tado.internal.builder;
 
 import static org.openhab.binding.tado.internal.api.TadoApiTypeUtils.*;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.openhab.binding.tado.TadoBindingConstants.HvacMode;
 import org.openhab.binding.tado.TadoBindingConstants.TemperatureUnit;
+import org.openhab.binding.tado.internal.api.TadoClientException;
 import org.openhab.binding.tado.internal.api.model.AcFanSpeed;
 import org.openhab.binding.tado.internal.api.model.AcMode;
 import org.openhab.binding.tado.internal.api.model.AcModeCapabilities;
@@ -26,7 +28,6 @@ import org.openhab.binding.tado.internal.api.model.Power;
 import org.openhab.binding.tado.internal.api.model.TadoSystemType;
 import org.openhab.binding.tado.internal.api.model.TemperatureObject;
 import org.openhab.binding.tado.internal.api.model.TemperatureRange;
-import org.openhab.binding.tado.internal.api.model.ZoneState;
 
 /**
  *
@@ -39,7 +40,8 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
     private static final float DEFAULT_TEMPERATURE_F = 68.0f;
 
     @Override
-    public GenericZoneSetting build(ZoneState zoneState, GenericZoneCapabilities genericCapabilities) {
+    public GenericZoneSetting build(ZoneStateProvider zoneStateProvider, GenericZoneCapabilities genericCapabilities)
+            throws IOException, TadoClientException {
         if (mode == HvacMode.OFF) {
             return coolingSetting(false);
         }
@@ -58,16 +60,17 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
             setting.setFanSpeed(getAcFanSpeed(fanSpeed));
         }
 
-        addMissingSettingParts(zoneState, genericCapabilities, setting);
+        addMissingSettingParts(zoneStateProvider, genericCapabilities, setting);
 
         return setting;
     }
 
-    private void addMissingSettingParts(ZoneState zoneState, GenericZoneCapabilities genericCapabilities,
-            CoolingZoneSetting setting) {
+    private void addMissingSettingParts(ZoneStateProvider zoneStateProvider,
+            GenericZoneCapabilities genericCapabilities, CoolingZoneSetting setting)
+            throws IOException, TadoClientException {
 
         if (setting.getMode() == null) {
-            AcMode targetMode = getCurrentOrDefaultAcMode(zoneState);
+            AcMode targetMode = getCurrentOrDefaultAcMode(zoneStateProvider);
             setting.setMode(targetMode);
         }
 
@@ -75,31 +78,33 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
                 setting.getMode());
 
         if (capabilities.getTemperatures() != null && setting.getTemperature() == null) {
-            TemperatureObject targetTemperature = getCurrentOrDefaultTemperature(zoneState,
+            TemperatureObject targetTemperature = getCurrentOrDefaultTemperature(zoneStateProvider,
                     capabilities.getTemperatures());
             setting.setTemperature(targetTemperature);
         }
 
         if (capabilities.getFanSpeeds() != null && !capabilities.getFanSpeeds().isEmpty()
                 && setting.getFanSpeed() == null) {
-            AcFanSpeed fanSpeed = getCurrentOrDefaultFanSpeed(zoneState, capabilities.getFanSpeeds());
+            AcFanSpeed fanSpeed = getCurrentOrDefaultFanSpeed(zoneStateProvider, capabilities.getFanSpeeds());
             setting.setFanSpeed(fanSpeed);
         }
 
         if (capabilities.getSwings() != null && !capabilities.getSwings().isEmpty() && setting.getSwing() == null) {
-            Power swing = getCurrentOrDefaultSwing(zoneState, capabilities.getSwings());
+            Power swing = getCurrentOrDefaultSwing(zoneStateProvider, capabilities.getSwings());
             setting.setSwing(swing);
         }
     }
 
-    private AcMode getCurrentOrDefaultAcMode(ZoneState zoneState) {
-        CoolingZoneSetting zoneSetting = (CoolingZoneSetting) zoneState.getSetting();
+    private AcMode getCurrentOrDefaultAcMode(ZoneStateProvider zoneStateProvider)
+            throws IOException, TadoClientException {
+        CoolingZoneSetting zoneSetting = (CoolingZoneSetting) zoneStateProvider.getZoneState().getSetting();
 
         return zoneSetting.getMode() != null ? zoneSetting.getMode() : DEFAULT_MODE;
     }
 
-    private TemperatureObject getCurrentOrDefaultTemperature(ZoneState zoneState, TemperatureRange temperatureRanges) {
-        CoolingZoneSetting zoneSetting = (CoolingZoneSetting) zoneState.getSetting();
+    private TemperatureObject getCurrentOrDefaultTemperature(ZoneStateProvider zoneStateProvider,
+            TemperatureRange temperatureRanges) throws IOException, TadoClientException {
+        CoolingZoneSetting zoneSetting = (CoolingZoneSetting) zoneStateProvider.getZoneState().getSetting();
 
         Float defaultTemperature = temperatureUnit == TemperatureUnit.FAHRENHEIT ? DEFAULT_TEMPERATURE_F
                 : DEFAULT_TEMPERATURE_C;
@@ -116,8 +121,9 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
         return temperature(finalTemperature, temperatureUnit);
     }
 
-    private AcFanSpeed getCurrentOrDefaultFanSpeed(ZoneState zoneState, List<AcFanSpeed> fanSpeeds) {
-        CoolingZoneSetting zoneSetting = (CoolingZoneSetting) zoneState.getSetting();
+    private AcFanSpeed getCurrentOrDefaultFanSpeed(ZoneStateProvider zoneStateProvider, List<AcFanSpeed> fanSpeeds)
+            throws IOException, TadoClientException {
+        CoolingZoneSetting zoneSetting = (CoolingZoneSetting) zoneStateProvider.getZoneState().getSetting();
 
         if (zoneSetting.getFanSpeed() != null && fanSpeeds.contains(zoneSetting.getFanSpeed())) {
             return zoneSetting.getFanSpeed();
@@ -126,8 +132,9 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
         return fanSpeeds.get(0);
     }
 
-    private Power getCurrentOrDefaultSwing(ZoneState zoneState, List<Power> swings) {
-        CoolingZoneSetting zoneSetting = (CoolingZoneSetting) zoneState.getSetting();
+    private Power getCurrentOrDefaultSwing(ZoneStateProvider zoneStateProvider, List<Power> swings)
+            throws IOException, TadoClientException {
+        CoolingZoneSetting zoneSetting = (CoolingZoneSetting) zoneStateProvider.getZoneState().getSetting();
 
         if (zoneSetting.getSwing() != null && swings.contains(zoneSetting.getSwing())) {
             return zoneSetting.getSwing();

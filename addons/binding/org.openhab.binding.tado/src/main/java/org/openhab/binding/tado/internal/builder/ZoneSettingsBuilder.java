@@ -8,14 +8,16 @@
  */
 package org.openhab.binding.tado.internal.builder;
 
+import java.io.IOException;
+
 import org.openhab.binding.tado.TadoBindingConstants.FanSpeed;
 import org.openhab.binding.tado.TadoBindingConstants.HvacMode;
 import org.openhab.binding.tado.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.handler.TadoZoneHandler;
+import org.openhab.binding.tado.internal.api.TadoClientException;
 import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
 import org.openhab.binding.tado.internal.api.model.TemperatureObject;
-import org.openhab.binding.tado.internal.api.model.ZoneState;
 
 /**
  * Base class for zone settings builder.
@@ -63,7 +65,8 @@ public abstract class ZoneSettingsBuilder {
         return this;
     }
 
-    public abstract GenericZoneSetting build(ZoneState zoneState, GenericZoneCapabilities capabilities);
+    public abstract GenericZoneSetting build(ZoneStateProvider zoneStateProvider, GenericZoneCapabilities capabilities)
+            throws IOException, TadoClientException;
 
     protected TemperatureObject truncateTemperature(TemperatureObject temperature) {
         if (temperature == null) {
