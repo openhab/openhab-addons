@@ -74,22 +74,17 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
                     return;
                 }
             } catch (IOException | TadoClientException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Could not connect to server due to " + e.getMessage());
+                cancelScheduledStateUpdate();
                 return;
             }
 
-            if (refreshTimer == null || refreshTimer.isCancelled()) {
-                refreshTimer = scheduler.scheduleWithFixedDelay(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateState();
-                    }
-                }, 5, configuration.refreshInterval, TimeUnit.SECONDS);
-            }
-
+            scheduleZoneStateUpdate();
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            refreshTimer.cancel(false);
+            cancelScheduledStateUpdate();
         }
     }
 
@@ -121,4 +116,20 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
         }
     }
 
+    private void scheduleZoneStateUpdate() {
+        if (refreshTimer == null || refreshTimer.isCancelled()) {
+            refreshTimer = scheduler.scheduleWithFixedDelay(new Runnable() {
+                @Override
+                public void run() {
+                    updateState();
+                }
+            }, 5, configuration.refreshInterval, TimeUnit.SECONDS);
+        }
+    }
+
+    private void cancelScheduledStateUpdate() {
+        if (refreshTimer != null) {
+            refreshTimer.cancel(false);
+        }
+    }
 }
