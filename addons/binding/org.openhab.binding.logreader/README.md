@@ -1,14 +1,18 @@
-# LogReader Binding
+# Log Reader Binding
 
-Binding to read and analyze log files. Search patterns are fully configurable, therefore different kind of log files should be possible to monitor by this binding. When certain log events is recognized, openHAB rules can be used to send notification about the event e.g by email for further analyze.
+This binding reads and analyzes log files. Search patterns are fully configurable, therefore different kind of log files should be possible to monitor by this binding.
+When certain log events is recognized, openHAB rules can be used to send notification about the event e.g by email for further analysis.
 
 ## Supported Things
 
-At this time Binding supports only one ThingType: `reader`. One reader support 3 separated channels; One for errors, one for warnings and one custom channel for other purposes. If you need more channels, you can always add another Thing.
+This binding supports one ThingType: `reader`.
+A reader supports 3 separate channels; One for errors, one for warnings and one custom channel for other purposes.
+If you need more channels, you can always add another Thing.
 
 ## Thing Configuration
 
-Thing is configurable manually or through PaperUI. Binding support following parameters. 
+Thing is configurable manually or through PaperUI. 
+The `reader` Thing has the following configuration parameters: 
 
 | Parameter                     | Type    | Required | Default if omitted               | Description                                                                             |
 | ------------------------------| ------- | -------- | -------------------------------- |-----------------------------------------------------------------------------------------|
@@ -88,9 +92,8 @@ rule "LogReader"
         // do something
     end
 ```
-Be carefull when send e.g. email notifications. You could easily send thousand of *spam* emails in short period if e.g. one binding is in error loop.
-
-## Troubleshooting
+Be careful when sending e.g. email notifications.
+You could easily send thousand of *spam* emails in short period if e.g. one binding is in error loop.
 
 ### Thing status
 

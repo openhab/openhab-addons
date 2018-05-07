@@ -15,7 +15,7 @@
 		<description>Displays contents of last [WARN] event</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="lastCustomEvent">
+	<channel-type id="lastCustomEvent" advanced="true">
 		<item-type>String</item-type>
 		<label>Last custom event</label>
 		<description>Displays contents of last custom event</description>
@@ -31,12 +31,12 @@
 		<label>Error events matched</label>
 		<description>Displays number of [ERROR] lines matched to search pattern</description>
 	</channel-type>
-	<channel-type id="customEvents">
+	<channel-type id="customEvents" advanced="true">
 		<item-type>Number</item-type>
 		<label>Custom events matched</label>
 		<description>Displays number of custom lines matched to search pattern</description>
 	</channel-type>
-	<channel-type id="logRotated">
+	<channel-type id="logRotated" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Log Rotated</label>
 		<description>Last time when log rotated recognized</description>
@@ -45,22 +45,22 @@
 
 	<channel-type id="newErrorEvent">
 		<kind>trigger</kind>
-		<label>Last Error Event</label>
-		<description>Trigger channel for last [ERROR] line</description>
+		<label>New Error Event</label>
+		<description>Fires when a new [ERROR] appears in the log</description>
 		<event>
 		</event>
 	</channel-type>
 	<channel-type id="newWarningEvent">
 		<kind>trigger</kind>
-		<label>Last Warning Event</label>
-		<description>Trigger channel for last [WARN] line</description>
+		<label>New Warning Event</label>
+		<description>Fires when a new [WARN] appears in the log</description>
 		<event>
 		</event>
 	</channel-type>
-	<channel-type id="newCustomEvent">
+	<channel-type id="newCustomEvent" advanced="true">
 		<kind>trigger</kind>
-		<label>Last Custom Event</label>
-		<description>Trigger channel for last custom line</description>
+		<label>New Custom Event</label>
+		<description>Fires when a new [CUSTOM] appears in the log</description>
 		<event>
 		</event>
 	</channel-type>
