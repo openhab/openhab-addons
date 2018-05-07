@@ -162,13 +162,15 @@ public class GardenaThingHandler extends BaseThingHandler {
                     Calendar cal = DateUtils.parseToCalendar(value);
                     if (cal != null && !cal.before(VALID_DATE_START)) {
                         return new DateTimeType(cal);
+                    } else {
+                        return UnDefType.NULL;
                     }
             }
         } catch (GardenaException e) {
             logger.warn("Channel '{}' cannot be updated as device does not contain property '{}:{}'", channelUID,
                     abilityName, propertyName);
         }
-        return UnDefType.NULL;
+        return null;
     }
 
     /**
