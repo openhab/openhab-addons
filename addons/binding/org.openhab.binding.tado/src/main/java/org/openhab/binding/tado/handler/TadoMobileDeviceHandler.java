@@ -78,7 +78,7 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
             }
 
             if (refreshTimer == null || refreshTimer.isCancelled()) {
-                refreshTimer = scheduler.scheduleAtFixedRate(new Runnable() {
+                refreshTimer = scheduler.scheduleWithFixedDelay(new Runnable() {
                     @Override
                     public void run() {
                         updateState();

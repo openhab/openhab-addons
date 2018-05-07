@@ -214,7 +214,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
     private void scheduleZoneStateUpdate() {
         if (refreshTimer == null || refreshTimer.isCancelled()) {
-            refreshTimer = scheduler.scheduleAtFixedRate(new Runnable() {
+            refreshTimer = scheduler.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
                     updateZoneState(false);
