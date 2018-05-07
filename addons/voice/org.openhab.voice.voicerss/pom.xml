@@ -5,7 +5,7 @@
 
   <parent>
     <artifactId>pom</artifactId>
-    <groupId>org.openhab.addons.voice</groupId>
+    <groupId>org.openhab.voice</groupId>
     <version>2.3.0-SNAPSHOT</version>
   </parent>
 
