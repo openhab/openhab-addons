@@ -44,6 +44,11 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
     }
 
     @Override
+    protected void updateProperties(NAHealthyHomeCoach deviceData) {
+        updateProperties(deviceData.getFirmware(), deviceData.getType());
+    }
+
+    @Override
     protected State getNAThingProperty(String channelId) {
         if (device != null) {
             NADashboardData dashboardData = device.getDashboardData();

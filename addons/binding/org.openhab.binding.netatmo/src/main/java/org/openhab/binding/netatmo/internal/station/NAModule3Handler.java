@@ -33,6 +33,11 @@ public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
     }
 
     @Override
+    protected void updateProperties(NAStationModule moduleData) {
+        updateProperties(moduleData.getFirmware(), moduleData.getType());
+    }
+
+    @Override
     protected State getNAThingProperty(String channelId) {
         if (module != null) {
             NADashboardData dashboardData = module.getDashboardData();
