@@ -41,19 +41,19 @@ import org.slf4j.LoggerFactory;
  */
 public class FtpServer {
 
-    private Logger logger = LoggerFactory.getLogger(FtpServer.class);
+    private final Logger logger = LoggerFactory.getLogger(FtpServer.class);
 
     private int port;
     int idleTimeout;
 
     private org.apache.ftpserver.FtpServer server;
-    private static List<FtpServerEventListener> listeners;
+    private List<FtpServerEventListener> listeners;
     private MyFTPLet myFTPLet;
     private FTPUserManager FTPUserManager;
     private String ftpStartUpErrorReason;
 
     public FtpServer() {
-        listeners = new ArrayList<FtpServerEventListener>();
+        listeners = new ArrayList<>();
         FTPUserManager = new FTPUserManager();
     }
 
@@ -67,7 +67,6 @@ public class FtpServer {
 
     public void stopServer() {
         if (server != null) {
-            logger.info("Stopping FTP server");
             server.stop();
         }
     }
@@ -123,8 +122,6 @@ public class FtpServer {
     }
 
     private void initServer() throws FtpException {
-        logger.info("Starting FTP server, port={}, idleTimeout={}", port, idleTimeout);
-
         FtpServerFactory serverFactory = new FtpServerFactory();
         ListenerFactory listenerFactory = new ListenerFactory();
         listenerFactory.setPort(port);
@@ -134,7 +131,7 @@ public class FtpServer {
 
         serverFactory.addListener("default", listener);
 
-        Map<String, Ftplet> ftplets = new LinkedHashMap<String, Ftplet>();
+        Map<String, Ftplet> ftplets = new LinkedHashMap<>();
         myFTPLet = new MyFTPLet();
 
         ftplets.put("ftplet", myFTPLet);
@@ -160,7 +157,7 @@ public class FtpServer {
             if (!e.getMessage().isEmpty()) {
                 ftpStartUpErrorReason += ": " + e.getMessage();
             }
-            throw (e);
+            throw e;
         }
     }
 

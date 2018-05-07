@@ -1,13 +1,13 @@
 # FTP Upload Binding
 
 This binding can be used to receive image files from FTP clients.
-Binding acts as a FTP server.
+The binding acts as a FTP server.
 Images stored on the FTP server are not saved to the file system, therefore the binding shouldn't cause any problems on flash based openHAB installations.
 
 ## Supported Things
 
-This binding supports ```ftpupload``` Thing.
-Every thing is identified by FTP user name.
+This binding supports Things of type ```ftpupload```.
+Every Thing is identified by FTP user name.
 Therefore, every thing should use unique user name to login FTP server.
 
 ## Discovery
@@ -16,22 +16,31 @@ Automatic discovery is not supported.
 
 ## Binding Configuration
 
-Bindings FTP server listening 2121 TCP port by default, but port can be configured.
-Also idle timeout can be configured.
+The binding has the following configuration options:
+
+| Parameter   | Name         | Description                                                                                                            | Required | Default value |
+|-------------|--------------|------------------------------------------------------------------------------------------------------------------------|----------|---------------|
+| port        | TCP Port     | TCP port of the FTP server                                                                                             | no       | 2121          |
+| idleTimeout | Idle timeout | The number of seconds before an inactive client is disconnected. If this value is set to 0, the idle time is disabled. | no       | 60            |
 
 ## Channels
 
-This binding currently supports following channels:
+This binding currently supports the following channels:
 
 | Channel Type ID | Item Type    | Description                                                                            |
 |-----------------|--------------|----------------------------------------------------------------------------------------|
 | image           | Image        | Image file received via FTP.                                                           |
 
-Binding also supports custom Image channels, where a matching filename can be configured.
 When an image file is uploaded to FTP server, the binding tries to find the channel whose filename matches the uploaded image filename.
-If any direct match isn't found, the default image channel is updated.
+If no match is found, no channel is updated.
 The filename parameter supports regular expression patterns.
-See more details in the Things example. 
+See more details in the Things example.
+
+Image channel supports following options:
+
+| Parameter   | Name         | Description                                                              | Required | Default value |
+|-------------|--------------|--------------------------------------------------------------------------|----------|---------------|
+| filename    | Filename     | Filename to match received files. Supports regular expression patterns.  | yes      | .*            |
 
 
 ### Trigger Channels
@@ -40,11 +49,16 @@ See more details in the Things example.
 |-----------------|------------------------|-----------------------------------------------------|
 | image-received  | IMAGE_RECEIVED         | Triggered when image file received from FTP client. |
 
-Binding also supports custom trigger channels, where a matching filename can be configured.
 When an image file is uploaded to FTP server, the binding tries to find the trigger channel whose filename matches the upload image filename.
-If any direct match isn't found, the default trigger channel is called.
+If no match is found, no channel is updated.
 The filename parameter supports regular expression patterns.
 See more details in the Things example. 
+
+Trigger channels supports following options:
+
+| Parameter   | Name         | Description                                                              | Required | Default value |
+|-------------|--------------|--------------------------------------------------------------------------|----------|---------------|
+| filename    | Filename     | Filename to match received files. Supports regular expression patterns.  | yes      | .*            |
 
 ## Full Example
 
@@ -107,7 +121,7 @@ Frame label="FTP images" {
 
 ## Use case example
 
-Binding is used to receive images from network camera which can send images to a FTP server when motion or sound is detected.
+The binding can be used to receive images from network cameras that send images to a FTP server when motion or sound is detected.
 
 Things:
 
@@ -140,7 +154,7 @@ Frame label="Garage network camera" icon="camera" {
 }
 ```
 
-## Logging and problem solving
+## Logging and Problem Solving
 
 For problem solving, if binding logging is not enough, Apache FTP server logging can also be enabled by the following command in the karaf console:
 

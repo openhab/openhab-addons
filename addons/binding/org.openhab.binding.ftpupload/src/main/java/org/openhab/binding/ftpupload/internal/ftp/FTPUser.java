@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Initial contribution
  */
 public class FTPUser implements User {
-    private Logger logger = LoggerFactory.getLogger(FTPUser.class);
+    private static Logger logger = LoggerFactory.getLogger(FTPUser.class);
 
     private final String login;
     private int idleTimeout;

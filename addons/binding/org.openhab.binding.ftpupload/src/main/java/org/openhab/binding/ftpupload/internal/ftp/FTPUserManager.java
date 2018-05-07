@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Initial contribution
  */
 public class FTPUserManager implements UserManager {
-    private Logger logger = LoggerFactory.getLogger(FTPUserManager.class);
+    private final Logger logger = LoggerFactory.getLogger(FTPUserManager.class);
 
     private int idleTimeout;
     private HashMap<String, UsernamePassword> authenticationData = new HashMap<String, UsernamePassword>();
@@ -42,7 +42,6 @@ public class FTPUserManager implements UserManager {
         if (!autheticate(login, password)) {
             throw new AuthenticationFailedException();
         }
-
         return new FTPUser(login, idleTimeout);
     }
 
@@ -50,7 +49,6 @@ public class FTPUserManager implements UserManager {
         boolean result = false;
 
         if (login != null && password != null) {
-
             UsernamePassword credential = authenticationData.get(login);
 
             if (credential != null) {
@@ -72,7 +70,6 @@ public class FTPUserManager implements UserManager {
         if (authenticationData.containsKey(username)) {
             throw new IllegalArgumentException("Credentials for user '" + username + "' already exists!");
         }
-
         authenticationData.put(username, new UsernamePassword(username, password));
     }
 

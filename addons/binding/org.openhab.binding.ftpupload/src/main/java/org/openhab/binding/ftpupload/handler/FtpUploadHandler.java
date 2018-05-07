@@ -83,10 +83,8 @@ public class FtpUploadHandler extends BaseThingHandler implements FtpServerEvent
     public void fileReceived(String userName, String filename, byte[] data) {
         if (configuration.userName.equals(userName)) {
             updateStatus(ThingStatus.ONLINE);
-            ChannelUID channel = findCustomChannelByFilename(filename);
-            updateState(channel != null ? channel.getId() : IMAGE, new RawType(data, guessMimeTypeFromData(data)));
-            channel = findCustomTriggerByFilename(filename);
-            triggerChannel(channel != null ? channel.getId() : IMAGE_RECEIVED_TRIGGER, EVENT_IMAGE_RECEIVED);
+            updateChannels(filename, data);
+            updateTriggers(filename);
         }
     }
 
@@ -100,32 +98,30 @@ public class FtpUploadHandler extends BaseThingHandler implements FtpServerEvent
         return mimeType;
     }
 
-    private ChannelUID findCustomChannelByFilename(String filename) {
+    private void updateChannels(String filename, byte[] data) {
         for (Channel channel : thing.getChannels()) {
             String channelConf = (String) channel.getConfiguration().get(PARAM_FILENAME_PATTERN);
             if (channelConf != null) {
                 if (filenameMatch(filename, channelConf)) {
                     if ("Image".equals(channel.getAcceptedItemType())) {
-                        return channel.getUID();
+                        updateState(channel.getUID().getId(), new RawType(data, guessMimeTypeFromData(data)));
                     }
                 }
             }
         }
-        return null;
     }
 
-    private ChannelUID findCustomTriggerByFilename(String filename) {
+    private void updateTriggers(String filename) {
         for (Channel channel : thing.getChannels()) {
             String channelConf = (String) channel.getConfiguration().get(PARAM_FILENAME_PATTERN);
             if (channelConf != null) {
                 if (filenameMatch(filename, channelConf)) {
                     if ("TRIGGER".equals(channel.getKind().toString())) {
-                        return channel.getUID();
+                        triggerChannel(channel.getUID().getId(), EVENT_IMAGE_RECEIVED);
                     }
                 }
             }
         }
-        return null;
     }
 
     private boolean filenameMatch(String filename, String pattern) {

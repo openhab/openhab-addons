@@ -20,12 +20,9 @@ public interface FtpServerEventListener {
     /**
      * Procedure for receive raw data from FTP server.
      *
-     * @param userName
-     *            User name.
-     * @param filename
-     *            Received filename.
-     * @param data
-     *            Received raw data.
+     * @param userName User name.
+     * @param filename Received filename.
+     * @param data Received raw data.
      */
     void fileReceived(@NonNull String userName, @NonNull String filename, byte[] data);
 

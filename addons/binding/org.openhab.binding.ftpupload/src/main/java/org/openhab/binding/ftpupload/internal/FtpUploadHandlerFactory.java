@@ -40,14 +40,14 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.ftpupload")
 public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(FtpUploadHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(FtpUploadHandlerFactory.class);
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_IMAGERECEIVER);
 
     private final int DEFAULT_PORT = 2121;
     private final int DEFAULT_IDLE_TIMEOUT = 60;
 
-    private FtpServer ftpServer = new FtpServer();
+    private FtpServer ftpServer;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -73,46 +73,56 @@ public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void activate(ComponentContext componentContext) {
         super.activate(componentContext);
+        ftpServer = new FtpServer();
         modified(componentContext);
     }
 
     @Override
     protected synchronized void deactivate(ComponentContext componentContext) {
-        ftpServer.stopServer();
+        stopFtpServer();
+        ftpServer = null;
         super.deactivate(componentContext);
     }
 
     protected synchronized void modified(ComponentContext componentContext) {
-        ftpServer.stopServer();
-
+        stopFtpServer();
         Dictionary<String, Object> properties = componentContext.getProperties();
 
         int port = DEFAULT_PORT;
         int idleTimeout = DEFAULT_IDLE_TIMEOUT;
 
-        String strPort = (String) properties.get("port");
-        String strIdleTimeout = (String) componentContext.getProperties().get("idleTimeout");
-
-        if (StringUtils.isNotEmpty(strPort)) {
-            try {
-                port = Integer.valueOf(strPort);
-            } catch (NumberFormatException e) {
-                logger.warn("Invalid port number '{}', using default port {}", strPort, port);
+        if (properties.get("port") != null) {
+            String strPort = properties.get("port").toString();
+            if (StringUtils.isNotEmpty(strPort)) {
+                try {
+                    port = Integer.valueOf(strPort);
+                } catch (NumberFormatException e) {
+                    logger.warn("Invalid port number '{}', using default port {}", strPort, port);
+                }
             }
         }
 
-        if (StringUtils.isNotEmpty(strPort)) {
-            try {
-                idleTimeout = Integer.valueOf(strIdleTimeout);
-            } catch (NumberFormatException e) {
-                logger.warn("Invalid idle timeout '{}', using default timeout {}", strIdleTimeout, idleTimeout);
+        if (properties.get("idleTimeout") != null) {
+            String strIdleTimeout = properties.get("idleTimeout").toString();
+            if (StringUtils.isNotEmpty(strIdleTimeout)) {
+                try {
+                    idleTimeout = Integer.valueOf(strIdleTimeout);
+                } catch (NumberFormatException e) {
+                    logger.warn("Invalid idle timeout '{}', using default timeout {}", strIdleTimeout, idleTimeout);
+                }
             }
         }
 
         try {
+            logger.info("Starting FTP server, port={}, idleTimeout={}", port, idleTimeout);
             ftpServer.startServer(port, idleTimeout);
         } catch (FtpException | FtpServerConfigurationException e) {
             logger.warn("FTP server starting failed, reason: {}", e.getMessage());
         }
+    }
+
+    private void stopFtpServer() {
+        logger.info("Stopping FTP server");
+        ftpServer.stopServer();
     }
 }
