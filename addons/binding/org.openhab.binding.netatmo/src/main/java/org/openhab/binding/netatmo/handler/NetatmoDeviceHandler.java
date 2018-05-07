@@ -103,6 +103,9 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
 
     protected abstract DEVICE updateReadings();
 
+    protected void updateProperties(DEVICE deviceData) {
+    }
+
     @Override
     protected void updateChannels() {
         if (refreshStrategy != null) {
@@ -128,6 +131,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                     updateStatus(ThingStatus.ONLINE);
                     logger.debug("Successfully updated device {} readings! Now updating channels", getId());
                     this.device = newDeviceReading;
+                    updateProperties(device);
                     Integer dataTimeStamp = getDataTimestamp();
                     if (dataTimeStamp != null) {
                         refreshStrategy.setDataTimeStamp(dataTimeStamp);

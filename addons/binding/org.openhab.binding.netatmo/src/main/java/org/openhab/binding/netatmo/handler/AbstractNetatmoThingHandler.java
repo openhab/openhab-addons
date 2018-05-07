@@ -11,6 +11,7 @@ package org.openhab.binding.netatmo.handler;
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 import javax.measure.Unit;
@@ -156,4 +157,17 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
         }
     }
 
+    protected void updateProperties(Integer firmware, String modelId) {
+        Map<String, String> properties = editProperties();
+        if (firmware != null || modelId != null) {
+            properties.put(Thing.PROPERTY_VENDOR, VENDOR);
+        }
+        if (firmware != null) {
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmware.toString());
+        }
+        if (modelId != null) {
+            properties.put(Thing.PROPERTY_MODEL_ID, modelId);
+        }
+        updateProperties(properties);
+    }
 }

@@ -50,6 +50,11 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
     }
 
     @Override
+    protected void updateProperties(NAMain deviceData) {
+        updateProperties(deviceData.getFirmware(), deviceData.getType());
+    }
+
+    @Override
     protected State getNAThingProperty(String channelId) {
         if (device != null) {
             NADashboardData dashboardData = device.getDashboardData();

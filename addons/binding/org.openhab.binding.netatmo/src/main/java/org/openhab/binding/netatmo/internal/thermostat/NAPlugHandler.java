@@ -53,6 +53,11 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
     }
 
     @Override
+    protected void updateProperties(NAPlug deviceData) {
+        updateProperties(deviceData.getFirmware(), deviceData.getType());
+    }
+
+    @Override
     protected State getNAThingProperty(String channelId) {
         switch (channelId) {
             case CHANNEL_CONNECTED_BOILER:

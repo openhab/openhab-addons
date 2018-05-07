@@ -92,6 +92,7 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
             updateStatus(ThingStatus.ONLINE);
             radioHelper.ifPresent(helper -> helper.setModule(module));
             batteryHelper.ifPresent(helper -> helper.setModule(module));
+            updateProperties(this.module);
             super.updateChannels();
         }
     }
@@ -99,6 +100,9 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     protected void requestParentRefresh() {
         Optional<AbstractNetatmoThingHandler> parent = getBridgeHandler().findNAThing(getParentId());
         parent.ifPresent(AbstractNetatmoThingHandler::updateChannels);
+    }
+
+    protected void updateProperties(MODULE moduleData) {
     }
 
 }

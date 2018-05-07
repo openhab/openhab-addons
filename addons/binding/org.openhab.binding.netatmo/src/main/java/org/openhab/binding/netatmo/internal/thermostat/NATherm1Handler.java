@@ -54,6 +54,11 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
     }
 
     @Override
+    protected void updateProperties(NAThermostat moduleData) {
+        updateProperties(moduleData.getFirmware(), moduleData.getType());
+    }
+
+    @Override
     public void updateChannels(Object module) {
         measurableChannels.getAsCsv().ifPresent(csvParams -> {
             ThermostatApi thermostatApi = getBridgeHandler().getThermostatApi();
