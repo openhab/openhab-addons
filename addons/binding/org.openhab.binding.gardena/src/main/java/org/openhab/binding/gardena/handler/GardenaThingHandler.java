@@ -136,7 +136,7 @@ public class GardenaThingHandler extends BaseThingHandler {
             String value = device.getAbility(abilityName).getProperty(propertyName).getValue();
 
             if (StringUtils.trimToNull(value) == null || StringUtils.equals(value, "N/A")) {
-                return null;
+                return UnDefType.NULL;
             }
 
             switch (getThing().getChannel(channelUID.getId()).getAcceptedItemType()) {
@@ -168,7 +168,7 @@ public class GardenaThingHandler extends BaseThingHandler {
             logger.warn("Channel '{}' cannot be updated as device does not contain property '{}:{}'", channelUID,
                     abilityName, propertyName);
         }
-        return null;
+        return UnDefType.NULL;
     }
 
     /**
