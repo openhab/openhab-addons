@@ -95,8 +95,10 @@ public class TeslaHandler extends BaseThingHandler {
     private static final int FAST_STATUS_REFRESH_INTERVAL = 15000;
     private static final int SLOW_STATUS_REFRESH_INTERVAL = 60000;
     private static final int CONNECT_RETRY_INTERVAL = 15000;
-    private static final int MAXIMUM_ERRORS_IN_INTERVAL = 2;
-    private static final int ERROR_INTERVAL_SECONDS = 15;
+    private static final int API_MAXIMUM_ERRORS_IN_INTERVAL = 2;
+    private static final int API_ERROR_INTERVAL_SECONDS = 15;
+    private static final int EVENT_MAXIMUM_ERRORS_IN_INTERVAL = 10;
+    private static final int EVENT_ERROR_INTERVAL_SECONDS = 15;
 
     private final Logger logger = LoggerFactory.getLogger(TeslaHandler.class);
 
@@ -129,8 +131,10 @@ public class TeslaHandler extends BaseThingHandler {
 
     protected boolean allowWakeUp = true;
     protected long lastTimeStamp;
-    protected long intervalTimestamp = 0;
-    protected int intervalErrors = 0;
+    protected long apiIntervalTimestamp;
+    protected int apiIntervalErrors;
+    protected long eventIntervalTimestamp;
+    protected int eventIntervalErrors;
     protected ReentrantLock lock;
 
     private StorageService storageService;
@@ -476,23 +480,23 @@ public class TeslaHandler extends BaseThingHandler {
                         new Object[] { command, (response != null) ? response.getStatus() : "",
                                 (response != null) ? response.getStatusInfo() : "No Response" });
 
-                if (intervalErrors == 0 && response != null && response.getStatus() == 401) {
+                if (apiIntervalErrors == 0 && response != null && response.getStatus() == 401) {
                     authenticate();
                 }
 
-                intervalErrors++;
-                if (intervalErrors >= MAXIMUM_ERRORS_IN_INTERVAL) {
+                apiIntervalErrors++;
+                if (apiIntervalErrors >= API_MAXIMUM_ERRORS_IN_INTERVAL) {
                     logger.warn("Reached the maximum number of errors ({}) for the current interval ({} seconds)",
-                            MAXIMUM_ERRORS_IN_INTERVAL, ERROR_INTERVAL_SECONDS);
+                            API_MAXIMUM_ERRORS_IN_INTERVAL, API_ERROR_INTERVAL_SECONDS);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                     eventClient.close();
                     return null;
                 }
 
-                if ((System.currentTimeMillis() - intervalTimestamp) > 1000 * ERROR_INTERVAL_SECONDS) {
-                    logger.trace("Resetting the error counter. ({} errors in the last interval)", intervalErrors);
-                    intervalTimestamp = System.currentTimeMillis();
-                    intervalErrors = 0;
+                if ((System.currentTimeMillis() - apiIntervalTimestamp) > 1000 * API_ERROR_INTERVAL_SECONDS) {
+                    logger.trace("Resetting the error counter. ({} errors in the last interval)", apiIntervalErrors);
+                    apiIntervalTimestamp = System.currentTimeMillis();
+                    apiIntervalErrors = 0;
                 }
             }
         }
@@ -933,8 +937,8 @@ public class TeslaHandler extends BaseThingHandler {
                             logger.debug("Found the vehicle with VIN '{}' in the list of vehicles you own",
                                     getConfig().get(VIN));
                             updateStatus(ThingStatus.ONLINE);
-                            intervalErrors = 0;
-                            intervalTimestamp = System.currentTimeMillis();
+                            apiIntervalErrors = 0;
+                            apiIntervalTimestamp = System.currentTimeMillis();
                         } else {
                             logger.warn("Unable to find the vehicle with VIN '{}' in the list of vehicles you own",
                                     getConfig().get(VIN));
@@ -987,6 +991,25 @@ public class TeslaHandler extends BaseThingHandler {
                         isEstablished = false;
                     } else {
                         isEstablished = false;
+                    }
+
+                    if (!isEstablished) {
+                        eventIntervalErrors++;
+                        if (eventIntervalErrors >= EVENT_MAXIMUM_ERRORS_IN_INTERVAL) {
+                            logger.warn(
+                                    "Reached the maximum number of errors ({}) for the current interval ({} seconds)",
+                                    EVENT_MAXIMUM_ERRORS_IN_INTERVAL, EVENT_ERROR_INTERVAL_SECONDS);
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                            eventClient.close();
+                        }
+
+                        if ((System.currentTimeMillis() - eventIntervalTimestamp) > 1000
+                                * EVENT_ERROR_INTERVAL_SECONDS) {
+                            logger.trace("Resetting the error counter. ({} errors in the last interval)",
+                                    eventIntervalErrors);
+                            eventIntervalTimestamp = System.currentTimeMillis();
+                            eventIntervalErrors = 0;
+                        }
                     }
                 }
             } catch (Exception e) {
