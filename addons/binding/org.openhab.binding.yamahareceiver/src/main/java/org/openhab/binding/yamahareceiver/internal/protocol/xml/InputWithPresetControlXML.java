@@ -8,18 +8,23 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import java.io.IOException;
-
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPresetControl;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
+import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
 import org.openhab.binding.yamahareceiver.internal.state.PlayInfoState;
 import org.openhab.binding.yamahareceiver.internal.state.PresetInfoState;
 import org.openhab.binding.yamahareceiver.internal.state.PresetInfoStateListener;
-import org.w3c.dom.Document;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getNode;
+import java.io.IOException;
+
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.GET_PARAM;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getResponse;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.*;
 
 /**
  * This class implements the Yamaha Receiver protocol related to navigation functionally. USB, NET_RADIO, IPOD and
@@ -37,23 +42,42 @@ import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.
  * {@link PresetInfoState} instead.
  *
  * @author David Graeff
+ * @author Tomasz Maruszak - Compatibility fixes
  */
 public class InputWithPresetControlXML extends AbstractInputControlXML implements InputWithPresetControl {
 
-    public static final int PRESET_CHANNELS = 40;
+    protected CommandTemplate preset = new CommandTemplate("<Play_Control><Preset><Preset_Sel>%s</Preset_Sel></Preset></Play_Control>", "Play_Control/Preset/Preset_Sel");
 
-    private PresetInfoStateListener observer;
+    private final PresetInfoStateListener observer;
 
     /**
      * Create a InputWithPlayControl object for altering menu positions and requesting current menu information as well
      * as controlling the playback and choosing a preset item.
      *
      * @param inputID The input ID like USB or NET_RADIO.
-     * @param com The Yamaha communication object to send http requests.
+     * @param con The Yamaha communication object to send http requests.
      */
-    public InputWithPresetControlXML(String inputID, AbstractConnection com, PresetInfoStateListener observer) {
-        super(inputID, com);
+    public InputWithPresetControlXML(String inputID,
+                                     AbstractConnection con,
+                                     PresetInfoStateListener observer,
+                                     DeviceInformationState deviceInformationState) {
+        super(LoggerFactory.getLogger(InputWithPresetControlXML.class), inputID, con, deviceInformationState);
+
         this.observer = observer;
+
+        this.applyModelVariations();
+    }
+
+    /**
+     * Apply command changes to ensure compatibility with all supported models
+     */
+    protected void applyModelVariations() {
+        if (deviceDescriptor == null) {
+            logger.trace("Descriptor not available");
+            return;
+        }
+
+        // add compatibility adjustments here (if any)
     }
 
     /**
@@ -66,28 +90,70 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
             return;
         }
 
-        Node responseNode = XMLProtocolService.getResponse(comReference.get(), wrInput("<Play_Control>GetParam</Play_Control>"), getInputElement());
+        AbstractConnection con = comReference.get();
+        Node response = getResponse(con, wrInput("<Play_Control><Preset><Preset_Sel_Item>GetParam</Preset_Sel_Item></Preset></Play_Control>"), inputElement);
 
         PresetInfoState msg = new PresetInfoState();
 
-        Node playbackInfoNode = getNode(responseNode, "Play_Control/Preset/Preset_Sel");
-        msg.presetChannel = playbackInfoNode != null ? Integer.valueOf(playbackInfoNode.getTextContent()) : -1;
-
         // Set preset channel names, obtained from this xpath:
         // NET_RADIO/Play_Control/Preset/Preset_Sel_Item/Item_1/Title
-        playbackInfoNode = getNode(responseNode, "Play_Control/Preset/Preset_Sel_Item");
-        if (playbackInfoNode != null) {
-            for (int i = 1; i <= PRESET_CHANNELS; ++i) {
-                Node itemNode = getNode(playbackInfoNode, "Item_" + String.valueOf(i) + "/Title");
-                String v = itemNode != null ? itemNode.getTextContent() : "Item_" + String.valueOf(i);
-                if (!v.equals(msg.presetChannelNames[i - 1])) {
-                    msg.presetChannelNamesChanged = true;
-                    msg.presetChannelNames[i - 1] = v;
+        Node presetNode = getNode(response, "Play_Control/Preset/Preset_Sel_Item");
+        if (presetNode != null) {
+            for (int i = 1; i <= PRESET_CHANNELS; i++) {
+                Node itemNode = getNode(presetNode, "Item_" + i);
+                if (itemNode == null) {
+                    break;
                 }
+
+                String title = getNodeContentOrDefault(itemNode, "Title", "Item_" + i);
+                String value = getNodeContentOrDefault(itemNode, "Param", String.valueOf(i));
+
+                // For RX-V3900 when a preset slot is not used, this is how it looks
+                if (StringUtils.isEmpty(title) && "Not Used".equalsIgnoreCase(value)) {
+                    continue;
+                }
+
+                int presetChannel = convertToPresetNumber(value);
+                PresetInfoState.Preset preset = new PresetInfoState.Preset(title, presetChannel);
+                msg.presetChannelNames.add(preset);
+            }
+        }
+        msg.presetChannelNamesChanged = true;
+
+        String presetValue = getNodeContentOrEmpty(response, preset.getPath());
+
+        // fall back to second method of obtaining current preset (works for Tuner on RX-V3900)
+        if (StringUtils.isEmpty(presetValue)) {
+            try {
+                Node presetResponse = getResponse(con, wrInput(preset.apply(GET_PARAM)), inputElement);
+                presetValue = getNodeContentOrEmpty(presetResponse, preset.getPath());
+            } catch (IOException | ReceivedMessageParseException e) {
+                // this is on purpose, in case the AVR does not support this request and responds with error or nonsense
             }
         }
 
+        // For Tuner input on RX-V3900 this is not a number (e.g. "A1" or "B1").
+        msg.presetChannel = convertToPresetNumber(presetValue);
+
         observer.presetInfoUpdated(msg);
+    }
+
+    private int convertToPresetNumber(String presetValue) {
+        if (StringUtils.isNotEmpty(presetValue)) {
+            if (StringUtils.isNumeric(presetValue)) {
+                return Integer.parseInt(presetValue);
+            } else {
+                // special handling for RX-V3900, where 'A1' becomes 101 and 'B2' becomes 202 preset
+                if (presetValue.length() >= 2) {
+                    Character presetAlpha = presetValue.charAt(0);
+                    if (Character.isLetter(presetAlpha) && Character.isUpperCase(presetAlpha)) {
+                        int presetNumber = Integer.parseInt(presetValue.substring(1));
+                        return (ArrayUtils.indexOf(LETTERS, presetAlpha) + 1) * 100 + presetNumber;
+                    }
+                }
+            }
+        }
+        return -1;
     }
 
     /**
@@ -97,8 +163,21 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
      * @throws Exception
      */
     public void selectItemByPresetNumber(int presetChannel) throws IOException, ReceivedMessageParseException {
-        comReference.get().send(wrInput(
-                "<Play_Control><Preset><Preset_Sel>" + presetChannel + "</Preset_Sel></Preset></Play_Control>"));
+        String presetValue;
+
+        // special handling for RX-V3900, where 'A1' becomes 101 and 'B2' becomes 202 preset
+        if (presetChannel > 100) {
+            int presetNumber = presetChannel % 100;
+            char presetAlpha = LETTERS[presetChannel / 100 - 1];
+            presetValue = Character.toString(presetAlpha) + presetNumber;
+        } else {
+            presetValue = Integer.toString(presetChannel);
+        }
+
+        String cmd = wrInput(preset.apply(presetValue));
+        comReference.get().send(cmd);
         update();
     }
+
+    private static final Character[] LETTERS = new Character[] { 'A', 'B', 'C', 'D' };
 }
