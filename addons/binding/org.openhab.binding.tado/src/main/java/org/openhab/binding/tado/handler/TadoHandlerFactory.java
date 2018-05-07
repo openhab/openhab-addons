@@ -10,6 +10,9 @@ package org.openhab.binding.tado.handler;
 
 import static org.openhab.binding.tado.TadoBindingConstants.*;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 
@@ -21,8 +24,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.tado.internal.discovery.TadoDiscoveryService;
 
-import com.google.common.collect.ImmutableSet;
-
 /**
  * The {@link TadoHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -31,8 +32,8 @@ import com.google.common.collect.ImmutableSet;
  */
 public class TadoHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_HOME,
-            THING_TYPE_ZONE, THING_TYPE_MOBILE_DEVICE);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_HOME, THING_TYPE_ZONE, THING_TYPE_MOBILE_DEVICE)));;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

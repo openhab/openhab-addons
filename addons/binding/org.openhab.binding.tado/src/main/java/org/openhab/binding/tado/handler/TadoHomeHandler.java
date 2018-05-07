@@ -76,7 +76,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
                     .getTemperatureUnit() ? TemperatureUnit.FAHRENHEIT : TemperatureUnit.CELSIUS;
             updateProperty(TadoBindingConstants.PROPERTY_HOME_TEMPERATURE_UNIT, temperatureUnit.name());
         } catch (IOException | TadoClientException e) {
-            logger.error("Error accessing tado server: " + e.getMessage(), e);
+            logger.debug("Error accessing tado server: " + e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to server due to " + e.getMessage());
             return;
