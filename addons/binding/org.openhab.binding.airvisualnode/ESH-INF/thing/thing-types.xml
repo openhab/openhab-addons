@@ -8,12 +8,19 @@
 		<label>AirVisual Node</label>
 		<description>AirVisual Node air quality monitor</description>
 
-		<!-- Channel groups -->
+		<!-- Channels -->
 
-		<channel-groups>
-			<channel-group id="measurements" typeId="Measurements" />
-			<channel-group id="status" typeId="Status" />
-		</channel-groups>
+		<channels>
+			<channel id="co2" typeId="Co2" />
+			<channel id="humidity" typeId="Humidity" />
+			<channel id="aqi" typeId="Aqi" />
+			<channel id="pm_25" typeId="Pm_25" />
+			<channel id="temperature" typeId="Temperature" />
+			<channel id="timestamp" typeId="Timestamp" />
+			<channel id="used_memory" typeId="Used_memory" />
+			<channel id="signal_strength" typeId="system.signal-strength" />
+			<channel id="battery_level" typeId="system.battery-level" />
+		</channels>
 
 		<!-- Configuration parameters -->
 
@@ -23,9 +30,8 @@
 				<context>network_address</context>
 				<label>Node Network Address</label>
 				<description>Node network address</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="username" type="text" required="true">
+			<parameter name="username" type="text">
 				<label>Node Username</label>
 				<description>Node network username</description>
 				<default>airvisual</default>
@@ -52,80 +58,46 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Channel group types -->
-
-	<channel-group-type id="Measurements">
-		<label>Measurements</label>
-		<channels>
-			<channel id="co2_ppm" typeId="Co2_ppm" />
-			<channel id="humidity" typeId="Humidity" />
-			<channel id="aqi_cn" typeId="Aqi_cn" />
-			<channel id="aqi_us" typeId="Aqi_us" />
-			<channel id="pm_25" typeId="Pm_25" />
-			<channel id="temp_celsius" typeId="Temp_celsius" />
-			<channel id="temp_fahrenheit" typeId="Temp_fahrenheit" />
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="Status">
-		<label>Status</label>
-		<channels>
-			<channel id="battery_level" typeId="system.battery-level" />
-			<channel id="wifi_strength" typeId="system.signal-strength" />
-			<channel id="timestamp" typeId="Timestamp" />
-			<channel id="used_memory" typeId="Used_memory" />
-		</channels>
-	</channel-group-type>
-
 	<!-- Channel types -->
 
-	<channel-type id="Co2_ppm">
-		<item-type>Number</item-type>
+	<channel-type id="Co2">
+		<item-type>Number:Dimensionless</item-type>
 		<label>CO₂ Level</label>
 		<description>CO&#8322; level, ppm</description>
-		<state readOnly="true" pattern="%d ppm" />
+		<category>CarbonDioxide</category>
+		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
 	<channel-type id="Humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Humidity, %</description>
-		<state readOnly="true" pattern="%d %%" />
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
-	<channel-type id="Aqi_cn">
-		<item-type>Number</item-type>
-		<label>AQI (CN)</label>
-		<description>Air Quality Index (Chinese)</description>
-		<state readOnly="true" pattern="%d" />
-	</channel-type>
-
-	<channel-type id="Aqi_us">
-		<item-type>Number</item-type>
-		<label>AQI (US)</label>
+	<channel-type id="Aqi">
+		<item-type>Number:Dimensionless</item-type>
+		<label>AQI</label>
 		<description>Air Quality Index (US)</description>
+		<category>Flow</category>
 		<state readOnly="true" pattern="%d" />
 	</channel-type>
 
 	<channel-type id="Pm_25">
-		<item-type>Number</item-type>
+		<item-type>Number:Density</item-type>
 		<label>PM2.5</label>
 		<description>PM2.5 level, μg/m&#179;</description>
-		<state readOnly="true" pattern="%.1f μg/m&#179;" />
+		<category>Flow</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
-	<channel-type id="Temp_celsius">
-		<item-type>Number</item-type>
-		<label>Temperature (°C)</label>
-		<description>Temperature, &#x2103;</description>
-		<state readOnly="true" pattern="%.1f &#x2103;" />
-	</channel-type>
-
-	<channel-type id="Temp_fahrenheit">
-		<item-type>Number</item-type>
-		<label>Temperature (°F)</label>
-		<description>Temperature, &#x2109;</description>
-		<state readOnly="true" pattern="%.1f &#x2109;" />
+	<channel-type id="Temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="Timestamp">

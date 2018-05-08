@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,7 +12,6 @@ import static org.openhab.binding.airvisualnode.AirVisualNodeBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -20,11 +19,16 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.GRAM;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.CUBIC_METRE;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.ONE;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.PERCENT;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.PARTS_PER_MILLION;
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MICRO;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -76,7 +80,7 @@ public class AirVisualNodeHandler extends BaseThingHandler {
 
     private NodeData nodeData;
 
-    public AirVisualNodeHandler(@NonNull Thing thing) {
+    public AirVisualNodeHandler(Thing thing) {
         super(thing);
         gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
     }
@@ -106,8 +110,6 @@ public class AirVisualNodeHandler extends BaseThingHandler {
         this.refreshInterval = config.refresh * 1000L;
 
         schedulePoll();
-
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Node poll scheduled");
     }
 
     @Override
@@ -150,9 +152,6 @@ public class AirVisualNodeHandler extends BaseThingHandler {
         } catch (IOException e) {
             logger.debug("Could not connect to Node", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } catch (Exception e) {
-            logger.debug("Unexpected error connecting to Node", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -177,91 +176,58 @@ public class AirVisualNodeHandler extends BaseThingHandler {
     }
 
     private void updateChannel(String channelId, boolean force) {
-        if (force || isLinked(channelId)) {
-            Object value = getChannelValue(channelId, nodeData);
-
-            // Get channel value
-            State state = null;
-            if (value == null) {
-                state = UnDefType.UNDEF;
-            } else if (value instanceof Calendar) {
-                state = new DateTimeType((Calendar) value);
-            } else if (value instanceof Integer) {
-                state = new DecimalType(BigDecimal.valueOf(((Integer) value).longValue()));
-            } else if (value instanceof Float) {
-                state = new DecimalType(BigDecimal.valueOf(((Float) value).floatValue()).setScale(1,
-                        RoundingMode.HALF_UP));
-            } else if (value instanceof String) {
-                state = new StringType(value.toString());
-            } else {
-                logger.warn("Update channel {}: Unsupported value type {}", channelId,
-                        value.getClass().getSimpleName());
-            }
-
-            // Update the channel
-            if (state != null) {
-                logger.debug("Update channel {} with state {} ({})", channelId, state.toString(),
-                        (value == null) ? "null" : value.getClass().getSimpleName());
-                updateState(channelId, state);
-            }
+        if (nodeData != null && (force || isLinked(channelId))) {
+            State state = getChannelState(channelId, nodeData);
+            logger.debug("Update channel {} with state {}", channelId, state);
+            updateState(channelId, state);
         }
     }
 
-    private Object getChannelValue(String fullChannelId, NodeData nodeData) {
-        Object value = null;
+    private State getChannelState(String channelId, NodeData nodeData) {
+        State state = UnDefType.UNDEF;
 
-        if (nodeData != null) {
-            String[] fullChannelIdFields = StringUtils.split(fullChannelId, "#");
-
-            String channelId = fullChannelIdFields[1];
-
-            switch (channelId) {
-                case CHANNEL_CO2_PPM:
-                    value = nodeData.getMeasurements().getCo2Ppm();
-                    break;
-                case CHANNEL_HUMIDITY:
-                    value = nodeData.getMeasurements().getHumidityRH();
-                    break;
-                case CHANNEL_AQI_CN:
-                    value = nodeData.getMeasurements().getPm25AQICN();
-                    break;
-                case CHANNEL_AQI_US:
-                    value = nodeData.getMeasurements().getPm25AQIUS();
-                    break;
-                case CHANNEL_PM_25:
-                    value = nodeData.getMeasurements().getPm25Ugm3();
-                    break;
-                case CHANNEL_TEMP_CELSIUS:
-                    value = nodeData.getMeasurements().getTemperatureC();
-                    break;
-                case CHANNEL_TEMP_FAHRENHEIT:
-                    value = nodeData.getMeasurements().getTemperatureF();
-                    break;
-                case CHANNEL_BATTERY_LEVEL:
-                    value = nodeData.getStatus().getBattery();
-                    break;
-                case CHANNEL_WIFI_STRENGTH:
-                    value = nodeData.getStatus().getWifiStrength();
-                    break;
-                case CHANNEL_TIMESTAMP:
-                    // It seem the Node timestamp is Unix timestamp converted from UTC time plus timezone offset.
-                    // Not sure about DST though, but it's best guess at now
-                    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-                    cal.setTimeInMillis(nodeData.getStatus().getDatetime() * 1000L);
-                    TimeZone tzSettings = TimeZone.getTimeZone(nodeData.getSettings().getTimezone());
-                    cal.add(Calendar.MILLISECOND, -tzSettings.getRawOffset());
-                    if (tzSettings.inDaylightTime(cal.getTime())) {
-                        cal.add(Calendar.MILLISECOND, -cal.getTimeZone().getDSTSavings());
-                    }
-                    value = cal;
-                    break;
-                case CHANNEL_USED_MEMORY:
-                    value = nodeData.getStatus().getUsedMemory();
-                    break;
-            }
+        switch (channelId) {
+            case CHANNEL_CO2:
+                state = new QuantityType<>(nodeData.getMeasurements().getCo2Ppm(), PARTS_PER_MILLION);
+                break;
+            case CHANNEL_HUMIDITY:
+                state = new QuantityType<>(nodeData.getMeasurements().getHumidityRH(), PERCENT);
+                break;
+            case CHANNEL_AQI_US:
+                state = new QuantityType<>(nodeData.getMeasurements().getPm25AQIUS(), ONE);
+                break;
+            case CHANNEL_PM_25:
+                // PM2.5 is in ug/m3
+                state = new QuantityType<>(nodeData.getMeasurements().getPm25Ugm3(), MICRO(GRAM).divide(CUBIC_METRE));
+                break;
+            case CHANNEL_TEMP_CELSIUS:
+                state = new QuantityType<>(nodeData.getMeasurements().getTemperatureC(), CELSIUS);
+                break;
+            case CHANNEL_BATTERY_LEVEL:
+                state = new DecimalType(BigDecimal.valueOf(nodeData.getStatus().getBattery()).longValue());
+                break;
+            case CHANNEL_WIFI_STRENGTH:
+                state = new DecimalType(BigDecimal.valueOf(Math.max(0, nodeData.getStatus().getWifiStrength()-1))
+                        .longValue());
+                break;
+            case CHANNEL_TIMESTAMP:
+                // It seem the Node timestamp is Unix timestamp converted from UTC time plus timezone offset.
+                // Not sure about DST though, but it's best guess at now
+                Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                cal.setTimeInMillis(nodeData.getStatus().getDatetime() * 1000L);
+                TimeZone tzSettings = TimeZone.getTimeZone(nodeData.getSettings().getTimezone());
+                cal.add(Calendar.MILLISECOND, -tzSettings.getRawOffset());
+                if (tzSettings.inDaylightTime(cal.getTime())) {
+                    cal.add(Calendar.MILLISECOND, -cal.getTimeZone().getDSTSavings());
+                }
+                state = new DateTimeType(cal);
+                break;
+            case CHANNEL_USED_MEMORY:
+                state = new DecimalType(BigDecimal.valueOf(nodeData.getStatus().getUsedMemory()).longValue());
+                break;
         }
 
-        return value;
+        return state;
     }
 
 }

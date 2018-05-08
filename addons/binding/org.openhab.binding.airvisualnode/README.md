@@ -9,6 +9,7 @@ There is one supported Thing, the "AirVisual Node".
 ## Discovery
 
 Binding will do autodiscovery for AirVisual Node by searching for a host advertised with the NetBIOS name 'AVISUAL-<SerialNumber>'.
+
 All discovered devices will be added to the inbox. Please note you will need to set the Node username and password in the configuration
 of the newly discovered thing before a connection can be made.
 
@@ -32,30 +33,21 @@ Required configuration parameters can be obtained by pressing the center button 
 
 ## Channels
 
-The binding support the following channels:
+The binding supports the following channels:
 
-### Measurements channels
-
-| Channel ID                   | Item Type | Description                 |
-|------------------------------|-----------|-----------------------------|
-| measurements#co2_ppm         | Number    | CO2 level, ppm              |
-| measurements#humidity        | Number    | Humidity, %                 |
-| measurements#aqi_cn          | Number    | Air Quality Index (Chinese) |
-| measurements#aqi_us          | Number    | Air Quality Index (US)      |
-| measurements#pm_25           | Number    | PM2.5 level, μg/m³          |
-| measurements#temp_celsius    | Number    | Temperature, Celsius        |
-| measurements#temp_fahrenheit | Number    | Temperature, Fahrenheit     |
+| Channel ID      | Item Type             | Description                 |
+|-----------------|-----------------------|-----------------------------|
+| co2             | Number:Dimensionless  | CO2 level, ppm              |
+| humidity        | Number:Dimensionless  | Relative humidity, %        |
+| aqi             | Number:Dimensionless  | Air Quality Index (US)      |
+| pm_25           | Number:Density        | PM2.5 level, μg/m³          |
+| temperature     | Number:Temperature    | Temperature                 |
+| battery_level   | Number                | Battery level, %            |
+| signal_strength | Number                | Wi-Fi signal strength       |
+| used_memory     | Number                | Used memory                 |
+| timestamp       | DateTime              | Timestamp                   |
 
 The Node updates measurements data every 5 minutes in active mode and every 15 minutes in power saving mode (screen off).
-
-### Status channels
-
-| Channel ID                   | Item Type | Description                 |
-|------------------------------|-----------|-----------------------------|
-| status#battery_level         | Number    | Battery level, %            |
-| status#wifi_strength         | Number    | Wi-Fi signal strength       |
-| status#used_memory           | Number    | Used memory                 |
-| status#timestamp             | DateTime  | Timestamp                   |
 
 ## Example
 
@@ -73,9 +65,59 @@ airvisualnode:avnode:1a2b3c4 [ address="192.168.1.32", username="airvisual", pas
 Here is an example of items for the AirVisual Node:
 
 ```
-Number Livingroom_Temperature "Temperature [%.1f °C]" <temperature> ["TargetTemperature"] {channel="airvisualnode:avnode:1a2b3c4:measurements#temp_celsius"}
-Number Livingroom_CO2_Level "CO₂" <flow> {channel="airvisualnode:avnode:1a2b3c4:measurements#co2_ppm"}
-Number Livingroom_Aqi_Level "Air Quality Index" <flow> { channel="airvisualnode:avnode:1a2b3c4:measurements#aqi_us" }
-Number Livingroom_Aqi_Pm25  "PM2.5 Level" <line> { channel="airvisualnode:avnode:1a2b3c4:measurements#pm_25" }
-DateTime Livingroom_Aqi_Timestamp "AQI Timestamp [%1$tH:%1$tM]" <clock> { channel="airvisualnode:avnode:1a2b3c4:status#timestamp" }
+Number:Temperature Livingroom_Temperature "Temperature [%.1f %unit%]" <temperature> {channel="airvisualnode:avnode:1a2b3c4:temperature"}
+Number:Dimensionless Livingroom_Humidity "Humidity [%d %unit%]" <humidity> {channel="airvisualnode:avnode:1a2b3c4:humidity"}
+Number:Dimensionless Livingroom_CO2_Level "CO₂" <flow> {channel="airvisualnode:avnode:1a2b3c4:co2"}
+Number:Dimensionless Livingroom_Aqi_Level "Air Quality Index" <flow> { channel="airvisualnode:avnode:1a2b3c4:aqi" }
+Number:Density Livingroom_Pm25_Level  "PM2.5 Level" <line> { channel="airvisualnode:avnode:1a2b3c4:pm_25" }
+DateTime Livingroom_Aqi_Timestamp "AQI Timestamp [%1$tH:%1$tM]" <clock> { channel="airvisualnode:avnode:1a2b3c4:timestamp" }
+```
+
+### Rules
+
+Example rules:
+
+```
+rule "AirVisual Node Temperature Rule"
+when
+    Item Livingroom_Temperature changed
+then
+    if (Livingroom_Temperature.state > 25.0 [°C]) {
+        logInfo("avnode.rules", "Temperature is above 25°C")
+    }
+end
+
+rule "AirVisual Node Humidity Rule"
+when
+    Item Livingroom_Humidity changed
+then
+    if (Livingroom_Humidity.state < 35.0 [%]) {
+        logInfo("avnode.rules", "Humidity is below 35%")
+    }
+end
+
+rule "AirVisual Node CO₂ Level Rule"
+when
+    Item Livingroom_CO2_Level changed
+then
+    if (Livingroom_CO2_Level.state > 1000.0 [ppm]) {
+        logInfo("avnode.rules", "CO₂ level is above 1000 ppm")
+    }
+end
+```
+
+### Sitemap
+
+Example sitemap:
+
+```
+sitemap home label="Home" {
+    Frame label="Living Room" {
+        Text item=Livingroom_Temperature
+        Text item=Livingroom_Humidity
+        Text item=Livingroom_CO2_Level
+        Text item=Livingroom_Aqi_Level
+        Text item=Livingroom_Pm25_Level
+    }
+}
 ```

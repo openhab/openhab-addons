@@ -8,7 +8,7 @@ Bundle-Name: AirVisualNode Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.airvisualnode;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Export-Package: 
  org.openhab.binding.airvisualnode,
  org.openhab.binding.airvisualnode.handler
@@ -17,6 +17,8 @@ Import-Package:
  org.openhab.binding.airvisualnode.handler,
  com.google.gson,
  com.google.gson.annotations,
+ javax.measure,
+ javax.measure.quantity,
  com.google.common.collect,
  org.apache.commons.io,
  org.apache.commons.lang,
@@ -24,10 +26,9 @@ Import-Package:
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
- org.eclipse.smarthome.core.thing.binding.builder,
- org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
