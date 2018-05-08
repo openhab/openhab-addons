@@ -15,7 +15,10 @@ import java.util.Date;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.ImperialUnits;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.tado.TadoBindingConstants.HvacMode;
@@ -193,10 +196,9 @@ public class TadoZoneStateAdapter {
             return UnDefType.NULL;
         }
 
-        double temperatureValue = temperatureUnit == TemperatureUnit.FAHRENHEIT ? temperature.getFahrenheit()
-                : temperature.getCelsius();
-
-        return toDecimalType(temperatureValue);
+        return temperatureUnit == TemperatureUnit.FAHRENHEIT
+                ? new QuantityType<>(temperature.getFahrenheit(), ImperialUnits.FAHRENHEIT)
+                : new QuantityType<>(temperature.getCelsius(), SIUnits.CELSIUS);
     }
 
     private static State toTemperatureState(TemperatureDataPoint temperature, TemperatureUnit temperatureUnit) {
@@ -204,9 +206,8 @@ public class TadoZoneStateAdapter {
             return UnDefType.NULL;
         }
 
-        double temperatureValue = temperatureUnit == TemperatureUnit.FAHRENHEIT ? temperature.getFahrenheit()
-                : temperature.getCelsius();
-
-        return toDecimalType(temperatureValue);
+        return temperatureUnit == TemperatureUnit.FAHRENHEIT
+                ? new QuantityType<>(temperature.getFahrenheit(), ImperialUnits.FAHRENHEIT)
+                : new QuantityType<>(temperature.getCelsius(), SIUnits.CELSIUS);
     }
 }

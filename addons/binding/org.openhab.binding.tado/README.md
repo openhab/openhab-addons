@@ -47,11 +47,11 @@ The availability of items as well as their allowed values depend on type and cap
 
 Name | Type | Description | Read/Write | Zone type
 -|-|-|-|-
-`currentTemperature` | Number | Current inside temperature | R | `HEATING`, `AC`
+`currentTemperature` | Number:Temperature | Current inside temperature | R | `HEATING`, `AC`
 `humidity` | Number | Current relative inside humidity in percent | R | `HEATING`, `AC`
 `heatingPower` | Number | Amount of heating power currently present | R | `HEATING`
 `hvacMode` | String | Active mode, one of `OFF`, `HEAT`, `COOL`, `DRY`, `FAN`, `AUTO` | RW | `HEATING` and `DHW` support `OFF` and `HEAT`, `AC` can support more
-`targetTemperature` | Number | Set point | RW | `HEATING`, `AC`, `DHW`
+`targetTemperature` | Number:Temperature | Set point | RW | `HEATING`, `AC`, `DHW`
 `fanspeed` | String | Fan speed, one of `AUTO`, `LOW`, `MIDDLE`, `HIGH` | RW | `AC`
 `swing` | Switch | Swing on/off | RW | `AC`
 `overlayExpiry` | DateTime | End date and time of a timer | R | `HEATING`, `AC`, `DHW`
@@ -117,32 +117,32 @@ Bridge tado:home:demo [ username="webuser@gmail.com", password="secret" ] {
 
 ## tado.items
 ```
-Number   HEAT_inside_temperature    "Inside Temperature"      { channel="tado:zone:demo:heating:currentTemperature" }
-Number   HEAT_humidity              "Humidity"                { channel="tado:zone:demo:heating:humidity" }
-Number   HEAT_heating_power         "Heating Power"           { channel="tado:zone:demo:heating:heatingPower" }
-String   HEAT_hvac_mode             "HVAC Mode"               { channel="tado:zone:demo:heating:hvacMode" }
-Number   HEAT_target_temperature    "Set Point"               { channel="tado:zone:demo:heating:targetTemperature" }
-DateTime HEAT_overlay_expiry        "Overlay Expiry"          { channel="tado:zone:demo:heating:overlayExpiry" }
-Number   HEAT_timer_duration        "Timer Duration"          { channel="tado:zone:demo:heating:timerDuration" }
-String   HEAT_operation_mode        "Operation Mode"          { channel="tado:zone:demo:heating:operationMode" }
+Number:Temperature HEAT_inside_temperature    "Inside Temperature"      { channel="tado:zone:demo:heating:currentTemperature" }
+Number             HEAT_humidity              "Humidity"                { channel="tado:zone:demo:heating:humidity" }
+Number             HEAT_heating_power         "Heating Power"           { channel="tado:zone:demo:heating:heatingPower" }
+String             HEAT_hvac_mode             "HVAC Mode"               { channel="tado:zone:demo:heating:hvacMode" }
+Number:Temperature HEAT_target_temperature    "Set Point"               { channel="tado:zone:demo:heating:targetTemperature" }
+DateTime           HEAT_overlay_expiry        "Overlay Expiry"          { channel="tado:zone:demo:heating:overlayExpiry" }
+Number             HEAT_timer_duration        "Timer Duration"          { channel="tado:zone:demo:heating:timerDuration" }
+String             HEAT_operation_mode        "Operation Mode"          { channel="tado:zone:demo:heating:operationMode" }
 
-Number   AC_inside_temperature      "Inside Temperature"      { channel="tado:zone:demo:ac:currentTemperature" }
-Number   AC_humidity                "Humidity"                { channel="tado:zone:demo:ac:humidity" }
-String   AC_hvac_mode               "HVMode"                  { channel="tado:zone:demo:ac:hvacMode" }
-Number   AC_target_temperature      "Set Point"               { channel="tado:zone:demo:ac:targetTemperature" }
-String   AC_fanspeed                "Fan Speed"               { channel="tado:zone:demo:ac:fanspeed" }
-Switch   AC_swing                   "Swing"                   { channel="tado:zone:demo:ac:swing" }
-DateTime AC_overlay_expiry          "Overlay Expiry"          { channel="tado:zone:demo:ac:overlayExpiry" }
-Number   AC_timer_duration          "Timer Duration"          { channel="tado:zone:demo:ac:timerDuration" }
-String   AC_operation_mode          "Operation Mode"          { channel="tado:zone:demo:ac:operationMode" }
+Number:Temperature AC_inside_temperature      "Inside Temperature"      { channel="tado:zone:demo:ac:currentTemperature" }
+Number             AC_humidity                "Humidity"                { channel="tado:zone:demo:ac:humidity" }
+String             AC_hvac_mode               "HVMode"                  { channel="tado:zone:demo:ac:hvacMode" }
+Number:Temperature AC_target_temperature      "Set Point"               { channel="tado:zone:demo:ac:targetTemperature" }
+String             AC_fanspeed                "Fan Speed"               { channel="tado:zone:demo:ac:fanspeed" }
+Switch             AC_swing                   "Swing"                   { channel="tado:zone:demo:ac:swing" }
+DateTime           AC_overlay_expiry          "Overlay Expiry"          { channel="tado:zone:demo:ac:overlayExpiry" }
+Number             AC_timer_duration          "Timer Duration"          { channel="tado:zone:demo:ac:timerDuration" }
+String             AC_operation_mode          "Operation Mode"          { channel="tado:zone:demo:ac:operationMode" }
 
-String   DHW_hvac_mode              "HVAC Mode"               { channel="tado:zone:demo:hotwater:hvacMode" }
-Number   DHW_target_temperature     "Set Point"               { channel="tado:zone:demo:hotwater:targetTemperature" }
-DateTime DHW_overlay_expiry         "Overlay Expiry"          { channel="tado:zone:demo:hotwater:overlayExpiry" }
-Number   DHW_timer_duration         "Timer Duration"          { channel="tado:zone:demo:hotwater:timerDuration" }
-String   DHW_operation_mode         "Operation Mode"          { channel="tado:zone:demo:hotwater:operationMode" }
+String             DHW_hvac_mode              "HVAC Mode"               { channel="tado:zone:demo:hotwater:hvacMode" }
+Number:Temperature DHW_target_temperature     "Set Point"               { channel="tado:zone:demo:hotwater:targetTemperature" }
+DateTime           DHW_overlay_expiry         "Overlay Expiry"          { channel="tado:zone:demo:hotwater:overlayExpiry" }
+Number             DHW_timer_duration         "Timer Duration"          { channel="tado:zone:demo:hotwater:timerDuration" }
+String             DHW_operation_mode         "Operation Mode"          { channel="tado:zone:demo:hotwater:operationMode" }
 
-Switch   Phone_atHome               "Phone location [MAP(presence.map):%s]" { channel="tado:mobiledevice:demo:phone:atHome" }
+Switch             Phone_atHome               "Phone location [MAP(presence.map):%s]" { channel="tado:mobiledevice:demo:phone:atHome" }
 ```
 
 ## tado.sitemap

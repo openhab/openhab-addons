@@ -12,9 +12,14 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.ImperialUnits;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -112,7 +117,11 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 scheduleHvacChange();
                 break;
             case TadoBindingConstants.CHANNEL_ZONE_TARGET_TEMPERATURE:
-                pendingHvacChange.withTemperature(((DecimalType) command).floatValue());
+                QuantityType<Temperature> state = (QuantityType<Temperature>) command;
+                float temperatureInHomeUnit = getTemperatureUnit() == TemperatureUnit.FAHRENHEIT
+                        ? state.toUnit(ImperialUnits.FAHRENHEIT).floatValue()
+                        : state.toUnit(SIUnits.CELSIUS).floatValue();
+                pendingHvacChange.withTemperature(temperatureInHomeUnit);
                 scheduleHvacChange();
                 break;
             case TadoBindingConstants.CHANNEL_ZONE_SWING:
