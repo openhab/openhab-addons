@@ -301,17 +301,20 @@ public class KodiConnection implements KodiClientSocketEventListener {
         if (response instanceof JsonObject) {
             JsonObject result = response.getAsJsonObject();
             if (result.has("favourites")) {
-                for (JsonElement element : result.get("favourites").getAsJsonArray()) {
-                    JsonObject object = (JsonObject) element;
-                    KodiFavorite favorite = new KodiFavorite();
-                    favorite.setTitle(object.get("title").getAsString());
-                    favorite.setFavoriteType(object.get("type").getAsString());
-                    favorite.setPath(object.get("path").getAsString());
-                    if (object.has("window")) {
-                        favorite.setWindow(object.get("window").getAsString());
-                        favorite.setWindowParameter(object.get("windowparameter").getAsString());
+                JsonElement favourites = result.get("favourites");
+                if (favourites instanceof JsonArray) {
+                    for (JsonElement element : favourites.getAsJsonArray()) {
+                        JsonObject object = (JsonObject) element;
+                        KodiFavorite favorite = new KodiFavorite();
+                        favorite.setTitle(object.get("title").getAsString());
+                        favorite.setFavoriteType(object.get("type").getAsString());
+                        favorite.setPath(object.get("path").getAsString());
+                        if (object.has("window")) {
+                            favorite.setWindow(object.get("window").getAsString());
+                            favorite.setWindowParameter(object.get("windowparameter").getAsString());
+                        }
+                        favorites.add(favorite);
                     }
-                    favorites.add(favorite);
                 }
             }
         }
@@ -731,13 +734,16 @@ public class KodiConnection implements KodiClientSocketEventListener {
         if (response instanceof JsonObject) {
             JsonObject result = response.getAsJsonObject();
             if (result.has("channelgroups")) {
-                for (JsonElement element : result.get("channelgroups").getAsJsonArray()) {
-                    JsonObject object = (JsonObject) element;
-                    KodiPVRChannelGroup pvrChannelGroup = new KodiPVRChannelGroup();
-                    pvrChannelGroup.setId(object.get("channelgroupid").getAsInt());
-                    pvrChannelGroup.setLabel(object.get("label").getAsString());
-                    pvrChannelGroup.setChannelType(pvrChannelType);
-                    pvrChannelGroups.add(pvrChannelGroup);
+                JsonElement channelgroups = result.get("channelgroups");
+                if (channelgroups instanceof JsonArray) {
+                    for (JsonElement element : channelgroups.getAsJsonArray()) {
+                        JsonObject object = (JsonObject) element;
+                        KodiPVRChannelGroup pvrChannelGroup = new KodiPVRChannelGroup();
+                        pvrChannelGroup.setId(object.get("channelgroupid").getAsInt());
+                        pvrChannelGroup.setLabel(object.get("label").getAsString());
+                        pvrChannelGroup.setChannelType(pvrChannelType);
+                        pvrChannelGroups.add(pvrChannelGroup);
+                    }
                 }
             }
         }
@@ -766,13 +772,16 @@ public class KodiConnection implements KodiClientSocketEventListener {
         if (response instanceof JsonObject) {
             JsonObject result = response.getAsJsonObject();
             if (result.has("channels")) {
-                for (JsonElement element : result.get("channels").getAsJsonArray()) {
-                    JsonObject object = (JsonObject) element;
-                    KodiPVRChannel pvrChannel = new KodiPVRChannel();
-                    pvrChannel.setId(object.get("channelid").getAsInt());
-                    pvrChannel.setLabel(object.get("label").getAsString());
-                    pvrChannel.setChannelGroupId(pvrChannelGroupId);
-                    pvrChannels.add(pvrChannel);
+                JsonElement channels = result.get("channels");
+                if (channels instanceof JsonArray) {
+                    for (JsonElement element : channels.getAsJsonArray()) {
+                        JsonObject object = (JsonObject) element;
+                        KodiPVRChannel pvrChannel = new KodiPVRChannel();
+                        pvrChannel.setId(object.get("channelid").getAsInt());
+                        pvrChannel.setLabel(object.get("label").getAsString());
+                        pvrChannel.setChannelGroupId(pvrChannelGroupId);
+                        pvrChannels.add(pvrChannel);
+                    }
                 }
             }
         }
