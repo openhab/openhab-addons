@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.upnpcontrolpoint.handler;
+package org.openhab.binding.upnpcontrol.handler;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -56,8 +56,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     @Override
     public void initialize() {
         logger.debug("Initializing handler for upnp media device");
-        for (Channel channel : this.getThing().getChannels()) {
-            this.handleCommand(channel.getUID(), RefreshType.REFRESH);
+        for (Channel channel : getThing().getChannels()) {
+            handleCommand(channel.getUID(), RefreshType.REFRESH);
         }
         updateStatus(ThingStatus.ONLINE);
     }
@@ -69,16 +69,17 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     protected String getTransportState() throws IOException {
         HashMap<String, String> inputs = new HashMap<String, String>();
-        inputs.put("InstanceID", Integer.toString(this.instanceId));
-        Map<String, String> result = this.service.invokeAction(this, "AVTransport", "GetTransportInfo", inputs);
+        inputs.put("InstanceID", Integer.toString(instanceId));
+        Map<String, String> result = service.invokeAction(this, "AVTransport", "GetTransportInfo", inputs);
         for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AVTransport");
+            onValueReceived(variable, result.get(variable), "AVTransport");
         }
-        return this.transportState;
+        return transportState;
     }
 
     @Override
     public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
+        logger.debug("Received subscription reply {} from service {}", succeeded, service);
     }
 
     @Override
@@ -87,7 +88,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     @Override
     public String getUDN() {
-        return this.getThing().getProperties().get("udn");
+        return getThing().getProperties().get("udn");
     }
 
     @Override
@@ -99,7 +100,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         switch (variable) {
             case "CurrentTransportState":
                 if (!((value == null) || (value.isEmpty()))) {
-                    this.transportState = value;
+                    transportState = value;
                 }
                 break;
             default:
@@ -112,6 +113,6 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     }
 
     public Set<AudioFormat> getSupportedAudioFormats() {
-        return this.supportedFormats;
+        return supportedFormats;
     }
 }

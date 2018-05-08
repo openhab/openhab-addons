@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.upnpcontrolpoint.internal;
+package org.openhab.binding.upnpcontrol.internal;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -25,7 +25,7 @@ import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioStreamException;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.openhab.binding.upnpcontrolpoint.handler.UpnpRendererHandler;
+import org.openhab.binding.upnpcontrol.handler.UpnpRendererHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

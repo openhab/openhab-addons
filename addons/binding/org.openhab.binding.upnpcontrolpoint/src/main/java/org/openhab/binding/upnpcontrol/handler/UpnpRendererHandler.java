@@ -6,13 +6,14 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.upnpcontrolpoint.handler;
+package org.openhab.binding.upnpcontrol.handler;
 
-import static org.openhab.binding.upnpcontrolpoint.UpnpControlPointBindingConstants.*;
+import static org.openhab.binding.upnpcontrol.UpnpControlBindingConstants.*;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,6 +35,8 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
+import org.openhab.binding.upnpcontrol.internal.UpnpEntry;
+import org.openhab.binding.upnpcontrol.internal.UpnpXMLParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +57,11 @@ public class UpnpRendererHandler extends UpnpHandler {
     private OnOffType soundMute = OnOffType.OFF;
     private String sink = "";
 
+    private @Nullable Queue<UpnpEntry> currentQueue;
+
     public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService) {
         super(thing, upnpIOService);
+        service.addSubscription(this, "AVTransport", 3600);
         getProtocolInfo();
     }
 
@@ -276,7 +282,7 @@ public class UpnpRendererHandler extends UpnpHandler {
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
 
-        logger.debug("Received variable {} with value {} from service {}", new Object[] { variable, value, service });
+        logger.debug("Received variable {} with value {} from service {}", variable, value, service);
         if (variable == null) {
             return;
         }
@@ -295,6 +301,34 @@ public class UpnpRendererHandler extends UpnpHandler {
             case "Sink":
                 if (!((value == null) || (value.isEmpty()))) {
                     sink = value;
+                }
+                break;
+            case "LastChange":
+                // pre-process some variables, eg XML processing
+                if ("AVTransport".equals(service) && "LastChange".equals(variable)) {
+                    Map<String, String> parsedValues = UpnpXMLParser.getAVTransportFromXML(value);
+                    for (String parsedValue : parsedValues.keySet()) {
+                        // Update the transport state after the update of the media information
+                        // to not break the notification mechanism
+                        if (!parsedValue.equals("TransportState")) {
+                            onValueReceived(parsedValue, parsedValues.get(parsedValue), "AVTransport");
+                        }
+                        // Translate AVTransportURI/AVTransportURIMetaData to CurrentURI/CurrentURIMetaData
+                        // for a compatibility with the result of the action GetMediaInfo
+                        if (parsedValue.equals("AVTransportURI")) {
+                            onValueReceived("CurrentURI", parsedValues.get(parsedValue), service);
+                        } else if (parsedValue.equals("AVTransportURIMetaData")) {
+                            onValueReceived("CurrentURIMetaData", parsedValues.get(parsedValue), service);
+                        }
+                    }
+                    if (parsedValues.get("TransportState") != null) {
+                        onValueReceived("TransportState", parsedValues.get("TransportState"), "AVTransport");
+                    }
+                }
+                break;
+            case "TransportState":
+                if (value.equals("STOPPED")) {
+                    serveNext();
                 }
                 break;
             default:
@@ -344,5 +378,19 @@ public class UpnpRendererHandler extends UpnpHandler {
             return audioSupport;
         }
         return false;
+    }
+
+    public void registerQueue(Queue<UpnpEntry> queue) {
+        currentQueue = queue;
+        serveNext();
+    }
+
+    public void serveNext() {
+        if (currentQueue != null) {
+            UpnpEntry nextMedia = currentQueue.poll();
+            if (nextMedia != null) {
+                setCurrentURI(nextMedia.getRes(), "");
+            }
+        }
     }
 }

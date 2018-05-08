@@ -1,18 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="upnpcontrolpoint"
+<thing:thing-descriptions bindingId="upnpcontrol"
 						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Thing Types -->
-	<thing-type id="upnpcontrolpoint">
-		<label>UPnPControlPoint</label>
-		<description>Control Point to control one or more UPnP AV servers and/or renderers</description>
-		<channels>
-		  <channel id="upnprenderer" typeId="upnprenderer"/>
-		  <channel id="upnpserver" typeId="upnpserver"/>
-		</channels>
-	</thing-type>
 	<thing-type id="upnprenderer">
 	   <label>UPnPRenderer</label>
 	   <description>UPnP AV Renderer</description>
@@ -27,21 +19,14 @@
        <label>UPnPServer</label>
        <description>UPnP AV Server</description>
        <channels>
+          <channel id="upnprenderer" typeId="upnprenderer"/>
            <channel id="currenttitle" typeId="currenttitle"/>
+           <channel id="select" typeId="select"/>
+           <channel id="serve" typeId="serve"/>
        </channels>
     </thing-type>
 
 	<!-- Channel Types -->
-	<channel-type id="upnpserver">
-	   <item-type>String</item-type>
-	   <label>Server</label>
-	   <description>Select AV server</description>
-	</channel-type>
-    <channel-type id="upnprenderer">
-       <item-type>String</item-type>
-       <label>Renderer</label>
-       <description>Select AV renderer</description>
-    </channel-type>
     <channel-type id="mute">
         <item-type>Switch</item-type>
         <label>Mute</label>
@@ -64,10 +49,24 @@
         <description>Set or get the master volume</description>
         <category>SoundVolume</category>
     </channel-type>
+    <channel-type id="upnprenderer">
+       <item-type>String</item-type>
+       <label>Renderer</label>
+       <description>Select AV renderer</description>
+    </channel-type>
     <channel-type id="currenttitle">
         <item-type>String</item-type>
         <label>Current Title</label>
         <description>Current title playing or ready to play</description>
     </channel-type>
-
+    <channel-type id="select">
+        <item-type>Switch</item-type>
+        <label>Select</label>
+        <description>Select item from directory</description>
+    </channel-type>
+    <channel-type id="serve">
+        <item-type>Switch</item-type>
+        <label>Serve</label>
+        <description>Send selection to renderer</description>
+    </channel-type>
 </thing:thing-descriptions>

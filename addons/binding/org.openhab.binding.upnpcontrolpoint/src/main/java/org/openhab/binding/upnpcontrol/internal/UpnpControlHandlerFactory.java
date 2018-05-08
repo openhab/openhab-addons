@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.upnpcontrolpoint.internal;
+package org.openhab.binding.upnpcontrol.internal;
 
-import static org.openhab.binding.upnpcontrolpoint.UpnpControlPointBindingConstants.*;
+import static org.openhab.binding.upnpcontrol.UpnpControlBindingConstants.*;
 
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,9 +26,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
-import org.openhab.binding.upnpcontrolpoint.handler.UpnpControlPointHandler;
-import org.openhab.binding.upnpcontrolpoint.handler.UpnpRendererHandler;
-import org.openhab.binding.upnpcontrolpoint.handler.UpnpServerHandler;
+import org.openhab.binding.upnpcontrol.handler.UpnpRendererHandler;
+import org.openhab.binding.upnpcontrol.handler.UpnpServerHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -36,21 +35,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link UpnpControlPointHandlerFactory} is responsible for creating things and thing
+ * The {@link UpnpControlHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Mark Herwege - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.upnpcontrolpoint")
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.upnpcontrol")
 @NonNullByDefault
-public class UpnpControlPointHandlerFactory extends BaseThingHandlerFactory {
+public class UpnpControlHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private ConcurrentMap<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
     private ConcurrentMap<String, UpnpRendererHandler> upnpRenderers = new ConcurrentHashMap<>();
     private ConcurrentMap<String, UpnpServerHandler> upnpServers = new ConcurrentHashMap<>();
-    private ConcurrentMap<String, UpnpControlPointHandler> upnpControlPoints = new ConcurrentHashMap<>();
 
     @NonNullByDefault(value = {})
     private UpnpIOService upnpIOService;
@@ -76,8 +74,6 @@ public class UpnpControlPointHandlerFactory extends BaseThingHandlerFactory {
             return addRenderer(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SERVER)) {
             return addServer(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_CONTROLPOINT)) {
-            return addControlPoint(thing);
         }
         return null;
     }
@@ -91,17 +87,15 @@ public class UpnpControlPointHandlerFactory extends BaseThingHandlerFactory {
             removeRenderer(key);
         } else if (thingTypeUID.equals(THING_TYPE_SERVER)) {
             removeServer(key);
-        } else if (thingTypeUID.equals(THING_TYPE_CONTROLPOINT)) {
-            removeControlPoint(key);
         }
         super.unregisterHandler(thing);
     }
 
     private UpnpServerHandler addServer(Thing thing) {
-        UpnpServerHandler handler = new UpnpServerHandler(thing, upnpIOService);
+        UpnpServerHandler handler = new UpnpServerHandler(thing, upnpIOService, upnpRenderers,
+                upnpStateDescriptionProvider);
         String key = thing.getUID().toString();
         upnpServers.put(key, handler);
-        upnpControlPoints.forEach((thingId, value) -> value.addServerOption(key, handler));
         logger.debug("Media server handler created for {}", thing.getLabel());
         return handler;
     }
@@ -110,7 +104,7 @@ public class UpnpControlPointHandlerFactory extends BaseThingHandlerFactory {
         UpnpRendererHandler handler = new UpnpRendererHandler(thing, upnpIOService);
         String key = thing.getUID().toString();
         upnpRenderers.put(key, handler);
-        upnpControlPoints.forEach((thingId, value) -> value.addRendererOption(key, handler));
+        upnpServers.forEach((thingId, value) -> value.addRendererOption(key, handler));
         logger.debug("Media renderer handler created for {}", thing.getLabel());
 
         callbackUrl = createCallbackUrl();
@@ -125,16 +119,7 @@ public class UpnpControlPointHandlerFactory extends BaseThingHandlerFactory {
         return handler;
     }
 
-    private UpnpControlPointHandler addControlPoint(Thing thing) {
-        UpnpControlPointHandler handler = new UpnpControlPointHandler(thing, upnpIOService, upnpRenderers, upnpServers,
-                upnpStateDescriptionProvider);
-        upnpControlPoints.put(thing.getUID().toString(), handler);
-        logger.debug("Control point handler created for {}", thing.getLabel());
-        return handler;
-    }
-
     private void removeServer(String key) {
-        upnpControlPoints.forEach((thingId, value) -> value.removeServerOption(key));
         upnpServers.remove(key);
     }
 
@@ -144,12 +129,8 @@ public class UpnpControlPointHandlerFactory extends BaseThingHandlerFactory {
             reg.unregister();
             audioSinkRegistrations.remove(key);
         }
-        upnpControlPoints.forEach((thingId, value) -> value.removeRendererOption(key));
+        upnpServers.forEach((thingId, value) -> value.removeRendererOption(key));
         upnpRenderers.remove(key);
-    }
-
-    private void removeControlPoint(String key) {
-        upnpControlPoints.remove(key);
     }
 
     private String createCallbackUrl() {

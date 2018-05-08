@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.upnpcontrolpoint.internal.discovery;
+package org.openhab.binding.upnpcontrol.internal.discovery;
 
-import static org.openhab.binding.upnpcontrolpoint.UpnpControlPointBindingConstants.*;
+import static org.openhab.binding.upnpcontrol.UpnpControlBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Herwege - Initial contribution
  */
 @Component(service = { UpnpDiscoveryParticipant.class }, immediate = true)
-public class UpnpControlPointDiscoveryParticipant implements UpnpDiscoveryParticipant {
+public class UpnpControlDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 

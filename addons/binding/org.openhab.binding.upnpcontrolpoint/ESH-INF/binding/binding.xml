@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<binding:binding id="upnpcontrolpoint"
+<binding:binding id="upnpcontrol"
 				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 				 xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
 				 xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-	<name>UPnPControlPoint Binding</name>
-	<description>This binding creates a UPnP Control Point that can manage media servers and renderers.</description>
+	<name>UPnP Control Binding</name>
+	<description>This binding acts as a UPnP Control Point that can query media server content directories and serve content to media renderers.</description>
 	<author>Mark Herwege</author>
 
 </binding:binding>

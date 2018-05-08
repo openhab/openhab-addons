@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.upnpcontrolpoint;
+package org.openhab.binding.upnpcontrol;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,22 +16,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link UpnpControlPointBindingConstants} class defines common constants, which are
+ * The {@link UpnpControlBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
-public class UpnpControlPointBindingConstants {
+public class UpnpControlBindingConstants {
 
-    public static final String BINDING_ID = "upnpcontrolpoint";
+    public static final String BINDING_ID = "upnpcontrol";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_RENDERER = new ThingTypeUID(BINDING_ID, "upnprenderer");
     public static final ThingTypeUID THING_TYPE_SERVER = new ThingTypeUID(BINDING_ID, "upnpserver");
-    public static final ThingTypeUID THING_TYPE_CONTROLPOINT = new ThingTypeUID(BINDING_ID, "upnpcontrolpoint");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(THING_TYPE_RENDERER, THING_TYPE_SERVER, THING_TYPE_CONTROLPOINT).collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_RENDERER, THING_TYPE_SERVER)
+            .collect(Collectors.toSet());
 
     // List of thing parameters names
     public static final String HOST_PARAMETER = "ipAddress";
@@ -44,8 +43,8 @@ public class UpnpControlPointBindingConstants {
     public static final String MUTE = "mute";
     public static final String CONTROL = "control";
     public static final String STOP = "stop";
-    public static final String CURRENTTITLE = "currenttitle";
     public static final String UPNPRENDERER = "upnprenderer";
-    public static final String UPNPSERVER = "upnpserver";
-
+    public static final String CURRENTTITLE = "currenttitle";
+    public static final String SELECT = "select";
+    public static final String SERVE = "serve";
 }

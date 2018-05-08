@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.upnpcontrolpoint.internal;
+package org.openhab.binding.upnpcontrol.internal;
 
 import java.util.Locale;
 import java.util.Map;
@@ -49,7 +49,6 @@ public class UpnpDynamicStateDescriptionProvider implements DynamicStateDescript
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
         StateDescription description = descriptions.get(channel.getUID());
-        logger.debug("Providing state description for channel {}", channel.getUID());
         return description;
     }
 }
