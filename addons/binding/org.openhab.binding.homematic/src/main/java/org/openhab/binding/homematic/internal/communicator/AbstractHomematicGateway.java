@@ -846,6 +846,39 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         }
     }
 
+    @Override
+    public void deleteDevice(String address, boolean reset, boolean force, boolean defer) {
+        for (RpcClient<?> rpcClient : rpcClients.values()) {
+            try {
+                rpcClient.deleteDevice(getDevice(address), translateFlags(reset, force, defer));
+            } catch (HomematicClientException e) {
+                // thrown by getDevice(address) if no device for the given address is paired on the gateway
+                logger.info("Device deletion not possible: {}", e.getMessage());
+            } catch (IOException e) {
+                logger.warn("Device deletion failed: {}", e.getMessage(), e);
+            }
+        }
+    }
+
+    private int translateFlags(boolean reset, boolean force, boolean defer) {
+        final int resetFlag = 0b001;
+        final int forceFlag = 0b010;
+        final int deferFlag = 0b100;
+        int resultFlag = 0;
+
+        if (reset) {
+            resultFlag += resetFlag;
+        }
+        if (force) {
+            resultFlag += forceFlag;
+        }
+        if (defer) {
+            resultFlag += deferFlag;
+        }
+
+        return resultFlag;
+    }
+
     /**
      * Thread which validates the connection to the gateway and restarts the RPC client if necessary.
      */

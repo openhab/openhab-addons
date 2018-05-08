@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
@@ -286,6 +287,11 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     public void onDeviceDeleted(HmDevice device) {
         discoveryService.deviceRemoved(device);
         updateThing(device);
+
+        Thing hmThing = getThingByUID(UidUtils.generateThingUID(device, getThing()));
+        if (hmThing != null && hmThing.getHandler() != null) {
+            ((HomematicThingHandler) hmThing.getHandler()).deviceRemoved();
+        }
     }
 
     @Override
@@ -304,6 +310,11 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         typeGenerator.generate(device);
         if (discoveryService != null) {
             discoveryService.deviceDiscovered(device);
+        }
+
+        Thing hmThing = getThingByUID(UidUtils.generateThingUID(device, getThing()));
+        if (hmThing != null && hmThing.getHandler() != null) {
+            ((HomematicThingHandler) hmThing.getHandler()).deviceLoaded(device);
         }
     }
 
@@ -325,6 +336,28 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                 logger.warn("{}", ex.getMessage());
             }
         }
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        if (((HomematicThingHandler) childHandler).isDeletionPending()) {
+            deleteFromGateway(UidUtils.getHomematicAddress(childThing), false, true, false);
+        }
+    }
+
+    /**
+     * Deletes a device from the gateway.
+     *
+     * @param address The address of the device to be deleted
+     * @param reset <i>true</i> will perform a factory reset on the device before deleting it.
+     * @param force <i>true</i> will delete the device even if it is not reachable.
+     * @param defer <i>true</i> will delete the device once it becomes available.
+     */
+    public void deleteFromGateway(String address, boolean reset, boolean force, boolean defer) {
+        scheduler.submit(() -> {
+            logger.debug("Deleting the device '{}' from gateway '{}'", address, getBridge());
+            getGateway().deleteDevice(address, reset, force, defer);
+        });
     }
 
 }

@@ -51,6 +51,7 @@ public class HomematicConfig {
     private int timeout = 15;
     private int installModeDuration = DEFAULT_INSTALL_MODE_DURATION;
     private long discoveryTimeToLive = -1;
+    private boolean unpairOnDeletion = false;
 
     private HmGatewayInfo gatewayInfo;
 
@@ -208,6 +209,25 @@ public class HomematicConfig {
      */
     public void setInstallModeDuration(int installModeDuration) {
         this.installModeDuration = installModeDuration;
+    }
+
+    /**
+     * Returns if devices are unpaired from the gateway when their corresponding things are removed
+     * 
+     * @return <i>true</i> if devices are unpaired from the gateway when their corresponding things are removed
+     */
+    public boolean isUnpairOnDeletion() {
+        return unpairOnDeletion;
+    }
+
+    /**
+     * Sets unpairOnDeletion
+     * 
+     * @param unpairOnDeletion if set to <i>true</i>, devices are unpaired from the gateway when their corresponding
+     *            things are removed
+     */
+    public void setUnpairOnDeletion(boolean unpairOnDeletion) {
+        this.unpairOnDeletion = unpairOnDeletion;
     }
 
     /**
