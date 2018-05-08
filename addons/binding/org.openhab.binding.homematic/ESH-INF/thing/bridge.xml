@@ -92,6 +92,12 @@
 				<description>Time in seconds that the controller will be in install mode when a device discovery is initiated</description>
 				<default>60</default>
 			</parameter>
+			<parameter name="unpairOnDeletion" type="boolean">
+				<label>Unpair Devices on Deletion</label>
+				<description>If set to true, devices are unpaired from the gateway when their corresponding things are removed</description>
+				<advanced>true</advanced>
+				<default>false</default>
+			</parameter>
 
 		</config-description>
 	</bridge-type>

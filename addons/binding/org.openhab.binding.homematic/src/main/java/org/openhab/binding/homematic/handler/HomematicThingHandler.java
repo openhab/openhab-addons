@@ -39,6 +39,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.converter.ConverterException;
 import org.openhab.binding.homematic.internal.converter.ConverterFactory;
@@ -67,6 +68,7 @@ public class HomematicThingHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(HomematicThingHandler.class);
     private Future<?> initFuture;
     private final Object initLock = new Object();
+    private volatile boolean deviceDeletionPending = false;
 
     public HomematicThingHandler(Thing thing) {
         super(thing);
@@ -497,5 +499,56 @@ public class HomematicThingHandler extends BaseThingHandler {
         } catch (HomematicClientException | BridgeHandlerNotAvailableException ex) {
             logger.error("Error setting thing properties: {}", ex.getMessage(), ex);
         }
+    }
+
+    @Override
+    public synchronized void handleRemoval() {
+        final Bridge bridge = getBridge();
+        if (bridge != null && bridge.getConfiguration().as(HomematicConfig.class).isUnpairOnDeletion()) {
+            deviceDeletionPending = true;
+            ((HomematicBridgeHandler) bridge.getHandler()).deleteFromGateway(UidUtils.getHomematicAddress(thing), false,
+                    false, true);
+        } else {
+            super.handleRemoval();
+        }
+    }
+
+    /**
+     * Called by the bridgeHandler when this device has been removed from the gateway.
+     */
+    public synchronized void deviceRemoved() {
+        deviceDeletionPending = false;
+        if (getThing().getStatus() == ThingStatus.REMOVING) {
+            // thing removal was initiated on ESH side
+            updateStatus(ThingStatus.REMOVED);
+        } else {
+            // device removal was initiated on homematic side, thing is not removed
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
+        }
+    }
+
+    /**
+     * Called by the bridgeHandler when the device for this thing has been added to the gateway.
+     * This is used to reconnect a device that was previously unpaired.
+     * 
+     * @param device The device that has been added to the gateway
+     */
+    public void deviceLoaded(HmDevice device) {
+        try {
+            updateStatus(device);
+        } catch (BridgeHandlerNotAvailableException ex) {
+            // ignore
+        } catch (IOException ex) {
+            logger.warn("Could not reinitialize the device '{}': {}", device.getAddress(), ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Returns whether the device deletion is pending.
+     * 
+     * @return true, if the deletion of this device on its gateway has been triggered but has not yet completed
+     */
+    public synchronized boolean isDeletionPending() {
+        return deviceDeletionPending;
     }
 }
