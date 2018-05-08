@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Solar-Log Binding
+Bundle-SymbolicName: org.openhab.binding.solarlog;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ClassPath: .
+Import-Package: 
+ com.google.gson,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
+ org.openhab.binding.solarlog,
+ org.openhab.binding.solarlog.handler,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
+Export-Package: org.openhab.binding.solarlog,
+ org.openhab.binding.solarlog.handler
