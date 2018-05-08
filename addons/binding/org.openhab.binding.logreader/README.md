@@ -7,11 +7,9 @@ When certain log events is recognized, openHAB rules can be used to send notific
 
 This binding supports one ThingType: `reader`.
 A reader supports 3 separate channels; One for errors, one for warnings and one custom channel for other purposes.
-If you need more channels, you can always add another Thing.
 
 ## Thing Configuration
 
-Thing is configurable manually or through PaperUI. 
 The `reader` Thing has the following configuration parameters: 
 
 | Parameter                     | Type    | Required | Default if omitted               | Description                                                                             |
@@ -92,6 +90,7 @@ rule "LogReader"
         // do something
     end
 ```
+
 Be careful when sending e.g. email notifications.
 You could easily send thousand of *spam* emails in short period if e.g. one binding is in error loop.
 
