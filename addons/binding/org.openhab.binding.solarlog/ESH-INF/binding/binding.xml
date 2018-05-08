@@ -3,8 +3,8 @@
 	xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-	<name>SolarLog Binding</name>
-	<description>This is the binding for the SolarLog product range developed and sold by Solare Datensysteme GmbH. The SolarLog devices allow monitoring of Photovoltaic (PV) installations and provide a JSON API to extract data. This includes information about current energy production and use, and other vital parameters of a PV installation. This binding makes this data accessible to openHAB from where it can be persistently stored, used to trigger actions or be displayed for information.</description>
+	<name>Solar-Log Binding</name>
+	<description>This is the binding for the Solar-Log product range developed and sold by Solare Datensysteme GmbH. The Solar-Log devices allow monitoring of Photovoltaic (PV) installations and provide a JSON API to extract data. This includes information about current energy production and use, and other vital parameters of a PV installation. This binding makes this data accessible to openHAB from where it can be persistently stored, used to trigger actions or be displayed for information.</description>
 	<author>Johann Richard</author>
 
 </binding:binding>

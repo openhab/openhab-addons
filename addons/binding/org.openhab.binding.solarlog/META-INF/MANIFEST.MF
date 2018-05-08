@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: SolarLog Binding
+Bundle-Name: Solar-Log Binding
 Bundle-SymbolicName: org.openhab.binding.solarlog;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.3.0.qualifier
@@ -9,12 +9,6 @@ Bundle-ClassPath: .
 Import-Package: 
  com.google.gson,
  org.eclipse.jdt.annotation;resolution:=optional,
- org.eclipse.jetty.client,
- org.eclipse.jetty.client.api,
- org.eclipse.jetty.client.util,
- org.eclipse.jetty.http,
- org.eclipse.jetty.util,
- org.eclipse.jetty.util.component,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,

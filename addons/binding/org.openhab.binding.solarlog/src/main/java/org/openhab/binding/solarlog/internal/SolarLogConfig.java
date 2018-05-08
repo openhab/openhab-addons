@@ -10,7 +10,7 @@ package org.openhab.binding.solarlog.internal;
 
 /**
  * The class {@link SolarLogConfig} represents the configuration
- * values available for the SolarLog Binding.
+ * values available for the Solar-Log Binding.
  *
  * @author Johann Richard - Initial contribution
  */

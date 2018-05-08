@@ -45,7 +45,7 @@ import com.google.gson.JsonSyntaxException;
 /**
  * The {@link SolarLogHandler} is responsible for handling commands, which are
  * sent to one of the channels. It does the "heavy lifting" of connecting to the
- * SolarLog, getting the data, parsing it and updating the channels.
+ * Solar-Log, getting the data, parsing it and updating the channels.
  *
  * @author Johann Richard - Initial contribution
  */
@@ -67,27 +67,23 @@ public class SolarLogHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing SolarLog");
+        logger.debug("Initializing Solar-Log");
         config = getConfigAs(SolarLogConfig.class);
-        scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                logger.debug("Running refresh cycle");
-                try {
-                    refresh();
-                    updateStatus(ThingStatus.ONLINE);
-                    // Very rudimentary Exception differentiation
-                } catch (IOException e) {
-                    logger.warn("Error reading response from SolarLog: {}", e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Communication error with the device. Please retry later.");
-                } catch (JsonSyntaxException je) {
-                    logger.warn("Invalid JSON when refreshing source {}: {}", getThing().getUID(), je);
-                } catch (Exception e) {
-                    logger.warn("Error refreshing source {}: {}", getThing().getUID(), e);
-                }
+        scheduler.scheduleWithFixedDelay(() -> {
+            logger.debug("Running refresh cycle");
+            try {
+                refresh();
+                updateStatus(ThingStatus.ONLINE);
+                // Very rudimentary Exception differentiation
+            } catch (IOException e) {
+                logger.debug("Error reading response from Solar-Log: {}", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Communication error with the device. Please retry later.");
+            } catch (JsonSyntaxException je) {
+                logger.warn("Invalid JSON when refreshing source {}: {}", getThing().getUID(), je);
+            } catch (Exception e) {
+                logger.warn("Error refreshing source {}: {}", getThing().getUID(), e);
             }
-
         }, 0, config.refreshInterval < 15 ? 15 : config.refreshInterval, TimeUnit.SECONDS); // Minimum interval is 15 s
     }
 
@@ -107,7 +103,7 @@ public class SolarLogHandler extends BaseThingHandler {
         // Check whether the data is well-formed
         if (solarLogData.has(SolarLogBindingConstants.SOLARLOG_JSON_ROOT)) {
             solarLogData = solarLogData.getAsJsonObject(SolarLogBindingConstants.SOLARLOG_JSON_ROOT);
-            logger.trace("Found root node in SolarLog data. Attempting to read data");
+            logger.trace("Found root node in Solar-Log data. Attempting to read data");
             if (solarLogData.has(SolarLogBindingConstants.SOLARLOG_JSON_PROPERTIES)) {
                 solarLogData = solarLogData.getAsJsonObject(SolarLogBindingConstants.SOLARLOG_JSON_PROPERTIES);
 

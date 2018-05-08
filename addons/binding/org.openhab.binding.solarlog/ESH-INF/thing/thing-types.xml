@@ -3,8 +3,8 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="meter">
-		<label>SolarLog Meter</label>
-		<description>Basic thing for the SolarLog Binding</description>
+		<label>Solar-Log Meter</label>
+		<description>Basic thing for the Solar-Log Binding</description>
 
 		<channels>
 			<channel id="lastupdate" typeId="lastupdate"></channel>
@@ -28,7 +28,7 @@
 		<config-description>
 			<parameter name="url" type="text" required="true">
 				<label>URL</label>
-				<description>URL of the SolarLog web interface (e.g. http://solarlog)</description>
+				<description>URL of the Solar-Log web interface (e.g. http://solar-log)</description>
 				<default>http://solar-log</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="15">
