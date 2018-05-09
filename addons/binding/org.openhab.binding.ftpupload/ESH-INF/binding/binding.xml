@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="ftpupload" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>FTP Upload Binding</name>
+	<description>This binding is for receiving files via FTP.</description>
+	<author>Pauli Anttila</author>
+
+	<config-description>
+		<parameter name="port" type="integer" min="1" max="65335">
+			<label>TCP Port</label>
+			<description>TCP port of the FTP server</description>
+			<default>2121</default>
+		</parameter>
+		<parameter name="idleTimeout" type="integer" min="0" max="65335">
+			<label>Idle timeout</label>
+			<description>The number of seconds before an inactive client is disconnected. If this value is set to 0, the idle time is disabled.</description>
+			<default>60</default>
+		</parameter>
+	</config-description>
+</binding:binding>
