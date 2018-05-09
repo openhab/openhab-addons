@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="logreader" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="lastErrorEvent">
+		<item-type>String</item-type>
+		<label>Last error event</label>
+		<description>Displays contents of last [ERROR] event</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="lastWarningEvent">
+		<item-type>String</item-type>
+		<label>Last warning event</label>
+		<description>Displays contents of last [WARN] event</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="lastCustomEvent" advanced="true">
+		<item-type>String</item-type>
+		<label>Last custom event</label>
+		<description>Displays contents of last custom event</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="warningEvents">
+		<item-type>Number</item-type>
+		<label>Warning events matched</label>
+		<description>Displays number of [WARN] lines matched to search pattern</description>
+	</channel-type>
+	<channel-type id="errorEvents">
+		<item-type>Number</item-type>
+		<label>Error events matched</label>
+		<description>Displays number of [ERROR] lines matched to search pattern</description>
+	</channel-type>
+	<channel-type id="customEvents" advanced="true">
+		<item-type>Number</item-type>
+		<label>Custom events matched</label>
+		<description>Displays number of custom lines matched to search pattern</description>
+	</channel-type>
+	<channel-type id="logRotated" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Log Rotated</label>
+		<description>Last time when log rotated recognized</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="newErrorEvent">
+		<kind>trigger</kind>
+		<label>New Error Event</label>
+		<description>Fires when a new [ERROR] appears in the log</description>
+		<event>
+		</event>
+	</channel-type>
+	<channel-type id="newWarningEvent">
+		<kind>trigger</kind>
+		<label>New Warning Event</label>
+		<description>Fires when a new [WARN] appears in the log</description>
+		<event>
+		</event>
+	</channel-type>
+	<channel-type id="newCustomEvent" advanced="true">
+		<kind>trigger</kind>
+		<label>New Custom Event</label>
+		<description>Fires when a new [CUSTOM] appears in the log</description>
+		<event>
+		</event>
+	</channel-type>
+
+</thing:thing-descriptions>
