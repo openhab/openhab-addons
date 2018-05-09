@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ftpupload"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="imagereceiver" extensible="image-channel, image-received">
+		<label>Image Receiver</label>
+		<description>Receive image files via FTP.</description>
+
+		<channels>
+			<channel id="image" typeId="image-channel" />
+			<channel id="image-received" typeId="image-received" />
+		</channels>
+
+		<config-description>
+			<parameter name="userName" type="text" required="true">
+				<label>User Name</label>
+				<description>Username</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Password</description>
+				<context>password</context>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="image-channel">
+		<item-type>Image</item-type>
+		<label>Image</label>
+		<description>Image received via FTP</description>
+		<state readOnly="true"></state>
+		<config-description>
+			<parameter name="filename" type="text" required="true">
+				<label>Filename</label>
+				<description>Filename to match received files. Supports regular expression patterns.</description>
+				<default>.*</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="image-received">
+		<kind>trigger</kind>
+		<label>Image file received trigger channel</label>
+		<event>
+			<options>
+				<option value="IMAGE_RECEIVED">Image received</option>
+			</options>
+		</event>
+		<config-description>
+			<parameter name="filename" type="text" required="true">
+				<label>Filename</label>
+				<description>Filename to match received files. Supports regular expression patterns.</description>
+				<default>.*</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+</thing:thing-descriptions>
