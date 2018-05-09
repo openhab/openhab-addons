@@ -2,10 +2,10 @@ Manifest-Version: 1.0
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
- lib/jna-platform-4.4.0.jar,
- lib/jna-4.4.0.jar,
- lib/oshi-core-3.4.3.jar,
- lib/threetenbp-1.3.5.jar
+ lib/jna-platform-4.5.0.jar,
+ lib/jna-4.5.0.jar,
+ lib/oshi-core-3.4.5.jar,
+ lib/threetenbp-1.3.6.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: Systeminfo Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
