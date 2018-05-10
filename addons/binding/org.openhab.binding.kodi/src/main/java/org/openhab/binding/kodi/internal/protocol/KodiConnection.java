@@ -57,6 +57,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private static final ExpiringCacheMap<String, JsonElement> REQUEST_CACHE = new ExpiringCacheMap<>(
             TimeUnit.MINUTES.toMillis(5));
 
+    private String hostName;
     private URI wsUri;
     private URI imageUri;
     private KodiClientSocket socket;
@@ -82,6 +83,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public synchronized void connect(String hostName, int port, ScheduledExecutorService scheduler, URI imageUri) {
+        this.hostName = hostName;
         this.imageUri = imageUri;
         try {
             close();
@@ -137,12 +139,10 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private synchronized JsonArray getPlaylistsInternal() {
         String method = "Playlist.GetPlaylists";
-        if (!REQUEST_CACHE.containsKey(method)) {
-            REQUEST_CACHE.put(method, () -> {
-                return socket.callMethod(method);
-            });
-        }
-        JsonElement response = REQUEST_CACHE.get(method);
+        String hash = hostName + '#' + method;
+        JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(hash, () -> {
+            return socket.callMethod(method);
+        });
 
         if (response instanceof JsonArray) {
             return response.getAsJsonArray();
@@ -289,7 +289,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     public synchronized List<KodiFavorite> getFavorites() {
         String method = "Favourites.GetFavourites";
-        JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(method, () -> {
+        String hash = hostName + '#' + method;
+        JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(hash, () -> {
             final String[] properties = { "path", "window", "windowparameter" };
 
             JsonObject params = new JsonObject();
@@ -723,7 +724,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     public synchronized List<KodiPVRChannelGroup> getPVRChannelGroups(final String pvrChannelType) {
         String method = "PVR.GetChannelGroups";
-        String hash = method + "#channeltype=" + pvrChannelType;
+        String hash = hostName + '#' + method + "#channeltype=" + pvrChannelType;
         JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(hash, () -> {
             JsonObject params = new JsonObject();
             params.addProperty("channeltype", pvrChannelType);
@@ -761,7 +762,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     public synchronized List<KodiPVRChannel> getPVRChannels(final int pvrChannelGroupId) {
         String method = "PVR.GetChannels";
-        String hash = method + "#channelgroupid=" + pvrChannelGroupId;
+        String hash = hostName + '#' + method + "#channelgroupid=" + pvrChannelGroupId;
         JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(hash, () -> {
             JsonObject params = new JsonObject();
             params.addProperty("channelgroupid", pvrChannelGroupId);
