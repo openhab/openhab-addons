@@ -13,12 +13,25 @@ import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.model.script.engine.action.ActionService;
 import org.openhab.binding.tado.TadoActions;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Action service for {@link TadoActions}.
  *
  * @author Dennis Frommknecht - Iniital contribution
+ *
+ *
+ *         <implementation class="org.openhab.binding.tado.internal.TadoActionService" />
+ *         <service>
+ *         <provide interface="org.eclipse.smarthome.model.script.engine.action.ActionService" />
+ *         </service>
+ *         <reference bind="setThingRegistry" cardinality="1..1" interface=
+ *         "org.eclipse.smarthome.core.thing.ThingRegistry" name="ThingRegistry" policy="static" unbind=
+ *         "unsetThingRegistry"/>
+ *
  */
+@Component(configurationPid = "binding.tado.action", name = "TadoActionsService", service = ActionService.class)
 public class TadoActionService implements ActionService {
     private static ThingRegistry thingRegistry;
 
@@ -32,12 +45,7 @@ public class TadoActionService implements ActionService {
         return TadoActions.class;
     }
 
-    public void activate() {
-    }
-
-    public void deactivate() {
-    }
-
+    @Reference(unbind = "unsetThingRegistry")
     public void setThingRegistry(ThingRegistry thingRegistry) {
         TadoActionService.thingRegistry = thingRegistry;
     }
