@@ -177,6 +177,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             case CHANNEL_PLAYFAVORITE:
                 if (command instanceof StringType) {
                     playFavorite(command);
+                    updateState(CHANNEL_PLAYFAVORITE, UnDefType.UNDEF);
                 } else if (RefreshType.REFRESH == command) {
                     updateState(CHANNEL_PLAYFAVORITE, UnDefType.UNDEF);
                 }
