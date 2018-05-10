@@ -19,6 +19,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -37,7 +38,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 /**
- * KodiConnection provides an api for accessing a Kodi device.
+ * KodiConnection provides an API for accessing a Kodi device.
  *
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
@@ -287,6 +288,11 @@ public class KodiConnection implements KodiClientSocketEventListener {
         socket.callMethod("Playlist.Remove", params);
     }
 
+    /**
+     * Retrieves a list of favorites from the Kodi instance. The result is cached.
+     *
+     * @return a list of {@link KodiFavorite}
+     */
     public synchronized List<KodiFavorite> getFavorites() {
         String method = "Favourites.GetFavourites";
         String hash = hostName + '#' + method;
@@ -306,10 +312,11 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 if (favourites instanceof JsonArray) {
                     for (JsonElement element : favourites.getAsJsonArray()) {
                         JsonObject object = (JsonObject) element;
-                        KodiFavorite favorite = new KodiFavorite();
-                        favorite.setTitle(object.get("title").getAsString());
+                        KodiFavorite favorite = new KodiFavorite(object.get("title").getAsString());
                         favorite.setFavoriteType(object.get("type").getAsString());
-                        favorite.setPath(object.get("path").getAsString());
+                        if (object.has("path")) {
+                            favorite.setPath(object.get("path").getAsString());
+                        }
                         if (object.has("window")) {
                             favorite.setWindow(object.get("window").getAsString());
                             favorite.setWindowParameter(object.get("windowparameter").getAsString());
@@ -322,6 +329,13 @@ public class KodiConnection implements KodiClientSocketEventListener {
         return favorites;
     }
 
+    /**
+     * Returns the path of the favorite with the given title or an empty String.
+     *
+     * @param favoriteTitle the title of the favorite
+     * @return the path of the favorite
+     */
+    @Nullable
     public String getFavoritePath(final String favoriteTitle) {
         for (KodiFavorite favorite : getFavorites()) {
             if (StringUtils.equalsIgnoreCase(favorite.getTitle(), favoriteTitle)) {
