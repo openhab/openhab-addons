@@ -135,7 +135,6 @@ public class KodiClientSocket {
             logger.debug("Message received from server: {}", message);
             final JsonObject json = parser.parse(message).getAsJsonObject();
             if (json.has("id")) {
-                logger.debug("Response received from server: {}", json);
                 int messageId = json.get("id").getAsInt();
                 if (messageId == nextMessageId - 1) {
                     commandResponse = json;
