@@ -330,19 +330,43 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     /**
-     * Returns the path of the favorite with the given title or an empty String.
+     * Returns the favorite with the given title or null.
      *
      * @param favoriteTitle the title of the favorite
-     * @return the path of the favorite
+     * @return the ({@link KodiFavorite}) with the given title
      */
     @Nullable
-    public String getFavoritePath(final String favoriteTitle) {
+    public KodiFavorite getFavorite(final String favoriteTitle) {
         for (KodiFavorite favorite : getFavorites()) {
             if (StringUtils.equalsIgnoreCase(favorite.getTitle(), favoriteTitle)) {
-                return favorite.getPath();
+                return favorite;
             }
         }
-        return "";
+        return null;
+    }
+
+    /**
+     * Activates the given window.
+     *
+     * @param window the window
+     */
+    public synchronized void activateWindow(final String window) {
+        activateWindow(window, null);
+    }
+
+    /**
+     * Activates the given window.
+     *
+     * @param window the window
+     * @param windowParameter list of parameters of the window
+     */
+    public synchronized void activateWindow(final String window, @Nullable final String[] windowParameter) {
+        JsonObject params = new JsonObject();
+        params.addProperty("window", window);
+        if (windowParameter != null) {
+            params.add("parameters", getJsonArray(windowParameter));
+        }
+        socket.callMethod("GUI.ActivateWindow", params);
     }
 
     public synchronized void increaseVolume() {
