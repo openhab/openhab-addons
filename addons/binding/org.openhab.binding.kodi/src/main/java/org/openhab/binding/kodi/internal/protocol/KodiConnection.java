@@ -752,12 +752,14 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public int getPVRChannelGroupId(final String channelType, final String pvrChannelGroupName) {
-        for (KodiPVRChannelGroup pvrChannelGroup : getPVRChannelGroups(channelType)) {
+        List<KodiPVRChannelGroup> pvrChannelGroups = getPVRChannelGroups(channelType);
+        for (KodiPVRChannelGroup pvrChannelGroup : pvrChannelGroups) {
             if (StringUtils.equalsIgnoreCase(pvrChannelGroup.getLabel(), pvrChannelGroupName)) {
                 return pvrChannelGroup.getId();
             }
         }
-        return 0;
+        // if we don't find a matching PVR channel group return the first (which is the default: "All channels")
+        return pvrChannelGroups.isEmpty() ? 0 : pvrChannelGroups.get(0).getId();
     }
 
     public synchronized List<KodiPVRChannel> getPVRChannels(final int pvrChannelGroupId) {
