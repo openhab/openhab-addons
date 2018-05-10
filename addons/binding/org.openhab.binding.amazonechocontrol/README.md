@@ -16,7 +16,7 @@ It provides features to control and view the current state of echo devices:
 - start traffic news
 - start daily briefing
 - start weather report
-- start good moring report
+- start good morning report
 - start automation routine
 - activate multiple configurations of flash briefings
 - start playing music by providing the voice command as text (Works with all music providers)
@@ -35,18 +35,23 @@ Some ideas what you can do in your home by using rules and other openHAB control
 
 ## Note ##
 
-This binding uses the same API as the Web-Browser-Based Alexa site (alexa.amazon.de). In other words, it simulates a user which is using the web page.
+This binding uses the same API as the Web-Browser-Based Alexa site (alexa.amazon.de).
+In other words, it simulates a user which is using the web page.
 Unfortunately, the binding can get broken if Amazon change the web site.
 
 The binding is tested with amazon.de and amazon.co.uk accounts, but should also work with all others. 
 
 ## Warning ##
 
-For the connection to the Amazon server, your password of the Amazon account is required, this will be stored in your openHAB thing device configuration. So you should be sure, that nobody other has access to your configuration! 
+For the connection to the Amazon server, your password of the Amazon account is required, this will be stored in your openHAB thing device configuration.
+So you should be sure, that nobody other has access to your configuration! 
 
 ## What else you should know ##
 
-All the display options are updated by polling the amazon server. The polling time can be configured, but a minimum of 10 seconds is required. The default is 60 seconds, which means the it can take up to 60 seconds to see the correct state. I do not know, if there is a limit implemented in the amazon server if the polling is too fast and maybe amazon will lock your account. 60 seconds seems to be safe.
+All the display options are updated by polling the amazon server.
+The polling time can be configured, but a minimum of 10 seconds is required.
+The default is 60 seconds, which means the it can take up to 60 seconds to see the correct state.
+I do not know, if there is a limit implemented in the amazon server if the polling is too fast and maybe amazon will lock your account. 60 seconds seems to be safe.
 
 ## Supported Things
 
@@ -64,11 +69,14 @@ All the display options are updated by polling the amazon server. The polling ti
 
 ## Discovery
 
-The first 'Amazon Account' thing will be automatically discovered. After configuration of the thing with the account data, a 'Amazon <???>' thing will be discovered for each registered device. If the device type is not known by the binding, an 'Unknown' device will be created.
+The first 'Amazon Account' thing will be automatically discovered.
+After configuration of the thing with the account data, a 'Amazon <???>' thing will be discovered for each registered device.
+If the device type is not known by the binding, an 'Unknown' device will be created.
 
 ## Binding Configuration
 
-The binding does not have any configuration. The configuration of your amazon account must be done in the 'Amazon Account' device.
+The binding does not have any configuration.
+The configuration of your amazon account must be done in the 'Amazon Account' device.
 
 ## Thing Configuration
 
@@ -97,7 +105,8 @@ You will find the serial number in the alexa app.
 
 ### Flash Briefing Profile
 
-The flashbriefingprofile thing has no configuration parameters. It will be configured at runtime by using the save channel to store the current flash briefing configuration in the thing.
+The flashbriefingprofile thing has no configuration parameters.
+It will be configured at runtime by using the save channel to store the current flash briefing configuration in the thing.
 
 ## Channels
 
@@ -154,7 +163,8 @@ You will find the serial number in the Alexa app.
 
 ### amzonechocontrol.items:
 
-Sample for the Thing echo1 only. But it will work in the same way for the other things, only replace the thing name in the channel link. Take a look in the channel description above to know, which channels are supported by your thing type.
+Sample for the Thing echo1 only. But it will work in the same way for the other things, only replace the thing name in the channel link.
+Take a look in the channel description above to know, which channels are supported by your thing type.
 
 ```
 Group Alexa_Living_Room <player>
@@ -232,7 +242,7 @@ sitemap amzonechocontrol label="Echo Devices"
 }
 ```
 
-To get instead of the id fields an selection box, use the Selection element and provide mappings for your favorite id's:
+To get instead of the id fields an selection box, use the selection element and provide mappings for your favorite id's:
 
 ```
         Selection item=Echo_Living_Room_RadioStationId mappings=[ ''='Off', 's1139'='Antenne Steiermark', 's8007'='Hitradio Ö3', 's16793'='Radio 10', 's8235'='FM4' ]
@@ -269,7 +279,8 @@ then
 end
 ```
 
-Note 1: Do not use a to short time for playing the sound, because alexa needs some time to start playing the sound. I recommend, that you to not use a time below 10 seconds.
+Note 1: Do not use a to short time for playing the sound, because alexa needs some time to start playing the sound.
+I recommend, that you to not use a time below 10 seconds.
 
 Note 2: The rule have no effect for your default alarm sound used in the alexa app.
 
@@ -297,8 +308,10 @@ Note: I recommend, that you test the command send to play music command first wi
 
 ## Credits
 
-The idea for writing this binding came from this blog: http://blog.loetzimmer.de/2017/10/amazon-alexa-hort-auf-die-shell-echo.html (German). Thank you Alex!
+The idea for writing this binding came from this blog: http://blog.loetzimmer.de/2017/10/amazon-alexa-hort-auf-die-shell-echo.html (German).
+Thank you Alex!
 
 ## Trademark Disclaimer
 
-TuneIn, Amazon Echo, Amazon Echo Spot, Amazon Echo Show, Amazon Music, Amazon Prime, Alexa and all other products and Amazon, TuneIn and other companies are trademarks™ or registered® trademarks of their respective holders. Use of them does not imply any affiliation with or endorsement by them. 
+TuneIn, Amazon Echo, Amazon Echo Spot, Amazon Echo Show, Amazon Music, Amazon Prime, Alexa and all other products and Amazon, TuneIn and other companies are trademarks™ or registered® trademarks of their respective holders.
+Use of them does not imply any affiliation with or endorsement by them. 
