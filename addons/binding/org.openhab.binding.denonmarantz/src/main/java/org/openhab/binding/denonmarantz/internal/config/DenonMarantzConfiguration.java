@@ -29,7 +29,7 @@ public class DenonMarantzConfiguration {
     /**
      * Whether Telnet communication is enabled
      */
-    public boolean telnetEnabled;
+    public Boolean telnetEnabled;
 
     /**
      * The telnet port
@@ -65,7 +65,7 @@ public class DenonMarantzConfiguration {
         this.host = host;
     }
 
-    public boolean isTelnet() {
+    public Boolean isTelnet() {
         return telnetEnabled;
     }
 

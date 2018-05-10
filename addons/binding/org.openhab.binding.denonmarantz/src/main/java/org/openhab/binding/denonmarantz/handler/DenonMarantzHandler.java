@@ -10,10 +10,29 @@ package org.openhab.binding.denonmarantz.handler;
 
 import static org.openhab.binding.denonmarantz.DenonMarantzBindingConstants.*;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -35,6 +54,10 @@ import org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector
 import org.openhab.binding.denonmarantz.internal.connector.http.DenonMarantzHttpConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * The {@link DenonMarantzHandler} is responsible for handling commands, which are
@@ -44,14 +67,16 @@ import org.slf4j.LoggerFactory;
  */
 public class DenonMarantzHandler extends BaseThingHandler implements DenonMarantzStateChangedListener {
 
-    private Logger logger = LoggerFactory.getLogger(DenonMarantzHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DenonMarantzHandler.class);
+    private HttpClient httpClient;
     private DenonMarantzConnector connector;
     private DenonMarantzConfiguration config;
     private DenonMarantzConnectorFactory connectorFactory = new DenonMarantzConnectorFactory();
     private DenonMarantzState denonMarantzState;
 
-    public DenonMarantzHandler(Thing thing) {
+    public DenonMarantzHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -149,9 +174,106 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
         return true;
     }
 
+    /**
+     * Try to auto configure the connection type (Telnet or HTTP)
+     * for Things not added through Paper UI.
+     */
+    private void autoConfigure() {
+        /*
+         * The isTelnet parameter has no default.
+         * When not set we will try to auto-detect the correct values
+         * for isTelnet and zoneCount and update the Thing accordingly.
+         */
+        if (config.isTelnet() == null) {
+            logger.debug("Trying to auto-detect the connection.");
+            ContentResponse response;
+            boolean telnetEnable = true;
+            int httpPort = 80;
+            boolean httpApiUsable = false;
+
+            // try to reach the HTTP API at port 80 (most models, except Denon ...H should respond.
+            String host = config.getHost();
+            try {
+                response = httpClient.newRequest("http://" + host + "/goform/Deviceinfo.xml")
+                        .timeout(3, TimeUnit.SECONDS).send();
+                if (response.getStatus() == HttpURLConnection.HTTP_OK) {
+                    logger.debug("We can access the HTTP API, disabling the Telnet mode by default.");
+                    telnetEnable = false;
+                    httpApiUsable = true;
+                }
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                logger.debug("Error when trying to access AVR using HTTP on port 80: {}, reverting to Telnet mode.", e);
+            }
+
+            if (telnetEnable) {
+                // the above attempt failed. Let's try on port 8080, as for some models a subset of the HTTP API is
+                // available
+                try {
+                    response = httpClient.newRequest("http://" + host + ":8080/goform/Deviceinfo.xml")
+                            .timeout(3, TimeUnit.SECONDS).send();
+                    if (response.getStatus() == HttpURLConnection.HTTP_OK) {
+                        logger.debug(
+                                "This model responds to HTTP port 8080, we use this port to retrieve the number of zones.");
+                        httpPort = 8080;
+                        httpApiUsable = true;
+                    }
+                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                    logger.debug("Additionally tried to connect to port 8080, this also failed: {}", e);
+                }
+            }
+
+            // default zone count
+            int zoneCount = 2;
+
+            // try to determine the zone count by checking the Deviceinfo.xml file
+            if (httpApiUsable) {
+                int status = 0;
+                response = null;
+                try {
+                    response = httpClient.newRequest("http://" + host + ":" + httpPort + "/goform/Deviceinfo.xml")
+                            .timeout(3, TimeUnit.SECONDS).send();
+                    status = response.getStatus();
+                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                    logger.debug("Failed in fetching the Deviceinfo.xml to determine zone count: {}", e);
+                }
+
+                if (status == HttpURLConnection.HTTP_OK && response != null) {
+                    DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder;
+                    try {
+                        builder = domFactory.newDocumentBuilder();
+                        Document dDoc = builder.parse(new InputSource(new StringReader(response.getContentAsString())));
+                        XPath xPath = XPathFactory.newInstance().newXPath();
+                        Node node = (Node) xPath.evaluate("/Device_Info/DeviceZones/text()", dDoc, XPathConstants.NODE);
+                        if (node != null) {
+                            String nodeValue = node.getNodeValue();
+                            logger.trace("/Device_Info/DeviceZones/text() = {}", nodeValue);
+                            zoneCount = Integer.parseInt(nodeValue);
+                            logger.debug("Discovered number of zones: {}", zoneCount);
+                        }
+                    } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException
+                            | NumberFormatException e) {
+                        logger.debug("Something went wrong with looking up the zone count in Deviceinfo.xml: {}",
+                                e.getMessage());
+                    }
+                }
+            }
+            config.setTelnet(telnetEnable);
+            config.setZoneCount(zoneCount);
+            Configuration configuration = editConfiguration();
+            configuration.put(DenonMarantzBindingConstants.PARAMETER_TELNET_ENABLED, telnetEnable);
+            configuration.put(DenonMarantzBindingConstants.PARAMETER_ZONE_COUNT, zoneCount);
+            updateConfiguration(configuration);
+        }
+    }
+
     @Override
     public void initialize() {
         config = getConfigAs(DenonMarantzConfiguration.class);
+
+        // Configure Connection type (Telnet/HTTP) and number of zones
+        // Note: this only happens for discovered Things
+        autoConfigure();
 
         if (!checkConfiguration()) {
             return;
@@ -159,30 +281,31 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
 
         denonMarantzState = new DenonMarantzState(this);
         configureZoneChannels();
+        updateStatus(ThingStatus.UNKNOWN);
         // create connection (either Telnet or HTTP)
         // ThingStatus ONLINE/OFFLINE is set when AVR status is known.
         createConnection();
     }
 
     private void createConnection() {
-        connector = connectorFactory.getConnector(config, denonMarantzState, scheduler);
+        connector = connectorFactory.getConnector(config, denonMarantzState, scheduler, httpClient);
         connector.connect();
     }
 
     private void configureZoneChannels() {
         logger.debug("Configuring zone channels");
         Integer zoneCount = config.getZoneCount();
-        ArrayList<Channel> channels = new ArrayList<Channel>(this.getThing().getChannels());
+        List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
         boolean channelsUpdated = false;
 
         // construct a set with the existing channel type UIDs, to quickly check
-        HashSet<String> currentChannels = new HashSet<String>();
+        Set<String> currentChannels = new HashSet<>();
         channels.forEach(channel -> currentChannels.add(channel.getUID().getId()));
 
-        HashSet<Entry<String, ChannelTypeUID>> channelsToRemove = new HashSet<Entry<String, ChannelTypeUID>>();
+        Set<Entry<String, ChannelTypeUID>> channelsToRemove = new HashSet<>();
 
         if (zoneCount > 1) {
-            ArrayList<Entry<String, ChannelTypeUID>> channelsToAdd = new ArrayList<Entry<String, ChannelTypeUID>>(
+            List<Entry<String, ChannelTypeUID>> channelsToAdd = new ArrayList<>(
                     DenonMarantzBindingConstants.ZONE2_CHANNEL_TYPES.entrySet());
 
             if (zoneCount > 2) {
@@ -250,7 +373,10 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
         super.channelLinked(channelUID);
         String channelID = channelUID.getId();
         if (isLinked(channelID)) {
-            updateState(channelID, denonMarantzState.getStateForChannelID(channelID));
+            State state = denonMarantzState.getStateForChannelID(channelID);
+            if (state != null) {
+                updateState(channelID, state);
+            }
         }
     }
 

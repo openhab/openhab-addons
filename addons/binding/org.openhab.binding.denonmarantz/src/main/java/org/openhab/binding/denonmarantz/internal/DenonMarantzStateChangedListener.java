@@ -9,8 +9,10 @@
 package org.openhab.binding.denonmarantz.internal;
 
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.denonmarantz.handler.DenonMarantzHandler;
 
 /**
+ * Interface to notify the {@link DenonMarantzHandler} about state changes.
  *
  * @author Jan-Willem Veldhuis - Initial contribution
  *
@@ -22,7 +24,12 @@ public interface DenonMarantzStateChangedListener {
      * @param channelID the channel for which its state changed
      * @param state the new state of the channel
      */
-    public void stateChanged(String channelID, State state);
+    void stateChanged(String channelID, State state);
 
-    public void connectionError(String errorMessage);
+    /**
+     * A connection error occurred
+     *
+     * @param errorMessage the error message
+     */
+    void connectionError(String errorMessage);
 }

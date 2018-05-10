@@ -10,6 +10,7 @@ package org.openhab.binding.denonmarantz.internal.connector;
 
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
 import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguration;
 import org.openhab.binding.denonmarantz.internal.connector.http.DenonMarantzHttpConnector;
@@ -24,11 +25,11 @@ import org.openhab.binding.denonmarantz.internal.connector.telnet.DenonMarantzTe
 public class DenonMarantzConnectorFactory {
 
     public DenonMarantzConnector getConnector(DenonMarantzConfiguration config, DenonMarantzState state,
-            ScheduledExecutorService scheduler) {
+            ScheduledExecutorService scheduler, HttpClient httpClient) {
         if (config.isTelnet()) {
             return new DenonMarantzTelnetConnector(config, state, scheduler);
         } else {
-            return new DenonMarantzHttpConnector(config, state, scheduler);
+            return new DenonMarantzHttpConnector(config, state, scheduler, httpClient);
         }
     }
 

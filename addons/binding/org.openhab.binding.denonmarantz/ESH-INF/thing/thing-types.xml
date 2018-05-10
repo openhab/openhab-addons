@@ -12,25 +12,25 @@
         <channel-groups>
             <channel-group id="general" typeId="general"/>
             <channel-group id="mainZone" typeId="zone">
-	            <label>Main zone control</label>
+	            <label>Main Zone Control</label>
 	            <description>Channels for the main zone of this AVR.</description>
             </channel-group>
             <channel-group id="zone2" typeId="zone">
-                <label>Zone 2 control</label>
+                <label>Zone 2 Control</label>
                 <description>Channels for zone2 of this AVR.</description>
             </channel-group>
             <channel-group id="zone3" typeId="zone">
-                <label>Zone 3 control</label>
+                <label>Zone 3 Control</label>
                 <description>Channels for zone2 of this AVR.</description>
             </channel-group>
         </channel-groups>
 
         <config-description>
             <parameter-group name="receiverProperties">
-                <label>Receiver properties</label>
+                <label>Receiver Properties</label>
             </parameter-group>
             <parameter-group name="connectionSettings">
-                <label>General connection settings</label>
+                <label>General Connection Settings</label>
             </parameter-group>
 
             <parameter-group name="telnetSettings">
@@ -46,7 +46,7 @@
             </parameter-group>
 
             <parameter name="zoneCount" type="integer" groupName="receiverProperties">
-                <label>Zone count of the receiver</label>
+                <label>Zone Count of the Receiver</label>
                 <description>Number of zones (including main zone), values 1-3 are supported.</description>
                 <default>2</default>
             </parameter>
@@ -58,27 +58,26 @@
             </parameter>
 
             <parameter name="telnetEnabled" type="boolean" groupName="connectionSettings">
-                <label>Use Telnet port?</label>
+                <label>Use Telnet Port</label>
                 <description>By using telnet the AVR updates are received immediately. Also, some devices only support telnet. However, the AVR only allows 1 simultaneous connection. Uncheck if you are using dedicated apps to control the AVR. Then HTTP polling is used instead.</description>
-                <default>false</default>
             </parameter>
 
             <parameter name="telnetPort" type="integer" groupName="telnetSettings">
-                <label>Telnet port</label>
+                <label>Telnet Port</label>
                 <description>Telnet port used for AVR communication. Normally shouldn't be changed.</description>
                 <default>23</default>
                 <advanced>true</advanced>
             </parameter>
 
             <parameter name="httpPort" type="integer" groupName="httpSettings">
-                <label>HTTP port</label>
+                <label>HTTP Port</label>
                 <description>HTTP Port used for AVR communication. Normally shouldn't be changed.</description>
                 <default>80</default>
                 <advanced>true</advanced>
             </parameter>
 
             <parameter name="httpPollingInterval" type="integer" groupName="httpSettings">
-                <label>Polling interval</label>
+                <label>Polling Interval</label>
                 <description>Refresh interval of the HTTP API in seconds (minimal 5)</description>
                 <default>5</default>
                 <advanced>true</advanced>
@@ -87,7 +86,7 @@
     </thing-type>
     
     <channel-group-type id="general">
-        <label>General control</label>
+        <label>General Control</label>
         <description>General channels for this AVR.</description>
         <channels>
             <channel id="power" typeId="mainPower"/>
@@ -100,7 +99,7 @@
     </channel-group-type>
     
     <channel-group-type id="zone">
-        <label>Zone control</label>
+        <label>Zone Control</label>
         <description>Channels for a zone of this AVR.</description>
         <channels>
             <channel id="power" typeId="zonePower"/>
@@ -146,7 +145,7 @@
 
     <channel-type id="input">
         <item-type>String</item-type>
-        <label>Input source</label>
+        <label>Input Source</label>
         <description>Select the input source for this zone of the AVR</description>
         <state>
             <options>
@@ -196,7 +195,7 @@
 
     <channel-type id="surroundProgram">
         <item-type>String</item-type>
-        <label>Surround program</label>
+        <label>Surround Program</label>
         <description>Select the surround program of the AVR</description>
         <state readOnly="true"/>
     </channel-type>
@@ -224,7 +223,7 @@
 
     <channel-type id="command" advanced="true">
         <item-type>String</item-type>
-        <label>Send a custom command</label>
+        <label>Send a Custom Command</label>
         <description>Use this channel to send any custom command, e.g. SITV or MSSTANDARD (check the protocol documentation)</description>
     </channel-type>
 

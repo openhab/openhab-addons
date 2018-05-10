@@ -9,6 +9,7 @@
 package org.openhab.binding.denonmarantz.internal;
 
 /**
+ * Exception thrown when an unsupported command type is sent to a channel.
  *
  * @author Jan-Willem Veldhuis - Initial contribution
  *

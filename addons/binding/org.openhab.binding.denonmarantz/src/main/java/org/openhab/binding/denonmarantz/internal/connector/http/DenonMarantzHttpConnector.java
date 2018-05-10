@@ -9,14 +9,13 @@
 package org.openhab.binding.denonmarantz.internal.connector.http;
 
 import java.beans.Introspector;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +35,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
 import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguration;
 import org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector;
@@ -90,14 +90,14 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
     private ScheduledFuture<?> pollingJob;
 
     public DenonMarantzHttpConnector(DenonMarantzConfiguration config, DenonMarantzState state,
-            ScheduledExecutorService scheduler) {
+            ScheduledExecutorService scheduler, HttpClient httpClient) {
         this.config = config;
         this.scheduler = scheduler;
         this.state = state;
         this.cmdUrl = String.format("http://%s:%d/goform/formiPhoneAppDirect.xml?", config.getHost(),
                 config.getHttpPort());
         this.statusUrl = String.format("http://%s:%d/goform/", config.getHost(), config.getHttpPort());
-        this.httpClient = new HttpClient();
+        this.httpClient = httpClient;
     }
 
     public DenonMarantzState getState() {
@@ -116,23 +116,19 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
     private void startPolling() {
         if (!isPolling()) {
             logger.debug("HTTP polling started.");
-            pollingJob = scheduler.scheduleWithFixedDelay(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        refreshHttpProperties();
-                    } catch (RuntimeException e) {
-                        /**
-                         * We need to catch this RuntimeException, as otherwise the polling stops.
-                         * Log as error as it could be a user configuration error.
-                         */
-                        StringBuilder sb = new StringBuilder();
-                        for (StackTraceElement s : e.getStackTrace()) {
-                            sb.append(s.toString()).append("\n");
-                        }
-                        logger.error("Error while polling Http: \"{}\". Stacktrace: \n{}", e.getMessage(),
-                                sb.toString());
+            pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                try {
+                    refreshHttpProperties();
+                } catch (RuntimeException e) {
+                    /**
+                     * We need to catch this RuntimeException, as otherwise the polling stops.
+                     * Log as error as it could be a user configuration error.
+                     */
+                    StringBuilder sb = new StringBuilder();
+                    for (StackTraceElement s : e.getStackTrace()) {
+                        sb.append(s.toString()).append("\n");
                     }
+                    logger.error("Error while polling Http: \"{}\". Stacktrace: \n{}", e.getMessage(), sb.toString());
                 }
             }, config.httpPollingInterval, config.httpPollingInterval, TimeUnit.SECONDS);
         }
@@ -157,14 +153,6 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
         logger.debug("disposing connector");
 
         stopPolling();
-
-        if (!httpClient.isStopped()) {
-            try {
-                httpClient.stop();
-            } catch (Exception e) {
-                logger.debug("Error stopping http client", e);
-            }
-        }
     }
 
     /**
@@ -190,10 +178,6 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
             String url = cmdUrl + URLEncoder.encode(command, Charset.defaultCharset().displayName());
             logger.trace("Calling url {}", url);
 
-            if (!httpClient.isStarted()) {
-                httpClient.start();
-            }
-
             httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS).send(new Response.CompleteListener() {
                 @Override
                 public void onComplete(Result result) {
@@ -205,8 +189,6 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
         } catch (UnsupportedEncodingException e) {
             logger.warn("Error sending command", e);
-        } catch (Exception e) {
-            logger.warn("Could not start HTTP client", e);
         }
     }
 
@@ -315,7 +297,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
     @Nullable
     private <T> T getDocument(String uri, Class<T> response) {
         try {
-            String result = doHttpRequest("GET", uri, null);
+            String result = HttpUtil.executeUrl("GET", uri, REQUEST_TIMEOUT_MS);
             logger.trace("result of getDocument for uri '{}':\r\n{}", uri, result);
 
             if (StringUtils.isNotBlank(result)) {
@@ -351,7 +333,8 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
             StringWriter sw = new StringWriter();
             jaxbMarshaller.marshal(request, sw);
 
-            String result = doHttpRequest("POST", uri, sw.toString());
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(sw.toString().getBytes(StandardCharsets.UTF_8));
+            String result = HttpUtil.executeUrl("POST", uri, inputStream, CONTENT_TYPE_XML, REQUEST_TIMEOUT_MS);
 
             if (StringUtils.isNotBlank(result)) {
                 JAXBContext jcResponse = JAXBContext.newInstance(response);
@@ -369,25 +352,6 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
         }
 
         return null;
-    }
-
-    public static String doHttpRequest(String method, String uri, String request) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(uri).openConnection();
-        connection.setRequestMethod(method);
-        connection.setConnectTimeout(REQUEST_TIMEOUT_MS);
-        connection.setReadTimeout(REQUEST_TIMEOUT_MS);
-        connection.addRequestProperty("Content-Type", CONTENT_TYPE_XML);
-
-        if (request != null) {
-            connection.setDoOutput(true);
-            connection.getOutputStream().write(request.getBytes());
-        }
-
-        InputStream is = connection.getInputStream();
-        String ret = IOUtils.toString(is);
-        connection.disconnect();
-
-        return ret;
     }
 
     private static class PropertyRenamerDelegate extends StreamReaderDelegate {

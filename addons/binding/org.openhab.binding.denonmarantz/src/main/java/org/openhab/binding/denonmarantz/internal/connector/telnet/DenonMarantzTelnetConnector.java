@@ -25,14 +25,13 @@ import org.slf4j.LoggerFactory;
 /**
  * This class makes the connection to the receiver and manages it.
  * It is also responsible for sending commands to the receiver.
- * *
  *
  * @author Jeroen Idserda - Initial Contribution (1.x Binding)
  * @author Jan-Willem Veldhuis - Refactored for 2.x
  */
 public class DenonMarantzTelnetConnector extends DenonMarantzConnector implements DenonMarantzTelnetListener {
 
-    private Logger logger = LoggerFactory.getLogger(DenonMarantzTelnetConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(DenonMarantzTelnetConnector.class);
 
     // All regular commands. Example: PW, SICD, SITV, Z2MU
     private static final Pattern COMMAND_PATTERN = Pattern.compile("^([A-Z0-9]{2})(.+)$");

@@ -18,13 +18,17 @@ import org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector
  */
 public interface DenonMarantzTelnetListener {
     /**
-     *
+     * The telnet client has received a line.
+     * 
+     * @param line the received line
      */
-    public void receivedLine(String line);
+    void receivedLine(String line);
 
     /**
      * The telnet client has successfully connected to the receiver.
+     * 
+     * @param connected whether or not the connection was successful
      */
-    public void telnetClientConnected(boolean connected);
+    void telnetClientConnected(boolean connected);
 
 }

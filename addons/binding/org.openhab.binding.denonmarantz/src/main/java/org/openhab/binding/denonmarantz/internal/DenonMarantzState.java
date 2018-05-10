@@ -16,7 +16,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.denonmarantz.DenonMarantzBindingConstants;
 
 /**
@@ -27,30 +26,30 @@ import org.openhab.binding.denonmarantz.DenonMarantzBindingConstants;
  */
 public class DenonMarantzState {
 
-    private State power = UnDefType.UNDEF;
-    private State mainZonePower = UnDefType.UNDEF;
-    private State mute = UnDefType.UNDEF;
-    private State mainVolume = UnDefType.UNDEF;
-    private State mainVolumeDB = UnDefType.UNDEF;
-    private State input = UnDefType.UNDEF;
-    private State surroundProgram = UnDefType.UNDEF;
+    private State power;
+    private State mainZonePower;
+    private State mute;
+    private State mainVolume;
+    private State mainVolumeDB;
+    private State input;
+    private State surroundProgram;
 
-    private State artist = UnDefType.UNDEF;
-    private State album = UnDefType.UNDEF;
-    private State track = UnDefType.UNDEF;
+    private State artist;
+    private State album;
+    private State track;
 
     // ------ Zones ------
-    private State zone2Power = UnDefType.UNDEF;
-    private State zone2Volume = UnDefType.UNDEF;
-    private State zone2VolumeDB = UnDefType.UNDEF;
-    private State zone2Mute = UnDefType.UNDEF;
-    private State zone2Input = UnDefType.UNDEF;
+    private State zone2Power;
+    private State zone2Volume;
+    private State zone2VolumeDB;
+    private State zone2Mute;
+    private State zone2Input;
 
-    private State zone3Power = UnDefType.UNDEF;
-    private State zone3Volume = UnDefType.UNDEF;
-    private State zone3VolumeDB = UnDefType.UNDEF;
-    private State zone3Mute = UnDefType.UNDEF;
-    private State zone3Input = UnDefType.UNDEF;
+    private State zone3Power;
+    private State zone3Volume;
+    private State zone3VolumeDB;
+    private State zone3Mute;
+    private State zone3Input;
 
     private DenonMarantzStateChangedListener handler;
 
@@ -109,7 +108,7 @@ public class DenonMarantzState {
                 return zone3Input;
 
             default:
-                return UnDefType.UNDEF;
+                return null;
         }
     }
 
