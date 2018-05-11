@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -41,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author David Bennett - initial contribution
  * @author Wouter Born - Add representation properties
  */
+@NonNullByDefault
 public class NestDiscoveryService extends AbstractDiscoveryService implements NestDeviceDataListener {
     private final Logger logger = LoggerFactory.getLogger(NestDiscoveryService.class);
 

@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
-import javax.xml.bind.DatatypeConverter;
+import org.eclipse.smarthome.core.util.HexUtils;
 
 import org.junit.Test;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
@@ -56,7 +56,7 @@ public class ModbusDataReadOutMessageTest {
 
         final ModbusDataReadOutMessage m = new ModbusDataReadOutMessage.MessageBuilder().values(values).build();
         final byte[] byteMessage = m.decodeMessage();
-        assertEquals(okMessage, DatatypeConverter.printHexBinary(byteMessage));
+        assertEquals(okMessage, HexUtils.bytesToHex(byteMessage));
     }
 
     @Test
@@ -181,10 +181,10 @@ public class ModbusDataReadOutMessageTest {
     }
 
     @Test(expected = NibeHeatPumpException.class)
-    public void badCrcTest() throws Exception {
+    public void badCrcTest() throws NibeHeatPumpException {
         final String message = "5C0020685001A81F0100A86400FDA7D003449C1E004F9CA000509C7800519C0301529C1B01879C14014E9CC601479C010115B9B0FF3AB94B00C9AF0000489C0D014C9CE7004B9C0000FFFF0000FFFF0000FFFF000044";
 
-        final byte[] msg = DatatypeConverter.parseHexBinary(message);
+        final byte[] msg = HexUtils.hexToBytes(message);
         MessageFactory.getMessage(msg);
     }
 
@@ -192,14 +192,14 @@ public class ModbusDataReadOutMessageTest {
     public void notModbusDataReadOutMessageTest() throws NibeHeatPumpException {
         final String message = "519C0301529C1B01879C14014E9CC601479C010115B9B0FF3AB94B00C9AF0000489C0D014C9CE7004B9C0000FFFF0000FFFF0000FFFF000044";
 
-        final byte[] msg = DatatypeConverter.parseHexBinary(message);
+        final byte[] msg = HexUtils.hexToBytes(message);
         new ModbusDataReadOutMessage(msg);
     }
 
     private void checkRegisters(final String message, final ArrayList<ModbusValue> expectedRegs)
             throws NibeHeatPumpException {
 
-        final byte[] msg = DatatypeConverter.parseHexBinary(message);
+        final byte[] msg = HexUtils.hexToBytes(message);
         final ModbusDataReadOutMessage m = (ModbusDataReadOutMessage) MessageFactory.getMessage(msg);
         assertNotNull(m);
 

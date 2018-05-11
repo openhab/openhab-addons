@@ -8,13 +8,6 @@
  */
 package org.openhab.binding.wifiled.handler;
 
-import org.eclipse.smarthome.core.library.types.HSBType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -29,11 +22,18 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The {@link FadingWiFiLEDDriver} class is responsible for the communication with the WiFi LED controller.
  * It utilizes color fading when changing colors or turning the light on of off.
  *
- * @author Stefan Endrullis
+ * @author Stefan Endrullis - Initial contribution
  * @author Ries van Twisk
  */
 public class FadingWiFiLEDDriver extends AbstractWiFiLEDDriver {
@@ -42,22 +42,23 @@ public class FadingWiFiLEDDriver extends AbstractWiFiLEDDriver {
     public static final int DEFAULT_FADE_STEPS = 100;
     public static final int KEEP_COMMUNICATION_OPEN_FOR_MS = 1000;
 
-    private static final InternalLedState blackState = new InternalLedState();
+    private static final InternalLedState BLACK_STATE = new InternalLedState();
 
     private boolean power = false;
-    private InternalLedState currentState = new InternalLedState(); // USe to not update the controller with the same value
+    private InternalLedState currentState = new InternalLedState(); // Use to not update the controller with the same
+                                                                    // value
     private InternalLedState currentFaderState = new InternalLedState();
     private InternalLedState targetState = new InternalLedState();
     private LEDStateDTO dtoState = LEDStateDTO.valueOf(0, 0, 0, 0, 0, 0, 0, 0);
-    private final ScheduledExecutorService waiterExecutor = Executors.newSingleThreadScheduledExecutor();;
-    private final ScheduledExecutorService faderExecutor = Executors.newSingleThreadScheduledExecutor();;
+    private final ScheduledExecutorService waiterExecutor = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService faderExecutor = Executors.newSingleThreadScheduledExecutor();
     private LEDFaderRunner ledfaderThread = null;
     private final Semaphore ledUpdateSyncSemaphore = new Semaphore(1, false);
     private final int fadeDurationInMs;
     private final int totalFadingSteps;
 
     public FadingWiFiLEDDriver(String host, int port, AbstractWiFiLEDDriver.Protocol protocol, int fadeDurationInMs,
-                               int totalFadingSteps) {
+            int totalFadingSteps) {
         super(host, port, protocol);
         this.fadeDurationInMs = fadeDurationInMs < 10 ? 10 : fadeDurationInMs;
         this.totalFadingSteps = totalFadingSteps < 1 ? 1 : totalFadingSteps;
@@ -91,7 +92,6 @@ public class FadingWiFiLEDDriver extends AbstractWiFiLEDDriver {
         } catch (InterruptedException e) {
             // Ignored
         }
-
     }
 
     @Override
@@ -158,7 +158,7 @@ public class FadingWiFiLEDDriver extends AbstractWiFiLEDDriver {
     public void setPower(OnOffType command) throws IOException {
         dtoState = dtoState.withPower(command);
         power = command == OnOffType.ON;
-        fadeToState(power ? targetState : blackState);
+        fadeToState(power ? targetState : BLACK_STATE);
     }
 
     @Override
@@ -176,8 +176,8 @@ public class FadingWiFiLEDDriver extends AbstractWiFiLEDDriver {
     /**
      * Runnable that takes care of fading of the LED's
      */
-    final static class LEDFaderRunner implements Runnable {
-        private Logger logger = LoggerFactory.getLogger(LEDFaderRunner.class);
+    static final class LEDFaderRunner implements Runnable {
+        private final Logger logger = LoggerFactory.getLogger(LEDFaderRunner.class);
 
         private String host;
         private int port;
@@ -198,11 +198,9 @@ public class FadingWiFiLEDDriver extends AbstractWiFiLEDDriver {
         private Socket socket;
         private DataOutputStream outputStream;
 
-        public LEDFaderRunner(String host, int port,
-                              InternalLedState fromState, InternalLedState toState,
-                              int totalFadingSteps, int keepCommOpenForMS,
-                              Function<DataOutputStream, Boolean> powerOnFunc,
-                              BiFunction<DataOutputStream, InternalLedState, Boolean> ledSender) {
+        public LEDFaderRunner(String host, int port, InternalLedState fromState, InternalLedState toState,
+                int totalFadingSteps, int keepCommOpenForMS, Function<DataOutputStream, Boolean> powerOnFunc,
+                BiFunction<DataOutputStream, InternalLedState, Boolean> ledSender) {
             this.host = host;
             this.port = port;
             this.fromState = fromState;
@@ -235,6 +233,7 @@ public class FadingWiFiLEDDriver extends AbstractWiFiLEDDriver {
             lock.unlock();
         }
 
+        @Override
         public void run() {
             lock.lock();
             if (currentFadingStep <= totalFadingSteps) {
@@ -244,13 +243,13 @@ public class FadingWiFiLEDDriver extends AbstractWiFiLEDDriver {
                 logger.debug("currentFadeState: {}", currentFadeState);
                 if (!ledSender.apply(outputStream, currentFadeState)) {
                     logger.warn("Failed sending at step {}", currentFadingStep);
-                    throw new RuntimeException("Failed sending at step " + currentFadingStep);
+                    throw new IllegalStateException("Failed sending at step " + currentFadingStep);
                 }
                 lastCommunicationTime = System.currentTimeMillis();
             } else {
                 lock.unlock();
                 if (lastCommunicationTime < (System.currentTimeMillis() - keepCommOpenForMS)) {
-                    throw new RuntimeException("Reached end step");
+                    throw new IllegalStateException("Reached end step");
                 }
             }
             currentFadingStep++;
@@ -267,19 +266,11 @@ public class FadingWiFiLEDDriver extends AbstractWiFiLEDDriver {
         }
     }
 
-    synchronized private void fadeToState(final InternalLedState newTargetState) throws IOException {
-
+    private synchronized void fadeToState(final InternalLedState newTargetState) throws IOException {
         if (ledUpdateSyncSemaphore.tryAcquire(1)) {
-
             // Create and Execute a new LED Fader
-            ledfaderThread = new LEDFaderRunner(
-                    host,
-                    port,
-                    currentFaderState,
-                    newTargetState,
-                    totalFadingSteps,
-                    KEEP_COMMUNICATION_OPEN_FOR_MS,
-                    (outputStream) -> {
+            ledfaderThread = new LEDFaderRunner(host, port, currentFaderState, newTargetState, totalFadingSteps,
+                    KEEP_COMMUNICATION_OPEN_FOR_MS, (outputStream) -> {
                         try {
                             sendRaw(getBytesForPower(true), outputStream);
                             return true;
@@ -287,8 +278,7 @@ public class FadingWiFiLEDDriver extends AbstractWiFiLEDDriver {
                             logger.warn("IOException", e);
                             return false;
                         }
-                    },
-                    (outputStream, fs) -> {
+                    }, (outputStream, fs) -> {
                         try {
                             sendLEDData(fs, outputStream);
                             currentFaderState = fs;
@@ -301,7 +291,8 @@ public class FadingWiFiLEDDriver extends AbstractWiFiLEDDriver {
                     });
             ledfaderThread.init();
             final int period = fadeDurationInMs / totalFadingSteps;
-            final Future<?> future = faderExecutor.scheduleAtFixedRate(ledfaderThread, 0, period < 1 ? 1 : period, TimeUnit.MILLISECONDS);
+            final Future<?> future = faderExecutor.scheduleAtFixedRate(ledfaderThread, 0, period < 1 ? 1 : period,
+                    TimeUnit.MILLISECONDS);
 
             // Wait untill LED Thread has finished, when so shutdown fader
             waiterExecutor.schedule(() -> {

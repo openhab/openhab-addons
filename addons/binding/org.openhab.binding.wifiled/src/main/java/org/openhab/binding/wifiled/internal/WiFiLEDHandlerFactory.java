@@ -8,16 +8,18 @@
  */
 package org.openhab.binding.wifiled.internal;
 
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.wifiled.handler.WiFiLEDHandler;
+import static org.openhab.binding.wifiled.WiFiLEDBindingConstants.THING_TYPE_WIFILED;
 
 import java.util.Collections;
 import java.util.Set;
 
-import static org.openhab.binding.wifiled.WiFiLEDBindingConstants.THING_TYPE_WIFILED;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.wifiled.handler.WiFiLEDHandler;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link WiFiLEDHandlerFactory} is responsible for creating things and thing
@@ -25,6 +27,7 @@ import static org.openhab.binding.wifiled.WiFiLEDBindingConstants.THING_TYPE_WIF
  *
  * @author Osman Basha - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.wifiled")
 public class WiFiLEDHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_WIFILED);
@@ -36,7 +39,6 @@ public class WiFiLEDHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_WIFILED)) {

@@ -11,6 +11,7 @@ package org.openhab.binding.nest.handler;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.nest.NestBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author David Bennett - initial contribution
  * @author Wouter Born - Handle channel refresh command
  */
+@NonNullByDefault
 public class NestStructureHandler extends NestBaseHandler<Structure> {
     private final Logger logger = LoggerFactory.getLogger(NestStructureHandler.class);
 
@@ -55,7 +57,9 @@ public class NestStructureHandler extends NestBaseHandler<Structure> {
             case CHANNEL_POSTAL_CODE:
                 return getAsStringTypeOrNull(structure.getPostalCode());
             case CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT:
-                return getAsOnOffType(structure.isRushHourRewardsEnrollement());
+                return getAsOnOffTypeOrNull(structure.isRhrEnrollment());
+            case CHANNEL_SECURITY_STATE:
+                return getAsStringTypeOrNull(structure.getWwnSecurityState());
             case CHANNEL_SMOKE_ALARM_STATE:
                 return getAsStringTypeOrNull(structure.getSmokeAlarmState());
             case CHANNEL_TIME_ZONE:
@@ -85,15 +89,16 @@ public class NestStructureHandler extends NestBaseHandler<Structure> {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (REFRESH.equals(command)) {
-            if (getLastUpdate() != null) {
-                updateState(channelUID, getChannelState(channelUID, getLastUpdate()));
+            Structure lastUpdate = getLastUpdate();
+            if (lastUpdate != null) {
+                updateState(channelUID, getChannelState(channelUID, lastUpdate));
             }
         } else if (CHANNEL_AWAY.equals(channelUID.getId())) {
             // Change the home/away state.
             if (command instanceof StringType) {
                 StringType cmd = (StringType) command;
                 // Set the mode to be the cmd value.
-                addUpdateRequest(NEST_STRUCTURE_UPDATE_URL, "away", HomeAwayState.valueOf(cmd.toString()));
+                addUpdateRequest(NEST_STRUCTURE_UPDATE_PATH, "away", HomeAwayState.valueOf(cmd.toString()));
             }
         }
     }

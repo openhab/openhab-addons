@@ -25,16 +25,19 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Configs.CONFIG_HOST_NAME;
+
 /**
  * The {@link YamahaDiscoveryParticipant} is responsible for processing the
  * results of searched UPnP devices
  *
  * @author David Graeff - Initial contribution
+ * @author Tomasz Maruszak - Introduced config object
  */
 @Component(immediate = true, service = UpnpDiscoveryParticipant.class)
 public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
-    private Logger logger = LoggerFactory.getLogger(YamahaDiscoveryParticipant.class);
+    private final Logger logger = LoggerFactory.getLogger(YamahaDiscoveryParticipant.class);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -57,19 +60,24 @@ public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
         }
 
         URL url = device.getIdentity().getDescriptorURL();
-        properties.put(YamahaReceiverBindingConstants.CONFIG_HOST_NAME, url.getHost());
+        properties.put(CONFIG_HOST_NAME, url.getHost());
 
         // The port via UPNP is unreliable, sometimes it is 8080, on some models 49154.
         // But so far the API was always reachable via port 80.
-        // We provide the CONFIG_HOST_PORT therefore, if the user ever needs to adjust the port.
+        // We provide the port config therefore, if the user ever needs to adjust the port.
         // Note the port is set in the thing-types.xml to 80 by default.
 
-        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withTTL(MIN_MAX_AGE_SECS).withProperties(properties)
-                .withLabel(label).build();
+        DiscoveryResult result = DiscoveryResultBuilder
+                .create(uid)
+                .withTTL(MIN_MAX_AGE_SECS)
+                .withProperties(properties)
+                .withLabel(label)
+                .build();
 
         logger.debug("Discovered a Yamaha Receiver '{}' model '{}' thing with UDN '{}'",
                 device.getDetails().getFriendlyName(), device.getDetails().getModelDetails().getModelName(),
                 device.getIdentity().getUdn().getIdentifierString());
+
         return result;
     }
 
@@ -89,14 +97,9 @@ public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public ThingUID getThingUID(RemoteDevice device) {
-        if (device == null) {
-            return null;
-        }
-
         String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
         String deviceType = device.getType().getType();
         // UDN shouldn't contain '-' characters.
-        return getThingUID(manufacturer, deviceType,
-                device.getIdentity().getUdn().getIdentifierString().replace("-", "_"));
+        return getThingUID(manufacturer, deviceType, device.getIdentity().getUdn().getIdentifierString().replace("-", "_"));
     }
 }

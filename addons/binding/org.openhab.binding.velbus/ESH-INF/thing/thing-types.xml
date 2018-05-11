@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="velbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>Velbus Bridge</label>
+		<description>This bridge represents a Velbus Serial-interface</description>
+		<config-description-ref uri="bridge-type:velbus:bridge" />
+	</bridge-type>
+
+	<thing-type id="vmb1bls">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB1BLS</label>
+		<description>1-channel blind control module for universal mounting</description>
+		<channels>
+			<channel id="CH1" typeId="rollershutter" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:1channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmb1dm">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB1DM</label>
+		<description>Dimmer module for inductive/resistive and capacitive load</description>
+		<channels>
+			<channel id="CH1" typeId="brightness" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:1channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmb1led">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB1LED</label>
+		<description>1-channel 0-10V controlled PWM dimmer for led strips</description>
+		<channels>
+			<channel id="CH1" typeId="brightness" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:1channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmb1ry">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB1RY</label>
+		<description>1-channel relay module</description>
+		<channels>
+			<channel id="CH1" typeId="switch" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:1channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmb1ryno">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB1RYNO</label>
+		<description>1-channel relay module with potential-free changeover contact</description>
+		<channels>
+			<channel id="CH1" typeId="switch" />
+			<channel id="CH2" typeId="switch" />
+			<channel id="CH3" typeId="switch" />
+			<channel id="CH4" typeId="switch" />
+			<channel id="CH5" typeId="switch" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:5channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmb1rynos">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB1RYNOS</label>
+		<description>1-channel relay module with potential-free changeover contact</description>
+		<channels>
+			<channel id="CH1" typeId="switch" />
+			<channel id="CH2" typeId="switch" />
+			<channel id="CH3" typeId="switch" />
+			<channel id="CH4" typeId="switch" />
+			<channel id="CH5" typeId="switch" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:5channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmb2ble">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB2BLE</label>
+		<description>2-channel blind control module with extended possibilities</description>
+		<channels>
+			<channel id="CH1" typeId="rollershutter" />
+			<channel id="CH2" typeId="rollershutter" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:2channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmb2pbn">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB2PBN</label>
+		<description>Push-button interface for Niko 1- or 2-fold push-buttons</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmb4dc">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB4DC</label>
+		<description>4-channel 0/1-10V dimmer controller</description>
+		<channels>
+			<channel id="CH1" typeId="brightness" />
+			<channel id="CH2" typeId="brightness" />
+			<channel id="CH3" typeId="brightness" />
+			<channel id="CH4" typeId="brightness" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:4channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmb4ry">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB4RY</label>
+		<description>4-channel relay module</description>
+		<channels>
+			<channel id="CH1" typeId="switch" />
+			<channel id="CH2" typeId="switch" />
+			<channel id="CH3" typeId="switch" />
+			<channel id="CH4" typeId="switch" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:4channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmb4ryld">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB4RYLD</label>
+		<description>4-channel relay module with voltage outputs</description>
+		<channels>
+			<channel id="CH1" typeId="switch" />
+			<channel id="CH2" typeId="switch" />
+			<channel id="CH3" typeId="switch" />
+			<channel id="CH4" typeId="switch" />
+			<channel id="CH5" typeId="switch" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:5channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmb4ryno">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB4RYNO</label>
+		<description>4-channel relay module with potential-free contacts</description>
+		<channels>
+			<channel id="CH1" typeId="switch" />
+			<channel id="CH2" typeId="switch" />
+			<channel id="CH3" typeId="switch" />
+			<channel id="CH4" typeId="switch" />
+			<channel id="CH5" typeId="switch" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:5channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmb6in">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB6IN</label>
+		<description>6-channel input module</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:6channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmb6pbn">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB6PBN</label>
+		<description>Push-button interface module for Niko 4- or 6-fold push-button</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmb7in">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB7IN</label>
+		<description>7-channel input module (potentialfree + pulse)</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmb8ir">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB8IR</label>
+		<description>Infrared remote control receiver module</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmb8pb">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB8PB</label>
+		<description>8-Channel Push Button module</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmb8pbu">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMB8PBU</label>
+		<description>Push-button interface with 8 channels for universal mounting</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmbdme">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBDME</label>
+		<description>Dimmer for electronic/resistive load</description>
+		<channels>
+			<channel id="CH1" typeId="brightness" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:1channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmbdmi">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBDMI</label>
+		<description>Single channel triac dimmer for resistive and inductive loads</description>
+		<channels>
+			<channel id="CH1" typeId="brightness" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:1channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmbdmir">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBDMI-R</label>
+		<description>Single channel triac dimmer for resistive and inductive loads</description>
+		<channels>
+			<channel id="CH1" typeId="brightness" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:1channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmbgp1">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBGP1</label>
+		<description>Glass control module with 1 touch key</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+			<channel id="CH9" typeId="temperature" />
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor" />
+	</thing-type>
+
+	<thing-type id="vmbgp2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBGP2</label>
+		<description>Glass control module with 2 touch keys</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+			<channel id="CH9" typeId="temperature" />
+		</channels>
+
+        <config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor" />
+	</thing-type>
+
+	<thing-type id="vmbgp4">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBGP4</label>
+		<description>Glass control module with 4 touch keys</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+			<channel id="CH9" typeId="temperature" />
+		</channels>
+
+        <config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor" />
+	</thing-type>
+
+	<thing-type id="vmbgp4pir">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBGP4PIR</label>
+		<description>Glass control module with 4 touch keys and built-in motion and twilight sensor</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+			<channel id="CH9" typeId="temperature" />
+		</channels>
+
+        <config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor" />
+	</thing-type>
+
+	<thing-type id="vmbgpo">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBGPO</label>
+		<description>Glass control module with oled display</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+			<channel id="CH9" typeId="trigger-channel" />
+			<channel id="CH10" typeId="trigger-channel" />
+			<channel id="CH11" typeId="trigger-channel" />
+			<channel id="CH12" typeId="trigger-channel" />
+			<channel id="CH13" typeId="trigger-channel" />
+			<channel id="CH14" typeId="trigger-channel" />
+			<channel id="CH15" typeId="trigger-channel" />
+			<channel id="CH16" typeId="trigger-channel" />
+			<channel id="CH17" typeId="trigger-channel" />
+			<channel id="CH18" typeId="trigger-channel" />
+			<channel id="CH19" typeId="trigger-channel" />
+			<channel id="CH20" typeId="trigger-channel" />
+			<channel id="CH21" typeId="trigger-channel" />
+			<channel id="CH22" typeId="trigger-channel" />
+			<channel id="CH23" typeId="trigger-channel" />
+			<channel id="CH24" typeId="trigger-channel" />
+			<channel id="CH25" typeId="trigger-channel" />
+			<channel id="CH26" typeId="trigger-channel" />
+			<channel id="CH27" typeId="trigger-channel" />
+			<channel id="CH28" typeId="trigger-channel" />
+			<channel id="CH29" typeId="trigger-channel" />
+			<channel id="CH30" typeId="trigger-channel" />
+			<channel id="CH31" typeId="trigger-channel" />
+			<channel id="CH32" typeId="trigger-channel" />
+			<channel id="CH33" typeId="temperature" />
+		</channels>
+
+        <config-description-ref uri="thing-type:velbus:33channelDeviceWithTemperatureSensor" />
+	</thing-type>
+
+	<thing-type id="vmbgpod">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBGPOD</label>
+		<description>Glass control module with oled display and temperature controller</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+			<channel id="CH9" typeId="trigger-channel" />
+			<channel id="CH10" typeId="trigger-channel" />
+			<channel id="CH11" typeId="trigger-channel" />
+			<channel id="CH12" typeId="trigger-channel" />
+			<channel id="CH13" typeId="trigger-channel" />
+			<channel id="CH14" typeId="trigger-channel" />
+			<channel id="CH15" typeId="trigger-channel" />
+			<channel id="CH16" typeId="trigger-channel" />
+			<channel id="CH17" typeId="trigger-channel" />
+			<channel id="CH18" typeId="trigger-channel" />
+			<channel id="CH19" typeId="trigger-channel" />
+			<channel id="CH20" typeId="trigger-channel" />
+			<channel id="CH21" typeId="trigger-channel" />
+			<channel id="CH22" typeId="trigger-channel" />
+			<channel id="CH23" typeId="trigger-channel" />
+			<channel id="CH24" typeId="trigger-channel" />
+			<channel id="CH25" typeId="trigger-channel" />
+			<channel id="CH26" typeId="trigger-channel" />
+			<channel id="CH27" typeId="trigger-channel" />
+			<channel id="CH28" typeId="trigger-channel" />
+			<channel id="CH29" typeId="trigger-channel" />
+			<channel id="CH30" typeId="trigger-channel" />
+			<channel id="CH31" typeId="trigger-channel" />
+			<channel id="CH32" typeId="trigger-channel" />
+			<channel id="CH33" typeId="temperature" />
+		</channels>
+
+        <config-description-ref uri="thing-type:velbus:33channelDeviceWithTemperatureSensor" />
+	</thing-type>
+
+	<thing-type id="vmbpirc">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBPIRC</label>
+		<description>Motion and twilight sensor for ceiling mounting</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+		</channels>
+
+        <config-description-ref uri="thing-type:velbus:7channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmbpirm">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBPIRM</label>
+		<description>Mini motion and twilight sensor for recessed or surface mounting</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+		</channels>
+
+        <config-description-ref uri="thing-type:velbus:7channelDevice" />
+	</thing-type>
+
+	<thing-type id="vmbpiro">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>VMBPIRO</label>
+		<description>Outdoor motion, twilight and temperature sensor, Theben</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel" />
+			<channel id="CH2" typeId="trigger-channel" />
+			<channel id="CH3" typeId="trigger-channel" />
+			<channel id="CH4" typeId="trigger-channel" />
+			<channel id="CH5" typeId="trigger-channel" />
+			<channel id="CH6" typeId="trigger-channel" />
+			<channel id="CH7" typeId="trigger-channel" />
+			<channel id="CH8" typeId="trigger-channel" />
+			<channel id="CH9" typeId="temperature" />
+		</channels>
+
+        <config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor" />
+	</thing-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch control for action in Velbus</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>Brightness control for dimmer action in Velbus</description>
+		<category>DimmableLight</category>
+	</channel-type>
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter</label>
+		<description>Rollershutter control for rollershutter action in Velbus</description>
+		<category>Blinds</category>
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+	<channel-type id="trigger-channel">
+		<kind>trigger</kind>
+		<label>Trigger Channel</label>
+		<event>
+			<options>
+				<option value="PRESSED">pressed</option>
+				<option value="RELEASED">released</option>
+				<option value="LONG_PRESSED">long pressed</option>
+			</options>
+		</event>
+	</channel-type>
+</thing:thing-descriptions>

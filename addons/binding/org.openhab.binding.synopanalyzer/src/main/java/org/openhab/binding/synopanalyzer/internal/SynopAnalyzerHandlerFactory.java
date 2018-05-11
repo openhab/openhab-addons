@@ -20,7 +20,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.synopanalyzer.handler.SynopAnalyzerHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link SynopAnalyzerHandlerFactory} is responsible for creating things and thing
@@ -29,7 +28,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  * @author Gaël L'hopital - Initial contribution
  */
 
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.synopanalyzer")
 public class SynopAnalyzerHandlerFactory extends BaseThingHandlerFactory {
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_SYNOP);

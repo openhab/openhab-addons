@@ -28,6 +28,8 @@ public class NetatmoBindingConstants {
 
     private static final String BINDING_ID = "netatmo";
 
+    public static final String VENDOR = "Netatmo";
+
     // Configuration keys
     public static final String EQUIPMENT_ID = "id";
     public static final String PARENT_ID = "parentId";
@@ -70,8 +72,6 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_LAST_STATUS_STORE = "LastStatusStore";
     public static final String CHANNEL_LAST_MESSAGE = "LastMessage";
     public static final String CHANNEL_LOCATION = "Location";
-    public static final String CHANNEL_BOILER_ON = "BoilerOn";
-    public static final String CHANNEL_BOILER_OFF = "BoilerOff";
     public static final String CHANNEL_DATE_MAX_TEMP = "DateMaxTemp";
     public static final String CHANNEL_DATE_MIN_TEMP = "DateMinTemp";
     public static final String CHANNEL_MAX_TEMP = "MaxTemp";
@@ -92,9 +92,6 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_BATTERY_LEVEL = "BatteryVP";
     public static final String CHANNEL_WIFI_STATUS = "WifiStatus";
     public static final String CHANNEL_RF_STATUS = "RfStatus";
-    public static final String CHANNEL_UNIT = "Unit";
-    public static final String CHANNEL_WIND_UNIT = "WindUnit";
-    public static final String CHANNEL_PRESSURE_UNIT = "PressureUnit";
 
     // Healthy Home Coach specific channel
     public static final String CHANNEL_HEALTH_INDEX = "HealthIndex";
@@ -168,8 +165,7 @@ public class NetatmoBindingConstants {
             .concat(SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(), Stream.of(APIBRIDGE_THING_TYPE))
             .collect(Collectors.toSet());
 
-    public static final Set<String> MEASURABLE_CHANNELS = Stream.of(CHANNEL_BOILER_ON, CHANNEL_BOILER_OFF)
-            .collect(Collectors.toSet());
+    public static final Set<String> MEASURABLE_CHANNELS = Stream.of(new String[] {}).collect(Collectors.toSet());
 
     public static final Set<EventTypeEnum> HOME_EVENTS = Stream.of(EventTypeEnum.PERSON_AWAY)
             .collect(Collectors.toSet());

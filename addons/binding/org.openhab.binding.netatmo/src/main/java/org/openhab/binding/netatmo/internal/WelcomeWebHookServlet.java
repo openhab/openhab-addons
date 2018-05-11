@@ -58,7 +58,7 @@ public class WelcomeWebHookServlet extends HttpServlet {
         this.bridgeHandler = bridgeHandler;
         try {
             httpService.registerServlet(path, this, null, httpService.createDefaultHttpContext());
-            logger.info("Started Netatmo Webhook servlet at {}", path);
+            logger.debug("Started Netatmo Webhook servlet at {}", path);
         } catch (ServletException | NamespaceException e) {
             logger.error("Could not start Netatmo Webhook servlet: {}", e.getMessage(), e);
         }
@@ -69,7 +69,7 @@ public class WelcomeWebHookServlet extends HttpServlet {
      */
     public void deactivate() {
         httpService.unregister(path);
-        logger.info("Netatmo webhook servlet stopped");
+        logger.debug("Netatmo webhook servlet stopped");
         this.bridgeHandler = null;
     }
 

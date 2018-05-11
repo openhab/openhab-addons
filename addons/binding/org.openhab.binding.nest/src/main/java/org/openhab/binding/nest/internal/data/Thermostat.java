@@ -8,7 +8,13 @@
  */
 package org.openhab.binding.nest.internal.data;
 
+import static org.eclipse.smarthome.core.library.unit.ImperialUnits.FAHRENHEIT;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
+
 import java.util.Date;
+
+import javax.measure.Unit;
+import javax.measure.quantity.Temperature;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -18,136 +24,147 @@ import com.google.gson.annotations.SerializedName;
  * @author David Bennett - Initial Contribution
  */
 public class Thermostat extends BaseNestDevice {
-    @SerializedName("can_cool")
-    private boolean canCool;
-    @SerializedName("can_heat")
-    private boolean canHeat;
-    @SerializedName("is_using_emergency_heat")
-    private boolean isUsingEmergencyHeat;
-    @SerializedName("has_fan")
-    private boolean hasFan;
-    @SerializedName("fan_timer_active")
-    private boolean fanTimerActive;
-    @SerializedName("fan_timer_timeout")
+
+    private Boolean canCool;
+    private Boolean canHeat;
+    private Boolean isUsingEmergencyHeat;
+    private Boolean hasFan;
+    private Boolean fanTimerActive;
     private Date fanTimerTimeout;
-    @SerializedName("has_leaf")
-    private boolean hasLeaf;
-    @SerializedName("temperature_scale")
-    private String tempScale;
-    @SerializedName("ambient_temperature_c")
-    private Double ambientTemperature;
-    @SerializedName("humidity")
+    private Boolean hasLeaf;
+    private String temperatureScale;
+    private Double ambientTemperatureC;
+    private Double ambientTemperatureF;
     private Integer humidity;
-    @SerializedName("target_temperature_c")
-    private Double targetTemperature;
-    @SerializedName("target_temperature_high_c")
-    private Double targetTemperatureHigh;
-    @SerializedName("target_temperature_low_c")
-    private Double targetTemperatureLow;
-    @SerializedName("hvac_mode")
-    private Mode mode;
-    @SerializedName("previous_hvac_mode")
-    private Mode previousMode;
-    @SerializedName("hvac_state")
-    private State state;
-    @SerializedName("is_locked")
-    private boolean isLocked;
-    @SerializedName("locked_temp_max_c")
-    private Double lockedTemperatureHigh;
-    @SerializedName("locked_temp_min_c")
-    private Double lockedTemperatureLow;
-    @SerializedName("sunlight_correction_enabled")
-    private boolean sunlightCorrectionEnabled;
-    @SerializedName("sunlight_correction_active")
-    private boolean sunlightCorrectionActive;
-    @SerializedName("fan_timer_duration")
+    private Double targetTemperatureC;
+    private Double targetTemperatureF;
+    private Double targetTemperatureHighC;
+    private Double targetTemperatureHighF;
+    private Double targetTemperatureLowC;
+    private Double targetTemperatureLowF;
+    private Mode hvacMode;
+    private Mode previousHvacMode;
+    private State hvacState;
+    private Double ecoTemperatureHighC;
+    private Double ecoTemperatureHighF;
+    private Double ecoTemperatureLowC;
+    private Double ecoTemperatureLowF;
+    private Boolean isLocked;
+    private Double lockedTempMaxC;
+    private Double lockedTempMaxF;
+    private Double lockedTempMinC;
+    private Double lockedTempMinF;
+    private Boolean sunlightCorrectionEnabled;
+    private Boolean sunlightCorrectionActive;
     private Integer fanTimerDuration;
-    @SerializedName("time_to_target")
     private String timeToTarget;
-    @SerializedName("where_name")
     private String whereName;
 
-    public String getTempScale() {
-        return tempScale;
-    }
-
-    public void setTempScale(String tempScale) {
-        this.tempScale = tempScale;
+    public Unit<Temperature> getTemperatureUnit() {
+        if ("C".equals(temperatureScale)) {
+            return CELSIUS;
+        } else if ("F".equals(temperatureScale)) {
+            return FAHRENHEIT;
+        } else {
+            return null;
+        }
     }
 
     public Double getTargetTemperature() {
-        return targetTemperature;
-    }
-
-    public void setTargetTemperature(Double targetTemperature) {
-        this.targetTemperature = targetTemperature;
+        if (getTemperatureUnit() == CELSIUS) {
+            return targetTemperatureC;
+        } else if (getTemperatureUnit() == FAHRENHEIT) {
+            return targetTemperatureF;
+        } else {
+            return null;
+        }
     }
 
     public Double getTargetTemperatureHigh() {
-        return targetTemperatureHigh;
-    }
-
-    public void setTargetTemperatureHigh(Double targetTemperatureHigh) {
-        this.targetTemperatureHigh = targetTemperatureHigh;
+        if (getTemperatureUnit() == CELSIUS) {
+            return targetTemperatureHighC;
+        } else if (getTemperatureUnit() == FAHRENHEIT) {
+            return targetTemperatureHighF;
+        } else {
+            return null;
+        }
     }
 
     public Double getTargetTemperatureLow() {
-        return targetTemperatureLow;
-    }
-
-    public void setTargetTemperatureLow(Double targetTemperatureLow) {
-        this.targetTemperatureLow = targetTemperatureLow;
+        if (getTemperatureUnit() == CELSIUS) {
+            return targetTemperatureLowC;
+        } else if (getTemperatureUnit() == FAHRENHEIT) {
+            return targetTemperatureLowF;
+        } else {
+            return null;
+        }
     }
 
     public Mode getMode() {
-        return mode;
+        return hvacMode;
     }
 
-    public void setMode(Mode mode) {
-        this.mode = mode;
+    public Double getEcoTemperatureHigh() {
+        if (getTemperatureUnit() == CELSIUS) {
+            return ecoTemperatureHighC;
+        } else if (getTemperatureUnit() == FAHRENHEIT) {
+            return ecoTemperatureHighF;
+        } else {
+            return null;
+        }
     }
 
-    public boolean isLocked() {
+    public Double getEcoTemperatureLow() {
+        if (getTemperatureUnit() == CELSIUS) {
+            return ecoTemperatureLowC;
+        } else if (getTemperatureUnit() == FAHRENHEIT) {
+            return ecoTemperatureLowF;
+        } else {
+            return null;
+        }
+    }
+
+    public Boolean isLocked() {
         return isLocked;
     }
 
-    public void setLocked(boolean isLocked) {
-        this.isLocked = isLocked;
+    public Double getLockedTempMax() {
+        if (getTemperatureUnit() == CELSIUS) {
+            return lockedTempMaxC;
+        } else if (getTemperatureUnit() == FAHRENHEIT) {
+            return lockedTempMaxF;
+        } else {
+            return null;
+        }
     }
 
-    public Double getLockedTemperatureHigh() {
-        return lockedTemperatureHigh;
+    public Double getLockedTempMin() {
+        if (getTemperatureUnit() == CELSIUS) {
+            return lockedTempMinC;
+        } else if (getTemperatureUnit() == FAHRENHEIT) {
+            return lockedTempMinF;
+        } else {
+            return null;
+        }
     }
 
-    public void setLockedTemperatureHigh(Double lockedTemperatureHigh) {
-        this.lockedTemperatureHigh = lockedTemperatureHigh;
-    }
-
-    public Double getLockedTemperatureLow() {
-        return lockedTemperatureLow;
-    }
-
-    public void setLockedTemperatureLow(Double lockedTemperatureLow) {
-        this.lockedTemperatureLow = lockedTemperatureLow;
-    }
-
-    public boolean isCanCool() {
+    public Boolean isCanCool() {
         return canCool;
     }
 
-    public boolean isCanHeat() {
+    public Boolean isCanHeat() {
         return canHeat;
     }
 
-    public boolean isUsingEmergencyHeat() {
+    public Boolean isUsingEmergencyHeat() {
         return isUsingEmergencyHeat;
     }
 
-    public boolean isHasFan() {
+    public Boolean isHasFan() {
         return hasFan;
     }
 
-    public boolean isFanTimerActive() {
+    public Boolean isFanTimerActive() {
         return fanTimerActive;
     }
 
@@ -155,32 +172,28 @@ public class Thermostat extends BaseNestDevice {
         return fanTimerTimeout;
     }
 
-    public boolean isHasLeaf() {
+    public Boolean isHasLeaf() {
         return hasLeaf;
     }
 
-    public Mode getPreviousMode() {
-        return previousMode;
+    public Mode getPreviousHvacMode() {
+        return previousHvacMode;
     }
 
-    public State getState() {
-        return state;
+    public State getHvacState() {
+        return hvacState;
     }
 
-    public boolean isSunlightCorrectionEnabled() {
+    public Boolean isSunlightCorrectionEnabled() {
         return sunlightCorrectionEnabled;
     }
 
-    public boolean isSunlightCorrectionActive() {
+    public Boolean isSunlightCorrectionActive() {
         return sunlightCorrectionActive;
     }
 
     public Integer getFanTimerDuration() {
         return fanTimerDuration;
-    }
-
-    public void setFanTimerDuration(Integer duration) {
-        fanTimerDuration = duration;
     }
 
     public Integer getTimeToTarget() {
@@ -191,7 +204,9 @@ public class Thermostat extends BaseNestDevice {
      * Turns the time to target string into a real value.
      */
     static Integer parseTimeToTarget(String timeToTarget) {
-        if (timeToTarget.startsWith("~") || timeToTarget.startsWith("<") || timeToTarget.startsWith(">")) {
+        if (timeToTarget == null) {
+            return null;
+        } else if (timeToTarget.startsWith("~") || timeToTarget.startsWith("<") || timeToTarget.startsWith(">")) {
             return Integer.valueOf(timeToTarget.substring(1));
         }
         return Integer.valueOf(timeToTarget);
@@ -202,7 +217,13 @@ public class Thermostat extends BaseNestDevice {
     }
 
     public Double getAmbientTemperature() {
-        return ambientTemperature;
+        if (getTemperatureUnit() == CELSIUS) {
+            return ambientTemperatureC;
+        } else if (getTemperatureUnit() == FAHRENHEIT) {
+            return ambientTemperatureF;
+        } else {
+            return null;
+        }
     }
 
     public Integer getHumidity() {
@@ -237,13 +258,19 @@ public class Thermostat extends BaseNestDevice {
         builder.append("Thermostat [canCool=").append(canCool).append(", canHeat=").append(canHeat)
                 .append(", isUsingEmergencyHeat=").append(isUsingEmergencyHeat).append(", hasFan=").append(hasFan)
                 .append(", fanTimerActive=").append(fanTimerActive).append(", fanTimerTimeout=").append(fanTimerTimeout)
-                .append(", hasLeaf=").append(hasLeaf).append(", tempScale=").append(tempScale)
-                .append(", ambientTemperature=").append(ambientTemperature).append(", humidity=").append(humidity)
-                .append(", targetTemperature=").append(targetTemperature).append(", targetTemperatureHigh=")
-                .append(targetTemperatureHigh).append(", targetTemperatureLow=").append(targetTemperatureLow)
-                .append(", mode=").append(mode).append(", previousMode=").append(previousMode).append(", state=")
-                .append(state).append(", isLocked=").append(isLocked).append(", lockedTemperatureHigh=")
-                .append(lockedTemperatureHigh).append(", lockedTemperatureLow=").append(lockedTemperatureLow)
+                .append(", hasLeaf=").append(hasLeaf).append(", temperatureScale=").append(temperatureScale)
+                .append(", ambientTemperatureC=").append(ambientTemperatureC).append(", ambientTemperatureF=")
+                .append(ambientTemperatureF).append(", humidity=").append(humidity).append(", targetTemperatureC=")
+                .append(targetTemperatureC).append(", targetTemperatureF=").append(targetTemperatureF)
+                .append(", targetTemperatureHighC=").append(targetTemperatureHighC).append(", targetTemperatureHighF=")
+                .append(targetTemperatureHighF).append(", targetTemperatureLowC=").append(targetTemperatureLowC)
+                .append(", targetTemperatureLowF=").append(targetTemperatureLowF).append(", hvacMode=").append(hvacMode)
+                .append(", previousHvacMode=").append(previousHvacMode).append(", hvacState=").append(hvacState)
+                .append(", ecoTemperatureHighC=").append(ecoTemperatureHighC).append(", ecoTemperatureHighF=")
+                .append(ecoTemperatureHighF).append(", ecoTemperatureLowC=").append(ecoTemperatureLowC)
+                .append(", ecoTemperatureLowF=").append(ecoTemperatureLowF).append(", isLocked=").append(isLocked)
+                .append(", lockedTempMaxC=").append(lockedTempMaxC).append(", lockedTempMaxF=").append(lockedTempMaxF)
+                .append(", lockedTempMinC=").append(lockedTempMinC).append(", lockedTempMinF=").append(lockedTempMinF)
                 .append(", sunlightCorrectionEnabled=").append(sunlightCorrectionEnabled)
                 .append(", sunlightCorrectionActive=").append(sunlightCorrectionActive).append(", fanTimerDuration=")
                 .append(fanTimerDuration).append(", timeToTarget=").append(timeToTarget).append(", whereName=")

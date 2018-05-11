@@ -8,21 +8,23 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-
 import org.apache.commons.lang.StringUtils;
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPlayControl;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
+import org.openhab.binding.yamahareceiver.internal.config.YamahaBridgeConfiguration;
 import org.openhab.binding.yamahareceiver.internal.state.PlayInfoState;
 import org.openhab.binding.yamahareceiver.internal.state.PlayInfoStateListener;
 import org.openhab.binding.yamahareceiver.internal.state.PresetInfoState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import java.io.IOException;
+
+import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.INPUT_SPOTIFY;
+import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.INPUT_TUNER;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.*;
 
 /**
  * This class implements the Yamaha Receiver protocol related to navigation functionally. USB, NET_RADIO, IPOD and
@@ -42,17 +44,14 @@ import org.w3c.dom.Node;
  * @author David Graeff
  * @author Tomasz Maruszak - Spotify support, refactoring
  */
-public class InputWithPlayControlXML implements InputWithPlayControl {
+public class InputWithPlayControlXML extends AbstractInputControlXML implements InputWithPlayControl {
 
     public static final int PRESET_CHANNELS = 40;
 
     private final Logger logger = LoggerFactory.getLogger(InputWithPlayControlXML.class);
 
-    protected final WeakReference<AbstractConnection> comReference;
-
-    protected final String inputID;
-
     private final PlayInfoStateListener observer;
+    private final YamahaBridgeConfiguration settings;
 
     /**
      * Create a InputWithPlayControl object for altering menu positions and requesting current menu information as well
@@ -61,21 +60,10 @@ public class InputWithPlayControlXML implements InputWithPlayControl {
      * @param inputID The input ID like USB or NET_RADIO.
      * @param com The Yamaha communication object to send http requests.
      */
-    public InputWithPlayControlXML(String inputID, AbstractConnection com, PlayInfoStateListener observer) {
-        this.inputID = inputID;
-        this.comReference = new WeakReference<>(com);
+    public InputWithPlayControlXML(String inputID, AbstractConnection com, PlayInfoStateListener observer, YamahaBridgeConfiguration settings) {
+        super(inputID, com);
         this.observer = observer;
-    }
-
-    /**
-     * Wraps the XML message with the inputID tags. Example with inputID=NET_RADIO:
-     * <NETRADIO>message</NETRADIO>.
-     *
-     * @param message XML message
-     * @return
-     */
-    protected String wrInput(String message) {
-        return "<" + inputID + ">" + message + "</" + inputID + ">";
+        this.settings = settings;
     }
 
     /**
@@ -89,32 +77,30 @@ public class InputWithPlayControlXML implements InputWithPlayControl {
             return;
         }
 
-        AbstractConnection com = comReference.get();
-        String response = com.sendReceive(wrInput("<Play_Info>GetParam</Play_Info>"));
-        Document doc = XMLUtils.xml(response);
-        if (doc.getFirstChild() == null) {
-            throw new ReceivedMessageParseException("<Play_Info>GetParam failed: " + response);
-        }
+        AbstractConnection con = comReference.get();
+        Node responseNode = XMLProtocolService.getResponse(con, wrInput("<Play_Info>GetParam</Play_Info>"), getInputElement());
 
         PlayInfoState msg = new PlayInfoState();
 
-        Node playInfoNode = XMLUtils.getNode(doc.getFirstChild(), "Play_Info");
+        Node playInfoNode = getNode(responseNode, "Play_Info");
 
-        msg.playbackMode = XMLUtils.getNodeContentOrDefault(playInfoNode, "Playback_Info", msg.playbackMode);
+        msg.playbackMode = getNodeContentOrDefault(playInfoNode, "Playback_Info", msg.playbackMode);
 
-        Node metaInfoNode = XMLUtils.getNode(playInfoNode, "Meta_Info");
+        Node metaInfoNode = getNode(playInfoNode, "Meta_Info");
         if (metaInfoNode != null) {
-            String stationElement = YamahaReceiverBindingConstants.INPUT_TUNER.equals(inputID) ? "Radio_Text_A" : "Station";
-            msg.station = XMLUtils.getNodeContentOrDefault(metaInfoNode, stationElement, msg.station);
+            String stationElement = INPUT_TUNER.equals(inputID) ? "Radio_Text_A" : "Station";
+            msg.station = getNodeContentOrDefault(metaInfoNode, stationElement, msg.station);
 
-            msg.artist = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Artist", msg.artist);
-            msg.album = XMLUtils.getNodeContentOrDefault(metaInfoNode, "Album", msg.album);
+            msg.artist = getNodeContentOrDefault(metaInfoNode, "Artist", msg.artist);
+            msg.album = getNodeContentOrDefault(metaInfoNode, "Album", msg.album);
 
-            String songElement = YamahaReceiverBindingConstants.INPUT_SPOTIFY.equals(inputID) ? "Track" : "Song";
-            msg.song = XMLUtils.getNodeContentOrDefault(metaInfoNode, songElement, msg.song);
+            String songElement = INPUT_SPOTIFY.equals(inputID) ? "Track" : "Song";
+            msg.song = getNodeContentOrDefault(metaInfoNode, songElement, msg.song);
         }
 
-        if (YamahaReceiverBindingConstants.INPUT_SPOTIFY.equals(inputID)) {
+        msg.songImageUrl = settings.getAlbumUrl();
+
+        if (INPUT_SPOTIFY.equals(inputID)) {
             //<YAMAHA_AV rsp="GET" RC="0">
             //    <Spotify>
             //        <Play_Info>
@@ -140,9 +126,9 @@ public class InputWithPlayControlXML implements InputWithPlayControl {
             //</YAMAHA_AV>
 
             // Spotify input supports song cover image
-            String songImageUrl = XMLUtils.getNodeContentOrDefault(playInfoNode, "Album_ART/URL", "");
+            String songImageUrl = getNodeContentOrEmpty(playInfoNode, "Album_ART/URL");
             if (StringUtils.isNotEmpty(songImageUrl)) {
-                msg.songImageUrl = String.format("http://%s%s", com.getHost(), songImageUrl);
+                msg.songImageUrl = String.format("http://%s%s", con.getHost(), songImageUrl);
             }
         }
 
@@ -190,7 +176,7 @@ public class InputWithPlayControlXML implements InputWithPlayControl {
      */
     @Override
     public void skipFF() throws IOException, ReceivedMessageParseException {
-        if (YamahaReceiverBindingConstants.INPUT_SPOTIFY.equals(inputID)) {
+        if (INPUT_SPOTIFY.equals(inputID)) {
             logger.warn("Command skip forward is not supported for input {}", inputID);
             return;
         }
@@ -204,7 +190,7 @@ public class InputWithPlayControlXML implements InputWithPlayControl {
      */
     @Override
     public void skipREV() throws IOException, ReceivedMessageParseException {
-        if (YamahaReceiverBindingConstants.INPUT_SPOTIFY.equals(inputID)) {
+        if (INPUT_SPOTIFY.equals(inputID)) {
             logger.warn("Command skip reverse is not supported for input {}", inputID);
             return;
         }
@@ -218,7 +204,7 @@ public class InputWithPlayControlXML implements InputWithPlayControl {
      */
     @Override
     public void nextTrack() throws IOException, ReceivedMessageParseException {
-        String cmd = YamahaReceiverBindingConstants.INPUT_SPOTIFY.equals(inputID) ? "Skip Fwd" : ">>|";
+        String cmd = INPUT_SPOTIFY.equals(inputID) ? "Skip Fwd" : ">>|";
         sendPlaybackCommand(cmd);
     }
 
@@ -229,7 +215,7 @@ public class InputWithPlayControlXML implements InputWithPlayControl {
      */
     @Override
     public void previousTrack() throws IOException, ReceivedMessageParseException {
-        String cmd = YamahaReceiverBindingConstants.INPUT_SPOTIFY.equals(inputID) ? "Skip Rev" : "|<<";
+        String cmd = INPUT_SPOTIFY.equals(inputID) ? "Skip Rev" : "|<<";
         sendPlaybackCommand(cmd);
     }
 

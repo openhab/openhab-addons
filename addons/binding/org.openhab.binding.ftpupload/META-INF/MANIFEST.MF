@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ManifestVersion: 2
+Bundle-Name: FTP Upload Binding
+Bundle-SymbolicName: org.openhab.binding.ftpupload;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ClassPath: .,
+ lib/ftplet-api-1.1.0.jar,
+ lib/ftpserver-core-1.1.0.jar,
+ lib/mina-core-2.0.16.jar
+Export-Package: 
+ org.openhab.binding.ftpupload,
+ org.openhab.binding.ftpupload.handler
+Import-Package: 
+ org.apache.commons.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
+ org.osgi.service.component,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml

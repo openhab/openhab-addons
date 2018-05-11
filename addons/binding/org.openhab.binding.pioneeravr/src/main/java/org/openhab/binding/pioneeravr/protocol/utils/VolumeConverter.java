@@ -83,13 +83,8 @@ public final class VolumeConverter {
      */
     private static String formatIpControlVolume(double ipControlVolume, int zone) {
         validateZone(zone - 1);
-        DecimalFormat FORMATTER = new DecimalFormat(IP_CONTROL_VOLUME_FORMAT[zone - 1]);
-        String result = IP_CONTROL_VOLUME_DEFAULT_VALUE[zone - 1];
-        // DecimalFormat is not ThreadSafe
-        synchronized (FORMATTER) {
-            result = FORMATTER.format(Math.round(ipControlVolume));
-        }
-        return result;
+        DecimalFormat formatter = new DecimalFormat(IP_CONTROL_VOLUME_FORMAT[zone - 1]);
+        return formatter.format(Math.round(ipControlVolume));
     }
 
     private static void validateZone(int zone) {

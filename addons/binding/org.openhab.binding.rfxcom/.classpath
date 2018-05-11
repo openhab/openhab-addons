@@ -4,27 +4,5 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="lib" path="lib/jd2xx.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Maven: org.apache.felix:org.apache.felix.fileinstall:3.4.0"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Maven: org.apache.felix:org.apache.felix.scr.ds-annotations:1.2.10"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/com.google.gson/2.7.0.v20170129-0911/com.google.gson-2.7.0.v20170129-0911.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/com.google.guava/15.0.0.v201403281430/com.google.guava-15.0.0.v201403281430.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/org.eclipse.osgi/3.12.1.v20170821-1548/org.eclipse.osgi-3.12.1.v20170821-1548.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/javax.measure.unit-api/1.0.0/javax.measure.unit-api-1.0.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/org.eclipse.osgi.services/3.6.0.v20170228-1906/org.eclipse.osgi.services-3.6.0.v20170228-1906.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/org.eclipse.osgi.util/3.4.0.v20170111-1608/org.eclipse.osgi.util-3.4.0.v20170111-1608.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/org.apache.commons.lang/2.6.0.v201404270220/org.apache.commons.lang-2.6.0.v201404270220.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/org.eclipse.smarthome.config.core/0.10.0.201803311938/org.eclipse.smarthome.config.core-0.10.0.201803311938.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/org.eclipse.smarthome.core/0.10.0.201803311938/org.eclipse.smarthome.core-0.10.0.201803311938.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/org.slf4j.api/1.7.2.v20121108-1250/org.slf4j.api-1.7.2.v20121108-1250.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/org.eclipse.smarthome.config.discovery/0.10.0.201803311938/org.eclipse.smarthome.config.discovery-0.10.0.201803311938.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/org.eclipse.smarthome.core.thing/0.10.0.201803311938/org.eclipse.smarthome.core.thing-0.10.0.201803311938.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/org.eclipse.smarthome.io.console/0.10.0.201803311938/org.eclipse.smarthome.io.console-0.10.0.201803311938.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/org.apache.commons.io/2.2.0.v201405211200/org.apache.commons.io-2.2.0.v201405211200.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/tec.uom.lib.uom-lib-common/1.0.2/tec.uom.lib.uom-lib-common-1.0.2.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/tec.uom.se/1.0.8/tec.uom.se-1.0.8.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/org.apache.commons.collections/3.2.0.v2013030210310/org.apache.commons.collections-3.2.0.v2013030210310.jar"/>
-	<classpathentry kind="lib" path="lib/jd2xx.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/com.neuronrobotics.nrjavaserial/3.12.0.OH/com.neuronrobotics.nrjavaserial-3.12.0.OH.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPOSITORY/p2/osgi/bundle/org.eclipse.jdt.annotation/2.1.100.v20170511-1408/org.eclipse.jdt.annotation-2.1.100.v20170511-1408.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

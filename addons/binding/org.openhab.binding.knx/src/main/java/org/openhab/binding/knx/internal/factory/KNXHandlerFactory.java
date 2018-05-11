@@ -34,7 +34,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Simon Kaufmann - Initial contribution and API
  */
-@Component(service = ThingHandlerFactory.class)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.knx")
 public class KNXHandlerFactory extends BaseThingHandlerFactory {
 
     public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_DEVICE,

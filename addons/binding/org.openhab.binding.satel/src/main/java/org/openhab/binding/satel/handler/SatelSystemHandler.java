@@ -50,7 +50,7 @@ public class SatelSystemHandler extends SatelThingHandler {
                     CHANNEL_ACU100_PRESENT, CHANNEL_INTRX_PRESENT, CHANNEL_GRADE23_SET)
             .collect(Collectors.toSet());
 
-    private Logger logger = LoggerFactory.getLogger(SatelSystemHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SatelSystemHandler.class);
 
     public SatelSystemHandler(Thing thing) {
         super(thing);

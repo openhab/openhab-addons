@@ -11,47 +11,45 @@ package org.openhab.binding.avmfritz.internal.discovery;
 import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.avmfritz.BindingConstants;
-import org.openhab.binding.avmfritz.handler.BoxHandler;
-import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
+import org.openhab.binding.avmfritz.handler.AVMFritzBaseBridgeHandler;
+import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
+import org.openhab.binding.avmfritz.internal.ahamodel.GroupModel;
+import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaDiscoveryCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Discover all AHA (AVM Home Automation) devices connected to a FRITZ!Box
- * device.
+ * Discover all AHA (AVM Home Automation) devices connected to a FRITZ!Box device.
  *
  * @author Robert Bausdorf - Initial contribution
- *
+ * @author Christoph Weitkamp - Added support for groups
  */
 public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
 
-    /**
-     * Logger
-     */
     private final Logger logger = LoggerFactory.getLogger(AVMFritzDiscoveryService.class);
 
     /**
      * Maximum time to search for devices.
      */
     private static final int SEARCH_TIME = 30;
-
     /**
      * Initial delay in s for scanning job.
      */
     private static final int INITIAL_DELAY = 5;
-
     /**
      * Scan interval in s for scanning job.
      */
@@ -59,14 +57,17 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
     /**
      * Handler of the bridge of which devices have to be discovered.
      */
-    private BoxHandler bridgeHandler;
+    private AVMFritzBaseBridgeHandler bridgeHandler;
     /**
      * Schedule for scanning
      */
     private ScheduledFuture<?> scanningJob;
 
-    public AVMFritzDiscoveryService(BoxHandler bridgeHandler) {
-        super(BindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME);
+    public AVMFritzDiscoveryService(AVMFritzBaseBridgeHandler bridgeHandler) {
+        super(Collections.unmodifiableSet(
+                Stream.concat(SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(), SUPPORTED_GROUP_THING_TYPES_UIDS.stream())
+                        .collect(Collectors.toSet())),
+                SEARCH_TIME);
         logger.debug("initialize discovery service");
         this.bridgeHandler = bridgeHandler;
         if (bridgeHandler == null) {
@@ -85,10 +86,11 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
      */
     @Override
     public void startScan() {
-        if (bridgeHandler.getWebInterface() != null) {
+        FritzAhaWebInterface webInterface = bridgeHandler.getWebInterface();
+        if (webInterface != null) {
             logger.debug("start manual scan on bridge {}", bridgeHandler.getThing().getUID());
-            FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(bridgeHandler.getWebInterface(), this);
-            bridgeHandler.getWebInterface().asyncGet(callback);
+            FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(webInterface, this);
+            webInterface.asyncGet(callback);
         }
     }
 
@@ -106,14 +108,12 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
      *
      * @param device Device model received from a FRITZ!Box
      */
-    public void onDeviceAddedInternal(DeviceModel device) {
-        ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID,
-                device.getProductName().replaceAll("[^a-zA-Z0-9_]", "_"));
+    public void onDeviceAddedInternal(AVMFritzBaseModel device) {
+        ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, bridgeHandler.getThingTypeId(device));
 
-        if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
+        if (getSupportedThingTypes().contains(thingTypeUID)) {
             ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID,
-                    device.getIdentifier().replaceAll("[^a-zA-Z0-9_]", "_"));
+            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, bridgeHandler.getThingName(device));
 
             Map<String, Object> properties = new HashMap<>();
             properties.put(THING_AIN, device.getIdentifier());
@@ -121,6 +121,10 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
             properties.put(PROPERTY_MODEL_ID, device.getDeviceId());
             properties.put(PROPERTY_SERIAL_NUMBER, device.getIdentifier());
             properties.put(PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
+            if (device instanceof GroupModel && ((GroupModel) device).getGroupinfo() != null) {
+                properties.put(PROPERTY_MASTER, ((GroupModel) device).getGroupinfo().getMasterdeviceid());
+                properties.put(PROPERTY_MEMBERS, ((GroupModel) device).getGroupinfo().getMembers());
+            }
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withRepresentationProperty(THING_AIN).withBridge(bridgeUID).withLabel(device.getName()).build();
@@ -138,14 +142,8 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
     protected void startBackgroundDiscovery() {
         if (scanningJob == null || scanningJob.isCancelled()) {
             logger.debug("start background scanning job at intervall {}s", SCAN_INTERVAL);
-            scanningJob = scheduler.scheduleWithFixedDelay(() -> {
-                if (bridgeHandler.getWebInterface() != null) {
-                    logger.debug("start background scan on bridge {}", bridgeHandler.getThing().getUID());
-                    FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(bridgeHandler.getWebInterface(),
-                            this);
-                    bridgeHandler.getWebInterface().asyncGet(callback);
-                }
-            }, INITIAL_DELAY, SCAN_INTERVAL, TimeUnit.SECONDS);
+            scanningJob = scheduler.scheduleWithFixedDelay(this::startScan, INITIAL_DELAY, SCAN_INTERVAL,
+                    TimeUnit.SECONDS);
         } else {
             logger.debug("scanningJob active");
         }

@@ -20,7 +20,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.amazondashbutton.handler.AmazonDashButtonHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link AmazonDashButtonHandlerFactory} is responsible for creating things and thing
@@ -28,7 +27,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  *
  * @author Oliver Libutzki - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.amazondashbutton", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.amazondashbutton")
 public class AmazonDashButtonHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(DASH_BUTTON_THING_TYPE);

@@ -12,7 +12,7 @@ import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.nest.NestBindingConstants.*;
 
-import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author David Bennett - Initial Contribution
  * @author Wouter Born - Handle channel refresh command
  */
+@NonNullByDefault
 public class NestSmokeDetectorHandler extends NestBaseHandler<SmokeDetector> {
     private final Logger logger = LoggerFactory.getLogger(NestSmokeDetectorHandler.class);
 
@@ -41,19 +42,20 @@ public class NestSmokeDetectorHandler extends NestBaseHandler<SmokeDetector> {
     protected State getChannelState(ChannelUID channelUID, SmokeDetector smokeDetector) {
         switch (channelUID.getId()) {
             case CHANNEL_CO_ALARM_STATE:
-                return new StringType(smokeDetector.getCoAlarmState().toString());
+                return getAsStringTypeOrNull(smokeDetector.getCoAlarmState());
             case CHANNEL_LAST_CONNECTION:
                 return getAsDateTimeTypeOrNull(smokeDetector.getLastConnection());
             case CHANNEL_LAST_MANUAL_TEST_TIME:
                 return getAsDateTimeTypeOrNull(smokeDetector.getLastManualTestTime());
             case CHANNEL_LOW_BATTERY:
-                return getAsOnOffType(smokeDetector.getBatteryHealth() == BatteryHealth.REPLACE);
+                return getAsOnOffTypeOrNull(smokeDetector.getBatteryHealth() == null ? null
+                        : smokeDetector.getBatteryHealth() == BatteryHealth.REPLACE);
             case CHANNEL_MANUAL_TEST_ACTIVE:
-                return getAsOnOffType(smokeDetector.isManualTestActive());
+                return getAsOnOffTypeOrNull(smokeDetector.isManualTestActive());
             case CHANNEL_SMOKE_ALARM_STATE:
-                return new StringType(smokeDetector.getSmokeAlarmState().toString());
+                return getAsStringTypeOrNull(smokeDetector.getSmokeAlarmState());
             case CHANNEL_UI_COLOR_STATE:
-                return new StringType(smokeDetector.getUiColorState().toString());
+                return getAsStringTypeOrNull(smokeDetector.getUiColorState());
             default:
                 logger.error("Unsupported channelId '{}'", channelUID.getId());
                 return UnDefType.UNDEF;
@@ -66,8 +68,9 @@ public class NestSmokeDetectorHandler extends NestBaseHandler<SmokeDetector> {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (REFRESH.equals(command)) {
-            if (getLastUpdate() != null) {
-                updateState(channelUID, getChannelState(channelUID, getLastUpdate()));
+            SmokeDetector lastUpdate = getLastUpdate();
+            if (lastUpdate != null) {
+                updateState(channelUID, getChannelState(channelUID, lastUpdate));
             }
         }
     }
@@ -83,7 +86,8 @@ public class NestSmokeDetectorHandler extends NestBaseHandler<SmokeDetector> {
 
         setLastUpdate(smokeDetector);
         updateChannels(smokeDetector);
-        updateStatus(smokeDetector.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+        updateStatus(smokeDetector.isOnline() == null ? ThingStatus.UNKNOWN
+                : smokeDetector.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
         updateProperty(PROPERTY_FIRMWARE_VERSION, smokeDetector.getSoftwareVersion());
     }
 

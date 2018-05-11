@@ -10,7 +10,7 @@ package org.openhab.binding.nest.handler;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
+import org.openhab.binding.nest.test.NestTestBridgeHandler;
 
 /**
  * Tests cases for {@link NestBridgeHandler}.
@@ -51,13 +52,7 @@ public class NestBridgeHandlerTest {
     public void setUp() {
         initMocks(this);
 
-        handler = new NestBridgeHandler(bridge) {
-            @Override
-            protected NestRedirectUrlSupplier getRedirectUrlSupplier() {
-                // we don't want to put extra load on real Nest servers when running unit tests
-                return redirectUrlSupplier;
-            }
-        };
+        handler = new NestTestBridgeHandler(bridge, "http://localhost");
         handler.setCallback(callback);
     }
 

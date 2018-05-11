@@ -29,7 +29,6 @@ import org.openhab.binding.onkyo.handler.OnkyoHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Paul Frank - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.onkyo", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.onkyo")
 public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(OnkyoHandlerFactory.class);
@@ -52,7 +51,7 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
     private NetworkAddressService networkAddressService;
 
     // url (scheme+server+port) to use for playing notification sounds
-    private String callbackUrl = null;
+    private String callbackUrl;
 
     @Override
     protected void activate(ComponentContext componentContext) {
@@ -68,7 +67,6 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
@@ -77,7 +75,7 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
             if (callbackUrl != null) {
                 @SuppressWarnings("unchecked")
                 ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                        .registerService(AudioSink.class.getName(), handler, new Hashtable<String, Object>());
+                        .registerService(AudioSink.class.getName(), handler, new Hashtable<>());
                 audioSinkRegistrations.put(thing.getUID().toString(), reg);
             }
             return handler;

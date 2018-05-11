@@ -10,11 +10,20 @@ package org.openhab.binding.nest.handler;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
 
+import javax.measure.Quantity;
+import javax.measure.Unit;
+
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -44,15 +53,17 @@ import org.slf4j.LoggerFactory;
  *
  * @param <T> the type of update data
  */
+@NonNullByDefault
 abstract class NestBaseHandler<T> extends BaseThingHandler implements NestDeviceDataListener, NestIdentifiable {
     private final Logger logger = LoggerFactory.getLogger(NestBaseHandler.class);
-    private T lastUpdate;
+
+    private @Nullable T lastUpdate;
 
     NestBaseHandler(Thing thing) {
         super(thing);
     }
 
-    protected T getLastUpdate() {
+    protected @Nullable T getLastUpdate() {
         return lastUpdate;
     }
 
@@ -76,20 +87,22 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestDevice
 
     @Override
     public void dispose() {
-        if (getNestBridgeHandler() != null) {
-            getNestBridgeHandler().removeDeviceDataListener(this);
+        NestBridgeHandler handler = getNestBridgeHandler();
+        if (handler != null) {
+            handler.removeDeviceDataListener(this);
         }
     }
 
-    protected void addUpdateRequest(String updateUrl, String field, Object value) {
-        if (getNestBridgeHandler() != null) {
-        // @formatter:off
-        getNestBridgeHandler().addUpdateRequest(new NestUpdateRequest.Builder()
-            .withBaseUrl(updateUrl)
-            .withIdentifier(getId())
-            .withAdditionalValue(field, value)
-            .build());
-        // @formatter:on
+    protected void addUpdateRequest(String updatePath, String field, Object value) {
+        NestBridgeHandler handler = getNestBridgeHandler();
+        if (handler != null) {
+            // @formatter:off
+            handler.addUpdateRequest(new NestUpdateRequest.Builder()
+                .withBasePath(updatePath)
+                .withIdentifier(getId())
+                .withAdditionalValue(field, value)
+                .build());
+            // @formatter:on
         }
     }
 
@@ -102,14 +115,14 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestDevice
         return getConfigAs(NestDeviceConfiguration.class).deviceId;
     }
 
-    protected NestBridgeHandler getNestBridgeHandler() {
+    protected @Nullable NestBridgeHandler getNestBridgeHandler() {
         Bridge bridge = getBridge();
         return bridge != null ? (NestBridgeHandler) bridge.getHandler() : null;
     }
 
     protected abstract State getChannelState(ChannelUID channelUID, T data);
 
-    protected State getAsDateTimeTypeOrNull(Date date) {
+    protected State getAsDateTimeTypeOrNull(@Nullable Date date) {
         if (date == null) {
             return UnDefType.NULL;
         }
@@ -119,12 +132,24 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestDevice
         return new DateTimeType(ZonedDateTime.ofInstant(instant, TimeZone.getDefault().toZoneId()));
     }
 
-    protected OnOffType getAsOnOffType(boolean value) {
-        return value ? OnOffType.ON : OnOffType.OFF;
+    protected State getAsDecimalTypeOrNull(@Nullable Integer value) {
+        return value == null ? UnDefType.NULL : new DecimalType(value);
     }
 
-    protected State getAsStringTypeOrNull(Object value) {
+    protected State getAsOnOffTypeOrNull(@Nullable Boolean value) {
+        return value == null ? UnDefType.NULL : value ? OnOffType.ON : OnOffType.OFF;
+    }
+
+    protected <U extends Quantity<U>> State getAsQuantityTypeOrNull(@Nullable Number value, Unit<U> unit) {
+        return value == null ? UnDefType.NULL : new QuantityType<U>(value, unit);
+    }
+
+    protected State getAsStringTypeOrNull(@Nullable Object value) {
         return value == null ? UnDefType.NULL : new StringType(value.toString());
+    }
+
+    protected State getAsStringTypeListOrNull(@Nullable Collection<? extends Object> values) {
+        return values == null || values.isEmpty() ? UnDefType.NULL : new StringType(StringUtils.join(values, ","));
     }
 
     protected boolean isNotHandling(NestIdentifiable nestIdentifiable) {
