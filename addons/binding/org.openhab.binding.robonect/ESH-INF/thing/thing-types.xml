@@ -29,9 +29,18 @@
 			<channel id="error-message" typeId="errorMessageType"/>
 			<channel id="error-date" typeId="errorDateType"/>
 
-			<channel id="last-error-code" typeId="errorCodeType"/>
-			<channel id="last-error-message" typeId="errorMessageType"/>
-			<channel id="last-error-date" typeId="errorDateType"/>
+			<channel id="last-error-code" typeId="errorCodeType">
+				<label>Last Error Code</label>
+				<description>The Error code of the last error occurred</description>
+			</channel>
+			<channel id="last-error-message" typeId="errorMessageType">
+				<label>Last Error Message</label>
+				<description>The error message of the last error occurred</description>
+			</channel>
+			<channel id="last-error-date" typeId="errorDateType">
+				<label>Last Error Date</label>
+				<description>The date and time of the last error occurred</description>
+			</channel>
 
 			<channel id="health-temperature" typeId="temperatureType"/>
 			<channel id="health-humidity" typeId="humidityType"/>

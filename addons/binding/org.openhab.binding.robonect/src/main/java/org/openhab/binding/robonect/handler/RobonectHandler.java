@@ -89,8 +89,9 @@ public class RobonectHandler extends BaseThingHandler {
 
     private RobonectClient robonectClient;
 
-    public RobonectHandler(Thing thing) {
+    public RobonectHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
     }
 
 
@@ -344,7 +345,6 @@ public class RobonectHandler extends BaseThingHandler {
         RobonectConfig robonectConfig = getConfigAs(RobonectConfig.class);
         RobonectEndpoint endpoint = new RobonectEndpoint(robonectConfig.getHost(), robonectConfig.getUser(),
                 robonectConfig.getPassword());
-        httpClient = new HttpClient();
         try {
             httpClient.start();
             robonectClient = new RobonectClient(httpClient, endpoint);

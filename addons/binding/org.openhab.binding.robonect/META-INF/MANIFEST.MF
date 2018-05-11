@@ -15,6 +15,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
  org.slf4j,
  org.eclipse.jetty.client,
  org.eclipse.jetty.client.util,
