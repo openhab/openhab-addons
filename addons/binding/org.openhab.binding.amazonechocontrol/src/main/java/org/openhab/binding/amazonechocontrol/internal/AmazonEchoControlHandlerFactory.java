@@ -76,7 +76,7 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.DYNAMIC)
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
     protected void setDiscoverService(DiscoveryService discoverService) {
         if (discoverService instanceof AmazonEchoDiscovery) {
             amazonEchoDiscovery = (AmazonEchoDiscovery) discoverService;
