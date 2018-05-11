@@ -177,6 +177,7 @@ public class AutelisHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("handleCommand channel: {} command: {}", channelUID.getId(), command);
         if (channelUID.getId().equals("lightscmd")) {
             /*
              * lighting command possible values, but we will let anything
