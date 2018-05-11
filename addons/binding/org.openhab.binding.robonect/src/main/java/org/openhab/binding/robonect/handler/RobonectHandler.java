@@ -349,8 +349,8 @@ public class RobonectHandler extends BaseThingHandler {
             httpClient.start();
             robonectClient = new RobonectClient(httpClient, endpoint);
         } catch (Exception e) {
-            logger.error("Exception when trying to initialize", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.error("Exception while trying to start http client", e);
+            throw new RuntimeException("Exception while trying to start http client", e);
         }
         Runnable runnable = new MowerChannelPoller(TimeUnit.SECONDS.toMillis(robonectConfig.getOfflineTimeout()));
         int pollInterval = robonectConfig.getPollInterval();
