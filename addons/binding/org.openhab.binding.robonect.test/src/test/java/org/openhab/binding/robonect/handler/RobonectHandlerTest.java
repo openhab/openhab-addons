@@ -10,6 +10,7 @@ package org.openhab.binding.robonect.handler;
 
 import java.util.Calendar;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -64,11 +65,14 @@ public class RobonectHandlerTest {
 
     @Mock
     private ThingHandlerCallback callbackMock;
+    
+    @Mock
+    private HttpClient httpClientMock;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        subject = new RobonectHandler(robonectThingMock);
+        subject = new RobonectHandler(robonectThingMock, httpClientMock);
         subject.setCallback(callbackMock);
         subject.setRobonectClient(robonectClientMock);
     }
