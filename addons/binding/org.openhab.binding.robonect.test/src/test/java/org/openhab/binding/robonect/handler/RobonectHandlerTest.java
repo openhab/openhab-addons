@@ -282,7 +282,7 @@ public class RobonectHandlerTest {
                 .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS_MODE)),
                         stateCaptorMode.capture());
         verify(callbackMock, times(1)).stateUpdated(
-                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_MOWER_STATUS_STARTED)),
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_MOWER_START)),
                 stateCaptorStarted.capture());
         verify(callbackMock, times(1))
                 .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_WLAN_SIGNAL)),
