@@ -33,7 +33,7 @@ public class ModeCommand implements Command {
     public enum Mode {
         HOME(1),
         EOD(2),
-        MAN(3),
+        MANUAL(3),
         AUTO(4),
         JOB(5);
 
@@ -152,7 +152,7 @@ public class ModeCommand implements Command {
         sb.append(mode.name().toLowerCase());
         switch (mode){
             case EOD:
-            case MAN:
+            case MANUAL:
             case AUTO:
             case HOME:
                 break;

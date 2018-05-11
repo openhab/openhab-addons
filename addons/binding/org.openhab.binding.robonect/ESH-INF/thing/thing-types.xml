@@ -21,10 +21,7 @@
 			<channel id="timer-status" typeId="timerStatusType"/>
 			<channel id="timer-next" typeId="nextTimerType"/>
 
-			<channel id="job-remote-start" typeId="remoteStartType"/>
-			<channel id="job-after-mode" typeId="modeType"/>
-			<channel id="job-start" typeId="startTimeType"/>
-			<channel id="job-end" typeId="endTimeType"/>
+			<channel id="job" typeId="jobType"/>
 
 			<channel id="offlineTrigger" typeId="offlineTriggerType"/>
 
@@ -146,36 +143,15 @@
 				<option value="HOME">Home</option>
 				<option value="MANUAL">Manual</option>
 				<option value="EOD">End of Day</option>
-				<option value="JOB">Job</option>
 			</options>
 		</state>
 	</channel-type>
 
-	<channel-type id="remoteStartType">
-		<item-type>String</item-type>
-		<label>Remote Start</label>
-		<description>The mower mode</description>
-		<state readOnly="false">
-			<options>
-				<option value="STANDARD">Standard</option>
-				<option value="REMOTE_1">Remote 1</option>
-				<option value="REMOTE_2">Remote 2</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="startTimeType">
-		<item-type>DateTime</item-type>
-		<label>The start time for a mowing job</label>
-		<description>The time to start the job</description>
-		<state readOnly="false" pattern="hh:mm"/>
-	</channel-type>
-
-	<channel-type id="endTimeType">
-		<item-type>DateTime</item-type>
-		<label>The end time for a mowing job</label>
-		<description>The time the job should end</description>
-		<state readOnly="false" pattern="hh:mm"/>
+	<channel-type id="jobType">
+		<item-type>Switch</item-type>
+		<label>Mowing Job</label>
+		<description>Starts a mowing job</description>
+		<config-description-ref uri="channel-type:job:config" />
 	</channel-type>
 
 	<channel-type id="timerStatusType">

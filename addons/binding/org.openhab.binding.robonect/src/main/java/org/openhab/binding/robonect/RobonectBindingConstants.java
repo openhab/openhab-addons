@@ -36,10 +36,7 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_TIMER_NEXT_TIMER = "timer-next";
     public static final String CHANNEL_WLAN_SIGNAL = "wlan-signal";
     
-    public static final String CHANNEL_JOB_REMOTE_START = "job-remote-start";
-    public static final String CHANNEL_JOB_AFTER_MODE = "job-after-mode";
-    public static final String CHANNEL_JOB_START = "job-start";
-    public static final String CHANNEL_JOB_END = "job-end";
+    public static final String CHANNEL_JOB = "job";
     
     public static final String CHANNEL_ERROR_CODE = "error-code";
     public static final String CHANNEL_ERROR_MESSAGE = "error-message";
