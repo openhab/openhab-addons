@@ -283,7 +283,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             if (StringUtils.isNotEmpty(path)) {
                 connection.playURI(path);
             } else if (StringUtils.isNotEmpty(windowParameter)) {
-                final String[] windowParameters = { windowParameter };
+                String[] windowParameters = { windowParameter };
                 connection.activateWindow(favorite.getWindow(), windowParameters);
             } else {
                 connection.activateWindow(favorite.getWindow());
