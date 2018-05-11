@@ -59,7 +59,7 @@ import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_LAST
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_LAST_ERROR_MESSAGE;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_MOWER_NAME;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_MOWER_STATUS_OFFLINE_TRIGGER;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_MOWER_STATUS_STARTED;
+import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_MOWER_START;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS_BATTERY;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS_DURATION;
@@ -130,7 +130,7 @@ public class RobonectHandler extends BaseThingHandler {
                 }
                 break;
 
-            case CHANNEL_MOWER_STATUS_STARTED:
+            case CHANNEL_MOWER_START:
                 if (command instanceof OnOffType) {
                     handleStartStop((OnOffType) command);
                 } else {
@@ -172,7 +172,7 @@ public class RobonectHandler extends BaseThingHandler {
             case CHANNEL_STATUS_DURATION:
             case CHANNEL_STATUS_HOURS:
             case CHANNEL_STATUS_MODE:
-            case CHANNEL_MOWER_STATUS_STARTED:
+            case CHANNEL_MOWER_START:
             case CHANNEL_TIMER_NEXT_TIMER:
             case CHANNEL_TIMER_STATUS:
             case CHANNEL_WLAN_SIGNAL:
@@ -215,7 +215,7 @@ public class RobonectHandler extends BaseThingHandler {
         }
         if (answer != null) {
             if (answer.isSuccessful()) {
-                updateState(CHANNEL_MOWER_STATUS_STARTED, command);
+                updateState(CHANNEL_MOWER_START, command);
             } else {
                 logErrorFromResponse(answer);
                 refreshMowerInfo();
@@ -249,7 +249,7 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_STATUS_DURATION, new QuantityType<>(info.getStatus().getDuration(), SIUnits.SECOND));
             updateState(CHANNEL_STATUS_HOURS, new QuantityType<>(info.getStatus().getHours(), SIUnits.HOUR));
             updateState(CHANNEL_STATUS_MODE, new StringType(info.getStatus().getMode().name()));
-            updateState(CHANNEL_MOWER_STATUS_STARTED, info.getStatus().isStopped() ? OnOffType.OFF : OnOffType.ON);
+            updateState(CHANNEL_MOWER_START, info.getStatus().isStopped() ? OnOffType.OFF : OnOffType.ON);
             if (info.getHealth() != null) {
                 updateState(CHANNEL_HEALTH_TEMP,
                     new QuantityType<>(info.getHealth().getTemperature(), SIUnits.CELSIUS));

@@ -30,7 +30,7 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_STATUS_HOURS = "mowing-hours";
     public static final String CHANNEL_STATUS_MODE = "mode";
     public static final String CHANNEL_STATUS = "status";
-    public static final String CHANNEL_MOWER_STATUS_STARTED = "started";
+    public static final String CHANNEL_MOWER_START = "start";
     public static final String CHANNEL_MOWER_STATUS_OFFLINE_TRIGGER = "offlineTrigger";
     public static final String CHANNEL_TIMER_STATUS = "timer-status";
     public static final String CHANNEL_TIMER_NEXT_TIMER = "timer-next";

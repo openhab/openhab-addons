@@ -14,7 +14,7 @@
 			<channel id="mowing-hours" typeId="hoursType"/>
 
 			<channel id="mode" typeId="modeType"/>
-			<channel id="started" typeId="startedType"/>
+			<channel id="start" typeId="startType"/>
 			<channel id="status" typeId="mowerStatusType"/>
 			<channel id="status-duration" typeId="durationType"/>
 			
@@ -197,10 +197,10 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="startedType">
+	<channel-type id="startType">
 		<item-type>Switch</item-type>
-		<label>Mower started</label>
-		<description>The mower was started</description>
+		<label>Start</label>
+		<description>On if started, Off if stopped</description>
 		<state readOnly="false"/>
 	</channel-type>
 
