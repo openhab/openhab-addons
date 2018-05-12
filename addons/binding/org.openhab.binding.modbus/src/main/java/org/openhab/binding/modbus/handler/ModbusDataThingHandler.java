@@ -229,7 +229,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         final Collection<ModbusWriteRequestBlueprint> requests;
         try {
             requests = WriteRequestJsonUtilities.fromJson(slaveId, transformOutput);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.warn(
                     "Thing {} '{}' could handle transformation result '{}'. Original command {}. Error details follow",
                     getThing().getUID(), getThing().getLabel(), transformOutput, command, e);
@@ -301,7 +301,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 return;
             }
             updateStatus(ThingStatus.ONLINE);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error("Exception during initialization", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
                     .format("Exception during initialization: %s (%s)", e.getMessage(), e.getClass().getSimpleName()));

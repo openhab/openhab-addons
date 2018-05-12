@@ -153,7 +153,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         }
 
         public ModbusPollerReadRequest(ModbusPollerConfiguration config,
-                ModbusEndpointThingHandler slaveEndpointThingHandler) {
+                ModbusEndpointThingHandler slaveEndpointThingHandler) throws EndpointNotInitializedException {
             super(slaveEndpointThingHandler.getSlaveId(), getFunctionCode(config.getType()), config.getStart(),
                     config.getLength(), config.getMaxTries());
         }
@@ -213,11 +213,11 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
             try {
                 config = getConfigAs(ModbusPollerConfiguration.class);
                 registerPollTask();
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                         "Exception during initialization: %s (%s)", e.getMessage(), e.getClass().getSimpleName()));
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error("Exception during initialization", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
                     .format("Exception during initialization: %s (%s)", e.getMessage(), e.getClass().getSimpleName()));
@@ -253,9 +253,12 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
 
     /**
      * Register poll task
+     *
+     * @throws EndpointNotInitializedException in case the bridge initialization is not complete. This should only
+     *             happen in transient conditions, for example, when bridge is initializing.
      */
     @SuppressWarnings("null")
-    private synchronized void registerPollTask() {
+    private synchronized void registerPollTask() throws EndpointNotInitializedException {
         logger.trace("registerPollTask()");
         if (pollTask != null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);

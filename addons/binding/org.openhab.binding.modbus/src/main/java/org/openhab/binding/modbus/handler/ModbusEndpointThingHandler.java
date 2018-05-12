@@ -34,9 +34,9 @@ public interface ModbusEndpointThingHandler {
      * Get Slave ID, also called as unit id, represented by the thing
      *
      * @return
-     * @throws IllegalStateException in case the initialization is not complete
+     * @throws EndpointNotInitializedException in case the initialization is not complete
      */
-    public int getSlaveId() throws IllegalStateException;
+    public int getSlaveId() throws EndpointNotInitializedException;
 
     /**
      * Get {@link ModbusManager} supplier
