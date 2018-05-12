@@ -159,7 +159,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         }
     }
 
-    private Logger logger = LoggerFactory.getLogger(ModbusPollerThingHandlerImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(ModbusPollerThingHandlerImpl.class);
 
     private ModbusPollerConfiguration config;
     private volatile PollTask pollTask;
