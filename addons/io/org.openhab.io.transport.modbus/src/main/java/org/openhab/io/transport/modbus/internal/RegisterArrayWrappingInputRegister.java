@@ -19,7 +19,7 @@ import net.wimpi.modbus.procimg.InputRegister;
 /**
  * Implementation of {@link ModbusRegisterArray} which wraps array of {@link InputRegister}
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public class RegisterArrayWrappingInputRegister implements ModbusRegisterArray {
 

@@ -15,7 +15,7 @@ import net.wimpi.modbus.util.BitVector;
 /**
  * BitArray implementation which wraps {@link BitVector}
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public class BitArrayWrappingBitVector implements BitArray {
 

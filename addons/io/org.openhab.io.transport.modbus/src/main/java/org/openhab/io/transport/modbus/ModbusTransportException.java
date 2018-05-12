@@ -11,7 +11,7 @@ package org.openhab.io.transport.modbus;
 /**
  * Base exception for all exceptions in Modbus transport bundle
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public class ModbusTransportException extends Exception {

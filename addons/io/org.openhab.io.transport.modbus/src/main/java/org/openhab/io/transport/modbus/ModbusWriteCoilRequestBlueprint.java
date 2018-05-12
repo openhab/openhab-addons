@@ -11,7 +11,7 @@ package org.openhab.io.transport.modbus;
 /**
  * Write request for coils
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public interface ModbusWriteCoilRequestBlueprint extends ModbusWriteRequestBlueprint {

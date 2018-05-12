@@ -11,7 +11,7 @@ package org.openhab.io.transport.modbus;
 /**
  * Low-level interface representing a read request
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public interface ModbusReadRequestBlueprint extends ModbusRequestBlueprint {

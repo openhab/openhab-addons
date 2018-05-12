@@ -14,7 +14,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 /**
  * Implementation for writing coils
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public class ModbusWriteCoilRequestBlueprintImpl implements ModbusWriteCoilRequestBlueprint {
@@ -28,7 +28,7 @@ public class ModbusWriteCoilRequestBlueprintImpl implements ModbusWriteCoilReque
     /**
      * Implementation of {@link BitArray} with single bit as data
      *
-     * @author Sami Salonen
+     * @author Sami Salonen - Initial contribution
      *
      */
     private static class SingleBitArray extends BitArrayImpl {

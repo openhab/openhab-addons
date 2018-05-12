@@ -21,7 +21,7 @@ package org.openhab.io.transport.modbus.endpoint;
 /**
  * Endpoint for UDP slaves
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public class ModbusUDPSlaveEndpoint extends ModbusIPSlaveEndpoint {

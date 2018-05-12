@@ -21,7 +21,7 @@ import org.openhab.io.transport.modbus.ModbusManager.PollTask;
  * if they have
  * the equal parameters (same slave id, start, length, function code and maxTries).
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public class ModbusReadRequestBlueprintImpl implements ModbusReadRequestBlueprint {

@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 /**
  * Interface for immutable sequence of Modbus registers
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public interface ModbusRegisterArray extends Iterable<ModbusRegister> {
     /**

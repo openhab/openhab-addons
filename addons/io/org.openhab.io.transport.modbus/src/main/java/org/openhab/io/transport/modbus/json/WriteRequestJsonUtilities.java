@@ -32,7 +32,7 @@ import com.google.gson.JsonParser;
  * Utilities for converting JSON to {@link ModbusWriteRequestBlueprint}
  *
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public final class WriteRequestJsonUtilities {
     /**

@@ -11,7 +11,7 @@ package org.openhab.io.transport.modbus;
 /**
  * Modbus read function codes supported by this transport
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public enum ModbusReadFunctionCode {
     READ_COILS,

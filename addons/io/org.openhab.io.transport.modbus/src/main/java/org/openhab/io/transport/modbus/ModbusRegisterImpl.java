@@ -13,7 +13,7 @@ import net.wimpi.modbus.procimg.SimpleInputRegister;
 /**
  * Basic {@link ModbusRegister} implementation
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public class ModbusRegisterImpl implements ModbusRegister {
 

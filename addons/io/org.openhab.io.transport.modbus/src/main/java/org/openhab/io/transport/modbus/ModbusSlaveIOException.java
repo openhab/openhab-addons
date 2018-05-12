@@ -11,7 +11,7 @@ package org.openhab.io.transport.modbus;
 /**
  * Exception for all IO errors
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public class ModbusSlaveIOException extends ModbusTransportException {

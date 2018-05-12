@@ -14,7 +14,7 @@ import java.util.BitSet;
  * Class that implements a collection for
  * bits
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public class BitArrayImpl implements BitArray {
 

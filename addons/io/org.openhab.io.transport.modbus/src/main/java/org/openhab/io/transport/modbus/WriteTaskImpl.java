@@ -16,7 +16,7 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 /**
  * Simple implementation for Modbus write requests
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public class WriteTaskImpl implements WriteTask {

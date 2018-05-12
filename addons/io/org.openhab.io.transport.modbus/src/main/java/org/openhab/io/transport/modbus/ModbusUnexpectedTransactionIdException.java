@@ -21,7 +21,7 @@ package org.openhab.io.transport.modbus;
 /**
  * Exception representing situation where transaction id of the response does not match request
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 @SuppressWarnings("serial")

@@ -11,7 +11,7 @@ package org.openhab.io.transport.modbus;
 /**
  * Interface for read callbacks
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public interface ModbusReadCallback extends ModbusCallback {
 

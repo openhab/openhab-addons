@@ -13,7 +13,7 @@ package org.openhab.io.transport.modbus;
  * ModbusWriteRequestBlueprintVisitor interface.
  * </p>
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public interface ModbusWriteRequestBlueprintVisitor {
 

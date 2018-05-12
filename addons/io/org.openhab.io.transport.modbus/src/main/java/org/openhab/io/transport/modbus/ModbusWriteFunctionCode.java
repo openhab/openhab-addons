@@ -17,7 +17,7 @@ import net.wimpi.modbus.Modbus;
 /**
  * Modbus write function codes supported by this transport
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public enum ModbusWriteFunctionCode {
     WRITE_COIL(Modbus.WRITE_COIL),

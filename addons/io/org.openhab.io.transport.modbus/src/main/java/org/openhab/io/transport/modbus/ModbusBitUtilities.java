@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.types.Command;
 /**
  * Utilities for working with binary data.
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public class ModbusBitUtilities {
 

@@ -17,7 +17,7 @@ package org.openhab.io.transport.modbus.endpoint;
  * Note that, endpoint class might not include all configuration that might be necessary to actually
  * communicate with the slave, just the data that is required to establish the connection.
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public interface ModbusSlaveEndpoint {
     public <R> R accept(ModbusSlaveEndpointVisitor<R> visitor);

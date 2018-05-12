@@ -18,14 +18,14 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 /**
  * ModbusManager is the main interface for interacting with Modbus slaves
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public interface ModbusManager {
 
     /**
      * Common base interface for read and write tasks.
      *
-     * @author Sami Salonen
+     * @author Sami Salonen - Initial contribution
      *
      * @param <R> request type
      * @param <C> callback type
@@ -61,7 +61,7 @@ public interface ModbusManager {
      * Must be hashable. HashCode and equals should be defined such that no two poll tasks are registered that are
      * equal.
      *
-     * @author Sami Salonen
+     * @author Sami Salonen - Initial contribution
      *
      * @see ModbusManager.registerRegularPoll
      */
@@ -77,7 +77,7 @@ public interface ModbusManager {
      *
      * Unlike {@link PollTask}, this does not have to be hashable.
      *
-     * @author Sami Salonen
+     * @author Sami Salonen - Initial contribution
      *
      */
     public interface WriteTask extends TaskWithEndpoint<ModbusWriteRequestBlueprint, ModbusWriteCallback> {

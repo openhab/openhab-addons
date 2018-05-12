@@ -23,7 +23,7 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
  * HashCode and equals should be defined such that two poll tasks considered the same only if their request,
  * maxTries, endpoint and callback are the same.
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public class PollTaskImpl implements PollTask {

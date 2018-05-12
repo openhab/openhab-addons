@@ -11,7 +11,7 @@ package org.openhab.io.transport.modbus;
 /**
  * Exception for explicit exception responses from Modbus slave
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public class ModbusSlaveErrorResponseException extends ModbusTransportException {

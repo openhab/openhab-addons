@@ -11,7 +11,7 @@ package org.openhab.io.transport.modbus;
 /**
  * Base interface for callbacks used in Modbus
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public interface ModbusCallback {
 }

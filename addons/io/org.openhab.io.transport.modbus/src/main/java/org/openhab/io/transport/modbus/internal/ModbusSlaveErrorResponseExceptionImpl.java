@@ -15,7 +15,7 @@ import net.wimpi.modbus.ModbusSlaveException;
 /**
  * Exception for explicit exception responses from Modbus slave
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public class ModbusSlaveErrorResponseExceptionImpl extends ModbusSlaveErrorResponseException {

@@ -15,7 +15,7 @@ import org.eclipse.jdt.annotation.NonNull;
 /**
  * Constants for Modbus transport
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public class ModbusConstants {
@@ -23,7 +23,7 @@ public class ModbusConstants {
     /**
      * Value types for different number types.
      *
-     * @author Sami Salonen
+     * @author Sami Salonen - Initial contribution
      *
      */
     public static enum ValueType {

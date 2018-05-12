@@ -17,7 +17,7 @@ import net.wimpi.modbus.ModbusIOException;
 /**
  * Exception for all IO errors
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public class ModbusSlaveIOExceptionImpl extends ModbusSlaveIOException {

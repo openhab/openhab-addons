@@ -20,7 +20,7 @@ import net.wimpi.modbus.util.SerialParameters;
  *
  * Endpoint contains SerialParameters which should be enough to establish the connection.
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public class ModbusSerialSlaveEndpoint implements ModbusSlaveEndpoint {
 

@@ -13,7 +13,7 @@ import net.wimpi.modbus.Modbus;
 /**
  * Base interface for Modbus write requests
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public interface ModbusWriteRequestBlueprint extends ModbusRequestBlueprint {

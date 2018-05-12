@@ -14,7 +14,7 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 /**
  * Interface for {@link ModbusManager} listeners
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public interface ModbusManagerListener {
 

@@ -11,7 +11,7 @@ package org.openhab.io.transport.modbus;
 /**
  * Interface for write callbacks
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public interface ModbusWriteCallback extends ModbusCallback {
 

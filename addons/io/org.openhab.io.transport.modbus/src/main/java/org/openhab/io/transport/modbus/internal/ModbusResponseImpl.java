@@ -15,7 +15,7 @@ import net.wimpi.modbus.msg.ModbusMessage;
 /**
  * Basic implementation of {@link ModbusResponse}
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public class ModbusResponseImpl implements ModbusResponse {
 

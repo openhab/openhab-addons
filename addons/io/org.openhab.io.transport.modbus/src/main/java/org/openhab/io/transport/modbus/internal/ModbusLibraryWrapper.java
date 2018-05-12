@@ -60,7 +60,7 @@ import net.wimpi.modbus.util.BitVector;
 /**
  * Conversion utilities between underlying Modbus library (net.wimpi.modbus) and this transport bundle
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public class ModbusLibraryWrapper {

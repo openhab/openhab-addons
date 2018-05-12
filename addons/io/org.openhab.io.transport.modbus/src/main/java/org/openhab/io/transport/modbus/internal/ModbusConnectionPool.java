@@ -22,7 +22,7 @@ import net.wimpi.modbus.net.ModbusSlaveConnection;
  *
  * Only one connection is allowed to be active at a time.
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public class ModbusConnectionPool extends GenericKeyedObjectPool<ModbusSlaveEndpoint, ModbusSlaveConnection> {

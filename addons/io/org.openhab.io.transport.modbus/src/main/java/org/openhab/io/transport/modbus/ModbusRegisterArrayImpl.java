@@ -11,7 +11,7 @@ package org.openhab.io.transport.modbus;
 /**
  * Immutable {@link ModbusRegisterArray} implementation
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public class ModbusRegisterArrayImpl implements ModbusRegisterArray {
 

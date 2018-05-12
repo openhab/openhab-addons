@@ -13,7 +13,7 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 /**
  * Exception for connection issues
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 @SuppressWarnings("serial")

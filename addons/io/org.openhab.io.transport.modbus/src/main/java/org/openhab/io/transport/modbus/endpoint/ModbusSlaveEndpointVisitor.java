@@ -12,7 +12,7 @@ package org.openhab.io.transport.modbus.endpoint;
  * Visitor for ModbusSlaveEndpoint
  *
  * @param <R> return type from visit
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public interface ModbusSlaveEndpointVisitor<R> {
 

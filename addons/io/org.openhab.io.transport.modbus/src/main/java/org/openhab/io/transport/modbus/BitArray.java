@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
  * Class that implements a collection for
  * bits
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public interface BitArray extends Iterable<Boolean> {
     /**

@@ -69,7 +69,7 @@ import net.wimpi.modbus.net.ModbusSlaveConnection;
  * important with serial slaves but practice has shown that even many tcp slaves have limited
  * capability to handle many connections at the same time
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 @Component(service = ModbusManager.class, immediate = true, configurationPid = "transport.modbus")
 public class ModbusManagerImpl implements ModbusManager {
@@ -126,7 +126,7 @@ public class ModbusManagerImpl implements ModbusManager {
     /**
      * Implementation for the PollTask operation
      *
-     * @author Sami Salonen
+     * @author Sami Salonen - Initial contribution
      *
      */
     private class PollOperation implements ModbusOperation<PollTask> {
@@ -163,7 +163,7 @@ public class ModbusManagerImpl implements ModbusManager {
     /**
      * Implementation for WriteTask operation
      *
-     * @author Sami Salonen
+     * @author Sami Salonen - Initial contribution
      *
      */
     private class WriteOperation implements ModbusOperation<WriteTask> {

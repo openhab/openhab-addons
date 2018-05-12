@@ -11,7 +11,7 @@ package org.openhab.io.transport.modbus;
 /**
  * Interface for 16 bit Modbus registers.
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  */
 public interface ModbusRegister {
 
