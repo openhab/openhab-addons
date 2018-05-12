@@ -119,5 +119,4 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
             }
         }
     }
-
 }

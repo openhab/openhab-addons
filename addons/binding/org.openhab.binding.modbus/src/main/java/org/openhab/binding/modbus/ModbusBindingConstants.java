@@ -70,5 +70,4 @@ public class ModbusBindingConstants {
         READ_FUNCTION_CODES.put(READ_TYPE_INPUT_REGISTER, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
         READ_FUNCTION_CODES.put(READ_TYPE_HOLDING_REGISTER, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
     }
-
 }
