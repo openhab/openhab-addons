@@ -11,7 +11,7 @@ package org.openhab.binding.modbus.handler;
 import java.util.function.Supplier;
 
 import org.openhab.io.transport.modbus.ModbusManager;
-import org.openhab.io.transport.modbus.ModbusManager.PollTask;
+import org.openhab.io.transport.modbus.PollTask;
 
 /**
  * Interface for poller thing handlers

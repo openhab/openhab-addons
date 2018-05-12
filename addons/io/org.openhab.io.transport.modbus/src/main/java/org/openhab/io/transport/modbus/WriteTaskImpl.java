@@ -10,7 +10,6 @@ package org.openhab.io.transport.modbus;
 
 import org.apache.commons.lang.builder.StandardToStringStyle;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.openhab.io.transport.modbus.ModbusManager.WriteTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 
 /**

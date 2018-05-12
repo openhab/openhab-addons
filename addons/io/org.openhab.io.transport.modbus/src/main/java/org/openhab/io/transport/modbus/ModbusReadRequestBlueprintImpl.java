@@ -12,7 +12,6 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.StandardToStringStyle;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.openhab.io.transport.modbus.ModbusManager.PollTask;
 
 /**
  * Immutable implementation of {@link ModbusReadRequestBlueprint}
