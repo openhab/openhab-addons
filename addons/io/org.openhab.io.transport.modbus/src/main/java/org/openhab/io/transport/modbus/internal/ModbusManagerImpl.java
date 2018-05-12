@@ -667,7 +667,7 @@ public class ModbusManagerImpl implements ModbusManager {
                     millisInThreadPoolWaiting);
             try {
                 executeOperation(task, true, pollOperation);
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 logger.error("Unexpected crash when executing task {}", task, e);
             }
         }, 0L, TimeUnit.MILLISECONDS);
@@ -689,7 +689,7 @@ public class ModbusManagerImpl implements ModbusManager {
                         started);
                 try {
                     executeOperation(task, false, pollOperation);
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     logger.error("Unexpected crash when executing task {}", task, e);
                 }
                 long finished = System.currentTimeMillis();
