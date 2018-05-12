@@ -20,7 +20,7 @@
 			</parameter>
 
 			<!-- serial parameters -->
-			<parameter name="baud" type="integer" required="true" multiple="false">
+			<parameter name="baud" type="integer" multiple="false">
 				<label>Baud</label>
 				<description>Baud of the connection</description>
 				<default>9600</default>
@@ -38,7 +38,7 @@
 					<option value="115200">115200</option>
 				</options>
 			</parameter>
-			<parameter name="stopBits" type="text" required="true" multiple="false">
+			<parameter name="stopBits" type="text" multiple="false">
 				<label>Stop bits</label>
 				<description>Stop bits</description>
 				<default>1.0</default>
@@ -48,7 +48,7 @@
 					<option value="2.0">2</option>
 				</options>
 			</parameter>
-			<parameter name="parity" type="text" required="true" multiple="false">
+			<parameter name="parity" type="text" multiple="false">
 				<label>Parity</label>
 				<description>Parity</description>
 				<default>none</default>
@@ -58,7 +58,7 @@
 					<option value="odd">Odd</option>
 				</options>
 			</parameter>
-			<parameter name="dataBits" type="integer" required="true" multiple="false">
+			<parameter name="dataBits" type="integer" multiple="false">
 				<label>Data bits</label>
 				<description>Data bits</description>
 				<default>8</default>
@@ -69,7 +69,7 @@
 					<option value="8">8</option>
 				</options>
 			</parameter>
-			<parameter name="encoding" type="text" required="true" multiple="false">
+			<parameter name="encoding" type="text" multiple="false">
 				<label>Encoding</label>
 				<description>Encoding</description>
 				<default>rtu</default>
