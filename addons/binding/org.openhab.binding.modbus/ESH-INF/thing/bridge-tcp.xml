@@ -53,8 +53,6 @@
 				<default>10000</default>
 				<advanced>true</advanced>
 			</parameter>
-
 		</config-description>
 	</bridge-type>
-
 </thing:thing-descriptions>

@@ -117,7 +117,6 @@
 				</options>
 			</parameter>
 
-
 			<!-- connection handling -->
 			<parameter name="timeBetweenTransactionsMillis" type="integer" min="0">
 				<label>Time between transactions (ms)</label>
@@ -136,9 +135,6 @@
 				<default>10000</default>
 				<advanced>true</advanced>
 			</parameter>
-
-
 		</config-description>
 	</bridge-type>
-
 </thing:thing-descriptions>
