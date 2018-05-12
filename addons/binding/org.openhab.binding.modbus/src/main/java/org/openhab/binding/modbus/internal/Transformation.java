@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * Inspired from other openHAB binding "Transformation" classes.
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public class Transformation {

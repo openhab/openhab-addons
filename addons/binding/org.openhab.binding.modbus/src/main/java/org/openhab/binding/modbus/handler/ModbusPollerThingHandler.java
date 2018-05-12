@@ -16,7 +16,7 @@ import org.openhab.io.transport.modbus.ModbusManager.PollTask;
 /**
  * Interface for poller thing handlers
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public interface ModbusPollerThingHandler {

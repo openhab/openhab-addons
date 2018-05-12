@@ -11,7 +11,7 @@ package org.openhab.binding.modbus.internal.config;
 /**
  * Configuration for serial thing
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public class ModbusSerialConfiguration {

@@ -16,7 +16,7 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 /**
  * Base interface for thing handlers of endpoint things
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 public interface ModbusEndpointThingHandler {
@@ -24,7 +24,7 @@ public interface ModbusEndpointThingHandler {
     /**
      * Gets the {@link ModbusSlaveEndpoint} represented by the thing
      *
-     * Note that teh endpoint can be <code>null</code> in case of incomplete initialization
+     * Note that the endpoint can be <code>null</code> in case of incomplete initialization
      *
      * @return
      */

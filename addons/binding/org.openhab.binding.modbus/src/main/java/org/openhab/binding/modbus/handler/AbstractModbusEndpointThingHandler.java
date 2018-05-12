@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Base class for Modbus Slave endpoint thing handlers
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  * @param <E> endpoint class
  * @param <C> config class
