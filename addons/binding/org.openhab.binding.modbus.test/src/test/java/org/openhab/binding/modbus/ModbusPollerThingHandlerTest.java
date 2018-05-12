@@ -191,7 +191,6 @@ public class ModbusPollerThingHandlerTest {
 
         thingHandler.initialize();
         assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
-
         verify(modbusManager).registerRegularPoll(argThat(pollTaskMatcherSupplier.get()), eq(150l), eq(0L));
         verifyNoMoreInteractions(modbusManager);
     }
