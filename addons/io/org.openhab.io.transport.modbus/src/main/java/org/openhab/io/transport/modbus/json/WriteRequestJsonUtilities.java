@@ -121,26 +121,34 @@ public final class WriteRequestJsonUtilities {
     private static ModbusWriteRequestBlueprint constructBluerint(int unitId, JsonElement functionCodeElem,
             JsonElement addressElem, JsonElement maxTriesElem, JsonArray valuesElem) {
         int functionCodeNumeric;
+        if (functionCodeElem == null || functionCodeElem.isJsonNull()) {
+            throw new IllegalStateException(String.format("Value for '%s' is invalid", JSON_FUNCTION_CODE));
+        }
         try {
             functionCodeNumeric = functionCodeElem.getAsInt();
-        } catch (NullPointerException | ClassCastException | IllegalStateException e) {
+        } catch (ClassCastException | IllegalStateException e) {
             throw new IllegalStateException(String.format("Value for '%s' is invalid", JSON_FUNCTION_CODE), e);
         }
         ModbusWriteFunctionCode functionCode = ModbusWriteFunctionCode.fromFunctionCode(functionCodeNumeric);
         int address;
+        if (addressElem == null || addressElem.isJsonNull()) {
+            throw new IllegalStateException(String.format("Value for '%s' is invalid", JSON_ADDRESS));
+        }
         try {
             address = addressElem.getAsInt();
-        } catch (NullPointerException | ClassCastException | IllegalStateException e) {
+        } catch (ClassCastException | IllegalStateException e) {
             throw new IllegalStateException(String.format("Value for '%s' is invalid", JSON_ADDRESS), e);
         }
         int maxTries;
-        try {
-            maxTries = maxTriesElem.getAsInt();
-        } catch (NullPointerException e) {
+        if (maxTriesElem == null || maxTriesElem.isJsonNull()) {
             // Go with default
             maxTries = DEFAULT_MAX_TRIES;
-        } catch (ClassCastException | IllegalStateException e) {
-            throw new IllegalStateException(String.format("Value for '%s' is invalid", JSON_MAX_TRIES), e);
+        } else {
+            try {
+                maxTries = maxTriesElem.getAsInt();
+            } catch (ClassCastException | IllegalStateException e) {
+                throw new IllegalStateException(String.format("Value for '%s' is invalid", JSON_MAX_TRIES), e);
+            }
         }
 
         AtomicBoolean writeSingle = new AtomicBoolean(false);
