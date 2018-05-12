@@ -105,8 +105,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
         }
         Integer pollingIntervalInSeconds = config.pollingIntervalInSeconds;
         if (pollingIntervalInSeconds == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Polling interval not configured");
-            return;
+            pollingIntervalInSeconds = 30;
         }
         if (pollingIntervalInSeconds < 10) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -138,6 +137,10 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
         if (command instanceof RefreshType) {
             refreshData();
         }
+    }
+
+    public List<FlashBriefingProfileHandler> getFlashBriefingProfileHandlers() {
+        return new ArrayList<>(this.flashBriefingProfileHandlers);
     }
 
     public List<Device> getLastKnownDevices() {
@@ -204,10 +207,6 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
         if (childHandler instanceof EchoHandler) {
             synchronized (echoHandlers) {
                 echoHandlers.remove(childHandler);
-            }
-            AmazonEchoDiscovery instance = AmazonEchoDiscovery.instance;
-            if (instance != null) {
-                instance.removeExistingEchoHandler(childThing.getUID());
             }
         }
 
@@ -445,7 +444,6 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
         if (currentConnection == null) {
             return;
         }
-        AmazonEchoDiscovery discoveryService = AmazonEchoDiscovery.instance;
 
         List<Device> devices = null;
         try {
@@ -464,10 +462,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
                 }
             }
             jsonSerialNumberDeviceMapping = newJsonSerialDeviceMapping;
-
-            if (discoveryService != null) {
-                discoveryService.setDevices(getThing().getUID(), devices);
-            }
+            amazonEchoDiscovery.setDevices(getThing().getUID(), devices);
         }
         synchronized (echoHandlers) {
             for (EchoHandler child : echoHandlers) {
@@ -512,14 +507,11 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
             if (flashBriefingProfileHandlers.isEmpty()) {
                 discoverFlashProfiles = true; // discover at least one device
             }
-            AmazonEchoDiscovery discoveryService = AmazonEchoDiscovery.instance;
-            if (discoveryService != null) {
-                if (discoverFlashProfiles) {
-                    discoverFlashProfiles = false;
-                    if (!flashBriefingProfileFound) {
-                        discoveryService.discoverFlashBriefingProfiles(getThing().getUID(),
-                                this.currentFlashBriefingJson);
-                    }
+            if (discoverFlashProfiles) {
+                discoverFlashProfiles = false;
+                if (!flashBriefingProfileFound) {
+                    amazonEchoDiscovery.discoverFlashBriefingProfiles(getThing().getUID(),
+                            this.currentFlashBriefingJson, this.flashBriefingProfileHandlers.size() + 1);
                 }
             }
         }

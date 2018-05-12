@@ -6,4 +6,12 @@
 	<description>Binding to control Amazon Echo devices (Alexa). This binding enables openHAB to control the volume, playing state, bluetooth connection of your amazon echo devices.</description>
 	<author>Michael Geramb</author>
 
+	<config-description>
+		<parameter name="showIdsInGUI" type="boolean" >
+			<label>Show ID's in the GUI</label>
+			<description>Shows ID's in the channel drop downs which needed for setting the value from a rule</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+
 </binding:binding>

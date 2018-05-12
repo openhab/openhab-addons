@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -603,7 +604,6 @@ public class Connection {
         String url = alexaServer + "/api/np/command?deviceSerialNumber=" + device.serialNumber + "&deviceType="
                 + device.deviceType;
         makeRequest("POST", url, command, true, true, null);
-
     }
 
     public void bluetooth(Device device, @Nullable String address) throws IOException, URISyntaxException {
@@ -658,14 +658,52 @@ public class Connection {
         }
     }
 
+    public void textToSpeech(Device device, String text) throws IOException, URISyntaxException {
+        Map<String, Object> parameters = new Hashtable<String, Object>();
+        parameters.put("textToSpeak", text);
+        executeSequenceCommand(device, "Alexa.Speak", parameters);
+    }
+
     // commands: Alexa.Weather.Play, Alexa.Traffic.Play, Alexa.FlashBriefing.Play, Alexa.GoodMorning.Play,
-    // Alexa.SingASong.Play, Alexa.TellStory.Play
-    public void executeSequenceCommand(Device device, String command) throws IOException, URISyntaxException {
-        String json = "{ \"behaviorId\": \"amzn1.alexa.automation.00000000-0000-0000-0000-000000000000\", "
-                + "    \"sequenceJson\": \"{\\\"@type\\\":\\\"com.amazon.alexa.behaviors.model.Sequence\\\",\\\"startNode\\\":{\\\"@type\\\":\\\"com.amazon.alexa.behaviors.model.OpaquePayloadOperationNode\\\",\\\"type\\\":\\\""
-                + command + "\\\",\\\"operationPayload\\\":{\\\"deviceType\\\":\\\"" + device.deviceType
-                + "\\\",\\\"deviceSerialNumber\\\":\\\"" + device.serialNumber + "\\\",\\\"customerId\\\":\\\""
-                + device.deviceOwnerCustomerId + "\\\",\\\"locale\\\":\\\"\\\"}}}\",\n" + " \"status\": \"ENABLED\" }";
+    // Alexa.SingASong.Play, Alexa.TellStory.Play, Alexa.Speak (textToSpeach)
+    public void executeSequenceCommand(Device device, String command, @Nullable Map<String, Object> parameters)
+            throws IOException, URISyntaxException {
+        Gson gson = new Gson();
+
+        JsonObject operationPayload = new JsonObject();
+        operationPayload.addProperty("deviceType", device.deviceType);
+        operationPayload.addProperty("deviceSerialNumber", device.serialNumber);
+        operationPayload.addProperty("locale", "");
+        operationPayload.addProperty("customerId", device.deviceOwnerCustomerId);
+        if (parameters != null) {
+            for (String key : parameters.keySet()) {
+                Object value = parameters.get(key);
+                if (value instanceof String) {
+                    operationPayload.addProperty(key, (String) value);
+                } else if (value instanceof Number) {
+                    operationPayload.addProperty(key, (Number) value);
+                } else if (value instanceof Boolean) {
+                    operationPayload.addProperty(key, (Boolean) value);
+                } else if (value instanceof Character) {
+                    operationPayload.addProperty(key, (Character) value);
+                } else {
+                    operationPayload.add(key, gson.toJsonTree(value));
+                }
+            }
+        }
+
+        JsonObject startNode = new JsonObject();
+        startNode.addProperty("@type", "com.amazon.alexa.behaviors.model.OpaquePayloadOperationNode");
+        startNode.addProperty("type", command);
+        startNode.add("operationPayload", operationPayload);
+
+        JsonObject sequenceJson = new JsonObject();
+        sequenceJson.addProperty("@type", "com.amazon.alexa.behaviors.model.Sequence");
+        sequenceJson.add("startNode", startNode);
+
+        JsonStartRoutineRequest request = new JsonStartRoutineRequest();
+        request.sequenceJson = gson.toJson(sequenceJson);
+        String json = gson.toJson(request);
 
         makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null);
     }

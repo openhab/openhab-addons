@@ -11,8 +11,8 @@ package org.openhab.binding.amazonechocontrol.internal.discovery;
 import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,16 +25,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.thing.ThingRegistry;
+import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
+import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,29 +41,23 @@ import org.slf4j.LoggerFactory;
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.amazonechocontrol")
-public class AmazonEchoDiscovery extends AbstractDiscoveryService {
+public class AmazonEchoDiscovery extends AbstractDiscoveryService implements ExtendedDiscoveryService {
 
-    private @Nullable ThingRegistry thingRegistry;
     private boolean discoverAccount = true;
     private final Set<IAmazonAccountHandler> discoveryServices = new HashSet<>();
-    public @Nullable static AmazonEchoDiscovery instance;
 
     private final Logger logger = LoggerFactory.getLogger(AmazonEchoDiscovery.class);
-    private final Map<String, ThingUID> lastDeviceInformations = new HashMap<>();
     private final HashSet<String> discoverdFlashBriefings = new HashSet<String>();
 
     @Nullable
     ScheduledFuture<?> startScanStateJob;
     long activateTimeStamp;
 
-    @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.DYNAMIC)
-    protected void setThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry = thingRegistry;
-    }
+    private @Nullable DiscoveryServiceCallback discoveryServiceCallback;
 
-    protected void unsetThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry = thingRegistry;
+    @Override
+    public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
+        this.discoveryServiceCallback = discoveryServiceCallback;
     }
 
     public void resetDiscoverAccount() {
@@ -88,6 +78,10 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
 
     public AmazonEchoDiscovery() {
         super(SUPPORTED_THING_TYPES_UIDS, 10);
+    }
+
+    public void activate() {
+        super.activate(new Hashtable<String, @Nullable Object>());
     }
 
     @Override
@@ -131,14 +125,12 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        AmazonEchoDiscovery.instance = this;
         stopScanJob();
         startScanStateJob = scheduler.schedule(this::startAutomaticScan, 3000, TimeUnit.MILLISECONDS);
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        AmazonEchoDiscovery.instance = null;
         stopScanJob();
     }
 
@@ -162,19 +154,15 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
     };
 
     public synchronized void setDevices(ThingUID brigdeThingUID, List<Device> deviceList) {
-        ThingRegistry thingRegistry = this.thingRegistry;
-        if (thingRegistry == null) {
+        DiscoveryServiceCallback discoveryServiceCallback = this.discoveryServiceCallback;
+        if (discoveryServiceCallback == null) {
             return;
         }
-
-        Set<String> toRemove = new HashSet<String>(lastDeviceInformations.keySet());
         for (Device device : deviceList) {
             String serialNumber = device.serialNumber;
             if (serialNumber != null) {
-                boolean alreadyfound = toRemove.remove(serialNumber);
-                // new
                 String deviceFamily = device.deviceFamily;
-                if (!alreadyfound && deviceFamily != null) {
+                if (deviceFamily != null) {
                     ThingTypeUID thingTypeId;
                     if (deviceFamily.equals("ECHO")) {
                         thingTypeId = THING_TYPE_ECHO;
@@ -185,30 +173,34 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
                     } else if (deviceFamily.equals("WHA")) {
                         thingTypeId = THING_TYPE_ECHO_WHA;
                     } else {
-                        thingTypeId = THING_TYPE_UNKNOWN;
+                        logger.debug("Unknown thing type '{}'", deviceFamily);
+                        continue;
                     }
 
                     ThingUID thingUID = new ThingUID(thingTypeId, brigdeThingUID, serialNumber);
-                    // Check if already created
-                    if (thingRegistry.get(thingUID) == null) {
-                        DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel(device.accountName)
-                                .withProperty(DEVICE_PROPERTY_SERIAL_NUMBER, serialNumber)
-                                .withProperty(DEVICE_PROPERTY_FAMILY, deviceFamily)
-                                .withRepresentationProperty(DEVICE_PROPERTY_SERIAL_NUMBER).withBridge(brigdeThingUID)
-                                .build();
-
-                        logger.debug("Device [{}: {}] found. Mapped to thing type {}", device.deviceFamily,
-                                serialNumber, thingTypeId.getAsString());
-
-                        thingDiscovered(result);
-                        lastDeviceInformations.put(serialNumber, thingUID);
+                    if (discoveryServiceCallback.getExistingDiscoveryResult(thingUID) != null) {
+                        continue;
                     }
+                    if (discoveryServiceCallback.getExistingThing(thingUID) != null) {
+                        continue;
+                    }
+                    DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel(device.accountName)
+                            .withProperty(DEVICE_PROPERTY_SERIAL_NUMBER, serialNumber)
+                            .withProperty(DEVICE_PROPERTY_FAMILY, deviceFamily)
+                            .withRepresentationProperty(DEVICE_PROPERTY_SERIAL_NUMBER).withBridge(brigdeThingUID)
+                            .build();
+
+                    logger.debug("Device [{}: {}] found. Mapped to thing type {}", device.deviceFamily, serialNumber,
+                            thingTypeId.getAsString());
+
+                    thingDiscovered(result);
                 }
             }
         }
     }
 
-    public synchronized void discoverFlashBriefingProfiles(ThingUID brigdeThingUID, String currentFlashBriefingJson) {
+    public synchronized void discoverFlashBriefingProfiles(ThingUID brigdeThingUID, String currentFlashBriefingJson,
+            int number) {
         if (currentFlashBriefingJson.isEmpty()) {
             return;
         }
@@ -221,21 +213,13 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
             String id = UUID.randomUUID().toString();
             ThingUID thingUID = new ThingUID(THING_TYPE_FLASH_BRIEFING_PROFILE, brigdeThingUID, id);
 
-            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel("FlashBriefing")
+            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel("FlashBriefing " + number)
                     .withProperty(DEVICE_PROPERTY_FLASH_BRIEFING_PROFILE, currentFlashBriefingJson)
                     .withBridge(brigdeThingUID).build();
             logger.debug("Flash Briefing {} discovered", currentFlashBriefingJson);
 
             thingDiscovered(result);
             discoverdFlashBriefings.add(currentFlashBriefingJson);
-        }
-    }
-
-    public synchronized void removeExistingEchoHandler(ThingUID uid) {
-        for (String id : lastDeviceInformations.keySet()) {
-            if (lastDeviceInformations.get(id).equals(uid)) {
-                lastDeviceInformations.remove(id);
-            }
         }
     }
 

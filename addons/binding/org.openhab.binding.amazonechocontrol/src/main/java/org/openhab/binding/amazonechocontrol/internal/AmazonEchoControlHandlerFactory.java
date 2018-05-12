@@ -10,6 +10,8 @@ package org.openhab.binding.amazonechocontrol.internal;
 
 import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
 
+import java.util.Hashtable;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -23,6 +25,8 @@ import org.openhab.binding.amazonechocontrol.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.handler.EchoHandler;
 import org.openhab.binding.amazonechocontrol.handler.FlashBriefingProfileHandler;
 import org.openhab.binding.amazonechocontrol.internal.discovery.AmazonEchoDiscovery;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -41,13 +45,40 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
 
     @Nullable
     HttpService httpService;
-
     @Nullable
     AmazonEchoDiscovery amazonEchoDiscovery;
+
+    boolean showIdsInGUI;
+    @Nullable
+    ServiceRegistration<?> discoverServiceRegistration;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+    }
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        Object configShowIdsInGui = componentContext.getProperties().get("showIdsInGUI");
+        showIdsInGUI = (configShowIdsInGui instanceof Boolean) ? (Boolean) configShowIdsInGui : false;
+
+    }
+
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        super.deactivate(componentContext);
+        AmazonEchoDiscovery amazonEchoDiscovery = this.amazonEchoDiscovery;
+        if (amazonEchoDiscovery != null) {
+            amazonEchoDiscovery.deactivate();
+        }
+        this.amazonEchoDiscovery = null;
+        @Nullable
+        ServiceRegistration<?> discoverServiceRegistration = this.discoverServiceRegistration;
+        if (discoverServiceRegistration != null) {
+            discoverServiceRegistration.unregister();
+            this.discoverServiceRegistration = null;
+        }
     }
 
     @Override
@@ -60,7 +91,12 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
         }
         AmazonEchoDiscovery amazonEchoDiscovery = this.amazonEchoDiscovery;
         if (amazonEchoDiscovery == null) {
-            return null;
+            amazonEchoDiscovery = new AmazonEchoDiscovery();
+            discoverServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
+                    amazonEchoDiscovery, new Hashtable<String, Object>());
+            amazonEchoDiscovery.activate();
+            this.amazonEchoDiscovery = amazonEchoDiscovery;
+
         }
 
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
@@ -68,25 +104,12 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
             return bridgeHandler;
         }
         if (thingTypeUID.equals(THING_TYPE_FLASH_BRIEFING_PROFILE)) {
-            return new FlashBriefingProfileHandler(thing);
+            return new FlashBriefingProfileHandler(thing, amazonEchoDiscovery);
         }
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new EchoHandler(thing);
+            return new EchoHandler(thing, showIdsInGUI);
         }
         return null;
-    }
-
-    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
-    protected void setDiscoverService(DiscoveryService discoverService) {
-        if (discoverService instanceof AmazonEchoDiscovery) {
-            amazonEchoDiscovery = (AmazonEchoDiscovery) discoverService;
-        }
-    }
-
-    protected void unsetDiscoverService(DiscoveryService discoverService) {
-        if (discoverService == amazonEchoDiscovery) {
-            amazonEchoDiscovery = null;
-        }
     }
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.DYNAMIC)

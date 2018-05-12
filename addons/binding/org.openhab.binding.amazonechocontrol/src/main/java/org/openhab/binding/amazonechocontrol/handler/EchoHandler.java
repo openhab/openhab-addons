@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -64,23 +65,30 @@ public class EchoHandler extends BaseThingHandler {
 
     private @Nullable Device device;
     private @Nullable Connection connection;
+    private @Nullable AccountHandler account;
     private @Nullable ScheduledFuture<?> updateStateJob;
     private @Nullable String lastKnownRadioStationId;
-    private @Nullable String lastKnownBluetoothId;
+    private @Nullable String lastKnownBluetoothMAC;
     private @Nullable String lastKnownAmazonMusicId;
-    private String musicProviderId = "";
+    private String musicProviderId = "TUNEIN";
+    private boolean isPlaying = false;
+    private boolean isPaused = false;
     private int lastKnownVolume = 25;
     private @Nullable BluetoothState bluetoothState;
     private boolean disableUpdate = false;
     private boolean updateRemind = true;
+    private boolean updateTextToSpeech = true;
     private boolean updateAlarm = true;
     private boolean updateRoutine = true;
     private boolean updatePlayMusicVoiceCommand = true;
+    private boolean updateStartCommand = true;
+    private boolean showIdsInGUI = false;
     private @Nullable JsonNotificationResponse currentNotification;
     private @Nullable ScheduledFuture<?> currentNotifcationUpdateTimer;
 
-    public EchoHandler(Thing thing) {
+    public EchoHandler(Thing thing, boolean showIdsInGUI) {
         super(thing);
+        this.showIdsInGUI = showIdsInGUI;
     }
 
     @Override
@@ -95,6 +103,7 @@ public class EchoHandler extends BaseThingHandler {
             if (bridge != null) {
                 AccountHandler account = (AccountHandler) bridge.getHandler();
                 if (account != null) {
+                    this.account = account;
                     account.addEchoHandler(this);
                 }
             }
@@ -118,12 +127,20 @@ public class EchoHandler extends BaseThingHandler {
         super.dispose();
     }
 
+    public boolean getShowIdsInGUI() {
+        return this.showIdsInGUI;
+    }
+
     public @Nullable BluetoothState findBluetoothState() {
         return this.bluetoothState;
     }
 
     public @Nullable Connection findConnection() {
         return this.connection;
+    }
+
+    public @Nullable AccountHandler findAccount() {
+        return this.account;
     }
 
     public @Nullable Device findDevice() {
@@ -143,7 +160,7 @@ public class EchoHandler extends BaseThingHandler {
         try {
             int waitForUpdate = 1000;
             boolean needBluetoothRefresh = false;
-            String lastKnownBluetoothId = this.lastKnownBluetoothId;
+            String lastKnownBluetoothMAC = this.lastKnownBluetoothMAC;
 
             ScheduledFuture<?> updateStateJob = this.updateStateJob;
             this.updateStateJob = null;
@@ -166,7 +183,12 @@ public class EchoHandler extends BaseThingHandler {
                 if (command == PlayPauseType.PAUSE || command == OnOffType.OFF) {
                     connection.command(device, "{\"type\":\"PauseCommand\"}");
                 } else if (command == PlayPauseType.PLAY || command == OnOffType.ON) {
-                    connection.command(device, "{\"type\":\"PlayCommand\"}");
+                    if (isPaused) {
+                        connection.command(device, "{\"type\":\"PlayCommand\"}");
+                    } else {
+                        connection.playMusicVoiceCommand(device, this.musicProviderId, "!");
+                        waitForUpdate = 3000;
+                    }
                 } else if (command == NextPreviousType.NEXT) {
                     connection.command(device, "{\"type\":\"NextCommand\"}");
                 } else if (command == NextPreviousType.PREVIOUS) {
@@ -217,10 +239,18 @@ public class EchoHandler extends BaseThingHandler {
             }
 
             // play music command
-            if (channelId.equals(CHANNEL_PLAY_MUSIC_PROVIDER)) {
+            if (channelId.equals(CHANNEL_MUSIC_PROVIDER_ID)) {
                 if (command instanceof StringType) {
-                    this.musicProviderId = ((StringType) command).toFullString();
                     waitForUpdate = 0;
+                    String musicProviderId = ((StringType) command).toFullString();
+                    if (!StringUtils.equals(musicProviderId, this.musicProviderId)) {
+                        this.musicProviderId = musicProviderId;
+                        if (this.isPlaying) {
+                            connection.playMusicVoiceCommand(device, this.musicProviderId, "!");
+                            waitForUpdate = 3000;
+                        }
+                    }
+
                 }
             }
             if (channelId.equals(CHANNEL_PLAY_MUSIC_VOICE_COMMAND)) {
@@ -235,7 +265,7 @@ public class EchoHandler extends BaseThingHandler {
             }
 
             // bluetooth commands
-            if (channelId.equals(CHANNEL_BLUETOOTH_ID) || channelId.equals(CHANNEL_BLUETOOTH_ID_SELECTION)) {
+            if (channelId.equals(CHANNEL_BLUETOOTH_MAC)) {
                 needBluetoothRefresh = true;
                 if (command instanceof StringType) {
                     String address = ((StringType) command).toFullString();
@@ -249,7 +279,7 @@ public class EchoHandler extends BaseThingHandler {
                 needBluetoothRefresh = true;
                 if (command == OnOffType.ON) {
                     waitForUpdate = 4000;
-                    String bluetoothId = lastKnownBluetoothId;
+                    String bluetoothId = lastKnownBluetoothMAC;
                     BluetoothState state = bluetoothState;
                     if (state != null && (StringUtils.isEmpty(bluetoothId))) {
                         PairedDevice[] pairedDeviceList = state.pairedDeviceList;
@@ -259,14 +289,14 @@ public class EchoHandler extends BaseThingHandler {
                                     continue;
                                 }
                                 if (StringUtils.isNotEmpty(paired.address)) {
-                                    lastKnownBluetoothId = paired.address;
+                                    lastKnownBluetoothMAC = paired.address;
                                     break;
                                 }
                             }
                         }
                     }
-                    if (lastKnownBluetoothId != null && !lastKnownBluetoothId.isEmpty()) {
-                        connection.bluetooth(device, lastKnownBluetoothId);
+                    if (StringUtils.isNotEmpty(lastKnownBluetoothMAC)) {
+                        connection.bluetooth(device, lastKnownBluetoothMAC);
                     }
                 } else if (command == OnOffType.OFF) {
                     connection.bluetooth(device, null);
@@ -293,7 +323,6 @@ public class EchoHandler extends BaseThingHandler {
                     String playListId = ((StringType) command).toFullString();
                     if (StringUtils.isNotEmpty(playListId)) {
                         waitForUpdate = 3000;
-                        updateState(CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID_LAST_USED, new StringType(playListId));
                     }
                     connection.playAmazonMusicPlayList(device, playListId);
 
@@ -375,32 +404,47 @@ public class EchoHandler extends BaseThingHandler {
             }
 
             // routine commands
-            if (channelId.equals(CHANNEL_PLAY_FLASH_BRIEFING)) {
-
-                if (command == OnOffType.ON) {
-                    waitForUpdate = 1000;
-                    connection.executeSequenceCommand(device, "Alexa.FlashBriefing.Play");
+            if (channelId.equals(CHANNEL_TEXT_TO_SPEECH)) {
+                if (command instanceof StringType) {
+                    String text = ((StringType) command).toFullString();
+                    if (StringUtils.isNotEmpty(text)) {
+                        waitForUpdate = 1000;
+                        updateTextToSpeech = true;
+                        connection.textToSpeech(device, text);
+                    }
                 }
             }
-            if (channelId.equals(CHANNEL_PLAY_TRAFFIC_NEWS)) {
+            if (channelId.equals(CHANNEL_START_COMMAND)) {
+                if (command instanceof StringType) {
+                    String commandText = ((StringType) command).toFullString();
+                    if (StringUtils.isNotEmpty(commandText)) {
+                        updateStartCommand = true;
+                        if (commandText.startsWith(FLASH_BRIEFING_COMMAND_PREFIX)) {
+                            // Handle custom flashbriefings commands
+                            String flashbriefing = commandText.substring(FLASH_BRIEFING_COMMAND_PREFIX.length());
 
-                if (command == OnOffType.ON) {
-                    waitForUpdate = 1000;
-                    connection.executeSequenceCommand(device, "Alexa.Traffic.Play");
-                }
-            }
-            if (channelId.equals(CHANNEL_PLAY_WEATER_REPORT)) {
-
-                if (command == OnOffType.ON) {
-                    waitForUpdate = 1000;
-                    connection.executeSequenceCommand(device, "Alexa.Weather.Play");
-                }
-            }
-            if (channelId.equals(CHANNEL_PLAY_GOOD_MORNING)) {
-
-                if (command == OnOffType.ON) {
-                    waitForUpdate = 1000;
-                    connection.executeSequenceCommand(device, "Alexa.GoodMorning.Play");
+                            AccountHandler account = this.account;
+                            if (account != null) {
+                                for (FlashBriefingProfileHandler flashBriefing : account
+                                        .getFlashBriefingProfileHandlers()) {
+                                    ThingUID flashBriefingId = flashBriefing.getThing().getUID();
+                                    if (StringUtils.equals(flashBriefing.getThing().getUID().getId(), flashbriefing)) {
+                                        flashBriefing.handleCommand(
+                                                new ChannelUID(flashBriefingId, CHANNEL_PLAY_ON_DEVICE),
+                                                new StringType(device.serialNumber));
+                                        break;
+                                    }
+                                }
+                            }
+                        } else {
+                            // Handle standard commands
+                            if (!commandText.startsWith("Alexa.")) {
+                                commandText = "Alexa." + commandText + ".Play";
+                            }
+                            waitForUpdate = 1000;
+                            connection.executeSequenceCommand(device, commandText, null);
+                        }
+                    }
                 }
             }
             if (channelId.equals(CHANNEL_START_ROUTINE)) {
@@ -553,16 +597,41 @@ public class EchoHandler extends BaseThingHandler {
         } catch (IOException | URISyntaxException e) {
             logger.info("getMediaState fails: {}", e);
         }
-
         // check playing
-        boolean playing = playerInfo != null && StringUtils.equals(playerInfo.state, "PLAYING");
+        isPlaying = (playerInfo != null && StringUtils.equals(playerInfo.state, "PLAYING"))
+                || (mediaState != null && StringUtils.equals(mediaState.currentState, "PLAYING"));
+
+        isPaused = (playerInfo != null && StringUtils.equals(playerInfo.state, "PAUSED"))
+                || (mediaState != null && StringUtils.equals(mediaState.currentState, "PAUSED"));
+        // handle music provider id
+
+        if (provider != null && isPlaying) {
+            String musicProviderId;
+            if (mediaState != null && StringUtils.equals(mediaState.currentState, "PLAYING")) {
+                musicProviderId = mediaState.providerId;
+            } else {
+                musicProviderId = provider.providerName;
+            }
+            // Map the music provider id to the one used for starting music with voice command
+            if (musicProviderId != null) {
+                musicProviderId = musicProviderId.toUpperCase();
+            }
+            if (StringUtils.equals(musicProviderId, "CLOUD_PLAYER")) {
+                musicProviderId = "AMAZON_MUSIC";
+            }
+            if (StringUtils.equals(musicProviderId, "TUNE_IN")) {
+                musicProviderId = "TUNEIN";
+            }
+            if (musicProviderId != null) {
+                this.musicProviderId = musicProviderId;
+            }
+        }
 
         // handle amazon music
         String amazonMusicTrackId = "";
         String amazonMusicPlayListId = "";
         boolean amazonMusic = false;
-        if (mediaState != null && StringUtils.equals(mediaState.currentState, "PLAYING")
-                && StringUtils.equals(mediaState.providerId, "CLOUD_PLAYER")
+        if (mediaState != null && isPlaying && StringUtils.equals(mediaState.providerId, "CLOUD_PLAYER")
                 && StringUtils.isNotEmpty(mediaState.contentId)) {
             amazonMusicTrackId = mediaState.contentId;
             lastKnownAmazonMusicId = amazonMusicTrackId;
@@ -570,7 +639,7 @@ public class EchoHandler extends BaseThingHandler {
         }
 
         // handle bluetooth
-        String bluetoothId = "";
+        String bluetoothMAC = "";
         String bluetoothDeviceName = "";
         boolean bluetoothIsConnected = false;
         if (bluetoothState != null) {
@@ -583,7 +652,7 @@ public class EchoHandler extends BaseThingHandler {
                     }
                     if (paired.connected && paired.address != null) {
                         bluetoothIsConnected = true;
-                        bluetoothId = paired.address;
+                        bluetoothMAC = paired.address;
                         bluetoothDeviceName = paired.friendlyName;
                         if (StringUtils.isEmpty(bluetoothDeviceName)) {
                             bluetoothDeviceName = paired.address;
@@ -593,8 +662,8 @@ public class EchoHandler extends BaseThingHandler {
                 }
             }
         }
-        if (StringUtils.isNotEmpty(bluetoothId)) {
-            lastKnownBluetoothId = bluetoothId;
+        if (StringUtils.isNotEmpty(bluetoothMAC)) {
+            lastKnownBluetoothMAC = bluetoothMAC;
         }
 
         // handle radio
@@ -693,31 +762,34 @@ public class EchoHandler extends BaseThingHandler {
             updateRoutine = false;
             updateState(CHANNEL_START_ROUTINE, new StringType(""));
         }
+        if (updateTextToSpeech) {
+            updateTextToSpeech = false;
+            updateState(CHANNEL_TEXT_TO_SPEECH, new StringType(""));
+        }
         if (updatePlayMusicVoiceCommand) {
             updatePlayMusicVoiceCommand = false;
             updateState(CHANNEL_PLAY_MUSIC_VOICE_COMMAND, new StringType(""));
         }
-        updateState(CHANNEL_PLAY_MUSIC_PROVIDER, new StringType(musicProviderId));
-        updateState(CHANNEL_PLAY_FLASH_BRIEFING, OnOffType.OFF);
-        updateState(CHANNEL_PLAY_WEATER_REPORT, OnOffType.OFF);
-        updateState(CHANNEL_PLAY_TRAFFIC_NEWS, OnOffType.OFF);
-        updateState(CHANNEL_PLAY_GOOD_MORNING, OnOffType.OFF);
+        if (updateStartCommand) {
+            updateStartCommand = false;
+            updateState(CHANNEL_START_COMMAND, new StringType(""));
+        }
+        updateState(CHANNEL_MUSIC_PROVIDER_ID, new StringType(musicProviderId));
         updateState(CHANNEL_AMAZON_MUSIC_TRACK_ID, new StringType(amazonMusicTrackId));
-        updateState(CHANNEL_AMAZON_MUSIC, playing && amazonMusic ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_AMAZON_MUSIC, isPlaying && amazonMusic ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID, new StringType(amazonMusicPlayListId));
         updateState(CHANNEL_RADIO_STATION_ID, new StringType(radioStationId));
-        updateState(CHANNEL_RADIO, playing && isRadio ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_RADIO, isPlaying && isRadio ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_VOLUME, volume != null ? new PercentType(volume) : UnDefType.UNDEF);
         updateState(CHANNEL_PROVIDER_DISPLAY_NAME, new StringType(providerDisplayName));
-        updateState(CHANNEL_PLAYER, playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
+        updateState(CHANNEL_PLAYER, isPlaying ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
         updateState(CHANNEL_IMAGE_URL, new StringType(imageUrl));
         updateState(CHANNEL_TITLE, new StringType(title));
         updateState(CHANNEL_SUBTITLE1, new StringType(subTitle1));
         updateState(CHANNEL_SUBTITLE2, new StringType(subTitle2));
         if (bluetoothState != null) {
             updateState(CHANNEL_BLUETOOTH, bluetoothIsConnected ? OnOffType.ON : OnOffType.OFF);
-            updateState(CHANNEL_BLUETOOTH_ID, new StringType(bluetoothId));
-            updateState(CHANNEL_BLUETOOTH_ID_SELECTION, new StringType(bluetoothId));
+            updateState(CHANNEL_BLUETOOTH_MAC, new StringType(bluetoothMAC));
             updateState(CHANNEL_BLUETOOTH_DEVICE_NAME, new StringType(bluetoothDeviceName));
         }
     }

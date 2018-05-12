@@ -50,9 +50,11 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
     boolean updatePlayOnDevice = true;
     String currentConfigurationJson = "";
     private @Nullable ScheduledFuture<?> updateStateJob;
+    private final AmazonEchoDiscovery amazonEchoDiscovery;
 
-    public FlashBriefingProfileHandler(Thing thing) {
+    public FlashBriefingProfileHandler(Thing thing, AmazonEchoDiscovery amazonEchoDiscovery) {
         super(thing);
+        this.amazonEchoDiscovery = amazonEchoDiscovery;
         stateStorage = new StateStorage(thing);
     }
 
@@ -140,7 +142,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
                                 logger.warn("Connection for '{}' not found",
                                         accountHandler.getThing().getUID().getId());
                             } else {
-                                connection.executeSequenceCommand(device, "Alexa.FlashBriefing.Play");
+                                connection.executeSequenceCommand(device, "Alexa.FlashBriefing.Play", null);
 
                                 scheduler.schedule(() -> accountHandler.setEnabledFlashBriefingsJson(old), 1000,
                                         TimeUnit.MILLISECONDS);
@@ -203,9 +205,6 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
     }
 
     private void removeFromDiscovery() {
-        AmazonEchoDiscovery instance = AmazonEchoDiscovery.instance;
-        if (instance != null) {
-            instance.removeExistingFlashBriefingProfile(this.currentConfigurationJson);
-        }
+        amazonEchoDiscovery.removeExistingFlashBriefingProfile(this.currentConfigurationJson);
     }
 }

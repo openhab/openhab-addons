@@ -27,6 +27,7 @@ Import-Package: com.google.gson;resolution:=optional,
  org.openhab.binding.amazonechocontrol,
  org.openhab.binding.amazonechocontrol.handler,
  org.osgi.framework,
+ org.osgi.service.component;version="1.3.0",
  org.osgi.service.component.annotations;resolution:=optional,
  org.osgi.service.http,
  org.slf4j
