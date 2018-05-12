@@ -201,7 +201,7 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Equipment Channels -->
+	<!-- System Channels -->
 
 	<channel-type id="system-runstate" advanced="true">
 		<item-type>Number</item-type>

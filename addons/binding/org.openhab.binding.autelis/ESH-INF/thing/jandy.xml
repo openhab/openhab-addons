@@ -301,7 +301,7 @@
 		<item-type>Number</item-type>
 		<label>Heater</label>
 		<description>The current state of the heater</description>
-		<state pattern="%s">
+		<state>
 			<options>
 				<option value="0">Off</option>
 				<option value="1">Enabled</option>
@@ -313,7 +313,7 @@
 		<item-type>Number</item-type>
 		<label>Auxiliary</label>
 		<description>The current state of auxiliary channel</description>
-		<state pattern="%s">
+		<state>
 			<options>
 				<option value="0">Off</option>
 				<option value="1">On</option>
@@ -338,7 +338,7 @@
 		<label>Temperature</label>
 		<description>The current temperature. Note: Only accurate when pool is running</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%d°">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="temp-airtemp">
@@ -346,7 +346,7 @@
 		<label>Air Temperature</label>
 		<description>The current air temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%d°">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="temp-tempunits" advanced="true">

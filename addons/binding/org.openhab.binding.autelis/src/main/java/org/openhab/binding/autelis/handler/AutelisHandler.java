@@ -207,8 +207,8 @@ public class AutelisHandler extends BaseThingHandler {
                     value = 1;
                 } else if (command instanceof DecimalType) {
                     value = ((DecimalType) command).intValue();
-                    if (value >= 3) {
-                        // this is a dim type. not sure what 2 does
+                    if (!isJandy() && value >= 3) {
+                        // this is a autelis dim type. not sure what 2 does
                         cmd = "dim";
                     }
                 } else {
@@ -521,5 +521,9 @@ public class AutelisHandler extends BaseThingHandler {
                 logger.error("Could not stop HttpClient", e);
             }
         }
+    }
+
+    private boolean isJandy() {
+        return getThing().getThingTypeUID() == AutelisBindingConstants.JANDY_THING_TYPE_UID;
     }
 }
