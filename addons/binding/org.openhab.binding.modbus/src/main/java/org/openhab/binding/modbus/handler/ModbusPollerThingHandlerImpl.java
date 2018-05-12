@@ -200,8 +200,8 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
             ModbusEndpointThingHandler slaveEndpoint = (ModbusEndpointThingHandler) handler;
             return slaveEndpoint;
         } else {
-            logger.error("Unexpected bridge handler: {}", handler);
-            throw new IllegalStateException();
+            logger.debug("Unexpected bridge handler: {}", handler);
+            return null;
         }
     }
 
@@ -218,7 +218,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
                         "Exception during initialization: %s (%s)", e.getMessage(), e.getClass().getSimpleName()));
             }
         } catch (Exception e) {
-            logger.error("Exception during initialization", e);
+            logger.debug("Exception during initialization", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
                     .format("Exception during initialization: %s (%s)", e.getMessage(), e.getClass().getSimpleName()));
         } finally {
@@ -262,7 +262,8 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         logger.trace("registerPollTask()");
         if (pollTask != null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            throw new IllegalStateException("pollTask should be unregistered before registering a new one!");
+            logger.debug("pollTask should be unregistered before registering a new one!");
+            return;
         }
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
