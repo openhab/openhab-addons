@@ -3,7 +3,6 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-
 	<channel-type id="switch-type">
 		<item-type>Switch</item-type>
 		<label>Value as Switch</label>
@@ -64,66 +63,4 @@
         <description>Date of last write error</description>
         <config-description></config-description>
     </channel-type>
-
-
-	<!-- - Sample Thing Type -->
-
-	<!-- <thing-type id="modbusThing"> -->
-	<!-- <supported-bridge-type-refs> -->
-	<!-- <bridge-type-ref id="poller" /> -->
-	<!-- </supported-bridge-type-refs> -->
-
-
-	<!-- <label>Modbus Data Thing</label> -->
-	<!-- <description>Thing that for accessing polled MODBUS data, and/or writing to MODBUS</description> -->
-
-	<!-- <channels> -->
-	<!-- <channel id="switch" typeId="switch-type" /> -->
-	<!-- <channel id="raw" typeId="raw-type" /> -->
-	<!-- - TODO: add the rest -->
-
-	<!-- </channels> -->
-	<!-- <config-description> -->
-	<!-- <parameter name="trigger" type="text"> <label>trigger</label> <description>Update channel values only if the polled -->
-	<!-- value matches this after transformation. With received commands only commands matching this trigger are processed. 
-		Use asterisk -->
-	<!-- (*) to match all</description> <default>*</default> </parameter> -->
-	<!-- <parameter name="transform" type="text"> -->
-	<!-- <label>transform</label> -->
-	<!-- <description>Transformation to apply to received commands and polled state. -->
-	<!-- Use "default" to communicate that no transformation is done and value should be passed as is. -->
-	<!-- Use SERVICENAME(ARG) to use transformation service. -->
-	<!-- Any other value than the above types will be interpreted as static text, in which case the actual content of the command/polled 
-		value is ignored.</description> -->
-	<!-- <default>default</default> -->
-	<!-- </parameter> -->
-	<!-- <parameter name="updateUnchangedItems" type="boolean"> -->
-	<!-- <label>updateUnchangedItems</label> -->
-	<!-- <description>Whether to update channels even if the channel value did not change</description> -->
-	<!-- </parameter> -->
-
-	<!-- </config-description> -->
-
-
-	<!-- </thing-type> -->
-
-	<!-- TODO: how to have float32 etc. parsing rules here? Would they be in thing definition? -->
-
-
-
-	<!-- <channel-type id="raw-type"> -->
-	<!-- <item-type>Number</item-type> -->
-	<!-- <label>Register value</label> -->
-	<!-- <description>Number item channel</description> -->
-	<!-- <config-description> -->
-	<!-- <parameter name="index" type="integer" multiple="true"> -->
-	<!-- <label>Start</label> -->
-	<!-- <description>Adress of the register, coil, or discrete input to poll. Input as zero-based index number.</description> -->
-	<!-- <default>0</default> -->
-	<!-- </parameter> -->
-	<!-- </config-description> -->
-	<!-- </channel-type> -->
-
-
-
 </thing:thing-descriptions>
