@@ -26,14 +26,14 @@ public interface ModbusEndpointThingHandler {
      *
      * Note that the endpoint can be <code>null</code> in case of incomplete initialization
      *
-     * @return
+     * @return endpoint represented by this thing handler
      */
     public ModbusSlaveEndpoint asSlaveEndpoint();
 
     /**
      * Get Slave ID, also called as unit id, represented by the thing
      *
-     * @return
+     * @return slave id represented by this thing handler
      * @throws EndpointNotInitializedException in case the initialization is not complete
      */
     public int getSlaveId() throws EndpointNotInitializedException;
@@ -41,7 +41,7 @@ public interface ModbusEndpointThingHandler {
     /**
      * Get {@link ModbusManager} supplier
      *
-     * @return
+     * @return reference to ModbusManager
      */
     public Supplier<ModbusManager> getManagerRef();
 }
