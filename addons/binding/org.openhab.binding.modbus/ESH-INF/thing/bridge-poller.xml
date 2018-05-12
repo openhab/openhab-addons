@@ -37,11 +37,11 @@
 					<option value="input">input register</option>
 				</options>
 			</parameter>
-            <parameter name="maxTries" type="integer" min="1">
-                <label>Maximum tries when reading</label>
-                <default>3</default>
-                <description>Number of tries when reading data, if some of the reading fail. For single try, enter 1.</description>
-            </parameter>
+			<parameter name="maxTries" type="integer" min="1">
+				<label>Maximum tries when reading</label>
+				<default>3</default>
+				<description>Number of tries when reading data, if some of the reading fail. For single try, enter 1.</description>
+			</parameter>
 		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>
