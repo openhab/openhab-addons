@@ -132,7 +132,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         logger.trace("Thing {} '{}' received command '{}' to channel '{}'", getThing().getUID(), getThing().getLabel(),
                 command, channelUID);
 
-        if (RefreshType.REFRESH.equals(command)) {
+        if (RefreshType.REFRESH == command) {
             if (pollTask == null || manager == null) {
                 logger.debug(
                         "Thing {} '{}' received REFRESH but no poll task and/or modbus manager is available. Aborting processing of command '{}' to channel '{}'. Not properly initialized or child of endpoint? ",
