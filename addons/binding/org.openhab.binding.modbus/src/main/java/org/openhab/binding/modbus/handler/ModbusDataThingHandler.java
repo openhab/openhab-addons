@@ -80,7 +80,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ModbusDataThingHandler extends BaseThingHandler implements ModbusReadCallback, ModbusWriteCallback {
 
-    private Logger logger = LoggerFactory.getLogger(ModbusDataThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ModbusDataThingHandler.class);
     private volatile ModbusDataConfiguration config;
 
     private static final Map<String, List<Class<? extends State>>> CHANNEL_ID_TO_ACCEPTED_TYPES = new HashMap<>();
