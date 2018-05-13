@@ -56,6 +56,10 @@ public abstract class AbstractJeeLinkConnection implements JeeLinkConnection {
         connectionListener.connectionOpened();
     }
 
+    protected void notifyClosed() {
+        connectionListener.connectionClosed();
+    }
+
     protected void notifyAbort(String cause) {
         connectionListener.connectionAborted(cause);
         initialized.set(false);
