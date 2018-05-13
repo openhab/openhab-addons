@@ -30,8 +30,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.joda.time,
- org.joda.time.base,
  org.openhab.binding.seneye,
  org.openhab.binding.seneye.handler,
  org.osgi.framework,
