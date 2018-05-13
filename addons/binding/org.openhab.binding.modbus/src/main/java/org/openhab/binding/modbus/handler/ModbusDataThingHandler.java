@@ -288,15 +288,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 pollStart = pollTask.getRequest().getReference();
                 childOfEndpoint = false;
             }
-            if (!validateAndParseReadParameters()) {
-                // status already updated to OFFLINE
-                return;
-            }
-            if (!validateAndParseWriteParameters()) {
-                // status already updated to OFFLINE
-                return;
-            }
-            if (!validateMustReadOrWrite()) {
+            if (!validateAndParseReadParameters() || !validateAndParseWriteParameters() || !validateMustReadOrWrite()) {
                 // status already updated to OFFLINE
                 return;
             }
