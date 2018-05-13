@@ -25,17 +25,15 @@ public interface ModbusPollerThingHandler {
      * Return {@link PollTask} represented by this thing.
      *
      * Note that the poll task might be <code>null</code> in case initialization is not complete.
-     * Also note that it is not guaranteed that the poll task is registered as regular poll with {@link ModbusManager}
-     * (refresh=0 setting)
      *
-     * @return
+     * @return poll task represented by this poller
      */
     public PollTask getPollTask();
 
     /**
      * Get {@link ModbusManager} supplier
      *
-     * @return
+     * @return supplier of ModbusManger
      */
     public Supplier<ModbusManager> getManagerRef();
 
