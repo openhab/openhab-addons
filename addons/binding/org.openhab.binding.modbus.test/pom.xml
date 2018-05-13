@@ -9,7 +9,6 @@
     <version>2.3.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.openhab.binding</groupId>
   <artifactId>org.openhab.binding.modbus.test</artifactId>
   <packaging>eclipse-test-plugin</packaging>
 
