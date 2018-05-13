@@ -60,7 +60,7 @@
             <parameter name="refreshInterval" type="integer">
                 <label>Refresh interval</label>
                 <description>Refresh interval of home data</description>
-                <default>60</default>
+                <default>30</default>
                 <advanced>true</advanced>
             </parameter>
             <parameter name="fallbackTimerDuration" type="integer">
