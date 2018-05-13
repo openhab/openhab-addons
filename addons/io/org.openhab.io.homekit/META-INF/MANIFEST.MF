@@ -35,7 +35,6 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.console,
  org.eclipse.smarthome.io.console.extensions,
- org.eclipse.smarthome.model.item,
  org.openhab.io.homekit,
  org.osgi.framework,
  org.osgi.service.component,
