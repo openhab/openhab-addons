@@ -103,7 +103,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     }
 
     //
-    // also note reset of values in dispose()
+    // If you change the below default/initial values, please update the corresponding values in dispose()
     //
     private volatile ValueType readValueType;
     private volatile ValueType writeValueType;
