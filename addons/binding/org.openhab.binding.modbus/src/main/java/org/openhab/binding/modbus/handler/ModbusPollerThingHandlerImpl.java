@@ -178,8 +178,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         // No channels, no commands
     }
 
-    @Override
-    public ModbusEndpointThingHandler getEndpointThingHandler() {
+    private ModbusEndpointThingHandler getEndpointThingHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
             logger.debug("Bridge is null");

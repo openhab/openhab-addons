@@ -39,10 +39,4 @@ public interface ModbusPollerThingHandler {
      */
     public Supplier<ModbusManager> getManagerRef();
 
-    /**
-     * Return the endpoint thing handler
-     *
-     * @return
-     */
-    public ModbusEndpointThingHandler getEndpointThingHandler();
 }
