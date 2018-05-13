@@ -194,7 +194,7 @@
             <enabled>false</enabled>
           </snapshots>
           <id>p2-smarthome-release</id>
-          <url>http://download.eclipse.org/smarthome/updates-release/${esh.releaseVersion}</url>
+          <url>http://download.eclipse.org/smarthome/updates-release/${esh.version}</url>
           <layout>p2</layout>
         </repository>
       </repositories>
