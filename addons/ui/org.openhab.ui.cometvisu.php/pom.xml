@@ -30,6 +30,21 @@
       <artifactId>org.openhab.ui.dashboard</artifactId>
       <version>${ohc.version}</version>
     </dependency>
+    <dependency>
+        <groupId>org.eclipse.smarthome.model</groupId>
+        <artifactId>org.eclipse.smarthome.model.sitemap</artifactId>
+        <version>${esh.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.smarthome.ui</groupId>
+        <artifactId>org.eclipse.smarthome.ui</artifactId>
+        <version>${esh.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.smarthome.ui</groupId>
+        <artifactId>org.eclipse.smarthome.ui.icon</artifactId>
+        <version>${esh.version}</version>
+    </dependency>
   </dependencies>
 
 </project>
