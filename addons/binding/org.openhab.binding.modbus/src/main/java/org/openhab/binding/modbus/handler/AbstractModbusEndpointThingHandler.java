@@ -40,7 +40,7 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
 
     protected @NonNull Supplier<ModbusManager> managerRef;
     protected volatile EndpointPoolConfiguration poolConfiguration;
-    private Logger logger = LoggerFactory.getLogger(AbstractModbusEndpointThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractModbusEndpointThingHandler.class);
 
     @SuppressWarnings("null")
     public AbstractModbusEndpointThingHandler(@NonNull Bridge bridge, @NonNull Supplier<ModbusManager> managerRef) {
