@@ -71,9 +71,6 @@
 					<option value="bit">individual bit (bit)</option>
 				</options>
 			</parameter>
-
-
-
 			<parameter name="writeStart" type="text">
 				<label>Write address</label>
 				<description><![CDATA[Start address of the first holding register or coil in the write. Use empty for read-only things.
@@ -90,7 +87,6 @@
 					<option value="holding">holding register</option>
 				</options>
 			</parameter>
-
 			<parameter name="writeTransform" type="text">
 				<label>Write transform</label>
 				<description><![CDATA[Transformation to apply to received commands.
@@ -113,7 +109,6 @@
 					<option value="bit">individual bit (bit)</option>
 				</options>
 			</parameter>
-
 			<parameter name="writeMultipleEvenWithSingleRegisterOrCoil" type="boolean">
 				<label>Write multiple even with single register or coil</label>
 				<default>false</default>
