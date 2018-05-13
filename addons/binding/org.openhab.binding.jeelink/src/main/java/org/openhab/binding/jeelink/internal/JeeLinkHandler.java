@@ -154,9 +154,7 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
     public void handleInput(String input) {
         Matcher matcher = READING_P.matcher(input);
         if (matcher.matches()) {
-            if (!connectionInitialized.getAndSet(true)) {
-                intializeConnection();
-            }
+            intializeConnection();
 
             String sensorType = matcher.group(1);
             JeeLinkReadingConverter<?> converter;
@@ -198,12 +196,14 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
     }
 
     private void intializeConnection() {
-        JeeLinkConfig cfg = getConfig().as(JeeLinkConfig.class);
+        if (!connectionInitialized.getAndSet(true)) {
+            JeeLinkConfig cfg = getConfig().as(JeeLinkConfig.class);
 
-        String initCommands = cfg.initCommands;
-        if (initCommands != null && !initCommands.trim().isEmpty()) {
-            logger.debug("Sending init commands for port {}: {}", connection.getPort(), initCommands);
-            connection.sendCommands(initCommands);
+            String initCommands = cfg.initCommands;
+            if (initCommands != null && !initCommands.trim().isEmpty()) {
+                logger.debug("Sending init commands for port {}: {}", connection.getPort(), initCommands);
+                connection.sendCommands(initCommands);
+            }
         }
     }
 
