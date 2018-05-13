@@ -58,6 +58,12 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
     public void initialize() {
         configuration = getConfigAs(TadoMobileDeviceConfig.class);
 
+        if (configuration.refreshInterval <= 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Refresh interval of zone "
+                    + configuration.id + " of home " + getHomeId() + " must be greater than zero");
+            return;
+        }
+
         Bridge bridge = getBridge();
         if (bridge != null) {
             bridgeStatusChanged(bridge.getStatusInfo());

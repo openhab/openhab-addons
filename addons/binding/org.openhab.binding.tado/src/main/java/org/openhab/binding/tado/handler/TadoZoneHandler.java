@@ -152,6 +152,21 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     @Override
     public void initialize() {
         configuration = getConfigAs(TadoZoneConfig.class);
+
+        if (configuration.refreshInterval <= 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Refresh interval of zone "
+                    + getZoneId() + " of home " + getHomeId() + " must be greater than zero");
+            return;
+        } else if (configuration.fallbackTimerDuration <= 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Fallback timer duration of zone "
+                    + getZoneId() + " of home " + getHomeId() + " must be greater than zero");
+            return;
+        } else if (configuration.hvacChangeDebounce <= 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "HVAC change debounce of zone "
+                    + getZoneId() + " of home " + getHomeId() + " must be greater than zero");
+            return;
+        }
+
         Bridge bridge = getBridge();
         if (bridge != null) {
             bridgeStatusChanged(bridge.getStatusInfo());
