@@ -227,18 +227,18 @@ public class HyperionNgHandler extends BaseThingHandler {
 
         // update effect
         // find the color priority that has the same origin specified in the Thing configuration
-        Priority effectPriority = priorities.stream() // convert list to stream
+        Optional<Priority> effectPriority = priorities.stream() // convert list to stream
                 .filter(priority -> EFFECT_PRIORITY.equals(priority.getComponentId())
                         && priority.getOrigin().matches(regex))
-                .findFirst().orElse(null);
+                .findFirst();
 
         // if there is no effect priority for the openHAB origin then set channel to NULL
-        if (effectPriority == null) {
-            updateState(CHANNEL_EFFECT, UnDefType.NULL);
-        } else {
-            String effectString = effectPriority.getOwner();
+        if (effectPriority.isPresent()) {
+            String effectString = effectPriority.get().getOwner();
             StringType effect = new StringType(effectString);
             updateState(CHANNEL_EFFECT, effect);
+        } else {
+            updateState(CHANNEL_EFFECT, UnDefType.NULL);
         }
 
     }
@@ -246,8 +246,8 @@ public class HyperionNgHandler extends BaseThingHandler {
     private void populateClearPriorities(List<Priority> priorities) {
         List<StateOption> options = new ArrayList<>();
         options.add(new StateOption("ALL", "ALL"));
-        priorities.stream().filter(
-                priority -> priority.getPriority() >= 1 && priority.getPriority() <= 253 && priority.isActive())
+        priorities.stream()
+                .filter(priority -> priority.getPriority() >= 1 && priority.getPriority() <= 253 && priority.isActive())
                 .forEach(priority -> {
                     options.add(new StateOption(priority.getPriority().toString(), priority.getPriority().toString()));
                 });
