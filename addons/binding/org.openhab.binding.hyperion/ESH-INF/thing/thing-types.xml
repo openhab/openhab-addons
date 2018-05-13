@@ -91,6 +91,7 @@
 				<description>The origin used on color and effect commands.</description>
 				<required>true</required>
 				<default>openHAB</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 
