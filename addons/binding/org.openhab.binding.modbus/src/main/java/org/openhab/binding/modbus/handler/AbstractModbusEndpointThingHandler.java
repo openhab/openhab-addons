@@ -52,11 +52,6 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    /**
-     * Must be overriden by subclasses to initialize config, endpoint, and poolConfiguration
-     */
-    protected abstract void configure();
-
     @SuppressWarnings("null")
     @Override
     public void initialize() {
@@ -89,18 +84,6 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     }
 
     @Override
-    public abstract int getSlaveId();
-
-    /**
-     * Format error message in case some other endpoint has been configured with different
-     * {@link EndpointPoolConfiguration}
-     *
-     * @param otherPoolConfig
-     * @return
-     */
-    protected abstract String formatConflictingParameterError(EndpointPoolConfiguration otherPoolConfig);
-
-    @Override
     public Supplier<ModbusManager> getManagerRef() {
         return managerRef;
     }
@@ -119,4 +102,21 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
             }
         }
     }
+
+    @Override
+    public abstract int getSlaveId();
+
+    /**
+     * Must be overriden by subclasses to initialize config, endpoint, and poolConfiguration
+     */
+    protected abstract void configure();
+
+    /**
+     * Format error message in case some other endpoint has been configured with different
+     * {@link EndpointPoolConfiguration}
+     *
+     * @param otherPoolConfig
+     * @return
+     */
+    protected abstract String formatConflictingParameterError(EndpointPoolConfiguration otherPoolConfig);
 }
