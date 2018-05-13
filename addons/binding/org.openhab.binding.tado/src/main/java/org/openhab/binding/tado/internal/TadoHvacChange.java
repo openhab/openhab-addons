@@ -27,7 +27,7 @@ import org.openhab.binding.tado.internal.builder.ZoneStateProvider;
 /**
  * Builder for incremental creation of zone overlays.
  *
- * @author Dennis Frommknecht - Iniital contribution
+ * @author Dennis Frommknecht - Initial contribution
  */
 public class TadoHvacChange {
     private TadoZoneHandler zoneHandler;

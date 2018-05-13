@@ -22,7 +22,7 @@ import org.openhab.binding.tado.internal.api.model.TemperatureObject;
 /**
  * Base class for zone settings builder.
  *
- * @author Dennis Frommknecht - Iniital contribution
+ * @author Dennis Frommknecht - Initial contribution
  */
 public abstract class ZoneSettingsBuilder {
     public static ZoneSettingsBuilder of(TadoZoneHandler zoneHandler) {

@@ -26,7 +26,7 @@ import com.google.gson.JsonSerializer;
 /**
  * Gson converter to handle type-hierarchy of {@link GenericZoneSetting}.
  *
- * @author Dennis Frommknecht - Iniital contribution
+ * @author Dennis Frommknecht - Initial contribution
  */
 public class ZoneSettingConverter implements JsonSerializer<GenericZoneSetting>, JsonDeserializer<GenericZoneSetting> {
     @Override

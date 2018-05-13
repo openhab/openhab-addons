@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -118,11 +119,15 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 break;
             case TadoBindingConstants.CHANNEL_ZONE_TARGET_TEMPERATURE:
                 QuantityType<Temperature> state = (QuantityType<Temperature>) command;
-                float temperatureInHomeUnit = getTemperatureUnit() == TemperatureUnit.FAHRENHEIT
-                        ? state.toUnit(ImperialUnits.FAHRENHEIT).floatValue()
-                        : state.toUnit(SIUnits.CELSIUS).floatValue();
-                pendingHvacChange.withTemperature(temperatureInHomeUnit);
-                scheduleHvacChange();
+                QuantityType<Temperature> stateInTargetUnit = getTemperatureUnit() == TemperatureUnit.FAHRENHEIT
+                        ? state.toUnit(ImperialUnits.FAHRENHEIT)
+                        : state.toUnit(SIUnits.CELSIUS);
+
+                if (stateInTargetUnit != null) {
+                    pendingHvacChange.withTemperature(stateInTargetUnit.floatValue());
+                    scheduleHvacChange();
+                }
+
                 break;
             case TadoBindingConstants.CHANNEL_ZONE_SWING:
                 pendingHvacChange.withSwing(((OnOffType) command) == OnOffType.ON);
@@ -147,9 +152,9 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     @Override
     public void initialize() {
         configuration = getConfigAs(TadoZoneConfig.class);
-
-        if (getBridge() != null) {
-            bridgeStatusChanged(getBridge().getStatusInfo());
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            bridgeStatusChanged(bridge.getStatusInfo());
         }
     }
 

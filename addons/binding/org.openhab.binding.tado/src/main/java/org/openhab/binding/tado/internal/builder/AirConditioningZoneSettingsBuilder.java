@@ -32,7 +32,7 @@ import org.openhab.binding.tado.internal.api.model.TemperatureRange;
 /**
  *
  *
- * @author Dennis Frommknecht - Iniital contribution
+ * @author Dennis Frommknecht - Initial contribution
  */
 public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
     private static final AcMode DEFAULT_MODE = AcMode.COOL;

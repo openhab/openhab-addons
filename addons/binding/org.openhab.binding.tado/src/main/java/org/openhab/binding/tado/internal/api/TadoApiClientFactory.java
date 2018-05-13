@@ -37,7 +37,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /**
  * Factory to create and configure {@link TadoApiClient} instances.
  *
- * @author Dennis Frommknecht - Iniital contribution
+ * @author Dennis Frommknecht - Initial contribution
  */
 public class TadoApiClientFactory {
     private static final String OAUTH_SCOPE = "home.user";

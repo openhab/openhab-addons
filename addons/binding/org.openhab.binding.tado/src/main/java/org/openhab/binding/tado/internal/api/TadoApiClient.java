@@ -29,7 +29,7 @@ import retrofit2.Response;
 /**
  * API client to access tado's cloud API.
  *
- * @author Dennis Frommknecht - Iniital contribution
+ * @author Dennis Frommknecht - Initial contribution
  */
 public class TadoApiClient {
     private PublicApi api;

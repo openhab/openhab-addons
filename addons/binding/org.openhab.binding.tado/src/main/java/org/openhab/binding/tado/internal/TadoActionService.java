@@ -19,17 +19,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * Action service for {@link TadoActions}.
  *
- * @author Dennis Frommknecht - Iniital contribution
- *
- *
- *         <implementation class="org.openhab.binding.tado.internal.TadoActionService" />
- *         <service>
- *         <provide interface="org.eclipse.smarthome.model.script.engine.action.ActionService" />
- *         </service>
- *         <reference bind="setThingRegistry" cardinality="1..1" interface=
- *         "org.eclipse.smarthome.core.thing.ThingRegistry" name="ThingRegistry" policy="static" unbind=
- *         "unsetThingRegistry"/>
- *
+ * @author Dennis Frommknecht - Initial contribution
  */
 @Component(configurationPid = "binding.tado.action", name = "TadoActionsService", service = ActionService.class)
 public class TadoActionService implements ActionService {

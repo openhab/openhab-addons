@@ -13,6 +13,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -56,8 +57,10 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
     @Override
     public void initialize() {
         configuration = getConfigAs(TadoMobileDeviceConfig.class);
-        if (getBridge() != null) {
-            bridgeStatusChanged(getBridge().getStatusInfo());
+
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            bridgeStatusChanged(bridge.getStatusInfo());
         }
     }
 

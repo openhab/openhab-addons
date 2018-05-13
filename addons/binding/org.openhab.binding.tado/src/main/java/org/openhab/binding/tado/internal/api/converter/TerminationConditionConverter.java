@@ -27,7 +27,7 @@ import com.google.gson.JsonSerializer;
 /**
  * Gson converter to handle type-hierarchy of {@link OverlayTerminationCondition}.
  *
- * @author Dennis Frommknecht - Iniital contribution
+ * @author Dennis Frommknecht - Initial contribution
  */
 public class TerminationConditionConverter
         implements JsonSerializer<OverlayTerminationCondition>, JsonDeserializer<OverlayTerminationCondition> {

@@ -16,7 +16,7 @@ import okhttp3.Response;
 /**
  * Interceptor to set user-agent header on API requests.
  *
- * @author Dennis Frommknecht - Iniital contribution
+ * @author Dennis Frommknecht - Initial contribution
  */
 public class UserAgentInterceptor implements Interceptor {
 

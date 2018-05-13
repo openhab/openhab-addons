@@ -27,7 +27,7 @@ import org.openhab.binding.tado.internal.api.model.TimerTerminationConditionTemp
 /**
  * Utility methods for the conversion of API types.
  *
- * @author Dennis Frommknecht - Iniital contribution
+ * @author Dennis Frommknecht - Initial contribution
  */
 public class TadoApiTypeUtils {
     public static OverlayTerminationCondition getTerminationCondition(OverlayTerminationConditionType type,

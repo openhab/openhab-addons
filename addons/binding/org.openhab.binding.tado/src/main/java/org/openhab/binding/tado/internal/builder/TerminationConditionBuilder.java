@@ -22,7 +22,7 @@ import org.openhab.binding.tado.internal.api.model.ZoneState;
 /**
  * Builder for creation of overlay termination conditions.
  *
- * @author Dennis Frommknecht - Iniital contribution
+ * @author Dennis Frommknecht - Initial contribution
  */
 public class TerminationConditionBuilder {
     private TadoZoneHandler zoneHandler;

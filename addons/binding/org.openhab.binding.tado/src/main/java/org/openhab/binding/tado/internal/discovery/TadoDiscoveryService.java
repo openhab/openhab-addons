@@ -34,7 +34,7 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Discovery service for zones and mobile devices.
  *
- * @author Dennis Frommknecht - Iniital contribution
+ * @author Dennis Frommknecht - Initial contribution
  */
 public class TadoDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(TadoDiscoveryService.class);

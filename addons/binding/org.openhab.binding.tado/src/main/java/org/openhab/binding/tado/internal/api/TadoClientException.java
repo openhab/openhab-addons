@@ -11,7 +11,7 @@ package org.openhab.binding.tado.internal.api;
 /**
  * Custom exception for logical errors on the API.
  *
- * @author Dennis Frommknecht - Iniital contribution
+ * @author Dennis Frommknecht - Initial contribution
  */
 public class TadoClientException extends Exception {
     public TadoClientException() {
