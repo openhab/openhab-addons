@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public class JsonTcpConnection {
 
-    private Logger logger = LoggerFactory.getLogger(JsonTcpConnection.class);
+    private final Logger logger = LoggerFactory.getLogger(JsonTcpConnection.class);
     private InetAddress address;
     private int port;
     private Socket hyperionServerSocket;
