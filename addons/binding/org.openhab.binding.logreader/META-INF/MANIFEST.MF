@@ -20,8 +20,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.joda.time,
- org.joda.time.format,
  org.openhab.binding.logreader,
  org.openhab.binding.logreader.handler,
  org.slf4j
