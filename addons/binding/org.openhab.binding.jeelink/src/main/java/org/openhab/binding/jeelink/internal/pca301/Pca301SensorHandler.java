@@ -90,7 +90,7 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
 
     @Override
     public ReadingPublisher<Pca301Reading> createPublisher() {
-        ReadingPublisher<Pca301Reading> publisher = new ReadingPublisher<Pca301Reading>() {
+        return new ReadingPublisher<Pca301Reading>() {
             @Override
             public void publish(Pca301Reading reading) {
                 if (reading != null) {
@@ -112,8 +112,6 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
             public void dispose() {
             }
         };
-
-        return new DiscardConfigReadingsPublisher(publisher);
     }
 
     private void sendCommand(Command command) {
