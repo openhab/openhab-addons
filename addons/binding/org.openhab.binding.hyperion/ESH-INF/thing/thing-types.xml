@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="hyperion" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="hyperion"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -50,15 +51,15 @@
 			<channel id="effect" typeId="effect" />
 			<channel id="clear" typeId="clear" />
 			<channel id="color" typeId="color" />
-			<channel id="blackborder" typeId="component" />
-			<channel id="smoothing" typeId="component" />
-			<channel id="kodichecker" typeId="component" />
-			<channel id="forwarder" typeId="component" />
-			<channel id="udplistener" typeId="component" />
-			<channel id="boblightserver" typeId="component" />
-			<channel id="grabber" typeId="component" />
-			<channel id="v4l" typeId="component" />
-			<channel id="leddevice" typeId="component" />
+			<channel id="blackborder" typeId="blackborder" />
+			<channel id="smoothing" typeId="smoothing" />
+			<channel id="kodichecker" typeId="kodichecker" />
+			<channel id="forwarder" typeId="forwarder" />
+			<channel id="udplistener" typeId="udplistener" />
+			<channel id="boblightserver" typeId="boblightserver" />
+			<channel id="grabber" typeId="grabber" />
+			<channel id="v4l" typeId="v4l" />
+			<channel id="leddevice" typeId="leddevice" />
 		</channels>
 
 		<config-description>
@@ -115,21 +116,69 @@
 	</channel-type>
 
 	<channel-type id="clear" advanced="true">
-	   <item-type>String</item-type>
+		<item-type>String</item-type>
 		<label>Clear priority</label>
 		<description>Clears the given Hyperion priority</description>
-	</channel-type>
-
-	<channel-type id="component" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Enabled</label>
-		<description>Shows the current state of the component and allows enabling or disabling the component</description>
 	</channel-type>
 
 	<channel-type id="enabled">
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>Shows whether Hyperion is currently enabled or not and allows enabling or disabling of Hyperion</description>
+	</channel-type>
+
+	<channel-type id="blackborder" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Black border</label>
+		<description>Shows the current state of the component and allows enabling or disabling the component</description>
+	</channel-type>
+
+	<channel-type id="smoothing" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Smoothing</label>
+		<description>Shows the current state of the component and allows enabling or disabling the component</description>
+	</channel-type>
+
+	<channel-type id="kodichecker" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Kodi checker</label>
+		<description>Shows the current state of the component and allows enabling or disabling the component</description>
+	</channel-type>
+
+	<channel-type id="forwarder" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Forwarder</label>
+		<description>Shows the current state of the component and allows enabling or disabling the component</description>
+	</channel-type>
+
+	<channel-type id="udplistener" advanced="true">
+		<item-type>Switch</item-type>
+		<label>UDP listener</label>
+		<description>Shows the current state of the component and allows enabling or disabling the component</description>
+	</channel-type>
+
+	<channel-type id="boblightserver" advanced="true">
+		<item-type>Switch</item-type>
+		<label>UDP listener</label>
+		<description>Shows the current state of the component and allows enabling or disabling the component</description>
+	</channel-type>
+
+	<channel-type id="grabber" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Grabber</label>
+		<description>Shows the current state of the component and allows enabling or disabling the component</description>
+	</channel-type>
+
+	<channel-type id="v4l" advanced="true">
+		<item-type>Switch</item-type>
+		<label>V4L device</label>
+		<description>Shows the current state of the component and allows enabling or disabling the component</description>
+	</channel-type>
+
+	<channel-type id="leddevice" advanced="true">
+		<item-type>Switch</item-type>
+		<label>LED device</label>
+		<description>Shows the current state of the component and allows enabling or disabling the component</description>
 	</channel-type>
 
 </thing:thing-descriptions>
