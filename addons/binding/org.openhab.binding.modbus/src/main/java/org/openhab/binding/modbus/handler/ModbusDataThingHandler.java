@@ -161,7 +161,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             transformedCommand = Optional.of(command);
         } else {
             transformOutput = writeTransformation.transform(bundleContext, command.toString());
-            if (transformOutput.trim().contains("[")) {
+            if (transformOutput.contains("[")) {
                 processJsonTransform(command, transformOutput);
                 return;
             } else if (transformationOnlyInWrite) {
@@ -226,7 +226,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
     @SuppressWarnings("null")
     private void processJsonTransform(Command command, String transformOutput) {
-        final Collection<ModbusWriteRequestBlueprint> requests;
+        Collection<ModbusWriteRequestBlueprint> requests;
         try {
             requests = WriteRequestJsonUtilities.fromJson(slaveId, transformOutput);
         } catch (Exception e) {
