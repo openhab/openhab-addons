@@ -177,6 +177,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             case CHANNEL_PLAYFAVORITE:
                 if (command instanceof StringType) {
                     playFavorite(command);
+                    updateState(CHANNEL_PLAYFAVORITE, UnDefType.UNDEF);
                 } else if (RefreshType.REFRESH == command) {
                     updateState(CHANNEL_PLAYFAVORITE, UnDefType.UNDEF);
                 }
@@ -274,10 +275,19 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         connection.playURI(command.toString());
     }
 
-    public void playFavorite(Command command) {
-        String path = connection.getFavoritePath(command.toString());
-        if (StringUtils.isNotEmpty(path)) {
-            connection.playURI(path);
+    private void playFavorite(Command command) {
+        KodiFavorite favorite = connection.getFavorite(command.toString());
+        if (favorite != null) {
+            String path = favorite.getPath();
+            String windowParameter = favorite.getWindowParameter();
+            if (StringUtils.isNotEmpty(path)) {
+                connection.playURI(path);
+            } else if (StringUtils.isNotEmpty(windowParameter)) {
+                String[] windowParameters = { windowParameter };
+                connection.activateWindow(favorite.getWindow(), windowParameters);
+            } else {
+                connection.activateWindow(favorite.getWindow());
+            }
         } else {
             logger.debug("Received unknown favorite '{}'.", command);
         }
