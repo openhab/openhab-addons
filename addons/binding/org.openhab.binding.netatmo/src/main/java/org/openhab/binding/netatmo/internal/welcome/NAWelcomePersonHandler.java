@@ -45,18 +45,21 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
 
     @Override
     public void updateChannels(Object module) {
-        WelcomeApi welcomeApi = getBridgeHandler().getWelcomeApi();
-        NAWelcomeEventResponse eventResponse = welcomeApi.getlasteventof(getParentId(), getId(), 10);
+        if (isRefreshRequired()) {
+            WelcomeApi welcomeApi = getBridgeHandler().getWelcomeApi();
+            NAWelcomeEventResponse eventResponse = welcomeApi.getlasteventof(getParentId(), getId(), 10);
 
-        // Search the last event for this person
-        List<NAWelcomeEvent> rawEventList = eventResponse.getBody().getEventsList();
-        rawEventList.forEach(event -> {
-            if (event.getPersonId() != null && event.getPersonId().equalsIgnoreCase(getId())
-                    && (lastEvent == null || lastEvent.getTime() < event.getTime())) {
-                lastEvent = event;
-            }
-        });
+            // Search the last event for this person
+            List<NAWelcomeEvent> rawEventList = eventResponse.getBody().getEventsList();
+            rawEventList.forEach(event -> {
+                if (event.getPersonId() != null && event.getPersonId().equalsIgnoreCase(getId())
+                        && (lastEvent == null || lastEvent.getTime() < event.getTime())) {
+                    lastEvent = event;
+                }
+            });
 
+            setRefreshRequired(false);
+        }
         super.updateChannels(module);
     }
 
@@ -108,12 +111,12 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
         if ((command instanceof OnOffType) && (CHANNEL_WELCOME_PERSON_ATHOME.equalsIgnoreCase(channelUID.getId()))) {
             if ((OnOffType) command == OnOffType.OFF) {
                 getBridgeHandler().getWelcomeApi().setpersonsaway(getParentId(), getId());
+                requestParentRefresh();
                 // } else {
                 // Experimental, this method is not documented in the API but **seems** to work
                 // Playing to much with it seems to lead to connection refused
                 // getBridgeHandler().getWelcomeApi().setpersonshome(getParentId(), "[\"" + getId() + "\"]");
             }
-            requestParentRefresh();
         }
     }
 

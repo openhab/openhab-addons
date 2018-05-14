@@ -60,12 +60,15 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
 
     @Override
     public void updateChannels(Object module) {
-        measurableChannels.getAsCsv().ifPresent(csvParams -> {
-            ThermostatApi thermostatApi = getBridgeHandler().getThermostatApi();
-            NAMeasureResponse measures = thermostatApi.getmeasure(getParentId(), "max", csvParams, getId(), null, null,
-                    1, true, true);
-            measurableChannels.setMeasures(measures);
-        });
+        if (isRefreshRequired()) {
+            measurableChannels.getAsCsv().ifPresent(csvParams -> {
+                ThermostatApi thermostatApi = getBridgeHandler().getThermostatApi();
+                NAMeasureResponse measures = thermostatApi.getmeasure(getParentId(), "max", csvParams, getId(), null,
+                        null, 1, true, true);
+                measurableChannels.setMeasures(measures);
+            });
+            setRefreshRequired(false);
+        }
         super.updateChannels(module);
     }
 
