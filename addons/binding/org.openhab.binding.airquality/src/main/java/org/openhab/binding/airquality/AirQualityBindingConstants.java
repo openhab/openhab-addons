@@ -27,6 +27,8 @@ public class AirQualityBindingConstants {
 
     public static final String BINDING_ID = "airquality";
 
+    public static final String LOCAL = "local";
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_AQI = new ThingTypeUID(BINDING_ID, "aqi");
 
