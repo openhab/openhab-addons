@@ -31,6 +31,7 @@
     <module>org.openhab.binding.coolmasternet</module>
     <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dscalarm</module>
+    <module>org.openhab.binding.denonmarantz</module>
     <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
     <module>org.openhab.binding.feed.test</module>
