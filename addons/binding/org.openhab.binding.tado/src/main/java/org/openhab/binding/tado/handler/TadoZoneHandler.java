@@ -33,7 +33,6 @@ import org.openhab.binding.tado.TadoBindingConstants;
 import org.openhab.binding.tado.TadoBindingConstants.OperationMode;
 import org.openhab.binding.tado.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.TadoBindingConstants.ZoneType;
-import org.openhab.binding.tado.config.TadoZoneConfig;
 import org.openhab.binding.tado.internal.TadoHvacChange;
 import org.openhab.binding.tado.internal.adapter.TadoZoneStateAdapter;
 import org.openhab.binding.tado.internal.api.TadoClientException;
@@ -42,6 +41,7 @@ import org.openhab.binding.tado.internal.api.model.Overlay;
 import org.openhab.binding.tado.internal.api.model.OverlayTerminationCondition;
 import org.openhab.binding.tado.internal.api.model.Zone;
 import org.openhab.binding.tado.internal.api.model.ZoneState;
+import org.openhab.binding.tado.internal.config.TadoZoneConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

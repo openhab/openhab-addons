@@ -22,9 +22,9 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.tado.TadoBindingConstants;
-import org.openhab.binding.tado.config.TadoMobileDeviceConfig;
 import org.openhab.binding.tado.internal.api.TadoClientException;
 import org.openhab.binding.tado.internal.api.model.MobileDevice;
+import org.openhab.binding.tado.internal.config.TadoMobileDeviceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

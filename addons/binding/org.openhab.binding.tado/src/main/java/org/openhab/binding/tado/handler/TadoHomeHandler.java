@@ -18,12 +18,12 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.tado.TadoBindingConstants;
 import org.openhab.binding.tado.TadoBindingConstants.TemperatureUnit;
-import org.openhab.binding.tado.config.TadoHomeConfig;
 import org.openhab.binding.tado.internal.api.TadoApiClient;
 import org.openhab.binding.tado.internal.api.TadoApiClientFactory;
 import org.openhab.binding.tado.internal.api.TadoClientException;
 import org.openhab.binding.tado.internal.api.model.HomeInfo;
 import org.openhab.binding.tado.internal.api.model.User;
+import org.openhab.binding.tado.internal.config.TadoHomeConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

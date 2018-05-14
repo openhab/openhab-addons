@@ -6,14 +6,14 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.tado.config;
+package org.openhab.binding.tado.internal.config;
 
 /**
- * Holder-object for home configuration
+ * Holder-object for mobile device configuration
  *
  * @author Dennis Frommknecht - Initial contribution
  */
-public class TadoHomeConfig {
-    public String username;
-    public String password;
+public class TadoMobileDeviceConfig {
+    public int id;
+    public int refreshInterval;
 }
