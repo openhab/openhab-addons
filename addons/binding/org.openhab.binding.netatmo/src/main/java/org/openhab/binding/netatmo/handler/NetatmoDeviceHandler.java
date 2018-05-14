@@ -140,6 +140,13 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                 } else {
                     logger.debug("Failed to update device {} readings! Skip updating channels", getId());
                 }
+                // Be sure that all channels for the modules will be updated with refreshed data
+                childs.forEach((childId, moduleData) -> {
+                    Optional<AbstractNetatmoThingHandler> childHandler = getBridgeHandler().findNAThing(childId);
+                    childHandler.map(NetatmoModuleHandler.class::cast).ifPresent(naChildModule -> {
+                        naChildModule.setRefreshRequired(true);
+                    });
+                });
             } else {
                 logger.debug("Data still valid for device {}", getId());
             }
