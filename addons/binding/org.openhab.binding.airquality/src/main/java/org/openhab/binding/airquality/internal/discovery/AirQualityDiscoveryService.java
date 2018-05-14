@@ -96,7 +96,7 @@ public class AirQualityDiscoveryService extends AbstractDiscoveryService {
 
     public void createResults(PointType location) {
         ThingUID localAirQualityThing = new ThingUID(THING_TYPE_AQI, LOCAL);
-        Map<String, Object> properties = new HashMap<>(3);
+        Map<String, Object> properties = new HashMap<>();
         properties.put(LOCATION, String.format("%s,%s", location.getLatitude(), location.getLongitude()));
         thingDiscovered(DiscoveryResultBuilder.create(localAirQualityThing).withLabel("Local Air Quality")
                 .withProperties(properties).build());
