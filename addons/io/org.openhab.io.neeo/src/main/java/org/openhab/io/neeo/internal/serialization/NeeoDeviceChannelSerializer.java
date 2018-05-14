@@ -28,6 +28,7 @@ import org.openhab.io.neeo.internal.models.NeeoCapabilityType;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannel;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannelKind;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannelRange;
+import org.openhab.io.neeo.internal.models.NeeoDeviceChannelText;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -147,6 +148,10 @@ public class NeeoDeviceChannelSerializer
             jo.addProperty("itemLabel", itemLabel);
             jo.add("acceptedCommandTypes", jsonContext.serialize(commandTypes));
             jo.addProperty("isReadOnly", isReadOnly);
+
+            if (chnl instanceof NeeoDeviceChannelText) {
+                jo.addProperty("labelVisible", ((NeeoDeviceChannelText) chnl).isLabelVisible());
+            }
         }
 
         return jo;
@@ -190,9 +195,17 @@ public class NeeoDeviceChannelSerializer
                 ? context.deserialize(jo.get("kind"), NeeoDeviceChannelKind.class)
                 : NeeoDeviceChannelKind.ITEM;
 
+        final boolean labelVisible = jo.has("labelVisible") ? jo.get("labelVisible").getAsBoolean() : true;
+
         try {
-            return new NeeoDeviceChannel(kind, itemName, channelNbr, capType, itemSubType,
-                    label == null || StringUtils.isEmpty(label) ? NeeoUtil.NOTAVAILABLE : label, value, range);
+            if (capType == NeeoCapabilityType.TEXTLABEL) {
+                return new NeeoDeviceChannelText(kind, itemName, channelNbr, capType, itemSubType,
+                        label == null || StringUtils.isEmpty(label) ? NeeoUtil.NOTAVAILABLE : label, value, range,
+                        labelVisible);
+            } else {
+                return new NeeoDeviceChannel(kind, itemName, channelNbr, capType, itemSubType,
+                        label == null || StringUtils.isEmpty(label) ? NeeoUtil.NOTAVAILABLE : label, value, range);
+            }
         } catch (NullPointerException | IllegalArgumentException e) {
             throw new JsonParseException(e);
         }

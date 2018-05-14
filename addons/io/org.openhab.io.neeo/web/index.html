@@ -127,7 +127,7 @@
                     <fieldset class="deviceCapabilities">
                         <legend>Device Capabilities</legend>
                         <div class="deviceCapability">
-                            <label><input type="checkbox" name="checkbox" ng-checked="$ctrl.isAlwaysOn()" ng-click="$ctrl.toggleAlwaysOn()">Always On</label>
+                            <div><label><input type="checkbox" name="checkbox" ng-checked="$ctrl.isAlwaysOn()" ng-click="$ctrl.toggleAlwaysOn()">Always On</label></div>
                         </div>
                     </fieldset>
                 </div>
@@ -476,9 +476,15 @@
 
 
                                                 <div class="channelLabel">
-                                                    <div class="channelLabelButton" ng-if="channel.type ==='textlabel' || channel.type=='slider'">
+                                                    <div class="channelLabelButton" ng-if="channel.type=='slider'">
                                                         <input ng-model="channel.label" placeholder="Label" />
                                                     </div>
+                                                    
+                                                    <div class="channelLabelButton" ng-if="channel.type ==='textlabel'">
+                                                        <input ng-model="channel.label" placeholder="Label" ng-disabled='!channel.labelVisible'/>
+                                                        <input ng-model="channel.labelVisible" type="checkbox" name="checkbox"/>
+                                                    </div>
+                                                    
                                                     <div class="channelLabelButton" ng-if="channel.type ==='button'">
                                                         <input ng-model="channel.label" placeholder="Label" />
                                                         <span uib-dropdown>

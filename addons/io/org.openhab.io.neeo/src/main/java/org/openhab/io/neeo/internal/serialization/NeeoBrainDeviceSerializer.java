@@ -24,6 +24,7 @@ import org.openhab.io.neeo.internal.models.NeeoDevice;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannel;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannelKind;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannelRange;
+import org.openhab.io.neeo.internal.models.NeeoDeviceChannelText;
 import org.openhab.io.neeo.internal.models.NeeoDeviceTiming;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -200,8 +201,14 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
                 capabilities.add(createBase(uniqueItemName, channel.getLabel(), NeeoCapabilityType.SENSOR.toString(),
                         compPath + "/image/sensor", sensorTypeObj));
             } else if (capabilityType == NeeoCapabilityType.TEXTLABEL) {
-                capabilities.add(createBase(uniqueItemName, channel.getLabel(), capabilityType.toString(),
-                        compPath + "/textlabel/actor", new JsonPrimitive(uniqueItemName)));
+                final JsonObject capObj = createBase(uniqueItemName, channel.getLabel(), capabilityType.toString(),
+                        compPath + "/textlabel/actor", new JsonPrimitive(uniqueItemName));
+
+                capObj.addProperty("isLabelVisible",
+                        channel instanceof NeeoDeviceChannelText ? ((NeeoDeviceChannelText) channel).isLabelVisible()
+                                : true);
+
+                capabilities.add(capObj);
 
                 final JsonObject sensorTypeObj = new JsonObject();
                 sensorTypeObj.addProperty("type", NeeoCapabilityType.SENSOR_CUSTOM.toString());

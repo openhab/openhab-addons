@@ -112,6 +112,11 @@ public class NeeoItemValueConverter {
                 break;
         }
 
+        // Note: state.as can return null
+        if (convertedState == null) {
+            convertedState = UnDefType.UNDEF;
+        }
+
         if (convertedState instanceof OnOffType) {
             return new NeeoItemValue(convertedState == OnOffType.ON);
         } else if (convertedState instanceof OpenClosedType) {

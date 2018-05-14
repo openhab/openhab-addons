@@ -98,6 +98,11 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
         final String groupId = channelUID.getGroupId();
         final String channelId = channelUID.getIdWithoutGroup();
 
+        if (groupId == null || StringUtils.isEmpty(groupId)) {
+            logger.debug("GroupID for channel is null - ignoring command: {}", channelUID);
+            return;
+        }
+        
         if (command instanceof RefreshType) {
             refreshChannel(protocol, groupId, channelId);
         } else {
@@ -181,11 +186,14 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
             final ThingUID thingUid = getThing().getUID();
             final List<Channel> channels = new ArrayList<>();
             for (NeeoMacro macro : device.getMacros().getMacros()) {
-                final Channel channel = ChannelBuilder
-                        .create(new ChannelUID(thingUid, NeeoConstants.DEVICE_GROUP_MACROSID, macro.getKey()), "Switch")
-                        .withType(UidUtils.createChannelType(macro)).build();
+                final String key = macro.getKey();
+                if (key != null && StringUtils.isNotEmpty(key)) {
+                    final Channel channel = ChannelBuilder
+                            .create(new ChannelUID(thingUid, NeeoConstants.DEVICE_GROUP_MACROSID, key), "Switch")
+                            .withType(UidUtils.createChannelType(macro)).build();
 
-                channels.add(channel);
+                    channels.add(channel);
+                }
             }
 
             final ThingBuilder thingBuilder = editThing();

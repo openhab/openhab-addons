@@ -84,6 +84,10 @@ Mappings consist of two parts:
 Please see this screen shot for reference to the next two sections.  This screen show partially shows the setup of my Russound (whole house music system):
 ![Configuration](doc/dashboardthings.png)
 
+##### NEEO Text Label
+
+The NEEO text label type will allow you to specify showing the label and text or just the text.  To show both a label and the text on the NEEO remote, uncheck the check mark next the the associated label field and enter in the label you wish to assign to the text.w
+
 #### Thing to Device
 
 The first step in mapping is to map an openHAB thing to a NEEO device type.  You may either choose an existing openHAB item or create a new 'virtual' thing by pressing the "+ Virtual" button and assign a name to it.  
@@ -145,6 +149,7 @@ Any device type that is marked with any type will be visible to the NEEO App whe
 ### Format
 
 When you have a text label, you can specify the text format to use and will be prefilled if the channel provides a default.  You can use any standard java string format for the value.  You may also provide a transformation format (in the same format as in .items file).  Example: "MAP(stuff.map):%s" will use the MAP tranformation file "stuff.map" to convert the value to a string. 
+
 
 #### Items to Capabilities
 
@@ -238,6 +243,30 @@ There are two files being stored:
 
 1.  discoveredbrains.json will contain the brains that are discovered or manually added from the 'brains' tab.  As brains are discovered, manually added or removed, this file will be updated.
 2.  neeodefinitions.json will contain the device mappings defined on the 'things' tab.  As definitions are saved, this file will be updated.
+
+## Firmware
+
+The following are notes on some of the NEEO Firmwares
+
+
+### 50.x
+
+The following changes have occurred:
+
+1. Added support for the MUSICPLAYER type
+2. Added support to hide the label for a text field
+
+### 49.2
+
+The following changes have occurred:
+
+1. SKIP BACKWARD should be changed to PREVIOUS
+2. SKIP FORWARD should be changed to NEXT
+3. ENTER should be changed to CURSOR ENTER 
+4. Added support for 'specificname' (allowing you to override the name shown in NEEO)
+5. Added support for HSBType channels (creates 4 channels: overall, hue, brightness and saturation)
+6. Added NEEO Brain name to the Brain tab
+
 
 ## Configuration
 

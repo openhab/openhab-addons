@@ -24,6 +24,7 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
         { value: "HDMISWITCH", text: "HDMI Switch"},
         { value: "LIGHT", text: "Light"}, 
         { value: "MEDIAPLAYER", text: "Media Player"},
+        { value: "MUSICPLAYER", text: "Music Player"},
         { value: "PROJECTOR", text: "Projector"},
         { value: "SOUNDBAR", text: "Soundbar"},
         { value: "THERMOSTAT", text: "Thermostat"},

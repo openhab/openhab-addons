@@ -36,7 +36,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.io.transport.mdns.MDNSClient;
 import org.openhab.io.neeo.NeeoConstants;
-import org.openhab.io.neeo.internal.MdnsHelper;
 import org.openhab.io.neeo.internal.NeeoApi;
 import org.openhab.io.neeo.internal.NeeoUtil;
 import org.openhab.io.neeo.internal.ServiceContext;
@@ -146,12 +145,6 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
                 } catch (IOException e) {
                     logger.debug("IOException reading {}: {}", file.toPath(), e.getMessage(), e);
                 }
-            }
-
-            try {
-                MdnsHelper.sendQuery();
-            } catch (IOException e) {
-                logger.error("Exception sending query: {}", e.getMessage(), e);
             }
 
             for (ServiceInfo info : context.getMdnsClient().list(NeeoConstants.NEEO_MDNS_TYPE)) {

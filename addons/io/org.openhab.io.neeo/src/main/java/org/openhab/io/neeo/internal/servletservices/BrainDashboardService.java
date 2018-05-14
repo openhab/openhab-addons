@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.openhab.io.neeo.NeeoBrainServlet;
 import org.openhab.io.neeo.NeeoService;
-import org.openhab.io.neeo.internal.MdnsHelper;
 import org.openhab.io.neeo.internal.NeeoUtil;
 import org.openhab.io.neeo.internal.models.BrainStatus;
 import org.openhab.io.neeo.internal.servletservices.models.BrainInfo;
@@ -84,9 +83,6 @@ public class BrainDashboardService extends DefaultServletService {
 
         try {
             if (StringUtils.equalsIgnoreCase(paths[0], "brainstatus")) {
-                // Resend a query
-                MdnsHelper.sendQuery();
-
                 final List<BrainStatus> status = new ArrayList<>();
                 for (NeeoBrainServlet servlet : service.getServlets()) {
                     status.add(servlet.getBrainStatus());
