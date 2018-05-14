@@ -51,6 +51,7 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
 
     private AtomicBoolean connectionInitialized = new AtomicBoolean(false);
     private ScheduledFuture<?> connectJob;
+    private ScheduledFuture<?> initJob;
 
     public JeeLinkHandler(Bridge bridge) {
         super(bridge);
@@ -79,18 +80,40 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
             connectJob.cancel(true);
             connectJob = null;
         }
+
+        JeeLinkConfig cfg = getConfig().as(JeeLinkConfig.class);
+        initJob = scheduler.schedule(() -> {
+            intializeConnection();
+        }, cfg.initDelay, TimeUnit.SECONDS);
+
+        logger.debug("Init commands scheduled in {} seconds.", cfg.initDelay);
+    }
+
+    @Override
+    public void connectionClosed() {
+        logger.debug("Connection to port {} closed.", connection.getPort());
+
+        updateStatus(ThingStatus.OFFLINE);
+        connectionInitialized.set(false);
+
+        if (initJob != null) {
+            initJob.cancel(true);
+        }
     }
 
     @Override
     public void connectionAborted(String cause) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, cause);
 
+        if (initJob != null) {
+            initJob.cancel(true);
+        }
+        connectionInitialized.set(false);
+
         connectJob = scheduler.schedule(() -> {
             connection.openConnection();
         }, 10, TimeUnit.SECONDS);
         logger.debug("Connection to port {} aborted ({}). Reconnect scheduled.", connection.getPort(), cause);
-
-        connectionInitialized.set(false);
     }
 
     public void addReadingHandler(ReadingHandler<? extends Reading> h) {
@@ -131,15 +154,7 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
     public void handleInput(String input) {
         Matcher matcher = READING_P.matcher(input);
         if (matcher.matches()) {
-            if (!connectionInitialized.getAndSet(true)) {
-                JeeLinkConfig cfg = getConfig().as(JeeLinkConfig.class);
-
-                String initCommands = cfg.initCommands;
-                if (initCommands != null && !initCommands.trim().isEmpty()) {
-                    logger.debug("Sending init commands for port {}: {}", connection.getPort(), initCommands);
-                    connection.sendCommands(initCommands);
-                }
-            }
+            intializeConnection();
 
             String sensorType = matcher.group(1);
             JeeLinkReadingConverter<?> converter;
@@ -180,6 +195,18 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
         }
     }
 
+    private void intializeConnection() {
+        if (!connectionInitialized.getAndSet(true)) {
+            JeeLinkConfig cfg = getConfig().as(JeeLinkConfig.class);
+
+            String initCommands = cfg.initCommands;
+            if (initCommands != null && !initCommands.trim().isEmpty()) {
+                logger.debug("Sending init commands for port {}: {}", connection.getPort(), initCommands);
+                connection.sendCommands(initCommands);
+            }
+        }
+    }
+
     @Override
     public void dispose() {
         if (connectJob != null) {
@@ -193,9 +220,6 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
 
         synchronized (sensorTypeConvertersMap) {
             sensorTypeConvertersMap.clear();
-        }
-        synchronized (readingClassHandlerMap) {
-            readingClassHandlerMap.clear();
         }
 
         super.dispose();
