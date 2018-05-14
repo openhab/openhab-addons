@@ -26,6 +26,7 @@
 			<channel id="temperature" typeId="temperature" />
 			<channel id="pressure" typeId="pressure" />
 			<channel id="humidity" typeId="humidity" />
+			<channel id="dominentpol" typeId="dominentPol" />
 		</channels>
 
 		<config-description>
@@ -56,7 +57,7 @@
 		<label>Air Quality Index</label>
 		<description></description>
 		<category>Air Quality Index</category>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="aqiDescription">
@@ -64,7 +65,7 @@
 		<label>AQI Description</label>
 		<description></description>
 		<category>AQI Description</category>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="pm25">
@@ -72,7 +73,7 @@
 		<label>PM2.5</label>
 		<description>Fine particles pollution level</description>
 		<category>PM2.5</category>
-		<state readOnly="true" pattern="%d μg/m&#179;"></state>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="pm10">
@@ -80,7 +81,7 @@
 		<label>PM10</label>
 		<description>Coarse dust particles pollution level</description>
 		<category>PM10</category>
-		<state readOnly="true" pattern="%d μg/m&#179;"></state>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="o3">
@@ -88,7 +89,7 @@
 		<label>O3</label>
 		<description>Ozone level</description>
 		<category>O3</category>
-		<state readOnly="true" pattern="%.1f μg/m&#179;"></state>
+		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 
 	<channel-type id="no2">
@@ -96,7 +97,7 @@
 		<label>NO2</label>
 		<description>Nitrogen dioxide level</description>
 		<category>NO2</category>
-		<state readOnly="true" pattern="%.1f μg/m&#179;"></state>
+		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 
 	<channel-type id="co">
@@ -104,7 +105,7 @@
 		<label>CO</label>
 		<description>Carbon monoxide level</description>
 		<category>CO</category>
-		<state readOnly="true" pattern="%.1f μg/m&#179;"></state>
+		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 
 	<channel-type id="locationName" advanced="true">
@@ -112,15 +113,15 @@
 		<label>Location</label>
 		<description>Nearest measuring station location</description>
 		<category>Location</category>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="stationLocation" advanced="true">
 		<item-type>Location</item-type>
 		<label>Station Location</label>
-		<description>Latitude/Longitude of the measuring station</description>
+		<description>Location of the measuring station</description>
 		<category>Station Location</category>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%2$s°N,%3$s°W" />
 	</channel-type>
 
 	<channel-type id="stationId" advanced="true">
@@ -128,7 +129,7 @@
 		<label>Station ID</label>
 		<description>Unique measuring station ID</description>
 		<category>Station ID</category>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="observationTime" advanced="true">
@@ -136,32 +137,37 @@
 		<label>Observation time</label>
 		<description>Observation date and time</description>
 		<category>Observation time</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperature" advanced="true">
-		<item-type>Number</item-type>
-		<label>Temperature (°C)</label>
-		<description>Temperature in Celsius degrees</description>
-		<category>Temperature (°C)</category>
-		<state readOnly="true" pattern="%.1f °C"></state>
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="pressure" advanced="true">
-		<item-type>Number</item-type>
-		<label>Pressure level</label>
-		<description></description>
-		<category>Pressure level</category>
-		<state readOnly="true" pattern="%.1f hPa"></state>
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure</label>
+		<description>Current Pressure</description>
+		<category>Pressure</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="humidity" advanced="true">
-		<item-type>Number</item-type>
-		<label>Humidity level</label>
-		<description></description>
-		<category>Humidity level</category>
-		<state readOnly="true" min="0" max="100" pattern="%.2f %%">
-		</state>
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Current humidity</description>
+		<category>Humidity</category>
+		<state readOnly="true" min="0" max="100" pattern="%.2f %unit%" />
+	</channel-type>
+	
+	<channel-type id="dominentPol">
+		<item-type>String</item-type>
+		<label>Dominent Polutor</label>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 </thing:thing-descriptions>

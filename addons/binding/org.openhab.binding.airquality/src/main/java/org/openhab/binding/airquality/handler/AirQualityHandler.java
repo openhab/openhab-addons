@@ -8,19 +8,26 @@
  */
 package org.openhab.binding.airquality.handler;
 
+import static org.openhab.binding.airquality.AirQualityBindingConstants.*;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.measure.quantity.Pressure;
+import javax.measure.quantity.Temperature;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.PointType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -32,7 +39,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.airquality.AirQualityBindingConstants;
 import org.openhab.binding.airquality.internal.AirQualityConfiguration;
 import org.openhab.binding.airquality.json.AirQualityJsonResponse;
 import org.slf4j.Logger;
@@ -62,6 +68,8 @@ public class AirQualityHandler extends BaseThingHandler {
 
     private Gson gson;
 
+    private int retryCounter = 0;
+
     public AirQualityHandler(Thing thing) {
         super(thing);
         gson = new Gson();
@@ -77,23 +85,19 @@ public class AirQualityHandler extends BaseThingHandler {
         logger.debug("config stationId = {}", config.stationId);
         logger.debug("config refresh = {}", config.refresh);
 
-        boolean validConfig = true;
         String errorMsg = null;
 
         if (StringUtils.trimToNull(config.apikey) == null) {
             errorMsg = "Parameter 'apikey' is mandatory and must be configured";
-            validConfig = false;
         }
         if (StringUtils.trimToNull(config.location) == null && config.stationId == null) {
             errorMsg = "Parameter 'location' or 'stationId' is mandatory and must be configured";
-            validConfig = false;
         }
         if (config.refresh != null && config.refresh < 5) {
             errorMsg = "Parameter 'refresh' must be at least 5 minutes";
-            validConfig = false;
         }
 
-        if (validConfig) {
+        if (errorMsg == null) {
             updateStatus(ThingStatus.ONLINE);
             startAutomaticRefresh();
         } else {
@@ -109,7 +113,8 @@ public class AirQualityHandler extends BaseThingHandler {
             Runnable runnable = () -> {
                 try {
                     // Request new air quality data to the aqicn.org service
-                    aqiResponse = updateAirQualityData();
+                    retryCounter = 0;
+                    aqiResponse = getAirQualityData();
 
                     // Update all channels from the updated AQI data
                     for (Channel channel : getThing().getChannels()) {
@@ -163,8 +168,12 @@ public class AirQualityHandler extends BaseThingHandler {
             State state = null;
             if (value == null) {
                 state = UnDefType.UNDEF;
-            } else if (value instanceof Calendar) {
-                state = new DateTimeType((Calendar) value);
+            } else if (value instanceof PointType) {
+                state = (PointType) value;
+            } else if (value instanceof ZonedDateTime) {
+                state = new DateTimeType((ZonedDateTime) value);
+            } else if (value instanceof QuantityType<?>) {
+                state = (QuantityType<?>) value;
             } else if (value instanceof BigDecimal) {
                 state = new DecimalType((BigDecimal) value);
             } else if (value instanceof Integer) {
@@ -186,13 +195,28 @@ public class AirQualityHandler extends BaseThingHandler {
     }
 
     /**
-     * Get new data from aqicn.org service
+     * Build request URL from configuration data
      *
-     * @return {AirQualityJsonResponse}
+     * @return a valid URL for the aqicn.org service
      */
-    private AirQualityJsonResponse updateAirQualityData() {
+    private String buildRequestURL() {
         AirQualityConfiguration config = getConfigAs(AirQualityConfiguration.class);
-        return getAirQualityData(StringUtils.trimToEmpty(config.location), config.stationId);
+
+        String location = StringUtils.trimToEmpty(config.location);
+        Integer stationId = config.stationId;
+
+        String geoStr = "geo:";
+        geoStr += location.replace(" ", "").replace(",", ";").replace("\"", "").replace("'", "").trim();
+
+        String urlStr = URL.replace("%apikey%", StringUtils.trimToEmpty(config.apikey));
+
+        if (stationId == null) {
+            urlStr = urlStr.replace("%QUERY%", geoStr);
+        } else {
+            urlStr = urlStr.replace("%QUERY%", "@" + stationId);
+        }
+
+        return urlStr;
     }
 
     /**
@@ -202,28 +226,14 @@ public class AirQualityHandler extends BaseThingHandler {
      * @param stationId station ID from config
      * @return the air quality data object mapping the JSON response or null in case of error
      */
-    private AirQualityJsonResponse getAirQualityData(String location, Integer stationId) {
+    private AirQualityJsonResponse getAirQualityData() {
         AirQualityJsonResponse result = null;
-        boolean resultOk = false;
         String errorMsg = null;
 
+        String urlStr = buildRequestURL();
+        logger.debug("URL = {}", urlStr);
+
         try {
-            // Build a valid URL for the aqicn.org service
-            AirQualityConfiguration config = getConfigAs(AirQualityConfiguration.class);
-
-            String geoStr = "geo:";
-            geoStr += location.replace(" ", "").replace(",", ";").replace("\"", "").replace("'", "").trim();
-
-            String urlStr = URL.replace("%apikey%", StringUtils.trimToEmpty(config.apikey));
-
-            if (stationId == null) {
-                urlStr = urlStr.replace("%QUERY%", geoStr);
-            } else {
-                urlStr = urlStr.replace("%QUERY%", "@" + stationId);
-            }
-
-            logger.debug("URL = {}", urlStr);
-
             // Run the HTTP request and get the JSON response from aqicn.org
             URL url = new URL(urlStr);
             URLConnection connection = url.openConnection();
@@ -238,17 +248,20 @@ public class AirQualityHandler extends BaseThingHandler {
                 IOUtils.closeQuietly(connection.getInputStream());
             }
 
-            if (result == null) {
-                errorMsg = "no data returned";
-            } else if (result.getData() != null && result.getStatus() != "error") {
-                resultOk = true;
+            if (result.getData() != null && result.getStatus() != "error") {
+                String attributions = result.getData().getAttributions();
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, attributions);
+                return result;
             } else {
+                retryCounter++;
+                if (retryCounter == 1) {
+                    logger.warn("Error in aqicn.org (Air Quality), retrying once");
+                    return getAirQualityData();
+                }
                 errorMsg = "missing data sub-object";
-            }
-
-            if (!resultOk) {
                 logger.warn("Error in aqicn.org (Air Quality) response: {}", errorMsg);
             }
+
         } catch (MalformedURLException e) {
             errorMsg = e.getMessage();
             logger.warn("Constructed url is not valid: {}", errorMsg);
@@ -259,55 +272,46 @@ public class AirQualityHandler extends BaseThingHandler {
             errorMsg = e.getMessage();
         }
 
-        // Update the thing status
-        if (resultOk) {
-            String attributions = result.getData().getAttributions();
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, attributions);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errorMsg);
-        }
-
-        return resultOk ? result : null;
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errorMsg);
+        return null;
     }
 
     public static Object getValue(String channelId, AirQualityJsonResponse data) throws Exception {
         String[] fields = StringUtils.split(channelId, "#");
 
-        if (data == null) {
-            return null;
-        }
-
-        String fieldName = fields[0];
-
-        switch (fieldName) {
-            case AirQualityBindingConstants.AQI:
-                return data.getData().getAqi();
-            case AirQualityBindingConstants.AQIDESCRIPTION:
-                return data.getData().getAqiDescription();
-            case AirQualityBindingConstants.PM25:
-                return data.getData().getIaqi().getPm25();
-            case AirQualityBindingConstants.PM10:
-                return data.getData().getIaqi().getPm10();
-            case AirQualityBindingConstants.O3:
-                return data.getData().getIaqi().getO3();
-            case AirQualityBindingConstants.NO2:
-                return data.getData().getIaqi().getNo2();
-            case AirQualityBindingConstants.CO:
-                return data.getData().getIaqi().getCo();
-            case AirQualityBindingConstants.LOCATIONNAME:
-                return data.getData().getCity().getName();
-            case AirQualityBindingConstants.STATIONID:
-                return data.getData().getStationId();
-            case AirQualityBindingConstants.STATIONLOCATION:
-                return data.getData().getCity().getGeo();
-            case AirQualityBindingConstants.OBSERVATIONTIME:
-                return data.getData().getTime().getDateString();
-            case AirQualityBindingConstants.TEMPERATURE:
-                return data.getData().getIaqi().getT();
-            case AirQualityBindingConstants.PRESSURE:
-                return data.getData().getIaqi().getP();
-            case AirQualityBindingConstants.HUMIDITY:
-                return data.getData().getIaqi().getH();
+        if (data != null) {
+            switch (fields[0]) {
+                case AQI:
+                    return data.getData().getAqi();
+                case AQIDESCRIPTION:
+                    return data.getData().getAqiDescription();
+                case PM25:
+                    return data.getData().getIaqi().getPm25();
+                case PM10:
+                    return data.getData().getIaqi().getPm10();
+                case O3:
+                    return data.getData().getIaqi().getO3();
+                case NO2:
+                    return data.getData().getIaqi().getNo2();
+                case CO:
+                    return data.getData().getIaqi().getCo();
+                case LOCATIONNAME:
+                    return data.getData().getCity().getName();
+                case STATIONID:
+                    return data.getData().getStationId();
+                case STATIONLOCATION:
+                    return new PointType(data.getData().getCity().getGeo());
+                case OBSERVATIONTIME:
+                    return data.getData().getTime().getObservationTime();
+                case TEMPERATURE:
+                    return new QuantityType<Temperature>(data.getData().getIaqi().getT(), API_TEMPERATURE_UNIT);
+                case PRESSURE:
+                    return new QuantityType<Pressure>(data.getData().getIaqi().getP(), API_PRESSURE_UNIT);
+                case HUMIDITY:
+                    return new QuantityType<>(data.getData().getIaqi().getH(), API_HUMIDITY_UNIT);
+                case DOMINENTPOL:
+                    return data.getData().getDominentPol();
+            }
         }
 
         return null;

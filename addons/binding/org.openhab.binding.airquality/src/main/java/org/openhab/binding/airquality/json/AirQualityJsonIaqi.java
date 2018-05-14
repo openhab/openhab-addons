@@ -34,6 +34,9 @@ public class AirQualityJsonIaqi {
     private AirQualityValue<BigDecimal> pressure;
     private AirQualityValue<BigDecimal> h;
 
+    @SerializedName("w")
+    private AirQualityValue<BigDecimal> wind;
+
     public AirQualityJsonIaqi() {
     }
 
@@ -67,6 +70,10 @@ public class AirQualityJsonIaqi {
 
     public BigDecimal getH() {
         return h.getValue();
+    }
+
+    public BigDecimal getW() {
+        return wind.getValue();
     }
 
 }

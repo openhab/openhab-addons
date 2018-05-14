@@ -8,9 +8,7 @@
  */
 package org.openhab.binding.airquality.json;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -19,6 +17,7 @@ import com.google.gson.annotations.SerializedName;
  * the "time" node from the waqi.org JSON response
  *
  * @author Kuba Wolanin - Initial contribution
+ * @author Gaël L'hopital - Use ZonedDateTime instead of Calendar
  */
 public class AirQualityJsonTime {
 
@@ -28,31 +27,16 @@ public class AirQualityJsonTime {
     @SerializedName("tz")
     private String timeZone;
 
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
-
-    /**
-     * Get Time zone from the JSON Response
-     * in following format: "+0100"
-     *
-     * @return {String}
-     */
-    public String getTimeZone() {
-        return timeZone;
-    }
-
     /**
      * Get observation time
      *
-     * @return {Calendar}
+     * @return {ZonedDateTime}
      * @throws Exception
      */
-    public Calendar getDateString() throws Exception {
-        Calendar calendar = Calendar.getInstance();
-        synchronized (SDF) {
-            Date date = SDF.parse(dateString + timeZone.replace(":", ""));
-            calendar.setTime(date);
-        }
-        return calendar;
+    public ZonedDateTime getObservationTime() throws Exception {
+        String fullString = dateString.replace(" ", "T") + timeZone;
+        ZonedDateTime observationTime = ZonedDateTime.parse(fullString);
+        return observationTime;
     }
 
 }
