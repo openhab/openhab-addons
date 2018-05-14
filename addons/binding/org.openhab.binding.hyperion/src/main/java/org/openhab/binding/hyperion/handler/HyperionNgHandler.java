@@ -200,7 +200,6 @@ public class HyperionNgHandler extends BaseThingHandler {
     }
 
     private void updatePriorities(List<Priority> priorities) {
-
         populateClearPriorities(priorities);
 
         String regex = origin + ".*";
@@ -240,7 +239,6 @@ public class HyperionNgHandler extends BaseThingHandler {
         } else {
             updateState(CHANNEL_EFFECT, UnDefType.NULL);
         }
-
     }
 
     private void populateClearPriorities(List<Priority> priorities) {
