@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+	http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="channel-type:job:config">
+		<parameter name="remoteStart" type="text" pattern="^STANDARD|REMOTE_1|REMOTE_2$">
+			<label>Remote Start</label>
+			<description>The location to start the mowing job from.</description>
+		</parameter>
+		<parameter name="duration" type="integer" min="0" max="60" unit="m">
+			<context>time</context>
+			<label>Job Duration</label>
+			<description>The duration of the job.</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="afterMode" type="text" pattern="^AUTO|HOME|EOD$">
+			<label>After Job Mode</label>
+			<description>The Mode to put the mower into after the job is done.</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

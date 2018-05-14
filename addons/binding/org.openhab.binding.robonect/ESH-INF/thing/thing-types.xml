@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions
+		bindingId="robonect" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="mower">
+		<label>Mower</label>
+		<description>Mower robot connected via robonect module</description>
+		<channels>
+			<channel id="name" typeId="nameType"/>
+			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="wlan-signal" typeId="system.signal-strength"/>
+			<channel id="mowing-hours" typeId="hoursType"/>
+
+			<channel id="mode" typeId="modeType"/>
+			<channel id="start" typeId="startType"/>
+			<channel id="status" typeId="mowerStatusType"/>
+			<channel id="status-duration" typeId="durationType"/>
+			
+			<channel id="timer-status" typeId="timerStatusType"/>
+			<channel id="timer-next" typeId="nextTimerType"/>
+
+			<channel id="job" typeId="jobType"/>
+
+			<channel id="offlineTrigger" typeId="offlineTriggerType"/>
+
+			<channel id="error-code" typeId="errorCodeType"/>
+			<channel id="error-message" typeId="errorMessageType"/>
+			<channel id="error-date" typeId="errorDateType"/>
+
+			<channel id="last-error-code" typeId="errorCodeType">
+				<label>Last Error Code</label>
+				<description>The Error code of the last error occurred</description>
+			</channel>
+			<channel id="last-error-message" typeId="errorMessageType">
+				<label>Last Error Message</label>
+				<description>The error message of the last error occurred</description>
+			</channel>
+			<channel id="last-error-date" typeId="errorDateType">
+				<label>Last Error Date</label>
+				<description>The date and time of the last error occurred</description>
+			</channel>
+
+			<channel id="health-temperature" typeId="temperatureType"/>
+			<channel id="health-humidity" typeId="humidityType"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">robonect.de</property>
+			<property name="firmwareVersion">N/A</property>
+			<property name="compiled">N/A</property>
+			<property name="serialNumber">N/A</property>
+		</properties>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
+				<label>Host</label>
+				<description>Host name or network address of the Robonect module</description>
+			</parameter>
+			<parameter name="user" type="text" required="false">
+				<label>User</label>
+				<description>The user id if authentication has been enabled on the mower</description>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>The password if authentication has been enabled on the mower</description>
+			</parameter>
+			<parameter name="pollInterval" type="integer" required="false" unit="s">
+				<label>Polling interval</label>
+				<default>30</default>
+				<description>The interval for the binding to poll the mowers status information.
+				</description>
+			</parameter>
+			<parameter name="offlineTimeout" type="integer" required="false" unit="m">
+				<label>Offline timeout</label>
+				<default>30</default>
+				<description>The maximum time the mower may be offline before the offline trigger is triggered.
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="serialType">
+		<item-type>String</item-type>
+		<label>Robonect serial number</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="versionType">
+		<item-type>String</item-type>
+		<label>Robonect version</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="compiledType">
+		<item-type>String</item-type>
+		<label>Robonect version</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="commentType">
+		<item-type>String</item-type>
+		<label>Robonect firmware comment</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nameType">
+		<item-type>String</item-type>
+		<label>Mower name</label>
+		<description>The name of the mower</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="durationType">
+		<item-type>Number:Time</item-type>
+		<label>Status duration</label>
+		<description>The number of seconds the mower is in the current status.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="hoursType">
+		<item-type>Number:Time</item-type>
+		<label>Total mowing hours</label>
+		<description>The number of total mowing hours</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperatureType">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>The temperature inside the mower</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="humidityType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>The relative humidity in the mower in percent</description>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="modeType">
+		<item-type>String</item-type>
+		<label>Mower mode</label>
+		<description>The mower mode</description>
+		<state readOnly="false">
+			<options>
+				<option value="AUTO">Auto</option>
+				<option value="HOME">Home</option>
+				<option value="MANUAL">Manual</option>
+				<option value="EOD">End of Day</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="jobType">
+		<item-type>Switch</item-type>
+		<label>Mowing Job</label>
+		<description>Starts a mowing job</description>
+		<config-description-ref uri="channel-type:job:config" />
+	</channel-type>
+
+	<channel-type id="timerStatusType">
+		<item-type>String</item-type>
+		<label>Timer Status</label>
+		<description>The status of the timer</description>
+		<state readOnly="true">
+			<options>
+				<option value="INACTIVE">Inactive</option>
+				<option value="ACTIVE">Active</option>
+				<option value="STANDBY">Standby</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="mowerStatusType">
+		<item-type>Number</item-type>
+		<label>Mower Status</label>
+		<description>The status of the mower</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Detecting Status</option>
+				<option value="1">Parking</option>
+				<option value="2">Mowing</option>
+				<option value="3">Search Charging Station</option>
+				<option value="4">Charging</option>
+				<option value="5">Searching</option>
+				<option value="6">Unknown Status 6</option>
+				<option value="7">Error Status</option>
+				<option value="16">Off</option>
+				<option value="17">Sleeping</option>
+				<option value="99">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="startType">
+		<item-type>Switch</item-type>
+		<label>Start</label>
+		<description>On if started, Off if stopped</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="offlineTriggerType">
+		<kind>trigger</kind>
+		<label>Offline Trigger</label>
+		<event>
+			<options>
+				<option value="OFFLINE_TIMEOUT">Offline Timeout</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="nextTimerType">
+		<item-type>DateTime</item-type>
+		<label>Next timer date</label>
+		<description>The next date the timer starts</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="errorCodeType">
+		<item-type>Number</item-type>
+		<label>Error code</label>
+		<description>Error code defined by the mower manufacturer</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="errorMessageType">
+		<item-type>String</item-type>
+		<label>Error message</label>
+		<description>The error message</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="errorDateType">
+		<item-type>DateTime</item-type>
+		<label>Error date</label>
+		<description>The date and time the error occurred</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

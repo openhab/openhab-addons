@@ -1,0 +1,32 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Robonect Binding Tests
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.robonect.test;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Fragment-Host: org.openhab.binding.robonect
+Import-Package: 
+  org.apache.commons.lang.reflect,
+  org.eclipse.jdt.annotation;resolution:=optional,
+  org.eclipse.smarthome.config.discovery,
+  org.eclipse.smarthome.core.events,
+  org.eclipse.smarthome.core.types,
+  org.eclipse.smarthome.core.library.types,
+  org.eclipse.smarthome.core.thing,
+  org.eclipse.smarthome.core.thing.util,
+  org.eclipse.smarthome.test,
+  org.eclipse.smarthome.test.storage,
+  org.eclipse.jetty.client,
+  org.eclipse.jetty.http,
+  org.hamcrest;core=split,
+  org.junit,
+  org.junit.runner,
+  org.junit.runners,
+  org.mockito,
+  org.mockito.invocation,
+  org.mockito.stubbing,
+  org.mockito.verification,
+  org.openhab.binding.robonect,
+  org.osgi.service.device,
+  org.slf4j

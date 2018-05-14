@@ -1,0 +1,91 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.openhab.binding.robonect.internal.model;
+
+/**
+ * The mower information holds the main information from the majority of the available channels. This class is a POJO
+ * to deserialize the JSON response from the module.
+ * 
+ * @author Marco Meyer - Initial contribution
+ */
+public class MowerInfo extends RobonectAnswer {
+
+    private String name;
+    private Status status;
+    private Timer timer;
+    private Wlan wlan;
+    private Health health;
+    private ErrorEntry error;
+
+    /**
+     * @return - the name of the mower
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @return - some status information of the mower. See {@link Status} for details.
+     */
+    public Status getStatus() {
+        return status;
+    }
+
+    /**
+     * @return - the current timer status information.
+     */
+    public Timer getTimer() {
+        return timer;
+    }
+
+    /**
+     * @return - the WLAN signal status.
+     */
+    public Wlan getWlan() {
+        return wlan;
+    }
+
+    /**
+     * @return - if the mower is in error status {@link #getStatus()} the error information is returned, null otherwise.
+     */
+    public ErrorEntry getError() {
+        return error;
+    }
+
+    /**
+     * @return - the health status information.
+     */
+    public Health getHealth() {
+        return health;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public void setTimer(Timer timer) {
+        this.timer = timer;
+    }
+
+    public void setWlan(Wlan wlan) {
+        this.wlan = wlan;
+    }
+
+    public void setHealth(Health health) {
+        this.health = health;
+    }
+
+    public void setError(ErrorEntry error) {
+        this.error = error;
+    }
+}
