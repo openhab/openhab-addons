@@ -34,6 +34,8 @@ public class JeeLinkBindingConstants {
 
     public static final ThingTypeUID JEELINK_USB_STICK_THING_TYPE = new ThingTypeUID(BINDING_ID, "jeelinkUsb");
     public static final ThingTypeUID JEELINK_TCP_STICK_THING_TYPE = new ThingTypeUID(BINDING_ID, "jeelinkTcp");
+    public static final ThingTypeUID LGW_USB_STICK_THING_TYPE = new ThingTypeUID(BINDING_ID, "lgwUsb");
+    public static final ThingTypeUID LGW_TCP_STICK_THING_TYPE = new ThingTypeUID(BINDING_ID, "lgwTcp");
     public static final ThingTypeUID LACROSSE_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "lacrosse");
     public static final ThingTypeUID EC3000_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "ec3k");
     public static final ThingTypeUID PCA301_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "pca301");
@@ -64,6 +66,8 @@ public class JeeLinkBindingConstants {
 
         SUPPORTED_THING_TYPES_UIDS.add(JeeLinkBindingConstants.JEELINK_USB_STICK_THING_TYPE);
         SUPPORTED_THING_TYPES_UIDS.add(JeeLinkBindingConstants.JEELINK_TCP_STICK_THING_TYPE);
+        SUPPORTED_THING_TYPES_UIDS.add(JeeLinkBindingConstants.LGW_USB_STICK_THING_TYPE);
+        SUPPORTED_THING_TYPES_UIDS.add(JeeLinkBindingConstants.LGW_TCP_STICK_THING_TYPE);
         SUPPORTED_THING_TYPES_UIDS.addAll(SUPPORTED_SENSOR_THING_TYPES_UIDS);
     }
 }

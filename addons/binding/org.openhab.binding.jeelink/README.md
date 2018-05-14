@@ -1,20 +1,22 @@
 # Jeelink Binding
 
-This binding integrates JeeLink USB RF receivers.
+This binding integrates JeeLink USB RF receivers and LaCrosseGateways.
 
 ## Introduction
 
-Binding should be compatible with JeeLink USB receivers. It supports connected LaCrosse temperature sensors as well as EC3000 sensors and PCA301 power monitoring wireless sockets.
+Binding should be compatible with JeeLink USB receivers and LaCrosseGateways. It supports connected LaCrosse temperature sensors as well as EC3000 sensors and PCA301 power monitoring wireless sockets.
 
 ## Supported Things
 
 This binding supports:
 
-*   JeeLink USB RF receivers (as bridge)
-*   JeeLink USB RF receivers connected over TCP (as bridge)
-*   LaCrosse Temperature Sensors connected to the bridge
-*   EC3000 Power Monitors connected to the bridge
-*   PCA301 power monitoring wireless sockets connected to the bridge
+*   JeeLink (connected to USB)
+*   JeeLink (connected over TCP)
+*   LaCrosseGateway (connected to USB)
+*   LaCrosseGateway (connected over TCP)
+*   LaCrosse Temperature Sensors
+*   EC3000 Power Monitors
+*   PCA301 power monitoring wireless sockets
 
 ## Binding configuration
 
@@ -22,29 +24,35 @@ Configuration of the binding is not needed.
 
 ## Thing discovery
 
-Only sensor discovery is supported, the thing for the USB receiver has to be created manually. Pay attention to use the correct serial port, as otherwise the binding may interfere with other bindings accessing serial ports.
+Only sensor discovery is supported, the thing for the USB receiver / LaCrosseGateway has to be created manually. Pay attention to use the correct serial port, as otherwise the binding may interfere with other bindings accessing serial ports.
 
-Afterwards, discovery reads from the USB receiver to find out which sensors are currently connected.
-It then creates a thing for every sensor for which currently no other thing with the same sensor ID is registered with the bridge.
+Afterwards, discovery reads from the USB receiver / LaCrosseGateways to find out which sensors are currently connected.
+It then creates a thing for every unknown sensor and puts it in the Inbox.
+
+Discovery only creates things for sensors that actually send a value during discovery. LaCrosse temperature sensors send values every few seconds, so that they are normally caught by the discovery. In rare cases, a second discovery run is needed.
+
+PCA301 sockets are polled every 120 seconds by default. This results in sockets not being found by the discovery. In order to make sure the socket is discovered, press the button on the socket during discovery (and make sure you have paired the socket to the USB stick / LaCrosseGateway before by pressing the button for 3 seconds while the receiver is powered).
 
 ## Thing configuration
 
-#### JeeLink USB receivers
+#### JeeLink / LaCrosseGateway (connected to USB)
 
-| Parameter     | Item Type | Description                                                                                                                |
-|---------------|-----------|----------------------------------------------------------------------------------------------------------------------------|
-| Serial Port   | String    | The serial port name for the USB receiver. Valid values are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux |
-| Baud Rate     | Number    | The baud rate of the USB Receiver. Valid values are 9600, 19200, 38400, 57600 (default), and 115200                        |
-| Init Commands | String    | A semicolon separated list of init commands that will be send to the Jeelink, e.g. "0a v" for disabling the LED            |
+| Parameter     | Item Type | Description                                                                                                                                  |
+|---------------|-----------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| Serial Port   | String    | The serial port name for the USB receiver / LaCrosseGateway. Valid values are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux |
+| Baud Rate     | Number    | The baud rate of the USB Receiver. Valid values are 9600, 19200, 38400, 57600 (default), and 115200                                          |
+| Init Commands | String    | A semicolon separated list of init commands that will be send to the Jeelink / LaCrosseGateway, e.g. "0a" for disabling the LED              |
+
+The available init commands depend on the sketch that is running on the USB stick / LaCrosseGateway.
 
 
-#### JeeLink receivers connected over TCP
+#### JeeLink / LaCrosseGateway (connected over TCP)
 
-| Parameter     | Item Type | Description                                                                                                     |
-|---------------|-----------|-----------------------------------------------------------------------------------------------------------------|
-| IP Address    | String    | The IP address of the Server to which the USB Receiver is connected                                             |
-| TCP Port      | Number    | The TCP port over which the serial port is made available                                                       |
-| Init Commands | String    | A semicolon separated list of init commands that will be send to the Jeelink, e.g. "0a v" for disabling the LED |
+| Parameter     | Item Type | Description                                                                                                                       |
+|---------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------|
+| IP Address    | String    | The IP address of the Server to which the USB Receiver is connected, or the IP address of the LaCrosseGateway                     |
+| TCP Port      | Number    | The TCP port over which the serial port is made available, or the LaCrosseGateway port (which usually is 81)                      |
+| Init Commands | String    | A semicolon separated list of init commands that will be send to the Jeelink / LaCrosseGateway, e.g. "0a" for disabling the LED   |
 
 
 #### LaCrosse temperature sensors
@@ -71,12 +79,11 @@ It then creates a thing for every sensor for which currently no other thing with
 
 #### PCA301 power monitoring wireless sockets
 
-| Parameter         | Item Type    | Description
-|-------------------|--------------|------------
-| Sensor ID         | Number       | The ID of the connected sensor
-| Sensor Timeout    | Number       | The amount of time in seconds that should result in OFFLINE status when no readings have 
-been received from the sensor
-| Retry Count       | Number       | The number of times a switch command will be resent to the socket until giving up
+| Parameter         | Item Type    | Description                                                                                                            |
+|-------------------|--------------|------------------------------------------------------------------------------------------------------------------------|
+| Sensor ID         | Number       | The ID of the connected sensor                                                                                         |
+| Sensor Timeout    | Number       | The amount of time in seconds that should result in OFFLINE status when no readings have been received from the sensor |
+| Retry Count       | Number       | The number of times a switch command will be resent to the socket until giving up                                      |
 
 ## Channels
 
@@ -102,19 +109,19 @@ been received from the sensor
 
 #### PCA301 power monitoring wireless sockets
 
-| Channel Type ID         | Item Type    | Description
-|-------------------------|--------------|------------
-| switchingState          | Switch       | Whether the sockets are currently switched on or off
-| currentWatt             | Number       | Instantaneous power in Watt
-| consumptionTotal        | Number       | Total energy consumption 
+| Channel Type ID         | Item Type    | Description                                          |
+|-------------------------|--------------|------------------------------------------------------|
+| switchingState          | Switch       | Whether the sockets are currently switched on or off |
+| currentWatt             | Number       | Instantaneous power in Watt                          |
+| consumptionTotal        | Number       | Total energy consumption                             |
 
 ## Commands
 
 #### PCA301 power monitoring wireless sockets
 
-| Channel Type ID         | Item Type    | Description
-|-------------------------|--------------|------------
-| switchingState          | Switch       | Supports ON and OFF commands to switch the socket.
+| Channel Type ID         | Item Type    | Description                                        |
+|-------------------------|--------------|----------------------------------------------------|
+| switchingState          | Switch       | Supports ON and OFF commands to switch the socket. |
 
 ## Full Example
 

@@ -54,6 +54,7 @@ public class JeeLinkSerialConnection extends AbstractJeeLinkConnection {
             serialPort.removeEventListener();
 
             serialPort.close();
+            notifyClosed();
             open = false;
         }
     }

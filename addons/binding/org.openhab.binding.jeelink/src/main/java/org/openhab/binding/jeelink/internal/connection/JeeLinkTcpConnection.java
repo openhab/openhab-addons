@@ -47,6 +47,7 @@ public class JeeLinkTcpConnection extends AbstractJeeLinkConnection {
             reader = null;
             closeSocketSilently();
             socket = null;
+            notifyClosed();
         }
     }
 

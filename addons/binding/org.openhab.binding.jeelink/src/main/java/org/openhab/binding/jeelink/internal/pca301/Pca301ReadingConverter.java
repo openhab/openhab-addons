@@ -23,9 +23,6 @@ import org.slf4j.LoggerFactory;
 public class Pca301ReadingConverter implements JeeLinkReadingConverter<Pca301Reading> {
     private static final Pattern READING_P = Pattern.compile(
             "OK\\s+24\\s+([0-9]+)\\s+4\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)");
-    private static final Pattern CONFIG_P = Pattern.compile(
-            "L\\s+24\\s+([0-9]+)\\s+([0-9]+)\\s+:\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+"
-                    + "([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)");
 
     private final Logger logger = LoggerFactory.getLogger(Pca301ReadingConverter.class);
 
@@ -64,32 +61,6 @@ public class Pca301ReadingConverter implements JeeLinkReadingConverter<Pca301Rea
 
                 return new Pca301Reading(sensorId, channelId, data == 1, consumptionCurrent / 10f,
                         consumptionTotal * 10);
-            }
-
-            matcher = CONFIG_P.matcher(inputLine);
-            if (matcher.matches()) {
-                // Format
-                //
-                // L 24 1 0 : 1 4 1 160 236 0 0 0 0 0
-                // Interpretation:
-                // L 24: fixed
-                // 1 Byte: device number
-                // 1 Byte: retry count
-                // ":"
-                // 1 Byte: channel
-                // 1 Byte: command (04=retrieve measure data, 05=switch device, 06=identify device by toggling device
-                // LED
-                // 3 Byte: device address (UID)
-                // 1 Byte: data -> 1 with command=4 resets device statistics
-                // -> 0/1 with command=5 switches device off/on
-                // 2 Byte: current consumption in watt (scale 1/10)
-                // 2 Byte: total consumption in kWh (scale 1/100)
-                logger.trace("Creating config reading from: {}", inputLine);
-
-                int channelId = Integer.parseInt(matcher.group(3));
-                String sensorId = matcher.group(5) + "-" + matcher.group(6) + "-" + matcher.group(7);
-
-                return new Pca301Reading(sensorId, channelId);
             }
         }
 

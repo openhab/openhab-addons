@@ -14,14 +14,50 @@
 				<context>serial-port</context>
 				<description>@text/parameter.serialport.description</description>
 			</parameter>
+			<parameter name="initCommands" type="text" required="false">
+				<label>@text/parameter.initcommands.label</label>
+				<description>@text/parameter.initcommands.description</description>
+			</parameter>
 			<parameter name="baudRate" type="integer" required="false">
 				<label>@text/parameter.baudrate.label</label>
 				<description>@text/parameter.baudrate.description</description>
 				<default>57600</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="initDelay" type="integer" required="false">
+				<label>@text/parameter.initdelay.label</label>
+				<description>@text/parameter.initdelay.description</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- LGW connected to USB port -->
+	<bridge-type id="lgwUsb">
+		<label>@text/bridge-type.lgwUsb.label</label>
+		<description>@text/bridge-type.lgwUsb.description</description>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<label>@text/parameter.serialport.label</label>
+				<context>serial-port</context>
+				<description>@text/parameter.serialportlgw.description</description>
 			</parameter>
 			<parameter name="initCommands" type="text" required="false">
 				<label>@text/parameter.initcommands.label</label>
 				<description>@text/parameter.initcommands.description</description>
+			</parameter>
+			<parameter name="baudRate" type="integer" required="false">
+				<label>@text/parameter.baudrate.label</label>
+				<description>@text/parameter.baudrate.description</description>
+				<default>57600</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="initDelay" type="integer" required="false">
+				<label>@text/parameter.initdelay.label</label>
+				<description>@text/parameter.initdelay.description</description>
+				<default>20</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -45,6 +81,43 @@
 			<parameter name="initCommands" type="text" required="false">
 				<label>@text/parameter.initcommands.label</label>
 				<description>@text/parameter.initcommands.description</description>
+			</parameter>
+			<parameter name="initDelay" type="integer" required="false">
+				<label>@text/parameter.initdelay.label</label>
+				<description>@text/parameter.initdelay.description</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+	<!-- LaCrosseGateway connected over TCP Type -->
+	<bridge-type id="lgwTcp">
+		<label>@text/bridge-type.lgwTcp.label</label>
+		<description>@text/bridge-type.lgwTcp.description</description>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>@text/parameter.ipaddress.label</label>
+				<description>@text/parameter.ipaddresslgw.description</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="initCommands" type="text" required="false">
+				<label>@text/parameter.initcommands.label</label>
+				<description>@text/parameter.initcommands.description</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="port" type="integer" required="false">
+				<label>@text/parameter.port.label</label>
+				<description>@text/parameter.portlgw.description</description>
+				<default>81</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="initDelay" type="integer" required="false">
+				<label>@text/parameter.initdelay.label</label>
+				<description>@text/parameter.initdelay.description</description>
+				<default>20</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -56,6 +129,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="jeelinkTcp" />
 			<bridge-type-ref id="jeelinkUsb" />
+			<bridge-type-ref id="lgwTcp" />
+			<bridge-type-ref id="lgwUsb" />
 		</supported-bridge-type-refs>
 
 		<label>@text/thing-type.lacrosse.label</label>
@@ -113,6 +188,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="jeelinkTcp" />
 			<bridge-type-ref id="jeelinkUsb" />
+			<bridge-type-ref id="lgwTcp" />
+			<bridge-type-ref id="lgwUsb" />
 		</supported-bridge-type-refs>
 
 		<label>@text/thing-type.ec3k.label</label>
@@ -156,6 +233,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="jeelinkTcp" />
 			<bridge-type-ref id="jeelinkUsb" />
+			<bridge-type-ref id="lgwTcp" />
+			<bridge-type-ref id="lgwUsb" />
 		</supported-bridge-type-refs>
 
 		<label>@text/thing-type.pca301.label</label>
@@ -215,7 +294,7 @@
 		<label>@text/channel-type.appliance-time.label</label>
 		<description>@text/channel-type.appliance-time.description</description>
 		<state readOnly="true" pattern="%d h" />
-		
+
 	</channel-type>
 
 	<!-- Sensor On Time Channel Type -->

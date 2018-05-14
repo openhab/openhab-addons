@@ -18,28 +18,17 @@ import org.openhab.binding.jeelink.internal.Reading;
 public class Pca301Reading implements Reading {
     private final String sensorId;
     private final int channel;
-    private final boolean configReading;
     private final boolean on;
     private final float current;
     private final long total;
 
-    public Pca301Reading(String sensorId, int channel) {
-        this(sensorId, channel, false, 0, 0, true);
-    }
-
     public Pca301Reading(String sensorId, int channel, boolean deviceOn, float consumptionCurrent,
             long consumptionTotal) {
-        this(sensorId, channel, deviceOn, consumptionCurrent, consumptionTotal, false);
-    }
-
-    private Pca301Reading(String sensorId, int channel, boolean deviceOn, float consumptionCurrent,
-            long consumptionTotal, boolean configReading) {
         this.sensorId = sensorId;
         this.channel = channel;
         on = deviceOn;
         current = consumptionCurrent;
         total = consumptionTotal;
-        this.configReading = configReading;
     }
 
     @Override
@@ -61,9 +50,5 @@ public class Pca301Reading implements Reading {
 
     public long getTotal() {
         return total;
-    }
-
-    public boolean isConfigReading() {
-        return configReading;
     }
 }
