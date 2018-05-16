@@ -182,7 +182,7 @@
 			<options>
 				<option value="SCHEDULE">schedule</option>
 				<option value="MANUAL">manual</option>
-				<option value="UNTIL_CHANGE">tado mode</option>
+				<option value="UNTIL_CHANGE">until change</option>
 				<option value="TIMER">timer</option>
 			</options>
 		</state>
