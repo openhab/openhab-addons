@@ -828,4 +828,58 @@
 		</state>
 	</channel-type>
 
+	<!-- ############################### Power ############################### -->
+	<thing-type id="power">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+
+		<label>Gardena Smart Power plug</label>
+		<description>A Gardena Smart Power plug</description>
+
+		<channel-groups>
+			<channel-group id="device_info" typeId="deviceInfo" />
+			<channel-group id="radio" typeId="radio" />
+			<channel-group id="power" typeId="power" />
+			<channel-group id="firmware" typeId="firmware" />
+		</channel-groups>
+		<properties>
+			<!-- device info -->
+			<property name="manufacturer" />
+			<property name="product" />
+			<property name="serialNumber" />
+			<property name="sgtin" />
+			<property name="version" />
+			<property name="category" />
+		</properties>
+	</thing-type>
+
+	<channel-group-type id="power">
+		<label>Power</label>
+		<description>Power</description>
+		<channels>
+			<channel id="power_timer" typeId="powerTimer" />
+			<channel id="error" typeId="powerError" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="powerTimer">
+		<item-type>String</item-type>
+		<label>Power Timer</label>
+		<description>The power timer</description>
+	</channel-type>
+
+	<channel-type id="powerError">
+		<item-type>String</item-type>
+		<label>Power Error</label>
+		<description>Power Error</description>
+		<state readOnly="true">
+			<options>
+				<option value="ok">OK</option>
+				<option value="timer_cancelled">Timer Cancelled</option>
+				<option value="unknown">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+
 </thing:thing-descriptions>
