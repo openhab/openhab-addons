@@ -12,7 +12,7 @@ import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest.TokenRequestBuilder;
 import org.openhab.binding.tado.internal.api.auth.OAuth;
 import org.openhab.binding.tado.internal.api.auth.OAuthFlow;
-import org.openhab.binding.tado.internal.api.client.PublicApi;
+import org.openhab.binding.tado.internal.api.client.HomeApi;
 import org.openhab.binding.tado.internal.api.converter.OverlayTerminationConditionTemplateConverter;
 import org.openhab.binding.tado.internal.api.converter.TerminationConditionConverter;
 import org.openhab.binding.tado.internal.api.converter.ZoneCapabilitiesConverter;
@@ -48,11 +48,11 @@ public class TadoApiClientFactory {
     private static final String USER_AGENT = "openhab/tado/1.0";
 
     public TadoApiClient create(String username, String password) {
-        PublicApi PublicApi = createPublicApi(username, password);
+        HomeApi PublicApi = createHomeApi(username, password);
         return new TadoApiClient(PublicApi);
     }
 
-    private PublicApi createPublicApi(String username, String password) {
+    private HomeApi createHomeApi(String username, String password) {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
                 .registerTypeAdapter(GenericZoneSetting.class, new ZoneSettingConverter())
                 .registerTypeAdapter(OverlayTerminationCondition.class, new TerminationConditionConverter())
@@ -78,12 +78,12 @@ public class TadoApiClientFactory {
         oauth.setFlow(OAuthFlow.password);
 
         apiClient.addAuthorization("oauth", oauth);
-        return apiClient.createService(PublicApi.class);
+        return apiClient.createService(HomeApi.class);
     }
 
     private void configureLogging(ApiClient apiClient) {
         // Add logging interceptor to HTTP Client if Debug is enabled. Make it configurable?
-        Logger logger = LoggerFactory.getLogger(PublicApi.class);
+        Logger logger = LoggerFactory.getLogger(HomeApi.class);
         if (logger.isDebugEnabled()) {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
                 @Override
