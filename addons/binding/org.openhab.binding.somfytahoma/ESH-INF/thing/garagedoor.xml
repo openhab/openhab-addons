@@ -6,7 +6,7 @@
 	<thing-type id="garagedoor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
-        </supported-bridge-type-refs>
+		</supported-bridge-type-refs>
 		<label>Somfy Garage Door</label>
 		<channels>
 			<channel id="control" typeId="control"></channel>

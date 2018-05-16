@@ -13,7 +13,7 @@
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
-    
+
 	<channel-type id="execute_action">
 		<item-type>Switch</item-type>
 		<label>Somfy Action Group Trigger</label>

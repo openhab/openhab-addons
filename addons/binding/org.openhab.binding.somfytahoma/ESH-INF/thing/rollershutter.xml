@@ -6,7 +6,7 @@
 	<thing-type id="rollershutter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
-        </supported-bridge-type-refs>
+		</supported-bridge-type-refs>
 		<label>Somfy Roller Shutter</label>
 		<channels>
 			<channel id="control" typeId="control"></channel>

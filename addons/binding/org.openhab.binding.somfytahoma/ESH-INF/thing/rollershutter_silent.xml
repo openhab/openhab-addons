@@ -6,7 +6,7 @@
 	<thing-type id="rollershutter_silent">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
-        </supported-bridge-type-refs>
+		</supported-bridge-type-refs>
 		<label>Somfy Silent Roller Shutter</label>
 		<channels>
 			<channel id="control_silent" typeId="control_silent"></channel>

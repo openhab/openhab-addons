@@ -14,5 +14,5 @@
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
-    
+
 </thing:thing-descriptions>

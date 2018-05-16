@@ -6,7 +6,7 @@
 	<thing-type id="onoffheatingsystem">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
-        </supported-bridge-type-refs>
+		</supported-bridge-type-refs>
 		<label>Somfy Heating System with On/Off</label>
 		<channels>
 			<channel id="target_heating_level" typeId="target_heating_level"></channel>
