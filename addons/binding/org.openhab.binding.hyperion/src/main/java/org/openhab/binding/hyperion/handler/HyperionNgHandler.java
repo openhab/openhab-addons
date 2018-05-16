@@ -102,7 +102,7 @@ public class HyperionNgHandler extends BaseThingHandler {
             } catch (IOException e) {
                 updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             } catch (JsonParseException e) {
-                logger.error("{}", e.getMessage(), e);
+                logger.warn("{}", e.getMessage(), e);
             } catch (CommandUnsuccessfulException e) {
                 logger.warn("Server rejected the command: {}", e.getMessage());
             }
@@ -143,7 +143,7 @@ public class HyperionNgHandler extends BaseThingHandler {
             connectFuture = scheduler.scheduleWithFixedDelay(connectionJob, 0, refreshInterval, TimeUnit.SECONDS);
             refreshFuture = scheduler.scheduleWithFixedDelay(refreshJob, 0, refreshInterval, TimeUnit.SECONDS);
         } catch (UnknownHostException e) {
-            logger.error("Could not resolve host: {}", e.getMessage());
+            logger.warn("Could not resolve host: {}", e.getMessage());
             updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
