@@ -298,12 +298,16 @@ public class HyperionNgHandler extends BaseThingHandler {
     }
 
     private void updateAdjustments(List<Adjustment> adjustments) {
-        Adjustment defaultAdjustment = adjustments.stream() // convert list to stream
-                .filter(adjustment -> DEFAULT_ADJUSTMENT.equals(adjustment.getId())).findFirst().get();
+        Optional<Adjustment> defaultAdjustment = adjustments.stream() // convert list to stream
+                .filter(adjustment -> DEFAULT_ADJUSTMENT.equals(adjustment.getId())).findFirst();
 
-        int brightness = defaultAdjustment.getBrightness();
-        PercentType brightnessState = new PercentType(brightness);
-        updateState(CHANNEL_BRIGHTNESS, brightnessState);
+        if (defaultAdjustment.isPresent()) {
+            int brightness = defaultAdjustment.get().getBrightness();
+            PercentType brightnessState = new PercentType(brightness);
+            updateState(CHANNEL_BRIGHTNESS, brightnessState);
+        } else {
+            updateState(CHANNEL_BRIGHTNESS, UnDefType.UNDEF);
+        }
     }
 
     @Override

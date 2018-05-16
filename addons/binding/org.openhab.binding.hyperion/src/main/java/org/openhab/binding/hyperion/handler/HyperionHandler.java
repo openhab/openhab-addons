@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -131,46 +132,49 @@ public class HyperionHandler extends BaseThingHandler {
     }
 
     private void updateTransform(List<Transform> transform) {
-        Transform defaultTransform = transform.stream() // convert list to stream
-                .findFirst().orElse(null);
+        Optional<Transform> defaultTransform = transform.stream() // convert list to stream
+                .findFirst();
 
-        if (defaultTransform == null) {
-            updateState(CHANNEL_BRIGHTNESS, UnDefType.NULL);
-        } else {
-            double luminanceGain = defaultTransform.getLuminanceGain();
+        if (defaultTransform.isPresent()) {
+
+            double luminanceGain = defaultTransform.get().getLuminanceGain();
             if (luminanceGain >= 0.0 && luminanceGain <= 1.0) {
                 PercentType luminanceGainPercentType = new PercentType((int) (luminanceGain * 100));
                 updateState(CHANNEL_BRIGHTNESS, luminanceGainPercentType);
             }
+        } else {
+            updateState(CHANNEL_BRIGHTNESS, UnDefType.NULL);
         }
     }
 
     private void updateEffect(List<ActiveEffect> activeEffects, List<Effect> effects) {
-        ActiveEffect effect = activeEffects.stream() // convert list to stream
-                .findFirst().orElse(null);
-        if (effect == null) {
-            updateState(CHANNEL_EFFECT, UnDefType.NULL);
+        Optional<ActiveEffect> effect = activeEffects.stream() // convert list to stream
+                .findFirst();
+        if (effect.isPresent()) {
+            String path = effect.get().getScript();
+            Optional<Effect> effectDescription = effects.stream() // convert list to stream
+                    .filter(effectCandidate -> effectCandidate.getScript().equals(path)).findFirst();
+            if (effectDescription.isPresent()) {
+                String effectName = effectDescription.get().getName();
+                updateState(CHANNEL_EFFECT, new StringType(effectName));
+            }
         } else {
-            String path = effect.getScript();
-            Effect effectDescription = effects.stream() // convert list to stream
-                    .filter(effectCandidate -> effectCandidate.getScript().equals(path)).findFirst().orElse(null);
-            String effectName = effectDescription.getName();
-            updateState(CHANNEL_EFFECT, new StringType(effectName));
+            updateState(CHANNEL_EFFECT, UnDefType.NULL);
         }
     }
 
     private void updateColor(List<ActiveLedColor> activeColors) {
-        ActiveLedColor color = activeColors.stream() // convert list to stream
-                .findFirst().orElse(null);
-        if (color == null) {
-            updateState(CHANNEL_COLOR, UnDefType.NULL);
-        } else {
-            List<Integer> rgbVals = color.getRGBValue();
+        Optional<ActiveLedColor> color = activeColors.stream() // convert list to stream
+                .findFirst();
+        if (color.isPresent()) {
+            List<Integer> rgbVals = color.get().getRGBValue();
             int r = rgbVals.get(0);
             int g = rgbVals.get(1);
             int b = rgbVals.get(2);
             HSBType hsbType = HSBType.fromRGB(r, g, b);
             updateState(CHANNEL_COLOR, hsbType);
+        } else {
+            updateState(CHANNEL_COLOR, UnDefType.NULL);
         }
     }
 
