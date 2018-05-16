@@ -181,6 +181,8 @@ public class GardenaThingHandler extends BaseThingHandler {
             return type == OnOffType.ON ? Boolean.TRUE : Boolean.FALSE;
         } else if (type instanceof DecimalType) {
             return ((DecimalType) type).intValue();
+        } else if (type instanceof StringType) {
+            return ((StringType) type).toFullString();
         }
         return null;
     }
@@ -237,6 +239,9 @@ public class GardenaThingHandler extends BaseThingHandler {
                 return OUTLET_MANUAL_OVERRIDE_TIME;
             case "outlet#valve_open":
                 return OUTLET_VALVE;
+
+            case "power#power_timer":
+                return POWER_TIMER;
             default:
                 return null;
         }

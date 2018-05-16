@@ -14,6 +14,7 @@ Devices connected to Gardena Smart Home, currently:
 | watering_computer        | smart Water Control   |
 | sensor                   | smart Sensor          |
 | electronic_pressure_pump | smart Pressure Pump   |
+| power                    | smart Power Plug      |
 
 The schedules are not yet integrated!
 
@@ -96,6 +97,26 @@ In scripts:
 import org.eclipse.smarthome.core.types.RefreshType
 ...
 sendCommand(ITEM_NAME, RefreshType.REFRESH)
+```
+
+## Examples
+
+```shell
+// smart Water Control
+Switch  Watering_Valve      "Valve"             { channel="gardena:watering_computer:home:myvalve:outlet#valve_open"}
+Number  Watering_Duration   "Duration [%d min]" { channel="gardena:watering_computer:home:wasserhahn:outlet#button_manual_override_time"}
+
+// smart Power Plug
+String Power_Timer          "Power Timer [%s]"  { channel="gardena:power:home:myPowerplug:power#power_timer"}
+```
+
+```shell
+Watering_Valve.sendCommand(30) // 30 minutes
+Watering_Duration.sendCommand(ON)
+
+Power_Timer.sendCommand("on")
+Power_Timer.sendCommand("off")
+Power_Timer.sendCommand("180") // on for 180 seconds
 ```
 
 ### Debugging and Tracing
