@@ -29,5 +29,8 @@ public enum GardenaSmartCommandName {
 
     // outlet
     OUTLET_MANUAL_OVERRIDE_TIME,
-    OUTLET_VALVE;
+    OUTLET_VALVE,
+
+    // power
+    POWER_TIMER;
 }
