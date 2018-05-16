@@ -14,7 +14,7 @@ The binding itself does not require any special configuration.
 
 ## Discovery
 
-Automatic background discovery only works for Hyperion.ng servers as they advertise using mDNS.    You must manually configure a Hyperion Server V1 either through a UI / REST or .things file.
+Automatic background discovery only works for Hyperion.ng servers as they advertise using mDNS. You must manually configure a Hyperion Server V1 either through a UI / REST or .things file.
 
 ## Thing Configuration
 
