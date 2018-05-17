@@ -834,8 +834,8 @@
 			<bridge-type-ref id="account" />
 		</supported-bridge-type-refs>
 
-		<label>Gardena Smart Power plug</label>
-		<description>A Gardena Smart Power plug</description>
+		<label>Gardena Smart Power Plug</label>
+		<description>A Gardena Smart Power Plug</description>
 
 		<channel-groups>
 			<channel-group id="device_info" typeId="deviceInfo" />
@@ -867,6 +867,23 @@
 		<item-type>String</item-type>
 		<label>Power Timer</label>
 		<description>The power timer</description>
+		<state>
+			<options>
+				<option value="on">On</option>
+				<option value="off">Off</option>
+				<option value="60">1 Minute</option>
+				<option value="300">5 Minutes</option>
+				<option value="900">15 Minutes</option>
+				<option value="3600">1 Hour</option>
+				<option value="7200">2 Hours</option>
+				<option value="18000">5 Hours</option>
+				<option value="43200">12 Hours</option>
+				<option value="86400">1 Day</option>
+				<option value="259200">3 Days</option>
+				<option value="604800">1 Week</option>
+				<option value="1209600">2 Weeks</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="powerError">
