@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * representing a Niko Home Control action and has methods to trigger the action in Niko Home Control and receive action
  * updates.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 public final class NhcAction {
 
@@ -30,14 +30,18 @@ public final class NhcAction {
     private Integer type;
     private String location;
     private Integer state;
+    private Integer closeTime;
+    private Integer openTime;
 
     private NikoHomeControlHandler thingHandler;
 
-    NhcAction(int id, String name, Integer type, String location) {
+    NhcAction(int id, String name, Integer type, String location, Integer closeTime, Integer openTime) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.location = location;
+        this.closeTime = closeTime;
+        this.openTime = openTime;
     }
 
     /**
@@ -95,6 +99,7 @@ public final class NhcAction {
      * Get state of action.
      * <p>
      * State is a value between 0 and 100 for a dimmer or rollershutter.
+     * Rollershutter state is 0 for fully closed and 100 for fully open.
      * State is 0 or 100 for a switch.
      *
      * @return action state
@@ -104,9 +109,32 @@ public final class NhcAction {
     }
 
     /**
+     * Get openTime of action.
+     * <p>
+     * openTime is the time in seconds to fully open a rollershutter.
+     *
+     * @return action openTime
+     */
+    public Integer getOpenTime() {
+        return this.openTime;
+    }
+
+    /**
+     * Get closeTime of action.
+     * <p>
+     * closeTime is the time in seconds to fully close a rollershutter.
+     *
+     * @return action closeTime
+     */
+    public Integer getCloseTime() {
+        return this.closeTime;
+    }
+
+    /**
      * Sets state of action.
      * <p>
      * State is a value between 0 and 100 for a dimmer or rollershutter.
+     * Rollershutter state is 0 for fully closed and 100 for fully open.
      * State is 0 or 100 for a switch.
      * If a thing handler is registered for the action, send a state update through the handler.
      * This method should only be called from inside this package.
@@ -117,7 +145,7 @@ public final class NhcAction {
         this.state = state;
         if (thingHandler != null) {
             logger.debug("Niko Home Control: update channel state for {} with {}", id, state);
-            thingHandler.handleStateUpdate(this.type, state);
+            thingHandler.handleStateUpdate(this);
         }
     }
 
@@ -127,26 +155,12 @@ public final class NhcAction {
      * @param percent - The allowed values depend on the action type.
      *            switch action: 0 or 100
      *            dimmer action: between 0 and 100, 254 for on, 255 for off
-     *            rollershutter action: between 0 (closed) and 100 (open), 255 to open, 254 to close, 253 to stop
+     *            rollershutter action: 254 to close, 255 to open, 253 to stop
      */
     public void execute(int percent) {
         logger.debug("Niko Home Control: execute action {} of type {} for {}", percent, this.type, this.id);
 
         NhcMessageCmd nhcCmd = new NhcMessageCmd("executeactions", this.id, percent);
-
-        // rollershutters have extra fields in the command
-        if ((this.type == 4) || (this.type == 5)) {
-            switch (percent) {
-                case 255: // open
-                    nhcCmd.setEndValue(100);
-                    break;
-                case 254: // close
-                    nhcCmd.setStartValue(100);
-                    break;
-                case 253: // stop
-                    nhcCmd.setStartValue(getState());
-            }
-        }
 
         nhcComm.sendMessage(nhcCmd);
     }

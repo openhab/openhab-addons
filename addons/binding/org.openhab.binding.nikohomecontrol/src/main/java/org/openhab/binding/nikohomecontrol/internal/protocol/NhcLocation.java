@@ -12,7 +12,7 @@ package org.openhab.binding.nikohomecontrol.internal.protocol;
  * The {@link NhcLocation} class represents the location Niko Home Control communication object. It contains all fields
  * representing a Niko Home Control location.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 final class NhcLocation {
 
