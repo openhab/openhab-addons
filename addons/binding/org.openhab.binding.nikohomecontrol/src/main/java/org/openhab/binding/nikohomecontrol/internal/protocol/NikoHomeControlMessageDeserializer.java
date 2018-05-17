@@ -26,7 +26,7 @@ import com.google.gson.JsonParseException;
  * Class {@link NikoHomeControlMessageDeserializer} deserializes all json messages from Niko Home Control. Various json
  * message formats are supported. The format is selected based on the content of the cmd and event json objects.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  *
  */
 class NikoHomeControlMessageDeserializer implements JsonDeserializer<NhcMessageBase> {

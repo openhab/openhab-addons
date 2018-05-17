@@ -14,7 +14,7 @@ package org.openhab.binding.nikohomecontrol.internal.protocol;
  * <p>
  * Example: <code>{"cmd":"executeactions","id":1,"value1":0}</code>
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 @SuppressWarnings("unused")
 class NhcMessageCmd extends NhcMessageBase {

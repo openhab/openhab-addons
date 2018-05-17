@@ -87,12 +87,6 @@
 				<description>Niko Home Control IP Interface Object ID</description>
 				<advanced>false</advanced>
 			</parameter>
-			<parameter name="invert" type="boolean" required="false">
-				<label>Invert</label>
-				<description>Invert open/close behavior</description>
-				<default>false</default>
-				<advanced>false</advanced>
-			</parameter>
 		</config-description>
 	</thing-type>
 

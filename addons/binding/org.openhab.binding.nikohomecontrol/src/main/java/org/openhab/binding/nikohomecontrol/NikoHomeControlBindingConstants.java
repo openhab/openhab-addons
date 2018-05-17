@@ -20,7 +20,7 @@ import com.google.common.collect.Sets;
  * The {@link NikoHomeControlBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
 public class NikoHomeControlBindingConstants {
@@ -58,6 +58,4 @@ public class NikoHomeControlBindingConstants {
     // Thing config properties
     public static final String CONFIG_ACTION_ID = "actionId";
     public static final String CONFIG_STEP_VALUE = "step";
-    public static final String CONFIG_INVERT = "invert"; // parameter for rollershutters if NHC does not correctly map
-                                                         // to openHAB 0% UP and 100% DOWN
 }

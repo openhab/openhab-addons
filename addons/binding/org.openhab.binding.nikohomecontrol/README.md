@@ -9,7 +9,7 @@ The binding does not work for Niko Home Control II.
 
 The binding exposes all actions from the Niko Home Control System that can be triggered from the smartphone/tablet interface, as defined in the Niko Home Control programming software.
 
-Supported actions are types are switches, dimmers and rollershutters.
+Supported action types are switches, dimmers and rollershutters or blinds.
 Niko Home Control alarm and notice messages are retrieved and made available in the binding.
 
 ## Supported Things
@@ -21,7 +21,7 @@ Connected to a bridge, the Niko Home Control Binding supports on/off actions (e.
 
 The bridge representing the Niko Home Control IP-interface needs to be added first in the things file or through Paper UI.
 A bridge can be auto-discovered or created manually.
-No bridge configuration is required when using auto-discovery. An auto-discovered bridge will have an IP-address parameter automatically filled with the current IP-address of the IP-interface.
+No bridge configuration is required when using auto-discovery. An auto-discovered bridge will have an IP-address parameter automatically filled with the current IP-address of the IP-interface. This IP-address for the discovered bridge will automatically update when the IP-address of the IP-interface changes.
 
 The IP-address and port can be set when manually creating the bridge.
 
@@ -36,7 +36,7 @@ Restarting the bridge at regular times improves the connection stability and avo
 
 A discovery scan will first discover the Niko Home Control IP-interface in the network as a bridge.
 Default parameters will be used.
-Note that this may fail to find the correct Niko Home Control IP-interface when there are multiple IP-interfaces in the network.
+Note that this may fail to find the correct Niko Home Control IP-interface when there are multiple IP-interfaces in the network, or when traffic to port 10000 on the openHAB server is blocked.
 
 When the Niko Home Control bridge is added as a thing, from the discovery inbox or manually, system information will be read from the Niko Home Control Controller and will be put in the bridge properties, visible through Paper UI.
 
@@ -44,7 +44,7 @@ Subsequently, all defined actions that can be triggered from a smartphone/tablet
 It is possible to trigger a manual scan for things on the Niko Home Control bridge.
 
 If the Niko Home Control system has locations configured, these will be copied to thing locations and grouped as such in PaperUI.
-Locations can subsequently be changed through the thing location paramter in PaperUI.
+Locations can subsequently be changed through the thing location parameter in PaperUI.
 
 ## Thing Configuration
 
@@ -86,7 +86,7 @@ onOff, dimmer, blind
 
 `thingId` can have any value, but will be set to the same value as the actionId parameter if discovery is used.
 
-`"Label"` is een optional label for the thing.
+`"Label"` is an optional label for the thing.
 
 `@ "Location"` is optional, and represents the location of the thing. Auto-discovery would have assigned a value automatically.
 
@@ -97,9 +97,6 @@ Open the file with an unzip tool to read it's content.
 
 The `step` parameter is only available for dimmers.
 It sets a step value for dimmer increase/decrease actions. The parameter is optional and set to 10 by default.
-
-The `invert` parameter is only available for rollershutters.
-It will invert the up/down direction of the rollerhutter and remap the position to the opposite position. This can be used if Niko Home Control does not map correctly to openHAB 0% UP and 100% DOWN. The parameter is optional and false by default.
 
 ## Channels
 
@@ -120,7 +117,7 @@ It can be used as a trigger to rules. The event message is the alarm or notice t
 
 The binding has been tested with a Niko Home Control IP-interface (550-00508) and the Niko Home Control Connected Controller (550-00003).
 
-The binding has been developed for and tested with Niko Home Control I. It is not expected to work with Niko Home Control II, or with Niko Home Control I installations upgraded to Niko Home Control II.
+The binding has been developed for and tested with Niko Home Control I. It does not work with Niko Home Control II, or with Niko Home Control I installations upgraded to Niko Home Control II.
 
 The action events implemented are limited to onOff, dimmer and rollershutter or blinds.
 Other actions have not been implemented.

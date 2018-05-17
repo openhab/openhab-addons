@@ -17,7 +17,7 @@ import java.util.Map;
  * <p>
  * Example: <code>{"cmd":"executeactions", "data":{"error":0}}</code>
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 class NhcMessageMap extends NhcMessageBase {
 

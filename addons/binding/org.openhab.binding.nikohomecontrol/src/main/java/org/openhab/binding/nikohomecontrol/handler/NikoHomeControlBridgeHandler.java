@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * {@link NikoHomeControlBridgeHandler} is the handler for a Niko Home Control IP-interface and connects it to
  * the framework.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
 

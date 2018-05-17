@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * representing a Niko Home Control action and has methods to trigger the action in Niko Home Control and receive action
  * updates.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 public final class NhcAction {
 
@@ -30,18 +30,18 @@ public final class NhcAction {
     private Integer type;
     private String location;
     private Integer state;
-    private Integer openTime;
     private Integer closeTime;
+    private Integer openTime;
 
     private NikoHomeControlHandler thingHandler;
 
-    NhcAction(int id, String name, Integer type, String location, Integer openTime, Integer closeTime) {
+    NhcAction(int id, String name, Integer type, String location, Integer closeTime, Integer openTime) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.location = location;
-        this.openTime = openTime;
         this.closeTime = closeTime;
+        this.openTime = openTime;
     }
 
     /**
@@ -99,6 +99,7 @@ public final class NhcAction {
      * Get state of action.
      * <p>
      * State is a value between 0 and 100 for a dimmer or rollershutter.
+     * Rollershutter state is 0 for fully closed and 100 for fully open.
      * State is 0 or 100 for a switch.
      *
      * @return action state
@@ -133,6 +134,7 @@ public final class NhcAction {
      * Sets state of action.
      * <p>
      * State is a value between 0 and 100 for a dimmer or rollershutter.
+     * Rollershutter state is 0 for fully closed and 100 for fully open.
      * State is 0 or 100 for a switch.
      * If a thing handler is registered for the action, send a state update through the handler.
      * This method should only be called from inside this package.
@@ -153,7 +155,7 @@ public final class NhcAction {
      * @param percent - The allowed values depend on the action type.
      *            switch action: 0 or 100
      *            dimmer action: between 0 and 100, 254 for on, 255 for off
-     *            rollershutter action: 254 to open, 255 to close, 253 to stop
+     *            rollershutter action: 254 to close, 255 to open, 253 to stop
      */
     public void execute(int percent) {
         logger.debug("Niko Home Control: execute action {} of type {} for {}", percent, this.type, this.id);

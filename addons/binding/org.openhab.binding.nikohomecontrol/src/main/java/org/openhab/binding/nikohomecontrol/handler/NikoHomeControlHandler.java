@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * The {@link NikoHomeControlHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
 public class NikoHomeControlHandler extends BaseThingHandler {
@@ -51,8 +51,8 @@ public class NikoHomeControlHandler extends BaseThingHandler {
     static final int NHCOFF = 255;
 
     // rollershutter constants
-    static final int NHCUP = 254;
-    static final int NHCDOWN = 255;
+    static final int NHCDOWN = 254;
+    static final int NHCUP = 255;
     static final int NHCSTOP = 253;
 
     @Nullable
@@ -201,12 +201,9 @@ public class NikoHomeControlHandler extends BaseThingHandler {
 
     private void handleRollershutterCommand(NhcAction nhcAction, Command command) {
         Configuration config = this.getConfig();
-        boolean invert = (boolean) config.get(CONFIG_INVERT); // parameter if NHC does not correctly map to openHAB 0%
-                                                              // UP and 100% DOWN
         if (logger.isTraceEnabled()) {
             String actionId = (String) config.get(CONFIG_ACTION_ID);
             logger.trace("handleRollerShutterCommand: rollershutter {} command {}", actionId, command);
-            logger.trace("handleRollerShutterCommand: rollershutter {} invert flag {}", actionId, invert);
             logger.trace("handleRollerShutterCommand: rollershutter {}, current position {}", actionId,
                     nhcAction.getState());
         }
@@ -232,19 +229,17 @@ public class NikoHomeControlHandler extends BaseThingHandler {
             if (command instanceof UpDownType) {
                 UpDownType s = (UpDownType) command;
                 if (s == UpDownType.UP) {
-                    nhcAction.execute(invert ? invertRollershutter(NHCUP) : NHCUP);
+                    nhcAction.execute(NHCUP);
                 } else {
-                    nhcAction.execute(invert ? invertRollershutter(NHCDOWN) : NHCDOWN);
+                    nhcAction.execute(NHCDOWN);
                 }
             } else if (command instanceof StopMoveType) {
                 nhcAction.execute(NHCSTOP);
             } else if (command instanceof PercentType) {
-                int commandValue = ((PercentType) command).intValue();
-                int newValue = invert ? invertRollershutter(commandValue) : commandValue;
+                int newValue = 100 - ((PercentType) command).intValue();
                 if (logger.isTraceEnabled()) {
-                    logger.trace(
-                            "handleRollerShutterCommand: rollershutter {} percent command, current {}, command {}, invert {}, new {}",
-                            config.get(CONFIG_ACTION_ID), currentValue, commandValue, invert, newValue);
+                    logger.trace("handleRollerShutterCommand: rollershutter {} percent command, current {}, new {}",
+                            config.get(CONFIG_ACTION_ID), currentValue, newValue);
                 }
                 if (currentValue == newValue) {
                     return;
@@ -253,9 +248,9 @@ public class NikoHomeControlHandler extends BaseThingHandler {
                     scheduleRollershutterStop(nhcAction, currentValue, newValue);
                 }
                 if (newValue < currentValue) {
-                    nhcAction.execute(NHCUP);
-                } else if (newValue > currentValue) {
                     nhcAction.execute(NHCDOWN);
+                } else if (newValue > currentValue) {
+                    nhcAction.execute(NHCUP);
                 }
             }
         };
@@ -426,13 +421,8 @@ public class NikoHomeControlHandler extends BaseThingHandler {
             this.waitForEvent = false;
             setRollershutterMovingFalse();
 
-            if ((boolean) config.get(CONFIG_INVERT)) {
-                properties.put("timeToOpen", String.valueOf(nhcAction.getCloseTime()));
-                properties.put("timeToClose", String.valueOf(nhcAction.getOpenTime()));
-            } else {
-                properties.put("timeToOpen", String.valueOf(nhcAction.getOpenTime()));
-                properties.put("timeToClose", String.valueOf(nhcAction.getCloseTime()));
-            }
+            properties.put("timeToOpen", String.valueOf(nhcAction.getOpenTime()));
+            properties.put("timeToClose", String.valueOf(nhcAction.getCloseTime()));
         }
         thing.setProperties(properties);
 
@@ -479,9 +469,8 @@ public class NikoHomeControlHandler extends BaseThingHandler {
             case 5:
                 cancelRollershutterStop();
 
-                boolean invert = (boolean) config.get(CONFIG_INVERT);
-                int state = invert ? invertRollershutter(actionState) : actionState;
-                int prevState = invert ? invertRollershutter(this.prevActionState) : this.prevActionState;
+                int state = 100 - actionState;
+                int prevState = 100 - this.prevActionState;
                 if (((state == 0) || (state == 100)) && (state != prevState)) {
                     long duration = rollershutterMoveTime(nhcAction, prevState, state);
                     setRollershutterMovingTrue(nhcAction, duration);
@@ -504,18 +493,5 @@ public class NikoHomeControlHandler extends BaseThingHandler {
         }
 
         this.prevActionState = actionState;
-    }
-
-    private int invertRollershutter(int actionState) {
-        switch (actionState) {
-            case NHCUP:
-                return NHCDOWN;
-            case NHCDOWN:
-                return NHCUP;
-            case NHCSTOP:
-                return NHCSTOP;
-            default:
-                return (100 - actionState);
-        }
     }
 }
