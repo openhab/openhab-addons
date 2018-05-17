@@ -16,6 +16,7 @@ package org.openhab.binding.smappee.internal;
  */
 
 public class CommunicationException extends Exception {
+
     private static final long serialVersionUID = -1397248504578142737L;
 
     public CommunicationException(String message) {

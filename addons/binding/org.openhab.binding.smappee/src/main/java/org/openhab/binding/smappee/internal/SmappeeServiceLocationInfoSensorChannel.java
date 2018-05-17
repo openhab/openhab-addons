@@ -15,6 +15,7 @@ package org.openhab.binding.smappee.internal;
  * @author Niko Tanghe - Initial contribution
  */
 public class SmappeeServiceLocationInfoSensorChannel {
+
     public String channel;
     public String name;
     public String type;

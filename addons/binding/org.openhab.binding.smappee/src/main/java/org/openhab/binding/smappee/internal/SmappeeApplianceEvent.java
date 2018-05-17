@@ -16,6 +16,7 @@ import org.eclipse.smarthome.core.library.types.DateTimeType;
  * @author Niko Tanghe - Initial contribution
  */
 public class SmappeeApplianceEvent {
+
     public double activePower;
     public String applianceId;
     public String timestamp;
@@ -30,11 +31,3 @@ public class SmappeeApplianceEvent {
         return date;
     }
 }
-
-// Example JSON received from the Smappee API :
-// {
-// [
-// { activePower: 340, applianceId: 432, timestamp: 1391212532100},
-// { activePower: -120, applianceId: 472, timestamp: 1389215612400}, ...
-// ]
-// }

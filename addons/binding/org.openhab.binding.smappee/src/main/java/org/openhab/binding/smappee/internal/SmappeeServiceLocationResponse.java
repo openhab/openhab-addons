@@ -14,18 +14,8 @@ package org.openhab.binding.smappee.internal;
  * @author Niko Tanghe - Initial contribution
  */
 public class SmappeeServiceLocationResponse {
+
     public String appname;
 
     public SmappeeServiceLocation[] serviceLocations;
 }
-
-// Example JSON received from the Smappee API :
-// {
-// "appName": "MyFirstApp",
-// "serviceLocations": [
-// {
-// "serviceLocationId": 123456,
-// "name": "Home"
-// }
-// ]
-// }

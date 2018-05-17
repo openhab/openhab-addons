@@ -15,6 +15,7 @@ package org.openhab.binding.smappee.internal;
  */
 
 public class InvalidConfigurationException extends Exception {
+
     private static final long serialVersionUID = -1359248384278371957L;
 
     public InvalidConfigurationException(String message) {

@@ -25,10 +25,10 @@ public class SmappeeBindingConstants {
     public static final String BINDING_ID = "smappee";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SMAPPEE = new ThingTypeUID(BINDING_ID, "smappee");
-    public final static ThingTypeUID THING_TYPE_APPLIANCE = new ThingTypeUID(BINDING_ID, "smappee-appliance");
-    public final static ThingTypeUID THING_TYPE_ACTUATOR = new ThingTypeUID(BINDING_ID, "smappee-actuator");
-    public final static ThingTypeUID THING_TYPE_SENSOR = new ThingTypeUID(BINDING_ID, "smappee-sensor");
+    public final static ThingTypeUID THING_TYPE_SMAPPEE = new ThingTypeUID(BINDING_ID, "monitor");
+    public final static ThingTypeUID THING_TYPE_APPLIANCE = new ThingTypeUID(BINDING_ID, "appliance");
+    public final static ThingTypeUID THING_TYPE_ACTUATOR = new ThingTypeUID(BINDING_ID, "actuator");
+    public final static ThingTypeUID THING_TYPE_SENSOR = new ThingTypeUID(BINDING_ID, "sensor");
 
     // All supported Bridge types
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_SMAPPEE);
@@ -39,9 +39,9 @@ public class SmappeeBindingConstants {
 
     // List of all Channel ids
     // Smappee
-    public final static String CHANNEL_CONSUMPTION = "consumption";
-    public final static String CHANNEL_SOLAR = "solar";
-    public final static String CHANNEL_ALWAYSON = "alwayson";
+    public final static String CHANNEL_CONSUMPTION = "monitor-consumption";
+    public final static String CHANNEL_SOLAR = "monitor-solar";
+    public final static String CHANNEL_ALWAYSON = "monitor-alwayson";
     // Appliance
     public final static String CHANNEL_APPLIANCE_POWER = "appliance-power";
     public final static String CHANNEL_APPLIANCE_LASTUPDATE = "appliance-lastupdate";
@@ -52,12 +52,12 @@ public class SmappeeBindingConstants {
 
     // List of all Parameters
     // Smappee
-    public final static String PARAMETER_CLIENT_ID = "client_id";
-    public final static String PARAMETER_CLIENT_SECRET = "client_secret";
+    public final static String PARAMETER_CLIENT_ID = "clientId";
+    public final static String PARAMETER_CLIENT_SECRET = "clientSecret";
     public final static String PARAMETER_USERNAME = "username";
     public final static String PARAMETER_PASSWORD = "password";
-    public final static String PARAMETER_SERVICE_LOCATION_NAME = "service_location_name";
-    public final static String PARAMETER_POLLTIME = "poll_time";
+    public final static String PARAMETER_SERVICE_LOCATION_NAME = "serviceLocationName";
+    public final static String PARAMETER_POLLTIME = "pollTime";
     // Appliance
     public final static String PARAMETER_APPLIANCE_ID = "id";
     public final static String PARAMETER_APPLIANCE_TYPE = "type";
@@ -65,7 +65,7 @@ public class SmappeeBindingConstants {
     public final static String PARAMETER_ACTUATOR_ID = "id";
     // Sensor
     public final static String PARAMETER_SENSOR_ID = "id";
-    public final static String PARAMETER_SENSOR_CHANNEL_ID = "channel_id";
+    public final static String PARAMETER_SENSOR_CHANNEL_ID = "channelId";
     public final static String PARAMETER_SENSOR_TYPE = "type";
 
 }

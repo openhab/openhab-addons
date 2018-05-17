@@ -110,11 +110,7 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
     }
 
     public void startAutomaticRefresh() {
-        Runnable runnable = () -> {
-            scanForNewDevices();
-        };
-
-        scheduledJob = scheduler.scheduleWithFixedDelay(runnable, 0, 5, TimeUnit.MILLISECONDS);
+        scheduledJob = scheduler.scheduleWithFixedDelay(this::scanForNewDevices, 0, 5, TimeUnit.MILLISECONDS);
     }
 
     private void scanForNewDevices() {
@@ -128,32 +124,28 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
         SmappeeServiceLocationInfo serviceLocationInfo = _smappeeService.getServiceLocationInfo();
 
         if (serviceLocationInfo == null) {
-            logger.warn("failed to scan for new smappee devices");
+            logger.debug("failed to scan for new smappee devices");
             return;
         }
 
         for (SmappeeServiceLocationInfoActuator actuator : serviceLocationInfo.actuators) {
-            String id = actuator.id;
             ThingTypeUID typeId = SmappeeBindingConstants.THING_TYPE_ACTUATOR;
 
-            addNewDiscoveredThing(id, actuator.name, typeId);
+            addNewDiscoveredThing(actuator.id, actuator.name, typeId);
         }
 
         for (SmappeeServiceLocationInfoAppliance appliance : serviceLocationInfo.appliances) {
-
-            if (appliance.type.equals("Find me")) {
+            if ("Find me".equals(appliance.type)) {
                 continue; // skip
             }
 
-            String id = appliance.id;
             ThingTypeUID typeId = SmappeeBindingConstants.THING_TYPE_APPLIANCE;
             ThingProperty[] properties = new ThingProperty[] { new ThingProperty("type", appliance.type) };
 
-            addNewDiscoveredThing(id, appliance.name, typeId, properties);
+            addNewDiscoveredThing(appliance.id, appliance.name, typeId, properties);
         }
 
         for (SmappeeServiceLocationInfoSensor sensor : serviceLocationInfo.sensors) {
-
             for (SmappeeServiceLocationInfoSensorChannel channel : sensor.channels) {
                 String id = sensor.id + "-" + channel.channel;
                 ThingTypeUID typeId = SmappeeBindingConstants.THING_TYPE_SENSOR;

@@ -17,6 +17,7 @@ import java.math.RoundingMode;
  * @author Niko Tanghe - Initial contribution
  */
 public class SmappeeDeviceReading {
+
     public int serviceLocationId;
     public SmappeeDeviceReadingConsumption[] consumptions;
 

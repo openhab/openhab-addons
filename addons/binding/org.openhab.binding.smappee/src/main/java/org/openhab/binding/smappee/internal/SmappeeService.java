@@ -58,6 +58,8 @@ public class SmappeeService {
 
     private static HttpClient httpClient = new HttpClient(new SslContextFactory());
 
+    private final String apiRoot = "https://app1pub.smappee.net";
+
     public SmappeeService(SmappeeConfigurationParameters config) {
         this.config = config;
 
@@ -87,7 +89,7 @@ public class SmappeeService {
             if (readings != null && readings.consumptions.length > 0) {
                 readingsUpdate.newState(readings);
             }
-        }, 0, config.poll_time, TimeUnit.MINUTES);
+        }, 0, config.pollTime, TimeUnit.MINUTES);
     }
 
     public void stopAutomaticRefresh() {
@@ -309,7 +311,7 @@ public class SmappeeService {
                     SmappeeServiceLocationResponse.class);
 
             for (SmappeeServiceLocation smappeeServiceLocation : smappeeServiceLocationResponse.serviceLocations) {
-                if (smappeeServiceLocation.name.equals(config.service_location_name)) {
+                if (smappeeServiceLocation.name.equals(config.serviceLocationName)) {
                     this.serviceLocationId = Integer.toString(smappeeServiceLocation.serviceLocationId);
                     initialized = true;
                     return;
@@ -317,7 +319,7 @@ public class SmappeeService {
             }
 
             throw new InvalidConfigurationException("Could not find a valid servicelotion for "
-                    + config.service_location_name + ", check binding configuration");
+                    + config.serviceLocationName + ", check binding configuration");
         } catch (JsonSyntaxException pe) {
             throw new CommunicationException("Failed to parse servicelocation response", pe);
         }
@@ -328,7 +330,7 @@ public class SmappeeService {
     }
 
     private String getData(String request) throws CommunicationException {
-        String url = "https://app1pub.smappee.net" + request;
+        String url = apiRoot + request;
 
         Request getMethod = httpClient.newRequest(url);
         getMethod.agent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
@@ -355,7 +357,7 @@ public class SmappeeService {
     }
 
     private void setData(String request, String jsonContent) throws CommunicationException {
-        String url = "https://app1pub.smappee.net" + request;
+        String url = apiRoot + request;
 
         Request postMethod = httpClient.newRequest(url);
         postMethod.method(HttpMethod.POST);
@@ -372,7 +374,6 @@ public class SmappeeService {
             if (response.getStatus() != HttpStatus.OK_200) {
                 throw new CommunicationException("Post data method failed : " + response.getReason());
             }
-
             return;
         } catch (InterruptedException e) {
             throw new CommunicationException("Request aborted", e);
@@ -400,8 +401,8 @@ public class SmappeeService {
             Fields params = new Fields();
             params.add("grant_type", "refresh_token");
             params.add("refresh_token", refreshToken);
-            params.add("client_id", config.client_id);
-            params.add("client_secret", config.client_secret);
+            params.add("client_id", config.clientId);
+            params.add("client_secret", config.clientSecret);
 
             postMethod.content(new FormContentProvider(params));
 
@@ -439,8 +440,8 @@ public class SmappeeService {
 
         Fields params = new Fields();
         params.add("grant_type", "password");
-        params.add("client_id", config.client_id);
-        params.add("client_secret", config.client_secret);
+        params.add("client_id", config.clientId);
+        params.add("client_secret", config.clientSecret);
         params.add("username", config.username);
         params.add("password", config.password);
 

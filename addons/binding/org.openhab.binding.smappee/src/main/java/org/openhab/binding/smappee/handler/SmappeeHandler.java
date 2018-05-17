@@ -78,12 +78,12 @@ public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate 
     public void initialize() {
         SmappeeConfigurationParameters config = getConfigAs(SmappeeConfigurationParameters.class);
 
-        if (config.client_id.isEmpty()) {
+        if (config.clientId.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Client Id must be provided");
             return;
         }
-        if (config.client_secret.isEmpty()) {
+        if (config.clientSecret.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Client secret must be provided");
             return;
@@ -98,7 +98,7 @@ public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate 
                     "Check configuration, Password must be provided");
             return;
         }
-        if (config.service_location_name.isEmpty()) {
+        if (config.serviceLocationName.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Service location name must be provided");
             return;

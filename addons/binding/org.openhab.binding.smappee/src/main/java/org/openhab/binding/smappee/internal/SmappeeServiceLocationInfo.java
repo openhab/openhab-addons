@@ -15,6 +15,7 @@ package org.openhab.binding.smappee.internal;
  * @author Niko Tanghe - Initial contribution
  */
 public class SmappeeServiceLocationInfo {
+
     public int serviceLocationId;
     public String name;
     public String timezone;
@@ -26,47 +27,3 @@ public class SmappeeServiceLocationInfo {
     public SmappeeServiceLocationInfoActuator[] actuators;
     public SmappeeServiceLocationInfoSensor[] sensors;
 }
-
-// sample response :
-
-// {
-// "serviceLocationId": 1,
-// "name": "My Place",
-// "timezone": "Europe/Brussels",
-// "lon":0.0,
-// "lat":0.0,
-// "electricityCost": 0.0,
-// "electricityCurrency": "EUR",
-// "appliances": [
-// {"id": 1, "name": "Coffeemaker", type: "cooking" },
-// {"id": 2, "name": "Refrigerator", type: "refridgeration"}, ...
-// ],
-// "actuators": [
-// {"id": 1, "name": "TV plug"},
-// {"id": 2, "name": "Office plug"}
-// ],
-// "sensors": [
-// {
-// "id": 2,
-// "name": "3003000078",
-// "channels": [
-// {
-// "name": “Garage",
-// "ppu": 100.0,
-// "uom": "m3",
-// "enabled": false,
-// "type": "gas",
-// "channel": 1
-// },
-// {
-// "name": “Outdoor",
-// "ppu": 100.0,
-// "uom": "m3",
-// "enabled": false,
-// "type": “water",
-// "channel": 2
-// }
-// ]
-// }
-// ]
-// }

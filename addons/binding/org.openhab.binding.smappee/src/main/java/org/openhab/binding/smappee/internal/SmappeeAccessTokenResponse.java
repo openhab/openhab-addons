@@ -9,17 +9,13 @@
 package org.openhab.binding.smappee.internal;
 
 /**
- * Interface for readings updates
+ * Interface for OAuth access token response
  *
  * @author Niko Tanghe - Initial contribution
  */
 public class SmappeeAccessTokenResponse {
+
     public String access_token;
-
     public int expires_in;
-
     public String refresh_token;
 }
-
-// example JSON of a token received from the smappee API :
-// {"access_token":"92dXXX49-0645-39ae-b7be-fXXXX65397ed","refresh_token":"8bXXXX54-4a8e-362d-a59a-d7bXXXXX4fd0","expires_in":86400}

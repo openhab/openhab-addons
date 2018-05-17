@@ -15,6 +15,7 @@ package org.openhab.binding.smappee.internal;
  * @author Niko Tanghe - Initial contribution
  */
 public class SmappeeServiceLocationInfoAppliance {
+
     public String id;
     public String name;
     public String type;

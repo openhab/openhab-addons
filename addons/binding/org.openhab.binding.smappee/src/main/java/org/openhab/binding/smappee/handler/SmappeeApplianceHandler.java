@@ -44,7 +44,6 @@ public class SmappeeApplianceHandler extends AbstractSmappeeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         SmappeeService smappeeService = getSmappeeService();
         if (smappeeService == null || !smappeeService.isInitialized()) {
             return;
@@ -66,7 +65,6 @@ public class SmappeeApplianceHandler extends AbstractSmappeeHandler {
 
     @Override
     public void initialize() {
-
         thingId = thing.getConfiguration().get(PARAMETER_APPLIANCE_ID).toString();
 
         updateStatus(ThingStatus.ONLINE);
@@ -91,7 +89,7 @@ public class SmappeeApplianceHandler extends AbstractSmappeeHandler {
             }
         };
 
-        scheduledJob = scheduler.scheduleWithFixedDelay(runnable, 0, smappeeService.config.poll_time,
+        scheduledJob = scheduler.scheduleWithFixedDelay(runnable, 0, smappeeService.config.pollTime,
                 TimeUnit.MILLISECONDS);
     }
 
@@ -103,5 +101,4 @@ public class SmappeeApplianceHandler extends AbstractSmappeeHandler {
             newState(readings);
         }
     }
-
 }

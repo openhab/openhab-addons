@@ -9,11 +9,12 @@
 package org.openhab.binding.smappee.internal;
 
 /**
- * What is the active power consumption of a specific appliance ?
+ * What is the active power consumption of a specific sensor ?
  *
  * @author Niko Tanghe - Initial contribution
  */
 public class SmappeeSensorConsumptionRecord {
+
     public String timestamp;
     public String value1;
     public String value2;
@@ -21,13 +22,3 @@ public class SmappeeSensorConsumptionRecord {
     public String humidity;
     public String battery;
 }
-
-// Example JSON received from the Smappee API :
-// {
-// "timestamp": 1457597400000,
-// "value1": 11.0,
-// "value2": 2.0,
-// "temperature": 226.0,
-// "humidity": 41.0,
-// "battery": 100.0
-// }

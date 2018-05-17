@@ -19,11 +19,8 @@ import org.joda.time.DateTimeZone;
 public class SmappeeDeviceReadingConsumption {
 
     public long timestamp;
-
     public double consumption;
-
     public double solar;
-
     public double alwaysOn;
 
     public DateTime timestampDateTime() {

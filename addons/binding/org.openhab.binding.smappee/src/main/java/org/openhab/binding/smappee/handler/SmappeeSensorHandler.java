@@ -44,7 +44,6 @@ public class SmappeeSensorHandler extends AbstractSmappeeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         SmappeeService smappeeService = getSmappeeService();
         if (smappeeService == null || !smappeeService.isInitialized()) {
             return;
@@ -69,7 +68,6 @@ public class SmappeeSensorHandler extends AbstractSmappeeHandler {
 
     @Override
     public void initialize() {
-
         thingId = thing.getConfiguration().get(PARAMETER_SENSOR_ID).toString();
         channelid = thing.getConfiguration().get(PARAMETER_SENSOR_CHANNEL_ID).toString();
 
@@ -95,7 +93,7 @@ public class SmappeeSensorHandler extends AbstractSmappeeHandler {
             }
         };
 
-        scheduledJob = scheduler.scheduleWithFixedDelay(runnable, 0, smappeeService.config.poll_time,
+        scheduledJob = scheduler.scheduleWithFixedDelay(runnable, 0, smappeeService.config.pollTime,
                 TimeUnit.MILLISECONDS);
     }
 

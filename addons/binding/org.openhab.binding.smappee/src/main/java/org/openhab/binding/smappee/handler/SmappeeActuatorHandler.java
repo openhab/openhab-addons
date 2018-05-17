@@ -36,7 +36,6 @@ public class SmappeeActuatorHandler extends AbstractSmappeeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         SmappeeService smappeeService = getSmappeeService();
         if (smappeeService == null || !smappeeService.isInitialized()) {
             return;
@@ -54,10 +53,8 @@ public class SmappeeActuatorHandler extends AbstractSmappeeHandler {
 
     @Override
     public void initialize() {
-
         thingId = thing.getConfiguration().get(PARAMETER_ACTUATOR_ID).toString();
 
         updateStatus(ThingStatus.ONLINE);
     }
-
 }

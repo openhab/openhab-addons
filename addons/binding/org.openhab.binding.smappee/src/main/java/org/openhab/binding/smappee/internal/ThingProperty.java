@@ -9,7 +9,7 @@
 package org.openhab.binding.smappee.internal;
 
 /**
- * Generic class ThingProperty.
+ * Generic class ThingProperty, A tuple of Key and Value
  *
  * @param <X> the generic type
  * @param <Y> the generic type
