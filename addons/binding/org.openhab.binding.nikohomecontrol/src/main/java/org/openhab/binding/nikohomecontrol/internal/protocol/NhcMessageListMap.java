@@ -19,7 +19,7 @@ import java.util.Map;
  * Example: <code>{"cmd":"listactions","data":[{"id":1,"name":"Garage","type":1,"location":1,"value1":0},
  * {"id":25,"name":"Frontdoor","type":2,"location":2,"value1":0}]}</code>
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 class NhcMessageListMap extends NhcMessageBase {
 

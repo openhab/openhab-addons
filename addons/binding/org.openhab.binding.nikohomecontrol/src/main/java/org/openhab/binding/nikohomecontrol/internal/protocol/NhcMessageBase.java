@@ -15,7 +15,7 @@ package org.openhab.binding.nikohomecontrol.internal.protocol;
  * {@link NhcMessageListMap}, {@link NhcMessageCmd}.
  * <p>
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 abstract class NhcMessageBase {
 

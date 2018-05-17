@@ -12,7 +12,7 @@ package org.openhab.binding.nikohomecontrol.internal.protocol;
  * The {@link NhcSystemInfo} class represents the systeminfo Niko Home Control communication object. It contains all
  * Niko Home Control system data received from the Niko Home Control controller when initializing the connection.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 public final class NhcSystemInfo {
 

@@ -20,7 +20,7 @@ import com.google.common.collect.Sets;
  * The {@link NikoHomeControlBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
 public class NikoHomeControlBindingConstants {
