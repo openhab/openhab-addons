@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="netatmo"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="netatmo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -19,27 +18,27 @@
 	</channel-type>
 
 	<channel-type id="temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="minTemp" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Min Temp</label>
 		<description>Minimum Temperature on current day</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="maxTemp" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Max Temp</label>
 		<description>Maximum Temperature on current day</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="temperatureTrend" advanced="true">
@@ -57,27 +56,11 @@
 	</channel-type>
 
 	<channel-type id="setpointTemp">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Setpoint</label>
 		<description>Thermostat temperature setpoint</description>
 		<category>Temperature</category>
-		<state min="4.5" max="30" step="0.5" pattern="%.1f °C" readOnly="false" />
-	</channel-type>
-
-	<channel-type id="boilerOn">
-		<item-type>Number</item-type>
-		<label>Boiler On</label>
-		<description>Duration, since the previous data point, during which the boiler has been on (in seconds)</description>
-		<category>Duration</category>
-		<state readOnly="true" pattern="%d s" />
-	</channel-type>
-
-	<channel-type id="boilerOff">
-		<item-type>Number</item-type>
-		<label>Boiler Off</label>
-		<description>Duration, since the previous data point, during which the boiler has been off (in seconds)</description>
-		<category>Duration</category>
-		<state readOnly="true" pattern="%d s" />
+		<state pattern="%.1f %unit%" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="setpointMode">
@@ -142,7 +125,7 @@
 		<item-type>DateTime</item-type>
 		<label>Available Bilan</label>
 		<description>Month of the last available thermostat bilan</description>
-		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY"/>
+		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY" />
 	</channel-type>
 
 	<channel-type id="connectedBoiler" advanced="true">
@@ -173,18 +156,18 @@
 	</channel-type>
 
 	<channel-type id="co2">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>CO2</label>
-		<description>Air Quality in ppm</description>
-		<state readOnly="true" pattern="%d ppm" />
+		<description>Air Quality</description>
+		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
 	<channel-type id="noise">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Noise</label>
-		<description>Current Noise Level in dB</description>
+		<description>Current Noise Level</description>
 		<category>Noise</category>
-		<state readOnly="true" pattern="%d dB" />
+		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
 	<channel-type id="healthindex">
@@ -203,11 +186,11 @@
 	</channel-type>
 
 	<channel-type id="pressure">
-		<item-type>Number</item-type>
+		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
-		<description>Current pressure in hPa</description>
+		<description>Current pressure</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.1f hPa" />
+		<state readOnly="true" pattern="%.3f %unit%" />
 	</channel-type>
 
 	<channel-type id="pressureTrend" advanced="true">
@@ -225,19 +208,19 @@
 	</channel-type>
 
 	<channel-type id="absolutePressure" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Pressure</item-type>
 		<label>Abs Pressure</label>
-		<description>Absolute pressure in hPa</description>
+		<description>Absolute pressure</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.1f hPa" />
+		<state readOnly="true" pattern="%.3f %unit%" />
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
-		<description>Current humidity in %</description>
+		<description>Current humidity</description>
 		<category>Humidity</category>
-		<state readOnly="true" pattern="%d %%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
 	</channel-type>
 
 	<channel-type id="humidex">
@@ -249,124 +232,84 @@
 	</channel-type>
 
 	<channel-type id="heatIndex">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Heat Index</label>
 		<description>Computed Heat Index</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f %unit%" />
 	</channel-type>
 
 	<channel-type id="dewPoint" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Dewpoint</label>
 		<description>Computed Dewpoint Temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="dewPointDepression" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Dewpoint Depression</label>
 		<description>Computed Dewpoint Depression</description>
-		<state readOnly="true" pattern="%.1f" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="rain">
-		<item-type>Number</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Rain</label>
 		<description>Quantity of water</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.1f mm" />
+		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
 
 	<channel-type id="rain1" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Rain 1h</label>
 		<description>Quantity of water on last hour</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.1f mm/1h" />
+		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
 
 	<channel-type id="rain24" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Rain 24h</label>
 		<description>Quantity of water on last day</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.1f mm/24h" />
+		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
 
 	<channel-type id="WindAngle">
-		<item-type>Number</item-type>
+		<item-type>Number:Angle</item-type>
 		<label>Wind Angle</label>
 		<description>Current 5 minutes average wind direction</description>
 		<category>Wind</category>
-		<state min="0" max="360" step="1" readOnly="true" pattern="%d °" />
+		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
 	<channel-type id="WindStrength">
-		<item-type>Number</item-type>
+		<item-type>Number:Speed</item-type>
 		<label>Wind Strength</label>
 		<description>Current 5 minutes average wind speed</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f km/h" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="GustAngle">
-		<item-type>Number</item-type>
+		<item-type>Number:Angle</item-type>
 		<label>Gust Angle</label>
 		<description>Direction of the last 5 minutes highest gust wind</description>
 		<category>Wind</category>
-		<state min="0" max="360" step="1" readOnly="true" pattern="%d °" />
+		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
 	<channel-type id="GustStrength">
-		<item-type>Number</item-type>
+		<item-type>Number:Speed</item-type>
 		<label>Gust Strength</label>
 		<description>Speed of the last 5 minutes highest gust wind</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f km/h" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
-	<channel-type id="unit">
-		<item-type>Number</item-type>
-		<label>Unit system</label>
-		<description>Unit system used to provide values (metric or imperial)</description>
-		<state readOnly="true">
-			<options>
-				<option value="0">Metric</option>
-				<option value="1">Imperial</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="windUnit">
-		<item-type>Number</item-type>
-		<label>Wind Unit</label>
-		<description>Unit used to report Wind speeds</description>
-		<state readOnly="true">
-			<options>
-				<option value="0">Km/h</option>
-				<option value="1">Miles/H</option>
-				<option value="2">m/s</option>
-				<option value="3">Beaufort</option>
-				<option value="4">Knot</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="pressureUnit">
-		<item-type>Number</item-type>
-		<label>Pressure Unit</label>
-		<description>Unit used to report Pressure values</description>
-		<state readOnly="true">
-			<options>
-				<option value="0">mbar</option>
-				<option value="1">inHg</option>
-				<option value="2">mmHg</option>
-			</options>
-		</state>
-	</channel-type>
-	
 	<channel-type id="homeEvent">
 		<kind>trigger</kind>
 		<label>Home event</label>

@@ -17,9 +17,11 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.onebusaway.internal.handler.ApiHandler;
 import org.openhab.binding.onebusaway.internal.handler.RouteHandler;
 import org.openhab.binding.onebusaway.internal.handler.StopHandler;
+import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -29,9 +31,10 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Shawn Wilsher - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.onebusaway")
 public class OneBusAwayHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(ApiHandler.SUPPORTED_THING_TYPE,
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(ApiHandler.SUPPORTED_THING_TYPE,
             RouteHandler.SUPPORTED_THING_TYPE, StopHandler.SUPPORTED_THING_TYPE);
 
     @Override
@@ -41,7 +44,6 @@ public class OneBusAwayHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_API)) {

@@ -16,8 +16,10 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.oceanic.handler.NetworkOceanicThingHandler;
 import org.openhab.binding.oceanic.handler.SerialOceanicThingHandler;
+import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.Lists;
 
@@ -27,6 +29,7 @@ import com.google.common.collect.Lists;
  *
  * @author Karel Goderis - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.oceanic")
 public class OceanicHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(THING_TYPE_SERIAL,

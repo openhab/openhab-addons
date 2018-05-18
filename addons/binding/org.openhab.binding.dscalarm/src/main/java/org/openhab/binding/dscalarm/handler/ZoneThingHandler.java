@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(ZoneThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ZoneThingHandler.class);
 
     /**
      * Constructor.
@@ -95,7 +95,6 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         logger.debug("handleCommand(): Command Received - {} {}.", channelUID, command);
 
         if (command instanceof RefreshType) {
@@ -104,7 +103,6 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
 
         if (dscAlarmBridgeHandler != null && dscAlarmBridgeHandler.isConnected()
                 && channelUID.getId() == ZONE_BYPASS_MODE) {
-
             if (command == OnOffType.OFF) {
                 String data = String.valueOf(getPartitionNumber()) + "*1" + String.format("%02d", getZoneNumber())
                         + "#";
@@ -128,7 +126,6 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
 
     @Override
     public void dscAlarmEventReceived(EventObject event, Thing thing) {
-
         if (thing != null) {
             if (getThing().equals(thing)) {
                 DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;

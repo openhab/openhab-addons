@@ -17,8 +17,7 @@ import org.openhab.binding.atlona.handler.AtlonaHandler;
  *
  * A callback to {@link AtlonaHandler} that can be used to update the status, properties and state of the thing.
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 public interface AtlonaHandlerCallback {
     /**

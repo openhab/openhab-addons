@@ -24,6 +24,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -32,10 +34,11 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.nest.NestBindingConstants;
+import org.openhab.binding.nest.internal.NestUtils;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.internal.data.ErrorData;
 import org.openhab.binding.nest.internal.data.NestDevices;
@@ -53,9 +56,6 @@ import org.openhab.binding.nest.internal.rest.NestUpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
  * This bridge handler connects to Nest and handles all the API requests. It pulls down the
  * updated data, polls the system and does all the co-ordination with the other handlers
@@ -65,6 +65,7 @@ import com.google.gson.GsonBuilder;
  * @author Martin van Wingerden - Use listeners not only for discovery but for all data processing
  * @author Wouter Born - Improve exception and URL redirect handling
  */
+@NonNullByDefault
 public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamingDataListener {
     private static final int REQUEST_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(30);
 
@@ -72,14 +73,13 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
 
     private final List<NestDeviceDataListener> listeners = new CopyOnWriteArrayList<>();
     private final List<NestUpdateRequest> nestUpdateRequests = new CopyOnWriteArrayList<>();
-    private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
 
-    private NestAuthorizer authorizer;
-    private NestBridgeConfiguration config;
-    private ScheduledFuture<?> initializeJob;
-    private ScheduledFuture<?> transmitJob;
-    private NestRedirectUrlSupplier redirectUrlSupplier;
-    private NestStreamingRestClient streamingRestClient;
+    private @Nullable NestAuthorizer authorizer;
+    private @Nullable NestBridgeConfiguration config;
+    private @Nullable ScheduledFuture<?> initializeJob;
+    private @Nullable ScheduledFuture<?> transmitJob;
+    private @Nullable NestRedirectUrlSupplier redirectUrlSupplier;
+    private @Nullable NestStreamingRestClient streamingRestClient;
 
     /**
      * Creates the bridge handler to connect to Nest.
@@ -107,7 +107,7 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
                 logger.debug("Product Secret  {}", config.productSecret);
                 logger.debug("Pincode         {}", config.pincode);
                 logger.debug("Access Token    {}", getExistingOrNewAccessToken());
-                redirectUrlSupplier = new NestRedirectUrlSupplier(getHttpHeaders());
+                redirectUrlSupplier = createRedirectUrlSupplier();
                 restartStreamingUpdates();
             } catch (InvalidAccessTokenException e) {
                 logger.debug("Invalid access token", e);
@@ -119,20 +119,24 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         logger.debug("Finished initializing Nest bridge handler");
     }
 
-    /**
-     * Allows the NestRedirectUrlSupplier to be overriden in tests.
-     *
-     * @return the NestRedirectUrlSupplier
-     */
-    protected NestRedirectUrlSupplier getRedirectUrlSupplier() {
-        return this.redirectUrlSupplier;
+    protected NestRedirectUrlSupplier createRedirectUrlSupplier() throws InvalidAccessTokenException {
+        return new NestRedirectUrlSupplier(getHttpHeaders());
+    }
+
+    private NestRedirectUrlSupplier getOrCreateRedirectUrlSupplier() throws InvalidAccessTokenException {
+        NestRedirectUrlSupplier localRedirectUrlSupplier = redirectUrlSupplier;
+        if (localRedirectUrlSupplier == null) {
+            localRedirectUrlSupplier = createRedirectUrlSupplier();
+            redirectUrlSupplier = localRedirectUrlSupplier;
+        }
+        return localRedirectUrlSupplier;
     }
 
     private void startStreamingUpdates() {
         synchronized (this) {
             try {
                 streamingRestClient = new NestStreamingRestClient(getExistingOrNewAccessToken(),
-                        getRedirectUrlSupplier(), scheduler);
+                        getOrCreateRedirectUrlSupplier(), scheduler);
                 streamingRestClient.addStreamingDataListener(this);
                 streamingRestClient.start();
             } catch (InvalidAccessTokenException e) {
@@ -195,8 +199,12 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
     }
 
     public void broadcastLastReceivedTopLevelData() {
-        if (streamingRestClient != null && streamingRestClient.getLastReceivedTopLevelData() != null) {
-            broadcastTopLevelData(streamingRestClient.getLastReceivedTopLevelData());
+        NestStreamingRestClient localStreamingRestClient = streamingRestClient;
+        if (localStreamingRestClient != null) {
+            TopLevelData data = localStreamingRestClient.getLastReceivedTopLevelData();
+            if (data != null) {
+                broadcastTopLevelData(data);
+            }
         }
     }
 
@@ -220,8 +228,8 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         if (devices.getCameras() != null) {
             devices.getCameras().values().forEach(listener::onNewNestCameraData);
         }
-        if (devices.getSmokeDetectors() != null) {
-            devices.getSmokeDetectors().values().forEach(listener::onNewNestSmokeDetectorData);
+        if (devices.getSmokeCoAlarms() != null) {
+            devices.getSmokeCoAlarms().values().forEach(listener::onNewNestSmokeDetectorData);
         }
     }
 
@@ -257,16 +265,20 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         boolean success = listeners.add(listener);
         if (streamingRestClient != null) {
             scheduler.schedule(() -> {
-                TopLevelData data = streamingRestClient.getLastReceivedTopLevelData();
-                if (data != null) {
-                    if (data.getDevices() != null) {
-                        broadcastDevices(listener, data.getDevices());
-                    }
-                    if (data.getStructures() != null) {
-                        broadcastStructures(listener, data.getStructures().values());
-                    }
+                if (streamingRestClient == null) {
+                    logger.debug("streamingRestClient is null");
                 } else {
-                    logger.debug("Last received TopLevelData is null");
+                    TopLevelData data = streamingRestClient.getLastReceivedTopLevelData();
+                    if (data != null) {
+                        if (data.getDevices() != null) {
+                            broadcastDevices(listener, data.getDevices());
+                        }
+                        if (data.getStructures() != null) {
+                            broadcastStructures(listener, data.getStructures().values());
+                        }
+                    } else {
+                        logger.debug("Last received TopLevelData is null");
+                    }
                 }
             }, 1, SECONDS);
         } else {
@@ -304,7 +316,7 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         }
 
         try {
-            while (nestUpdateRequests.size() > 0) {
+            while (!nestUpdateRequests.isEmpty()) {
                 // nestUpdateRequests is a CopyOnWriteArrayList so its iterator does not support remove operations
                 NestUpdateRequest request = nestUpdateRequests.get(0);
                 jsonToPutUrl(request);
@@ -322,18 +334,17 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
             logger.debug("Error sending data", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             scheduler.schedule(this::restartStreamingUpdates, 5, SECONDS);
-            getRedirectUrlSupplier().resetCache();
+            redirectUrlSupplier.resetCache();
         }
     }
 
     private void jsonToPutUrl(NestUpdateRequest request)
             throws FailedSendingNestDataException, InvalidAccessTokenException, FailedResolvingNestUrlException {
         try {
-            String url = request.getUpdateUrl().replaceFirst(NestBindingConstants.NEST_URL,
-                    getRedirectUrlSupplier().getRedirectUrl());
+            String url = redirectUrlSupplier.getRedirectUrl() + request.getUpdatePath();
             logger.debug("Putting data to: {}", url);
 
-            String jsonContent = gson.toJson(request.getValues());
+            String jsonContent = NestUtils.toJson(request.getValues());
             logger.debug("PUT content: {}", jsonContent);
 
             ByteArrayInputStream inputStream = new ByteArrayInputStream(jsonContent.getBytes(StandardCharsets.UTF_8));
@@ -341,7 +352,7 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
                     REQUEST_TIMEOUT);
             logger.debug("PUT response: {}", jsonResponse);
 
-            ErrorData error = gson.fromJson(jsonResponse, ErrorData.class);
+            ErrorData error = NestUtils.fromJson(jsonResponse, ErrorData.class);
             if (StringUtils.isNotBlank(error.getError())) {
                 logger.debug("Nest API error: {}", error);
                 logger.warn("Nest API error: {}", error.getMessage());
@@ -351,7 +362,7 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         }
     }
 
-    private Properties getHttpHeaders() throws InvalidAccessTokenException {
+    protected Properties getHttpHeaders() throws InvalidAccessTokenException {
         Properties httpHeaders = new Properties();
         httpHeaders.put("Authorization", "Bearer " + getExistingOrNewAccessToken());
         httpHeaders.put("Content-Type", JSON_CONTENT_TYPE);
@@ -406,8 +417,8 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
             if (data.getDevices().getCameras() != null) {
                 identifiers.addAll(data.getDevices().getCameras().keySet());
             }
-            if (data.getDevices().getSmokeDetectors() != null) {
-                identifiers.addAll(data.getDevices().getSmokeDetectors().keySet());
+            if (data.getDevices().getSmokeCoAlarms() != null) {
+                identifiers.addAll(data.getDevices().getSmokeCoAlarms().keySet());
             }
             if (data.getDevices().getThermostats() != null) {
                 identifiers.addAll(data.getDevices().getThermostats().keySet());
@@ -418,10 +429,13 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
         }
 
         for (Thing thing : getThing().getThings()) {
-            String id = ((NestIdentifiable) thing.getHandler()).getId();
-            if (!identifiers.contains(id)) {
-                thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
-                        "Missing from streaming updates"));
+            ThingHandler handler = thing.getHandler();
+            if (handler != null) {
+                String id = ((NestIdentifiable) handler).getId();
+                if (!identifiers.contains(id)) {
+                    thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                            "Missing from streaming updates"));
+                }
             }
         }
     }

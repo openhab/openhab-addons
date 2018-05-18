@@ -46,7 +46,6 @@ Import-Package:
  org.eclipse.smarthome.core.service,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.model.script.engine.action,
- org.eclipse.smarthome.ui.items,
  org.openhab.core,
  org.openhab.io.openhabcloud,
  org.osgi.framework,

@@ -13,7 +13,7 @@ import org.openhab.binding.onkyo.internal.eiscp.EiscpMessage;
 /**
  * This interface defines interface to receive status updates from Onkyo receiver.
  *
- * @author Pauli Anttila
+ * @author Pauli Anttila - Initial contribution
  */
 public interface OnkyoEventListener {
 

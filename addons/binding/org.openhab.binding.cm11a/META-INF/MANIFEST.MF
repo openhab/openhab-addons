@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
 Bundle-Name: CM11A Binding
 Bundle-SymbolicName: org.openhab.binding.cm11a;singleton:=true
@@ -6,22 +7,22 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.3.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
-Import-Package: gnu.io,
+Export-Package: 
  org.openhab.binding.cm11a,
- org.openhab.binding.cm11a.handler,
+ org.openhab.binding.cm11a.handler
+Import-Package: gnu.io,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.items,
+ org.eclipse.smarthome.core.library.items,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.slf4j,
- org.eclipse.smarthome.core.items,
- org.eclipse.smarthome.core.library.items,
- org.osgi.framework
+ org.openhab.binding.cm11a,
+ org.openhab.binding.cm11a.handler,
+ org.osgi.framework,
+ org.slf4j
 Service-Component: OSGI-INF/*.xml
-Bundle-ActivationPolicy: lazy
-Export-Package: org.openhab.binding.cm11a,
- org.openhab.binding.cm11a.handler

@@ -11,7 +11,7 @@ package org.openhab.binding.meteostick.handler;
 /**
  * This interface provides notifications between the bridge and the sensors.
  *
- * @author Chris Jackson - Initial Implementation
+ * @author Chris Jackson - Initial contribution
  *
  */
 public interface MeteostickEventListener {

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="innogysmarthome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>innogy SmartHome Controller</label>
+		<description>The innogy SmartHome Controller (SHC) is the bridge for the innogy SmartHome System.</description>
+
+		<config-description>
+			<parameter-group name="connection">
+				<label>Connection</label>
+				<description>Parameters for connecting to innogy SmartHome Controller (SHC)</description>
+			</parameter-group>
+			<parameter-group name="advanced">
+				<label>Advanced configuration</label>
+				<description>Advanced parameters, for special tweaking only.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="brand" type="text" required="true" groupName="connection">
+				<label>Brand</label>
+				<description>Choose the brand of your innogy SmartHome based solution.</description>
+				<default>innogy_smarthome</default>
+				<options>
+					<option value="innogy_smarthome">innogy SmartHome</option>
+					<option value="smarthome_austria">SmartHome Austria</option>
+					<option value="start_smarthome">Start SmartHome</option>
+				</options>
+			</parameter>
+			<parameter name="authcode" type="text" groupName="connection">
+				<label>Authorization code</label>
+				<description><![CDATA[ The auth-code is a one-time code needed to retrieve the
+				necessary access-codes from innogy SmartHome Service. <b>Please go - depending on your brand - to...</b>
+				<ul> 
+				<li><b>innogy SmartHome Portal</b>: https://api.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635748&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Finnogy-smarthome.html&scope&lang=de-DE</li>
+				<li><b>SmartHome Austria Portal</b>: https://api.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635749&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Fsmarthome-austria.html&scope&lang=de-DE</li>
+				<li><b>Start SmartHome Portal</b>: https://api.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635750&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Fstart-smarthome.html&scope&lang=de-DE</li>
+				</ul>                
+				<b>... to generate an auth-code and paste it here</b>. After initial authorization, this code is not needed anymore.]]></description>
+			</parameter>
+			<parameter name="websocketidletimeout" type="integer" min="0" max="3600" unit="s" groupName="advanced">
+				<required>false</required>
+				<unitLabel>seconds</unitLabel>
+				<label>WebSocket idle timeout in seconds</label>
+				<description>The WebSocket is the connection to the innogy service that listens to status updates.
+					If no data is received over the websocket connection for the given time,
+					the websocket will reconnect. 0 will disable the idle timeout. Default is 900 seconds (15 minutes).</description>
+				<default>900</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshtoken" type="text" groupName="advanced" readOnly="true">
+				<label>Refresh token</label>
+				<description>The refresh token is used to create a valid access token. It is automatically
+					pulled from innogy SmartHome backend with the initial auth-code.</description>
+				<advanced>true</advanced>
+				<context>password</context>
+			</parameter>
+			<parameter name="accesstoken" type="text" groupName="advanced" readOnly="true">
+				<label>Access token</label>
+				<description>The access token is used to access the innogy SmartHome backend. Is is automatically
+					pulled from innogy SmartHome backend.</description>
+				<advanced>true</advanced>
+				<context>password</context>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+
+</thing:thing-descriptions>

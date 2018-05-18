@@ -17,8 +17,10 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.urtsi.handler.RtsDeviceHandler;
 import org.openhab.binding.urtsi.handler.UrtsiDeviceHandler;
+import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.Lists;
 
@@ -28,6 +30,7 @@ import com.google.common.collect.Lists;
  *
  * @author Oliver Libutzki - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.urtsi")
 public class UrtsiHandlerFactory extends BaseThingHandlerFactory {
 
     private static final List<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(URTSI_DEVICE_THING_TYPE,
@@ -40,7 +43,6 @@ public class UrtsiHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(URTSI_DEVICE_THING_TYPE) && thing instanceof Bridge) {

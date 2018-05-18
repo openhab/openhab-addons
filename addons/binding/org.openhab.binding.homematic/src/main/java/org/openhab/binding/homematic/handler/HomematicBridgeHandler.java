@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -26,6 +27,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
@@ -57,16 +59,19 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     private HomematicConfig config;
     private HomematicGateway gateway;
     private HomematicTypeGenerator typeGenerator;
+    private HttpClient httpClient;
 
     private HomematicDeviceDiscoveryService discoveryService;
     private ServiceRegistration<?> discoveryServiceRegistration;
 
     private String ipv4Address;
 
-    public HomematicBridgeHandler(@NonNull Bridge bridge, HomematicTypeGenerator typeGenerator, String ipv4Address) {
+    public HomematicBridgeHandler(@NonNull Bridge bridge, HomematicTypeGenerator typeGenerator, String ipv4Address,
+            HttpClient httpClient) {
         super(bridge);
         this.typeGenerator = typeGenerator;
         this.ipv4Address = ipv4Address;
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -77,12 +82,15 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         scheduler.execute(() -> {
             try {
                 String id = getThing().getUID().getId();
-                gateway = HomematicGatewayFactory.createGateway(id, config, instance);
+                gateway = HomematicGatewayFactory.createGateway(id, config, instance, httpClient);
                 configureThingProperties();
                 gateway.initialize();
 
+                // scan for already known devices (new devices will not be discovered, 
+                // since installMode==true is only achieved if the bridge is online
                 discoveryService.startScan(null);
                 discoveryService.waitForScanFinishing();
+                
                 updateStatus(ThingStatus.ONLINE);
                 if (!config.getGatewayInfo().isHomegear()) {
                     try {
@@ -95,6 +103,8 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                 gateway.startWatchdogs();
             } catch (IOException ex) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                logger.error("Homematic bridge was set to OFFLINE-COMMUNICATION_ERROR due to the following exception: {}",
+                        ex.getMessage(), ex);
                 dispose();
                 scheduleReinitialize();
             }
@@ -277,6 +287,11 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     public void onDeviceDeleted(HmDevice device) {
         discoveryService.deviceRemoved(device);
         updateThing(device);
+
+        Thing hmThing = getThingByUID(UidUtils.generateThingUID(device, getThing()));
+        if (hmThing != null && hmThing.getHandler() != null) {
+            ((HomematicThingHandler) hmThing.getHandler()).deviceRemoved();
+        }
     }
 
     @Override
@@ -295,6 +310,11 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         typeGenerator.generate(device);
         if (discoveryService != null) {
             discoveryService.deviceDiscovered(device);
+        }
+
+        Thing hmThing = getThingByUID(UidUtils.generateThingUID(device, getThing()));
+        if (hmThing != null && hmThing.getHandler() != null) {
+            ((HomematicThingHandler) hmThing.getHandler()).deviceLoaded(device);
         }
     }
 
@@ -316,6 +336,28 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                 logger.warn("{}", ex.getMessage());
             }
         }
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        if (((HomematicThingHandler) childHandler).isDeletionPending()) {
+            deleteFromGateway(UidUtils.getHomematicAddress(childThing), false, true, false);
+        }
+    }
+
+    /**
+     * Deletes a device from the gateway.
+     *
+     * @param address The address of the device to be deleted
+     * @param reset <i>true</i> will perform a factory reset on the device before deleting it.
+     * @param force <i>true</i> will delete the device even if it is not reachable.
+     * @param defer <i>true</i> will delete the device once it becomes available.
+     */
+    public void deleteFromGateway(String address, boolean reset, boolean force, boolean defer) {
+        scheduler.submit(() -> {
+            logger.debug("Deleting the device '{}' from gateway '{}'", address, getBridge());
+            getGateway().deleteDevice(address, reset, force, defer);
+        });
     }
 
 }

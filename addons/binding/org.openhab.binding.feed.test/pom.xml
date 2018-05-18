@@ -1,149 +1,147 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.openhab.binding</groupId>
-		<artifactId>pom</artifactId>
-		<version>2.3.0-SNAPSHOT</version>
-	</parent>
+  <parent>
+    <artifactId>pom</artifactId>
+    <groupId>org.openhab.binding</groupId>
+    <version>2.3.0-SNAPSHOT</version>
+  </parent>
 
-	<artifactId>org.openhab.binding.feed.test</artifactId>
+  <artifactId>org.openhab.binding.feed.test</artifactId>
+  <packaging>eclipse-test-plugin</packaging>
 
-	<name>Feed Binding Tests</name>
-	<packaging>eclipse-test-plugin</packaging>
+  <name>Feed Binding Tests</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.openhab.io</groupId>
-			<artifactId>org.openhab.io.transport.feed</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>org.openhab.io</groupId>
+      <artifactId>org.openhab.io.transport.feed</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-surefire-plugin</artifactId>
-				<version>${tycho-version}</version>
-				<configuration>
-					<providerHint>junit47</providerHint>
-					<providerProperties>
-						<excludedGroups>org.openhab.binding.feed.test.SlowTests</excludedGroups>
-					</providerProperties>
-					<defaultStartLevel>
-						<level>4</level>
-						<autoStart>true</autoStart>
-					</defaultStartLevel>
-					<dependencies>
-						<!-- Equinox Bundles -->
-						<dependency>
-							<type>eclipse-plugin</type>
-							<artifactId>org.eclipse.equinox.ds</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-						<dependency>
-							<type>eclipse-plugin</type>
-							<artifactId>org.eclipse.equinox.event</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-						<dependency>
-							<type>eclipse-plugin</type>
-							<artifactId>org.eclipse.equinox.util</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-						<dependency>
-							<type>eclipse-plugin</type>
-							<artifactId>org.eclipse.osgi.services</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-						<!-- Required Bundles to enable LOGGING -->
-						<dependency>
-							<type>eclipse-plugin</type>
-							<artifactId>ch.qos.logback.classic</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-						<dependency>
-							<type>eclipse-plugin</type>
-							<artifactId>ch.qos.logback.core</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-						<dependency>
-							<type>eclipse-plugin</type>
-							<artifactId>ch.qos.logback.slf4j</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-						<!-- Required Bundles to for HTTP service -->
-						<dependency>
-							<type>eclipse-plugin</type>
-							<artifactId>org.eclipse.equinox.http.jetty</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-						<dependency>
-							<type>eclipse-plugin</type>
-							<artifactId>org.eclipse.equinox.http.servlet</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-						<!-- Smarthome core bundles -->
-						<dependency>
-							<type>eclipse-plugin</type>
-							<artifactId>org.eclipse.smarthome.config.xml</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-						<dependency>
-							<type>eclipse-plugin</type>
-							<artifactId>org.eclipse.smarthome.core.thing</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-						<dependency>
-							<type>eclipse-plugin</type>
-							<artifactId>org.eclipse.smarthome.core.thing.xml</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-						<dependency>
-							<type>eclipse-plugin</type>
-							<artifactId>org.eclipse.smarthome.core.binding.xml</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-					</dependencies>
-					<bundleStartLevel>
-						<bundle>
-							<id>org.eclipse.equinox.ds</id>
-							<level>1</level>
-							<autoStart>true</autoStart>
-						</bundle>
-						<bundle>
-							<id>org.eclipse.equinox.http.servlet</id>
-							<level>3</level>
-							<autoStart>true</autoStart>
-						</bundle>
-						<bundle>
-							<id>org.eclipse.equinox.http.jetty</id>
-							<level>3</level>
-							<autoStart>true</autoStart>
-						</bundle>
-						<bundle>
-							<id>org.eclipse.equinox.event</id>
-							<level>2</level>
-							<autoStart>true</autoStart>
-						</bundle>
-					</bundleStartLevel>
-					<!-- org.osgi.service.http.port is the port, where the dummy servlets will be accessible (e.g. for mocked camera, backend, 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>${tycho-groupid}</groupId>
+        <artifactId>tycho-surefire-plugin</artifactId>
+        <configuration>
+          <providerHint>junit47</providerHint>
+          <providerProperties>
+            <excludedGroups>org.openhab.binding.feed.test.SlowTests</excludedGroups>
+          </providerProperties>
+          <defaultStartLevel>
+            <level>4</level>
+            <autoStart>true</autoStart>
+          </defaultStartLevel>
+          <dependencies>
+            <!-- Equinox Bundles -->
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.equinox.ds</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.equinox.event</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.equinox.util</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.osgi.services</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <!-- Required Bundles to enable LOGGING -->
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>ch.qos.logback.classic</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>ch.qos.logback.core</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>ch.qos.logback.slf4j</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <!-- Required Bundles to for HTTP service -->
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.equinox.http.jetty</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.equinox.http.servlet</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <!-- Smarthome core bundles -->
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.smarthome.config.xml</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.smarthome.core.thing</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.smarthome.core.thing.xml</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.smarthome.core.binding.xml</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+          </dependencies>
+          <bundleStartLevel>
+            <bundle>
+              <id>org.eclipse.equinox.ds</id>
+              <level>1</level>
+              <autoStart>true</autoStart>
+            </bundle>
+            <bundle>
+              <id>org.eclipse.equinox.http.servlet</id>
+              <level>3</level>
+              <autoStart>true</autoStart>
+            </bundle>
+            <bundle>
+              <id>org.eclipse.equinox.http.jetty</id>
+              <level>3</level>
+              <autoStart>true</autoStart>
+            </bundle>
+            <bundle>
+              <id>org.eclipse.equinox.event</id>
+              <level>2</level>
+              <autoStart>true</autoStart>
+            </bundle>
+          </bundleStartLevel>
+          <!-- org.osgi.service.http.port is the port, where the dummy servlets will be accessible (e.g. for mocked camera, backend, 
 						etc.) -->
-					<!-- Setting ClientPlatformID. Otherwise the acs url will be got differently -->
-					<argLine> -Dorg.osgi.service.http.port=9090 -Dprm.platform.capability.ClientPlatformID=notSimulator</argLine>
-					<!-- All the println test output is redirected to target\surefire-reports\[test-class-fully-qualified-name]-output.txt -->
-					<redirectTestOutputToFile>false</redirectTestOutputToFile>
-					<!-- Only this declaration is not enough. We have to do this in the argLine above. Otherwise the argument is not taken 
+          <!-- Setting ClientPlatformID. Otherwise the acs url will be got differently -->
+          <argLine>-Dorg.osgi.service.http.port=9090 -Dprm.platform.capability.ClientPlatformID=notSimulator</argLine>
+          <!-- All the println test output is redirected to target\surefire-reports\[test-class-fully-qualified-name]-output.txt -->
+          <redirectTestOutputToFile>false</redirectTestOutputToFile>
+          <!-- Only this declaration is not enough. We have to do this in the argLine above. Otherwise the argument is not taken 
 						into account -->
-					<systemPropertyVariables>
-						<prm.platform.capability.ClientPlatformID>notSimulator</prm.platform.capability.ClientPlatformID>
-					</systemPropertyVariables>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+          <systemPropertyVariables>
+            <prm.platform.capability.ClientPlatformID>notSimulator</prm.platform.capability.ClientPlatformID>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

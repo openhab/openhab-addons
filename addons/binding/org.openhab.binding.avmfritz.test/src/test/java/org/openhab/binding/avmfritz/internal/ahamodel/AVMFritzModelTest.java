@@ -21,8 +21,6 @@ import javax.xml.bind.Unmarshaller;
 import org.eclipse.jdt.annotation.NonNull;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +29,6 @@ import org.slf4j.LoggerFactory;
  * Tests for {@link DevicelistModel}.
  *
  * @author Christoph Weitkamp - Initial contribution
- *
  */
 public class AVMFritzModelTest {
 
@@ -42,7 +39,7 @@ public class AVMFritzModelTest {
     @Before
     public void setUp() {
         String xml = "<devicelist version=\"1\">"
-                + "<group identifier=\"F0:A3:7F-900\" id=\"20001\" functionbitmask=\"640\" fwversion=\"1.0\" manufacturer=\"AVM\" productname=\"\"><present>1</present><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><power>0</power><energy>2087</energy></powermeter><groupinfo><masterdeviceid>1000</masterdeviceid><members>20000</members></groupinfo></group>"
+                + "<group identifier=\"F0:A3:7F-900\" id=\"20001\" functionbitmask=\"640\" fwversion=\"1.0\" manufacturer=\"AVM\" productname=\"\"><present>1</present><name>Schlafzimmer</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><power>0</power><energy>2087</energy></powermeter><groupinfo><masterdeviceid>1000</masterdeviceid><members>20000</members></groupinfo></group>"
                 + "<device identifier=\"08761 0000434\" id=\"17\" functionbitmask=\"2944\" fwversion=\"03.83\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 200\"><present>1</present><name>FRITZ!DECT 200 #1</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><power>45</power><energy>166</energy></powermeter><temperature><celsius>255</celsius><offset>0</offset></temperature></device>"
                 + "<device identifier=\"08761 0000437\" id=\"20\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 300\"><present>0</present><name>FRITZ!DECT 300 #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><batterylow>0</batterylow><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>"
                 + "<device identifier=\"08761 0000436\" id=\"21\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 301\"><present>0</present><name>FRITZ!DECT 301 #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><batterylow>0</batterylow><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>"
@@ -62,16 +59,17 @@ public class AVMFritzModelTest {
     @Test
     public void validateDevicelistModel() {
         assertNotNull(devices);
-        assertEquals(devices.getDevicelist().size(), 6);
-        assertEquals(devices.getXmlApiVersion(), "1");
+        assertEquals(7, devices.getDevicelist().size());
+        assertEquals("1", devices.getXmlApiVersion());
     }
 
     @Test
     public void validateDECTRepeater100Model() {
-        Optional<DeviceModel> optionalDevice = findDevice("FRITZ!DECT Repeater 100");
+        Optional<AVMFritzBaseModel> optionalDevice = findModel("FRITZ!DECT Repeater 100");
         assertTrue(optionalDevice.isPresent());
+        assertTrue(optionalDevice.get() instanceof DeviceModel);
 
-        DeviceModel device = optionalDevice.get();
+        DeviceModel device = (DeviceModel) optionalDevice.get();
         assertEquals("FRITZ!DECT Repeater 100", device.getProductName());
         assertEquals("087610954669", device.getIdentifier());
         assertEquals("40", device.getDeviceId());
@@ -98,10 +96,11 @@ public class AVMFritzModelTest {
 
     @Test
     public void validateDECT200Model() {
-        Optional<DeviceModel> optionalDevice = findDevice("FRITZ!DECT 200");
+        Optional<AVMFritzBaseModel> optionalDevice = findModel("FRITZ!DECT 200");
         assertTrue(optionalDevice.isPresent());
+        assertTrue(optionalDevice.get() instanceof DeviceModel);
 
-        DeviceModel device = optionalDevice.get();
+        DeviceModel device = (DeviceModel) optionalDevice.get();
         assertEquals("FRITZ!DECT 200", device.getProductName());
         assertEquals("087610000434", device.getIdentifier());
         assertEquals("17", device.getDeviceId());
@@ -131,15 +130,16 @@ public class AVMFritzModelTest {
         assertEquals(new BigDecimal("0.0"), device.getTemperature().getOffset());
 
         assertEquals(new BigDecimal("0.045"), device.getPowermeter().getPower());
-        assertEquals(new BigDecimal("0.166"), device.getPowermeter().getEnergy());
+        assertEquals(new BigDecimal("166"), device.getPowermeter().getEnergy());
     }
 
     @Test
     public void validateDECT300Model() {
-        Optional<DeviceModel> optionalDevice = findDevice("FRITZ!DECT 300");
+        Optional<AVMFritzBaseModel> optionalDevice = findModel("FRITZ!DECT 300");
         assertTrue(optionalDevice.isPresent());
+        assertTrue(optionalDevice.get() instanceof DeviceModel);
 
-        DeviceModel device = optionalDevice.get();
+        DeviceModel device = (DeviceModel) optionalDevice.get();
         assertEquals("FRITZ!DECT 300", device.getProductName());
         assertEquals("087610000437", device.getIdentifier());
         assertEquals("20", device.getDeviceId());
@@ -181,10 +181,11 @@ public class AVMFritzModelTest {
 
     @Test
     public void validateDECT301Model() {
-        Optional<DeviceModel> optionalDevice = findDevice("FRITZ!DECT 301");
+        Optional<AVMFritzBaseModel> optionalDevice = findModel("FRITZ!DECT 301");
         assertTrue(optionalDevice.isPresent());
+        assertTrue(optionalDevice.get() instanceof DeviceModel);
 
-        DeviceModel device = optionalDevice.get();
+        DeviceModel device = (DeviceModel) optionalDevice.get();
         assertEquals("FRITZ!DECT 301", device.getProductName());
         assertEquals("087610000436", device.getIdentifier());
         assertEquals("21", device.getDeviceId());
@@ -226,10 +227,11 @@ public class AVMFritzModelTest {
 
     @Test
     public void validateCometDECTModel() {
-        Optional<DeviceModel> optionalDevice = findDevice("Comet DECT");
+        Optional<AVMFritzBaseModel> optionalDevice = findModel("Comet DECT");
         assertTrue(optionalDevice.isPresent());
+        assertTrue(optionalDevice.get() instanceof DeviceModel);
 
-        DeviceModel device = optionalDevice.get();
+        DeviceModel device = (DeviceModel) optionalDevice.get();
         assertEquals("Comet DECT", device.getProductName());
         assertEquals("087610000435", device.getIdentifier());
         assertEquals("22", device.getDeviceId());
@@ -271,10 +273,11 @@ public class AVMFritzModelTest {
 
     @Test
     public void validatePowerline546EModel() {
-        Optional<DeviceModel> optionalDevice = findDevice("FRITZ!Powerline 546E");
+        Optional<AVMFritzBaseModel> optionalDevice = findModel("FRITZ!Powerline 546E");
         assertTrue(optionalDevice.isPresent());
+        assertTrue(optionalDevice.get() instanceof DeviceModel);
 
-        DeviceModel device = optionalDevice.get();
+        DeviceModel device = (DeviceModel) optionalDevice.get();
         assertEquals("FRITZ!Powerline 546E", device.getProductName());
         assertEquals("5C:49:79:F0:A3:84", device.getIdentifier());
         assertEquals("30", device.getDeviceId());
@@ -301,10 +304,49 @@ public class AVMFritzModelTest {
         assertEquals(BigDecimal.ONE, device.getSwitch().getDevicelock());
 
         assertEquals(new BigDecimal("0.000"), device.getPowermeter().getPower());
-        assertEquals(new BigDecimal("2.087"), device.getPowermeter().getEnergy());
+        assertEquals(new BigDecimal("2087"), device.getPowermeter().getEnergy());
     }
 
-    private Optional<DeviceModel> findDevice(@NonNull String name) {
+    @Test
+    public void validateSwitchGroupModel() {
+        Optional<AVMFritzBaseModel> optionalGroup = findModel("");
+        assertTrue(optionalGroup.isPresent());
+        assertTrue(optionalGroup.get() instanceof GroupModel);
+
+        GroupModel group = (GroupModel) optionalGroup.get();
+        assertEquals("", group.getProductName());
+        assertEquals("F0:A3:7F-900", group.getIdentifier());
+        assertEquals("20001", group.getDeviceId());
+        assertEquals("1.0", group.getFirmwareVersion());
+        assertEquals("AVM", group.getManufacturer());
+
+        assertEquals(1, group.getPresent());
+        assertEquals("Schlafzimmer", group.getName());
+
+        assertFalse(group.isDectRepeater());
+        assertTrue(group.isSwitchableOutlet());
+        assertFalse(group.isTempSensor());
+        assertTrue(group.isPowermeter());
+        assertFalse(group.isHeatingThermostat());
+
+        assertNotNull(group.getSwitch());
+        assertNotNull(group.getPowermeter());
+        assertNull(group.getHkr());
+        assertNotNull(group.getGroupinfo());
+
+        assertEquals(SwitchModel.ON, group.getSwitch().getState());
+        assertEquals(MODE_MANUAL, group.getSwitch().getMode());
+        assertEquals(BigDecimal.ZERO, group.getSwitch().getLock());
+        assertEquals(BigDecimal.ZERO, group.getSwitch().getDevicelock());
+
+        assertEquals(new BigDecimal("0.000"), group.getPowermeter().getPower());
+        assertEquals(new BigDecimal("2087"), group.getPowermeter().getEnergy());
+
+        assertEquals("1000", group.getGroupinfo().getMasterdeviceid());
+        assertEquals("20000", group.getGroupinfo().getMembers());
+    }
+
+    private Optional<AVMFritzBaseModel> findModel(@NonNull String name) {
         return devices.getDevicelist().stream().filter(it -> name.equals(it.getProductName())).findFirst();
     }
 }

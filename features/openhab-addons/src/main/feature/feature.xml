@@ -68,10 +68,16 @@
         <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.cm11a/${project.version}</bundle>
     </feature>
-    
+
     <feature name="openhab-binding-coolmasternet" description="CoolMasterNet Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.coolmasternet/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-denonmarantz" description="DenonMarantz Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-mdns</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.denonmarantz/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-dlinksmarthome" description="D-Link Smart Home Binding" version="${project.version}">
@@ -112,10 +118,17 @@
         <feature>openhab-transport-mdns</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.freebox/${project.version}</bundle>
     </feature>
+
     <feature name="openhab-binding-fronius" description="Fronius Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.fronius/${project.version}</bundle>
     </feature>
+
+    <feature name="openhab-binding-ftpupload" description="FTP Upload Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.ftpupload/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-gardena" description="Gardena Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.gardena/${project.version}</bundle>
@@ -131,7 +144,7 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.harmonyhub/${project.version}</bundle>
     </feature>
-    
+
     <feature name="openhab-binding-helios" description="Helios Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.helios/${project.version}</bundle>
@@ -157,10 +170,22 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.hdpowerview/${project.version}</bundle>
     </feature>
-	
-	<feature name="openhab-binding-icloud" description="icloud Binding" version="${project.version}">
+
+    <feature name="openhab-binding-icloud" description="icloud Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.icloud/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-innogysmarthome" description="innogy Smarthome Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-http</feature>
+        <feature>openhab-httpclient</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.innogysmarthome/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-irtrans" description="IRTrans Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.irtrans/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-ipp" description="IPP Binding" version="${project.version}">
@@ -190,6 +215,8 @@
 
     <feature name="openhab-binding-kodi" description="Kodi Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-http</feature>
+        <feature>openhab-transport-upnp</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.kodi/${project.version}</bundle>
     </feature>
 
@@ -216,6 +243,11 @@
         <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/4.2.3</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/4.2.3</bundle>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.lgwebos/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-logreader" description="Log Reader Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.logreader/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-loxone" description="Loxone Binding" version="${project.version}">
@@ -321,6 +353,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.pentair/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-phc" description="PHC Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.phc/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-pioneeravr" description="PioneerAVR Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
@@ -352,6 +390,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.rme/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-robonect" description="Robonect Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>         
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.robonect/${project.version}</bundle>
+    </feature>
+    
     <feature name="openhab-binding-rotelra1x" description="RotelRa1x Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
@@ -375,6 +418,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.samsungtv/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-satel" description="Satel Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.satel/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-sensebox" description="Sensebox Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.sensebox/${project.version}</bundle>
@@ -383,7 +432,7 @@
     <feature name="openhab-binding-seneye" description="Seneye Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.seneye/${project.version}</bundle>
-    </feature>    
+    </feature>
 
     <feature name="openhab-binding-silvercrestwifisocket" description="Silvercrest Wifi Plug Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
@@ -404,6 +453,11 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.smappee/${project.version}</bundle>
     </feature>    
+
+    <feature name="openhab-binding-solarlog" description="SolarLog Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.solarlog/${project.version}</bundle>
+    </feature>
 
     <feature name="openhab-binding-squeezebox" description="Squeezebox Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
@@ -451,6 +505,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.urtsi/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-velbus" description="Velbus Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.velbus/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-vitotronic" description="Vitotronic Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.vitotronic/${project.version}</bundle>
@@ -477,7 +537,7 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.zoneminder/${project.version}</bundle>
     </feature>
 
-	<feature name="openhab-binding-zway" description="Z-Way Binding" version="${project.version}">
+    <feature name="openhab-binding-zway" description="Z-Way Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.zway/${project.version}</bundle>
     </feature>
@@ -490,6 +550,11 @@
     </feature>
 
     <!-- misc -->
+
+    <feature name="openhab-misc-azureiothub" description="Azure IoT Hub Connector" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.azureiothub/${project.version}</bundle>
+    </feature>
 
     <feature name="openhab-misc-openhabcloud" description="openHAB Cloud Connector" version="${project.version}">
         <feature>openhab-runtime-base</feature>

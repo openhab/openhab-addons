@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.swagger.client.model.NAPlace;
-import io.swagger.client.model.NAUserAdministrative;
 import retrofit.RetrofitError;
 
 /**
@@ -52,7 +51,6 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     private RefreshStrategy refreshStrategy;
     @Nullable
     protected DEVICE device;
-    protected NAUserAdministrative userAdministrative;
     protected Map<String, Object> childs = new ConcurrentHashMap<>();
 
     public NetatmoDeviceHandler(@NonNull Thing thing) {
@@ -105,6 +103,9 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
 
     protected abstract DEVICE updateReadings();
 
+    protected void updateProperties(DEVICE deviceData) {
+    }
+
     @Override
     protected void updateChannels() {
         if (refreshStrategy != null) {
@@ -130,6 +131,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                     updateStatus(ThingStatus.ONLINE);
                     logger.debug("Successfully updated device {} readings! Now updating channels", getId());
                     this.device = newDeviceReading;
+                    updateProperties(device);
                     Integer dataTimeStamp = getDataTimestamp();
                     if (dataTimeStamp != null) {
                         refreshStrategy.setDataTimeStamp(dataTimeStamp);
@@ -138,6 +140,13 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                 } else {
                     logger.debug("Failed to update device {} readings! Skip updating channels", getId());
                 }
+                // Be sure that all channels for the modules will be updated with refreshed data
+                childs.forEach((childId, moduleData) -> {
+                    Optional<AbstractNetatmoThingHandler> childHandler = getBridgeHandler().findNAThing(childId);
+                    childHandler.map(NetatmoModuleHandler.class::cast).ifPresent(naChildModule -> {
+                        naChildModule.setRefreshRequired(true);
+                    });
+                });
             } else {
                 logger.debug("Data still valid for device {}", getId());
             }
@@ -171,8 +180,6 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                     } else {
                         return UnDefType.UNDEF;
                     }
-                case CHANNEL_UNIT:
-                    return new DecimalType(userAdministrative.getUnit());
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             logger.debug("The device has no method to access {} property ", channelId);

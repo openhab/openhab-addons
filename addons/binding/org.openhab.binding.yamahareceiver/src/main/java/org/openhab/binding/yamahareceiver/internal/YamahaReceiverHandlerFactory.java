@@ -31,7 +31,7 @@ import com.google.common.collect.Sets;
  *
  * @author David Graeff -- Intial contribution
  */
-@Component(immediate = true, service = ThingHandlerFactory.class)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.yamahareceiver")
 public class YamahaReceiverHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(
             YamahaReceiverBindingConstants.BRIDGE_THING_TYPES_UIDS,

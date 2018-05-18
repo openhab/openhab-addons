@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NibeHeatPump Binding Tests
+Bundle-SymbolicName: 
+ org.openhab.binding.nibeheatpump.test;singleton:=true
+Bundle-Version: 2.3.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: openHAB
+Fragment-Host: org.openhab.binding.nibeheatpump
+Import-Package:  org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.core.events,
+ org.eclipse.smarthome.core.thing.util,
+ org.eclipse.smarthome.core.util,
+ org.eclipse.smarthome.test,
+ org.eclipse.smarthome.test.storage,
+ org.hamcrest;core=split,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners,
+ org.openhab.binding.nibeheatpump,
+ org.osgi.framework,
+ org.osgi.service.device

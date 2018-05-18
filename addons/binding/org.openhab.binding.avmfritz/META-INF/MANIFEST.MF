@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: AVM FRITZ! Binding
@@ -10,6 +11,7 @@ Export-Package:
  org.openhab.binding.avmfritz,
  org.openhab.binding.avmfritz.handler
 Import-Package: 
+ javax.measure.quantity,
  javax.xml.bind,
  org.apache.commons.lang.builder,
  org.eclipse.jdt.annotation;resolution:=optional,
@@ -26,6 +28,7 @@ Import-Package:
  org.eclipse.smarthome.config.discovery.upnp,
  org.eclipse.smarthome.core.events,
  org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,

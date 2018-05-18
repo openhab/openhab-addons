@@ -71,7 +71,35 @@
 		<state readOnly="true" />
 	</channel-type>
 
+	<channel-type id="SecurityState">
+		<item-type>String</item-type>
+		<label>Security State</label>
+		<description>Security state of the structure</description>
+		<state readOnly="true">
+			<options>
+				<option value="OK">ok</option>
+				<option value="DETER">deter</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<!-- Camera -->
+	<channel-group-type id="Camera">
+		<label>Camera</label>
+		<description>Information about the camera</description>
+		<channels>
+			<channel id="streaming" typeId="Streaming" />
+			<channel id="audio_input_enabled" typeId="AudioInputEnabled" />
+			<channel id="public_share_enabled" typeId="PublicShareEnabled" />
+			<channel id="video_history_enabled" typeId="VideoHistoryEnabled" />
+			<channel id="app_url" typeId="AppUrl" />
+			<channel id="snapshot_url" typeId="SnapshotUrl" />
+			<channel id="public_share_url" typeId="PublicShareUrl" />
+			<channel id="web_url" typeId="WebUrl" />
+			<channel id="last_online_change" typeId="LastOnlineChange" />
+		</channels>
+	</channel-group-type>
+
 	<channel-type id="AudioInputEnabled" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Audio Input Enabled</label>
@@ -127,10 +155,105 @@
 		<state readOnly="true" />
 	</channel-type>
 
+	<channel-group-type id="CameraEvent" advanced="true">
+		<label>Camera Event</label>
+		<description>Information about the camera event</description>
+		<channels>
+			<channel id="has_motion" typeId="CameraEventHasMotion" />
+			<channel id="has_sound" typeId="CameraEventHasSound" />
+			<channel id="has_person" typeId="CameraEventHasPerson" />
+			<channel id="start_time" typeId="CameraEventStartTime" />
+			<channel id="end_time" typeId="CameraEventEndTime" />
+			<channel id="urls_expire_time" typeId="CameraEventUrlsExpireTime" />
+			<channel id="animated_image_url" typeId="CameraEventAnimatedImageUrl" />
+			<channel id="app_url" typeId="CameraEventAppUrl" />
+			<channel id="image_url" typeId="CameraEventImageUrl" />
+			<channel id="web_url" typeId="CameraEventWebUrl" />
+			<channel id="activity_zones" typeId="CameraEventActivityZones" />
+		</channels>
+	</channel-group-type>
+	
+	<channel-type id="CameraEventHasSound" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Has Sound</label>
+		<description>If sound was detected in the camera event</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="CameraEventHasMotion" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Has Motion</label>
+		<description>If motion was detected in the camera event</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="CameraEventHasPerson" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Has Person</label>
+		<description>If a person was detected in the camera event</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="CameraEventStartTime" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Start Time</label>
+		<description>Timestamp when the camera event started</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="CameraEventEndTime" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>End Time</label>
+		<description>Timestamp when the camera event ended</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="CameraEventUrlsExpireTime" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>URLs Expire Time</label>
+		<description>Timestamp when the camera event URLs expire</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="CameraEventWebUrl" advanced="true">
+		<item-type>String</item-type>
+		<label>Web URL</label>
+		<description>The web URL for the camera event, allows you to see the camera event in a web page</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="CameraEventAppUrl" advanced="true">
+		<item-type>String</item-type>
+		<label>App URL</label>
+		<description>The app URL for the camera event, allows you to see the camera event in an app</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="CameraEventImageUrl" advanced="true">
+		<item-type>String</item-type>
+		<label>Image URL</label>
+		<description>The URL showing an image for the camera event</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="CameraEventAnimatedImageUrl" advanced="true">
+		<item-type>String</item-type>
+		<label>Animated Image URL</label>
+		<description>The URL showing an animated image for the camera event</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="CameraEventActivityZones" advanced="true">
+		<item-type>String</item-type>
+		<label>Activity Zones</label>
+		<description>Identifiers for activity zones that detected the event (comma separated)</description>
+		<state readOnly="true" />
+	</channel-type>
+
 	<!-- Smoke detector -->
 	<channel-type id="UiColorState" advanced="true">
 		<item-type>String</item-type>
-		<label>Mode</label>
+		<label>UI Color State</label>
 		<description>Current color state of the protect</description>
 		<state readOnly="true">
 			<options>
@@ -184,51 +307,67 @@
 
 	<!-- Thermostat -->
 	<channel-type id="Temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Current temperature in degrees Celsius</description>
+		<description>Current temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="SetPoint">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Set Point</label>
-		<description>The set point in degrees Celsius</description>
+		<description>The set point temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °C" step="0.5" />
+		<state pattern="%.1f %unit%" step="0.5" />
 	</channel-type>
 
 	<channel-type id="MaxSetPoint">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Max Set Point</label>
-		<description>The max set point in degrees Celsius</description>
+		<description>The max set point temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °C" step="0.5" />
+		<state pattern="%.1f %unit%" step="0.5" />
 	</channel-type>
 
 	<channel-type id="MinSetPoint">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Min Set Point</label>
-		<description>The min set point in degrees Celsius</description>
+		<description>The min set point temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °C" step="0.5" />
+		<state pattern="%.1f %unit%" step="0.5" />
+	</channel-type>
+
+	<channel-type id="EcoMaxSetPoint" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Eco Max Set Point</label>
+		<description>The eco range max set point temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="EcoMinSetPoint" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Eco Min Set Point</label>
+		<description>The eco range min set point temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="LockedMaxSetPoint" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Locked Max Set Point</label>
-		<description>The locked range max set point in degrees Celsius</description>
+		<description>The locked range max set point temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °C" step="0.5" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="LockedMinSetPoint" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Locked Min Set Point</label>
-		<description>The locked range min set point in degrees Celsius</description>
+		<description>The locked range min set point temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °C" step="0.5" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="Locked" advanced="true">
@@ -282,18 +421,18 @@
 	</channel-type>
 
 	<channel-type id="Humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Indicates the current relative humidity</description>
 		<category>Humidity</category>
-		<state pattern="%.1f %%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="TimeToTarget">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Time To Target</label>
-		<description>Time left to the target temperature (mins) approximately</description>
-		<state readOnly="true" />
+		<description>Time left to the target temperature approximately</description>
+		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="CanHeat" advanced="true">
@@ -318,10 +457,21 @@
 	</channel-type>
 
 	<channel-type id="FanTimerDuration" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Fan Timer Duration</label>
-		<description>Length of time (in minutes) that the fan is set to run</description>
-		<state />
+		<description>Length of time that the fan is set to run</description>
+		<state>
+			<options>
+				<option value="15">15 min</option>
+				<option value="30">30 min</option>
+				<option value="45">45 min</option>
+				<option value="60">1 h</option>
+				<option value="120">2 h</option>
+				<option value="240">4 h</option>
+				<option value="480">8 h</option>
+				<option value="960">16 h</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="FanTimerTimeout" advanced="true">

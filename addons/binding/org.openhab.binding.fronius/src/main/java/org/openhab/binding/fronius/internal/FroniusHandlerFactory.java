@@ -22,7 +22,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.fronius.handler.FroniusBridgeHandler;
 import org.openhab.binding.fronius.handler.FroniusSymoInverterHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link FroniusHandlerFactory} is responsible for creating things and thing
@@ -30,7 +29,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  *
  * @author Thomas Rokohl - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.fronius", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.fronius")
 public class FroniusHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>() {

@@ -10,9 +10,10 @@ package org.openhab.binding.pioneeravr.protocol;
 
 /**
  * Exception for eISCP errors.
- * 
- * @author Rainer Ostendorf
- * @author based on the Onkyo binding by Pauli Anttila and others
+ *
+ * Based on the Onkyo binding by Pauli Anttila and others.
+ *
+ * @author Rainer Ostendorf - Initial contribution
  */
 public class AvrConnectionException extends RuntimeException {
 

@@ -15,11 +15,13 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.pentair.handler.PentairEasyTouchHandler;
 import org.openhab.binding.pentair.handler.PentairIPBridgeHandler;
 import org.openhab.binding.pentair.handler.PentairIntelliChlorHandler;
 import org.openhab.binding.pentair.handler.PentairIntelliFloHandler;
 import org.openhab.binding.pentair.handler.PentairSerialBridgeHandler;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link PentairHandlerFactory} is responsible for creating things and thing
@@ -27,7 +29,7 @@ import org.openhab.binding.pentair.handler.PentairSerialBridgeHandler;
  *
  * @author Jeff James - Initial contribution
  */
-
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.pentair")
 public class PentairHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

@@ -5,7 +5,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.knx.test;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.3.0.qualifier
-Export-Package: org.openhab.binding.knx;uses:="org.eclipse.smarthome.test"
+Export-Package: 
+ org.openhab.binding.knx;uses:="org.eclipse.smarthome.test"
 Fragment-Host: org.openhab.binding.knx
 Import-Package: 
  org.openhab.binding.knx,

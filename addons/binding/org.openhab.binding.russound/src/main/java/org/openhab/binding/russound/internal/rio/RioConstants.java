@@ -15,7 +15,7 @@ import org.openhab.binding.russound.RussoundBindingConstants;
 /**
  * The class defines common constants ({@link ThingTypeUID} and channels), which are used across the rio binding
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 @NonNullByDefault
 public class RioConstants {
@@ -30,7 +30,7 @@ public class RioConstants {
             "source");
 
     // the port number rio listens on
-    public static final int RioPort = 9621;
+    public static final int RIO_PORT = 9621;
 
     // SYSTEM PROPERTIES
     public static final String PROPERTY_SYSVERSION = "Firmware Version";

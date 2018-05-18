@@ -16,17 +16,20 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.hdpowerview.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
+import org.osgi.service.component.annotations.Component;
 
 import jcifs.netbios.NbtAddress;
 
 /**
  * Discovers the HD Power View HUB by searching for a host advertised with the NetBIOS name PDBU-Hub3.0
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.hdpowerview")
 public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
 
     private final Runnable scanner;

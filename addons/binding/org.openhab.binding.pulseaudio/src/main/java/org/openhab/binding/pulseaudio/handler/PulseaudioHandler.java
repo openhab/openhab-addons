@@ -56,11 +56,11 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
             COMBINED_SINK_THING_TYPE, SINK_INPUT_THING_TYPE, SOURCE_THING_TYPE, SOURCE_OUTPUT_THING_TYPE);
 
     private int refresh = 60; // refresh every minute as default
-    ScheduledFuture<?> refreshJob;
+    private ScheduledFuture<?> refreshJob;
 
     private PulseaudioBridgeHandler bridgeHandler;
 
-    private Logger logger = LoggerFactory.getLogger(PulseaudioHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PulseaudioHandler.class);
 
     private String name;
 
@@ -185,7 +185,7 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
             } else if (channelUID.getId().equals(PulseaudioBindingConstants.SLAVES_CHANNEL)) {
                 if (device instanceof Sink && ((Sink) device).isCombinedSink()) {
                     if (command instanceof StringType) {
-                        List<Sink> slaves = new ArrayList<Sink>();
+                        List<Sink> slaves = new ArrayList<>();
                         for (String slaveName : command.toString().split(",")) {
                             Sink slave = bridge.getClient().getSink(slaveName.trim());
                             if (slave != null) {

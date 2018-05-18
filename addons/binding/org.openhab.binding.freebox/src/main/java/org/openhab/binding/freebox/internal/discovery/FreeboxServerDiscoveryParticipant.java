@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * The {@link FreeboxServerDiscoveryParticipant} is responsible for discovering
  * the Freebox Server (bridge) thing using mDNS discovery service
  *
- * @author Laurent Garnier
+ * @author Laurent Garnier - Initial contribution
  */
 @Component(immediate = true)
 public class FreeboxServerDiscoveryParticipant implements MDNSDiscoveryParticipant {

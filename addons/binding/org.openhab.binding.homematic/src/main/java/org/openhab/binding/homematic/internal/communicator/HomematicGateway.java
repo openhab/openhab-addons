@@ -79,6 +79,27 @@ public interface HomematicGateway {
      * Returns the id of the HomematicGateway.
      */
     public String getId();
+    
+    /**
+     * Set install mode of homematic controller. During install mode the
+     * controller will accept any device (normal mode)
+     * 
+     * @param enable <i>true</i> will start install mode, whereas <i>false</i>
+     *         will stop it
+     * @param seconds specify how long the install mode should last
+     * @throws IOException if RpcClient fails to propagate command
+     */
+    public void setInstallMode(boolean enable, int seconds) throws IOException;
+
+    /**
+     * Get current install mode of homematic contoller
+     * 
+     * @return the current time in seconds that the controller remains in
+     *         <i>install_mode==true</i>, respectively <i>0</i> in case of
+     *         <i>install_mode==false</i>
+     * @throws IOException if RpcClient fails to propagate command
+     */
+    public int getInstallMode() throws IOException;
 
     /**
      * Loads all rssi values from the gateway.
@@ -89,5 +110,15 @@ public interface HomematicGateway {
      * Starts the connection and event tracker threads.
      */
     public void startWatchdogs();
+
+    /**
+     * Deletes the device from the gateway.
+     *
+     * @param address The address of the device to be deleted
+     * @param reset <i>true</i> will perform a factory reset on the device before deleting it.
+     * @param force <i>true</i> will delete the device even if it is not reachable.
+     * @param defer <i>true</i> will delete the device once it becomes available.
+     */
+    public void deleteDevice(String address, boolean reset, boolean force, boolean defer);
 
 }

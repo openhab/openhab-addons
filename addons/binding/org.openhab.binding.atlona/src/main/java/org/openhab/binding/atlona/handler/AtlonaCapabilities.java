@@ -12,7 +12,7 @@ package org.openhab.binding.atlona.handler;
  * Any model specific capabilities class should inherit from this base class. Currently doesn't provide any generic
  * functionality.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public abstract class AtlonaCapabilities {
 

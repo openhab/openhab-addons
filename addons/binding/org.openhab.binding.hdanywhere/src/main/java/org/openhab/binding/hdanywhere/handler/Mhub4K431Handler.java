@@ -48,10 +48,10 @@ public class Mhub4K431Handler extends BaseThingHandler {
     // public static final String PORTS = "ports";
     public static final String POLLING_INTERVAL = "interval";
 
-    private Logger logger = LoggerFactory.getLogger(Mhub4K431Handler.class);
+    private final Logger logger = LoggerFactory.getLogger(Mhub4K431Handler.class);
 
     private ScheduledFuture<?> pollingJob;
-    protected Gson gson = new Gson();
+    protected final Gson gson = new Gson();
 
     private final int timeout = 5000;
     private final int numberOfPorts = 4;
@@ -65,8 +65,8 @@ public class Mhub4K431Handler extends BaseThingHandler {
         logger.debug("Initializing HDanywhere MHUB 4K (4×3+1) matrix handler.");
 
         if (pollingJob == null || pollingJob.isCancelled()) {
-            int polling_interval = ((BigDecimal) getConfig().get(POLLING_INTERVAL)).intValue();
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, polling_interval, TimeUnit.SECONDS);
+            int pollingInterval = ((BigDecimal) getConfig().get(POLLING_INTERVAL)).intValue();
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, pollingInterval, TimeUnit.SECONDS);
         }
         updateStatus(ThingStatus.UNKNOWN);
     }
@@ -119,12 +119,10 @@ public class Mhub4K431Handler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof RefreshType) {
             // Simply schedule a single run of the polling runnable to refresh all channels
             scheduler.schedule(pollingRunnable, 0, TimeUnit.SECONDS);
         } else {
-
             String channelID = channelUID.getId();
 
             String host = (String) getConfig().get(IP_ADDRESS);
@@ -140,7 +138,6 @@ public class Mhub4K431Handler extends BaseThingHandler {
                 logger.warn("Output port {} goes beyond the physical number of {} ports available on the matrix {}",
                         new Object[] { outputPort, numberOfPorts, host });
             } else {
-
                 String httpMethod = "POST";
                 String url = "http://" + host + "/cgi-bin/MMX32_Keyvalue.cgi";
 

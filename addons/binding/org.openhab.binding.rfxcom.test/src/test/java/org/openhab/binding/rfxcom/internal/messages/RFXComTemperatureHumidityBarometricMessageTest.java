@@ -13,8 +13,7 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComTemperatureHumi
 import static org.openhab.binding.rfxcom.internal.messages.RFXComTemperatureHumidityBarometricMessage.HumidityStatus.DRY;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComTemperatureHumidityBarometricMessage.SubType.THB2;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
@@ -30,7 +29,7 @@ public class RFXComTemperatureHumidityBarometricMessageTest {
     @Test
     public void testSomeMessages() throws RFXComException, RFXComMessageNotImplementedException {
         String hexMessage = "0D54020EE90000C9270203E70439";
-        byte[] message = DatatypeConverter.parseHexBinary(hexMessage);
+        byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComTemperatureHumidityBarometricMessage msg = (RFXComTemperatureHumidityBarometricMessage) RFXComMessageFactory
                 .createMessage(message);
         assertEquals("SubType", THB2, msg.subType);
@@ -46,6 +45,6 @@ public class RFXComTemperatureHumidityBarometricMessageTest {
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
     }
 }

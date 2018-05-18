@@ -7,6 +7,7 @@
 	<bridge-type id="bridge">
 		<label>Homematic Bridge</label>
 		<description>The Homematic bridge represents a Homematic gateway</description>
+		<representation-property>serialNumber</representation-property>
 
 		<config-description>
 			<parameter name="gatewayAddress" type="text" required="true">
@@ -44,6 +45,12 @@
 				<advanced>true</advanced>
 				<default>15</default>
 			</parameter>
+			<parameter name="discoveryTimeToLive" type="integer">
+				<label>Discovery Time To Live</label>
+				<description>The time to live for discovery results of a Homematic gateway in seconds. (default = -1 -> infinite)</description>
+				<advanced>true</advanced>
+				<default>-1</default>
+			</parameter>
 			<parameter name="socketMaxAlive" type="integer">
 				<label>Socket maxAlive</label>
 				<description>The maximum lifetime of a pooled socket connection to the Homematic gateway in seconds (default = 900)</description>
@@ -79,6 +86,17 @@
 				<description>The port number of the Group daemon</description>
 				<advanced>true</advanced>
 				<default>9292</default>
+			</parameter>
+			<parameter name="installModeDuration" type="integer" min="10" max="300" unit="s">
+				<label>Install mode duration</label>
+				<description>Time in seconds that the controller will be in install mode when a device discovery is initiated</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="unpairOnDeletion" type="boolean">
+				<label>Unpair Devices on Deletion</label>
+				<description>If set to true, devices are unpaired from the gateway when their corresponding things are removed</description>
+				<advanced>true</advanced>
+				<default>false</default>
 			</parameter>
 
 		</config-description>

@@ -53,24 +53,35 @@ Please note that at least one channel must be bound to an item before the bindin
 
 ## Example
 
-This example assumes the IP of your smart TV is 192.168.2.119.
+Assuming your TV has device ID 3aab9eea-953b-4272-bdbd-f0cd0ecf4a46. 
+By default this binding will create ThingIDs for discovery results with prefix lgwebos:WebOSTV: and the device ID. e.g. lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46.
+Thus, you can find your TV's device ID by looking into discovery results in Paper UI.
+
+You could also specify an alternate ThingID using a .things file, specifying the deviceId as a mandatory configuration parameter:
+
+```
+Thing lgwebos:WebOSTV:tv1 [ deviceId="3aab9eea-953b-4272-bdbd-f0cd0ecf4a46" ]
+```
+
+However, for the next steps of this example we will assumes you are using automatic discovery and the default ThingID.
+
 
 demo.items:
 
 ```
-Switch LG_TV0_Power "TV Power" <television>  { autoupdate="false", channel="lgwebos:WebOSTV:192_168_2_119:power" }
-Switch LG_TV0_Mute  "TV Mute"                { channel="lgwebos:WebOSTV:192_168_2_119:mute"}
-Dimmer LG_TV0_Volume "Volume [%S]"           { channel="lgwebos:WebOSTV:192_168_2_119:volume" }
+Switch LG_TV0_Power "TV Power" <television>  { autoupdate="false", channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:power" }
+Switch LG_TV0_Mute  "TV Mute"                { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mute"}
+Dimmer LG_TV0_Volume "Volume [%S]"           { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:volume" }
 Number LG_TV0_VolDummy "VolumeUpDown"
-Number LG_TV0_ChannelNo "Channel [%d]"       { channel="lgwebos:WebOSTV:192_168_2_119:channel" }
+Number LG_TV0_ChannelNo "Channel [%d]"       { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channel" }
 Number LG_TV0_ChannelDummy "ChannelUpDown"
-String LG_TV0_Channel "Channel [%S]"         { channel="lgwebos:WebOSTV:192_168_2_119:channelName"}
-String LG_TV0_Toast                          { channel="lgwebos:WebOSTV:192_168_2_119:toast"}
-Switch LG_TV0_Stop "Stop"                    { autoupdate="false", channel="lgwebos:WebOSTV:192_168_2_119:mediaStop" }
-String LG_TV0_Application "Application [%s]" { channel="lgwebos:WebOSTV:192_168_2_119:appLauncher"}
-Player LG_TV0_Player                         { channel="lgwebos:WebOSTV:192_168_2_119:mediaPlayer"}
+String LG_TV0_Channel "Channel [%S]"         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channelName"}
+String LG_TV0_Toast                          { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:toast"}
+Switch LG_TV0_Stop "Stop"                    { autoupdate="false", channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mediaStop" }
+String LG_TV0_Application "Application [%s]" { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:appLauncher"}
+Player LG_TV0_Player                         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mediaPlayer"}
 
-// this assumes you also have the wake on lan binding configured & You need to update your broadcast and mac address
+// this assumes you also have the wake on lan binding configured and your TV's IP address is on this network - You would need to update your broadcast and mac address accordingly
 Switch LG_TV0_WOL                            { wol="192.168.2.255#3c:cd:93:c2:20:e0" }
 ```
 
@@ -87,8 +98,6 @@ sitemap demo label="Main Menu"
         Text item=LG_TV0_ChannelNo
         Switch item=LG_TV0_ChannelDummy icon="television" label="Kanal" mappings=[1="▲", 0="▼"]
         Text item=LG_TV0_Channel
-        Switch item=LG_TV0_ChannelDown
-        Switch item=LG_TV0_ChannelUp
         Default item=LG_TV0_Player
         Text item=LG_TV0_Application
         Selection item=LG_TV0_Application mappings=[

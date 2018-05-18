@@ -40,11 +40,11 @@ import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 /**
  * The {@link Mcp23017Handler} is base class for MCP23017 chip support
  *
- * @author Anatol Ogorek
+ * @author Anatol Ogorek - Initial contribution
  */
 public class Mcp23017Handler extends BaseThingHandler implements GpioPinListenerDigital {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private MCP23017GpioProvider mcpProvider;
     private Integer address;
@@ -86,7 +86,6 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
             default:
                 break;
         }
-
     }
 
     private boolean verifyChannel(ChannelUID channelUID) {
@@ -138,7 +137,6 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "An exception occurred while adding pin. Check pin configuration. Exception: " + e.getMessage());
         }
-
     }
 
     private MCP23017GpioProvider initializeMcpProvider() {
@@ -160,7 +158,7 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
         Pin pin = PinMapper.get(channel.getIdWithoutGroup());
 
         String pullMode = DEFAULT_PULL_MODE;
-        if (thing.getChannel(channel.getIdWithoutGroup()) != null) {
+        if (thing.getChannel(channel.getId ()) != null) {
             Configuration configuration = thing.getChannel(channel.getId()).getConfiguration();
             pullMode = ((String) configuration.get(PULL_MODE)) != null ? ((String) configuration.get(PULL_MODE))
                     : DEFAULT_PULL_MODE;
@@ -172,7 +170,6 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
         logger.debug("Bound digital input for PIN: {}, ItemName: {}, pullMode: {}", pin, channel.getAsString(),
                 pullMode);
         return input;
-
     }
 
     @Override

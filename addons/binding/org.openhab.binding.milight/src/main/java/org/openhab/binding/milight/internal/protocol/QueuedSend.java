@@ -27,9 +27,8 @@ import org.slf4j.LoggerFactory;
  * delay only. The user may issue absolute brightness or color changes faster than 1/10s though, and we don't
  * want to just queue up those commands but apply the newest command only.
  *
- * @author David Graeff <david.graeff@web.de>
+ * @author David Graeff - Initial contribution
  * @since 2.1
- *
  */
 public class QueuedSend implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(QueuedSend.class);
@@ -37,8 +36,8 @@ public class QueuedSend implements Runnable {
     BlockingQueue<QueueItem> queue = new LinkedBlockingQueue<>(20);
     protected final DatagramPacket packet;
     protected final DatagramSocket datagramSocket;
-    private int delay_between_commands = 100;
-    private int repeat_commands = 1;
+    private int delayBetweenCommands = 100;
+    private int repeatCommands = 1;
     private boolean willbeclosed = false;
     private Thread thread;
 
@@ -66,21 +65,21 @@ public class QueuedSend implements Runnable {
     }
 
     public int getDelayBetweenCommands() {
-        return delay_between_commands;
+        return delayBetweenCommands;
     }
 
     public int getRepeatCommands() {
-        return repeat_commands;
+        return repeatCommands;
     }
 
-    public void setRepeatCommands(int repeat_commands) {
-        repeat_commands = Math.max(1, Math.min(5, repeat_commands));
-        this.repeat_commands = repeat_commands;
+    public void setRepeatCommands(int repeatCommands) {
+        repeatCommands = Math.max(1, Math.min(5, repeatCommands));
+        this.repeatCommands = repeatCommands;
     }
 
     public void setDelayBetweenCommands(int ms) {
         ms = Math.max(0, Math.min(400, ms));
-        delay_between_commands = ms;
+        delayBetweenCommands = ms;
     }
 
     /**
@@ -105,7 +104,7 @@ public class QueuedSend implements Runnable {
                 }
             }
 
-            if (item == null || item.unique_command_id == QueueItem.INVALID) {
+            if (item == null || item.uniqueCommandId == QueueItem.INVALID) {
                 // Just in case it is a command chain, set the item to null to not process any chained commands.
                 item = null;
                 continue;
@@ -113,7 +112,7 @@ public class QueuedSend implements Runnable {
 
             packet.setData(item.data);
             try {
-                for (int i = 0; i < (item.repeatable ? repeat_commands : 1); ++i) {
+                for (int i = 0; i < (item.repeatable ? repeatCommands : 1); ++i) {
                     datagramSocket.send(packet);
 
                     if (logger.isDebugEnabled()) {
@@ -125,14 +124,13 @@ public class QueuedSend implements Runnable {
                                 packet.getAddress().getHostAddress());
                     }
                 }
-
             } catch (Exception e) {
                 logger.error("Failed to send Message to '{}': {}", packet.getAddress().getHostAddress(),
                         e.getMessage());
             }
 
             try {
-                Thread.sleep((item.custom_delay_time != 0) ? item.custom_delay_time : delay_between_commands);
+                Thread.sleep((item.customDelayTime != 0) ? item.customDelayTime : delayBetweenCommands);
             } catch (InterruptedException e) {
                 if (!willbeclosed) {
                     logger.error("Queue sleep failed: {}", e.getLocalizedMessage());
@@ -140,7 +138,6 @@ public class QueuedSend implements Runnable {
                 break;
             }
         }
-
     }
 
     /**
@@ -150,7 +147,7 @@ public class QueuedSend implements Runnable {
         willbeclosed = true;
         if (thread != null) {
             try {
-                thread.join(delay_between_commands);
+                thread.join(delayBetweenCommands);
             } catch (InterruptedException e) {
             }
             thread.interrupt();
@@ -159,7 +156,7 @@ public class QueuedSend implements Runnable {
     }
 
     public void setRepeatTimes(int times) {
-        repeat_commands = times;
+        repeatCommands = times;
     }
 
     /**
@@ -168,15 +165,15 @@ public class QueuedSend implements Runnable {
      * element. Command chains are always executed in a row. Even if the head of the command queue has been marked
      * as invalid, if the processing has been started, the chain will be processed completely.
      *
-     * @param unique_command_id
+     * @param uniqueCommandId
      */
-    private void remove_from_queue(int unique_command_id) {
+    private void removeFromQueue(int uniqueCommandId) {
         Iterator<QueueItem> iterator = queue.iterator();
         while (iterator.hasNext()) {
             try {
                 QueueItem item = iterator.next();
-                if (item != null && item.unique_command_id == unique_command_id) {
-                    item.unique_command_id = QueueItem.INVALID; // invalidate
+                if (item != null && item.uniqueCommandId == uniqueCommandId) {
+                    item.uniqueCommandId = QueueItem.INVALID; // invalidate
                 }
             } catch (IllegalStateException e) {
                 // Ignore threading errors
@@ -198,12 +195,12 @@ public class QueuedSend implements Runnable {
      * This is used for animations and multi-message commands. Be aware that a later added command with the
      * same id will replace all those commands at once.
      *
-     * @param unique_command_id A unique command id. Commands with the same id will overwrite themself.
+     * @param uniqueCommandId A unique command id. Commands with the same id will overwrite themself.
      * @param data Data to be send
      */
-    public void queueRepeatable(int unique_command_id, byte[]... data) {
-        remove_from_queue(unique_command_id);
-        QueueItem item = QueueItem.createRepeatable(unique_command_id, data[0]);
+    public void queueRepeatable(int uniqueCommandId, byte[]... data) {
+        removeFromQueue(uniqueCommandId);
+        QueueItem item = QueueItem.createRepeatable(uniqueCommandId, data[0]);
         QueueItem next = item;
         for (int i = 1; i < data.length; ++i) {
             next = next.addRepeatable(data[i]);
@@ -220,8 +217,8 @@ public class QueuedSend implements Runnable {
      * @param item A queue item, cannot be null.
      */
     public void queue(QueueItem item) {
-        if (item.unique_command_id != NO_CATEGORY) {
-            remove_from_queue(item.unique_command_id);
+        if (item.uniqueCommandId != NO_CATEGORY) {
+            removeFromQueue(item.uniqueCommandId);
         }
         queue.offer(item);
     }

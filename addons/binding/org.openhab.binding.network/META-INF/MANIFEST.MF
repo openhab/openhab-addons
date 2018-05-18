@@ -23,7 +23,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.exec,
- org.eclipse.smarthome.model.script.actions,
  org.openhab.binding.network,
  org.openhab.binding.network.handler,
  org.osgi.service.component,

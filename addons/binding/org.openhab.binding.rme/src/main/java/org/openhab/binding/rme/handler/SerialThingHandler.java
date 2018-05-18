@@ -51,7 +51,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
     public static final String BAUD_RATE = "baud";
     public static final String BUFFER_SIZE = "buffer";
 
-    private Logger logger = LoggerFactory.getLogger(SerialThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SerialThingHandler.class);
 
     private SerialPort serialPort;
     private CommPortIdentifier portId;
@@ -139,7 +139,6 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
         logger.debug("Initializing serial thing handler.");
 
         if (serialPort == null && port != null && baud != 0) {
-
             // parse ports and if the default port is found, initialized the
             // reader
             @SuppressWarnings("rawtypes")
@@ -188,7 +187,6 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                     serialPort.setSerialPortParams(baud, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                             SerialPort.PARITY_NONE);
                 } catch (UnsupportedCommOperationException e) {
-
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Could not configure serial port " + serialPort + ": " + e.getMessage());
                     return;
@@ -231,6 +229,9 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
 
     public class SerialPortReader extends Thread {
 
+        private static final byte LINE_FEED = (byte) '\n';
+        private static final byte CARRIAGE_RETURN = (byte) '\r';
+
         private boolean interrupted = false;
         private InputStream inputStream;
         private boolean hasInterval = interval == 0 ? false : true;
@@ -244,7 +245,6 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
 
         @Override
         public void interrupt() {
-
             interrupted = true;
             super.interrupt();
             try {
@@ -255,20 +255,16 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
 
         @Override
         public void run() {
-
             byte[] dataBuffer = new byte[bufferSize];
             byte[] tmpData = new byte[bufferSize];
             int index = 0;
             int len = -1;
             boolean foundStart = false;
 
-            final byte LINE_FEED = (byte) '\n';
-            final byte CARRIAGE_RETURN = (byte) '\r';
-
             logger.debug("Serial port listener for serial port '{}' has started", port);
 
             try {
-                while (interrupted != true) {
+                while (!interrupted) {
                     long startOfRead = System.currentTimeMillis();
 
                     if ((len = inputStream.read(tmpData)) > 0) {
@@ -301,7 +297,6 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                                         onDataReceived(new String(Arrays.copyOf(dataBuffer, index)));
                                         index = 0;
                                     }
-
                                 }
                             }
 

@@ -8,7 +8,8 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.3.0.qualifier
 Export-Package: 
  org.openhab.binding.homematic,
- org.openhab.binding.homematic.handler
+ org.openhab.binding.homematic.handler,
+ org.openhab.binding.homematic.type
 Import-Package: 
  com.google.common.collect,
  com.thoughtworks.xstream,
@@ -43,6 +44,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.link,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
  org.jupnp.model.meta,
  org.openhab.binding.homematic,
  org.openhab.binding.homematic.handler,

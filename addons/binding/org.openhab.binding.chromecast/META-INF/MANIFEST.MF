@@ -16,12 +16,12 @@ Export-Package:
  org.openhab.binding.chromecast,
  org.openhab.binding.chromecast.handler
 Import-Package: 
- com.fasterxml.jackson.annotation,
  javax.jmdns,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.mdns,
  org.eclipse.smarthome.core.audio,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.net,
@@ -31,9 +31,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
- org.eclipse.smarthome.io.transport.mdns.discovery,
- org.jupnp.model.meta,
- org.jupnp.model.types,
  org.openhab.binding.chromecast,
  org.openhab.binding.chromecast.handler,
  org.osgi.framework,

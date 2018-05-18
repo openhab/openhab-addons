@@ -25,8 +25,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 public class ModelMapper {
 
-    private static final Map<String, ThingTypeUID> THING_MAP = new HashMap<String, ThingTypeUID>();
-    private static final Map<String, String> LABEL_MAP = new HashMap<String, String>();
+    private static final Map<String, ThingTypeUID> THING_MAP = new HashMap<>();
+    private static final Map<String, String> LABEL_MAP = new HashMap<>();
     static {
         // Alphabetical order
         THING_MAP.put("curtain", THING_TYPE_ACTOR_CURTAIN);

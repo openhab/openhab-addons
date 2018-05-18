@@ -26,7 +26,7 @@ public class DeleteDevicesParser extends CommonRpcParser<Object[], List<String>>
         if (message != null && message.length > 1) {
             Object[] data = (Object[]) message[1];
             for (int i = 0; i < message.length; i++) {
-                String address = toString(data[i]);
+                String address = getSanitizedAddress(data[i]);
                 boolean isDevice = !StringUtils.contains(address, ":")
                         && !StringUtils.startsWithIgnoreCase(address, "BidCos");
                 if (isDevice) {

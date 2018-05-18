@@ -2,14 +2,15 @@
 
 The Rego heat pump binding supports:
 
-* Rego 6xx controllers family and
-* Husdata interface.
+*   Rego 6xx controllers family and
+*   Husdata interface.
 
 ## The Rego 6xx family
 
-The Rego 6xx controllers family is used in many heat pumps, like IVT/Bosch/Autotherm/Carrier and others.
+The Rego 6xx controllers family is used in many heat pumps such as IVT/Bosch/Autotherm/Carrier and others.
 
-Rego 6xx unit contain an interface marked as service. Header of this interface is close to the control unit. This is 5V (TTL) serial interface and is connected by a 9 pin can/d-sub connector. Pinout:  
+Rego 6xx unit contain an interface marked as service.
+Header of this interface is close to the control unit. This is 5V (TTL) serial interface and is connected by a 9 pin can/d-sub connector. Pinout:  
 
 2 - RxD  
 3 - TxD  
@@ -22,12 +23,13 @@ Serial communication is using 19200 bps, 8 bit, no parity, 1 stop bit.
 
 Two connection types are supported:
 
-* TCP/IP and
-* serial (RS232).
+*   TCP/IP and
+*   serial (RS232).
 
 #### TCP/IP connection
 
-A transparent bridge between the serial interface of the heat pump and network (i.e. wifi) is used. This way no additional wires are required between heat pump and computer, running openhab.
+A transparent bridge between the serial interface of the heat pump and network (i.e. wifi) is used.
+This way no additional wires are required between heat pump and computer, running openhab.
 
 There are many existing project providing such functionality, i.e. [ser2net](http://ser2net.sourceforge.net/).
 
@@ -37,13 +39,14 @@ Board:
 
 ![board](doc/board.png)
 
-The code running on the ESP module can be found [here](https://github.com/crnjan/esp8266-bridge). There are other projects providing ESP firmware with similar functionality, i.e. [ESP-LINK](https://github.com/jeelabs/esp-link), but did not test with those.
+The code running on the ESP module can be found [here](https://github.com/crnjan/esp8266-bridge).
+There are other projects providing ESP firmware with similar functionality, i.e. [ESP-LINK](https://github.com/jeelabs/esp-link), but did not test with those.
 
 Configuration of the TCP/IP thing:
 
- - address: the hostname/IP address of the transparent bridge on the local network - mandatory,
- - tcpPort: the port number to use to connect to the transparent bridge - optional, defaults to 9265,
- - refreshInterval: refresh interval in seconds, used to fetch new values from the heat pump - optional, defaults to 60 seconds.
+-   address: the hostname/IP address of the transparent bridge on the local network - mandatory,
+-   tcpPort: the port number to use to connect to the transparent bridge - optional, defaults to 9265,
+-   refreshInterval: refresh interval in seconds, used to fetch new values from the heat pump - optional, defaults to 60 seconds.
 
 Example thing definition:
 
@@ -57,15 +60,14 @@ In order to connect directly to the rego 6xx controller, one needs to adjust the
 
 Parameters:
 
- - portName: the name of the serial port on your computer - mandatory,
- - refreshInterval: refresh interval in seconds, used to fetch new values from the heat pump - optional, defaults to 60 seconds.
+-   portName: the name of the serial port on your computer - mandatory,
+-   refreshInterval: refresh interval in seconds, used to fetch new values from the heat pump - optional, defaults to 60 seconds.
 
 Example thing definition:
 
 ```
 regoheatpump:serialRego6xx:ivtSerial [ portName="COM3" ]
 ```
-
 
 ### Channels
 
@@ -147,8 +149,8 @@ Above list is informational, please consult with the Husdata interface provider 
 
 Two connection types are supported:
 
-* TCP/IP and
-* serial (RS232).
+*   TCP/IP and
+*   serial (RS232).
 
 #### TCP/IP connection
 
@@ -158,8 +160,8 @@ There are many existing project providing such functionality, i.e. [ser2net](htt
 
 Configuration of the TCP/IP thing:
 
- - address: the hostname/IP address of the transparent bridge on the local network - mandatory,
- - tcpPort: the port number to use to connect to the transparent bridge - optional, defaults to 9265.
+-   address: the hostname/IP address of the transparent bridge on the local network - mandatory,
+-   tcpPort: the port number to use to connect to the transparent bridge - optional, defaults to 9265.
 
 Example thing definition:
 
@@ -173,14 +175,13 @@ One can connect the Husdata interface directly to a computer that runs openHAB.
 
 Parameters:
 
- - portName: the name of the serial port on your computer - mandatory.
+-   portName: the name of the serial port on your computer - mandatory.
 
 Example thing definition:
 
 ```
 regoheatpump:serialHusdata:ivtSerial [ portName="COM3" ]
 ```
-
 
 ### Channels
 

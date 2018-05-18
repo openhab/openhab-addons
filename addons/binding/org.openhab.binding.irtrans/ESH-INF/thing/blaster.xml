@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="irtrans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Blaster/Receiver diode connected to an IRtrans transceiver -->
+	<thing-type id="blaster">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ethernet" />
+		</supported-bridge-type-refs>
+
+		<label>Blaster</label>
+		<description>This is an infrared transmitter that can send infrared commands</description>
+
+		<channels>
+			<channel id="io" typeId="io" />
+		</channels>
+
+		<config-description>
+			<parameter name="led" type="text" required="true">
+				<label>Led</label>
+				<description>The Led on which infrared commands will be emitted</description>
+			</parameter>
+
+			<parameter name="remote" type="text" required="true">
+				<label>Remote</label>
+				<description>The remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server database and flashed into the transceiver. Can be '*' for any remote</description>
+			</parameter>
+
+			<parameter name="command" type="text" required="true">
+				<label>Command</label>
+				<description>The name of the command will be allowed, as defined in the IRtrans server database and flashed into the transceiver. Can be '*' for any command</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="io">
+		<item-type>String</item-type>
+		<label>Input/Output</label>
+		<description>Read commands received by the blaster, or write commands to be sent by the blaster</description>
+	</channel-type>
+
+</thing:thing-descriptions>

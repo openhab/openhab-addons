@@ -30,10 +30,6 @@
 			<channel id="LastStatusStore" typeId="lastStatusStore" />
 			<channel id="WifiStatus" typeId="system.signal-strength" />
 			<channel id="Location" typeId="location" />
-			<!--  Global configuration channels -->
-			<channel id="Unit" typeId="unit" />
-			<channel id="WindUnit" typeId="windUnit" />
-			<channel id="PressureUnit" typeId="pressureUnit" />
 		</channels>
 
 		<properties>

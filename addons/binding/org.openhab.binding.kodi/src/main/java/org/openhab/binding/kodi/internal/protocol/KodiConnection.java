@@ -19,11 +19,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.kodi.internal.KodiEventListener;
+import org.openhab.binding.kodi.internal.KodiEventListener.KodiPlaylistState;
 import org.openhab.binding.kodi.internal.KodiEventListener.KodiState;
+import org.openhab.binding.kodi.internal.model.KodiFavorite;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannel;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannelGroup;
 import org.slf4j.Logger;
@@ -35,11 +38,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 /**
- * KodiConnection provides an api for accessing a Kodi device.
+ * KodiConnection provides an API for accessing a Kodi device.
  *
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
  * @author Andreas Reinhardt & Christoph Weitkamp - Added channels for thumbnail and fanart
+ * @author Christoph Weitkamp - Improvements for playing audio notifications
  */
 public class KodiConnection implements KodiClientSocketEventListener {
 
@@ -54,12 +58,14 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private static final ExpiringCacheMap<String, JsonElement> REQUEST_CACHE = new ExpiringCacheMap<>(
             TimeUnit.MINUTES.toMillis(5));
 
+    private String hostname;
     private URI wsUri;
     private URI imageUri;
     private KodiClientSocket socket;
 
     private int volume = 0;
     private KodiState currentState = KodiState.Stop;
+    private KodiPlaylistState currentPlaylistState = KodiPlaylistState.CLEAR;
 
     private final KodiEventListener listener;
 
@@ -77,15 +83,16 @@ public class KodiConnection implements KodiClientSocketEventListener {
         listener.updateConnectionState(true);
     }
 
-    public synchronized void connect(String hostName, int port, ScheduledExecutorService scheduler, URI imageUri) {
+    public synchronized void connect(String hostname, int port, ScheduledExecutorService scheduler, URI imageUri) {
+        this.hostname = hostname;
         this.imageUri = imageUri;
         try {
             close();
-            wsUri = new URI("ws", null, hostName, port, "/jsonrpc", null, null);
+            wsUri = new URI("ws", null, hostname, port, "/jsonrpc", null, null);
             socket = new KodiClientSocket(this, wsUri, scheduler);
             checkConnection();
         } catch (URISyntaxException e) {
-            logger.error("exception during constructing URI host={}, port={}", hostName, port, e);
+            logger.error("exception during constructing URI host={}, port={}", hostname, port, e);
         }
     }
 
@@ -102,6 +109,59 @@ public class KodiConnection implements KodiClientSocketEventListener {
             }
         }
         return -1;
+    }
+
+    public int getActivePlaylist() {
+        for (JsonElement element : getPlaylistsInternal()) {
+            JsonObject playlist = (JsonObject) element;
+            if (playlist.has("playlistid")) {
+                int playlistID = playlist.get("playlistid").getAsInt();
+                JsonObject playlistItems = getPlaylistItemsInternal(playlistID);
+                if (playlistItems.has("limits") && playlistItems.get("limits") instanceof JsonObject) {
+                    JsonObject limits = playlistItems.get("limits").getAsJsonObject();
+                    if (limits.has("total") && limits.get("total").getAsInt() > 0) {
+                        return playlistID;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+    public int getPlaylistID(String type) {
+        for (JsonElement element : getPlaylistsInternal()) {
+            JsonObject playlist = (JsonObject) element;
+            if (playlist.has("playlistid") && playlist.has("type") && type.equals(playlist.get("type").getAsString())) {
+                return playlist.get("playlistid").getAsInt();
+            }
+        }
+        return -1;
+    }
+
+    private synchronized JsonArray getPlaylistsInternal() {
+        String method = "Playlist.GetPlaylists";
+        String hash = hostname + '#' + method;
+        JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(hash, () -> {
+            return socket.callMethod(method);
+        });
+
+        if (response instanceof JsonArray) {
+            return response.getAsJsonArray();
+        } else {
+            return null;
+        }
+    }
+
+    private synchronized JsonObject getPlaylistItemsInternal(int playlistID) {
+        JsonObject params = new JsonObject();
+        params.addProperty("playlistid", playlistID);
+        JsonElement response = socket.callMethod("Playlist.GetItems", params);
+
+        if (response instanceof JsonObject) {
+            return response.getAsJsonObject();
+        } else {
+            return null;
+        }
     }
 
     public synchronized void playerPlayPause() {
@@ -178,6 +238,137 @@ public class KodiConnection implements KodiClientSocketEventListener {
         socket.callMethod("Player.SetSpeed", params);
     }
 
+    public synchronized void playlistAdd(int playlistID, String uri) {
+        currentPlaylistState = KodiPlaylistState.ADD;
+
+        JsonObject item = new JsonObject();
+        item.addProperty("file", uri);
+
+        JsonObject params = new JsonObject();
+        params.addProperty("playlistid", playlistID);
+        params.add("item", item);
+        socket.callMethod("Playlist.Add", params);
+    }
+
+    public synchronized void playlistClear(int playlistID) {
+        currentPlaylistState = KodiPlaylistState.CLEAR;
+
+        JsonObject params = new JsonObject();
+        params.addProperty("playlistid", playlistID);
+        socket.callMethod("Playlist.Clear", params);
+    }
+
+    public synchronized void playlistInsert(int playlistID, String uri, int position) {
+        currentPlaylistState = KodiPlaylistState.INSERT;
+
+        JsonObject item = new JsonObject();
+        item.addProperty("file", uri);
+
+        JsonObject params = new JsonObject();
+        params.addProperty("playlistid", playlistID);
+        params.addProperty("position", position);
+        params.add("item", item);
+        socket.callMethod("Playlist.Insert", params);
+    }
+
+    public synchronized void playlistPlay(int playlistID, int position) {
+        JsonObject item = new JsonObject();
+        item.addProperty("playlistid", playlistID);
+        item.addProperty("position", position);
+
+        playInternal(item);
+    }
+
+    public synchronized void playlistRemove(int playlistID, int position) {
+        currentPlaylistState = KodiPlaylistState.REMOVE;
+
+        JsonObject params = new JsonObject();
+        params.addProperty("playlistid", playlistID);
+        params.addProperty("position", position);
+        socket.callMethod("Playlist.Remove", params);
+    }
+
+    /**
+     * Retrieves a list of favorites from the Kodi instance. The result is cached.
+     *
+     * @return a list of {@link KodiFavorite}
+     */
+    public synchronized List<KodiFavorite> getFavorites() {
+        String method = "Favourites.GetFavourites";
+        String hash = hostname + '#' + method;
+        JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(hash, () -> {
+            final String[] properties = { "path", "window", "windowparameter" };
+
+            JsonObject params = new JsonObject();
+            params.add("properties", getJsonArray(properties));
+            return socket.callMethod(method, params);
+        });
+
+        List<KodiFavorite> favorites = new ArrayList<>();
+        if (response instanceof JsonObject) {
+            JsonObject result = response.getAsJsonObject();
+            if (result.has("favourites")) {
+                JsonElement favourites = result.get("favourites");
+                if (favourites instanceof JsonArray) {
+                    for (JsonElement element : favourites.getAsJsonArray()) {
+                        JsonObject object = (JsonObject) element;
+                        KodiFavorite favorite = new KodiFavorite(object.get("title").getAsString());
+                        favorite.setFavoriteType(object.get("type").getAsString());
+                        if (object.has("path")) {
+                            favorite.setPath(object.get("path").getAsString());
+                        }
+                        if (object.has("window")) {
+                            favorite.setWindow(object.get("window").getAsString());
+                            favorite.setWindowParameter(object.get("windowparameter").getAsString());
+                        }
+                        favorites.add(favorite);
+                    }
+                }
+            }
+        }
+        return favorites;
+    }
+
+    /**
+     * Returns the favorite with the given title or null.
+     *
+     * @param favoriteTitle the title of the favorite
+     * @return the ({@link KodiFavorite}) with the given title
+     */
+    @Nullable
+    public KodiFavorite getFavorite(final String favoriteTitle) {
+        for (KodiFavorite favorite : getFavorites()) {
+            if (StringUtils.equalsIgnoreCase(favorite.getTitle(), favoriteTitle)) {
+                return favorite;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Activates the given window.
+     *
+     * @param window the window
+     */
+    public synchronized void activateWindow(final String window) {
+        activateWindow(window, null);
+    }
+
+    /**
+     * Activates the given window.
+     *
+     * @param window the window
+     * @param windowParameter list of parameters of the window
+     */
+    public synchronized void activateWindow(final String window, @Nullable final String[] windowParameter) {
+        JsonObject params = new JsonObject();
+        params.addProperty("window", window);
+        if (windowParameter != null) {
+            params.add("parameters", getJsonArray(windowParameter));
+        }
+        socket.callMethod("GUI.ActivateWindow", params);
+    }
+
     public synchronized void increaseVolume() {
         setVolumeInternal(this.volume + VOLUMESTEP);
     }
@@ -191,10 +382,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     private void setVolumeInternal(int volume) {
-        this.volume = volume;
-
         JsonObject params = new JsonObject();
-        params.addProperty("volume", this.volume);
+        params.addProperty("volume", volume);
         socket.callMethod("Application.SetVolume", params);
     }
 
@@ -382,6 +571,10 @@ public class KodiConnection implements KodiClientSocketEventListener {
         return currentState;
     }
 
+    public KodiPlaylistState getPlaylistState() {
+        return currentPlaylistState;
+    }
+
     private void updateState(KodiState state) {
         // sometimes get a Pause immediately after a Stop - so just ignore
         if (currentState.equals(KodiState.Stop) && state.equals(KodiState.Pause)) {
@@ -423,6 +616,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 processSystemStateChanged(method, params);
             } else if (method.startsWith("GUI.OnScreensaver")) {
                 processScreensaverStateChanged(method, params);
+            } else if (method.startsWith("Playlist.On")) {
+                processPlaylistStateChanged(method, params);
             } else {
                 logger.debug("Received unknown method: {}", method);
             }
@@ -442,6 +637,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
             requestPlayerUpdate(playerId);
         } else if ("Player.OnPause".equals(method)) {
             updateState(KodiState.Pause);
+        } else if ("Player.OnResume".equals(method)) {
+            updateState(KodiState.Play);
         } else if ("Player.OnStop".equals(method)) {
             // get the end parameter and send an End state if true
             JsonObject data = json.get("data").getAsJsonObject();
@@ -466,7 +663,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 updateState(KodiState.FastForward);
             }
         } else {
-            logger.debug("Unknown event from Kodi {}: {}", method, json.toString());
+            logger.debug("Unknown event from Kodi {}: {}", method, json);
         }
         listener.updateConnectionState(true);
     }
@@ -475,19 +672,16 @@ public class KodiConnection implements KodiClientSocketEventListener {
         if ("Application.OnVolumeChanged".equals(method)) {
             // get the player id and make a new request for the media details
             JsonObject data = json.get("data").getAsJsonObject();
-
-            int volume = data.get("volume").getAsInt();
-            boolean muted = data.get("muted").getAsBoolean();
-            try {
+            if (data.has("volume")) {
+                volume = data.get("volume").getAsInt();
                 listener.updateVolume(volume);
-                listener.updateMuted(muted);
-            } catch (Exception e) {
-                logger.error("Event listener invoking error", e);
             }
-
-            this.volume = volume;
+            if (data.has("muted")) {
+                boolean muted = data.get("muted").getAsBoolean();
+                listener.updateMuted(muted);
+            }
         } else {
-            logger.debug("Unknown event from Kodi {}: {}", method, json.toString());
+            logger.debug("Unknown event from Kodi {}: {}", method, json);
         }
         listener.updateConnectionState(true);
     }
@@ -498,27 +692,34 @@ public class KodiConnection implements KodiClientSocketEventListener {
         } else if ("System.OnWake".equals(method)) {
             listener.updateConnectionState(true);
         } else {
-            logger.debug("Unknown event from Kodi {}: {}", method, json.toString());
+            logger.debug("Unknown event from Kodi {}: {}", method, json);
         }
     }
 
     private void processScreensaverStateChanged(String method, JsonObject json) {
         if ("GUI.OnScreensaverDeactivated".equals(method)) {
-            updateScreenSaverStatus(false);
+            listener.updateScreenSaverState(false);
         } else if ("GUI.OnScreensaverActivated".equals(method)) {
-            updateScreenSaverStatus(true);
+            listener.updateScreenSaverState(true);
         } else {
-            logger.debug("Unknown event from Kodi {}: {}", method, json.toString());
+            logger.debug("Unknown event from Kodi {}: {}", method, json);
         }
         listener.updateConnectionState(true);
     }
 
-    private void updateScreenSaverStatus(boolean screenSaverActive) {
-        try {
-            listener.updateScreenSaverState(screenSaverActive);
-        } catch (Exception e) {
-            logger.error("Event listener invoking error", e);
+    private void processPlaylistStateChanged(String method, JsonObject json) {
+        if ("Playlist.OnAdd".equals(method)) {
+            currentPlaylistState = KodiPlaylistState.ADDED;
+
+            listener.updatePlaylistState(KodiPlaylistState.ADDED);
+        } else if ("Playlist.OnRemove".equals(method)) {
+            currentPlaylistState = KodiPlaylistState.REMOVED;
+
+            listener.updatePlaylistState(KodiPlaylistState.REMOVED);
+        } else {
+            logger.debug("Unknown event from Kodi {}: {}", method, json);
         }
+        listener.updateConnectionState(true);
     }
 
     public synchronized void close() {
@@ -536,13 +737,13 @@ public class KodiConnection implements KodiClientSocketEventListener {
             JsonElement response = socket.callMethod("Application.GetProperties", params);
 
             if (response instanceof JsonObject) {
-                JsonObject result = response.getAsJsonObject();
-                if (result.has("volume")) {
-                    volume = result.get("volume").getAsInt();
+                JsonObject data = response.getAsJsonObject();
+                if (data.has("volume")) {
+                    volume = data.get("volume").getAsInt();
                     listener.updateVolume(volume);
                 }
-                if (result.has("muted")) {
-                    boolean muted = result.get("muted").getAsBoolean();
+                if (data.has("muted")) {
+                    boolean muted = data.get("muted").getAsBoolean();
                     listener.updateMuted(muted);
                 }
             }
@@ -556,14 +757,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
         JsonObject item = new JsonObject();
         item.addProperty("file", uri);
 
-        JsonObject params = new JsonObject();
-        params.add("item", item);
-        socket.callMethod("Player.Open", params);
+        playInternal(item);
     }
 
     public synchronized List<KodiPVRChannelGroup> getPVRChannelGroups(final String pvrChannelType) {
         String method = "PVR.GetChannelGroups";
-        String hash = method + "#channeltype=" + pvrChannelType;
+        String hash = hostname + '#' + method + "#channeltype=" + pvrChannelType;
         JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(hash, () -> {
             JsonObject params = new JsonObject();
             params.addProperty("channeltype", pvrChannelType);
@@ -574,13 +773,16 @@ public class KodiConnection implements KodiClientSocketEventListener {
         if (response instanceof JsonObject) {
             JsonObject result = response.getAsJsonObject();
             if (result.has("channelgroups")) {
-                for (JsonElement element : result.get("channelgroups").getAsJsonArray()) {
-                    JsonObject object = (JsonObject) element;
-                    KodiPVRChannelGroup pvrChannelGroup = new KodiPVRChannelGroup();
-                    pvrChannelGroup.setId(object.get("channelgroupid").getAsInt());
-                    pvrChannelGroup.setLabel(object.get("label").getAsString());
-                    pvrChannelGroup.setChannelType(pvrChannelType);
-                    pvrChannelGroups.add(pvrChannelGroup);
+                JsonElement channelgroups = result.get("channelgroups");
+                if (channelgroups instanceof JsonArray) {
+                    for (JsonElement element : channelgroups.getAsJsonArray()) {
+                        JsonObject object = (JsonObject) element;
+                        KodiPVRChannelGroup pvrChannelGroup = new KodiPVRChannelGroup();
+                        pvrChannelGroup.setId(object.get("channelgroupid").getAsInt());
+                        pvrChannelGroup.setLabel(object.get("label").getAsString());
+                        pvrChannelGroup.setChannelType(pvrChannelType);
+                        pvrChannelGroups.add(pvrChannelGroup);
+                    }
                 }
             }
         }
@@ -588,17 +790,19 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public int getPVRChannelGroupId(final String channelType, final String pvrChannelGroupName) {
-        for (KodiPVRChannelGroup pvrChannelGroup : getPVRChannelGroups(channelType)) {
+        List<KodiPVRChannelGroup> pvrChannelGroups = getPVRChannelGroups(channelType);
+        for (KodiPVRChannelGroup pvrChannelGroup : pvrChannelGroups) {
             if (StringUtils.equalsIgnoreCase(pvrChannelGroup.getLabel(), pvrChannelGroupName)) {
                 return pvrChannelGroup.getId();
             }
         }
-        return 0;
+        // if we don't find a matching PVR channel group return the first (which is the default: "All channels")
+        return pvrChannelGroups.isEmpty() ? 0 : pvrChannelGroups.get(0).getId();
     }
 
     public synchronized List<KodiPVRChannel> getPVRChannels(final int pvrChannelGroupId) {
         String method = "PVR.GetChannels";
-        String hash = method + "#channelgroupid=" + pvrChannelGroupId;
+        String hash = hostname + '#' + method + "#channelgroupid=" + pvrChannelGroupId;
         JsonElement response = REQUEST_CACHE.putIfAbsentAndGet(hash, () -> {
             JsonObject params = new JsonObject();
             params.addProperty("channelgroupid", pvrChannelGroupId);
@@ -609,13 +813,16 @@ public class KodiConnection implements KodiClientSocketEventListener {
         if (response instanceof JsonObject) {
             JsonObject result = response.getAsJsonObject();
             if (result.has("channels")) {
-                for (JsonElement element : result.get("channels").getAsJsonArray()) {
-                    JsonObject object = (JsonObject) element;
-                    KodiPVRChannel pvrChannel = new KodiPVRChannel();
-                    pvrChannel.setId(object.get("channelid").getAsInt());
-                    pvrChannel.setLabel(object.get("label").getAsString());
-                    pvrChannel.setChannelGroupId(pvrChannelGroupId);
-                    pvrChannels.add(pvrChannel);
+                JsonElement channels = result.get("channels");
+                if (channels instanceof JsonArray) {
+                    for (JsonElement element : channels.getAsJsonArray()) {
+                        JsonObject object = (JsonObject) element;
+                        KodiPVRChannel pvrChannel = new KodiPVRChannel();
+                        pvrChannel.setId(object.get("channelid").getAsInt());
+                        pvrChannel.setLabel(object.get("label").getAsString());
+                        pvrChannel.setChannelGroupId(pvrChannelGroupId);
+                        pvrChannels.add(pvrChannel);
+                    }
                 }
             }
         }
@@ -635,6 +842,10 @@ public class KodiConnection implements KodiClientSocketEventListener {
         JsonObject item = new JsonObject();
         item.addProperty("channelid", pvrChannelId);
 
+        playInternal(item);
+    }
+
+    private void playInternal(JsonObject item) {
         JsonObject params = new JsonObject();
         params.add("item", item);
         socket.callMethod("Player.Open", params);
@@ -707,13 +918,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
         socket.callMethod("Input.ExecuteAction", params);
     }
 
-    public void playNotificationSoundURI(String uri) {
-        playURI(uri);
-    }
-
     public void sendSystemCommand(String command) {
         String method = "System." + command;
         socket.callMethod(method);
     }
-
 }

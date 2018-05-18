@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 public class IppPrinterHandler extends BaseThingHandler implements DiscoveryListener {
 
-    private Logger logger = LoggerFactory.getLogger(IppPrinterHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(IppPrinterHandler.class);
 
     private URL url;
     private String name;

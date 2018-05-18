@@ -11,13 +11,13 @@ package org.openhab.binding.russound.internal.rio.zone;
 /**
  * Configuration class for the {@link RioZoneHandler}
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class RioZoneConfig {
     /**
      * Constant defined for the "zone" configuration field
      */
-    public static final String Zone = "zone";
+    public static final String ZONE = "zone";
 
     /**
      * ID of the zone

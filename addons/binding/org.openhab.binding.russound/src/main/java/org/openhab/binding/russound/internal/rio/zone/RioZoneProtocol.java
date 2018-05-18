@@ -38,8 +38,7 @@ import com.google.gson.JsonSyntaxException;
  * This is the protocol handler for the Russound Zone. This handler will issue the protocol commands and will
  * process the responses from the Russound system.
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 class RioZoneProtocol extends AbstractRioProtocol
         implements RioSystemFavoritesProtocol.Listener, RioPresetsProtocol.Listener {
@@ -76,8 +75,8 @@ class RioZoneProtocol extends AbstractRioProtocol
     private static final String ZONE_ENABLED = "enabled"; // OFF/ON
 
     // Multimedia functions
-    private static final String ZONE_MMInit = "MMInit"; // button
-    private static final String ZONE_MMContextMenu = "MMContextMenu"; // button
+    private static final String ZONE_MMINIT = "MMInit"; // button
+    private static final String ZONE_MMCONTEXTMENU = "MMContextMenu"; // button
 
     // Favorites
     private static final String FAV_NAME = "name";
@@ -532,7 +531,7 @@ class RioZoneProtocol extends AbstractRioProtocol
             };
         }
 
-        final List<Integer> updateFavIds = new ArrayList<Integer>();
+        final List<Integer> updateFavIds = new ArrayList<>();
         try {
             final RioFavorite[] favs = gson.fromJson(favJson, RioFavorite[].class);
             for (int x = favs.length - 1; x >= 0; x--) {
@@ -659,7 +658,7 @@ class RioZoneProtocol extends AbstractRioProtocol
         sendEvent("MMUseForms FALSE");
         sendEvent("MMMaxItems 25");
 
-        sendEvent(ZONE_MMInit);
+        sendEvent(ZONE_MMINIT);
     }
 
     /**
@@ -673,7 +672,7 @@ class RioZoneProtocol extends AbstractRioProtocol
         sendEvent("MMUseForms FALSE");
         sendEvent("MMMaxItems 25");
 
-        sendEvent(ZONE_MMContextMenu);
+        sendEvent(ZONE_MMCONTEXTMENU);
     }
 
     /**
@@ -882,7 +881,7 @@ class RioZoneProtocol extends AbstractRioProtocol
      * Will update the zone favorites channel with only valid favorites
      */
     private void updateZoneFavoritesChannel() {
-        final List<RioFavorite> favs = new ArrayList<RioFavorite>();
+        final List<RioFavorite> favs = new ArrayList<>();
         for (final RioFavorite fav : zoneFavorites) {
             if (fav.isValid()) {
                 favs.add(fav);

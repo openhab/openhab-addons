@@ -17,13 +17,12 @@ import org.slf4j.LoggerFactory;
  * A lot of stuff is not supported by this type of bulbs and they are not auto discovered
  * and can only be add manually in the things file.
  *
- * @author David Graeff
+ * @author David Graeff - Initial contribution
  * @since 2.0
- *
  */
 public class MilightV2RGB extends AbstractBulbInterface {
     protected final Logger logger = LoggerFactory.getLogger(MilightV2RGB.class);
-    protected static final int brLevels = 9;
+    protected static final int BR_LEVELS = 9;
 
     public MilightV2RGB(QueuedSend sendQueue, int zone) {
         super(5, sendQueue, zone);
@@ -38,7 +37,7 @@ public class MilightV2RGB extends AbstractBulbInterface {
         } else {
             setPower(true, state);
             state.hue360 = hue;
-            sendQueue.queueRepeatable(uidc(CAT_COLOR_SET), new byte[] { 0x20, MilightV3.make_color(hue), 0x55 });
+            sendQueue.queueRepeatable(uidc(CAT_COLOR_SET), new byte[] { 0x20, MilightV3.makeColor(hue), 0x55 });
 
             if (brightness != -1) {
                 setBrightness(brightness, state);
@@ -67,32 +66,26 @@ public class MilightV2RGB extends AbstractBulbInterface {
 
     @Override
     public void whiteMode(MilightThingState state) {
-
     }
 
     @Override
     public void nightMode(MilightThingState state) {
-
     }
 
     @Override
-    public void changeColorTemperature(int color_temp_relative, MilightThingState state) {
-
+    public void changeColorTemperature(int colorTempRelative, MilightThingState state) {
     }
 
     @Override
     public void setLedMode(int mode, MilightThingState state) {
-
     }
 
     @Override
     public void setSaturation(int value, MilightThingState state) {
-
     }
 
     @Override
-    public void setColorTemperature(int color_temp, MilightThingState state) {
-
+    public void setColorTemperature(int colorTemp, MilightThingState state) {
     }
 
     @Override
@@ -121,8 +114,8 @@ public class MilightV2RGB extends AbstractBulbInterface {
     }
 
     @Override
-    public void changeBrightness(int relative_brightness, MilightThingState state) {
-        int newPercent = state.brightness + relative_brightness;
+    public void changeBrightness(int relativeBrightness, MilightThingState state) {
+        int newPercent = state.brightness + relativeBrightness;
         if (newPercent < 0) {
             newPercent = 0;
         }
@@ -133,9 +126,9 @@ public class MilightV2RGB extends AbstractBulbInterface {
             setPower(false, state);
         } else {
             setPower(true, state);
-            int steps = (int) Math.abs(Math.floor(relative_brightness * brLevels / 100.0));
+            int steps = (int) Math.abs(Math.floor(relativeBrightness * BR_LEVELS / 100.0));
             for (int s = 0; s < steps; ++s) {
-                byte[] t = { (byte) (relative_brightness < 0 ? 0x24 : 0x23), 0x00, 0x55 };
+                byte[] t = { (byte) (relativeBrightness < 0 ? 0x24 : 0x23), 0x00, 0x55 };
                 sendQueue.queue(QueueItem.createNonRepeatable(t));
             }
         }
@@ -143,8 +136,7 @@ public class MilightV2RGB extends AbstractBulbInterface {
     }
 
     @Override
-    public void changeSpeed(int relative_speed, MilightThingState state) {
-
+    public void changeSpeed(int relativeSpeed, MilightThingState state) {
     }
 
     @Override

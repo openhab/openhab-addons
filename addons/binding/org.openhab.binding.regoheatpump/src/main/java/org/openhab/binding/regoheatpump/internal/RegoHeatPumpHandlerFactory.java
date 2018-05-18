@@ -19,10 +19,12 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.regoheatpump.handler.IpHusdataHandler;
 import org.openhab.binding.regoheatpump.handler.IpRego6xxHeatPumpHandler;
 import org.openhab.binding.regoheatpump.handler.SerialHusdataHandler;
 import org.openhab.binding.regoheatpump.handler.SerialRego6xxHeatPumpHandler;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link RegoHeatPumpHandlerFactory} is responsible for creating things and thing
@@ -30,6 +32,7 @@ import org.openhab.binding.regoheatpump.handler.SerialRego6xxHeatPumpHandler;
  *
  * @author Boris Krivonog - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.regoheatpump")
 public class RegoHeatPumpHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
@@ -43,7 +46,6 @@ public class RegoHeatPumpHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_IP_REGO6XX)) {

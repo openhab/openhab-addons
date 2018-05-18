@@ -15,10 +15,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OnkyoAlbumArt {
 
-    private Logger logger = LoggerFactory.getLogger(OnkyoAlbumArt.class);
+    private final Logger logger = LoggerFactory.getLogger(OnkyoAlbumArt.class);
 
     private enum State {
         INVALID,
@@ -50,7 +49,7 @@ public class OnkyoAlbumArt {
     private StringBuilder albumArtStringBuilder = new StringBuilder();
     private ImageType imageType = ImageType.UNKNOWN;
     private State state = State.NOTSTARTED;
-    String coverArtUrl = null;
+    private String coverArtUrl;
 
     public boolean isAlbumCoverTransferStarted() {
         return state == State.STARTED;
@@ -68,7 +67,6 @@ public class OnkyoAlbumArt {
     }
 
     public void addFrame(String data) {
-
         if (data.length() <= 2) {
             return;
         }
@@ -146,7 +144,7 @@ public class OnkyoAlbumArt {
             switch (imageType) {
                 case BMP:
                 case JPEG:
-                    data = DatatypeConverter.parseHexBinary(albumArtStringBuilder.toString());
+                    data = HexUtils.hexToBytes(albumArtStringBuilder.toString());
                     break;
                 case URL:
                     data = downloadAlbumArt(coverArtUrl);

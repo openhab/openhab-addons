@@ -83,8 +83,10 @@ public class GardenaSmartImpl implements GardenaSmart {
     private static final String ABILITY_AMBIENT_TEMPERATURE = "ambient_temperature";
     private static final String ABILITY_SOIL_TEMPERATURE = "soil_temperature";
     private static final String ABILITY_PUMP_ON_OFF = "pump_on_off";
+    private static final String ABILITY_POWER = "power";
 
     private static final String PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME = "button_manual_override_time";
+    private static final String PROPERTY_POWER_TIMER = "power_timer";
 
     private static final String DEVICE_CATEGORY_MOWER = "mower";
     private static final String DEVICE_CATEGORY_GATEWAY = "gateway";
@@ -326,7 +328,20 @@ public class GardenaSmartImpl implements GardenaSmart {
                     command = new WateringCancelOverrideCommand();
                 }
                 break;
+            case POWER_TIMER:
+                if (value == null) {
+                    throw new GardenaException("Command '" + commandName + "' requires a value");
+                }
+                prop = new SimpleProperties(PROPERTY_POWER_TIMER, ObjectUtils.toString(value));
+                propertyUrl = String.format(URL_PROPERTY, device.getId(), ABILITY_POWER, PROPERTY_POWER_TIMER,
+                        device.getLocation().getId());
 
+                stopRefreshThread(false);
+                executeRequest(HttpMethod.PUT, propertyUrl, new SimplePropertiesWrapper(prop), NoResult.class);
+                device.getAbility(ABILITY_POWER).getProperty(PROPERTY_POWER_TIMER).setValue(prop.getValue());
+                startRefreshThread();
+
+                break;
             default:
                 throw new GardenaException("Unknown command " + commandName);
         }
@@ -370,7 +385,6 @@ public class GardenaSmartImpl implements GardenaSmart {
      */
     private synchronized <T> T executeRequest(HttpMethod method, String url, Object contentObject, Class<T> result)
             throws GardenaException {
-
         try {
             if (logger.isTraceEnabled()) {
                 logger.trace("{} request:  {}", method, url);
@@ -450,7 +464,7 @@ public class GardenaSmartImpl implements GardenaSmart {
         public void run() {
             try {
                 logger.debug("Refreshing gardena device data");
-                Map<String, Device> newDevicesById = new HashMap<String, Device>();
+                Map<String, Device> newDevicesById = new HashMap<>();
 
                 for (Location location : allLocations) {
                     Devices devices = loadDevices(location);

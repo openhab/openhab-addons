@@ -12,8 +12,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public class EiscpProtocol {
 
-    private static final Logger logger = LoggerFactory.getLogger(EiscpProtocol.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EiscpProtocol.class);
 
     /**
      * Wraps a command in a eISCP data message (data characters).
@@ -32,9 +31,8 @@ public class EiscpProtocol {
      * @param msg
      *            eISCP command.
      * @return String holding the full eISCP message packet
-     **/
+     */
     public static String createEiscpPdu(EiscpMessage msg) {
-
         String data = msg.getCommand() + msg.getValue();
         StringBuilder sb = new StringBuilder();
         int eiscpDataSize = 2 + data.length() + 1; // this is the eISCP data size
@@ -80,10 +78,9 @@ public class EiscpProtocol {
         // msg end - EOF
         sb.append((char) 0x0D);
 
-        if (logger.isTraceEnabled()) {
+        if (LOGGER.isTraceEnabled()) {
             String d = sb.toString();
-            logger.trace("Created eISCP message: {} -> {}", DatatypeConverter.printHexBinary(d.getBytes()),
-                    toPrintable(d));
+            LOGGER.trace("Created eISCP message: {} -> {}", HexUtils.bytesToHex(d.getBytes()), toPrintable(d));
         }
 
         return sb.toString();
@@ -97,17 +94,15 @@ public class EiscpProtocol {
      * @throws IOException
      * @throws InterruptedException
      * @throws EiscpException
-     **/
+     */
     public static EiscpMessage getNextMessage(DataInputStream stream)
             throws IOException, InterruptedException, EiscpException {
-
         while (true) {
-
             // 1st 4 chars are the lead in
 
             byte firstByte = stream.readByte();
             if (firstByte != 'I') {
-                logger.trace("Expected character 'I', received '{}'",
+                LOGGER.trace("Expected character 'I', received '{}'",
                         toPrintable(new String(new byte[] { firstByte })));
                 continue;
             }
@@ -133,7 +128,7 @@ public class EiscpProtocol {
             final int dataSize = (stream.readByte() & 0xFF) << 24 | (stream.readByte() & 0xFF) << 16
                     | (stream.readByte() & 0xFF) << 8 | (stream.readByte() & 0xFF);
 
-            logger.trace("Data size: {}", dataSize);
+            LOGGER.trace("Data size: {}", dataSize);
 
             // version
             final byte versionChar = stream.readByte();
@@ -153,7 +148,7 @@ public class EiscpProtocol {
                 while (bytesReceived < dataSize) {
                     bytesReceived = bytesReceived + stream.read(data, bytesReceived, data.length - bytesReceived);
 
-                    if (logger.isTraceEnabled()) {
+                    if (LOGGER.isTraceEnabled()) {
                         // create header for debugging purposes
                         final StringBuilder sb = new StringBuilder();
                         sb.append("ISCP");
@@ -172,14 +167,13 @@ public class EiscpProtocol {
                         sb.append((char) b1).append((char) b2).append((char) b3);
                         // data
                         sb.append(new String(data, "UTF-8"));
-                        logger.trace("Received eISCP message, {} -> {}",
-                                DatatypeConverter.printHexBinary(sb.toString().getBytes()), toPrintable(sb.toString()));
+                        LOGGER.trace("Received eISCP message, {} -> {}", HexUtils.bytesToHex(sb.toString().getBytes()),
+                                toPrintable(sb.toString()));
                     }
-
                 }
-            } catch (Throwable t) {
+            } catch (IOException t) {
                 if (bytesReceived != dataSize) {
-                    logger.debug("Received bad data: '{}'", toPrintable(new String(data, "UTF-8")));
+                    LOGGER.debug("Received bad data: '{}'", toPrintable(new String(data, "UTF-8")));
                     throw new EiscpException(
                             "Data missing, expected + " + dataSize + " received " + bytesReceived + " bytes");
                 } else {
@@ -211,31 +205,21 @@ public class EiscpProtocol {
 
             if (data[dataSize - 5] == (byte) 0x1A && data[dataSize - 4] == '\n' && data[dataSize - 3] == '\n'
                     && data[dataSize - 2] == '\r' && data[dataSize - 1] == '\n') {
-
                 // skip "[EOF][LF][LF][CR][LF]"
                 endBytes = 5;
-
             } else if (data[dataSize - 4] == (byte) 0x1A && data[dataSize - 3] == '\r' && data[dataSize - 2] == '\n'
                     && data[dataSize - 1] == 0x00) {
-
                 // skip "[EOF][CR][LF][NULL]"
                 endBytes = 4;
-
             } else if (data[dataSize - 3] == (byte) 0x1A && data[dataSize - 2] == '\r' && data[dataSize - 1] == '\n') {
-
                 // skip "[EOF][CR][LF]"
                 endBytes = 3;
-
             } else if (data[dataSize - 2] == (byte) 0x1A && data[dataSize - 1] == '\r') {
-
                 // "[EOF][CR]"
                 endBytes = 2;
-
             } else if (data[dataSize - 1] == (byte) 0x1A) {
-
                 // "[EOF]"
                 endBytes = 1;
-
             } else {
                 throw new EiscpException("Illegal end of message");
             }

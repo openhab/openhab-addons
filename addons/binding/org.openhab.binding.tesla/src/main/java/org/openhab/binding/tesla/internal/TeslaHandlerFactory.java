@@ -18,7 +18,10 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.tesla.handler.TeslaHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link TeslaHandlerFactory} is responsible for creating things and thing
@@ -27,6 +30,7 @@ import org.openhab.binding.tesla.handler.TeslaHandler;
  * @author Karel Goderis - Initial contribution
  * @author Nicolai Grødum - Adding token based auth
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.tesla")
 public class TeslaHandlerFactory extends BaseThingHandlerFactory {
 
     private StorageService storageService;
@@ -40,7 +44,6 @@ public class TeslaHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_MODELS)) {
@@ -50,6 +53,7 @@ public class TeslaHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
+    @Reference
     public void setStorageService(StorageService storageService) {
         this.storageService = storageService;
     }

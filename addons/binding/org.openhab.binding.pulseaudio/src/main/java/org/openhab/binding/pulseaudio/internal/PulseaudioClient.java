@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.pulseaudio.PulseaudioBindingConstants;
 import org.openhab.binding.pulseaudio.internal.cli.Parser;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig.State;
@@ -119,8 +120,8 @@ public class PulseaudioClient {
         this.host = host;
         this.port = port;
 
-        items = new ArrayList<AbstractAudioDeviceConfig>();
-        modules = new ArrayList<Module>();
+        items = new ArrayList<>();
+        modules = new ArrayList<>();
 
         connect();
         update();
@@ -138,11 +139,24 @@ public class PulseaudioClient {
         modules.addAll(Parser.parseModules(listModules()));
 
         items.clear();
-        items.addAll(Parser.parseSinks(listSinks(), this));
-        items.addAll(Parser.parseSources(listSources(), this));
-        items.addAll(Parser.parseSinkInputs(listSinkInputs(), this));
-        items.addAll(Parser.parseSourceOutputs(listSourceOutputs(), this));
-
+        if (PulseaudioBindingConstants.TYPE_FILTERS.get(PulseaudioBindingConstants.SINK_THING_TYPE.getId()) == true) {
+            logger.debug("reading sinks");
+            items.addAll(Parser.parseSinks(listSinks(), this));
+        }
+        if (PulseaudioBindingConstants.TYPE_FILTERS.get(PulseaudioBindingConstants.SOURCE_THING_TYPE.getId()) == true) {
+            logger.debug("reading sources");
+            items.addAll(Parser.parseSources(listSources(), this));
+        }
+        if (PulseaudioBindingConstants.TYPE_FILTERS
+                .get(PulseaudioBindingConstants.SINK_INPUT_THING_TYPE.getId()) == true) {
+            logger.debug("reading sink-inputs");
+            items.addAll(Parser.parseSinkInputs(listSinkInputs(), this));
+        }
+        if (PulseaudioBindingConstants.TYPE_FILTERS
+                .get(PulseaudioBindingConstants.SOURCE_OUTPUT_THING_TYPE.getId()) == true) {
+            logger.debug("reading source-outputs");
+            items.addAll(Parser.parseSourceOutputs(listSourceOutputs(), this));
+        }
         logger.debug("Pulseaudio server {}: {} modules and {} items updated", host, modules.size(), items.size());
     }
 
@@ -417,7 +431,7 @@ public class PulseaudioClient {
         if (combinedSink == null || !combinedSink.isCombinedSink()) {
             return;
         }
-        List<String> slaves = new ArrayList<String>();
+        List<String> slaves = new ArrayList<>();
         for (Sink sink : sinks) {
             slaves.add(sink.getPaName());
         }
@@ -510,7 +524,7 @@ public class PulseaudioClient {
         if (getSink(combinedSinkName) != null) {
             return;
         }
-        List<String> slaves = new ArrayList<String>();
+        List<String> slaves = new ArrayList<>();
         for (Sink sink : sinks) {
             slaves.add(sink.getPaName());
         }

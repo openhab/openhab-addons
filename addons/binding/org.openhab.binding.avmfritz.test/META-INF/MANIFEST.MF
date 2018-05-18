@@ -5,7 +5,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.avmfritz.test;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.3.0.qualifier
-Export-Package: org.openhab.binding.avmfritz;uses:="org.eclipse.smarthome.test"
+Export-Package: 
+ org.openhab.binding.avmfritz;uses:="org.eclipse.smarthome.test"
 Fragment-Host: org.openhab.binding.avmfritz
 Import-Package: 
  org.eclipse.jdt.annotation;resolution:=optional,
@@ -17,7 +18,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.util,
  org.eclipse.smarthome.test.java,
  org.eclipse.smarthome.test.storage,
- org.hamcrest;core=split,
  org.junit;version="4.0.0",
  org.mockito,
  org.mockito.stubbing,

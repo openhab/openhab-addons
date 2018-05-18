@@ -18,8 +18,10 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.opensprinkler.handler.OpenSprinklerHTTPHandler;
 import org.openhab.binding.opensprinkler.handler.OpenSprinklerPiHandler;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link OpenSprinklerHandlerFactory} is responsible for creating things and thing
@@ -27,8 +29,9 @@ import org.openhab.binding.opensprinkler.handler.OpenSprinklerPiHandler;
  *
  * @author Chris Graham - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.opensprinkler")
 public class OpenSprinklerHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(OPENSPRINKLER_THING, OPENSPRINKLERPI_THING));
 
     @Override

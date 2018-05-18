@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.windcentrale.handler;
 
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.KILO;
 import static org.openhab.binding.windcentrale.WindcentraleBindingConstants.*;
 
 import java.io.IOException;
@@ -20,7 +21,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -47,6 +50,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class WindcentraleHandler extends BaseThingHandler {
 
+    private static final String HOURS_RUN_THIS_YEAR = "hoursRunThisYear";
     private static final String URL_FORMAT = "https://zep-api.windcentrale.nl/production/%d/live?ignoreLoadingBar=true";
     private static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(5);
 
@@ -123,15 +127,22 @@ public class WindcentraleHandler extends BaseThingHandler {
 
             updateState(CHANNEL_WIND_SPEED, new DecimalType(millData.get(CHANNEL_WIND_SPEED).getAsString()));
             updateState(CHANNEL_WIND_DIRECTION, new StringType(millData.get(CHANNEL_WIND_DIRECTION).getAsString()));
-            updateState(CHANNEL_POWER_TOTAL, new DecimalType(millData.get(CHANNEL_POWER_TOTAL).getAsBigDecimal()));
-            updateState(CHANNEL_POWER_PER_WD, new DecimalType(
-                    millData.get(CHANNEL_POWER_PER_WD).getAsBigDecimal().multiply(new BigDecimal(config.wd))));
+            updateState(CHANNEL_POWER_TOTAL,
+                    new QuantityType<>(millData.get(CHANNEL_POWER_TOTAL).getAsBigDecimal(), KILO(SmartHomeUnits.WATT)));
+            updateState(CHANNEL_POWER_PER_WD,
+                    new QuantityType<>(
+                            millData.get(CHANNEL_POWER_PER_WD).getAsBigDecimal().multiply(new BigDecimal(config.wd)),
+                            SmartHomeUnits.WATT));
             updateState(CHANNEL_POWER_RELATIVE,
-                    new DecimalType(millData.get(CHANNEL_POWER_RELATIVE).getAsBigDecimal()));
-            updateState(CHANNEL_ENERGY, new DecimalType(millData.get(CHANNEL_ENERGY).getAsBigDecimal()));
-            updateState(CHANNEL_ENERGY_FC, new DecimalType(millData.get(CHANNEL_ENERGY_FC).getAsBigDecimal()));
-            updateState(CHANNEL_RUNTIME, new DecimalType(millData.get(CHANNEL_RUNTIME).getAsBigDecimal()));
-            updateState(CHANNEL_RUNTIME_PER, new DecimalType(millData.get(CHANNEL_RUNTIME_PER).getAsBigDecimal()));
+                    new QuantityType<>(millData.get(CHANNEL_POWER_RELATIVE).getAsBigDecimal(), SmartHomeUnits.PERCENT));
+            updateState(CHANNEL_ENERGY,
+                    new QuantityType<>(millData.get(CHANNEL_ENERGY).getAsBigDecimal(), SmartHomeUnits.KILOWATT_HOUR));
+            updateState(CHANNEL_ENERGY_FC, new QuantityType<>(millData.get(CHANNEL_ENERGY_FC).getAsBigDecimal(),
+                    SmartHomeUnits.KILOWATT_HOUR));
+            updateState(CHANNEL_RUNTIME,
+                    new QuantityType<>(millData.get(HOURS_RUN_THIS_YEAR).getAsBigDecimal(), SmartHomeUnits.HOUR));
+            updateState(CHANNEL_RUNTIME_PER,
+                    new QuantityType<>(millData.get(CHANNEL_RUNTIME_PER).getAsBigDecimal(), SmartHomeUnits.PERCENT));
             updateState(CHANNEL_LAST_UPDATE, new DateTimeType(millData.get(CHANNEL_LAST_UPDATE).getAsString()));
 
             if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {

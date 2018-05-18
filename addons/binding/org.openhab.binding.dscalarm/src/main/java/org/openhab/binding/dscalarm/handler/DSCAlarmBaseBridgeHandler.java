@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
 
-    private Logger logger = LoggerFactory.getLogger(DSCAlarmBaseBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DSCAlarmBaseBridgeHandler.class);
 
     /** The DSC Alarm bridge type. */
     private DSCAlarmBridgeType dscAlarmBridgeType = null;
@@ -155,7 +155,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
      * Connect The Bridge.
      */
     private void connect() {
-
         openConnection();
 
         if (isConnected()) {
@@ -180,7 +179,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
      * Disconnect The Bridge.
      */
     private void disconnect() {
-
         closeConnection();
 
         if (!isConnected()) {
@@ -299,7 +297,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
         logger.debug("DSC Alarm Polling Task - '{}' is {}", getThing().getUID(), getThing().getStatus());
 
         if (isConnected()) {
-
             if (pollStartTime == 0) {
                 pollStartTime = System.currentTimeMillis();
             }
@@ -353,7 +350,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                         handler.isThingHandlerInitialized());
 
                 if (!handler.isThingHandlerInitialized() || !thing.getStatus().equals(ThingStatus.ONLINE)) {
-
                     if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
                         handler.bridgeStatusChanged(getThing().getStatusInfo());
                     }
@@ -383,13 +379,11 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
      * @return thing
      */
     public Thing findThing(DSCAlarmThingType dscAlarmThingType, int partitionId, int zoneId) {
-
         List<Thing> things = getThing().getThings();
 
         Thing thing = null;
 
         for (Thing t : things) {
-
             try {
                 Configuration config = t.getConfiguration();
                 DSCAlarmBaseThingHandler handler = (DSCAlarmBaseThingHandler) t.getHandler();
@@ -503,7 +497,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
             }
 
             if (dscAlarmThingType != null) {
-
                 Thing thing = findThing(dscAlarmThingType, partitionId, zoneId);
 
                 logger.debug("handleIncomingMessage(): Thing Search - '{}'", thing);
@@ -534,7 +527,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         logger.debug("handleCommand(): Command Received - {} {}.", channelUID, command);
 
         if (command instanceof RefreshType) {
@@ -788,7 +780,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 validCommand = true;
                 break;
             case CodeSend: /* 200 */
-
                 if (userCode == null || userCode.length() < 4 || userCode.length() > 6) {
                     logger.error("sendCommand(): Access Code is invalid, must be between 4 and 6 chars: {}",
                             dscAlarmData[0]);

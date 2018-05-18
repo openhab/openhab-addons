@@ -38,6 +38,7 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     private ScheduledFuture<?> refreshJob;
     @Nullable
     protected MODULE module;
+    private boolean refreshRequired;
 
     protected NetatmoModuleHandler(@NonNull Thing thing) {
         super(thing);
@@ -92,13 +93,26 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
             updateStatus(ThingStatus.ONLINE);
             radioHelper.ifPresent(helper -> helper.setModule(module));
             batteryHelper.ifPresent(helper -> helper.setModule(module));
+            updateProperties(this.module);
             super.updateChannels();
         }
     }
 
     protected void requestParentRefresh() {
+        setRefreshRequired(true);
         Optional<AbstractNetatmoThingHandler> parent = getBridgeHandler().findNAThing(getParentId());
         parent.ifPresent(AbstractNetatmoThingHandler::updateChannels);
+    }
+
+    protected void updateProperties(MODULE moduleData) {
+    }
+
+    protected boolean isRefreshRequired() {
+        return refreshRequired;
+    }
+
+    protected void setRefreshRequired(boolean refreshRequired) {
+        this.refreshRequired = refreshRequired;
     }
 
 }

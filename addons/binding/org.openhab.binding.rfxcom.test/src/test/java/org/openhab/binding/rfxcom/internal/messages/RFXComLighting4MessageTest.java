@@ -17,9 +17,8 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting4Messag
 import java.util.Arrays;
 import java.util.List;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfigurationBuilder;
@@ -58,7 +57,7 @@ public class RFXComLighting4MessageTest {
             byte commandByte, Integer seqNbr, int signalLevel, int offCommand, int onCommand)
             throws RFXComException {
         RFXComLighting4Message msg = (RFXComLighting4Message) RFXComMessageFactory
-                .createMessage(DatatypeConverter.parseHexBinary(hexMsg));
+                .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals("Sensor Id", deviceId, msg.getDeviceId());
         assertEquals("Command", commandByte, RFXComTestHelper.getActualIntValue(msg, CHANNEL_COMMAND_ID));
         if (seqNbr != null) {
@@ -68,7 +67,7 @@ public class RFXComLighting4MessageTest {
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMsg, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", hexMsg, HexUtils.bytesToHex(decoded));
 
         RFXComTestHelper.checkDiscoveryResult(msg, deviceId, pulse, subType.toString(), offCommand, onCommand);
     }

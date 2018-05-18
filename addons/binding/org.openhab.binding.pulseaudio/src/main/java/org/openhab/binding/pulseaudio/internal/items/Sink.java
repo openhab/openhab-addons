@@ -26,8 +26,8 @@ public class Sink extends AbstractAudioDeviceConfig {
 
     public Sink(int id, String name, Module module) {
         super(id, name, module);
-        combinedSinkNames = new ArrayList<String>();
-        combinedSinks = new ArrayList<Sink>();
+        combinedSinkNames = new ArrayList<>();
+        combinedSinks = new ArrayList<>();
     }
 
     public void addCombinedSinkName(String name) {

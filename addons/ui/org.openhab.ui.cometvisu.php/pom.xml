@@ -1,35 +1,50 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<parent>
-		<groupId>org.openhab.ui</groupId>
-		<artifactId>pom</artifactId>
-		<version>2.3.0-SNAPSHOT</version>
-	</parent>
+  <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <artifactId>pom</artifactId>
+    <groupId>org.openhab.ui</groupId>
+    <version>2.3.0-SNAPSHOT</version>
+  </parent>
 
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>org.openhab.ui.cometvisu.php</artifactId>
+  <artifactId>org.openhab.ui.cometvisu.php</artifactId>
+  <packaging>eclipse-plugin</packaging>
 
-	<name>PHP Support for the CometVisu Backend</name>
+  <name>PHP Support for the CometVisu Backend</name>
 
-
-	<packaging>eclipse-plugin</packaging>
-	<dependencies>
-		<dependency>
-			<groupId>org.openhab</groupId>
-			<artifactId>com.caucho.quercus</artifactId>
-			<version>4.0.45</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openhab.core</groupId>
-			<artifactId>org.openhab.core</artifactId>
-			<version>${ohc.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openhab.core</groupId>
-			<artifactId>org.openhab.ui.dashboard</artifactId>
-			<version>${ohc.version}</version>
-		</dependency>
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>org.openhab</groupId>
+      <artifactId>com.caucho.quercus</artifactId>
+      <version>4.0.45</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.core</groupId>
+      <artifactId>org.openhab.core</artifactId>
+      <version>${ohc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.core</groupId>
+      <artifactId>org.openhab.ui.dashboard</artifactId>
+      <version>${ohc.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.smarthome.model</groupId>
+        <artifactId>org.eclipse.smarthome.model.sitemap</artifactId>
+        <version>${esh.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.smarthome.ui</groupId>
+        <artifactId>org.eclipse.smarthome.ui</artifactId>
+        <version>${esh.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.smarthome.ui</groupId>
+        <artifactId>org.eclipse.smarthome.ui.icon</artifactId>
+        <version>${esh.version}</version>
+    </dependency>
+  </dependencies>
 
 </project>

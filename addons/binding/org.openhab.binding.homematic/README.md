@@ -77,6 +77,14 @@ If you are using a YAHM for example, you have to manually set the gateway type i
 If autodetection can not identify the gateway, the binding uses the default gateway implementation.
 The difference is, that variables, scripts and device names are not supported, everything else is the same.
 
+### Automatic install mode during discovery
+
+Besides discovering devices that are already known by the gateway, it may be desired to connect new devices to your system - which requires your gateway to be in install mode. Starting the binding's DiscoveryService will automatically put your gateway(s) in install mode for a specified period of time (see installModeDuration).
+
+**Note:** Enabling / disabling of install mode is also available via GATEWAY_EXTRAS. You may use this if you prefer.
+
+**Exception:** If a gateway is not ONLINE, the install mode will not be set automatically. _For instance during initialization of the binding its DiscoveryService is started and will discover devices that are already connected. However, the install mode is not automatically enabled in this situation because the gateway is in the status INITIALIZING._
+
 ## Bridge Configuration
 
 There are several settings for a bridge:
@@ -111,6 +119,9 @@ Think in hours when configuring (one hour = 3600)
 -   **timeout**  
 The timeout in seconds for connections to a Homematic gateway (default = 15)
 
+-   **discoveryTimeToLive**  
+The time to live in seconds for discovery results of a Homematic gateway (default = -1, which means infinite)
+
 -   **socketMaxAlive**  
 The maximum lifetime of a pooled socket connection to the Homematic gateway in seconds (default = 900)
 
@@ -125,6 +136,12 @@ The port number of the HMIP server (default = 2010)
 
 -   **cuxdPort**  
 The port number of the CUxD daemon (default = 8701)
+
+-   **installModeDuration**
+Time in seconds that the controller will be in install mode when a device discovery is initiated (default = 60)
+
+-   **unpairOnDeletion**
+If true, devices are automatically unpaired from a gateway when the corresponding thing is deleted (default = false)
 
 The syntax for a bridge is:
 

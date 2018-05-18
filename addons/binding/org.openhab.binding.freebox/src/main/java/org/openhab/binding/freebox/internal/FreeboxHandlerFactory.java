@@ -35,7 +35,6 @@ import org.openhab.binding.freebox.internal.discovery.FreeboxDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +48,7 @@ import com.google.common.collect.Sets;
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Garnier - several thing types and handlers + discovery service
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.freebox", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.freebox")
 public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxHandlerFactory.class);
@@ -99,7 +98,6 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(FreeboxBindingConstants.FREEBOX_BRIDGE_TYPE_SERVER)) {
@@ -129,7 +127,7 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
 
     private void registerDiscoveryService(FreeboxHandler bridgeHandler) {
         FreeboxDiscoveryService discoveryService = new FreeboxDiscoveryService(bridgeHandler);
-        discoveryService.activate();
+        discoveryService.activate(null);
         discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }

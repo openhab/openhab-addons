@@ -13,7 +13,6 @@ package org.openhab.binding.onkyo.internal.config;
  *
  * @author Pauli Anttila - Initial contribution
  */
-
 public class OnkyoDeviceConfiguration {
 
     public String ipAddress;

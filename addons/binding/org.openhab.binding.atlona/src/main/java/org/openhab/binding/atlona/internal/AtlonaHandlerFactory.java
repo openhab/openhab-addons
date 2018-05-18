@@ -14,9 +14,11 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.atlona.AtlonaBindingConstants;
 import org.openhab.binding.atlona.internal.pro3.AtlonaPro3Capabilities;
 import org.openhab.binding.atlona.internal.pro3.AtlonaPro3Handler;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,11 +28,12 @@ import com.google.common.collect.ImmutableSet;
  * The {@link org.openhab.binding.atlona.internal.AtlonaHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.atlona")
 public class AtlonaHandlerFactory extends BaseThingHandlerFactory {
 
-    private Logger logger = LoggerFactory.getLogger(AtlonaHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(AtlonaHandlerFactory.class);
 
     /**
      * The set of supported Atlona products
@@ -56,7 +59,6 @@ public class AtlonaHandlerFactory extends BaseThingHandlerFactory {
      */
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         if (thing == null) {
             logger.error("createHandler was given a null thing!");
             return null;

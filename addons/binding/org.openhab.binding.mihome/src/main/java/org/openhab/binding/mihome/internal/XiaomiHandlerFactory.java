@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.mihome.handler.XiaomiActorCurtainHandler;
 import org.openhab.binding.mihome.handler.XiaomiActorGatewayHandler;
 import org.openhab.binding.mihome.handler.XiaomiActorPlugHandler;
@@ -42,6 +43,7 @@ import org.openhab.binding.mihome.handler.XiaomiSensorSwitchHandler;
 import org.openhab.binding.mihome.handler.XiaomiSensorWaterHandler;
 import org.openhab.binding.mihome.internal.discovery.XiaomiItemDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.Sets;
 
@@ -54,6 +56,7 @@ import com.google.common.collect.Sets;
  * @author Daniel Walters - Added Aqara Door/Window sensor and Aqara temperature, humidity and pressure sensor
  * @author Kuba Wolanin - Added Water Leak sensor and Aqara motion sensor
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.mihome")
 public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
@@ -170,7 +173,7 @@ public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void registerItemDiscoveryService(XiaomiBridgeHandler bridgeHandler) {
         XiaomiItemDiscoveryService discoveryService = new XiaomiItemDiscoveryService(bridgeHandler);
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 }
