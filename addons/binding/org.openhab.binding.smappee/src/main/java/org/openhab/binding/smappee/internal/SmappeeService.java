@@ -40,11 +40,11 @@ public class SmappeeService {
 
     private final Logger logger = LoggerFactory.getLogger(SmappeeService.class);
 
-    ScheduledFuture<?> scheduledJob;
+    private ScheduledFuture<?> scheduledJob;
 
     private int retry;
 
-    public SmappeeConfigurationParameters config;
+    private SmappeeConfigurationParameters config;
 
     private String serviceLocationId;
 
@@ -78,6 +78,10 @@ public class SmappeeService {
             }
         }
 
+    }
+
+    public SmappeeConfigurationParameters getConfig() {
+        return config;
     }
 
     public void startAutomaticRefresh(ScheduledExecutorService scheduledExecutorService,
@@ -137,7 +141,7 @@ public class SmappeeService {
                 return readings;
 
             } catch (CommunicationException se) {
-                logger.error("failed to read smappee '{}'", se.getMessage());
+                logger.debug("failed to read smappee '{}'", se.getMessage());
             } catch (JsonSyntaxException pe) {
                 logger.warn("failed to read response from smappee : {}", pe.getMessage());
             }
@@ -152,7 +156,6 @@ public class SmappeeService {
             try {
                 // sample API method to call :
                 // https://app1pub.smappee.net/dev/v1/servicelocation/123/info
-
                 String responseReadings = getData("/dev/v1/servicelocation/" + this.serviceLocationId + "/info");
 
                 if (responseReadings.isEmpty()) {

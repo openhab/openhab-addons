@@ -43,10 +43,10 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
     private static final int SEARCH_TIME = 60;
 
     private final Logger logger = LoggerFactory.getLogger(SmappeeDiscoveryService.class);
-    private SmappeeService _smappeeService;
-    private ThingUID _bridgeUID;
+    private SmappeeService smappeeService;
+    private ThingUID bridgeUID;
 
-    ScheduledFuture<?> scheduledJob;
+    private ScheduledFuture<?> scheduledJob;
 
     /**
      * Whether we are currently scanning or not
@@ -62,8 +62,8 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
         super(ImmutableSet.of(SmappeeBindingConstants.THING_TYPE_ACTUATOR,
                 SmappeeBindingConstants.THING_TYPE_APPLIANCE), SEARCH_TIME, false);
 
-        _smappeeService = smappeeService;
-        _bridgeUID = bridgeUID;
+        this.smappeeService = smappeeService;
+        this.bridgeUID = bridgeUID;
     }
 
     @Override
@@ -114,14 +114,14 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void scanForNewDevices() {
-        if (!_smappeeService.isInitialized()) {
+        if (!smappeeService.isInitialized()) {
             logger.debug("skipping discovery because smappee service is not up yet (config error ?)");
             return;
         }
 
         logger.debug("Starting Discovery");
 
-        SmappeeServiceLocationInfo serviceLocationInfo = _smappeeService.getServiceLocationInfo();
+        SmappeeServiceLocationInfo serviceLocationInfo = smappeeService.getServiceLocationInfo();
 
         if (serviceLocationInfo == null) {
             logger.debug("failed to scan for new smappee devices");
@@ -173,7 +173,7 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
             }
         }
 
-        DiscoveryResult result = DiscoveryResultBuilder.create(newthing).withBridge(_bridgeUID)
+        DiscoveryResult result = DiscoveryResultBuilder.create(newthing).withBridge(bridgeUID)
                 .withProperties(thingProperties).withLabel(label).build();
         thingDiscovered(result);
     }
