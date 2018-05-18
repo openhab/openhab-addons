@@ -105,19 +105,6 @@
       <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
     </repository>
 
-    <!-- SmartHome p2 snapshot repository -->
-    <repository>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <id>p2-smarthome-snapshot</id>
-      <url>https://openhab.jfrog.io/openhab/eclipse-smarthome-stable</url>
-      <layout>p2</layout>
-    </repository>
-
     <!-- openHAB dependencies p2 repository -->
     <repository>
       <id>p2-openhab-deps-repo</id>
@@ -174,31 +161,5 @@
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>releasebuild</id>
-      <activation>
-        <property>
-          <name>release</name>
-        </property>
-      </activation>
-      <repositories>
-        <!-- SmartHome p2 release repository -->
-        <repository>
-          <releases>
-            <enabled>true</enabled>
-            <updatePolicy>never</updatePolicy>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-          <id>p2-smarthome-release</id>
-          <url>http://download.eclipse.org/smarthome/updates-release/${esh.version}</url>
-          <layout>p2</layout>
-        </repository>
-      </repositories>
-    </profile>
-  </profiles>
 
 </project>
