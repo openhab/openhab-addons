@@ -13,7 +13,7 @@
 	<artifactId>org.openhab.binding.amazonechocontrol</artifactId>
 	<version>2.3.0-SNAPSHOT</version>
 
-	<name>AmazonEchoControl Binding</name>
+	<name>Amazon Echo Control Binding</name>
 	<packaging>eclipse-plugin</packaging>
 
 </project>

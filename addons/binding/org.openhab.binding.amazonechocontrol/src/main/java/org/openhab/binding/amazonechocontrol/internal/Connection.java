@@ -38,6 +38,9 @@ import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Payload;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Trigger;
@@ -86,9 +89,11 @@ public class Connection {
     private @Nullable Date loginTime;
     private @Nullable Date verifyTime;
 
+    private final Gson gson = new Gson();
+    private final Gson gsonWithNullSerialization;
+
     public Connection(@Nullable String email, @Nullable String password, @Nullable String amazonSite,
             @Nullable String accountThingId) {
-
         this.accountThingId = accountThingId != null ? accountThingId : "";
         this.email = email != null ? email : "";
         this.password = password != null ? password : "";
@@ -108,6 +113,9 @@ public class Connection {
         }
         this.amazonSite = correctedAmazonSite;
         alexaServer = "https://alexa." + this.amazonSite;
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonWithNullSerialization = gsonBuilder.create();
     }
 
     public @Nullable Date tryGetLoginTime() {
@@ -461,10 +469,23 @@ public class Connection {
 
             String postData = postDataBuilder.toString();
 
-            if (postLoginData(queryParameters, postData) != null) {
-                throw new ConnectionException(
-                        "Login fails. Check your credentials and try to login with your webbrowser to http(s)://<youropenhab:yourport>/amazonechocontrol/"
-                                + accountThingId);
+            String response = postLoginData(queryParameters, postData);
+            if (response != null) {
+                Document htmlDocument = Jsoup.parse(response);
+                Element authWarningBoxElement = htmlDocument.getElementById("auth-warning-message-box");
+                String error = null;
+                if (authWarningBoxElement != null) {
+                    error = authWarningBoxElement.text();
+                }
+                if (StringUtils.isNotEmpty(error)) {
+                    throw new ConnectionException(
+                            "Login fails. Check your credentials and try to login with your webbrowser to http(s)://<youropenhab:yourport>/amazonechocontrol/"
+                                    + accountThingId + System.lineSeparator() + "" + error);
+                } else {
+                    throw new ConnectionException(
+                            "Login fails. Check your credentials and try to login with your webbrowser to http(s)://<youropenhab:yourport>/amazonechocontrol/"
+                                    + accountThingId);
+                }
             }
 
         } catch (Exception e) {
@@ -507,6 +528,7 @@ public class Connection {
         if (response.contains("<title>Amazon Alexa</title>")) {
             logger.debug("Response seems to be alexa app");
         } else {
+
             logger.info("Response maybe not valid");
         }
 
@@ -540,7 +562,6 @@ public class Connection {
     // parser
     private <T> T parseJson(String json, Class<T> type) throws JsonSyntaxException {
         try {
-            Gson gson = new Gson();
             return gson.fromJson(json, type);
         } catch (JsonSyntaxException e) {
             logger.warn("Parsing json failed {}", e);
@@ -558,7 +579,7 @@ public class Connection {
         if (result == null) {
             return new ArrayList<>();
         }
-        return new ArrayList<Device>(Arrays.asList(result));
+        return new ArrayList<>(Arrays.asList(result));
     }
 
     public String getDeviceListJson() throws IOException, URISyntaxException {
@@ -668,8 +689,6 @@ public class Connection {
     // Alexa.SingASong.Play, Alexa.TellStory.Play, Alexa.Speak (textToSpeach)
     public void executeSequenceCommand(Device device, String command, @Nullable Map<String, Object> parameters)
             throws IOException, URISyntaxException {
-        Gson gson = new Gson();
-
         JsonObject operationPayload = new JsonObject();
         operationPayload.addProperty("deviceType", device.deviceType);
         operationPayload.addProperty("deviceSerialNumber", device.serialNumber);
@@ -731,7 +750,6 @@ public class Connection {
             }
         }
         if (found != null) {
-            Gson gson = new Gson();
             String sequenceJson = gson.toJson(found.sequence);
 
             JsonStartRoutineRequest request = new JsonStartRoutineRequest();
@@ -792,10 +810,7 @@ public class Connection {
     public void setEnabledFlashBriefings(JsonFeed[] enabledFlashBriefing) throws IOException, URISyntaxException {
         JsonEnabledFeeds enabled = new JsonEnabledFeeds();
         enabled.enabledFeeds = enabledFlashBriefing;
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.serializeNulls();
-        Gson gson = gsonBuilder.create();
-        String json = gson.toJson(enabled);
+        String json = gsonWithNullSerialization.toJson(enabled);
         makeRequest("POST", alexaServer + "/api/content-skills/enabled-feeds", json, true, true, null);
     }
 
@@ -832,11 +847,7 @@ public class Connection {
         request.type = type;
         request.id = "create" + type;
 
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.serializeNulls();
-        Gson gson = gsonBuilder.create();
-
-        String data = gson.toJson(request);
+        String data = gsonWithNullSerialization.toJson(request);
         String response = makeRequestAndReturnString("PUT", alexaServer + "/api/notifications/createReminder", data,
                 true, null);
         JsonNotificationResponse result = parseJson(response, JsonNotificationResponse.class);
@@ -881,7 +892,6 @@ public class Connection {
         payload.musicProviderId = providerId;
         payload.searchPhrase = voiceCommand;
 
-        Gson gson = new Gson();
         String playloadString = gson.toJson(payload);
 
         JsonObject postValidataionJson = new JsonObject();

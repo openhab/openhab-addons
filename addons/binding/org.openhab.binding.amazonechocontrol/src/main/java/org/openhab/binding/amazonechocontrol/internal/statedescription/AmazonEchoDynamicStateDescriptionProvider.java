@@ -10,6 +10,8 @@ package org.openhab.binding.amazonechocontrol.internal.statedescription;
 
 import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +33,8 @@ import org.openhab.binding.amazonechocontrol.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.handler.EchoHandler;
 import org.openhab.binding.amazonechocontrol.handler.FlashBriefingProfileHandler;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
+import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
+import org.openhab.binding.amazonechocontrol.internal.HttpException;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.PairedDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
@@ -44,6 +48,8 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Dynamic channel state description provider.
@@ -80,7 +86,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
         return thing.getHandler();
     }
 
-    StateOption CreateStateOption(@Nullable String id, @Nullable String displayValue, boolean showIdsInGUI) {
+    StateOption createStateOption(@Nullable String id, @Nullable String displayValue, boolean showIdsInGUI) {
         if (showIdsInGUI) {
             return new StateOption(id, String.format("%s [%s]", displayValue, id));
         } else {
@@ -112,14 +118,14 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 return originalStateDescription;
             }
 
-            ArrayList<StateOption> options = new ArrayList<StateOption>();
+            ArrayList<StateOption> options = new ArrayList<>();
             options.add(new StateOption("", ""));
             for (PairedDevice device : pairedDeviceList) {
                 if (device == null) {
                     continue;
                 }
                 if (device.address != null && device.friendlyName != null) {
-                    options.add(CreateStateOption(device.address, device.friendlyName, handler.getShowIdsInGUI()));
+                    options.add(createStateOption(device.address, device.friendlyName, handler.getShowIdsInGUI()));
                 }
             }
             StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
@@ -143,11 +149,11 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             JsonPlaylists playLists;
             try {
                 playLists = connection.getPlaylists(device);
-            } catch (Exception e) {
+            } catch (IOException | HttpException | URISyntaxException | JsonSyntaxException | ConnectionException e) {
                 logger.warn("Get playlist failed: {}", e);
                 return originalStateDescription;
             }
-            ArrayList<StateOption> options = new ArrayList<StateOption>();
+            ArrayList<StateOption> options = new ArrayList<>();
             options.add(new StateOption("", ""));
             @Nullable
             Map<@NonNull String, @Nullable PlayList @Nullable []> playlistMap = playLists.playlists;
@@ -156,7 +162,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                     if (innerLists != null && innerLists.length > 0) {
                         PlayList playList = innerLists[0];
                         if (playList.playlistId != null && playList.title != null) {
-                            options.add(CreateStateOption(playList.playlistId,
+                            options.add(createStateOption(playList.playlistId,
                                     String.format("%s (%d)", playList.title, playList.trackCount),
                                     handler.getShowIdsInGUI()));
                         }
@@ -184,18 +190,18 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             JsonNotificationSound[] notificationSounds;
             try {
                 notificationSounds = connection.getNotificationSounds(device);
-            } catch (Exception e) {
+            } catch (IOException | HttpException | URISyntaxException | JsonSyntaxException | ConnectionException e) {
                 logger.warn("Get notification sounds failed: {}", e);
                 return originalStateDescription;
             }
-            ArrayList<StateOption> options = new ArrayList<StateOption>();
+            ArrayList<StateOption> options = new ArrayList<>();
             options.add(new StateOption("", ""));
 
             for (JsonNotificationSound notificationSound : notificationSounds) {
                 if (notificationSound.folder == null && notificationSound.providerId != null
                         && notificationSound.id != null && notificationSound.displayName != null) {
                     String providerSoundId = notificationSound.providerId + ":" + notificationSound.id;
-                    options.add(CreateStateOption(providerSoundId, notificationSound.displayName,
+                    options.add(createStateOption(providerSoundId, notificationSound.displayName,
                             handler.getShowIdsInGUI()));
                 }
             }
@@ -218,7 +224,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 return originalStateDescription;
             }
 
-            ArrayList<StateOption> options = new ArrayList<StateOption>();
+            ArrayList<StateOption> options = new ArrayList<>();
             options.add(new StateOption("", ""));
             for (Device device : devices) {
                 if (device.capabilities != null && Arrays.asList(device.capabilities).contains("FLASH_BRIEFING")) {
@@ -240,7 +246,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             }
             List<JsonMusicProvider> musicProviders = connection.getMusicProviders();
 
-            ArrayList<StateOption> options = new ArrayList<StateOption>();
+            ArrayList<StateOption> options = new ArrayList<>();
             for (JsonMusicProvider musicProvider : musicProviders) {
                 @Nullable
                 List<@Nullable String> properties = musicProvider.supportedProperties;
@@ -250,7 +256,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                         && StringUtils.isNotEmpty(providerId)
                         && StringUtils.equals(musicProvider.availability, "AVAILABLE")
                         && StringUtils.isNotEmpty(displayName)) {
-                    options.add(CreateStateOption(providerId, displayName, handler.getShowIdsInGUI()));
+                    options.add(createStateOption(providerId, displayName, handler.getShowIdsInGUI()));
                 }
             }
             StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
@@ -272,13 +278,13 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 return originalStateDescription;
             }
 
-            ArrayList<StateOption> options = new ArrayList<StateOption>();
+            ArrayList<StateOption> options = new ArrayList<>();
             options.addAll(originalStateDescription.getOptions());
 
             for (FlashBriefingProfileHandler flashBriefing : flashbriefings) {
                 String value = FLASH_BRIEFING_COMMAND_PREFIX + flashBriefing.getThing().getUID().getId();
                 String displayName = flashBriefing.getThing().getLabel();
-                options.add(CreateStateOption(value, displayName, handler.getShowIdsInGUI()));
+                options.add(createStateOption(value, displayName, handler.getShowIdsInGUI()));
             }
             StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
                     originalStateDescription.getMaximum(), originalStateDescription.getStep(),

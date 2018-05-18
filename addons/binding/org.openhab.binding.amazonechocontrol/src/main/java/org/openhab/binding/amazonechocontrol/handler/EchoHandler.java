@@ -96,7 +96,7 @@ public class EchoHandler extends BaseThingHandler {
         logger.debug("Amazon Echo Control Binding initialized");
 
         if (this.connection != null) {
-            updateStatus(ThingStatus.ONLINE);
+            setDeviceAndUpdateThingState(this.device);
         } else {
             updateStatus(ThingStatus.UNKNOWN);
             Bridge bridge = this.getBridge();
@@ -112,8 +112,21 @@ public class EchoHandler extends BaseThingHandler {
 
     public void intialize(Connection connection, @Nullable Device deviceJson) {
         this.connection = connection;
-        this.device = deviceJson;
+        setDeviceAndUpdateThingState(deviceJson);
+    }
+
+    boolean setDeviceAndUpdateThingState(@Nullable Device device) {
+        if (device == null) {
+            updateStatus(ThingStatus.UNKNOWN);
+            return false;
+        }
+        this.device = device;
+        if (!device.online) {
+            updateStatus(ThingStatus.OFFLINE);
+            return false;
+        }
         updateStatus(ThingStatus.ONLINE);
+        return true;
     }
 
     @Override
@@ -543,16 +556,13 @@ public class EchoHandler extends BaseThingHandler {
         if (this.disableUpdate) {
             return;
         }
+        if (!setDeviceAndUpdateThingState(device)) {
+            return;
+        }
         if (device == null) {
-            updateStatus(ThingStatus.UNKNOWN);
             return;
         }
-        this.device = device;
-        if (!device.online) {
-            updateStatus(ThingStatus.OFFLINE);
-            return;
-        }
-        updateStatus(ThingStatus.ONLINE);
+
         Connection connection = this.connection;
         if (connection == null) {
             return;

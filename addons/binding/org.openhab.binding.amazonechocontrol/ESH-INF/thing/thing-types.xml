@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="account">
 		<label>Amazon Account</label>
-		<description>Amazon Account where your amazon echo is registered.</description>
+		<description>Amazon Account where the amazon echo devices are registered.</description>
 		<config-description>
 			<parameter name="amazonSite" type="text" required="true">
 				<default />
@@ -19,18 +19,16 @@
 					<option value="amazon.fr">amazon.fr</option>
 					<option value="amazon.co.uk">amazon.co.uk</option>
 				</options>
-				<description>Select or type in the site where your amazon account is created.</description>
+				<description>Site where the amazon account is created.</description>
 			</parameter>
 			<parameter name="email" type="text" required="true">
-				<default />
 				<label>Email</label>
-				<description>Enter the email address of the amazon account which is used for the amazon echo devices. Hint: 2 factor authentication is not supported!</description>
+				<description>Email address of the amazon account which is used for the amazon echo devices. Hint: 2 factor authentication is not supported!</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
-				<default />
 				<context>password</context>
 				<label>Password</label>
-				<description>Enter the password of the amazon account which is used for the amazon echo devices. IMPORTANT: If the account thing does not go online and reports and login error, open the url YOUR_OPENHAP/amazonechocontrol/ID_OF_THIS_THING in your browser (e.g. http://openhab:8080/amazonechocontrol/account) and try to login.</description>
+				<description>Password of the amazon account which is used for the amazon echo devices. IMPORTANT: If the account thing does not go online and reports and login error, open the url YOUR_OPENHAP/amazonechocontrol/ID_OF_THIS_THING in your browser (e.g. http://openhab:8080/amazonechocontrol/account) and try to login.</description>
 			</parameter>
 			<parameter name="pollingIntervalInSeconds" type="integer" min="10" max="65535" unit="s">
 				<default>30</default>
@@ -75,7 +73,7 @@
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
-				<description>You will find the serial number of your device in the Alexa app</description>
+				<description>The serial number of the device from the Alexa app</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -114,7 +112,7 @@
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
-				<description>You will find the serial number of your device in the Alexa app</description>
+				<description>The serial number of the device from the Alexa app</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -153,7 +151,7 @@
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
-				<description>You will find the serial number of your device in the Alexa app</description>
+				<description>The serial number of the device from the Alexa app</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -181,7 +179,7 @@
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
-				<description>You will find the serial number of your device in the Alexa app</description>
+				<description>The serial number of the device from the Alexa app</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -232,7 +230,7 @@
 	<channel-type id="startRoutine" advanced="true">
 		<item-type>String</item-type>
 		<label>Start a routine</label>
-		<description>Type in what you normally say to Alexa without the preceding "Alexa," (Write Only)</description>
+		<description>The command which must be spoken to active the routing without the preceding "Alexa," (Write Only)</description>
 	</channel-type>
 	<channel-type id="playAlarmSound" advanced="true">
 		<item-type>String</item-type>

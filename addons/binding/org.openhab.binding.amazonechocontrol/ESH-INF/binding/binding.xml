@@ -3,13 +3,13 @@
 	id="amazonechocontrol" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>Amazon Echo Control Binding</name>
-	<description>Binding to control Amazon Echo devices (Alexa). This binding enables openHAB to control the volume, playing state, bluetooth connection of your amazon echo devices.</description>
+	<description>Binding to control Amazon Echo devices (Alexa). This binding enables openHAB to control the volume, playing state, bluetooth connection of your amazon echo devices or allow to use it as TTS device.</description>
 	<author>Michael Geramb</author>
 
 	<config-description>
 		<parameter name="showIdsInGUI" type="boolean" >
-			<label>Show ID's in the GUI</label>
-			<description>Shows ID's in the channel drop downs which needed for setting the value from a rule</description>
+			<label>Show IDs in the GUI</label>
+			<description>Shows IDs in the channel drop downs which needed for setting the value from a rule</description>
 			<default>false</default>
 		</parameter>
 	</config-description>

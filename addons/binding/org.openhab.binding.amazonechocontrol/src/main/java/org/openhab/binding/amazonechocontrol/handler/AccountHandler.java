@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.amazonechocontrol.internal.AccountConfiguration;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
+import org.openhab.binding.amazonechocontrol.internal.HttpException;
 import org.openhab.binding.amazonechocontrol.internal.LoginServlet;
 import org.openhab.binding.amazonechocontrol.internal.StateStorage;
 import org.openhab.binding.amazonechocontrol.internal.discovery.AmazonEchoDiscovery;
@@ -73,6 +74,7 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
     private final HttpService httpService;
     private final AmazonEchoDiscovery amazonEchoDiscovery;
     private @Nullable LoginServlet loginServlet;
+    private final Gson gson = new Gson();
 
     public AccountHandler(Bridge bridge, HttpService httpService, AmazonEchoDiscovery amazonEchoDiscovery) {
         super(bridge);
@@ -320,6 +322,9 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
                             this.stateStorage.storeState("sessionStorage", serializedStorage);
                         }
                         this.connection = currentConnection;
+                    } catch (ConnectionException e) {
+                        loginIsValid = false;
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                     } catch (UnknownHostException e) {
                         loginIsValid = false;
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unknown host name '"
@@ -338,8 +343,10 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
                     }
                 }
             }
-        } catch (Exception e) {
-            logger.error("check login fails {}", e);
+        } catch (HttpException | JsonSyntaxException | ConnectionException e) {
+            logger.debug("check login fails {}", e);
+        } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
+            logger.error("check login fails with unexpected error {}", e);
         }
     }
 
@@ -475,7 +482,6 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
 
     public void setEnabledFlashBriefingsJson(String flashBriefingJson) {
         Connection currentConnection = connection;
-        Gson gson = new Gson();
         JsonFeed[] feeds = gson.fromJson(flashBriefingJson, JsonFeed[].class);
         if (currentConnection != null) {
             try {
@@ -543,9 +549,8 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
                 // Do not copy imageUrl here, because it will change
                 forSerializer[i] = copy;
             }
-            Gson gson = new Gson();
             this.currentFlashBriefingJson = gson.toJson(forSerializer);
-        } catch (JsonSyntaxException | IOException | URISyntaxException e) {
+        } catch (HttpException | JsonSyntaxException | IOException | URISyntaxException | ConnectionException e) {
             logger.warn("get flash briefing profiles fails {}", e);
         }
 

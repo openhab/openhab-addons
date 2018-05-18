@@ -35,7 +35,7 @@ Some ideas what you can do in your home by using rules and other openHAB control
 - Have different flash briefing in the morning and evening
 - Let alexa say 'welcome' to you if you open the door
 
-## Note ##
+## Note
 
 This binding uses the same API as the Web-Browser-Based Alexa site (alexa.amazon.de).
 In other words, it simulates a user which is using the web page.
@@ -43,17 +43,17 @@ Unfortunately, the binding can get broken if Amazon change the web site.
 
 The binding is tested with amazon.de, amazon.com and amazon.co.uk accounts, but should also work with all others. 
 
-## Warning ##
+## Warning
 
 For the connection to the Amazon server, your password of the Amazon account is required, this will be stored in your openHAB thing device configuration.
 So you should be sure, that nobody other has access to your configuration! 
 
-## What else you should know ##
+## What else you should know
 
 All the display options are updated by polling the amazon server.
 The polling time can be configured, but a minimum of 10 seconds is required.
 The default is 60 seconds, which means the it can take up to 60 seconds to see the correct state.
-I do not know, if there is a limit implemented in the amazon server if the polling is too fast and maybe amazon will lock your account. 60 seconds seems to be safe.
+It's not know, if there is a limit implemented in the amazon server if the polling is too fast and maybe amazon will lock your account. 30 seconds seems to be safe.
 
 ## Supported Things
 
@@ -82,7 +82,7 @@ The configuration of your amazon account must be done in the 'Amazon Account' de
 
 ## Thing Configuration
 
-The Amazon Account thing need the following configurations:
+The Amazon Account thing needs the following configurations:
 
 | Configuration name       | Description                                                               |
 |--------------------------|---------------------------------------------------------------------------|
@@ -142,7 +142,7 @@ It will be configured at runtime by using the save channel to store the current 
 
 ## Full Example
 
-### amzonechocontrol.things
+### amazonechocontrol.things
 
 ```
 Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [amazonSite="amazon.de", email="myaccountemail@myprovider.com", password="secure", pollingIntervalInSeconds=60]
@@ -158,7 +158,7 @@ Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [amazonS
 
 You will find the serial number in the Alexa app. 
 
-### amzonechocontrol.items:
+### amazonechocontrol.items:
 
 Sample for the Thing echo1 only. But it will work in the same way for the other things, only replace the thing name in the channel link.
 Take a look in the channel description above to know, which channels are supported by your thing type.
@@ -213,7 +213,7 @@ Switch FlashBriefing_LifeStyle_Active "Active" { channel="amazonechocontrol:flas
 String FlashBriefing_LifeStyle_Play "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:playOnDevice"}
 ```
 
-### amzonechocontrol.sitemap:
+### amazonechocontrol.sitemap:
 
 ```
 sitemap amzonechocontrol label="Echo Devices"
@@ -247,7 +247,7 @@ sitemap amzonechocontrol label="Echo Devices"
             // Change the <YOUR_DEVICE_MAC> Place holder with the MAC address shown, if alexa is connected to the device
             Selection item=Echo_Living_Room_BluetoothMAC mappings=[ ''='Disconnected', '<YOUR_DEVICE_MAC>'='Bluetooth Device 1', '<YOUR_DEVICE_MAC>'='Bluetooth Device 2']       
                  
-            // These are only view of the possible options. Enable ShowIDsInGUI in the binding configuration and look in drop-down-box of this channel in the paper UI Control section     
+            // These are only view of the possible options. Enable ShowIDsInGUI in the binding configuration and look in drop-down-box of this channel in the Paper UI Control section     
             Selection item=Echo_Living_Room_PlayAlarmSound mappings=[ ''='None', 'ECHO:system_alerts_soothing_01'='Adrift', 'ECHO:system_alerts_atonal_02'='Clangy']       
 
             Switch  item=Echo_Living_Room_Bluetooth
@@ -268,20 +268,20 @@ sitemap amzonechocontrol label="Echo Devices"
 }
 ```
 
-## How To Get ID's 
-Simple way to get the ID's required by the Selection element or an rule:
+## How To Get IDs 
+Simple way to get the IDs required by the selection element or an rule:
 
-1) Open the paper UI
+1) Open the Paper UI
 2) Navigate to the Configuration / Bindings section
 3) Click on the edit button (Pencil) of the Amazon Echo Control Binding
-4) Enable the 'Show ID's in the GUI' option and save it
+4) Enable the 'Show IDs in the GUI' option and save it
 5) Navigate to the Control section
 6) Most of the channels which requires a ID show now a drop-down with the ID within []-brackets. 
 If there are no drop downs, check if you have defined the channel and sometimes a browser refresh helps.
 
 ## Tutorials
 
-**Let alexa speak a text from a rule:**
+### Let alexa speak a text from a rule:
 
 1) Create a rule with a trigger of your choice
 
@@ -294,9 +294,9 @@ then
 end
 ```
 
-**Playing an alarm sound for 15 seconds with an openHAB rule if an door contact was opened:**
+## Playing an alarm sound for 15 seconds with an openHAB rule if an door contact was opened:
 
-1) Do get the ID of your sound, follow the steps in "How To Get ID's"
+1) Do get the ID of your sound, follow the steps in "How To Get IDs"
 2) Write down the text in the square brackets. e.g. ECHO:system_alerts_repetitive01 for the nightstand sound
 3) Create a rule for start playing the sound:
 
@@ -320,13 +320,13 @@ end
 ```
 
 Note 1: Do not use a to short time for playing the sound, because alexa needs some time to start playing the sound.
-I recommend, that you to not use a time below 10 seconds.
+It's not recommended to use a time below 10 seconds.
 
 Note 2: The rule have no effect for your default alarm sound used in the alexa app.
 
-**Play a spotify playlist if a switch was changed to on:**
+### Play a spotify playlist if a switch was changed to on:
 
-1) Do get the ID of your sound, follow the steps in "How To Get ID's"
+1) Do get the ID of your sound, follow the steps in "How To Get IDs"
 2) Write down the text in the square brackets. e.g. SPOTIFY for the spotify music provider
 3) Create a rule for start playing a song or playlist:
 
@@ -340,7 +340,36 @@ then
 end
 ```
 
-Note: I recommend, that you test the command send to play music command first with your voice on your alexa device. E.g. say 'Alexa, Playlist Party'
+Note: It's recommended to test the command send to play music command first with the voice and the real alexa device. E.g. say 'Alexa, Playlist Party'
+
+### Start playing weather/traffic/etc:
+
+1) Pick up one of the available commands: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing
+2) Create a rule for start playing the information where you provide the command as string:
+
+```php
+rule "Start wheater info"
+when
+    Item Spotify_Start_Wheater_Switch changed to ON
+then
+     Echo_Living_Room_StartCommand.sendCommand('Weather')
+end
+```
+
+### Start playing a custom flashbriefing on a device:
+
+1) Do get the ID of your sound, follow the steps in "How To Get IDs"
+2) Write down the text in the square brackets. e.g. flashbriefing.flashbriefing1
+2) Create a rule for start playing the information where you provide the command as string:
+
+```php
+rule "Start wheater info"
+when
+    Item Spotify_Start_Wheater_Switch changed to ON
+then
+     Echo_Living_Room_StartCommand.sendCommand('FlashBriefing.flashbriefing1')
+end
+```
 
 ## Credits
 
