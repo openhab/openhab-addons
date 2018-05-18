@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tadoac"
+						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="airconditioner">
+		<label>Tado AC-Controller</label>
+		<channels>
+			<channel id="power" typeId="power-channel"/>
+			<channel id="temperature" typeId="temperature-channel"/>
+			<channel id="mode" typeId="mode-channel"/>
+			<channel id="fanspeed" typeId="fanspeed-channel"/>
+		</channels>	
+		<config-description>
+            <parameter name="username" type="text">
+                <label>Username</label>
+            </parameter>
+            <parameter name="password" type="text">
+                <label>password</label>
+                <context>password</context>    
+            </parameter>
+            <parameter name="homeid" type="integer">
+                <label>ID of the home</label>
+            </parameter>
+            <parameter name="zoneid" type="integer">
+                <label>ID of the zone</label>
+            </parameter>
+            <parameter name="interval" type="integer" min="30">
+                <label>Refresh interval</label>
+                <description>Refresh interval in seconds</description>
+                <default>60</default>   
+            </parameter>
+      </config-description>
+	</thing-type>
+
+	<channel-type id="power-channel">
+		<item-type>Switch</item-type>
+		<label>Power Switch</label>
+	</channel-type>
+	<channel-type id="temperature-channel">
+        <item-type>Number</item-type>
+        <label>Target Temperature</label>
+    </channel-type>
+    <channel-type id="mode-channel">
+        <item-type>Number</item-type>
+        <label>Mode</label>
+        <state>
+            <options>
+                <option value="1">Cool</option>
+                <option value="2">Dry</option>
+                <option value="3">Fan</option>
+            </options>
+        </state>
+    </channel-type>
+    <channel-type id="fanspeed-channel">
+        <item-type>Number</item-type>
+        <label>Fan-Speed</label>
+        <state>
+            <options>
+                <option value="1">Low</option>
+                <option value="2">Medium</option>
+                <option value="3">High</option>
+            </options>
+        </state>
+    </channel-type>
+
+</thing:thing-descriptions>
