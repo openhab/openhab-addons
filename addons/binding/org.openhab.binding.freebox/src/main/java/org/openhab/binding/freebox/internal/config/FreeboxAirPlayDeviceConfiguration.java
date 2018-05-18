@@ -12,7 +12,7 @@ package org.openhab.binding.freebox.internal.config;
  * The {@link FreeboxAirPlayDeviceConfiguration} is responsible for holding
  * configuration informations associated to a Freebox AirPlay Device thing type
  *
- * @author Laurent Garnier
+ * @author Laurent Garnier - Initial contribution
  */
 public class FreeboxAirPlayDeviceConfiguration {
 

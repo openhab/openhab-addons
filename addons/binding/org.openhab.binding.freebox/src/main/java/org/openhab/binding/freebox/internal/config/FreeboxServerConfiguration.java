@@ -12,7 +12,7 @@ package org.openhab.binding.freebox.internal.config;
  * The {@link FreeboxServerConfiguration} is responsible for holding
  * configuration informations needed to access/poll the freebox server
  *
- * @author Gaël L'hopital
+ * @author Gaël L'hopital - Initial contribution
  */
 public class FreeboxServerConfiguration {
 

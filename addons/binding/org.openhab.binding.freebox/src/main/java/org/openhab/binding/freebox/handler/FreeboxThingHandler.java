@@ -16,7 +16,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -54,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * The {@link FreeboxThingHandler} is responsible for handling everything associated to
  * any Freebox thing types except the bridge thing type.
  *
- * @author Laurent Garnier
+ * @author Laurent Garnier - Initial contribution
  */
 public class FreeboxThingHandler extends BaseThingHandler {
 
@@ -80,7 +79,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
             return;
         }
         try {
-            if (command == null || command instanceof RefreshType) {
+            if (command instanceof RefreshType) {
                 return;
             } else if (command instanceof StringType && PLAYURL.equals(channelUID.getId())) {
                 playMedia(command.toString());
@@ -117,7 +116,6 @@ public class FreeboxThingHandler extends BaseThingHandler {
     private void initializeThing(ThingHandler thingHandler, ThingStatus bridgeStatus) {
         logger.debug("initializeThing {}", bridgeStatus);
         if (thingHandler != null && bridgeStatus != null) {
-
             if (bridgeStatus == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
 
@@ -259,7 +257,6 @@ public class FreeboxThingHandler extends BaseThingHandler {
             Calendar callEndTime = call.getTimeStamp();
             callEndTime.add(Calendar.SECOND, (int) (call.getDuration()));
             if ((call.getDuration() > 0) && callEndTime.after(lastPhoneCheck)) {
-
                 updateCall(call, ANY);
 
                 if (call.getType().equalsIgnoreCase("accepted")) {
@@ -327,11 +324,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
                         reachable ? OnOffType.ON : OnOffType.OFF);
             }
             if ((vendor != null) && !vendor.isEmpty()) {
-                Map<String, String> properties = editProperties();
-                if ((properties.get(Thing.PROPERTY_VENDOR) == null)
-                        || !properties.get(Thing.PROPERTY_VENDOR).equals(vendor)) {
-                    updateProperty(Thing.PROPERTY_VENDOR, vendor);
-                }
+                updateProperty(Thing.PROPERTY_VENDOR, vendor);
             }
         }
     }

@@ -12,7 +12,7 @@ package org.openhab.binding.freebox.internal.config;
  * The {@link FreeboxPhoneConfiguration} is responsible for holding
  * configuration informations associated to a Freebox Phone thing type
  *
- * @author Laurent Garnier
+ * @author Laurent Garnier - Initial contribution
  */
 public class FreeboxPhoneConfiguration {
 

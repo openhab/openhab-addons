@@ -13,7 +13,7 @@ package org.openhab.binding.freebox.internal.config;
  * configuration informations associated to a Freebox Network Interface
  * thing type
  *
- * @author Laurent Garnier
+ * @author Laurent Garnier - Initial contribution
  */
 public class FreeboxNetInterfaceConfiguration {
 
