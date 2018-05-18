@@ -57,7 +57,7 @@ public class SmappeeBindingConstants {
     public final static String PARAMETER_USERNAME = "username";
     public final static String PARAMETER_PASSWORD = "password";
     public final static String PARAMETER_SERVICE_LOCATION_NAME = "serviceLocationName";
-    public final static String PARAMETER_POLLTIME = "pollTime";
+    public final static String PARAMETER_POLLINGINTERVALL = "pollingInterval";
     // Appliance
     public final static String PARAMETER_APPLIANCE_ID = "id";
     public final static String PARAMETER_APPLIANCE_TYPE = "type";

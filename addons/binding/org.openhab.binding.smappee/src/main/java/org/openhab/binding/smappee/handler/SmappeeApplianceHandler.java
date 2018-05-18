@@ -89,7 +89,7 @@ public class SmappeeApplianceHandler extends AbstractSmappeeHandler {
             }
         };
 
-        scheduledJob = scheduler.scheduleWithFixedDelay(runnable, 0, smappeeService.config.pollTime,
+        scheduledJob = scheduler.scheduleWithFixedDelay(runnable, 0, smappeeService.config.pollingInterval,
                 TimeUnit.MILLISECONDS);
     }
 

@@ -89,7 +89,7 @@ public class SmappeeService {
             if (readings != null && readings.consumptions.length > 0) {
                 readingsUpdate.newState(readings);
             }
-        }, 0, config.pollTime, TimeUnit.MINUTES);
+        }, 0, config.pollingInterval, TimeUnit.MINUTES);
     }
 
     public void stopAutomaticRefresh() {

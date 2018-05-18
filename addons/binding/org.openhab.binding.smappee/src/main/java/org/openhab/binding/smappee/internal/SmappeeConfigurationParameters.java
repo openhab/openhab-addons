@@ -31,5 +31,5 @@ public class SmappeeConfigurationParameters {
     public String serviceLocationName;
 
     /** How often (in minutes) does the smappee needs to be checked ? */
-    public int pollTime;
+    public int pollingInterval;
 }

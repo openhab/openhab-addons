@@ -38,12 +38,12 @@ Following settings must be configured in order to make your smappee binding work
 
 | Setting              |                                                                        |
 |----------------------|------------------------------------------------------------------------|
-|Client Id             | The Smappee Api Oauth client id (obtain by mail from smappee support) |
-|Client Secret         | The Smappee Api Oauth client secret (obtain by mail from smappee support)|
+|ClientId              | The Smappee Api Oauth client id (obtain by mail from smappee support) |
+|ClientSecret          | The Smappee Api Oauth client secret (obtain by mail from smappee support)|
 |Username              | The username for your Smappee Account|
 |Password              | The password for your Smappee Account|
-|Service location name | The name of your Smappee installation|
-|Polling time          | How often (in minutes) does the smappee needs to be checked ?|
+|ServiceLocationName   | The name of your Smappee installation|
+|PollingInterval       | How often (in minutes) does the smappee needs to be checked ?|
 
 #### Appliance Thing
 
@@ -101,7 +101,7 @@ The following channels are supported:
 A manual setup through a `things/smappee.things` file could look like this:
 
 ```
-Bridge smappee:monitor:mySmappee "Smappee" @ "Living Room" [clientId="xxx", clientSecret="xxx", username="xxx", password="xxx", serviceLocationName="xxx", poll_time=5]
+Bridge smappee:monitor:mySmappee "Smappee" @ "Living Room" [clientId="xxx", clientSecret="xxx", username="xxx", password="xxx", serviceLocationName="xxx", pollingInterval=5]
 {
     Thing smappee:appliance:myAppliance [ id="xxx", type="Blinds" ]
     Thing smappee:actuator:myPlug [ id="xxx" ]
@@ -112,9 +112,9 @@ Bridge smappee:monitor:mySmappee "Smappee" @ "Living Room" [clientId="xxx", clie
 A manual configuration through a `demo.items` file could look like this:
 
 ```
-Number mySmappee_Consumption     "Consumption [%s]"      { channel="smappee:monitor:mySmappee:monitor-consumption-channel" }
-Number mySmappee_Solar           "Solar [%s]"            { channel="smappee:monitor:mySmappee:monitor-solar-channel" } 
-Number mySmappee_AlwaysOn        "Always On [%s]"        { channel="smappee:monitor:mySmappee:monitor-alwayson-channel" }
+Number mySmappee_Consumption     "Consumption [%s]"      { channel="smappee:monitor:mySmappee:monitor-consumption" }
+Number mySmappee_Solar           "Solar [%s]"            { channel="smappee:monitor:mySmappee:monitor-solar" } 
+Number mySmappee_AlwaysOn        "Always On [%s]"        { channel="smappee:monitor:mySmappee:monitor-alwayson" }
 
 Number mySmappee_AppliancePower  "Appliance Power [%s]"  { channel="smappee:appliance:myAppliance:appliance-power" }
 ```
