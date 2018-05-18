@@ -344,13 +344,13 @@ public class FreeboxHandler extends BaseBridgeHandler {
         }
 
         Map<String, String> properties = editProperties();
-        if (apiBaseUrl != null && !apiBaseUrl.isEmpty()) {
+        if (StringUtils.isNotEmpty(apiBaseUrl)) {
             properties.put(FreeboxBindingConstants.API_BASE_URL, apiBaseUrl);
         }
-        if (apiVersion != null && !apiVersion.isEmpty()) {
+        if (StringUtils.isNotEmpty(apiVersion)) {
             properties.put(FreeboxBindingConstants.API_VERSION, apiVersion);
         }
-        if (hardwareVersion != null && !hardwareVersion.isEmpty()) {
+        if (StringUtils.isNotEmpty(hardwareVersion)) {
             properties.put(Thing.PROPERTY_HARDWARE_VERSION, hardwareVersion);
         }
         updateProperties(properties);
