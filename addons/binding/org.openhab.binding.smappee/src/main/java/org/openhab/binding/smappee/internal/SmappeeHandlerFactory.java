@@ -44,7 +44,7 @@ public class SmappeeHandlerFactory extends BaseThingHandlerFactory {
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(
             SmappeeBindingConstants.SUPPORTED_BRIDGE_TYPES_UIDS, SmappeeBindingConstants.SUPPORTED_THING_TYPES_UIDS);
 
-    private final static Logger logger = LoggerFactory.getLogger(SmappeeHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(SmappeeHandlerFactory.class);
 
     public SmappeeHandlerFactory() {
         logger.debug("Creating new instance of SmappeeHandlerFactory");

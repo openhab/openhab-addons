@@ -33,10 +33,10 @@ public class SmappeeSensorHandler extends AbstractSmappeeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SmappeeSensorHandler.class);
 
-    ScheduledFuture<?> scheduledJob;
+    private ScheduledFuture<?> scheduledJob;
 
-    private String thingId;
-    private String channelid;
+    private String sensorId;
+    private String channelId;
 
     public SmappeeSensorHandler(Thing thing) {
         super(thing);
@@ -58,9 +58,9 @@ public class SmappeeSensorHandler extends AbstractSmappeeHandler {
 
     public void newState(SmappeeSensorConsumptionRecord readings) {
         if (readings != null) {
-            if (channelid == "1") {
+            if (channelId == "1") {
                 updateState(CHANNEL_SENSOR_VALUE, new DecimalType(readings.value1));
-            } else if (channelid == "2") {
+            } else if (channelId == "2") {
                 updateState(CHANNEL_SENSOR_VALUE, new DecimalType(readings.value2));
             }
         }
@@ -68,8 +68,8 @@ public class SmappeeSensorHandler extends AbstractSmappeeHandler {
 
     @Override
     public void initialize() {
-        thingId = thing.getConfiguration().get(PARAMETER_SENSOR_ID).toString();
-        channelid = thing.getConfiguration().get(PARAMETER_SENSOR_CHANNEL_ID).toString();
+        sensorId = thing.getConfiguration().get(PARAMETER_SENSOR_ID).toString();
+        channelId = thing.getConfiguration().get(PARAMETER_SENSOR_CHANNEL_ID).toString();
 
         updateStatus(ThingStatus.ONLINE);
 
@@ -98,9 +98,9 @@ public class SmappeeSensorHandler extends AbstractSmappeeHandler {
     }
 
     private void readSensor(SmappeeService smappeeService) {
-        SmappeeSensorConsumptionRecord readings = smappeeService.getLatestSensorConsumption(thingId);
+        SmappeeSensorConsumptionRecord readings = smappeeService.getLatestSensorConsumption(sensorId);
         if (readings == null) {
-            logger.warn("failed to read to read power consumption for sensor {}", thingId);
+            logger.warn("failed to read to read power consumption for sensor {}", sensorId);
         } else {
             newState(readings);
         }

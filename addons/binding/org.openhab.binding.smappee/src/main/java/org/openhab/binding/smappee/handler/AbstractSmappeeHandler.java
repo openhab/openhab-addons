@@ -35,6 +35,6 @@ abstract class AbstractSmappeeHandler extends BaseThingHandler {
             return null;
         }
 
-        return smappeeHandler.smappeeService;
+        return smappeeHandler.getSmappeeService();
     }
 }

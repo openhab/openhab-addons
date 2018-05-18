@@ -1,32 +1,33 @@
 # Smappee Binding
 
-This binding integrates the [Smappee energy monitor](http://www.smappee.com/be_en/home).
+This binding integrates the [Smappee energy monitor](http://www.smappee.com).
 
 ## Introduction
 
-Thanks to the Smappee energy monitor you always know how much power your appliances consume, wherever you are. For more comfort, a better insight and sustainable energy savings up to 30%.
+The Smappee energy monitor monitors how much power your appliances consume and how much you gain from your solar power system in realtime. It can automatically detect the appliances based on their energy consumption pattern. Smappee also offers a water and a gas sensor consumption monitor.
 
 Both the Energy monitor and the Solar energy monitor can be used. These can be bought online in the [smappee webshop] (http://www.smappee.com/be_en/eshop/monitors.html).
 
-The smappee supports clamps for 3 phase and 1 phase systems and there is a separate circuit clamp for your solar system. installation manuals can be found on [their support page](https://www.smappee.com/be_en/support)
+The smappee supports clamps for 3 phase and 1 phase systems and there is a separate circuit clamp for your solar system. Installation manuals can be found on [their support page](https://www.smappee.com/be_en/support)
 
 ## Supported Things
 
-This binding provides 1 bridge thing type : 'smappee'. There should be only 1 smappee device installed in your home.
+This binding provides one bridge thing type : 'smappee'. There should be only one smappee device installed in your home.
 This thing act like a bridge and represents your smappee monitor device and should be configured first. Once configured, this will autodetect all other smappee things.
-Detected things :
 
-- appliance: A detected appliance, the appliances that are not categorized yet (type "Find Me"), are skipped. 
+Detected things:
+
+- appliance: A detected appliance. The appliances that are not categorized yet (type is "Find Me") are skipped. 
 - actuator: A paired smappee switch.
 - sensor: A paired water or gas sensor.
 
 ## Discovery
 
-The smappee thing must be configured manually. Appliances, Actuators and the sensors are auto-detected. 
+The smappee thing must be configured manually. Appliances, actuators and the sensors are autodetected. 
 
 ## Smappee thing configuration
 
-As described on their [support page] (https://support.smappee.com/hc/en-us/articles/202153935-Where-can-I-find-the-API-documentation-), you need to email [support@smappee.com] (mailto:support@smappee.com) to get a client ID and a client secret to access the api. In that mail you need to provide them :
+As described on their [support page] (https://support.smappee.com/hc/en-us/articles/202153935-Where-can-I-find-the-API-documentation-), you need to email [support@smappee.com] (mailto:support@smappee.com) to get a client ID and a client secret to access the API. In that mail you need to provide them:
 
 - Full name: your full name
 - Monitor serial number: this can be found at the back of your smappee
@@ -62,7 +63,7 @@ Following settings must be configured in order to make your smappee binding work
 
 | Setting              |                                                                                                              |
 |----------------------|--------------------------------------------------------------------------------------------------------------|
-|Id                    | The unique identifier of the sensor, is a combined identifier : format : [SensorId-ChannelId], eg 1-1    |
+|Id                    | The unique identifier of the sensor, is a combined identifier. Format: [SensorId-ChannelId], eg 1-1    |
 
 ## Channels
 
@@ -81,8 +82,8 @@ The following channels are supported:
 | Channel Type ID            | Item Type    | Description                                                    |
 |----------------------------|--------------|----------------------------------------------------------------|
 | appliance-power            | Number       | The amount of energy that is being consumed now                |
-|                            |              | Note : sometimes the api doesn't return any reading,           |
-|                            |              | this can be validated in the appliance settings, show events   |
+|                            |              | Note: sometimes the API doesn't return any reading,           |
+|                            |              | This can be validated in the appliance settings, show events   |
 
 #### Actuator Thing
 

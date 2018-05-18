@@ -42,13 +42,17 @@ import org.slf4j.LoggerFactory;
 public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate {
 
     private final Logger logger = LoggerFactory.getLogger(SmappeeHandler.class);
-    public SmappeeService smappeeService;
+    private SmappeeService smappeeService;
 
     private SmappeeDiscoveryService discoveryService;
     private ServiceRegistration<?> discoveryServiceRegistration;
 
     public SmappeeHandler(Bridge bridge) {
         super(bridge);
+    }
+
+    public SmappeeService getSmappeeService() {
+        return smappeeService;
     }
 
     @Override
@@ -121,6 +125,10 @@ public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate 
         try {
             smappeeService.initialize();
         } catch (CommunicationException ex) {
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Could not contact Smappee, retrying");
+
             // try again in 30 seconds
             scheduler.schedule(new Runnable() {
                 @Override
@@ -168,13 +176,9 @@ public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate 
 
     private void unregisterDeviceDiscoveryService() {
         if (discoveryServiceRegistration != null) {
-            if (bundleContext != null) {
-                SmappeeDiscoveryService service = (SmappeeDiscoveryService) bundleContext
-                        .getService(discoveryServiceRegistration.getReference());
-                service.deactivate();
-            }
             discoveryServiceRegistration.unregister();
             discoveryServiceRegistration = null;
+            discoveryService.deactivate();
             discoveryService = null;
         }
     }
