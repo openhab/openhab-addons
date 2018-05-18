@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -25,8 +27,8 @@ import org.matmaul.freeboxos.lan.LanHostConfig;
 import org.matmaul.freeboxos.lan.LanHostL3Connectivity;
 import org.matmaul.freeboxos.lan.LanHostsConfig;
 import org.openhab.binding.freebox.FreeboxBindingConstants;
+import org.openhab.binding.freebox.FreeboxDataListener;
 import org.openhab.binding.freebox.handler.FreeboxHandler;
-import org.openhab.binding.freebox.internal.FreeboxDataListener;
 import org.openhab.binding.freebox.internal.config.FreeboxAirPlayDeviceConfiguration;
 import org.openhab.binding.freebox.internal.config.FreeboxNetDeviceConfiguration;
 import org.openhab.binding.freebox.internal.config.FreeboxNetInterfaceConfiguration;
@@ -37,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * The {@link FreeboxDiscoveryService} is responsible for discovering all things
  * except the Freebox Server thing itself
  *
- * @author Laurent Garnier
+ * @author Laurent Garnier - Initial contribution
  */
 public class FreeboxDiscoveryService extends AbstractDiscoveryService implements FreeboxDataListener {
 
@@ -57,13 +59,16 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
         this.bridgeHandler = freeboxBridgeHandler;
     }
 
-    public void activate() {
+    @Override
+    public void activate(@Nullable Map<@NonNull String, @Nullable Object> configProperties) {
+        super.activate(configProperties);
         bridgeHandler.registerDataListener(this);
     }
 
     @Override
     public void deactivate() {
         bridgeHandler.unregisterDataListener(this);
+        super.deactivate();
     }
 
     @Override
@@ -95,7 +100,6 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
         thingDiscovered(discoveryResult);
 
         if (hostsConfig != null) {
-
             // Network devices
             for (LanHostConfig hostConfig : hostsConfig.getConfig()) {
                 String mac = hostConfig.getMAC();
