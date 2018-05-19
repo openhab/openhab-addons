@@ -9,7 +9,6 @@
 package org.openhab.binding.autelis.handler;
 
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -344,20 +343,20 @@ public class AutelisHandler extends BaseThingHandler {
         StringBuilder sb = new StringBuilder("<response>");
 
         // pull down the three xml documents
-        ArrayList<String> statuses = new ArrayList<String>();
-        statuses.add("status");
-
-        if (getThing().getThingTypeUID() == AutelisBindingConstants.PENTAIR_THING_TYPE_UID) {
-            statuses.add("chem");
-            statuses.add("pumps");
-        }
+        String[] statuses = { "status", "chem", "pumps" };
 
         for (String status : statuses) {
             String response = getUrl(baseURL + "/" + status + ".xml", TIMEOUT);
             logger.trace("{}/{}.xml \n {}", baseURL, status, response);
             if (response == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
-                return;
+                // all models and versions have the status.xml endpoint
+                if (status.equals("status")) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
+                    return;
+                } else {
+                    // not all models have the other endpoints, so we ignore errors
+                    continue;
+                }
             }
             // get the xml data between the response tags and append to our main
             // doc
@@ -393,7 +392,7 @@ public class AutelisHandler extends BaseThingHandler {
                  *
                  * watts,rpm,gpm,filter,error
                  *
-                 * Also, some pool will only report the first 3 out of the 5 values.
+                 * Also, some pools will only report the first 3 out of the 5 values.
                  */
 
                 Matcher matcher = pumpsPattern.matcher(key);
@@ -453,17 +452,17 @@ public class AutelisHandler extends BaseThingHandler {
      * @return
      */
     private String getUrl(String url, int timeout) {
-        url += (url.contains("?") ? "&" : "?") + "timestamp=" + System.currentTimeMillis();
+        String getURL = url + (url.contains("?") ? "&" : "?") + "timestamp=" + System.currentTimeMillis();
         startHttpClient(client);
-        logger.trace("Gettiing URL {} ", url);
-        Request request = client.newRequest(url).timeout(TIMEOUT, TimeUnit.MILLISECONDS);
+        logger.trace("Gettiing URL {} ", getURL);
+        Request request = client.newRequest(getURL).timeout(TIMEOUT, TimeUnit.MILLISECONDS);
         request.header(HttpHeader.AUTHORIZATION, basicAuthentication);
 
         try {
             ContentResponse response = request.send();
             int statusCode = response.getStatus();
             if (statusCode != HttpStatus.OK_200) {
-                logger.debug("Method failed: {}", response.getStatus() + " " + response.getReason());
+                logger.trace("Method failed: {}", response.getStatus() + " " + response.getReason());
                 return null;
             }
             return response.getContentAsString();
