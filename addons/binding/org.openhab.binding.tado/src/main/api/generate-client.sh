@@ -39,9 +39,6 @@ rm ../../lib/slf4j-*.jar
 
 cd ../../
 
-#Additional libs
-curl http://central.maven.org/maven2/com/squareup/okhttp3/logging-interceptor/3.8.1/logging-interceptor-3.8.1.jar -o lib/logging-interceptor-3.8.1.jar
-
 libAfter=$(find lib -type f)
 
 set +e 

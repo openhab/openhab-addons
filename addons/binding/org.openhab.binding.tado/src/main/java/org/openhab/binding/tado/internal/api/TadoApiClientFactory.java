@@ -21,15 +21,11 @@ import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
 import org.openhab.binding.tado.internal.api.model.OverlayTerminationCondition;
 import org.openhab.binding.tado.internal.api.model.OverlayTerminationConditionTemplate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import okhttp3.logging.HttpLoggingInterceptor.Level;
 import retrofit2.Retrofit;
 import retrofit2.Retrofit.Builder;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -79,20 +75,5 @@ public class TadoApiClientFactory {
 
         apiClient.addAuthorization("oauth", oauth);
         return apiClient.createService(HomeApi.class);
-    }
-
-    private void configureLogging(ApiClient apiClient) {
-        // Add logging interceptor to HTTP Client if Debug is enabled. Make it configurable?
-        Logger logger = LoggerFactory.getLogger(HomeApi.class);
-        if (logger.isDebugEnabled()) {
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
-                @Override
-                public void log(String msg) {
-                    logger.debug(msg);
-                }
-            });
-            loggingInterceptor.setLevel(Level.BODY);
-            apiClient.getOkBuilder().addNetworkInterceptor(loggingInterceptor);
-        }
     }
 }

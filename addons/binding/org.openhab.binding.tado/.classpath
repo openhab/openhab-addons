@@ -14,7 +14,6 @@
 	<classpathentry kind="lib" path="lib/retrofit-2.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/swagger-annotations-1.5.15.jar"/>
 	<classpathentry kind="lib" path="lib/tado-api-client-1.0.0.jar"/>
-	<classpathentry kind="lib" path="lib/logging-interceptor-3.8.1.jar"/>
 	<classpathentry kind="lib" path="lib/gson-fire-1.8.0.jar"/>
 	<classpathentry kind="lib" path="lib/gson-2.7.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
