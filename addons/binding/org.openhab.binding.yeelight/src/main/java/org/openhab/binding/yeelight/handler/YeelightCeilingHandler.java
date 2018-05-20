@@ -16,6 +16,8 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.yeelight.YeelightBindingConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.openhab.binding.yeelight.YeelightBindingConstants.COLOR_TEMPERATURE_MINIMUM;
 import static org.openhab.binding.yeelight.YeelightBindingConstants.COLOR_TEMPERATURE_STEP;
@@ -27,6 +29,8 @@ import static org.openhab.binding.yeelight.YeelightBindingConstants.COLOR_TEMPER
  * @author Coaster Li (lixin@yeelink.net) - Initial contribution
  */
 public class YeelightCeilingHandler extends YeelightHandlerBase {
+
+    private final Logger logger = LoggerFactory.getLogger(YeelightCeilingHandler.class);
 
     public YeelightCeilingHandler(Thing thing) {
         super(thing);
