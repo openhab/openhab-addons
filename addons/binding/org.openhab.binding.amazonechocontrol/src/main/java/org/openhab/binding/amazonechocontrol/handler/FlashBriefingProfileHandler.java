@@ -29,7 +29,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.StateStorage;
-import org.openhab.binding.amazonechocontrol.internal.discovery.AmazonEchoDiscovery;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,11 +49,9 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
     boolean updatePlayOnDevice = true;
     String currentConfigurationJson = "";
     private @Nullable ScheduledFuture<?> updateStateJob;
-    private final AmazonEchoDiscovery amazonEchoDiscovery;
 
-    public FlashBriefingProfileHandler(Thing thing, AmazonEchoDiscovery amazonEchoDiscovery) {
+    public FlashBriefingProfileHandler(Thing thing) {
         super(thing);
-        this.amazonEchoDiscovery = amazonEchoDiscovery;
         stateStorage = new StateStorage(thing);
     }
 
@@ -87,7 +84,6 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
         if (updateStateJob != null) {
             updateStateJob.cancel(false);
         }
-        removeFromDiscovery();
         super.dispose();
     }
 
@@ -175,7 +171,6 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
             if (configurationJson == null || configurationJson.isEmpty()) {
                 this.currentConfigurationJson = saveCurrentProfile(handler);
             } else {
-                removeFromDiscovery();
                 this.currentConfigurationJson = configurationJson;
             }
             if (!this.currentConfigurationJson.isEmpty()) {
@@ -196,15 +191,10 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
     private String saveCurrentProfile(AccountHandler connection) {
         String configurationJson = "";
         configurationJson = connection.getEnabledFlashBriefingsJson();
-        removeFromDiscovery();
         this.currentConfigurationJson = configurationJson;
         if (!configurationJson.isEmpty()) {
             this.stateStorage.storeState("configurationJson", configurationJson);
         }
         return configurationJson;
-    }
-
-    private void removeFromDiscovery() {
-        amazonEchoDiscovery.removeExistingFlashBriefingProfile(this.currentConfigurationJson);
     }
 }

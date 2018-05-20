@@ -300,7 +300,7 @@ public class Connection {
                 connection = (HttpsURLConnection) new URL(currentUrl).openConnection();
                 connection.setRequestMethod(verb);
                 connection.setRequestProperty("Accept-Language", "en-US");
-                connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0 openHAB/1.0.0.0");
                 connection.setRequestProperty("DNT", "1");
                 connection.setRequestProperty("Upgrade-Insecure-Requests", "1");
                 if (customHeaders != null) {

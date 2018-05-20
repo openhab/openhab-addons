@@ -39,8 +39,6 @@ import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.HttpException;
 import org.openhab.binding.amazonechocontrol.internal.LoginServlet;
 import org.openhab.binding.amazonechocontrol.internal.StateStorage;
-import org.openhab.binding.amazonechocontrol.internal.discovery.AmazonEchoDiscovery;
-import org.openhab.binding.amazonechocontrol.internal.discovery.IAmazonAccountHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
@@ -58,7 +56,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Michael Geramb - Initial Contribution
  */
 @NonNullByDefault
-public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountHandler {
+public class AccountHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private StateStorage stateStorage;
@@ -72,15 +70,12 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
     private boolean discoverFlashProfiles;
     private String currentFlashBriefingJson = "";
     private final HttpService httpService;
-    private final AmazonEchoDiscovery amazonEchoDiscovery;
     private @Nullable LoginServlet loginServlet;
     private final Gson gson = new Gson();
 
-    public AccountHandler(Bridge bridge, HttpService httpService, AmazonEchoDiscovery amazonEchoDiscovery) {
+    public AccountHandler(Bridge bridge, HttpService httpService) {
         super(bridge);
         this.httpService = httpService;
-        this.amazonEchoDiscovery = amazonEchoDiscovery;
-        this.amazonEchoDiscovery.resetDiscoverAccount();
         stateStorage = new StateStorage(bridge);
     }
 
@@ -229,7 +224,6 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
             loginServlet.dispose();
         }
         this.loginServlet = null;
-        this.amazonEchoDiscovery.removeAccountHandler(this);
         cleanup();
         super.dispose();
     }
@@ -351,9 +345,9 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
     }
 
     private void handleValidLogin() {
-        updateDeviceList(false);
+        updateDeviceList();
+        updateFlashBriefingHandlers();
         updateStatus(ThingStatus.ONLINE);
-        this.amazonEchoDiscovery.addAccountHandler(this);
     }
 
     // used to set a valid connection from the web proxy login
@@ -383,7 +377,8 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
             }
 
             // get all devices registered in the account
-            updateDeviceList(false);
+            updateDeviceList();
+            updateFlashBriefingHandlers();
 
             // update bluetooth states
             JsonBluetoothStates states = null;
@@ -441,15 +436,11 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
         return null;
     }
 
-    @Override
-    public void updateDeviceList(boolean manualScan) {
-        if (manualScan) {
-            discoverFlashProfiles = true;
-        }
+    public List<Device> updateDeviceList() {
 
         Connection currentConnection = connection;
         if (currentConnection == null) {
-            return;
+            return new ArrayList<Device>();
         }
 
         List<Device> devices = null;
@@ -469,15 +460,16 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
                 }
             }
             jsonSerialNumberDeviceMapping = newJsonSerialDeviceMapping;
-            amazonEchoDiscovery.setDevices(getThing().getUID(), devices);
         }
         synchronized (echoHandlers) {
             for (EchoHandler child : echoHandlers) {
                 initializeEchoHandler(child, currentConnection);
             }
         }
-
-        updateFlashBriefingHandlers(currentConnection);
+        if (devices != null) {
+            return devices;
+        }
+        return new ArrayList<Device>();
     }
 
     public void setEnabledFlashBriefingsJson(String flashBriefingJson) {
@@ -493,33 +485,32 @@ public class AccountHandler extends BaseBridgeHandler implements IAmazonAccountH
         updateFlashBriefingHandlers();
     }
 
-    public void updateFlashBriefingHandlers() {
-        Connection currentConnection = connection;
-        if (currentConnection != null) {
-            updateFlashBriefingHandlers(currentConnection);
-        }
+    public String getNewCurrentFlashbriefingConfiguration() {
+        discoverFlashProfiles = true;
+        return updateFlashBriefingHandlers();
     }
 
-    private void updateFlashBriefingHandlers(Connection currentConnection) {
+    public String updateFlashBriefingHandlers() {
+        Connection currentConnection = connection;
+        if (currentConnection != null) {
+            return updateFlashBriefingHandlers(currentConnection);
+        }
+        return "";
+    }
+
+    private String updateFlashBriefingHandlers(Connection currentConnection) {
         synchronized (flashBriefingProfileHandlers) {
             if (!flashBriefingProfileHandlers.isEmpty() || currentFlashBriefingJson.isEmpty()) {
                 updateFlashBriefingProfiles(currentConnection);
             }
-
             boolean flashBriefingProfileFound = false;
             for (FlashBriefingProfileHandler child : flashBriefingProfileHandlers) {
                 flashBriefingProfileFound |= child.initialize(this, currentFlashBriefingJson);
             }
-            if (flashBriefingProfileHandlers.isEmpty()) {
-                discoverFlashProfiles = true; // discover at least one device
+            if (flashBriefingProfileFound) {
+                return "";
             }
-            if (discoverFlashProfiles) {
-                discoverFlashProfiles = false;
-                if (!flashBriefingProfileFound) {
-                    amazonEchoDiscovery.discoverFlashBriefingProfiles(getThing().getUID(),
-                            this.currentFlashBriefingJson, this.flashBriefingProfileHandlers.size() + 1);
-                }
-            }
+            return this.currentFlashBriefingJson;
         }
     }
 

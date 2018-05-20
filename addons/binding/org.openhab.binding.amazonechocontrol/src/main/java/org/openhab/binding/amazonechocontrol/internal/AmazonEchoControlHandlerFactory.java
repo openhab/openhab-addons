@@ -10,7 +10,9 @@ package org.openhab.binding.amazonechocontrol.internal;
 
 import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
 
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -18,6 +20,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
@@ -43,10 +46,10 @@ import org.osgi.service.http.HttpService;
 @NonNullByDefault
 public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
 
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
+
     @Nullable
     HttpService httpService;
-    @Nullable
-    AmazonEchoDiscovery amazonEchoDiscovery;
 
     boolean showIdsInGUI;
     @Nullable
@@ -68,17 +71,6 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void deactivate(ComponentContext componentContext) {
         super.deactivate(componentContext);
-        AmazonEchoDiscovery amazonEchoDiscovery = this.amazonEchoDiscovery;
-        if (amazonEchoDiscovery != null) {
-            amazonEchoDiscovery.deactivate();
-        }
-        this.amazonEchoDiscovery = null;
-        @Nullable
-        ServiceRegistration<?> discoverServiceRegistration = this.discoverServiceRegistration;
-        if (discoverServiceRegistration != null) {
-            discoverServiceRegistration.unregister();
-            this.discoverServiceRegistration = null;
-        }
     }
 
     @Override
@@ -89,27 +81,44 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
         if (httpService == null) {
             return null;
         }
-        AmazonEchoDiscovery amazonEchoDiscovery = this.amazonEchoDiscovery;
-        if (amazonEchoDiscovery == null) {
-            amazonEchoDiscovery = new AmazonEchoDiscovery();
-            discoverServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
-                    amazonEchoDiscovery, new Hashtable<String, Object>());
-            amazonEchoDiscovery.activate();
-            this.amazonEchoDiscovery = amazonEchoDiscovery;
-
-        }
 
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
-            AccountHandler bridgeHandler = new AccountHandler((Bridge) thing, httpService, amazonEchoDiscovery);
+
+            AccountHandler bridgeHandler = new AccountHandler((Bridge) thing, httpService);
+            registerDiscoveryService(bridgeHandler);
             return bridgeHandler;
         }
         if (thingTypeUID.equals(THING_TYPE_FLASH_BRIEFING_PROFILE)) {
-            return new FlashBriefingProfileHandler(thing, amazonEchoDiscovery);
+            return new FlashBriefingProfileHandler(thing);
         }
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new EchoHandler(thing, showIdsInGUI);
         }
         return null;
+    }
+
+    private synchronized void registerDiscoveryService(AccountHandler bridgeHandler) {
+        AmazonEchoDiscovery discoveryService = new AmazonEchoDiscovery(bridgeHandler);
+        discoveryService.activate();
+        this.discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), bundleContext
+                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+    }
+
+    @Override
+    protected synchronized void removeHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof AccountHandler) {
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegistrations
+                    .get(thingHandler.getThing().getUID());
+            if (serviceReg != null) {
+                // remove discovery service, if bridge handler is removed
+                AmazonEchoDiscovery service = (AmazonEchoDiscovery) bundleContext.getService(serviceReg.getReference());
+                if (service != null) {
+                    service.deactivate();
+                }
+                serviceReg.unregister();
+                discoveryServiceRegistrations.remove(thingHandler.getThing().getUID());
+            }
+        }
     }
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.DYNAMIC)
