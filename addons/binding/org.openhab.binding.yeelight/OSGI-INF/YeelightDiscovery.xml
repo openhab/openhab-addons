@@ -10,9 +10,11 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.yeelight.internal.discovery.DiscoveryService">
- <implementation class="org.openhab.binding.yeelight.internal.discovery.DiscoveryService"/>
- <service>
-	<provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
-  
- </service>
+	
+	<implementation class="org.openhab.binding.yeelight.internal.discovery.DiscoveryService"/>
+	
+	<service>
+		<provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
+	</service>
+
 </scr:component>

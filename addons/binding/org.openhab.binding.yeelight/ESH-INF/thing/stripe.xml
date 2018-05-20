@@ -20,7 +20,7 @@
 		<label>Brightness</label>
 		<description>The brightness channel allows to control the brightness of a light.
 			It is also possible to switch the light on and off.
-        </description>
+		</description>
 		<category>DimmableLight</category>
 		<tags>
 			<tag>Lighting</tag>
