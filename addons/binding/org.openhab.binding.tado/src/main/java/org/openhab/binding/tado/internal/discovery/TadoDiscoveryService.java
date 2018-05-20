@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -37,7 +39,12 @@ import com.google.common.collect.ImmutableSet;
  * @author Dennis Frommknecht - Initial contribution
  */
 public class TadoDiscoveryService extends AbstractDiscoveryService {
+    private static final int TIMEOUT = 5;
+    private static final long REFRESH = 600;
+
     private final Logger logger = LoggerFactory.getLogger(TadoDiscoveryService.class);
+
+    private ScheduledFuture<?> discoveryFuture;
 
     public final static Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_ZONE,
             THING_TYPE_MOBILE_DEVICE);
@@ -45,8 +52,17 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
     private TadoHomeHandler homeHandler;
 
     public TadoDiscoveryService(TadoHomeHandler tadoHomeHandler) {
-        super(DISCOVERABLE_THING_TYPES_UIDS, 5);
+        super(DISCOVERABLE_THING_TYPES_UIDS, TIMEOUT);
         this.homeHandler = tadoHomeHandler;
+    }
+
+    public void activate() {
+        super.activate(null);
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
     }
 
     @Override
@@ -61,8 +77,20 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        super.startBackgroundDiscovery();
-        startScan();
+        logger.debug("Start Tado background discovery");
+        if (discoveryFuture == null || discoveryFuture.isCancelled()) {
+            logger.debug("Start Scan");
+            discoveryFuture = scheduler.scheduleWithFixedDelay(this::startScan, 30, REFRESH, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        logger.debug("Stop Tado background discovery");
+        if (discoveryFuture != null && !discoveryFuture.isCancelled()) {
+            discoveryFuture.cancel(true);
+            discoveryFuture = null;
+        }
     }
 
     private void discoverZones() {
@@ -76,7 +104,7 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
                 }
             }
         } catch (IOException | TadoClientException e) {
-            logger.error("Could not discover tado zones: {}", e.getMessage(), e);
+            logger.debug("Could not discover tado zones: {}", e.getMessage(), e);
         }
     }
 
@@ -110,7 +138,7 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
                 }
             }
         } catch (IOException | TadoClientException e) {
-            logger.error("Could not discover tado zones: {}", e.getMessage(), e);
+            logger.debug("Could not discover tado zones: {}", e.getMessage(), e);
         }
     }
 

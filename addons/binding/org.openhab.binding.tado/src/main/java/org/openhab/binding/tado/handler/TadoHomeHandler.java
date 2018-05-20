@@ -9,6 +9,8 @@
 package org.openhab.binding.tado.handler;
 
 import java.io.IOException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -40,6 +42,8 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     private TadoApiClient api;
     private Long homeId;
 
+    private ScheduledFuture<?> initializationFuture;
+
     public TadoHomeHandler(Bridge bridge) {
         super(bridge);
     }
@@ -54,6 +58,12 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         configuration = getConfigAs(TadoHomeConfig.class);
         api = new TadoApiClientFactory().create(configuration.username, configuration.password);
 
+        if (this.initializationFuture == null || this.initializationFuture.isDone()) {
+            initializationFuture = scheduler.schedule(this::initializeBridgeStatusAndProperties, 0, TimeUnit.SECONDS);
+        }
+    }
+
+    private void initializeBridgeStatusAndProperties() {
         try {
             // Get user info to verify successful authentication and connection to server
             User user = api.getUserDetails();
@@ -76,13 +86,22 @@ public class TadoHomeHandler extends BaseBridgeHandler {
                     .getTemperatureUnit() ? TemperatureUnit.FAHRENHEIT : TemperatureUnit.CELSIUS;
             updateProperty(TadoBindingConstants.PROPERTY_HOME_TEMPERATURE_UNIT, temperatureUnit.name());
         } catch (IOException | TadoClientException e) {
-            logger.debug("Error accessing tado server: " + e.getMessage(), e);
+            logger.debug("Error accessing tado server: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to server due to " + e.getMessage());
             return;
         }
 
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (this.initializationFuture != null || !this.initializationFuture.isDone()) {
+            this.initializationFuture.cancel(true);
+            this.initializationFuture = null;
+        }
     }
 
     public TadoApiClient getApi() {

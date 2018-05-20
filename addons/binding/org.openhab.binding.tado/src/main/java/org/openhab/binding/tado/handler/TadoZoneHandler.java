@@ -94,12 +94,12 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     }
 
     public Overlay setOverlay(Overlay overlay) throws IOException, TadoClientException {
-        logger.debug("Setting overlay of home " + getHomeId() + " and zone " + getZoneId());
+        logger.debug("Setting overlay of home {} and zone {}", getHomeId(), getZoneId());
         return getApi().setOverlay(getHomeId(), getZoneId(), overlay);
     }
 
     public void removeOverlay() throws IOException, TadoClientException {
-        logger.debug("Removing overlay of home " + getHomeId() + " and zone " + getZoneId());
+        logger.debug("Removing overlay of home {} and zone {}", getHomeId(), getZoneId());
         getApi().removeOverlay(getHomeId(), getZoneId());
     }
 
@@ -218,7 +218,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 return;
             }
 
-            logger.debug("Updating state of home " + getHomeId() + " and zone " + getZoneId());
+            logger.debug("Updating state of home {} and zone {}", getHomeId(), getZoneId());
 
             TadoZoneStateAdapter state = new TadoZoneStateAdapter(zoneState, getTemperatureUnit());
             updateStateIfNotNull(TadoBindingConstants.CHANNEL_ZONE_CURRENT_TEMPERATURE, state.getInsideTemperature());
@@ -271,8 +271,8 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (TadoClientException e) {
-                logger.error("Could not apply HVAC change on home + " + getHomeId() + " and zone " + getZoneId() + ": "
-                        + e.getMessage(), e);
+                logger.error("Could not apply HVAC change on home {} and zone {}: " + e.getMessage(), e, getHomeId(),
+                        getZoneId());
             } finally {
                 updateZoneState(true);
             }

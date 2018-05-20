@@ -1,6 +1,6 @@
 # tado° Binding
 
-The tado° binding integrates devices from [tado°](http://www.tado.com) into openHab.
+The tado° binding integrates devices from [tado°](http://www.tado.com).
 
 It requires a fully functional tado° installation. You can then monitor and control all zone types (Heating, AC, Hot Water) as well as retrieve the HOME/AWAY status of mobile devices.
 
@@ -66,13 +66,13 @@ Name | Type | Description | Read/Write | Zone type
 
 The `RW` items are used to either override the schedule or to return to it (if `hvacMode` is set to `SCHEDULE`).
 
-### Item command collection
+### Item Command Collection
 
 Item changes are not immediately applied, but instead collected and only when no change is done for 5 seconds (by default - see `hvacChangeDebounce` above), the combined HVAC change is sent to the server.
 This way, you can for example set a timer for 15 minutes, with target temperature 22° and mode `HEAT` in one go, without intermediate partial overrides.
 It's still fine to only change one item, like setting the target temperature to 22°, but you have the opportunity to set more items and have less defaults applied.
 
-### Default handling
+### Default Handling
 
 To set an override, the tado° cloud API requires a full setting (`hvacMode`, `targetTemperature`, `fanspeed`, `swing`) and a termination condition (`operationMode`, `timerDuration`). If only some of the properties are set, the binding fills the missing pieces automatically. It tries to keep the current state wherever possible.
 
