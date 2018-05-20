@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="yeelight"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="dolphin">
-        <label>Yeelight White LED Bulb</label>
-        <description>Yeelight White LED Bulb</description>
+	<thing-type id="dolphin">
+		<label>Yeelight White LED Bulb</label>
+		<description>Yeelight White LED Bulb</description>
 
-        <channels>
-            <channel id="brightness" typeId="brightness" />
-        </channels>
-    </thing-type>
+		<channels>
+			<channel id="brightness" typeId="brightness" />
+		</channels>
+	</thing-type>
 
-    <!-- Brightness Channel -->
-    <channel-type id="brightness">
-        <item-type>Dimmer</item-type>
-        <label>Brightness</label>
-        <description>The brightness channel allows to control the brightness of a light.
-            It is also possible to switch the light on and off.
-        </description>
-        <category>DimmableLight</category>
-        <tags>
-            <tag>Lighting</tag>
-        </tags>
-    </channel-type>
+	<!-- Brightness Channel -->
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>The brightness channel allows to control the brightness of a light.
+			It is also possible to switch the light on and off.
+		</description>
+		<category>DimmableLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
 
 </thing:thing-descriptions>
