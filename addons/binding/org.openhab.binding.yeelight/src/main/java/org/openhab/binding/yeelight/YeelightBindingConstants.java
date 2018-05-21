@@ -21,10 +21,10 @@ public class YeelightBindingConstants {
     public static final String BINDING_ID = "yeelight";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_CEILING = new ThingTypeUID(BINDING_ID, "Ceiling");
-    public static final ThingTypeUID THING_TYPE_DOLPHIN = new ThingTypeUID(BINDING_ID, "Dolphin");
-    public static final ThingTypeUID THING_TYPE_WONDER = new ThingTypeUID(BINDING_ID, "Wonder");
-    public static final ThingTypeUID THING_TYPE_STRIPE = new ThingTypeUID(BINDING_ID, "Stripe");
+    public static final ThingTypeUID THING_TYPE_CEILING = new ThingTypeUID(BINDING_ID, "ceiling");
+    public static final ThingTypeUID THING_TYPE_DOLPHIN = new ThingTypeUID(BINDING_ID, "dolphin");
+    public static final ThingTypeUID THING_TYPE_WONDER = new ThingTypeUID(BINDING_ID, "wonder");
+    public static final ThingTypeUID THING_TYPE_STRIPE = new ThingTypeUID(BINDING_ID, "stripe");
 
     // List of all Channel ids
     public static final String CHANNEL_BRIGHTNESS = "brightness";

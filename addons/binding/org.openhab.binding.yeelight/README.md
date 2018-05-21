@@ -69,11 +69,11 @@ Description: This channel supports adjusting the color temperature, only part of
 Things:
 
 ```
-Thing yeelight:Stripe:deviceId
+Thing yeelight:stripe:deviceId
 ```
 
 Items:
 
 ```
-Dimmer Brightness { channel="yeelight:Stripe:deviceId:Brightness" }
+Dimmer Brightness { channel="yeelight:stripe:deviceId:Brightness" }
 ```
