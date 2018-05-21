@@ -8,16 +8,8 @@
  */
 package org.openhab.binding.yeelight.handler;
 
-import com.yeelight.sdk.device.ConnectState;
-import com.yeelight.sdk.device.DeviceBase;
-import com.yeelight.sdk.device.DeviceFactory;
-import com.yeelight.sdk.device.DeviceStatus;
-import com.yeelight.sdk.enums.DeviceAction;
-import com.yeelight.sdk.enums.DeviceMode;
-import com.yeelight.sdk.enums.DeviceType;
-import com.yeelight.sdk.listeners.DeviceConnectionStateListener;
-import com.yeelight.sdk.listeners.DeviceStatusChangeListener;
-import com.yeelight.sdk.services.DeviceManager;
+import static org.openhab.binding.yeelight.YeelightBindingConstants.*;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -34,8 +26,16 @@ import org.openhab.binding.yeelight.YeelightBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openhab.binding.yeelight.YeelightBindingConstants.COLOR_TEMPERATURE_MINIMUM;
-import static org.openhab.binding.yeelight.YeelightBindingConstants.COLOR_TEMPERATURE_STEP;
+import com.yeelight.sdk.device.ConnectState;
+import com.yeelight.sdk.device.DeviceBase;
+import com.yeelight.sdk.device.DeviceFactory;
+import com.yeelight.sdk.device.DeviceStatus;
+import com.yeelight.sdk.enums.DeviceAction;
+import com.yeelight.sdk.enums.DeviceMode;
+import com.yeelight.sdk.enums.DeviceType;
+import com.yeelight.sdk.listeners.DeviceConnectionStateListener;
+import com.yeelight.sdk.listeners.DeviceStatusChangeListener;
+import com.yeelight.sdk.services.DeviceManager;
 
 /**
  * The {@link YeelightHandlerBase} is responsible for handling commands, which are
@@ -83,8 +83,6 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         }
     }
 
-
-
     @Override
     public void onConnectionStateChanged(ConnectState connectState) {
         logger.debug("onConnectionStateChanged -> {}", connectState.name());
@@ -108,7 +106,7 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        logger.debug("ChannelLinked -> {}",channelUID.getId());
+        logger.debug("ChannelLinked -> {}", channelUID.getId());
         super.channelLinked(channelUID);
 
         if (channelUID.getId().equals(YeelightBindingConstants.CHANNEL_BRIGHTNESS)) {
@@ -199,8 +197,6 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
             DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(), baction);
         }
     }
-
-
 
     @Override
     public void onStatusChanged(String prop, DeviceStatus status) {
