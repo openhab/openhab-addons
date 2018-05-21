@@ -17,7 +17,7 @@
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host address</label>
-				<context>network_address</context>
+				<context>network-address</context>
 				<description>The host address of the Hyperion server JSON API.</description>
 				<required>true</required>
 			</parameter>
@@ -65,7 +65,7 @@
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host address</label>
-				<context>network_address</context>
+				<context>network-address</context>
 				<description>The host address of the Hyperion server JSON API.</description>
 				<required>true</required>
 			</parameter>
