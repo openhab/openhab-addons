@@ -95,8 +95,7 @@ Thing hyperion:serverNG:myServer [ host="192.168.0.10", port=19444, priority=50,
 Dimmer Brightness 			"Brightness [%s]" 	{ channel="hyperion:serverV1:myServer:brightness"}
 String Effect				"Current effect [%s]" 	{ channel="hyperion:serverV1:myServer:effect"}
 Color MyColor				"Color"	 { channel="hyperion:serverV1:myServer:color"}
-Switch ClearAllSwitch		"Clear all priorities" { channel="hyperion:serverV1:myServer:clear_all"}
-Switch ClearSwitch          "Clear priority"  { channel="hyperion:serverV1:myServer:clear"}
+String Clear          "Clear priority"  { channel="hyperion:serverV1:myServer:clear"}
 ```
 
 ```
@@ -122,8 +121,7 @@ sitemap demo label="Main Menu" {
         Frame  {
                	Slider item=Brightness
 				Selection item=Effect mappings=['Knight rider' = 'Knight rider', 'Red mood blobs'='Red mood blobs']
-				Switch item=ClearAllSwitch
-				Switch item=ClearSwitch
+				Text item=Clear
 				Colorpicker item=MyColor
 				
 				Switch item=HyperionEnabled
