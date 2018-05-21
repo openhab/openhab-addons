@@ -26,7 +26,7 @@ import static org.openhab.binding.yeelight.YeelightBindingConstants.COLOR_TEMPER
  * The {@link YeelightCeilingHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Coaster Li (lixin@yeelink.net) - Initial contribution
+ * @author Coaster Li - Initial contribution
  */
 public class YeelightCeilingHandler extends YeelightHandlerBase {
 

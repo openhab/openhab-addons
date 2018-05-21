@@ -41,7 +41,7 @@ import static org.openhab.binding.yeelight.YeelightBindingConstants.COLOR_TEMPER
  * The {@link YeelightHandlerBase} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Coaster Li (lixin@yeelink.net) - Initial contribution
+ * @author Coaster Li - Initial contribution
  */
 public abstract class YeelightHandlerBase extends BaseThingHandler
         implements DeviceConnectionStateListener, DeviceStatusChangeListener {
@@ -117,7 +117,7 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
-                    logger.warn("Sleep interrupted setting channel brightness", e);
+                    logger.debug("Sleep interrupted setting channel brightness", e);
                 }
                 mDevice.queryStatus();
             };

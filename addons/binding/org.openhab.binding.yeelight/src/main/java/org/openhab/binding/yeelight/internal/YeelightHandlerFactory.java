@@ -23,8 +23,9 @@ import java.util.Set;
 import static org.openhab.binding.yeelight.YeelightBindingConstants.*;
 
 /**
+ * The {@link YeelightHandlerFactory} is responsible for returning supported things and handlers for the devices.
  *
- * @author Coaster Li (lixin@yeelink.net) - Initial contribution
+ * @author Coaster Li - Initial contribution
  */
 public class YeelightHandlerFactory extends BaseThingHandlerFactory {
 

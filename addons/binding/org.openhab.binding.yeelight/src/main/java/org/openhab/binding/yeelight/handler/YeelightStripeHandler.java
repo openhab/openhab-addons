@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * The {@link YeelightStripeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Coaster Li (lixin@yeelink.net) - Initial contribution
+ * @author Coaster Li - Initial contribution
  */
 public class YeelightStripeHandler extends YeelightHandlerBase {
 
@@ -47,27 +47,20 @@ public class YeelightStripeHandler extends YeelightHandlerBase {
             case YeelightBindingConstants.CHANNEL_BRIGHTNESS:
                 handleBrightnessChannelCommand(channelUID,command);
                 break;
-
             case YeelightBindingConstants.CHANNEL_COLOR:
                 handleColorChannelCommand(channelUID, command);
                 break;
             case YeelightBindingConstants.CHANNEL_COLOR_TEMPERATURE:
                 handleColorTemperatureChannelCommand(channelUID, command);
                 break;
-
             default:
                 break;
         }
     }
-
-
-
 
     @Override
     protected void updateUI(DeviceStatus status) {
         super.updateUI(status);
         updateBrightnessAndColorUI(status);
     }
-
-
 }

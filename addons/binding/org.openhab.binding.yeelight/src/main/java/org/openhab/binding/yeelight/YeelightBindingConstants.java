@@ -14,7 +14,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * The {@link YeelightBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Coaster Li (lixin@yeelink.net) - Initial contribution
+ * @author Coaster Li - Initial contribution
  */
 public class YeelightBindingConstants {
 

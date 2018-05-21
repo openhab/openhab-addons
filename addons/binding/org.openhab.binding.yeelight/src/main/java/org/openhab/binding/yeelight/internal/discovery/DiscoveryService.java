@@ -22,8 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * The {@link DiscoveryService} is responsible for search and discovery of new devices.
  *
- * @author Coaster Li (lixin@yeelink.net) - Initial contribution
+ * @author Coaster Li - Initial contribution
  */
 public class DiscoveryService extends AbstractDiscoveryService implements DeviceListener {
 

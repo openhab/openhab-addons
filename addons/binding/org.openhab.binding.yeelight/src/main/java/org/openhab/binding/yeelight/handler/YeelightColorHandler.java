@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * The {@link YeelightColorHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Coaster Li (lixin@yeelink.net) - Initial contribution
+ * @author Coaster Li - Initial contribution
  */
 public class YeelightColorHandler extends YeelightHandlerBase {
 
