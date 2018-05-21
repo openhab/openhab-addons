@@ -98,13 +98,13 @@ public class HyperionNgHandler extends BaseThingHandler {
                 if (response.isSuccess()) {
                     handleServerInfoResponse(response);
                 }
-                updateOnlineStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                updateOnlineStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
             } catch (IOException e) {
-                updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (JsonParseException e) {
-                logger.warn("{}", e.getMessage(), e);
+                logger.debug("{}", e.getMessage(), e);
             } catch (CommandUnsuccessfulException e) {
-                logger.warn("Server rejected the command: {}", e.getMessage());
+                logger.debug("Server rejected the command: {}", e.getMessage());
             }
         }
     };
@@ -115,10 +115,10 @@ public class HyperionNgHandler extends BaseThingHandler {
             try {
                 if (!connection.isConnected()) {
                     connection.connect();
-                    updateOnlineStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                    updateOnlineStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
                 }
             } catch (IOException e) {
-                updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     };
@@ -143,8 +143,8 @@ public class HyperionNgHandler extends BaseThingHandler {
             connectFuture = scheduler.scheduleWithFixedDelay(connectionJob, 0, refreshInterval, TimeUnit.SECONDS);
             refreshFuture = scheduler.scheduleWithFixedDelay(refreshJob, 0, refreshInterval, TimeUnit.SECONDS);
         } catch (UnknownHostException e) {
-            logger.warn("Could not resolve host: {}", e.getMessage());
-            updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            logger.debug("Could not resolve host: {}", e.getMessage());
+            updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -349,9 +349,9 @@ public class HyperionNgHandler extends BaseThingHandler {
                 handleComponentEnabled(channelUID.getId(), command);
             }
         } catch (IOException e) {
-            updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (CommandUnsuccessfulException e) {
-            logger.warn("Server rejected the command: {}", e.getMessage());
+            logger.debug("Server rejected the command: {}", e.getMessage());
         }
     }
 
@@ -394,7 +394,7 @@ public class HyperionNgHandler extends BaseThingHandler {
             ComponentStateCommand stateCommand = new ComponentStateCommand(componentState);
             sendCommand(stateCommand);
         } else {
-            logger.warn("Channel {} unable to process command {}", channel, command.toString());
+            logger.debug("Channel {} unable to process command {}", channel, command);
         }
     }
 
@@ -407,7 +407,7 @@ public class HyperionNgHandler extends BaseThingHandler {
             ComponentStateCommand stateCommand = new ComponentStateCommand(componentState);
             sendCommand(stateCommand);
         } else {
-            logger.warn("Channel {} unable to process command {}", CHANNEL_HYPERION_ENABLED, command.toString());
+            logger.debug("Channel {} unable to process command {}", CHANNEL_HYPERION_ENABLED, command);
         }
     }
 
@@ -422,7 +422,7 @@ public class HyperionNgHandler extends BaseThingHandler {
             AdjustmentCommand brightnessCommand = new AdjustmentCommand(adjustment);
             sendCommand(brightnessCommand);
         } else {
-            logger.warn("Channel {} unable to process command {}", CHANNEL_BRIGHTNESS, command.toString());
+            logger.debug("Channel {} unable to process command {}", CHANNEL_BRIGHTNESS, command);
         }
     }
 
@@ -438,7 +438,7 @@ public class HyperionNgHandler extends BaseThingHandler {
             colorCommand.setOrigin(origin);
             sendCommand(colorCommand);
         } else {
-            logger.warn("Channel {} unable to process command {}", CHANNEL_COLOR, command.toString());
+            logger.debug("Channel {} unable to process command {}", CHANNEL_COLOR, command);
         }
     }
 
@@ -453,7 +453,7 @@ public class HyperionNgHandler extends BaseThingHandler {
 
             sendCommand(effectCommand);
         } else {
-            logger.warn("Channel {} unable to process command {}", CHANNEL_EFFECT, command.toString());
+            logger.debug("Channel {} unable to process command {}", CHANNEL_EFFECT, command);
         }
 
     }
@@ -472,12 +472,12 @@ public class HyperionNgHandler extends BaseThingHandler {
         }
     }
 
-    private void updateOnlineStatus(ThingStatus status, ThingStatusDetail detail) {
+    private void updateOnlineStatus(ThingStatus status, ThingStatusDetail detail, String message) {
         ThingStatusInfo currentStatusInfo = thing.getStatusInfo();
         ThingStatus currentStatus = currentStatusInfo.getStatus();
         ThingStatusDetail currentDetail = currentStatusInfo.getStatusDetail();
         if (!currentStatus.equals(status) || !currentDetail.equals(detail)) {
-            updateStatus(status, detail);
+            updateStatus(status, detail, message);
         }
     }
 

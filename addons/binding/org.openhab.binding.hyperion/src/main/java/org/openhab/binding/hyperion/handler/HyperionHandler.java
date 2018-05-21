@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.HSBType;
-import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -84,12 +83,12 @@ public class HyperionHandler extends BaseThingHandler {
                     handleServerInfoResponse(response);
                 }
             } catch (IOException e) {
-                logger.warn("Could not connect to server.");
-                updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                logger.debug("Could not connect to server.");
+                updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (JsonParseException e) {
-                logger.warn("{}", e.getMessage(), e);
+                logger.debug("{}", e.getMessage(), e);
             } catch (CommandUnsuccessfulException e) {
-                logger.warn("Server rejected the command: {}", e.getMessage());
+                logger.debug("Server rejected the command: {}", e.getMessage());
             }
         }
     };
@@ -100,11 +99,11 @@ public class HyperionHandler extends BaseThingHandler {
             try {
                 if (!connection.isConnected()) {
                     connection.connect();
-                    updateOnlineStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                    updateOnlineStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
                 }
             } catch (IOException e) {
-                logger.warn("Could not connect to server.");
-                updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                logger.debug("Could not connect to server.");
+                updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     };
@@ -192,8 +191,8 @@ public class HyperionHandler extends BaseThingHandler {
             connectFuture = scheduler.scheduleWithFixedDelay(connectionJob, 0, refreshInterval, TimeUnit.SECONDS);
             refreshFuture = scheduler.scheduleWithFixedDelay(refreshJob, 0, refreshInterval, TimeUnit.SECONDS);
         } catch (UnknownHostException e) {
-            logger.warn("Could not resolve host: {}", e.getMessage());
-            updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            logger.debug("Could not resolve host: {}", e.getMessage());
+            updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -234,9 +233,9 @@ public class HyperionHandler extends BaseThingHandler {
                 handleEffect(command);
             }
         } catch (IOException e) {
-            logger.warn("Unable to send command: {}", command.toString());
+            logger.debug("Unable to send command: {}", command);
         } catch (CommandUnsuccessfulException e) {
-            logger.warn("Server rejected the command: {}", e.getMessage());
+            logger.debug("Server rejected the command: {}", e.getMessage());
         }
     }
 
@@ -248,7 +247,7 @@ public class HyperionHandler extends BaseThingHandler {
             EffectCommand effectCommand = new EffectCommand(effect, priority);
             sendCommand(effectCommand);
         } else {
-            logger.warn("Channel {} unable to process command {}", CHANNEL_EFFECT, command.toString());
+            logger.debug("Channel {} unable to process command {}", CHANNEL_EFFECT, command);
         }
     }
 
@@ -259,10 +258,8 @@ public class HyperionHandler extends BaseThingHandler {
             transform.setLuminanceGain(percent.doubleValue() / 100);
             TransformCommand transformCommand = new TransformCommand(transform);
             sendCommand(transformCommand);
-        } else if (command instanceof IncreaseDecreaseType) {
-            logger.warn("Channel {} unable to process command {}", CHANNEL_BRIGHTNESS, command.toString());
         } else {
-            logger.warn("Channel {} unable to process command {}", CHANNEL_BRIGHTNESS, command.toString());
+            logger.debug("Channel {} unable to process command {}", CHANNEL_BRIGHTNESS, command);
         }
     }
 
@@ -277,7 +274,7 @@ public class HyperionHandler extends BaseThingHandler {
             ColorCommand colorCommand = new ColorCommand(r, g, b, priority);
             sendCommand(colorCommand);
         } else {
-            logger.warn("Channel {} unable to process command {}", CHANNEL_COLOR, command.toString());
+            logger.debug("Channel {} unable to process command {}", CHANNEL_COLOR, command);
         }
     }
 
@@ -305,11 +302,11 @@ public class HyperionHandler extends BaseThingHandler {
         return response;
     }
 
-    private void updateOnlineStatus(ThingStatus status, ThingStatusDetail detail) {
+    private void updateOnlineStatus(ThingStatus status, ThingStatusDetail detail, String message) {
         ThingStatus current = thing.getStatus();
         ThingStatusDetail currentDetail = thing.getStatusInfo().getStatusDetail();
         if (!current.equals(status) || !currentDetail.equals(detail)) {
-            updateStatus(status, detail);
+            updateStatus(status, detail, message);
         }
     }
 }
