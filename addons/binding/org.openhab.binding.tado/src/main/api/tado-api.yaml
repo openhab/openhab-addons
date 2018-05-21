@@ -1,0 +1,953 @@
+---
+swagger: '2.0'
+
+info:
+  version: v2
+  title: tado° API
+
+host: my.tado.com
+basePath: /api/v2
+schemes:
+  - https
+produces:
+  - application/json
+consumes:
+  - application/json
+
+tags:
+ - name: home
+   description: Operations that query and control tado° homes.
+
+securityDefinitions:
+  oauth:
+    type: oauth2
+    flow: password
+    tokenUrl: https://auth.tado.com/oauth/token
+    scopes:
+      identity:read: read the identity
+      home.details:read:  read home details
+      home.operation:read: read home operation
+      home.operation.overlay:read: read home overlay
+      home.operation.overlay:write: write home overlay
+
+paths:
+  /me:
+    get:
+      operationId: showUser
+      summary: Details about the currently logged in user
+      tags:
+      - home
+      security:
+      - oauth:
+        - identity:read
+      description: This will return details about the currently logged in user.
+      responses:
+        200:
+          description: User details
+          schema:
+            $ref: "#/definitions/User"
+        401:
+          $ref: "#/responses/Unauthorized"
+
+  /homes/{home_id}:
+    get:
+      operationId: showHome
+      summary: Details about a specific home.
+      tags:
+      - home
+      security:
+      - oauth:
+        - home.details:read
+      description: This will return the details of the specified home.
+      parameters:
+      - $ref: "#/parameters/homeID"
+      responses:
+        200:
+          description: Home details
+          schema:
+            $ref: "#/definitions/HomeInfo"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/AccessDenied"
+        404:
+          $ref: "#/responses/NotFound"
+
+  /homes/{home_id}/zones:
+    get:
+      operationId: listZones
+      summary: List all zones of a home.
+      tags:
+      - home
+      security:
+      - oauth:
+        - home.details:read
+      description: This will return a list of zones that are associated with a home.
+      parameters:
+      - $ref: "#/parameters/homeID"
+      responses:
+        200:
+          description: List of zones
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Zone"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/AccessDenied"
+        404:
+          $ref: "#/responses/NotFound"
+
+  /homes/{home_id}/zones/{zone_id}/state:
+    get:
+      operationId: showZoneState
+      summary: State of a zone.
+      tags:
+      - home
+      security:
+      - oauth:
+        - home.operation:read
+      description: This will return the current state of the specified zone.
+      parameters:
+      - $ref: "#/parameters/homeID"
+      - $ref: "#/parameters/zoneID"
+      responses:
+        200:
+          description: Zone state.
+          schema:
+            $ref: "#/definitions/ZoneState"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/AccessDenied"
+        404:
+          $ref: "#/responses/NotFound"
+
+  /homes/{home_id}/zones/{zone_id}/details:
+    get:
+      operationId: showZoneDetails
+      summary: Details of a zone.
+      tags:
+      - home
+      security:
+      - oauth:
+        - home.operation:read
+      parameters:
+      - $ref: "#/parameters/homeID"
+      - $ref: "#/parameters/zoneID"
+      responses:
+        200:
+          description: Zone details.
+          schema:
+            $ref: "#/definitions/Zone"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/AccessDenied"
+        404:
+          $ref: "#/responses/NotFound"
+
+  /homes/{home_id}/zones/{zone_id}/defaultOverlay:
+    get:
+      operationId: showZoneDefaultOverlay
+      summary: Preferences for default overlay. If an overlay is created without a termination condition (e.g through the device UI), the given termination condition is taken for this overlay.
+      tags:
+      - home
+      security:
+      - oauth:
+        - home.operation:read
+      parameters:
+      - $ref: "#/parameters/homeID"
+      - $ref: "#/parameters/zoneID"
+      responses:
+        200:
+          description: Preferences for default overlay.
+          schema:
+            $ref: "#/definitions/OverlayTemplate"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/AccessDenied"
+        404:
+          $ref: "#/responses/NotFound"
+
+  /homes/{home_id}/zones/{zone_id}/overlay:
+    get:
+      operationId: showZoneOverlay
+      summary: Overlay of a zone
+      tags:
+      - home
+      security:
+      - oauth:
+        - home.operation.overlay:read
+      description: This will return the current overlay of the specified zone.
+      parameters:
+      - $ref: "#/parameters/homeID"
+      - $ref: "#/parameters/zoneID"
+      responses:
+        200:
+          description: Zone overlay.
+          schema:
+            $ref: "#/definitions/Overlay"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/AccessDenied"
+        404:
+          $ref: "#/responses/NotFound"
+
+    put:
+      operationId: updateZoneOverlay
+      summary: Set a new overlay
+      tags:
+      - home
+      security:
+      - oauth:
+        - home.operation.overlay:write
+      description: This will set the overlay for the specified zone of a home.
+      parameters:
+      - $ref: "#/parameters/homeID"
+      - $ref: "#/parameters/zoneID"
+      - name: json
+        in: body
+        description: The new overlay settings.
+        required: true
+        schema:
+          $ref: "#/definitions/Overlay"
+      responses:
+        200:
+          description: Zone overlay.
+          schema:
+            $ref: "#/definitions/Overlay"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/AccessDenied"
+        404:
+          $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
+
+    delete:
+      operationId: deleteZoneOverlay
+      summary: Delete an overlay
+      tags:
+      - home
+      security:
+      - oauth:
+        - home.operation.overlay:write
+      description: This will delete the overlay for the specified zone of a home.
+      parameters:
+      - $ref: "#/parameters/homeID"
+      - $ref: "#/parameters/zoneID"
+      responses:
+        204:
+          description: Overlay successfully deleted.
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/AccessDenied"
+        404:
+          $ref: "#/responses/NotFound"
+
+  /homes/{home_id}/zones/{zone_id}/capabilities:
+    get:
+      operationId: showZoneCapabilities
+      summary: Capabilities of a zone
+      tags:
+      - home
+      security:
+      - oauth:
+        - home.details:read
+      description: This will return the capabilities of the specified zone.
+      parameters:
+      - $ref: "#/parameters/homeID"
+      - $ref: "#/parameters/zoneID"
+      responses:
+        200:
+          description: Zone capabilities.
+          schema:
+            $ref: "#/definitions/GenericZoneCapabilities"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/AccessDenied"
+        404:
+          $ref: "#/responses/NotFound"
+
+  /homes/{home_id}/mobileDevices:
+    get:
+      operationId: listMobileDevices
+      summary: List all mobile devices associated with this home.
+      tags:
+      - home
+      security:
+      - oauth:
+        - home.details:read
+      parameters:
+      - $ref: "#/parameters/homeID"
+      responses:
+        200:
+          description: (Potentially empty) list of mobile devices associated with this home.
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/MobileDevice"
+            minItems: 0
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/AccessDenied"
+        404:
+          $ref: "#/responses/NotFound"
+
+definitions:
+  User:
+    type: object
+    properties:
+      name:
+        description: Full name of the user.
+        type: string
+      id:
+        description: Unique indentifier of the user.
+        type: string
+      email:
+        description: Email of the user.
+        type: string
+      username:
+        description: Username of the user.
+        type: string
+      homes:
+        description: List of Homes of the user, with their IDs.
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              description: The ID of the home
+              type: integer
+              format: int32
+      locale:
+        description: Locale string
+        type: string
+    required:
+    - name
+    - email
+    - username
+    
+  HomeInfo:
+    type: object
+    properties:
+      id:
+        description: ID of the home.
+        type: integer
+        format: int32
+      name:
+        description: User defined name for the home.
+        type: string
+      dateTimeZone:
+        description: Time zone ID of the home time zone.
+        type: string
+      temperatureUnit:
+        description: The preferred temperature unit of the home.
+        $ref: "#/definitions/TemperatureUnit"
+      geolocation:
+        description: The geolocation of this home. Absent, if the OAuth scope `home.contact:read` is not granted.
+        $ref: '#/definitions/Geolocation'
+      awayRadiusInMeters:
+        description: Distance from home geolocation at which user geolocation is considered away
+        type: number
+        format: double
+    required:
+    - id
+    - name
+    - dateTimeZone
+    - temperatureUnit
+    - awayRadiusInMeters
+
+  TadoSystemType:
+    description: The system type of the zone.
+    type: string
+    enum:
+    - HEATING
+    - AIR_CONDITIONING
+    - HOT_WATER
+    readOnly: true
+
+  Zone:
+    type: object
+    properties:
+      id:
+        description: ID of the zone.
+        type: integer
+        format: int32
+        readOnly: true
+      name:
+        description: User defined name for the zone.
+        type: string
+      type:
+        $ref: "#/definitions/TadoSystemType"
+    required:
+    - id
+    - name
+    - type
+
+  Power:
+    type: string
+    description: General use enum to indicate on/off state.
+    enum:
+    - 'ON'
+    - 'OFF'
+
+  GenericZoneSetting:
+    type: object
+    discriminator: type
+    properties:
+      type:
+        $ref: "#/definitions/TadoSystemType"
+    required:
+    - type
+
+  HeatingZoneSetting:
+    allOf:
+    - $ref: "#/definitions/GenericZoneSetting"
+    - properties:
+        power:
+          description: Whether the heating should be ON or OFF.
+          $ref: "#/definitions/Power"
+        temperature:
+          description: The desired temperature, if power is `ON`.
+          $ref: "#/definitions/TemperatureObject"
+      required:
+      - power
+
+  AcFanSpeed:
+    type: string
+    description: Cooling system fan speed.
+    enum:
+    - LOW
+    - MIDDLE
+    - HIGH
+    - AUTO
+
+  AcMode:
+    type: string
+    description: Cooling system mode.
+    enum:
+    - COOL
+    - HEAT
+    - DRY
+    - FAN
+    - AUTO
+
+  CoolingZoneSetting:
+    allOf:
+    - $ref: "#/definitions/GenericZoneSetting"
+    - properties:
+        power:
+          description: Whether the AC should be ON or OFF.
+          $ref: "#/definitions/Power"
+        mode:
+          description: The desired AC mode, if power is `ON`.
+          $ref: "#/definitions/AcMode"
+        temperature:
+          description: The desired temperature, if power is `ON` and temperatures are supported in this AC mode.
+          $ref: "#/definitions/TemperatureObject"
+        fanSpeed:
+          description: The desired fan speed, if power is `ON` and fan speeds are supported in this AC mode.
+          $ref: "#/definitions/AcFanSpeed"
+        swing:
+          description: Whether the angle of the air stream should be fixed or not, if power is `ON` and configuring this is supported in this AC mode.
+          $ref: "#/definitions/Power"
+      required:
+      - power
+
+  HotWaterZoneSetting:
+    allOf:
+    - $ref: "#/definitions/GenericZoneSetting"
+    - properties:
+        power:
+          description: Whether domestic hot water should be produced or not.
+          $ref: "#/definitions/Power"
+        temperature:
+          description: The desired hot water temperature, if power is `ON`. Only available if setting a temperature for hot water is supported by the heating setup.
+          $ref: "#/definitions/TemperatureObject"
+      required:
+      - power
+
+  ActivityDataPoints:
+    type: object
+    properties:
+      heatingPower:
+        $ref: "#/definitions/PercentageDataPoint"
+
+  SensorDataPoints:
+    type: object
+    properties:
+      insideTemperature:
+        $ref: "#/definitions/TemperatureDataPoint"
+      humidity:
+        $ref: "#/definitions/PercentageDataPoint"
+
+  TemperatureDataPoint:
+    type: object
+    properties:
+      timestamp:
+        description: Measurement timestamp
+        type: string
+        format: date-time
+      celsius:
+        description: The temperature in celsius.
+        type: number
+        format: float
+      fahrenheit:
+        description: The temperature in fahrenheit.
+        type: number
+        format: float
+    required:
+    - timestamp
+
+  PercentageDataPoint:
+    type: object
+    properties:
+      timestamp:
+        description: Measurement timestamp
+        type: string
+        format: date-time
+      percentage:
+        description: Relative value (0-100)
+        type: number
+        format: float
+        minimum: 0.0
+        maximum: 100.0
+    required:
+    - timestamp
+    - percentage
+
+  TadoMode:
+    type: string
+    enum:
+    - HOME
+    - SLEEP
+    - AWAY
+
+  Preparation:
+    description: Contains preparation target if tado is preparing for an upcoming mode, otherwise null.
+    type: object
+    properties:
+      tadoMode:
+        $ref: "#/definitions/TadoMode"
+      end:
+        type: string
+        format: date-time
+      setting:
+        $ref: "#/definitions/GenericZoneSetting"
+    required:
+    - tadoMode
+    - end
+    - setting
+
+  OverlayTerminationConditionType:
+    type: string
+    description: |
+      When the overlay terminates.
+      `MANUAL`: only when manually removed,
+      `TADO_MODE`: when the current tado mode or the block schedule setting changes,
+      `TIMER`: at a fixed point in time.
+    enum:
+    - MANUAL
+    - TADO_MODE
+    - TIMER
+
+  ZoneState:
+    type: object
+    properties:
+      tadoMode:
+        description: The current tado mode of the zone.
+        $ref: "#/definitions/TadoMode"
+      preparation:
+        description: Contains preparation target if tado is preparing for an upcoming mode, otherwise null.
+        $ref: "#/definitions/Preparation"
+      geolocationOverride:
+        description: Whether the geolocation is detected (through the geolocations of the app users) or overridden (by "always active" blocks of the block schedule).
+        type: boolean
+      overlay:
+        description: The currently active overlay for the zone, `null` if none.
+        $ref: "#/definitions/Overlay"
+      openWindow:
+        description: The currently active open window for the zone, `null` if none.
+        $ref: "#/definitions/OpenWindow"
+      setting:
+        description: Current setting of the zone.
+        $ref: "#/definitions/GenericZoneSetting"
+      link:
+        description: Link object of current zone connection.
+        $ref: "#/definitions/Link"
+      activityDataPoints:
+        $ref: "#/definitions/ActivityDataPoints"
+      sensorDataPoints:
+        $ref: "#/definitions/SensorDataPoints"
+    required:
+    - tadoMode
+    - preparation
+    - geolocationOverride
+    - setting
+    - link
+    - activityDataPoints
+    - sensorDataPoints
+
+  Overlay:
+    type: object
+    properties:
+      setting:
+        description: Current setting of the zone.
+        $ref: "#/definitions/GenericZoneSetting"
+      termination:
+        description: The condition when the overlay is removed. Mandatory (except when 'type' is set, for backward compatibility reasons, see description for 'type').
+        $ref: "#/definitions/OverlayTerminationCondition"
+    required:
+    - setting
+
+  OverlayTerminationCondition:
+    type: object
+    discriminator: type
+    properties:
+      type:
+        $ref: "#/definitions/OverlayTerminationConditionType"
+      projectedExpiry:
+        description: |
+          [ISO8601 datetime](https://en.wikipedia.org/wiki/ISO_8601). E.g. `2015-09-28T15:03:20Z` with second precision.
+          Only relevant when receiving an overlay, ignored when overlay is sent to the server. Indicates the expected time of
+          termination for this overlay, if no app user moves. `null` means that the overlay never expires (by itself, unless manully removed).
+        type: string
+        format: date-time
+        readOnly: true
+    required:
+    - type
+
+  ManualTerminationCondition:
+    description: The overlay only terminates when it is manually removed.
+    allOf:
+    - $ref: "#/definitions/OverlayTerminationCondition"
+
+  TadoModeTerminationCondition:
+    description: The overlay terminates when the tado mode changes or when the setting (power, temperature, ...) of the underlying block schedule changes (or when removed manually).
+    allOf:
+    - $ref: "#/definitions/OverlayTerminationCondition"
+
+  TimerTerminationCondition:
+    description: The overlay terminates at a certain point in time (or when removed manually).
+    allOf:
+    - $ref: "#/definitions/OverlayTerminationCondition"
+    - properties:
+        durationInSeconds:
+          description: The number of seconds that the overlay should last/was configured to last.
+          type: integer
+          minimum: 0
+        expiry:
+          description: |
+            [ISO8601 datetime](https://en.wikipedia.org/wiki/ISO_8601). E.g.: `2015-09-28T15:03:20Z` with second precision.
+            Only relevant when receiving an overlay, ignored when overlay is sent to the server.
+          type: string
+          format: date-time
+          readOnly: true
+        remainingTimeInSeconds:
+          description: The number of seconds that are remaining of the timer overlay at the time that the response is assembled by the server.
+          type: integer
+          minimum: 0
+      required:
+      - durationInSeconds
+
+  OpenWindow:
+    description: The open window expires at a certain point in time (or when ignored).
+    properties:
+      durationInSeconds:
+        description: The number of seconds that the open window should last/was configured to last.
+        type: integer
+        minimum: 0
+      expiry:
+        description: ISO8601 datetime, e.g. `2015-09-28T15:03:20Z` with second precision.
+        type: string
+        format: date-time
+      remainingTimeInSeconds:
+        description: The number of seconds that are remaining of the open window at the time that the response is assembled by the server.
+        type: integer
+        minimum: 0
+
+  OverlayTemplate:
+    description: The from which an instance of an overlay can be created. It is used to set default values not provided when creating an overlay.
+    type: object
+    properties:
+      terminationCondition:
+        $ref: "#/definitions/OverlayTerminationConditionTemplate"
+    required:
+    - terminationCondition
+
+  OverlayTerminationConditionTemplate:
+    type: object
+    description: A template to be used e.g. as a default for an overlay's termination condition. See `OverlayTerminationCondition` definition for more info.
+    discriminator: type
+    properties:
+      type:
+        $ref: "#/definitions/OverlayTerminationConditionType"
+    required:
+    - type
+
+  TimerTerminationConditionTemplate:
+    allOf:
+    - $ref: "#/definitions/OverlayTerminationConditionTemplate"
+    - properties:
+        durationInSeconds:
+          description: The number of seconds that the overlay should last/was configured to last.
+          type: integer
+          minimum: 0
+      required:
+      - durationInSeconds
+
+  TemperatureObject:
+    description: A temperature specified in degrees celsius and fahrenheit.
+    type: object
+    properties:
+      celsius:
+        description: The temperature in celsius.
+        type: number
+        format: float
+      fahrenheit:
+        description: The temperature in fahrenheit.
+        type: number
+        format: float
+
+  Link:
+    description: Details about the current link of a system.
+    type: object
+    properties:
+      state:
+        description: The state of the link.
+        type: string
+        enum:
+        - ONLINE
+        - OFFLINE
+      reason:
+        description: Details about the current state.
+        type: object
+        properties:
+          code:
+            description: Message key intended for i18n.
+            type: string
+          title:
+            description: Short english error description, should not be presented to the user.
+            type: string
+    required:
+    - state
+
+  TemperatureUnit:
+    type: string
+    enum:
+    - CELSIUS
+    - FAHRENHEIT
+
+  MobileDevice:
+    type: object
+    description: A (mobile) device that has the tado app installed. This is used to track its geolocation, track its app version and device metadata, and deliver push notifications to it.  If the `geoTrackingEnabled` setting is `true`, then there is a `location` property, if it is `false`, the `location` property is omitted.
+    properties:
+      id:
+        type: integer
+        format: int32
+        readOnly: true
+      name:
+        type: string
+        description: The name that the user chose for his mobile device when creating it.
+        maxLength: 255
+      settings:
+        $ref: "#/definitions/MobileDeviceSettings"
+      location:
+        description: The device's last reported location. Is `null`, if there was no location reported yet. If there is any location (though it might be `stale`), there is a location object.
+        $ref: "#/definitions/MobileDeviceLocation"
+    required:
+    - name
+    - settings
+
+  MobileDeviceSettings:
+    type: object
+    properties:
+      geoTrackingEnabled:
+        type: boolean
+        description: Whether this device's location is reported to the server so that this decice participates in the geolocation logic of controlling the home.
+    required:
+    - geoTrackingEnabled
+
+  MobileDeviceLocation:
+    type: object
+    properties:
+      stale:
+        type: boolean
+        description: Whether the last received geolocation of the device is older than 48h (though this depends on a configuration per mobile device).
+      atHome:
+        type: boolean
+        description: Whether the mobile device, based on the last reported geolocation is within the home fence (which by default is 400m, but can be configured per home).
+    required:
+    - stale
+    - atHome
+
+  Geolocation:
+    type: object
+    description: Geolocation
+    properties:
+      latitude:
+        type: number
+        format: double
+      longitude:
+        type: number
+        format: double
+    required:
+    - latitude
+    - longitude
+
+  GenericZoneCapabilities:
+    type: object
+    discriminator: type
+    properties:
+      type:
+        description: The system type of the zone. Depending on the value of `type`, either `AirConditioningCapabilities`, `HeatingCapabilities` or `HotWaterCapabilities` is returned.
+        $ref: "#/definitions/TadoSystemType"
+    required:
+    - type
+
+  AirConditioningCapabilities:
+    allOf:
+    - $ref: "#/definitions/GenericZoneCapabilities"
+    - properties:
+        COOL:
+          $ref: "#/definitions/AcModeCapabilities"
+        HEAT:
+          $ref: "#/definitions/AcModeCapabilities"
+        DRY:
+          $ref: "#/definitions/AcModeCapabilities"
+        FAN:
+          $ref: "#/definitions/AcModeCapabilities"
+        AUTO:
+          $ref: "#/definitions/AcModeCapabilities"
+
+  AcModeCapabilities:
+    properties:
+      temperatures:
+        $ref: "#/definitions/TemperatureRange"
+      fanSpeeds:
+        description: Cooling system fan speed.
+        type: array
+        items:
+          $ref: "#/definitions/AcFanSpeed"
+      swings:
+        description: Cooling system swing mode.
+        type: array
+        items:
+          $ref: "#/definitions/Power"
+
+  HeatingCapabilities:
+    allOf:
+    - $ref: "#/definitions/GenericZoneCapabilities"
+    - properties:
+        temperatures:
+          $ref: "#/definitions/TemperatureRange"
+      required:
+      - temperatures
+
+  HotWaterCapabilities:
+    allOf:
+    - $ref: "#/definitions/GenericZoneCapabilities"
+    - properties:
+        canSetTemperature:
+          type: boolean
+          description: True if hot water zone can set temperature, false otherwise.
+        temperatures:
+          $ref: "#/definitions/TemperatureRange"
+          description: Temperature range of hot water zone. Only set if `canSetTemperature` is `true`.
+      required:
+      - canSetTemperature
+
+  TemperatureRange:
+    properties:
+      celsius:
+        $ref: "#/definitions/IntRange"
+      fahrenheit:
+        $ref: "#/definitions/IntRange"
+
+  IntRange:
+    type: object
+    properties:
+      min:
+        description: Minimum range value.
+        type: integer
+      max:
+        description: Maximum range value.
+        type: integer
+      step:
+        description: Step size between min and max.
+        type: number
+        format: float
+    required:
+    - min
+    - max
+    - step
+
+  ClientError:
+    type: object
+    properties:
+      code:
+        type: string
+        description: Error identifier
+      title:
+        type: string
+        description: Detailed error message. Just for informational purposes. Might change at any time!
+    required:
+    - code
+    - title
+
+  ClientErrorModel:
+    type: object
+    properties:
+      errors:
+        type: array
+        items:
+          $ref: "#/definitions/ClientError"
+
+parameters:
+  homeID:
+    name: home_id
+    description: The ID of a home.
+    in: path
+    type: integer
+    format: int64
+    required: true
+  zoneID:
+    name: zone_id
+    description: The ID of a zone.
+    in: path
+    type: integer
+    format: int64
+    required: true
+
+responses:
+  BadRequest:
+    description: Bad request, wrong type of parameters, etc.
+    schema:
+      $ref: "#/definitions/ClientErrorModel"
+  Unauthorized:
+    description: User authentication failed.
+    schema:
+      $ref: "#/definitions/ClientErrorModel"
+  AccessDenied:
+    description: Authenticated user has no access rights to the requested entity.
+    schema:
+      $ref: "#/definitions/ClientErrorModel"
+  NotFound:
+    description: Requested entity not found.
+    schema:
+      $ref: "#/definitions/ClientErrorModel"
+  UnprocessableEntity:
+    description: The request was well-formed but was unable to be followed due to semantic errors.
+    schema:
+      $ref: "#/definitions/ClientErrorModel"
