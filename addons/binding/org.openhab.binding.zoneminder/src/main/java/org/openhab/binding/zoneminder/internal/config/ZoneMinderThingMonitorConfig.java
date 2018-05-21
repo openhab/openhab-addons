@@ -9,6 +9,7 @@
 package org.openhab.binding.zoneminder.internal.config;
 
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
+import org.openhab.binding.zoneminder.internal.RefreshPriority;
 
 /**
  * Specific configuration class for Monitor COnfig.
@@ -18,7 +19,19 @@ import org.openhab.binding.zoneminder.ZoneMinderConstants;
 public class ZoneMinderThingMonitorConfig extends ZoneMinderThingConfig {
 
     // Parameters
-    private Integer monitorId;
+    private Integer id;
+    private Integer triggerTimeout;
+    private String eventText;
+    private String imageRefreshIdle;
+    private String imageRefreshEvent;
+    // private String daemonRefresh;
+    private Integer imageScale;
+
+    // private Integer max_image_size;
+
+    // private Boolean enable_image_updates;
+    // private String video_encoding;
+    // private Integer video_framerate;
 
     @Override
     public String getConfigId() {
@@ -26,11 +39,64 @@ public class ZoneMinderThingMonitorConfig extends ZoneMinderThingConfig {
     }
 
     public String getId() {
-        return monitorId.toString();
+        return id.toString();
     }
 
     @Override
     public String getZoneMinderId() {
-        return monitorId.toString();
+        return id.toString();
     }
-}
+
+    public RefreshPriority getImageRefreshIdle() {
+        return getRefreshPriorityEnum(imageRefreshIdle);
+    }
+
+    public RefreshPriority getImageRefreshEvent() {
+        return getRefreshPriorityEnum(imageRefreshEvent);
+    }
+
+    /*
+     * public RefreshPriority getDaemonRefresh() {
+     * return getRefreshPriorityEnum(daemonRefresh);
+     * }
+     */
+    public Integer getImageScale() {
+        return imageScale;
+    }
+
+    /*
+     * public Integer getMaxImageSize() {
+     * return max_image_size;
+     * }
+     *
+     * public void setMaxImageSize(Integer size) {
+     * this.max_image_size = size;
+     * }
+     */
+    /*
+     * public Boolean getEnableImageUpdates() {
+     * return enable_image_updates;
+     * }
+     *
+     * public void setEnableImageUpdates(Boolean enable_image_updates) {
+     * this.enable_image_updates = enable_image_updates;
+     * }
+     */
+    /*
+     * public String getVideoEncoding() {
+     * return video_encoding;
+     * }
+     *
+     * public void setVideoEncoding(String video_encoding) {
+     * this.video_encoding = video_encoding;
+     * }
+     *
+     * public Integer getVideoFramerate() {
+     * return video_framerate;
+     * }
+     *
+     * public void setVideoFramerate(Integer video_framerate) {
+     * this.video_framerate = video_framerate;
+     * }
+     *
+     */}

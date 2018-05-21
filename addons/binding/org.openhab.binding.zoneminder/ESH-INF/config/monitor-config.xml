@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	<config-description uri="thing-type:monitor-channels:config">
+
+		<parameter-group name="advancedConfig">
+			<context>advancedConfig</context>
+			<label>Other</label>
+			<advanced>true</advanced>
+		</parameter-group>
+
+		<parameter-group name="imageConfig">
+			<context>imageConfig</context>
+			<label>Image Settings</label>
+			<advanced>true</advanced>
+		</parameter-group>
+
+		<parameter name="id" type="integer" required="true">
+			<label>Monitor ID</label>
+			<description>The ID of the monitor in ZoneMinder</description>
+		</parameter>
+
+		<parameter name="triggerTimeout" type="integer" required="false" min="0" max="65335" groupName="advancedConfig">
+			<label>ForceAlarm timeout</label>
+			<description>Timeout in seconds when activating alarm, 0 disables timeout. Default is 60 seconds</description>
+			<default>60</default>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="eventText" type="text" required="false" groupName="advancedConfig">
+			<label>Event Text</label>
+			<description>Event text in ZoneMinder</description>
+			<default>Triggered from openHAB</default>
+			<advanced>true</advanced>
+		</parameter>
+
+
+		<parameter name="imageRefreshIdle" type="text" required="false" groupName="imageConfig">
+			<label>Image refresh (Idle)</label>
+			<description>Refresh priority for still images when event state is idle</description>
+			<default>low</default>
+			<options>
+				<option value="normal">Normal Priority</option>
+				<option value="low">Low Priority</option>
+				<option value="disabled">Disabled</option>
+			</options>
+		</parameter>
+
+		<parameter name="imageRefreshEvent" type="text" required="false" groupName="imageConfig">
+			<label>Image refresh (Event)</label>
+			<description>Refresh priority for still images when event state is alarmed</description>
+			<default>normal</default>
+			<options>
+				<option value="alarm">Alarm Priority</option>
+				<option value="normal">Normal Priority</option>
+				<option value="low">Low Priority</option>
+				<option value="disabled">Disabled</option>
+			</options>
+		</parameter>
+
+
+		<parameter name="imageScale" type="integer" required="false" min="1" max="1000" groupName="imageConfig">
+			<label>Image Scale</label>
+			<description>Rescale image from ZoneMinder Monitor</description>
+			<default>100</default>
+			<options>
+				<option value="10">0.1</option>
+				<option value="20">0.2</option>
+				<option value="30">0.3</option>
+				<option value="40">0.4</option>
+				<option value="50">0.5</option>
+				<option value="60">0.6</option>
+				<option value="70">0.7</option>
+				<option value="80">0.8</option>
+				<option value="90">0.9</option>
+				<option value="100">1.0</option>
+				<option value="125">1.25</option>
+				<option value="150">1.5</option>
+				<option value="175">1.75</option>
+				<option value="200">2.0</option>
+			</options>
+		</parameter>
+
+	</config-description>
+</config-description:config-descriptions>

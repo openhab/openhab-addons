@@ -1,0 +1,300 @@
+[INFO] Scanning for projects...
+Downloading: https://openhab.jfrog.io/openhab/libs-snapshot/org/openhab/pom-tycho/2.3.0-SNAPSHOT/maven-metadata.xml
+599/599 B               Downloaded: https://openhab.jfrog.io/openhab/libs-snapshot/org/openhab/pom-tycho/2.3.0-SNAPSHOT/maven-metadata.xml (599 B at 0.7 KB/sec)
+[WARNING] Could not transfer metadata org.openhab:pom-tycho:2.3.0-SNAPSHOT/maven-metadata.xml from/to p2-smarthome-snapshot (https://openhab.jfrog.io/openhab/eclipse-smarthome-stable): Cannot access https://openhab.jfrog.io/openhab/eclipse-smarthome-stable with type p2 using the available connector factories: BasicRepositoryConnectorFactory
+[WARNING] Could not transfer metadata org.openhab:pom-tycho:2.3.0-SNAPSHOT/maven-metadata.xml from/to p2-openhab-deps-repo (https://dl.bintray.com/openhab/p2/openhab-deps-repo/${ohdr.version}): Cannot access https://dl.bintray.com/openhab/p2/openhab-deps-repo/${ohdr.version} with type p2 using the available connector factories: BasicRepositoryConnectorFactory
+Downloading: https://openhab.jfrog.io/openhab/libs-snapshot/org/openhab/pom/2.3.0-SNAPSHOT/maven-metadata.xml
+593/593 B               Downloaded: https://openhab.jfrog.io/openhab/libs-snapshot/org/openhab/pom/2.3.0-SNAPSHOT/maven-metadata.xml (593 B at 2.2 KB/sec)
+[WARNING] Could not transfer metadata org.openhab:pom:2.3.0-SNAPSHOT/maven-metadata.xml from/to p2-smarthome-snapshot (https://openhab.jfrog.io/openhab/eclipse-smarthome-stable): Cannot access https://openhab.jfrog.io/openhab/eclipse-smarthome-stable with type p2 using the available connector factories: BasicRepositoryConnectorFactory
+[WARNING] Could not transfer metadata org.openhab:pom:2.3.0-SNAPSHOT/maven-metadata.xml from/to p2-openhab-deps-repo (https://dl.bintray.com/openhab/p2/openhab-deps-repo/${ohdr.version}): Cannot access https://dl.bintray.com/openhab/p2/openhab-deps-repo/${ohdr.version} with type p2 using the available connector factories: BasicRepositoryConnectorFactory
+[INFO] Computing target platform for MavenProject: org.openhab.binding:org.openhab.binding.zoneminder:2.3.0-SNAPSHOT @ D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\pom.xml
+[INFO] Fetching p2.index from https://openhab.jfrog.io/openhab/eclipse-smarthome-stable/ (172B)
+[INFO] Fetching p2.index from https://openhab.jfrog.io/openhab/eclipse-smarthome-stable/ (172B)
+[INFO] Adding repository https://openhab.jfrog.io/openhab/eclipse-smarthome-stable
+[INFO] Fetching p2.index from http://download.eclipse.org/smarthome/updates-release/0.9.0/
+[INFO] Fetching p2.index from http://download.eclipse.org/smarthome/updates-release/0.9.0/
+[INFO] Adding repository http://download.eclipse.org/smarthome/updates-release/0.9.0
+[INFO] Fetching p2.index from https://dl.bintray.com/openhab/p2/openhab-deps-repo/1.0.19/ (172B)
+[INFO] Fetching p2.index from https://dl.bintray.com/openhab/p2/openhab-deps-repo/1.0.19/ (172B)
+[INFO] Adding repository https://dl.bintray.com/openhab/p2/openhab-deps-repo/1.0.19
+[INFO] Resolving dependencies of MavenProject: org.openhab.binding:org.openhab.binding.zoneminder:2.3.0-SNAPSHOT @ D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\pom.xml
+[INFO] Resolving class path of MavenProject: org.openhab.binding:org.openhab.binding.zoneminder:2.3.0-SNAPSHOT @ D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\pom.xml
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building ZoneMinder Binding 2.3.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ org.openhab.binding.zoneminder ---
+[INFO] Deleting D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\target
+[INFO] 
+[INFO] --- tycho-packaging-plugin:1.0.0:build-qualifier (default-build-qualifier) @ org.openhab.binding.zoneminder ---
+[INFO] The project's OSGi version is 2.3.0.201802031407
+[INFO] 
+[INFO] --- tycho-packaging-plugin:1.0.0:validate-id (default-validate-id) @ org.openhab.binding.zoneminder ---
+[INFO] 
+[INFO] --- tycho-packaging-plugin:1.0.0:validate-version (default-validate-version) @ org.openhab.binding.zoneminder ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ org.openhab.binding.zoneminder ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\resources
+[INFO] 
+[INFO] --- tycho-compiler-plugin:1.0.0:compile (default-compile) @ org.openhab.binding.zoneminder ---
+[WARNING] Parameter 'useProjectSettings' is set to true, but preferences file 'D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\.settings\org.eclipse.jdt.core.prefs' could not be found!
+[INFO] Compiling 25 source files to D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\target\classes
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderBaseThingHandler.java:[215] 
+	Channel ch = thing.getChannel(id);
+	                              ^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderBaseThingHandler.java:[216] 
+	return ch.getUID();
+	       ^^
+Potential null pointer access: The variable ch may be null at this location
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderBaseThingHandler.java:[332] 
+	updateState(channel, getChannelBoolAsOnOffState(isOnline()));
+	                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'State' needs unchecked conversion to conform to '@NonNull State'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderBaseThingHandler.java:[493] 
+	updateStatus(thingStatus, statusDetail, statusDescription);
+	                          ^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'ThingStatusDetail' needs unchecked conversion to conform to '@NonNull ThingStatusDetail'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderBaseThingHandler.java:[497] 
+	updateStatus(thingStatus);
+	             ^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'ThingStatus' needs unchecked conversion to conform to '@NonNull ThingStatus'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\internal\discovery\ZoneMinderDiscoveryService.java:[62] 
+	return ZoneMinderThingMonitorHandler.SUPPORTED_THING_TYPES;
+	       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'Set<ThingTypeUID>' needs unchecked conversion to conform to '@NonNull Set<ThingTypeUID>'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\internal\discovery\ZoneMinderDiscoveryService.java:[101] 
+	return serverHandler.getThingByUID(newThingUID) != null ? true : false;
+	                                   ^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'ThingUID' needs unchecked conversion to conform to '@NonNull ThingUID'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\internal\discovery\ZoneMinderDiscoveryService.java:[129] 
+	DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+	                                                                                         ^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'Map<String,Object>' needs unchecked conversion to conform to '@Nullable Map<@NonNull String,@NonNull Object>'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingMonitorHandler.java:[507] 
+	Channel channel = this.getThing().getChannel(ZoneMinderConstants.CHANNEL_MONITOR_DETAILED_STATUS);
+	                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingMonitorHandler.java:[508] 
+	Channel chEventCause = this.getThing().getChannel(ZoneMinderConstants.CHANNEL_MONITOR_EVENT_CAUSE);
+	                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingMonitorHandler.java:[640] 
+	getLogIdentifier(), thing.getUID(), getBridge().getBridgeUID());
+	                                    ^^^^^^^^^^^
+Potential null pointer access: The method getBridge() may return null
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingMonitorHandler.java:[644] 
+	if (getBridge().getStatus() != ThingStatus.ONLINE) {
+	    ^^^^^^^^^^^
+Potential null pointer access: The method getBridge() may return null
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingMonitorHandler.java:[645] 
+	msg = String.format("Bridge '%s' is OFFLINE", getBridge().getBridgeUID());
+	                                              ^^^^^^^^^^^
+Potential null pointer access: The method getBridge() may return null
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingMonitorHandler.java:[654] 
+	getLogIdentifier(), getBridge().getBridgeUID());
+	                    ^^^^^^^^^^^
+Potential null pointer access: The method getBridge() may return null
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingMonitorHandler.java:[802] 
+	updateState(channel.getId(), state);
+	            ^^^^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingMonitorHandler.java:[806] 
+	getLogIdentifier(), channel.toString(), state.toString(), ex.getMessage());
+	                                        ^^^^^
+Potential null pointer access: The variable state may be null at this location
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingMonitorHandler.java:[813] 
+	updateState(ZoneMinderConstants.CHANNEL_ONLINE,
+	            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingMonitorHandler.java:[845] 
+	session = null;
+	^^^^^^^
+Redundant assignment: The variable session can only be null at this location
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingMonitorHandler.java:[920] 
+	if (isLinked(ZoneMinderConstants.CHANNEL_MONITOR_CAPTURE_DAEMON_STATE)) {
+	             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingMonitorHandler.java:[939] 
+	if (isLinked(ZoneMinderConstants.CHANNEL_MONITOR_ANALYSIS_DAEMON_STATE)) {
+	             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingMonitorHandler.java:[961] 
+	if (isLinked(ZoneMinderConstants.CHANNEL_MONITOR_FRAME_DAEMON_STATE)) {
+	             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingMonitorHandler.java:[981] 
+	if (isLinked(ZoneMinderConstants.CHANNEL_MONITOR_STILL_IMAGE)) {
+	             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingMonitorHandler.java:[1044] 
+	if (session != null) {
+	    ^^^^^^^
+Redundant null check: The variable session cannot be null at this location
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingMonitorHandler.java:[1124] 
+	updateProperties(properties);
+	                 ^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'Map<String,String>' needs unchecked conversion to conform to '@NonNull Map<@NonNull String,@NonNull String>'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingMonitorHandler.java:[1148] 
+	updateState(channelUID.getId(), state);
+	            ^^^^^^^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\ZoneMinderConstants.java:[42] 
+	public static final ThingTypeUID THING_TYPE_BRIDGE_ZONEMINDER_SERVER = new ThingTypeUID(BINDING_ID,
+	                                                                                        ^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\ZoneMinderConstants.java:[43] 
+	BRIDGE_ZONEMINDER_SERVER);
+	^^^^^^^^^^^^^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\ZoneMinderConstants.java:[89] 
+	public static final ThingTypeUID THING_TYPE_THING_ZONEMINDER_MONITOR = new ThingTypeUID(BINDING_ID,
+	                                                                                        ^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\ZoneMinderConstants.java:[90] 
+	THING_ZONEMINDER_MONITOR);
+	^^^^^^^^^^^^^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\ZoneMinderConstants.java:[128] 
+	public static final ThingTypeUID THING_TYPE_THING_ZONEMINDER_PTZCONTROL = new ThingTypeUID(BINDING_ID,
+	                                                                                           ^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\ZoneMinderConstants.java:[129] 
+	THING_ZONEMINDER_PTZCONTROL);
+	^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderThingPTZControlHandler.java:[78] 
+	Channel channel = ChannelBuilder.create(new ChannelUID(channelIdString), "String").withDescription(description)
+	                                                                                                   ^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderServerBridgeHandler.java:[314] 
+	super.handleConfigurationUpdate(configurationParameters);
+	                                ^^^^^^^^^^^^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type '@NonNull Map<String,Object>' needs unchecked conversion to conform to '@NonNull Map<@NonNull String,@NonNull Object>'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderServerBridgeHandler.java:[407] 
+	if ((thingHandler.getZoneMinderId().equals(zoneMinderId))
+	     ^^^^^^^^^^^^
+Potential null pointer access: The variable thingHandler may be null at this location
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderServerBridgeHandler.java:[495] 
+	} else if (hostLoad.getHttpStatus() != HttpStatus.OK_200) {
+	           ^^^^^^^^
+Potential null pointer access: The variable hostLoad may be null at this location
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderServerBridgeHandler.java:[529] 
+	if (isLinked(channel.getUID().getId())) {
+	             ^^^^^^^^^^^^^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderServerBridgeHandler.java:[544] 
+	thingHandler.refreshThing(curPriority);
+	^^^^^^^^^^^^
+Potential null pointer access: The variable thingHandler may be null at this location
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderServerBridgeHandler.java:[1057] 
+	curSession = null;
+	^^^^^^^^^^
+Redundant assignment: The variable curSession can only be null at this location
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderServerBridgeHandler.java:[1476] 
+	updateStatus(newStatus, statusDetail, statusDescription);
+	                        ^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'ThingStatusDetail' needs unchecked conversion to conform to '@NonNull ThingStatusDetail'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderServerBridgeHandler.java:[1484] 
+	updateStatus(newStatus);
+	             ^^^^^^^^^
+Null type safety (type annotations): The expression of type 'ThingStatus' needs unchecked conversion to conform to '@NonNull ThingStatus'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderServerBridgeHandler.java:[1542] 
+	updateState(channel.getId(), state);
+	            ^^^^^^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'String' needs unchecked conversion to conform to '@NonNull String'
+[WARNING] D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\main\java\org\openhab\binding\zoneminder\handler\ZoneMinderServerBridgeHandler.java:[1874] 
+	updateProperties(properties);
+	                 ^^^^^^^^^^
+Null type safety (type annotations): The expression of type 'Map<String,String>' needs unchecked conversion to conform to '@NonNull Map<@NonNull String,@NonNull String>'
+42 problems (42 warnings)
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.6.1:compile (default) @ org.openhab.binding.zoneminder ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-scr-plugin:1.24.0:scr (generate-scr-scrdescriptor) @ org.openhab.binding.zoneminder ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:testResources (default-testResources) @ org.openhab.binding.zoneminder ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\src\test\resources
+[INFO] 
+[INFO] --- target-platform-configuration:1.0.0:target-platform (default-target-platform) @ org.openhab.binding.zoneminder ---
+[INFO] 
+[INFO] --- tycho-packaging-plugin:1.0.0:package-plugin (default-package-plugin) @ org.openhab.binding.zoneminder ---
+[INFO] Building jar: D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\target\org.openhab.binding.zoneminder-2.3.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- tycho-p2-plugin:1.0.0:p2-metadata-default (default-p2-metadata-default) @ org.openhab.binding.zoneminder ---
+[INFO] 
+[INFO] --- sat-plugin:0.4.1:checkstyle (default) @ org.openhab.binding.zoneminder ---
+[INFO] Adding dependency to checkstyle:0.4.1
+[INFO] Adding dependency to checkstyle:8.1
+[INFO] There is 1 error reported by Checkstyle 8.1 with jar:file:/C:/Users/Martin.KAERVEJ/.m2/repository/org/openhab/tools/sat/sat-plugin/0.4.1/sat-plugin-0.4.1.jar!/rulesets/checkstyle/rules.xml ruleset.
+[INFO] 
+[INFO] --- sat-plugin:0.4.1:pmd (default) @ org.openhab.binding.zoneminder ---
+[INFO] Adding dependency to pmd:0.4.1
+[INFO] Adding dependency to pmd-core:5.8.1
+[INFO] Adding dependency to pmd-java:5.8.1
+[INFO] Adding dependency to pmd-javascript:5.8.1
+[INFO] Adding dependency to pmd-jsp:5.8.1
+[INFO] 
+[INFO] --- sat-plugin:0.4.1:findbugs (default) @ org.openhab.binding.zoneminder ---
+[INFO] Adding dependency to findbugs:0.4.1
+[INFO] Adding dependency to bug-pattern:1.2.4
+[INFO] Adding dependency to spotbugs:3.1.0
+[INFO] Fork Value is false
+     [java] JVM args ignored when same JVM is used.
+[INFO] Done FindBugs Analysis....
+[INFO] 
+[INFO] --- sat-plugin:0.4.1:report (default) @ org.openhab.binding.zoneminder ---
+[INFO] Individual report appended to summary report.
+[ERROR] Code Analysis Tool has found: 
+ 1 error(s)! 
+ 12 warning(s) 
+ 214 info(s)
+[WARNING] .binding.zoneminder\ESH-INF\binding\binding.xml:[3]
+There were whitespace characters used for indentation. Please use tab characters instead
+[WARNING] .binding.zoneminder\ESH-INF\config\monitor-config.xml:[3]
+There were whitespace characters used for indentation. Please use tab characters instead
+[WARNING] .binding.zoneminder\ESH-INF\config\server-config.xml:[3]
+There were whitespace characters used for indentation. Please use tab characters instead
+[WARNING] .binding.zoneminder\ESH-INF\thing\bridge-server.xml:[3]
+There were whitespace characters used for indentation. Please use tab characters instead
+[WARNING] .binding.zoneminder\ESH-INF\thing\thing-monitor.xml:[3]
+There were whitespace characters used for indentation. Please use tab characters instead
+[ERROR] .binding.zoneminder\META-INF\MANIFEST.MF:[0]
+The jar file lib/javax.ws.rs-api-2.0.1.jar is present in the lib folder but is not present in the MANIFEST.MF file
+[WARNING] .binding.zoneminder\OSGI-INF\ZoneMinderHandlerFactory.xml:[3]
+There were whitespace characters used for indentation. Please use tab characters instead
+[WARNING] .binding.zoneminder\pom.xml:[2]
+There were whitespace characters used for indentation. Please use tab characters instead
+[WARNING] org.openhab.binding.zoneminder.handler.ZoneMinderServerBridgeHandler.java:[254]
+Avoid catching NullPointerException; consider removing the cause of the NPE.
+[WARNING] org.openhab.binding.zoneminder.handler.ZoneMinderServerBridgeHandler.java:[547]
+Avoid catching NullPointerException; consider removing the cause of the NPE.
+[WARNING] org.openhab.binding.zoneminder.handler.ZoneMinderServerBridgeHandler.java:[937]
+Avoid catching NullPointerException; consider removing the cause of the NPE.
+[WARNING] org.openhab.binding.zoneminder.handler.ZoneMinderServerBridgeHandler.java:[1042]
+Avoid catching NullPointerException; consider removing the cause of the NPE.
+[WARNING] org.openhab.binding.zoneminder.handler.ZoneMinderServerBridgeHandler.java:[1161]
+Avoid catching NullPointerException; consider removing the cause of the NPE.
+[INFO] Detailed report can be found at: file:///D:\Development\openHAB\zoneminder\openhab2-zoneminder\git\openhab2-addons\addons\binding\org.openhab.binding.zoneminder\target\code-analysis\report.html
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 29.567 s
+[INFO] Finished at: 2018-02-03T15:07:41+01:00
+[INFO] Final Memory: 62M/711M
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.openhab.tools.sat:sat-plugin:0.4.1:report (default) on project org.openhab.binding.zoneminder:
+[ERROR] Code Analysis Tool has found 1 error(s)!
+[ERROR] Please fix the errors and rerun the build.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

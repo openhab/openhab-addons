@@ -3,10 +3,10 @@ Bundle-ClassPath:
  .,
  lib/gson-2.7.jar,
  lib/guava-17.0.jar,
- lib/jersey-common-2.4.1.jar,
  lib/javax.ws.rs-api-2.0.1.jar,
+ lib/jersey-common-2.4.1.jar,
  lib/jsoup-1.10.1.jar,
- lib/zoneminder4j-0.9.7.jar
+ lib/zoneminder4j-0.9.8.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: ZoneMinder Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -18,13 +18,22 @@ Export-Package:
  org.openhab.binding.zoneminder.handler
 Import-Package: 
  com.google.common.collect,
+ com.google.gson,
  javax.ws.rs.client,
  javax.ws.rs.core,
  org.apache.commons.lang,
- org.apache.commons.net.util,
  org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.jetty.client,
+ org.eclipse.jetty.client.api,
+ org.eclipse.jetty.client.util,
+ org.eclipse.jetty.http,
+ org.eclipse.jetty.io,
+ org.eclipse.jetty.util,
+ org.eclipse.jetty.util.component,
+ org.eclipse.jetty.util.ssl,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.inbox,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,

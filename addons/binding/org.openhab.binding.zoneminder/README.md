@@ -3,7 +3,7 @@
 This binding offers integration to a ZoneMinder Server. It currently only offers to integrate to monitors (eg. cameras in ZoneMinder).
 It also only offers access to a limited set of values, as well as a even more limited option to update values in ZoneMinder.
 It requires at least ZoneMinder 1.29 with API enabled (option 'OPT_USE_API' in ZoneMinder must be enabled).
-The option 'OPT_TRIGGERS' must be anabled to allow openHAB to trip the ForceAlarm in ZoneMinder.
+The option 'OPT_TRIGGERS' must be enabled to allow openHAB to trip the ForceAlarm in ZoneMinder.
 
 ## Supported Things
 
@@ -31,8 +31,8 @@ When a new monitor is discovered it will appear in the Inbox.
 | Channel    | Type   | Description                                  |
 |------------|--------|----------------------------------------------|
 | online     | Switch | Parameter indicating if the server is online |
-| CPU load   | Text   | Current CPU Load of server                   |
-| Disk Usage | text   | Current Disk Usage on server                 |
+| cpu-load   | Text   | Current CPU Load of server                   |
+| disk-usage | Text   | Current Disk Usage on server                 |
 
 ### Thing
 
@@ -49,15 +49,48 @@ When a new monitor is discovered it will appear in the Inbox.
 | capture-daemon  | Switch | Run state of ZMC Daemon                                                                    |
 | analysis-daemon | Switch | Run state of ZMA Daemon                                                                    |
 | frame-daemon    | Switch | Run state of ZMF Daemon                                                                    |
+| image           | Image  | Still image from Monitor                                                                   |
+| videourl        | Text   | Url to video stream                                                                        | 
 
-## Manual configuration
+## Configuration
 
 ### Things configuration
 
+#### Bridge Configuration
+| Parameter                | Optional | Description                                                                                |
+|--------------------------|----------|--------------------------------------------------------------------------------------------|
+| host                     |          | Hostname or Ip address of ZoneMinder server                                                |
+| protocol                 |          | Protocol used ('http' or 'https'). https can cause issues with certificates                |
+| user                     |    X     | Username to login to ZoneMidner server, if authentication is enabled                       |
+| password                 |    X     | Password to login to ZoneMidner server, if authentication is enabled                       |
+| urlSite                  |    X     | Path to ZoneMinder site (Default: '/zm')                                                   |
+| urlApi                   |    X     | Path to ZoneMinder API (Default: '/zm/api')                                                |
+| portHttp                 |    X     | Port to access ZoneMinder site. (Default: 0 (is either 80 or 443 depending on protocol))   |
+| portTelnet               |    X     | Port to access ZoneMinder with Telnet (Default: 6802)                                      |
+| refreshNormal            |    X     | Refresh rate in seconds for Normal priority (Default: 10)                                  |
+| refreshLow               |    X     | Refresh rate in seconds for Low priority (Default: 60)                                     |
+| diskUsageRefresh         |    X     | Either 'batch' or 'disabled' (Default: 'disabled')                                         |
+| autodiscover             |    X     | Enable / Disable autodiscovery (Default: true)                                             |
+| useSpecificUserStreaming |    X     | Use specific user for streaming (Default: false)                                           |
+| streamingUser            |    X     | If 'useSpecificUserStreaming' is true, username must be specified here                     |
+| streamingPassword        |    X     | If 'useSpecificUserStreaming' is true, password must be specified here                     |
+
+#### Monitor Configuration
+| Parameter                | Optional | Description                                                                                   |
+|--------------------------|----------|-----------------------------------------------------------------------------------------------|
+| id                       |          | Id of the monitor. Must match id in ZoneMinder                                                |
+| triggerTimeout           |    x     | Timeout in seconds of events generated from openHAB (Default: 60)                             |
+| eventText                |    X     | Event text of openHAB trigegred events (Default: 'Triggered from openHAB')                    |
+| imageRefreshIdle         |    X     | Refresh rate of image when monitor has no active event (normal, low, disabled) (Default: low) |
+| imageRefreshEvent        |    X     | Refresh rate when active event (alarm, normal, low, disabled), (Default: alarm)               |
+| imageScale               |    X     | Size (scale) of image. Default: 100                                                           |
+
+
+### Things file
 ```
-Bridge zoneminder:server:ZoneMinderSample [ hostname="192.168.1.55", user="<USERNAME>", password="<PASSWORD>", telnet_port=6802, refresh_interval_disk_usage=1 ]
+Bridge zoneminder:server:ZoneMinderSample [ host="192.168.1.55", protocol="http", user="<USERNAME>", password="<PASSWORD>", autodiscover=false, useSpecificUserStreaming=true, streamingUser="<STREAMING-USER>", streamingPassword="<STREAMING-PASSWORD>" ]
 {
-	Thing monitor monitor_1 [ monitorId=1, monitorTriggerTimeout=120, monitorEventText="Trigger activated from openHAB" ]
+	Thing monitor monitor_1 [ monitorId=1, monitorTriggerTimeout=120, monitorEventText="Trigger activated from openHAB", imageRefreshIdle="disabled", imageRefreshEvent="alarm" ]
 }
 
 ```

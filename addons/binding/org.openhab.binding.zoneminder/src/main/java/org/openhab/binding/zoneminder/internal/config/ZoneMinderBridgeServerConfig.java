@@ -9,63 +9,70 @@
 package org.openhab.binding.zoneminder.internal.config;
 
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
+import org.openhab.binding.zoneminder.internal.RefreshPriority;
 
 /**
  * Configuration data according to zoneminderserver.xml
  *
- * @author Martin S. Eskildsen
+ * @author Martin S. Eskildsen - Initial contribution
  *
  */
 public class ZoneMinderBridgeServerConfig extends ZoneMinderConfig {
 
-    private String hostname;
-    private Integer http_port;
-    private Integer telnet_port;
+    private Integer portHttp;
+    private Integer portTelnet;
 
     private String protocol;
+    private String host;
 
-    private String urlpath;
+    private String urlSite;
+    private String urlApi;
 
     private String user;
     private String password;
-    private Integer refresh_interval;
-    private Integer refresh_interval_disk_usage;
-    private Boolean autodiscover_things;
+    private Integer refreshNormal;
+    private Integer refreshLow;
+    private String diskUsageRefresh;
+    private Boolean autodiscover;
+
+    private Boolean useSpecificUserStreaming;
+    private String streamingUser;
+    private String streamingPassword;
 
     @Override
     public String getConfigId() {
         return ZoneMinderConstants.BRIDGE_ZONEMINDER_SERVER;
     }
 
-    public String getHostName() {
-        return hostname;
+    public String getHost() {
+        return host;
     }
 
-    public void setHostName(String hostName) {
-        this.hostname = hostName;
+    public void setHostName(String host) {
+        this.host = host;
     }
 
     public Integer getHttpPort() {
-        if ((http_port == null) || (http_port == 0)) {
+        if ((portHttp == null) || (portHttp == 0)) {
             if (getProtocol().equalsIgnoreCase("http")) {
-                http_port = 80;
+                portHttp = 80;
             } else {
-                http_port = 443;
+                portHttp = 443;
             }
         }
-        return http_port;
+        return portHttp;
     }
 
     public void setHttpPort(Integer port) {
-        this.http_port = port;
+        this.portHttp = port;
     }
 
     public Integer getTelnetPort() {
-        return telnet_port;
+        return portTelnet;
     }
 
     public void setTelnetPort(Integer telnetPort) {
-        this.telnet_port = telnetPort;
+        this.portTelnet = telnetPort;
     }
 
     public String getProtocol() {
@@ -77,11 +84,19 @@ public class ZoneMinderBridgeServerConfig extends ZoneMinderConfig {
     }
 
     public String getServerBasePath() {
-        return urlpath;
+        return urlSite;
     }
 
     public void setServerBasePath(String urlpath) {
-        this.urlpath = urlpath;
+        this.urlSite = urlpath;
+    }
+
+    public String getServerApiPath() {
+        return urlApi;
+    }
+
+    public void setServerApiPath(String apiPath) {
+        this.urlApi = apiPath;
     }
 
     public String getUserName() {
@@ -100,28 +115,49 @@ public class ZoneMinderBridgeServerConfig extends ZoneMinderConfig {
         this.password = password;
     }
 
-    public Integer getRefreshInterval() {
-        return refresh_interval;
+    public Integer getRefreshIntervalNormal() {
+        return this.refreshNormal;
     }
 
-    public void setRefreshInterval(Integer refreshInterval) {
-        this.refresh_interval = refreshInterval;
+    public void setRefreshIntervalNormal(Integer refreshInterval) {
+        this.refreshNormal = refreshInterval;
     }
 
-    public Integer getRefreshIntervalLowPriorityTask() {
-        return refresh_interval_disk_usage;
+    public Integer getRefreshIntervalLow() {
+        return this.refreshLow;
     }
 
-    public void setRefreshIntervalDiskUsage(Integer refreshIntervalDiskUsage) {
-        this.refresh_interval_disk_usage = refreshIntervalDiskUsage;
+    public void setRefreshIntervalDiskUsage(Integer refreshInterval) {
+        this.refreshLow = refreshInterval;
     }
 
     public Boolean getAutodiscoverThings() {
-        return autodiscover_things;
+        return autodiscover;
     }
 
     public void setAutodiscoverThings(Boolean autodiscoverThings) {
-        this.autodiscover_things = autodiscoverThings;
+        this.autodiscover = autodiscoverThings;
     }
 
+    public RefreshPriority getDiskUsageRefresh() {
+        return getRefreshPriorityEnum(diskUsageRefresh);
+    }
+
+    public Boolean getUseSpecificUserStreaming() {
+        return useSpecificUserStreaming;
+    }
+
+    public String getStreamingUser() {
+        if (!getUseSpecificUserStreaming()) {
+            return getUserName();
+        }
+        return streamingUser;
+    }
+
+    public String getStreamingPassword() {
+        if (!getUseSpecificUserStreaming()) {
+            return getPassword();
+        }
+        return streamingPassword;
+    }
 }

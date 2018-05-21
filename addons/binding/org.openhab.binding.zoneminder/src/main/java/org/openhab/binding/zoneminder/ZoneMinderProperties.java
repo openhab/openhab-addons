@@ -14,14 +14,16 @@ package org.openhab.binding.zoneminder;
  */
 public class ZoneMinderProperties {
     public static final String PROPERTY_ID = "Id";
+    public static final String PROPERTY_NAME = "Name";
 
     public static final String PROPERTY_SERVER_VERSION = "Version";
     public static final String PROPERTY_SERVER_API_VERSION = "API Version";
     public static final String PROPERTY_SERVER_USE_API = "API Enabled";
     public static final String PROPERTY_SERVER_USE_AUTHENTIFICATION = "Use Authentification";
+    public static final String PROPERTY_SERVER_USE_AUTH_HASH = "Allow Auth. Hash";
     public static final String PROPERTY_SERVER_TRIGGERS_ENABLED = "Triggers enabled";
+    public static final String PROPERTY_SERVER_FRAME_SERVER = "Use Frame Server";
 
-    public static final String PROPERTY_MONITOR_NAME = "Name";
     public static final String PROPERTY_MONITOR_SOURCETYPE = "Sourcetype";
 
     public static final String PROPERTY_MONITOR_ANALYSIS_FPS = "Analysis FPS";

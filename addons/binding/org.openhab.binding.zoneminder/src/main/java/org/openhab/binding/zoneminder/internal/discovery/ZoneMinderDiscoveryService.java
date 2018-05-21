@@ -25,7 +25,7 @@ import org.openhab.binding.zoneminder.handler.ZoneMinderThingMonitorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import name.eskildsen.zoneminder.IZoneMinderMonitorData;
+import name.eskildsen.zoneminder.data.IMonitorDataGeneral;
 
 /**
  *
@@ -65,12 +65,15 @@ public class ZoneMinderDiscoveryService extends AbstractDiscoveryService impleme
     @Override
     public void startBackgroundDiscovery() {
         logger.debug("[DISCOVERY]: Performing background discovery scan for {}", serverHandler.getThing().getUID());
+
+        // removeOlderResults(getTimestampOfLastScan());
         discoverMonitors();
     }
 
     @Override
     public void startScan() {
         logger.debug("[DISCOVERY]: Starting discovery scan for {}", serverHandler.getThing().getUID());
+
         discoverMonitors();
     }
 
@@ -84,55 +87,67 @@ public class ZoneMinderDiscoveryService extends AbstractDiscoveryService impleme
         super.stopScan();
     }
 
-    protected String BuildMonitorLabel(String id, String name) {
+    private String buildMonitorLabel(String id, String name) {
         return String.format("%s [%s]", ZoneMinderConstants.ZONEMINDER_MONITOR_NAME, name);
     }
 
     protected synchronized void discoverMonitors() {
-        // Add all existing devices
-        for (IZoneMinderMonitorData monitor : serverHandler.getMonitors()) {
-            deviceAdded(monitor);
+        for (IMonitorDataGeneral monitorData : serverHandler.getMonitors()) {
+            DiscoveryResult curDiscoveryResult = null;
+            ThingUID thingUID = getMonitorThingUID(monitorData);
+
+            // Avoid issue #5143 in Eclipse SmartHome
+            DiscoveryResult existingResult = discoveryServiceCallback.getExistingDiscoveryResult(thingUID);
+            if ((existingResult != null) && (existingResult.getThingUID() != thingUID)) {
+                existingResult = null;
+            }
+
+            if (existingResult != null) {
+                logger.debug("[DISCOVERY]: Monitor with Id='{}' and Name='{}' with ThingUID='{}' already discovered",
+                        monitorData.getId(), monitorData.getName(), thingUID);
+
+            } else if (discoveryServiceCallback.getExistingThing(thingUID) != null) {
+                logger.debug("[DISCOVERY]: Monitor with Id='{}' and Name='{}' with ThingUID='{}' already added",
+                        monitorData.getId(), monitorData.getName(), thingUID);
+            } else {
+                curDiscoveryResult = createMonitorDiscoveryResult(thingUID, monitorData);
+
+            }
+
+            if (curDiscoveryResult != null) {
+                logger.info("[DISCOVERY]: Monitor with Id='{}' and Name='{}' added to Inbox with ThingUID='{}'",
+                        monitorData.getId(), monitorData.getName(), thingUID);
+                thingDiscovered(curDiscoveryResult);
+            }
         }
     }
 
-    private boolean monitorThingExists(ThingUID newThingUID) {
-        return serverHandler.getThingByUID(newThingUID) != null ? true : false;
+    private ThingUID getMonitorThingUID(IMonitorDataGeneral monitor) {
+        ThingUID bridgeUID = serverHandler.getThing().getUID();
+        String monitorUID = String.format("%s-%s", ZoneMinderConstants.THING_ZONEMINDER_MONITOR, monitor.getId());
+
+        return new ThingUID(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR, bridgeUID, monitorUID);
+
     }
 
-    /**
-     * This is called once the node is fully discovered. At this point we know most of the information about
-     * the device including manufacturer information.
-     *
-     * @param node the node to be added
-     */
-
-    public void deviceAdded(IZoneMinderMonitorData monitor) {
+    protected DiscoveryResult createMonitorDiscoveryResult(ThingUID monitorUID, IMonitorDataGeneral monitorData) {
         try {
             ThingUID bridgeUID = serverHandler.getThing().getUID();
-            String monitorUID = String.format("%s-%s", ZoneMinderConstants.THING_ZONEMINDER_MONITOR, monitor.getId());
-            ThingUID thingUID = new ThingUID(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR, bridgeUID,
-                    monitorUID);
 
-            // Does Monitor exist?
-            if (!monitorThingExists(thingUID)) {
-                logger.info("[DISCOVERY]: Monitor with Id='{}' and Name='{}' added", monitor.getId(),
-                        monitor.getName());
-                Map<String, Object> properties = new HashMap<>(0);
-                properties.put(ZoneMinderConstants.PARAMETER_MONITOR_ID, Integer.valueOf(monitor.getId()));
-                properties.put(ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT,
-                        ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT_DEFAULTVALUE);
-                properties.put(ZoneMinderConstants.PARAMETER_MONITOR_EVENTTEXT,
-                        ZoneMinderConstants.MONITOR_EVENT_OPENHAB);
+            Map<String, Object> properties = new HashMap<>(0);
+            properties.put(ZoneMinderConstants.PARAMETER_MONITOR_ID, Integer.valueOf(monitorData.getId()));
+            properties.put(ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT,
+                    ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT_DEFAULTVALUE);
+            properties.put(ZoneMinderConstants.PARAMETER_MONITOR_EVENTTEXT, ZoneMinderConstants.MONITOR_EVENT_OPENHAB);
 
-                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(bridgeUID).withLabel(BuildMonitorLabel(monitor.getId(), monitor.getName())).build();
+            return DiscoveryResultBuilder.create(monitorUID).withProperties(properties).withBridge(bridgeUID)
+                    .withLabel(buildMonitorLabel(monitorData.getId(), monitorData.getName())).build();
 
-                thingDiscovered(discoveryResult);
-            }
         } catch (Exception ex) {
-            logger.error("[DISCOVERY]: Error occurred when calling 'monitorAdded' from Discovery. Exception={}",
-                    ex.getMessage());
+            logger.error(
+                    "[DISCOVERY]: Error occurred when calling 'monitorAdded' from Discovery. Id='{}', Name='{}', ThingUID='{}'",
+                    monitorData.getId(), monitorData.getName(), monitorUID, ex.getCause());
         }
-
+        return null;
     }
 }
