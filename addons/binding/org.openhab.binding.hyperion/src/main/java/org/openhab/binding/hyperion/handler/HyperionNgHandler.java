@@ -306,7 +306,7 @@ public class HyperionNgHandler extends BaseThingHandler {
             PercentType brightnessState = new PercentType(brightness);
             updateState(CHANNEL_BRIGHTNESS, brightnessState);
         } else {
-            updateState(CHANNEL_BRIGHTNESS, UnDefType.UNDEF);
+            updateState(CHANNEL_BRIGHTNESS, UnDefType.NULL);
         }
     }
 
