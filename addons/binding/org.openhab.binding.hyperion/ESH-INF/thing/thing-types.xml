@@ -19,24 +19,20 @@
 				<label>Host address</label>
 				<context>network-address</context>
 				<description>The host address of the Hyperion server JSON API.</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="port" type="integer" required="true">
+			<parameter name="port" type="integer" required="false">
 				<label>Port</label>
 				<description>The port of the Hyperion server JSON API.</description>
-				<required>true</required>
 				<default>19444</default>
 			</parameter>
-			<parameter name="priority" type="integer" required="true">
+			<parameter name="priority" type="integer" required="false">
 				<label>Priority</label>
 				<description>The priority associated with updates sent to the Hyperion server.</description>
-				<required>true</required>
 				<default>50</default>
 			</parameter>
-			<parameter name="poll_frequency" type="integer" required="true">
+			<parameter name="poll_frequency" type="integer" required="false" min="1">
 				<label>Polling frequency</label>
 				<description>How often (in seconds) to poll the Hyperion server for value changes.</description>
-				<required>true</required>
 				<default>15</default>
 			</parameter>
 		</config-description>
@@ -67,30 +63,26 @@
 				<label>Host address</label>
 				<context>network-address</context>
 				<description>The host address of the Hyperion server JSON API.</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="port" type="integer" required="true">
+			<parameter name="port" type="integer" required="false">
 				<label>Port</label>
 				<description>The port of the Hyperion server JSON API.</description>
-				<required>true</required>
 				<default>19444</default>
 			</parameter>
-			<parameter name="priority" type="integer" required="true">
+			<parameter name="priority" type="integer" required="false">
 				<label>Priority</label>
 				<description>The priority associated with updates sent to the Hyperion server.</description>
-				<required>true</required>
 				<default>50</default>
 			</parameter>
-			<parameter name="poll_frequency" type="integer" required="true">
+			<parameter name="poll_frequency" type="integer" required="false" min="1">
 				<label>Polling frequency</label>
 				<description>How often (in seconds) to poll the Hyperion server for value changes.</description>
 				<required>true</required>
 				<default>3</default>
 			</parameter>
-			<parameter name="origin" type="text" required="true">
+			<parameter name="origin" type="text" required="false">
 				<label>Origin</label>
 				<description>The origin used on color and effect commands.</description>
-				<required>true</required>
 				<default>openHAB</default>
 				<advanced>true</advanced>
 			</parameter>
