@@ -38,26 +38,7 @@ public class YeelightCeilingHandler extends YeelightHandlerBase {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Handle Ceiling Command {}", command);
-
-        // if device is disconnect, start discover to reconnect.
-        if (mDevice.isAutoConnect() && mDevice.getConnectionState() != ConnectState.CONNECTED) {
-            DeviceManager.getInstance().startDiscovery(5 * 1000);
-            return;
-        }
-
-        switch (channelUID.getId()) {
-            case YeelightBindingConstants.CHANNEL_BRIGHTNESS:
-                handleBrightnessChannelCommand(channelUID, command);
-                break;
-
-            case YeelightBindingConstants.CHANNEL_COLOR_TEMPERATURE:
-                handleColorTemperatureChannelCommand(channelUID, command);
-                break;
-
-            default:
-                break;
-        }
+        handleCommandHelper(channelUID, command, "Handle Ceiling Command {}");
     }
 
     @Override

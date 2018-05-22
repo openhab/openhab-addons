@@ -123,6 +123,34 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         }
     }
 
+    public void handleCommandHandler(ChannelUID channelUID, Command command, String logInfo) {
+        logger.debug(logInfo, command);
+
+        // If device is disconnected, start discover to reconnect.
+        if (mDevice.isAutoConnect() && mDevice.getConnectionState() != ConnectState.CONNECTED) {
+            DeviceManager.getInstance().startDiscovery(5 * 1000);
+            return;
+        }
+
+        if (command == "REFRESH"){
+            handleRefreshCommand();
+        }
+
+        switch (channelUID.getId()) {
+            case YeelightBindingConstants.CHANNEL_BRIGHTNESS:
+                handleBrightnessChannelCommand(channelUID, command);
+                break;
+            case YeelightBindingConstants.CHANNEL_COLOR:
+                handleColorChannelCommand(channelUID, command);
+                break;
+            case YeelightBindingConstants.CHANNEL_COLOR_TEMPERATURE:
+                handleColorTemperatureChannelCommand(channelUID, command);
+                break;
+            default:
+                break;
+        }
+    }
+
     /**
      * Channel Commands
      */
@@ -149,6 +177,10 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         } else if (command instanceof IncreaseDecreaseType) {
             handleIncreaseDecreaseBrightnessCommand(channelUID, (IncreaseDecreaseType) command);
         }
+    }
+
+    void handleRefreshCommand() {
+        DeviceManager.getInstance().startDiscovery(15 * 1000);
     }
 
     /**
