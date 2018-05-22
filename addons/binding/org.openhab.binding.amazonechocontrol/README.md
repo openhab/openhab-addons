@@ -48,7 +48,7 @@ The binding is tested with amazon.de, amazon.com and amazon.co.uk accounts, but 
 For the connection to the Amazon server, your password of the Amazon account is required, this will be stored in your openHAB thing device configuration.
 So you should be sure, that nobody other has access to your configuration! 
 
-## What else you should know
+## What Else You Should Know
 
 All the display options are updated by polling the amazon server.
 The polling time can be configured, but a minimum of 10 seconds is required.
@@ -66,14 +66,22 @@ It's not know, if there is a limit implemented in the amazon server if the polli
 | wha                  | Amazon Echo Whole House Audio Control |
 | flashbriefingprofile | Flash briefing profile                |
 
+## First Steps
+
+1) Create an 'Amazon Account' thing
+2) Configure your credentials in the account thing (2 factor authentication is not supported!)
+3) After confirmation:
+a) the 'Account Thing' goes Online -> continue with 4)
+b) the 'Account Thing' stays offline:  
+open the url YOUR_OPENHAB/amazonechocontrol in your browser (e.g. http://openhab:8080/amazonechocontrol/), click the link for your account thing and try to login.
+4) The echo device things get automatically discovered and can be accepted
+
 ## Discovery
 
-The first 'Amazon Account' thing will be automatically discovered.
-After configuration of the thing with the account data, a 'Amazon <???>' thing will be discovered for each registered device.
+After configuration of the account thing with the login data, the echo devices registered in the amazon account, get discovered.
 If the device type is not known by the binding, the device will not be discovered.
 But you can define any device listed in your alexa app with the best matching existing device (e.g. echo).
 You will find the required serial number in settings of the device in the alexa app.
-
 
 ## Binding Configuration
 
@@ -91,9 +99,7 @@ The Amazon Account thing needs the following configurations:
 | password                 | Password of your amazon account                                           |
 | pollingIntervalInSeconds | Polling interval for the device state in seconds. Default 30, minimum 10  |
 
-2 factor authentication is not supported!
-
-** HINT ** IMPORTANT: If the Account thing does not go online and reports a login error, open the url YOUR_OPENHAB/amazonechocontrol in your browser, click the link for your account thing (e.g. http://openhab:8080/amazonechocontrol/) and try to login.
+IMPORTANT: If the Account thing does not go online and reports a login error, read the instructions in "First Steps" above.
 
 ### Amazon Devices
 
