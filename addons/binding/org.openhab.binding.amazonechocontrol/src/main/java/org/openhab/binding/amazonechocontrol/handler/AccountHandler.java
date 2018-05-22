@@ -408,8 +408,10 @@ public class AccountHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
 
             logger.debug("refresh data {} finished", getThing().getUID().getAsString());
-        } catch (Exception e) {
-            logger.error("refresh data failed: {}", e);
+        } catch (HttpException | JsonSyntaxException | ConnectionException e) {
+            logger.debug("refresh data fails {}", e);
+        } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
+            logger.error("refresh data fails with unexpected error {}", e);
         }
     }
 
