@@ -38,7 +38,6 @@ public class YeelightCeilingHandler extends YeelightHandlerBase {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         logger.debug("Handle Ceiling Command {}", command);
 
         // if device is disconnect, start discover to reconnect.

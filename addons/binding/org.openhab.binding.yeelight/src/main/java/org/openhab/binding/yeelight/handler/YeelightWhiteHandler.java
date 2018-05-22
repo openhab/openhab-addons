@@ -36,7 +36,6 @@ public class YeelightWhiteHandler extends YeelightHandlerBase {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         logger.debug("Handle White Command {}", command);
 
         // if device is disconnect, start discover to reconnect.

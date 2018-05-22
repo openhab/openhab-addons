@@ -65,7 +65,7 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         DeviceManager.getInstance().addDevice(mDevice);
         mDevice.registerConnectStateListener(this);
         mDevice.registerStatusChangedListener(this);
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.UNKNOWN);
         DeviceManager.getInstance().startDiscovery(15 * 1000);
     }
 

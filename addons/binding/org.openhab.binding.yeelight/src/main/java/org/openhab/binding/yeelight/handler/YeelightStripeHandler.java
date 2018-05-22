@@ -35,7 +35,6 @@ public class YeelightStripeHandler extends YeelightHandlerBase {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         logger.debug("Handle Stripe Command {}", command);
 
         // if device is disconnect, start discover to reconnect.

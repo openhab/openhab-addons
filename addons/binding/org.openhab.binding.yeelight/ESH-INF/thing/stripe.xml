@@ -8,7 +8,6 @@
 		<description>Yeelight Color LED Stripe</description>
 
 		<channels>
-			<channel id="brightness" typeId="brightness" />
 			<channel id="color" typeId="color" />
 			<channel id="colorTemperature" typeId="colorTemperature" />
 		</channels>
