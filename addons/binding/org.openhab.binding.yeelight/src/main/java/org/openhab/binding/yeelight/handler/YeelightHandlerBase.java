@@ -123,7 +123,7 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         }
     }
 
-    public void handleCommandHandler(ChannelUID channelUID, Command command, String logInfo) {
+    public void handleCommandHelper(ChannelUID channelUID, Command command, String logInfo) {
         logger.debug(logInfo, command);
 
         // If device is disconnected, start discover to reconnect.

@@ -51,6 +51,5 @@ public class YeelightCeilingHandler extends YeelightHandlerBase {
             updateState(YeelightBindingConstants.CHANNEL_COLOR_TEMPERATURE,
                     new PercentType((status.getCt() - COLOR_TEMPERATURE_MINIMUM) / COLOR_TEMPERATURE_STEP));
         }
-
     }
 }
