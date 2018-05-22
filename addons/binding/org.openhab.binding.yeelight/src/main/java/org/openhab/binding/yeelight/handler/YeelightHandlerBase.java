@@ -132,8 +132,8 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
             return;
         }
 
-        if (command == "REFRESH"){
-            handleRefreshCommand();
+        if (command instanceof RefreshType){
+            DeviceManager.getInstance().startDiscovery(15 * 1000);
         }
 
         switch (channelUID.getId()) {
@@ -177,10 +177,6 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         } else if (command instanceof IncreaseDecreaseType) {
             handleIncreaseDecreaseBrightnessCommand(channelUID, (IncreaseDecreaseType) command);
         }
-    }
-
-    void handleRefreshCommand() {
-        DeviceManager.getInstance().startDiscovery(15 * 1000);
     }
 
     /**
