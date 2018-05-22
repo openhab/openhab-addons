@@ -50,10 +50,10 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
 
     @Nullable
     HttpService httpService;
-
-    boolean showIdsInGUI;
     @Nullable
     ServiceRegistration<?> discoverServiceRegistration;
+    @Nullable
+    BindingServlet bindingServlet;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -63,13 +63,19 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
-        Object configShowIdsInGui = componentContext.getProperties().get("showIdsInGUI");
-        showIdsInGUI = (configShowIdsInGui instanceof Boolean) ? (Boolean) configShowIdsInGui : false;
-
+        HttpService httpService = this.httpService;
+        if (bindingServlet == null && httpService != null) {
+            bindingServlet = new BindingServlet(httpService);
+        }
     }
 
     @Override
     protected void deactivate(ComponentContext componentContext) {
+        BindingServlet bindingServlet = this.bindingServlet;
+        this.bindingServlet = null;
+        if (bindingServlet != null) {
+            bindingServlet.dispose();
+        }
         super.deactivate(componentContext);
     }
 
@@ -83,16 +89,18 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
-
             AccountHandler bridgeHandler = new AccountHandler((Bridge) thing, httpService);
             registerDiscoveryService(bridgeHandler);
+            if (bindingServlet != null) {
+                bindingServlet.addAccountThing(thing);
+            }
             return bridgeHandler;
         }
         if (thingTypeUID.equals(THING_TYPE_FLASH_BRIEFING_PROFILE)) {
             return new FlashBriefingProfileHandler(thing);
         }
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new EchoHandler(thing, showIdsInGUI);
+            return new EchoHandler(thing);
         }
         return null;
     }
@@ -107,6 +115,11 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof AccountHandler) {
+            BindingServlet bindingServlet = this.bindingServlet;
+            if (bindingServlet != null) {
+                bindingServlet.removeAccountThing(thingHandler.getThing());
+            }
+
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegistrations
                     .get(thingHandler.getThing().getUID());
             if (serviceReg != null) {

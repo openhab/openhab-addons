@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 public class AmazonEchoControlBindingConstants {
 
     public static final String BINDING_ID = "amazonechocontrol";
+    public static final String BINDING_NAME = "Amazon Echo Control";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");

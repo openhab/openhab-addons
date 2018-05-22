@@ -93,7 +93,7 @@ The Amazon Account thing needs the following configurations:
 
 2 factor authentication is not supported!
 
-** HINT ** IMPORTANT: If the Account thing does not go online and reports a login error, open the url YOUR_OPENHAB/amazonechocontrol/ID_OF_ACCOUNT_THING (Replace YOUR_OPENHAB and ID_OF_ACCOUNT_THING with your configuration) in your browser (e.g. http://openhab:8080/amazonechocontrol/account1) and try to login.
+** HINT ** IMPORTANT: If the Account thing does not go online and reports a login error, open the url YOUR_OPENHAB/amazonechocontrol in your browser, click the link for your account thing (e.g. http://openhab:8080/amazonechocontrol/) and try to login.
 
 ### Amazon Devices
 
@@ -269,15 +269,11 @@ sitemap amzonechocontrol label="Echo Devices"
 ```
 
 ## How To Get IDs 
-Simple way to get the IDs required by the selection element or an rule:
 
-1) Open the Paper UI
-2) Navigate to the Configuration / Bindings section
-3) Click on the edit button (Pencil) of the Amazon Echo Control Binding
-4) Enable the 'Show IDs in the GUI' option and save it
-5) Navigate to the Control section
-6) Most of the channels which requires a ID show now a drop-down with the ID within []-brackets. 
-If there are no drop downs, check if you have defined the channel and sometimes a browser refresh helps.
+1) Open the url YOUR_OPENHAB/amazonechocontrol in your browser (e.g. http://openhab:8080/amazonechocontrol/)
+2) Click on the name of the account thing
+3) Click on the name of the echo thing 
+4) Scroll to the channel and copy the required ID
 
 ## Tutorials
 

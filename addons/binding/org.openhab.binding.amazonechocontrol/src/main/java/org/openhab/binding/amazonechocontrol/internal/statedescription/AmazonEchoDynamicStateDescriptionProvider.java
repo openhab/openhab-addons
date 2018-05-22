@@ -86,14 +86,6 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
         return thing.getHandler();
     }
 
-    StateOption createStateOption(@Nullable String id, @Nullable String displayValue, boolean showIdsInGUI) {
-        if (showIdsInGUI) {
-            return new StateOption(id, String.format("%s [%s]", displayValue, id));
-        } else {
-            return new StateOption(id, displayValue);
-        }
-    }
-
     @Override
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
@@ -125,7 +117,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                     continue;
                 }
                 if (device.address != null && device.friendlyName != null) {
-                    options.add(createStateOption(device.address, device.friendlyName, handler.getShowIdsInGUI()));
+                    options.add(new StateOption(device.address, device.friendlyName));
                 }
             }
             StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
@@ -162,9 +154,8 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                     if (innerLists != null && innerLists.length > 0) {
                         PlayList playList = innerLists[0];
                         if (playList.playlistId != null && playList.title != null) {
-                            options.add(createStateOption(playList.playlistId,
-                                    String.format("%s (%d)", playList.title, playList.trackCount),
-                                    handler.getShowIdsInGUI()));
+                            options.add(new StateOption(playList.playlistId,
+                                    String.format("%s (%d)", playList.title, playList.trackCount)));
                         }
                     }
                 }
@@ -201,8 +192,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 if (notificationSound.folder == null && notificationSound.providerId != null
                         && notificationSound.id != null && notificationSound.displayName != null) {
                     String providerSoundId = notificationSound.providerId + ":" + notificationSound.id;
-                    options.add(createStateOption(providerSoundId, notificationSound.displayName,
-                            handler.getShowIdsInGUI()));
+                    options.add(new StateOption(providerSoundId, notificationSound.displayName));
                 }
             }
             StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
@@ -256,7 +246,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                         && StringUtils.isNotEmpty(providerId)
                         && StringUtils.equals(musicProvider.availability, "AVAILABLE")
                         && StringUtils.isNotEmpty(displayName)) {
-                    options.add(createStateOption(providerId, displayName, handler.getShowIdsInGUI()));
+                    options.add(new StateOption(providerId, displayName));
                 }
             }
             StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
@@ -284,7 +274,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             for (FlashBriefingProfileHandler flashBriefing : flashbriefings) {
                 String value = FLASH_BRIEFING_COMMAND_PREFIX + flashBriefing.getThing().getUID().getId();
                 String displayName = flashBriefing.getThing().getLabel();
-                options.add(createStateOption(value, displayName, handler.getShowIdsInGUI()));
+                options.add(new StateOption(value, displayName));
             }
             StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
                     originalStateDescription.getMaximum(), originalStateDescription.getStep(),

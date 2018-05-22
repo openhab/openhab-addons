@@ -34,10 +34,10 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.amazonechocontrol.internal.AccountConfiguration;
+import org.openhab.binding.amazonechocontrol.internal.AccountServlet;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.HttpException;
-import org.openhab.binding.amazonechocontrol.internal.LoginServlet;
 import org.openhab.binding.amazonechocontrol.internal.StateStorage;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
@@ -67,10 +67,9 @@ public class AccountHandler extends BaseBridgeHandler {
     private Map<String, Device> jsonSerialNumberDeviceMapping = new HashMap<>();
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> refreshLogin;
-    private boolean discoverFlashProfiles;
     private String currentFlashBriefingJson = "";
     private final HttpService httpService;
-    private @Nullable LoginServlet loginServlet;
+    private @Nullable AccountServlet accountServlet;
     private final Gson gson = new Gson();
 
     public AccountHandler(Bridge bridge, HttpService httpService) {
@@ -116,8 +115,8 @@ public class AccountHandler extends BaseBridgeHandler {
                 this.connection = new Connection(email, password, amazonSite, this.getThing().getUID().getId());
             }
         }
-        if (this.loginServlet == null) {
-            this.loginServlet = new LoginServlet(httpService, this.getThing().getUID().getId(), this, config);
+        if (this.accountServlet == null) {
+            this.accountServlet = new AccountServlet(httpService, this.getThing().getUID().getId(), this, config);
         }
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
@@ -152,6 +151,17 @@ public class AccountHandler extends BaseBridgeHandler {
         if (connection != null) {
             initializeEchoHandler(echoHandler, connection);
         }
+    }
+
+    public @Nullable Thing findThingBySerialNumber(@Nullable String deviceSerialNumber) {
+        synchronized (echoHandlers) {
+            for (EchoHandler echoHandler : echoHandlers) {
+                if (StringUtils.equals(echoHandler.findSerialNumber(), deviceSerialNumber)) {
+                    return echoHandler.getThing();
+                }
+            }
+        }
+        return null;
     }
 
     public void addFlashBriefingProfileHandler(FlashBriefingProfileHandler flashBriefingProfileHandler) {
@@ -206,24 +216,22 @@ public class AccountHandler extends BaseBridgeHandler {
                 echoHandlers.remove(childHandler);
             }
         }
-
         // check for flash briefing profile handler
         if (childHandler instanceof FlashBriefingProfileHandler) {
             synchronized (flashBriefingProfileHandlers) {
                 flashBriefingProfileHandlers.remove(childHandler);
             }
         }
-
         super.childHandlerDisposed(childHandler, childThing);
     }
 
     @Override
     public void dispose() {
-        LoginServlet loginServlet = this.loginServlet;
-        if (loginServlet != null) {
-            loginServlet.dispose();
+        AccountServlet accountServlet = this.accountServlet;
+        if (accountServlet != null) {
+            accountServlet.dispose();
         }
-        this.loginServlet = null;
+        this.accountServlet = null;
         cleanup();
         super.dispose();
     }
@@ -486,7 +494,6 @@ public class AccountHandler extends BaseBridgeHandler {
     }
 
     public String getNewCurrentFlashbriefingConfiguration() {
-        discoverFlashProfiles = true;
         return updateFlashBriefingHandlers();
     }
 

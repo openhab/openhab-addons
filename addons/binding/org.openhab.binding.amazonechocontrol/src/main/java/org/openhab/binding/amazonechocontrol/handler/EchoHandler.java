@@ -82,13 +82,11 @@ public class EchoHandler extends BaseThingHandler {
     private boolean updateRoutine = true;
     private boolean updatePlayMusicVoiceCommand = true;
     private boolean updateStartCommand = true;
-    private boolean showIdsInGUI = false;
     private @Nullable JsonNotificationResponse currentNotification;
     private @Nullable ScheduledFuture<?> currentNotifcationUpdateTimer;
 
-    public EchoHandler(Thing thing, boolean showIdsInGUI) {
+    public EchoHandler(Thing thing) {
         super(thing);
-        this.showIdsInGUI = showIdsInGUI;
     }
 
     @Override
@@ -138,10 +136,6 @@ public class EchoHandler extends BaseThingHandler {
             updateStateJob.cancel(false);
         }
         super.dispose();
-    }
-
-    public boolean getShowIdsInGUI() {
-        return this.showIdsInGUI;
     }
 
     public @Nullable BluetoothState findBluetoothState() {
