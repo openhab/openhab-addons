@@ -13,38 +13,4 @@
 		</channels>
 	</thing-type>
 
-	<!-- Brightness Channel -->
-	<channel-type id="brightness">
-		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
-		<description>The brightness channel allows to control the brightness of a light.
-			It is also possible to switch the light on and off.
-		</description>
-		<category>DimmableLight</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
-	</channel-type>
-
-	<!-- Color Channel -->
-	<channel-type id="color">
-		<item-type>Color</item-type>
-		<label>Color</label>
-		<description>The color channel allows to control the color of a light.</description>
-		<category>ColorLight</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
-	</channel-type>
-
-	<!-- Color Temperature Channel -->
-	<channel-type id="colorTemperature">
-		<item-type>Dimmer</item-type>
-		<label>ColorTemperature</label>
-		<description>The CT channel allows to control the CT of a light.</description>
-		<category>DimmableCT</category>
-		<tags>
-			<tag>ColorTemperature</tag>
-		</tags>
-	</channel-type>
 </thing:thing-descriptions>

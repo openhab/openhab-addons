@@ -37,6 +37,14 @@ fixed period of time (this is to refresh its state). The message is sent to a mu
 with some basic information. The receiver of the message should not respond to the
 advertisement.
 
+## Thing Configuration
+
+The Yeelight thing requires the `deviceId` from the device it should be connected to.
+
+| Parameter           | Values                                    | Default |
+|---------------------|-------------------------------------------|---------|
+| deviceId            | ID of the Yeelight device                 | -       |
+
 ## Channels
 
 All devices support some of the following channels:
@@ -52,11 +60,11 @@ Channel | openHAB Type | Description
 Things:
 
 ```
-Thing yeelight:stripe:deviceId
+Thing yeelight:stripe:1 [ deviceId="0x000000000321a1bc" ]
 ```
 
 Items:
 
 ```
-Dimmer Brightness { channel="yeelight:stripe:deviceId:brightness" }
+Dimmer Brightness { channel="yeelight:stripe:1:brightness" }
 ```

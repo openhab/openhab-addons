@@ -54,7 +54,6 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     }
 
     protected void updateUI(DeviceStatus status) {
-        thing.setLabel(status.getName().isEmpty() ? DeviceManager.getDefaultName(mDevice) : status.getName());
     }
 
     @Override

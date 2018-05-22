@@ -5,36 +5,12 @@
 
 	<thing-type id="ceiling">
 		<label>Yeelight LED Ceiling</label>
-		<description>Yeelight LED Ceiling</description>
+		<description>Yeelight LED Ceiling lamp</description>
 
 		<channels>
 			<channel id="brightness" typeId="brightness" />
 			<channel id="colorTemperature" typeId="colorTemperature" />
 		</channels>
 	</thing-type>
-
-	<!-- Brightness Channel -->
-	<channel-type id="brightness">
-		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
-		<description>The brightness channel allows to control the brightness of a light.
-			It is also possible to switch the light on and off.
-		</description>
-		<category>DimmableLight</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
-	</channel-type>
-
-	<!-- Color Temperature Channel -->
-	<channel-type id="colorTemperature">
-		<item-type>Dimmer</item-type>
-		<label>ColorTemperature</label>
-		<description>The CT channel allows to control the CT of a light.</description>
-		<category>DimmableCT</category>
-		<tags>
-			<tag>ColorTemperature</tag>
-		</tags>
-	</channel-type>
 
 </thing:thing-descriptions>
