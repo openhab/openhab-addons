@@ -98,10 +98,24 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
         }
     }
 
+    protected void invalidateParentCacheAndRefresh() {
+        // Leave a bit of time to Netatmo Server to get in sync with new values sent
+        setRefreshRequired(true);
+        scheduler.schedule(() -> {
+            invalidateParentCache();
+            requestParentRefresh();
+        }, 1800, TimeUnit.MILLISECONDS);
+    }
+
     protected void requestParentRefresh() {
         setRefreshRequired(true);
         Optional<AbstractNetatmoThingHandler> parent = getBridgeHandler().findNAThing(getParentId());
         parent.ifPresent(AbstractNetatmoThingHandler::updateChannels);
+    }
+
+    private void invalidateParentCache() {
+        Optional<AbstractNetatmoThingHandler> parent = getBridgeHandler().findNAThing(getParentId());
+        parent.map(NetatmoDeviceHandler.class::cast).ifPresent(NetatmoDeviceHandler::expireData);
     }
 
     protected void updateProperties(MODULE moduleData) {
