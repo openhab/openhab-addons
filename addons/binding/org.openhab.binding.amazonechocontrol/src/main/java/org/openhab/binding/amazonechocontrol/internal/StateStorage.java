@@ -81,17 +81,15 @@ public class StateStorage {
     }
 
     private void saveProperties() {
-        try {
-            Properties properties = initProperties();
-            logger.debug("Create file {}.", propertyFile);
-            String directoryName = propertyFile.getParent();
-            File directory = new File(directoryName);
-            if (!directory.exists()) {
-                directory.mkdirs();
-            }
-            try (FileWriter fileWriter = new FileWriter(propertyFile)) {
-                properties.store(fileWriter, "Save properties");
-            }
+        Properties properties = initProperties();
+        logger.debug("Create file {}.", propertyFile);
+        String directoryName = propertyFile.getParent();
+        File directory = new File(directoryName);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+        try (FileWriter fileWriter = new FileWriter(propertyFile)) {
+            properties.store(fileWriter, "Save properties");
         } catch (IOException e) {
             logger.error("Saving properties failed {}", e);
         }
@@ -102,10 +100,8 @@ public class StateStorage {
         if (result == null) {
             result = new Properties();
             if (propertyFile.exists()) {
-                try {
-                    try (FileReader fileReader = new FileReader(propertyFile)) {
-                        result.load(fileReader);
-                    }
+                try (FileReader fileReader = new FileReader(propertyFile)) {
+                    result.load(fileReader);
                 } catch (IOException e) {
                     logger.error("Error occured on writing the property file.", e);
                 }
