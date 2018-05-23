@@ -8,7 +8,8 @@
  */
 package org.openhab.binding.yeelight.internal;
 
-import com.google.common.collect.Sets;
+import java.util.HashSet;
+import java.util.Set;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -29,8 +30,8 @@ import static org.openhab.binding.yeelight.YeelightBindingConstants.*;
  */
 public class YeelightHandlerFactory extends BaseThingHandlerFactory {
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_CEILING,
-            THING_TYPE_DOLPHIN, THING_TYPE_WONDER, THING_TYPE_STRIPE);
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(THING_TYPE_CEILING,
+            THING_TYPE_DOLPHIN, THING_TYPE_WONDER, THING_TYPE_STRIPE));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
