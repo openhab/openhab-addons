@@ -17,6 +17,8 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.storage.Storage;
+import org.eclipse.smarthome.core.storage.StorageService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -50,6 +52,8 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
 
     @Nullable
     HttpService httpService;
+    @Nullable
+    StorageService storageService;
     @Nullable
     BindingServlet bindingServlet;
 
@@ -85,9 +89,15 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
         if (httpService == null) {
             return null;
         }
+        StorageService storageService = this.storageService;
+        if (storageService == null) {
+            return null;
+        }
 
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
-            AccountHandler bridgeHandler = new AccountHandler((Bridge) thing, httpService);
+            Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
+                    String.class.getClassLoader());
+            AccountHandler bridgeHandler = new AccountHandler((Bridge) thing, httpService, storage);
             registerDiscoveryService(bridgeHandler);
             if (bindingServlet != null) {
                 bindingServlet.addAccountThing(thing);
@@ -95,7 +105,9 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
             return bridgeHandler;
         }
         if (thingTypeUID.equals(THING_TYPE_FLASH_BRIEFING_PROFILE)) {
-            return new FlashBriefingProfileHandler(thing);
+            Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
+                    String.class.getClassLoader());
+            return new FlashBriefingProfileHandler(thing, storage);
         }
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new EchoHandler(thing);
@@ -139,5 +151,14 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
 
     protected void unsetHttpService(HttpService httpService) {
         this.httpService = null;
+    }
+
+    @Reference
+    protected void setStorageService(StorageService storageService) {
+        this.storageService = storageService;
+    }
+
+    protected void unsetStorageService(StorageService storageService) {
+        this.storageService = null;
     }
 }

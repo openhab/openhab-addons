@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.storage.Storage;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -45,14 +46,20 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
 
     @Nullable
     AccountHandler accountHandler;
-    StateStorage stateStorage;
+    Storage<String> stateStorage;
     boolean updatePlayOnDevice = true;
     String currentConfigurationJson = "";
     private @Nullable ScheduledFuture<?> updateStateJob;
 
-    public FlashBriefingProfileHandler(Thing thing) {
+    public FlashBriefingProfileHandler(Thing thing, Storage<String> storage) {
         super(thing);
-        stateStorage = new StateStorage(thing);
+        this.stateStorage = storage;
+        StateStorage oldStorage = new StateStorage(thing);
+        String configurationJson = oldStorage.findState("configurationJson");
+        if (configurationJson != null) {
+            this.stateStorage.put("configurationJson", configurationJson);
+            oldStorage.storeState("configurationJson", null);
+        }
     }
 
     public @Nullable AccountHandler findAccountHandler() {
@@ -167,7 +174,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
         }
         if (this.accountHandler != handler) {
             this.accountHandler = handler;
-            String configurationJson = this.stateStorage.findState("configurationJson");
+            String configurationJson = this.stateStorage.get("configurationJson");
             if (configurationJson == null || configurationJson.isEmpty()) {
                 this.currentConfigurationJson = saveCurrentProfile(handler);
             } else {
@@ -193,7 +200,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
         configurationJson = connection.getEnabledFlashBriefingsJson();
         this.currentConfigurationJson = configurationJson;
         if (!configurationJson.isEmpty()) {
-            this.stateStorage.storeState("configurationJson", configurationJson);
+            this.stateStorage.put("configurationJson", configurationJson);
         }
         return configurationJson;
     }

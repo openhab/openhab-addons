@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.storage.Storage;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -59,7 +60,7 @@ import com.google.gson.JsonSyntaxException;
 public class AccountHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
-    private StateStorage stateStorage;
+    private Storage<String> stateStorage;
     private @Nullable Connection connection;
     private final Set<EchoHandler> echoHandlers = new HashSet<>();
     private final Set<FlashBriefingProfileHandler> flashBriefingProfileHandlers = new HashSet<>();
@@ -72,10 +73,16 @@ public class AccountHandler extends BaseBridgeHandler {
     private @Nullable AccountServlet accountServlet;
     private final Gson gson = new Gson();
 
-    public AccountHandler(Bridge bridge, HttpService httpService) {
+    public AccountHandler(Bridge bridge, HttpService httpService, Storage<String> stateStorage) {
         super(bridge);
         this.httpService = httpService;
-        stateStorage = new StateStorage(bridge);
+        this.stateStorage = stateStorage;
+        StateStorage oldStorage = new StateStorage(thing);
+        String sessionStorage = oldStorage.findState("sessionStorage");
+        if (sessionStorage != null) {
+            this.stateStorage.put("sessionStorage", sessionStorage);
+            oldStorage.storeState("sessionStorage", null);
+        }
     }
 
     @Override
@@ -284,7 +291,7 @@ public class AccountHandler extends BaseBridgeHandler {
                 if (loginTime != null && currentTime - loginTime.getTime() > 86400000 * 5) // 5 days
                 {
                     // Recreate session
-                    this.stateStorage.storeState("sessionStorage", "");
+                    this.stateStorage.put("sessionStorage", "");
                     currentConnection = new Connection(currentConnection.getEmail(), currentConnection.getPassword(),
                             currentConnection.getAmazonSite(), this.getThing().getUID().getId());
                 }
@@ -293,7 +300,7 @@ public class AccountHandler extends BaseBridgeHandler {
                     try {
 
                         // read session data from property
-                        String sessionStore = this.stateStorage.findState("sessionStorage");
+                        String sessionStore = this.stateStorage.get("sessionStorage");
 
                         // try use the session data
                         if (!currentConnection.tryRestoreLogin(sessionStore)) {
@@ -321,7 +328,7 @@ public class AccountHandler extends BaseBridgeHandler {
                             }
                             // store session data in property
                             String serializedStorage = currentConnection.serializeLoginData();
-                            this.stateStorage.storeState("sessionStorage", serializedStorage);
+                            this.stateStorage.put("sessionStorage", serializedStorage);
                         }
                         this.connection = currentConnection;
                     } catch (ConnectionException e) {
@@ -362,7 +369,7 @@ public class AccountHandler extends BaseBridgeHandler {
     public void setConnection(Connection connection) {
         this.connection = connection;
         String serializedStorage = connection.serializeLoginData();
-        this.stateStorage.storeState("sessionStorage", serializedStorage);
+        this.stateStorage.put("sessionStorage", serializedStorage);
         handleValidLogin();
     }
 
