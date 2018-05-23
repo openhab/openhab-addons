@@ -19,8 +19,6 @@ import org.openhab.binding.yeelight.handler.YeelightColorHandler;
 import org.openhab.binding.yeelight.handler.YeelightStripeHandler;
 import org.openhab.binding.yeelight.handler.YeelightWhiteHandler;
 
-import java.util.Set;
-
 import static org.openhab.binding.yeelight.YeelightBindingConstants.*;
 
 /**
@@ -29,9 +27,13 @@ import static org.openhab.binding.yeelight.YeelightBindingConstants.*;
  * @author Coaster Li - Initial contribution
  */
 public class YeelightHandlerFactory extends BaseThingHandlerFactory {
-
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(THING_TYPE_CEILING,
-            THING_TYPE_DOLPHIN, THING_TYPE_WONDER, THING_TYPE_STRIPE));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
+    static {
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CEILING);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_DOLPHIN);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_WONDER);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_STRIPE);
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -45,13 +47,17 @@ public class YeelightHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_DOLPHIN)) {
             return new YeelightWhiteHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_WONDER)) {
+        }
+        else if (thingTypeUID.equals(THING_TYPE_WONDER)) {
             return new YeelightColorHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_STRIPE)) {
+        }
+        else if (thingTypeUID.equals(THING_TYPE_STRIPE)) {
             return new YeelightStripeHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_CEILING)) {
+        }
+        else if (thingTypeUID.equals(THING_TYPE_CEILING)) {
             return new YeelightCeilingHandler(thing);
-        } else {
+        }
+        else {
             return null;
         }
     }
