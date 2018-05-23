@@ -5,7 +5,7 @@
 		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>Yeelight Binding</name>
-	<description>This is the binding for Yeelight product.</description>
+	<description>This is the binding for Yeelight products.</description>
 	<author>Coaster Li</author>
 
 </binding:binding>
