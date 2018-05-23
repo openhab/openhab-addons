@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This servlet provides the base navigation page, with hyperlinks for the defined account things
- * 
+ *
  * @author Michael Geramb - Initial Contribution
  */
 @NonNullByDefault
@@ -99,8 +99,9 @@ public class BindingServlet extends HttpServlet {
         }
 
         StringBuilder html = new StringBuilder();
-        html.append("<html><head><title>" + StringEscapeUtils.escapeHtml(BINDING_NAME) + "</title><head><body>");
-        html.append("<h1>" + StringEscapeUtils.escapeHtml(BINDING_NAME) + "</h1>");
+        html.append(
+                "<html><head><title>" + StringEscapeUtils.escapeHtml(BINDING_NAME + " RC3") + "</title><head><body>");
+        html.append("<h1>" + StringEscapeUtils.escapeHtml(BINDING_NAME + " RC3") + "</h1>");
 
         synchronized (accountHandlers) {
             if (accountHandlers.isEmpty()) {
