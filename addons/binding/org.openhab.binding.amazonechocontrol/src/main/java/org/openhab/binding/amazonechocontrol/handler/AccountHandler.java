@@ -39,7 +39,6 @@ import org.openhab.binding.amazonechocontrol.internal.AccountServlet;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.HttpException;
-import org.openhab.binding.amazonechocontrol.internal.StateStorage;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
@@ -77,12 +76,6 @@ public class AccountHandler extends BaseBridgeHandler {
         super(bridge);
         this.httpService = httpService;
         this.stateStorage = stateStorage;
-        StateStorage oldStorage = new StateStorage(thing);
-        String sessionStorage = oldStorage.findState("sessionStorage");
-        if (sessionStorage != null) {
-            this.stateStorage.put("sessionStorage", sessionStorage);
-            oldStorage.storeState("sessionStorage", null);
-        }
     }
 
     @Override

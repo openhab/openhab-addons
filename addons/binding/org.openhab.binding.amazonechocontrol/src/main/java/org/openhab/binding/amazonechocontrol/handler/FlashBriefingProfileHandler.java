@@ -29,7 +29,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
-import org.openhab.binding.amazonechocontrol.internal.StateStorage;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,12 +53,6 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
     public FlashBriefingProfileHandler(Thing thing, Storage<String> storage) {
         super(thing);
         this.stateStorage = storage;
-        StateStorage oldStorage = new StateStorage(thing);
-        String configurationJson = oldStorage.findState("configurationJson");
-        if (configurationJson != null) {
-            this.stateStorage.put("configurationJson", configurationJson);
-            oldStorage.storeState("configurationJson", null);
-        }
     }
 
     public @Nullable AccountHandler findAccountHandler() {
