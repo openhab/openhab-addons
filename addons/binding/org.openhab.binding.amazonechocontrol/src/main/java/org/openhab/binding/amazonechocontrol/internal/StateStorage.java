@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class StateStorage {
-
     private final Logger logger = LoggerFactory.getLogger(StateStorage.class);
 
     File propertyFile;
@@ -90,10 +89,9 @@ public class StateStorage {
             if (!directory.exists()) {
                 directory.mkdirs();
             }
-
-            FileWriter fileWriter = new FileWriter(propertyFile);
-            properties.store(fileWriter, "Save properties");
-            fileWriter.close();
+            try (FileWriter fileWriter = new FileWriter(propertyFile)) {
+                properties.store(fileWriter, "Save properties");
+            }
         } catch (IOException e) {
             logger.error("Saving properties failed {}", e);
         }
@@ -105,9 +103,9 @@ public class StateStorage {
             result = new Properties();
             if (propertyFile.exists()) {
                 try {
-                    FileReader fileReader = new FileReader(propertyFile);
-                    result.load(fileReader);
-                    fileReader.close();
+                    try (FileReader fileReader = new FileReader(propertyFile)) {
+                        result.load(fileReader);
+                    }
                 } catch (IOException e) {
                     logger.error("Error occured on writing the property file.", e);
                 }

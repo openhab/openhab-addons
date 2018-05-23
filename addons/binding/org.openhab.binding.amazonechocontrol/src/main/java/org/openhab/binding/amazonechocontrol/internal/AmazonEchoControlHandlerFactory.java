@@ -51,8 +51,6 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
     @Nullable
     HttpService httpService;
     @Nullable
-    ServiceRegistration<?> discoverServiceRegistration;
-    @Nullable
     BindingServlet bindingServlet;
 
     @Override
