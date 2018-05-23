@@ -99,6 +99,7 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
                     String.class.getClassLoader());
             AccountHandler bridgeHandler = new AccountHandler((Bridge) thing, httpService, storage);
             registerDiscoveryService(bridgeHandler);
+            BindingServlet bindingServlet = this.bindingServlet;
             if (bindingServlet != null) {
                 bindingServlet.addAccountThing(thing);
             }
