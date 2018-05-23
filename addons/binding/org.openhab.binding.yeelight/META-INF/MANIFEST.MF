@@ -8,7 +8,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/yeelight_lib.jar
 Import-Package:
- import java.util,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,

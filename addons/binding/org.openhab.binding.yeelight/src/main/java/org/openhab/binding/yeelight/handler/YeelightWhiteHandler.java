@@ -43,10 +43,11 @@ public class YeelightWhiteHandler extends YeelightHandlerBase {
     protected void updateUI(DeviceStatus status) {
         super.updateUI(status);
         if (status.isPowerOff()) {
-            logger.debug("Device is power off!");
+            logger.debug("Device is powered off!");
             updateState(YeelightBindingConstants.CHANNEL_BRIGHTNESS, new PercentType(0));
-        } else {
-            logger.debug("Device is power on!");
+        }
+        else {
+            logger.debug("Device is powered on!");
             updateState(YeelightBindingConstants.CHANNEL_BRIGHTNESS, new PercentType(status.getBrightness()));
         }
     }

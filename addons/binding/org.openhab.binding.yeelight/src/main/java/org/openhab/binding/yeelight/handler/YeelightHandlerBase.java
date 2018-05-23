@@ -10,6 +10,10 @@ package org.openhab.binding.yeelight.handler;
 
 import static org.openhab.binding.yeelight.YeelightBindingConstants.*;
 
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -72,13 +76,17 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     private DeviceType getDeviceModel(ThingTypeUID typeUID) {
         if (typeUID.equals(YeelightBindingConstants.THING_TYPE_CEILING)) {
             return DeviceType.ceiling;
-        } else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_WONDER)) {
+        }
+        else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_WONDER)) {
             return DeviceType.color;
-        } else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_DOLPHIN)) {
+        }
+        else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_DOLPHIN)) {
             return DeviceType.mono;
-        } else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_STRIPE)) {
+        }
+        else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_STRIPE)) {
             return DeviceType.stripe;
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -88,17 +96,15 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         logger.debug("onConnectionStateChanged -> {}", connectState.name());
         switch (connectState) {
             case DISCONNECTED:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device is offline !");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device is offline!");
                 if (mDevice.isAutoConnect()) {
                     DeviceManager.sInstance.startDiscovery(5 * 1000);
                 }
                 break;
-
             case CONNECTED:
                 updateStatus(ThingStatus.ONLINE);
                 mDevice.queryStatus();
                 break;
-
             default:
                 break;
         }
@@ -110,17 +116,10 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         super.channelLinked(channelUID);
 
         if (channelUID.getId().equals(YeelightBindingConstants.CHANNEL_BRIGHTNESS)) {
-
             Runnable task = () -> {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    logger.debug("Sleep interrupted setting channel brightness", e);
-                }
                 mDevice.queryStatus();
             };
-
-            new Thread(task).start();
+            scheduler.schedule(task, 500, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -132,11 +131,9 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
             DeviceManager.getInstance().startDiscovery(5 * 1000);
             return;
         }
-
         if (command instanceof RefreshType){
             DeviceManager.getInstance().startDiscovery(15 * 1000);
         }
-
         switch (channelUID.getId()) {
             case YeelightBindingConstants.CHANNEL_BRIGHTNESS:
                 handleBrightnessChannelCommand(channelUID, command);
@@ -159,9 +156,11 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     void handleBrightnessChannelCommand(ChannelUID channelUID, Command command) {
         if (command instanceof PercentType) {
             handlePercentMessage(channelUID, (PercentType) command);
-        } else if (command instanceof OnOffType) {
+        }
+        else if (command instanceof OnOffType) {
             handleOnOffCommand(channelUID, (OnOffType) command);
-        } else if (command instanceof IncreaseDecreaseType) {
+        }
+        else if (command instanceof IncreaseDecreaseType) {
             handleIncreaseDecreaseBrightnessCommand(channelUID, (IncreaseDecreaseType) command);
         }
     }
@@ -175,7 +174,8 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     void handleColorTemperatureChannelCommand(ChannelUID channelUID, Command command) {
         if (command instanceof PercentType) {
             handleColorTemperatureCommand(channelUID, (PercentType) command);
-        } else if (command instanceof IncreaseDecreaseType) {
+        }
+        else if (command instanceof IncreaseDecreaseType) {
             handleIncreaseDecreaseBrightnessCommand(channelUID, (IncreaseDecreaseType) command);
         }
     }
@@ -216,7 +216,8 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     void handlePercentMessage(ChannelUID channelUID, PercentType brightness) {
         if (brightness.intValue() == 0) {
             DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(), DeviceAction.close);
-        } else {
+        }
+        else {
             if (mDevice.getDeviceStatus().isPowerOff()) {
                 DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(), DeviceAction.open);
             }
@@ -235,12 +236,14 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     void updateBrightnessAndColorUI(DeviceStatus status) {
         if (status.isPowerOff()) {
             updateState(YeelightBindingConstants.CHANNEL_BRIGHTNESS, new PercentType(0));
-        } else {
+        }
+        else {
             updateState(YeelightBindingConstants.CHANNEL_BRIGHTNESS, new PercentType(status.getBrightness()));
             HSBType hsbType = null;
             if (status.getMode() == DeviceMode.MODE_COLOR) {
                 hsbType = HSBType.fromRGB(status.getR(), status.getG(), status.getB());
-            } else if (status.getMode() == DeviceMode.MODE_HSV) {
+            }
+            else if (status.getMode() == DeviceMode.MODE_HSV) {
                 hsbType = new HSBType(new DecimalType(status.getHue()), new PercentType(status.getSat()),
                         new PercentType(1));
             }
