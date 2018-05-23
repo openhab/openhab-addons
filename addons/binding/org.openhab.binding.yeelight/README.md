@@ -66,5 +66,5 @@ Thing yeelight:stripe:1 [ deviceId="0x000000000321a1bc" ]
 Items:
 
 ```
-Dimmer Brightness { channel="yeelight:stripe:1:brightness" }
+Color YeelightLEDColor { channel="yeelight:stripe:1:color" }
 ```
