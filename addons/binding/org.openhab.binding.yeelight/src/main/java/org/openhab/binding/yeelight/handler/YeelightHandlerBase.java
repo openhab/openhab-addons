@@ -126,13 +126,12 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     public void handleCommandHelper(ChannelUID channelUID, Command command, String logInfo) {
         logger.debug(logInfo, command);
 
-        // If device is disconnected, start discover to reconnect.
+        // If device is disconnected, start discovery to reconnect.
         if (mDevice.isAutoConnect() && mDevice.getConnectionState() != ConnectState.CONNECTED) {
             DeviceManager.getInstance().startDiscovery(5 * 1000);
-            return;
         }
         if (command instanceof RefreshType){
-            DeviceManager.getInstance().startDiscovery(15 * 1000);
+            DeviceManager.getInstance().startDiscovery(5 * 1000);
         }
         switch (channelUID.getId()) {
             case YeelightBindingConstants.CHANNEL_BRIGHTNESS:
