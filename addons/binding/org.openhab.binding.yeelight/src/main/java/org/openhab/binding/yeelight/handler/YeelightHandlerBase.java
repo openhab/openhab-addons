@@ -135,53 +135,62 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         }
         switch (channelUID.getId()) {
             case YeelightBindingConstants.CHANNEL_BRIGHTNESS:
-                handleBrightnessChannelCommand(channelUID, command);
+                if (command instanceof PercentType) {
+                    handlePercentMessage(channelUID, (PercentType) command);
+                }
+                else if (command instanceof OnOffType) {
+                    handleOnOffCommand(channelUID, (OnOffType) command);
+                }
+                else if (command instanceof IncreaseDecreaseType) {
+                    handleIncreaseDecreaseBrightnessCommand(channelUID, (IncreaseDecreaseType) command);
+                }
                 break;
             case YeelightBindingConstants.CHANNEL_COLOR:
-                handleColorChannelCommand(channelUID, command);
+                if (command instanceof HSBType) {
+                    HSBType hsbCommand = (HSBType) command;
+                    if (hsbCommand.getBrightness().intValue() == 0) {
+                        handleOnOffCommand(channelUID, OnOffType.OFF);
+                    }
+                    else {
+                        handleHSBCommand(channelUID, hsbCommand);
+                    }
+                }
+                else if (command instanceof PercentType) {
+                    handlePercentMessage(channelUID, (PercentType) command);
+                }
+                else if (command instanceof OnOffType) {
+                    handleOnOffCommand(channelUID, (OnOffType) command);
+                }
+                else if (command instanceof IncreaseDecreaseType) {
+                    handleIncreaseDecreaseBrightnessCommand(channelUID, (IncreaseDecreaseType) command);
+                }
                 break;
             case YeelightBindingConstants.CHANNEL_COLOR_TEMPERATURE:
-                handleColorTemperatureChannelCommand(channelUID, command);
+                if (command instanceof PercentType) {
+                    handleColorTemperatureCommand(channelUID, (PercentType) command);
+                }
+                else if (command instanceof IncreaseDecreaseType) {
+                    handleIncreaseDecreaseBrightnessCommand(channelUID, (IncreaseDecreaseType) command);
+                }
                 break;
             default:
                 break;
         }
     }
 
-    /**
-     * Channel Commands
-     */
-
-    void handleBrightnessChannelCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof PercentType) {
-            handlePercentMessage(channelUID, (PercentType) command);
+    void handlePercentMessage(ChannelUID channelUID, PercentType brightness) {
+        if (brightness.intValue() == 0) {
+            DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(), DeviceAction.close);
         }
-        else if (command instanceof OnOffType) {
-            handleOnOffCommand(channelUID, (OnOffType) command);
-        }
-        else if (command instanceof IncreaseDecreaseType) {
-            handleIncreaseDecreaseBrightnessCommand(channelUID, (IncreaseDecreaseType) command);
+        else {
+            if (mDevice.getDeviceStatus().isPowerOff()) {
+                DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(), DeviceAction.open);
+            }
+            DeviceAction baction = DeviceAction.brightness;
+            baction.putValue(brightness.intValue());
+            DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(), baction);
         }
     }
-
-    void handleColorChannelCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof HSBType) {
-            handleHSBCommand(channelUID, (HSBType) command);
-        }
-    }
-
-    void handleColorTemperatureChannelCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof PercentType) {
-            handleColorTemperatureCommand(channelUID, (PercentType) command);
-        }
-        else if (command instanceof IncreaseDecreaseType) {
-            handleIncreaseDecreaseBrightnessCommand(channelUID, (IncreaseDecreaseType) command);
-        }
-    }
-
-    /**
-     * Individual Messages
-     */
 
     void handleIncreaseDecreaseBrightnessCommand(ChannelUID channelUID, IncreaseDecreaseType increaseDecrease) {
         DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(),
@@ -210,20 +219,6 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         DeviceAction ctaction = DeviceAction.colortemperature;
         ctaction.putValue(COLOR_TEMPERATURE_STEP * ct.intValue() + COLOR_TEMPERATURE_MINIMUM);
         DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(), ctaction);
-    }
-
-    void handlePercentMessage(ChannelUID channelUID, PercentType brightness) {
-        if (brightness.intValue() == 0) {
-            DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(), DeviceAction.close);
-        }
-        else {
-            if (mDevice.getDeviceStatus().isPowerOff()) {
-                DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(), DeviceAction.open);
-            }
-            DeviceAction baction = DeviceAction.brightness;
-            baction.putValue(brightness.intValue());
-            DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(), baction);
-        }
     }
 
     @Override
