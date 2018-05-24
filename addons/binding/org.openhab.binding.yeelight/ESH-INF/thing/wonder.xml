@@ -13,10 +13,7 @@
 		</channels>
 
 		<config-description>
-			<parameter-group name="connectionSettings">
-				<label>General Connection Settings</label>
-			</parameter-group>
-			<parameter name="deviceId" type="text" required="true" groupName="connectionSettings">
+			<parameter name="deviceId" type="text" required="true">
 					<context>deviceId</context>
 					<label>Id of the Yeelight device</label>
 					<description>Id of the Yeelight device to connect with.</description>
