@@ -35,8 +35,8 @@ In case it is offline you should see an error message.
 demo.items:
 
 ```
-Number SolarPower "Solar power [%.2f Watt]" <energy> (gGF) { channel="kostalinverter:kostalinverter:inverter:acPower" }
-Number SolarEnergyDay "Solar day energy[%.2f kwh]" <energy> (gGF)  { channel="kostalinverter:kostalinverter:inverter:dayEnergy" }
-Number SolarTotalEnergy "Solar total energy[%.2f kwh]" <energy> (gGF) { channel="kostalinverter:kostalinverter:inverter:totalEnergy" }
-String SolarStatus "Solar status [%s]" <energy> (gGF) { channel="kostalinverter:kostalinverter:inverter:status" }
+Number:Power SolarPower "Solar power [%.1f %unit%]" <energy> { channel="kostalinverter:kostalinverter:inverter:acPower" }
+Number:Energy SolarEnergyDay "Solar day energy [%.3f %unit%]" <energy> { channel="kostalinverter:kostalinverter:inverter:dayEnergy" }
+Number:Energy SolarTotalEnergy "Solar total energy [%.3f %unit%]" <energy> { channel="kostalinverter:kostalinverter:inverter:totalEnergy" }
+String SolarStatus "Solar status [%s]" <energy> { channel="kostalinverter:kostalinverter:inverter:status" }
 ```
