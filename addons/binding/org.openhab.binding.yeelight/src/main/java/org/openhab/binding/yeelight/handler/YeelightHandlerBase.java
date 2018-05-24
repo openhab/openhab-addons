@@ -74,7 +74,7 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         DeviceManager.getInstance().addDevice(mDevice);
         mDevice.registerConnectStateListener(this);
         mDevice.registerStatusChangedListener(this);
-        updateStatus(ThingStatus.UNKNOWN);
+        updateStatusHelper(mDevice.getConnectionState());
         DeviceManager.getInstance().startDiscovery(15 * 1000);
     }
 
@@ -99,6 +99,10 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     @Override
     public void onConnectionStateChanged(ConnectState connectState) {
         logger.debug("onConnectionStateChanged -> {}", connectState.name());
+        updateStatusHelper(connectState);
+    }
+
+    public void updateStatusHelper(ConnectState connectState) {
         switch (connectState) {
             case DISCONNECTED:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device is offline!");
@@ -111,6 +115,7 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
                 mDevice.queryStatus();
                 break;
             default:
+                updateStatus(ThingStatus.UNKNOWN);
                 break;
         }
     }
