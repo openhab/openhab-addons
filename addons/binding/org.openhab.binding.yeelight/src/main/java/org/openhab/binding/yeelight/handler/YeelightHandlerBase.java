@@ -137,6 +137,21 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         }
         if (command instanceof RefreshType){
             DeviceManager.getInstance().startDiscovery(5 * 1000);
+            switch (channelUID.getId()) {
+                //TODO: Add missing update functions, but lib does not seem to support that currently.
+                case YeelightBindingConstants.CHANNEL_BRIGHTNESS:
+                    //updateState(channelUID, getBrightness());
+                    break;
+                case YeelightBindingConstants.CHANNEL_COLOR:
+                    //updateState(channelUID, getColor());
+                    break;
+                case YeelightBindingConstants.CHANNEL_COLOR_TEMPERATURE:
+                    //updateState(channelUID, getColorTemperature());
+                    break;
+                default:
+                    break;
+            }
+            return;
         }
         switch (channelUID.getId()) {
             case YeelightBindingConstants.CHANNEL_BRIGHTNESS:
