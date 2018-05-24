@@ -76,7 +76,8 @@ public class DiscoveryService extends AbstractDiscoveryService implements Device
                 : device.getDeviceName();
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                .withLabel(deviceName).withProperties(device.getBulbInfo()).build();
+                .withLabel(deviceName).withProperties(device.getBulbInfo())
+                .withProperty(YeelightBindingConstants.PARAMETER_DEVICE_ID, device.getDeviceId()).build();
 
         thingDiscovered(discoveryResult);
     }

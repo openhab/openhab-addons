@@ -26,6 +26,9 @@ public class YeelightBindingConstants {
     public static final ThingTypeUID THING_TYPE_WONDER = new ThingTypeUID(BINDING_ID, "wonder");
     public static final ThingTypeUID THING_TYPE_STRIPE = new ThingTypeUID(BINDING_ID, "stripe");
 
+    // List of thing Parameters names
+    public static final String PARAMETER_DEVICE_ID = "deviceId";
+
     // List of all Channel ids
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_COLOR = "color";
