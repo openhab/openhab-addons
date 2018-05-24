@@ -1,0 +1,38 @@
+Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,lib/jsoup-1.10.1.jar
+Bundle-ManifestVersion: 2
+Bundle-Name: Amazon Echo Control Binding
+Bundle-SymbolicName: org.openhab.binding.amazonechocontrol;singleton:=true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Import-Package: com.google.gson,
+ javax.servlet,
+ javax.servlet.http,
+ javax.ws.rs.core,
+ org.apache.commons.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.cache,
+ org.eclipse.smarthome.core.i18n,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.storage,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.openhab.binding.amazonechocontrol,
+ org.openhab.binding.amazonechocontrol.handler,
+ org.osgi.framework,
+ org.osgi.service.component,
+ org.osgi.service.http,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
+Export-Package: 
+ org.openhab.binding.amazonechocontrol,
+ org.openhab.binding.amazonechocontrol.handler
+
+
