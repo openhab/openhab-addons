@@ -13,6 +13,8 @@ import static org.openhab.binding.yeelight.YeelightBindingConstants.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -54,6 +56,9 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     private final Logger logger = LoggerFactory.getLogger(YeelightHandlerBase.class);
     protected DeviceBase mDevice;
 
+    //Reading the deviceId from the properties map.
+    private String deviceId = editProperties().get(YeelightBindingConstants.PARAMETER_DEVICE_ID);
+
     public YeelightHandlerBase(Thing thing) {
         super(thing);
     }
@@ -63,7 +68,7 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
 
     @Override
     public void initialize() {
-        mDevice = DeviceFactory.build(getDeviceModel(getThing().getThingTypeUID()).name(), getThing().getUID().getId());
+        mDevice = DeviceFactory.build(getDeviceModel(getThing().getThingTypeUID()).name(), deviceId);
         mDevice.setDeviceName(getThing().getLabel());
         mDevice.setAutoConnect(true);
         DeviceManager.getInstance().addDevice(mDevice);
@@ -136,41 +141,41 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         switch (channelUID.getId()) {
             case YeelightBindingConstants.CHANNEL_BRIGHTNESS:
                 if (command instanceof PercentType) {
-                    handlePercentMessage(channelUID, (PercentType) command);
+                    handlePercentMessage((PercentType) command);
                 }
                 else if (command instanceof OnOffType) {
-                    handleOnOffCommand(channelUID, (OnOffType) command);
+                    handleOnOffCommand((OnOffType) command);
                 }
                 else if (command instanceof IncreaseDecreaseType) {
-                    handleIncreaseDecreaseBrightnessCommand(channelUID, (IncreaseDecreaseType) command);
+                    handleIncreaseDecreaseBrightnessCommand((IncreaseDecreaseType) command);
                 }
                 break;
             case YeelightBindingConstants.CHANNEL_COLOR:
                 if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
                     if (hsbCommand.getBrightness().intValue() == 0) {
-                        handleOnOffCommand(channelUID, OnOffType.OFF);
+                        handleOnOffCommand(OnOffType.OFF);
                     }
                     else {
-                        handleHSBCommand(channelUID, hsbCommand);
+                        handleHSBCommand(hsbCommand);
                     }
                 }
                 else if (command instanceof PercentType) {
-                    handlePercentMessage(channelUID, (PercentType) command);
+                    handlePercentMessage((PercentType) command);
                 }
                 else if (command instanceof OnOffType) {
-                    handleOnOffCommand(channelUID, (OnOffType) command);
+                    handleOnOffCommand((OnOffType) command);
                 }
                 else if (command instanceof IncreaseDecreaseType) {
-                    handleIncreaseDecreaseBrightnessCommand(channelUID, (IncreaseDecreaseType) command);
+                    handleIncreaseDecreaseBrightnessCommand((IncreaseDecreaseType) command);
                 }
                 break;
             case YeelightBindingConstants.CHANNEL_COLOR_TEMPERATURE:
                 if (command instanceof PercentType) {
-                    handleColorTemperatureCommand(channelUID, (PercentType) command);
+                    handleColorTemperatureCommand((PercentType) command);
                 }
                 else if (command instanceof IncreaseDecreaseType) {
-                    handleIncreaseDecreaseBrightnessCommand(channelUID, (IncreaseDecreaseType) command);
+                    handleIncreaseDecreaseBrightnessCommand((IncreaseDecreaseType) command);
                 }
                 break;
             default:
@@ -178,47 +183,47 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         }
     }
 
-    void handlePercentMessage(ChannelUID channelUID, PercentType brightness) {
+    void handlePercentMessage(PercentType brightness) {
         if (brightness.intValue() == 0) {
-            DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(), DeviceAction.close);
+            DeviceManager.getInstance().doAction(deviceId, DeviceAction.close);
         }
         else {
             if (mDevice.getDeviceStatus().isPowerOff()) {
-                DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(), DeviceAction.open);
+                DeviceManager.getInstance().doAction(deviceId, DeviceAction.open);
             }
             DeviceAction baction = DeviceAction.brightness;
             baction.putValue(brightness.intValue());
-            DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(), baction);
+            DeviceManager.getInstance().doAction(deviceId, baction);
         }
     }
 
-    void handleIncreaseDecreaseBrightnessCommand(ChannelUID channelUID, IncreaseDecreaseType increaseDecrease) {
-        DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(),
+    void handleIncreaseDecreaseBrightnessCommand(IncreaseDecreaseType increaseDecrease) {
+        DeviceManager.getInstance().doAction(deviceId,
                 increaseDecrease == IncreaseDecreaseType.INCREASE ? DeviceAction.increase_bright
                         : DeviceAction.decrease_bright);
     }
 
-    void handleIncreaseDecreaseColorTemperatureCommand(ChannelUID channelUID, IncreaseDecreaseType increaseDecrease) {
-        DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(),
+    void handleIncreaseDecreaseColorTemperatureCommand(IncreaseDecreaseType increaseDecrease) {
+        DeviceManager.getInstance().doAction(deviceId,
                 increaseDecrease == IncreaseDecreaseType.INCREASE ? DeviceAction.increase_ct
                         : DeviceAction.decrease_ct);
     }
 
-    void handleOnOffCommand(ChannelUID channelUID, OnOffType onoff) {
-        DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(),
+    void handleOnOffCommand(OnOffType onoff) {
+        DeviceManager.getInstance().doAction(deviceId,
                 onoff == OnOffType.ON ? DeviceAction.open : DeviceAction.close);
     }
 
-    void handleHSBCommand(ChannelUID channelUID, HSBType color) {
+    void handleHSBCommand(HSBType color) {
         DeviceAction caction = DeviceAction.color;
         caction.putValue(color.getRGB() & 0xFFFFFF);
-        DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(), caction);
+        DeviceManager.getInstance().doAction(deviceId, caction);
     }
 
-    void handleColorTemperatureCommand(ChannelUID channelUID, PercentType ct) {
+    void handleColorTemperatureCommand(PercentType ct) {
         DeviceAction ctaction = DeviceAction.colortemperature;
         ctaction.putValue(COLOR_TEMPERATURE_STEP * ct.intValue() + COLOR_TEMPERATURE_MINIMUM);
-        DeviceManager.getInstance().doAction(channelUID.getThingUID().getId(), ctaction);
+        DeviceManager.getInstance().doAction(deviceId, ctaction);
     }
 
     @Override
