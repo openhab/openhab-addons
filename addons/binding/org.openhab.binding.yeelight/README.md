@@ -60,11 +60,11 @@ Channel | openHAB Type | Description
 Things:
 
 ```
-Thing yeelight:stripe:1 [ deviceId="0x000000000321a1bc" ]
+Thing yeelight:stripe:0x000000000321a1bc [ deviceId="0x000000000321a1bc" ]
 ```
 
 Items:
 
 ```
-Color YeelightLEDColor { channel="yeelight:stripe:1:color" }
+Color YeelightLEDColor { channel="yeelight:stripe:0x000000000321a1bc:color" }
 ```
