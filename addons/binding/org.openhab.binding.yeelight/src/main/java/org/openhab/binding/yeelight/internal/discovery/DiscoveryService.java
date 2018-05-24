@@ -31,19 +31,7 @@ public class DiscoveryService extends AbstractDiscoveryService implements Device
     private final Logger logger = LoggerFactory.getLogger(DiscoveryService.class.getSimpleName());
 
     public DiscoveryService() {
-        super(YeelightHandlerFactory.SUPPORTED_THING_TYPES_UIDS, 2, true);
-    }
-
-    @Override
-    protected void startBackgroundDiscovery() {
-        logger.debug("StartBackgroundDiscovery");
-        DeviceManager.getInstance().startDiscovery();
-    }
-
-    @Override
-    protected void stopBackgroundDiscovery() {
-        logger.debug("StopBackgroundDiscovery");
-        DeviceManager.getInstance().stopDiscovery();
+        super(YeelightHandlerFactory.SUPPORTED_THING_TYPES_UIDS, 2, false);
     }
 
     @Override
