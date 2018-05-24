@@ -16,7 +16,7 @@
 		</tags>
 	</channel-type>
 
-	<!-- Color Channel-->
+	<!-- Color Channel -->
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color</label>
@@ -27,7 +27,7 @@
 		</tags>
 	</channel-type>
 
-	<!-- Color Temperature Channel-->
+	<!-- Color Temperature Channel -->
 	<channel-type id="colorTemperature">
 		<item-type>Dimmer</item-type>
 		<label>ColorTemperature</label>

@@ -14,9 +14,8 @@
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
-					<context>deviceId</context>
-					<label>Id of the Yeelight device</label>
-					<description>Id of the Yeelight device to connect with.</description>
+				<label>Device ID</label>
+				<description>Id of the Yeelight device to connect with.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
