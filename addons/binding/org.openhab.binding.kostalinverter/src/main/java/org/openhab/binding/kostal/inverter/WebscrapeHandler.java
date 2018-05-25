@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -61,9 +62,9 @@ public class WebscrapeHandler extends BaseThingHandler {
                 refresh();
                 updateStatus(ThingStatus.ONLINE);
             } catch (Exception e) {
+                logger.debug("Error refreshing source '{}'", getThing().getUID(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         e.getClass().getName() + ":" + e.getMessage());
-                logger.debug("Error refreshing source {} ", getThing().getUID(), e);
             }
         }, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
@@ -76,9 +77,9 @@ public class WebscrapeHandler extends BaseThingHandler {
     private void refresh() throws Exception {
         Document doc = getDoc();
         for (ChannelConfig cConfig : channelConfigs) {
-            String value = getTag(doc, cConfig.tag).get(cConfig.num);
             Channel channel = getThing().getChannel(cConfig.id);
             if (channel != null) {
+                String value = getTag(doc, cConfig.tag).get(cConfig.num);
                 updateState(channel.getUID(), getState(value, cConfig.unit));
             }
         }
@@ -107,7 +108,12 @@ public class WebscrapeHandler extends BaseThingHandler {
         if (unit == null) {
             return new StringType(value);
         } else {
-            return new QuantityType<>(new BigDecimal(value), unit);
+            try {
+                return new QuantityType<>(new BigDecimal(value), unit);
+            } catch (NumberFormatException e) {
+                logger.debug("Error parsing value '{}'", value, e);
+                return UnDefType.UNDEF;
+            }
         }
     }
 
