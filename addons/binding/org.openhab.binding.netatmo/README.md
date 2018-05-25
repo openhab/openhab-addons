@@ -405,7 +405,7 @@ Warning : while setting person away using the channel welcomePersonAtHome is fin
 
 ```
 // Bridge configuration:
-Bridge netatmo:netatmoapi:home "Netatmo API" [ clientId="*********", clientSecret="**********", username = "me@example.com", password = "******", readStation=true, readThermostat=false] {
+Bridge netatmo:netatmoapi:home "Netatmo API" [ clientId="*********", clientSecret="**********", username = "mail@example.com", password = "******", readStation=true, readThermostat=false] {
     // Thing configuration:
     Thing netatmo:NAMain:home:inside "Netatmo Inside"  [ id="aa:aa:aa:aa:aa:aa" ]
     Thing netatmo:NAModule1:home:outside "Netatmo Outside"  [ id="bb:bb:bb:bb:bb:bb", parentId="aa:aa:aa:aa:aa:aa" ]

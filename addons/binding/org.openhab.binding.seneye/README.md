@@ -53,7 +53,7 @@ The following channels are supported:
 A manual configuration through a `things/seneye.things` file could look like this:
 
 ```
-Thing seneye:seneye:mySeneye "Seneye" @ "Living Room" [aquarium_name="MyAquarium", username="user@mail.com", password="xxx", poll_time=5]
+Thing seneye:seneye:mySeneye "Seneye" @ "Living Room" [aquarium_name="MyAquarium", username="mail@example.com", password="xxx", poll_time=5]
 ```
 
 A manual configuration through a `demo.items` file could look like this:

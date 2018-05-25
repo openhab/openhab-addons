@@ -22,7 +22,7 @@ If you really don't like the thought of your username and password being stored 
 
 ```
 openhab> smarthome:tesla logon 1
-Username (email): ****@***.com
+Username (email): mail@example.com
 Password:
 Attempting logon...
 Successfully logged on and stored token.
@@ -37,7 +37,7 @@ The Tesla Thing requires the username and password as a configuration value in o
 In the thing file, this looks e.g. like
 
 ```
-Thing tesla:models:1 [ username="your.email@company.com", password="somepassword", vin="5YJSA7H25FFP53746"]
+Thing tesla:models:1 [ username="mail@example.com", password="somepassword", vin="5YJSA7H25FFP53746"]
 ```
 
 ## Channels
@@ -61,7 +61,7 @@ All devices support the following channels (non exhaustive):
 demo.Things:
 
 ```
-Thing tesla:models:1 [ username="your.email@company.com", password="somepassword", vin="5YJSA7H25FFP53746"]
+Thing tesla:models:1 [ username="mail@example.com", password="somepassword", vin="5YJSA7H25FFP53746"]
 ```
 
 demo.items:
