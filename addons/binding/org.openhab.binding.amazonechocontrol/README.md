@@ -151,7 +151,7 @@ It will be configured at runtime by using the save channel to store the current 
 ### amazonechocontrol.things
 
 ```
-Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [amazonSite="amazon.de", email="myaccountemail@myprovider.com", password="secure", pollingIntervalInSeconds=60]
+Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [amazonSite="amazon.de", email="mail@example.com", password="secure", pollingIntervalInSeconds=60]
 {
     Thing echo                 echo1          "Alexa" @ "Living Room" [serialNumber="SERIAL_NUMBER"]
     Thing echoshow             echoshow1      "Alexa" @ "Kitchen" [serialNumber="SERIAL_NUMBER"]

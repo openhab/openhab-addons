@@ -17,7 +17,7 @@ Parameter | Required | Description
 Example `tado.things`
 
 ```
-Bridge tado:home:demo [ username="a.tado.user@gmail.com", password="secret" ]
+Bridge tado:home:demo [ username="mail@example.com", password="secret" ]
 ```
 
 Afterwards the discovery will show all zones and mobile devices associated with the user's home.
@@ -37,7 +37,7 @@ Zones can either be added through discovery or manually. Following up on the abo
 Example `tado.things`
 
 ```
-Bridge tado:home:demo [ username="webuser@gmail.com", password="secret" ] {
+Bridge tado:home:demo [ username="mail@example.com", password="secret" ] {
   zone heating [id=1]
   zone ac [id=2]
   zone hotwater [id=0]
@@ -100,7 +100,7 @@ Mobile devices are part of discovery, but can also be configured manually. It's 
 Example `tado.things`:
 
 ```
-Bridge tado:home:demo [ username="webuser@gmail.com", password="secret" ] {
+Bridge tado:home:demo [ username="mail@example.com", password="secret" ] {
   mobiledevice phone [id=12345]
 }
 ```
@@ -118,7 +118,7 @@ Group `OR` can be used to define an item for *'is any device at home'*.
 ## tado.things
 
 ```
-Bridge tado:home:demo [ username="webuser@gmail.com", password="secret" ] {
+Bridge tado:home:demo [ username="mail@example.com", password="secret" ] {
   zone heating [id=1]
   zone ac [id=2]
   zone hotwater [id=0]

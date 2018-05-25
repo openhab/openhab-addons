@@ -50,7 +50,7 @@ Each bed requires a bed ID as defined by the SleepIQ service.
 ### Sample Thing Configuration
 
 ```
-Bridge sleepiq:cloud:1 [ username="name@example.com", password="password", pollingInterval=60, logging=false ]
+Bridge sleepiq:cloud:1 [ username="mail@example.com", password="password", pollingInterval=60, logging=false ]
 {
     Thing dualBed master [ bedId="-9999999999999999999" ]
     Thing dualBed guest [ bedId="-8888888888888888888" ]
