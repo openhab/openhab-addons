@@ -76,6 +76,7 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         mDevice.registerStatusChangedListener(this);
         updateStatusHelper(mDevice.getConnectionState());
         DeviceManager.getInstance().startDiscovery(15 * 1000);
+        mDevice.connect();
     }
 
     private DeviceType getDeviceModel(ThingTypeUID typeUID) {
@@ -125,12 +126,10 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         logger.debug("ChannelLinked -> {}", channelUID.getId());
         super.channelLinked(channelUID);
 
-        if (channelUID.getId().equals(YeelightBindingConstants.CHANNEL_BRIGHTNESS)) {
-            Runnable task = () -> {
-                mDevice.queryStatus();
-            };
-            scheduler.schedule(task, 500, TimeUnit.MILLISECONDS);
-        }
+        Runnable task = () -> {
+            mDevice.queryStatus();
+        };
+        scheduler.schedule(task, 500, TimeUnit.MILLISECONDS);
     }
 
     public void handleCommandHelper(ChannelUID channelUID, Command command, String logInfo) {
@@ -142,16 +141,17 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         }
         if (command instanceof RefreshType){
             DeviceManager.getInstance().startDiscovery(5 * 1000);
+            Device Status s = getDeviceStatus();
             switch (channelUID.getId()) {
-                //TODO: Add missing update functions, but lib does not seem to support that currently.
                 case YeelightBindingConstants.CHANNEL_BRIGHTNESS:
-                    //updateState(channelUID, getBrightness());
+                    updateState(channelUID, new PercentType(s.getBrightness()));
                     break;
                 case YeelightBindingConstants.CHANNEL_COLOR:
-                    //updateState(channelUID, getColor());
+                    HSBType hsb = new HSBType();
+                    updateState(channelUID, hsb.fromRGB(s.getR(), s.getG(), s.getB()));
                     break;
                 case YeelightBindingConstants.CHANNEL_COLOR_TEMPERATURE:
-                    //updateState(channelUID, getColorTemperature());
+                    updateState(channelUID, new PercentType(s.getCt()));
                     break;
                 default:
                     break;
