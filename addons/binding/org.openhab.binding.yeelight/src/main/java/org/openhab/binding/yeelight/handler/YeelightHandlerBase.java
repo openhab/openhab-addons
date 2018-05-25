@@ -141,7 +141,7 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         }
         if (command instanceof RefreshType){
             DeviceManager.getInstance().startDiscovery(5 * 1000);
-            DeviceStatus s = getDeviceStatus();
+            DeviceStatus s = mDevice.getDeviceStatus();
             switch (channelUID.getId()) {
                 case YeelightBindingConstants.CHANNEL_BRIGHTNESS:
                     updateState(channelUID, new PercentType(s.getBrightness()));
