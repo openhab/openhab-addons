@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
-Bundle-Name: AirQuality Binding
+Bundle-Name: OpenUV Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.openuv;singleton:=true
 Bundle-Vendor: openHAB

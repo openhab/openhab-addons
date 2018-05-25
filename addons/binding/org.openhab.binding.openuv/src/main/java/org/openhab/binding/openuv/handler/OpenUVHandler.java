@@ -76,9 +76,6 @@ public class OpenUVHandler extends BaseThingHandler {
         logger.debug("Initializing OpenUV handler.");
 
         OpenUVConfiguration config = getConfigAs(OpenUVConfiguration.class);
-        logger.debug("config apikey = (omitted from logging)");
-        logger.debug("config refresh = {}", config.refresh);
-
         String errorMsg = null;
 
         if (StringUtils.trimToNull(config.apikey) == null) {

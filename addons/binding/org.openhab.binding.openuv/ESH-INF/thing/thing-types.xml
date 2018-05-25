@@ -15,8 +15,8 @@
 			<channel id="UVIndex" typeId="UVIndex" />
 			<channel id="UVColor" typeId="UVColor" />
 			<channel id="UVMax" typeId="UVMax" />
-            <channel id="UVMaxTime" typeId="UVMaxTime" />
-            <channel id="UVMaxEvent" typeId="UVMaxEvent" />
+			<channel id="UVMaxTime" typeId="UVMaxTime" />
+			<channel id="UVMaxEvent" typeId="UVMaxEvent" />
 			<channel id="Ozone" typeId="Ozone" />
 			<channel id="OzoneTime" typeId="OzoneTime" />
 			<channel id="UVTime" typeId="UVTime" />
@@ -85,15 +85,13 @@
 		<description>UV Index datetime</description>
 		<state readOnly="true"/>
 	</channel-type>
-	
 
-    <channel-type id="UVColor">
-        <item-type>Color</item-type>
-        <label>UV Color</label>
-        <description>Color associated to given UV Index.</description>
-        <state readOnly="true"/>
-    </channel-type>
-
+	<channel-type id="UVColor">
+		<item-type>Color</item-type>
+		<label>UV Color</label>
+		<description>Color associated to given UV Index.</description>
+		<state readOnly="true"/>
+	</channel-type>
 
 	<channel-type id="SafeExposure" advanced="false">
 		<item-type>Number:Time</item-type>
@@ -105,24 +103,24 @@
 				<label>Skin Type</label>
 				<description>Fitzpatrick Skin Type.</description>
 				<options>
-                    <option value="1">I – White</option>
-                    <option value="2">II – White</option>
-                    <option value="3">III – Light brown</option>
-                    <option value="4">IV – Moderate brown</option>
-                    <option value="5">V – Dark brown</option>
-                    <option value="6">VI – Black</option>
-                </options>
+					<option value="1">I – White</option>
+					<option value="2">II – White</option>
+					<option value="3">III – Light brown</option>
+					<option value="4">IV – Moderate brown</option>
+					<option value="5">V – Dark brown</option>
+					<option value="6">VI – Black</option>
+				</options>
 				<default>1</default>
 			</parameter>
 		</config-description>
 	</channel-type>
 	
-    <!-- UV Max Event Channel Type -->
-    <channel-type id="UVMaxEvent">
-        <kind>trigger</kind>
-        <label>UV Max Event</label>
-        <description>Triggers when current UV Index reaches maximum of the day</description>
-    </channel-type>
+	<!-- UV Max Event Channel Type -->
+	<channel-type id="UVMaxEvent">
+		<kind>trigger</kind>
+		<label>UV Max Event</label>
+		<description>Triggers when current UV Index reaches maximum of the day</description>
+	</channel-type>
 
 </thing:thing-descriptions>
 
