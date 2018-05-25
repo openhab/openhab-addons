@@ -16,9 +16,7 @@ import org.openhab.binding.yeelight.YeelightBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yeelight.sdk.device.ConnectState;
 import com.yeelight.sdk.device.DeviceStatus;
-import com.yeelight.sdk.services.DeviceManager;
 
 /**
  * The {@link YeelightWhiteHandler} is responsible for handling commands, which are
@@ -45,8 +43,7 @@ public class YeelightWhiteHandler extends YeelightHandlerBase {
         if (status.isPowerOff()) {
             logger.debug("Device is powered off!");
             updateState(YeelightBindingConstants.CHANNEL_BRIGHTNESS, new PercentType(0));
-        }
-        else {
+        } else {
             logger.debug("Device is powered on!");
             updateState(YeelightBindingConstants.CHANNEL_BRIGHTNESS, new PercentType(status.getBrightness()));
         }

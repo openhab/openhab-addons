@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.yeelight.internal.discovery;
 
-import com.yeelight.sdk.device.DeviceBase;
-import com.yeelight.sdk.listeners.DeviceListener;
-import com.yeelight.sdk.services.DeviceManager;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -20,6 +17,10 @@ import org.openhab.binding.yeelight.YeelightBindingConstants;
 import org.openhab.binding.yeelight.internal.YeelightHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.yeelight.sdk.device.DeviceBase;
+import com.yeelight.sdk.listeners.DeviceListener;
+import com.yeelight.sdk.services.DeviceManager;
 
 /**
  * The {@link DiscoveryService} is responsible for search and discovery of new devices.

@@ -8,8 +8,11 @@
  */
 package org.openhab.binding.yeelight.internal;
 
+import static org.openhab.binding.yeelight.YeelightBindingConstants.*;
+
 import java.util.HashSet;
 import java.util.Set;
+
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -18,8 +21,6 @@ import org.openhab.binding.yeelight.handler.YeelightCeilingHandler;
 import org.openhab.binding.yeelight.handler.YeelightColorHandler;
 import org.openhab.binding.yeelight.handler.YeelightStripeHandler;
 import org.openhab.binding.yeelight.handler.YeelightWhiteHandler;
-
-import static org.openhab.binding.yeelight.YeelightBindingConstants.*;
 
 /**
  * The {@link YeelightHandlerFactory} is responsible for returning supported things and handlers for the devices.
@@ -47,17 +48,13 @@ public class YeelightHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_DOLPHIN)) {
             return new YeelightWhiteHandler(thing);
-        }
-        else if (thingTypeUID.equals(THING_TYPE_WONDER)) {
+        } else if (thingTypeUID.equals(THING_TYPE_WONDER)) {
             return new YeelightColorHandler(thing);
-        }
-        else if (thingTypeUID.equals(THING_TYPE_STRIPE)) {
+        } else if (thingTypeUID.equals(THING_TYPE_STRIPE)) {
             return new YeelightStripeHandler(thing);
-        }
-        else if (thingTypeUID.equals(THING_TYPE_CEILING)) {
+        } else if (thingTypeUID.equals(THING_TYPE_CEILING)) {
             return new YeelightCeilingHandler(thing);
-        }
-        else {
+        } else {
             return null;
         }
     }
