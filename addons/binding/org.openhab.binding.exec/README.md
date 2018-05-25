@@ -27,7 +27,7 @@ The "command" Thing requires the command to execute on the shell.
 Optionally one can specify:
 
 
-- `transform` - A [transformation](https://docs.openhab.org/addons/transformations.html) to apply on the execution result,
+- `transform` - A [transformation](https://www.openhab.org/docs/configuration/transformations.html) to apply on the execution result,
 - `interval` - An interval, in seconds, the command will be repeatedly executed,
 - `timeout` - A time-out, in seconds, the execution of the command will time out, and lastly,
 - `autorun` - A boolean parameter to make the command execute immediately every time the state of the input channel has changed.
