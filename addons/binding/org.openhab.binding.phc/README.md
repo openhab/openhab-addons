@@ -41,7 +41,7 @@ A guide how to install this can be found here: [CH340/341 UART Driver for Raspbe
 
 If you don´t have the same kernel as used in the guide you have to compile the module yourself. In the guide is described a specific way for the Raspberry Pi. With another Linux version you can go the normal way with linux-headers.   
 
-In Linux amongst others the user 'openhab' must be added to the group 'dialout': ```sudo usermod -a -G dialout openhab``` For more information read the [installation guide](http://docs.openhab.org/installation/linux.html#recommended-additional-setup-steps).
+In Linux amongst others the user 'openhab' must be added to the group 'dialout': ```sudo usermod -a -G dialout openhab``` For more information read the [installation guide](https://www.openhab.org/docs/installation/linux.html#recommended-additional-setup-steps).
 
 ## Supported Things
 

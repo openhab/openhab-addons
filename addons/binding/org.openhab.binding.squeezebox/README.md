@@ -149,7 +149,7 @@ Selecting a favorite from the list will play it.
 ### How To Set Up
 
 Squeeze Players can be set up as audio sinks in openHAB.
-Please follow the [openHAB multimedia documentation](http://docs.openhab.org/configuration/multimedia.html) for setup guidance.
+Please follow the [openHAB multimedia documentation](https://www.openhab.org/docs/configuration/multimedia.html) for setup guidance.
 
 You can set the default notification volume in the player thing configuration.
 

@@ -104,6 +104,6 @@ Enable DEBUG logging in karaf console to see more precise error messages:
 
 `log:set DEBUG org.openhab.binding.logreader`
 
-See [openHAB2 logging docs](http://docs.openhab.org/administration/logging.html#defining-what-to-log) for more help.
+See [openHAB2 logging docs](https://www.openhab.org/docs/administration/logging.html#defining-what-to-log) for more help.
 
 

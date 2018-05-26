@@ -125,7 +125,7 @@ made through a pull request.
 ### Helping contributors with the DCO
 
 The [DCO or `Sign your work`](
-https://github.com/openhab/openhab2/blob/master/CONTRIBUTING.md#sign-your-work)
+https://github.com/openhab/openhab2-addons/blob/master/CONTRIBUTING.md#sign-your-work)
 requirement is not intended as a roadblock or speed bump.
 
 Some openHAB contributors are not as familiar with `git`, or have used a web based

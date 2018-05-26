@@ -6,13 +6,13 @@ feels wrong or incomplete.
 
 ## Reporting Issues
 
-Please report [openHAB2 specific issues here](https://github.com/openhab/openhab2/issues), while issues that are related to the core framework should be reported in the [bugzilla of Eclipse SmartHome](https://bugs.eclipse.org/bugs/buglist.cgi?product=SmartHome&component=Core).
+Please report [openHAB2 specific issues here](https://github.com/openhab/openhab2-addons/issues), while issues that are related to the core framework should be reported in the [issue tracker of Eclipse SmartHome](https://github.com/eclipse/smarthome/issues).
 Do not worry, if you are not clear, which category your issue belongs to - we will redirect you, if necessary.
 
 ## Build Environment
 
 For instructions on setting up your development environment, please
-see our dedicated [IDE setup guide](http://docs.openhab.org/developers/development/ide.html).
+see our dedicated [IDE setup guide](https://www.openhab.org/docs/developer/development/ide.html).
 
 ## Contribution guidelines
 
@@ -31,9 +31,9 @@ to do everything for everybody. This means that we might decide against
 incorporating a new feature. However, there might be a way to implement
 that feature *on top of* openHAB.
 
-### Discuss your design on the mailing list
+### Discuss your design in the discussion forum
 
-We recommend discussing your plans [in the discussion forum](https://community.openhab.org/c/openhab-2)
+We recommend discussing your plans [in the discussion forum](https://community.openhab.org/c/add-ons)
 before starting to code - especially for more ambitious contributions.
 This gives other contributors a chance to point you in the right
 direction, give feedback on your design, and maybe point out if someone
@@ -42,7 +42,7 @@ else is working on the same thing.
 ### Create issues...
 
 Any significant improvement should be documented as [a GitHub
-issue](https://github.com/openhab/openhab2/issues?labels=enhancement&page=1&state=open) before anybody
+issue](https://github.com/openhab/openhab2-addons/issues?labels=enhancement&page=1&state=open) before anybody
 starts working on it.
 
 ### ...but check for existing issues first!
@@ -185,7 +185,7 @@ There are several exceptions to the signing requirement. Currently these are:
 
 * Step 1: learn the component inside out
 * Step 2: make yourself useful by contributing code, bugfixes, support etc.
-* Step 3: volunteer on [the discussion group](https://github.com/openhab/openhab2/issues?labels=question&page=1&state=open)
+* Step 3: volunteer on [the discussion group](https://github.com/openhab/openhab2-addons/issues?labels=question&page=1&state=open)
 
 Don't forget: being a maintainer is a time investment. Make sure you will have time to make yourself available.
 You don't have to be a maintainer to make a difference on the project!
