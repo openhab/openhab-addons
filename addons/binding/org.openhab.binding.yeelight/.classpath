@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="lib" path="/Users/kai/Documents/dev/openhab/clones/claell/addons/binding/org.openhab.binding.yeelight/lib/yeelight.jar"/>
 	<classpathentry kind="lib" path="lib/yeelight.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
