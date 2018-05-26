@@ -6,7 +6,7 @@ feels wrong or incomplete.
 
 ## Reporting Issues
 
-Please report [openHAB2 specific issues here](https://github.com/openhab/openhab2-addons/issues), while issues that are related to the core framework should be reported in the [bugzilla of Eclipse SmartHome](https://bugs.eclipse.org/bugs/buglist.cgi?product=SmartHome&component=Core).
+Please report [openHAB2 specific issues here](https://github.com/openhab/openhab2-addons/issues), while issues that are related to the core framework should be reported in the [issue tracker of Eclipse SmartHome](https://github.com/eclipse/smarthome/issues).
 Do not worry, if you are not clear, which category your issue belongs to - we will redirect you, if necessary.
 
 ## Build Environment
@@ -31,7 +31,7 @@ to do everything for everybody. This means that we might decide against
 incorporating a new feature. However, there might be a way to implement
 that feature *on top of* openHAB.
 
-### Discuss your design on the mailing list
+### Discuss your design in the discussion forum
 
 We recommend discussing your plans [in the discussion forum](https://community.openhab.org/c/add-ons)
 before starting to code - especially for more ambitious contributions.
