@@ -53,7 +53,8 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     protected DeviceBase mDevice;
 
     // Reading the deviceId from the properties map.
-    private String deviceId = getThing().getConfiguration().get(YeelightBindingConstants.PARAMETER_DEVICE_ID).toString();
+    private String deviceId = getThing().getConfiguration().get(YeelightBindingConstants.PARAMETER_DEVICE_ID)
+            .toString();
 
     public YeelightHandlerBase(Thing thing) {
         super(thing);
@@ -72,8 +73,7 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         mDevice.registerConnectStateListener(this);
         mDevice.registerStatusChangedListener(this);
         updateStatusHelper(mDevice.getConnectionState());
-        //DeviceManager.getInstance().startDiscovery(15 * 1000);
-        //mDevice.connect();
+        DeviceManager.getInstance().startDiscovery(15 * 1000);
     }
 
     private DeviceType getDeviceModel(ThingTypeUID typeUID) {
@@ -131,10 +131,10 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
 
         // If device is disconnected, start discovery to reconnect.
         if (mDevice.isAutoConnect() && mDevice.getConnectionState() != ConnectState.CONNECTED) {
-            //DeviceManager.getInstance().startDiscovery(5 * 1000);
+            DeviceManager.getInstance().startDiscovery(5 * 1000);
         }
         if (command instanceof RefreshType) {
-            //DeviceManager.getInstance().startDiscovery(5 * 1000);
+            DeviceManager.getInstance().startDiscovery(5 * 1000);
             DeviceStatus s = mDevice.getDeviceStatus();
             switch (channelUID.getId()) {
                 case YeelightBindingConstants.CHANNEL_BRIGHTNESS:
