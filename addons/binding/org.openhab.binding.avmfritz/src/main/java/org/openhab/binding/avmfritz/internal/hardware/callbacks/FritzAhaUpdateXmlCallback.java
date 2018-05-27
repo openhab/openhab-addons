@@ -16,7 +16,6 @@ import javax.xml.bind.Unmarshaller;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.avmfritz.handler.AVMFritzBaseBridgeHandler;
-import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
@@ -59,9 +58,7 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
                 Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
                 DevicelistModel model = (DevicelistModel) u.unmarshal(new StringReader(response));
                 if (model != null) {
-                    for (AVMFritzBaseModel device : model.getDevicelist()) {
-                        handler.addDeviceList(device);
-                    }
+                    handler.addDeviceList(model.getDevicelist());
                     handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "FRITZ!Box online");
                 } else {
                     logger.warn("no model in response");
