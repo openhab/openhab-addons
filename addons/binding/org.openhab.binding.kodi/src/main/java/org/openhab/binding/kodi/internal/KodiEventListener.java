@@ -23,12 +23,12 @@ import org.openhab.binding.kodi.internal.protocol.KodiConnection;
  */
 public interface KodiEventListener extends EventListener {
     public enum KodiState {
-        Play,
-        Pause,
-        End,
-        Stop,
-        Rewind,
-        FastForward
+        PLAY,
+        PAUSE,
+        END,
+        STOP,
+        REWIND,
+        FASTFORWARD
     }
 
     public enum KodiPlaylistState {
@@ -67,4 +67,10 @@ public interface KodiEventListener extends EventListener {
     void updateThumbnail(RawType thumbnail);
 
     void updateFanart(RawType fanart);
+
+    void updateCurrentTime(long currentTime);
+
+    void updateCurrentTimePercentage(double currentTimePercentage);
+
+    void updateDuration(long duration);
 }

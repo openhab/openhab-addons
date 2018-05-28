@@ -44,7 +44,7 @@ public class KodiAudioSink implements AudioSink {
     private static final Set<Class<? extends AudioStream>> SUPPORTED_AUDIO_STREAMS = Collections
             .unmodifiableSet(Stream.of(FixedLengthAudioStream.class, URLAudioStream.class).collect(Collectors.toSet()));
     // Needed because Kodi does multiple requests for the stream
-    private final int STREAM_TIMEOUT = 30;
+    private static final int STREAM_TIMEOUT = 30;
 
     private final KodiHandler handler;
     private final AudioHTTPServer audioHTTPServer;
