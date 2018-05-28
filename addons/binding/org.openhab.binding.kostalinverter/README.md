@@ -29,6 +29,7 @@ Thing kostalinverter:kostalinverter:inverter [ url="http://192.168.0.128" ]
 
 If the thing goes online then the connection to the web interface is successful.
 In case it is offline you should see an error message.
+You optionally can define a `userName` and a `password` parameter if the access to the webinterface is protected and a desired `refreshInterval` (the time interval between updates, default 60 seconds).
 
 ## Items
 

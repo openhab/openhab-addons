@@ -31,9 +31,9 @@
 				<default>pvwr</default>
 			</parameter>
 
-			<parameter name="refreshInterval" type="integer" unit="ms">
+			<parameter name="refreshInterval" type="integer" unit="s">
 				<label>Refresh Interval</label>
-				<description>States how often a refresh shall occur (in ms)</description>
+				<description>States how often a refresh shall occur (in s)</description>
 				<default>60</default>
 			</parameter>
 		</config-description>
