@@ -6,7 +6,7 @@ Bundle-Name: Hyperion Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.hyperion;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Export-Package: 
  org.openhab.binding.hyperion,
  org.openhab.binding.hyperion.handler
