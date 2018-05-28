@@ -4,7 +4,7 @@ Bundle-Name: AVM FRITZ! Binding Tests
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.avmfritz.test;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Export-Package: 
  org.openhab.binding.avmfritz;uses:="org.eclipse.smarthome.test"
 Fragment-Host: org.openhab.binding.avmfritz

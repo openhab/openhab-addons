@@ -6,7 +6,7 @@ Bundle-Name: Amazon Echo Control Binding
 Bundle-SymbolicName: org.openhab.binding.amazonechocontrol;singleton:=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Import-Package: com.google.gson,
  javax.servlet,
  javax.servlet.http,

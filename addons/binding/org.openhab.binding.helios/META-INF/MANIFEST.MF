@@ -4,7 +4,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Helios Binding
 Bundle-SymbolicName: org.openhab.binding.helios;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/cxf-core-3.1.0-SNAPSHOT.jar,
