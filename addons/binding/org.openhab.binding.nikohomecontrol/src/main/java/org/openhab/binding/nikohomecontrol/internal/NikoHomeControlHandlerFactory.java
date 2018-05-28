@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Component;
  * The {@link NikoHomeControlHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.nikohomecontrol")

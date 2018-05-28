@@ -50,6 +50,8 @@ public class HomematicConfig {
     private int socketMaxAlive = 900;
     private int timeout = 15;
     private int installModeDuration = DEFAULT_INSTALL_MODE_DURATION;
+    private long discoveryTimeToLive = -1;
+    private boolean unpairOnDeletion = false;
 
     private HmGatewayInfo gatewayInfo;
 
@@ -162,6 +164,20 @@ public class HomematicConfig {
     }
 
     /**
+     * Returns the time to live for discovery results of a Homematic gateway in seconds.
+     */
+    public long getDiscoveryTimeToLive() {
+        return discoveryTimeToLive;
+    }
+
+    /**
+     * Sets the time to live for discovery results of a Homematic gateway in seconds.
+     */
+    public void setDiscoveryTimeToLive(long discoveryTimeToLive) {
+        this.discoveryTimeToLive = discoveryTimeToLive;
+    }
+
+    /**
      * Returns the HmGatewayType.
      */
     public String getGatewayType() {
@@ -193,6 +209,25 @@ public class HomematicConfig {
      */
     public void setInstallModeDuration(int installModeDuration) {
         this.installModeDuration = installModeDuration;
+    }
+
+    /**
+     * Returns if devices are unpaired from the gateway when their corresponding things are removed
+     * 
+     * @return <i>true</i> if devices are unpaired from the gateway when their corresponding things are removed
+     */
+    public boolean isUnpairOnDeletion() {
+        return unpairOnDeletion;
+    }
+
+    /**
+     * Sets unpairOnDeletion
+     * 
+     * @param unpairOnDeletion if set to <i>true</i>, devices are unpaired from the gateway when their corresponding
+     *            things are removed
+     */
+    public void setUnpairOnDeletion(boolean unpairOnDeletion) {
+        this.unpairOnDeletion = unpairOnDeletion;
     }
 
     /**
@@ -321,8 +356,8 @@ public class HomematicConfig {
                 .append("xmlCallbackPort", xmlCallbackPort).append("binCallbackPort", binCallbackPort)
                 .append("gatewayType", gatewayType).append("rfPort", getRfPort()).append("wiredPort", getWiredPort())
                 .append("hmIpPort", getHmIpPort()).append("cuxdPort", getCuxdPort()).append("groupPort", getGroupPort())
-                .append("timeout", timeout).append("installModeDuration", installModeDuration)
-                .append("socketMaxAlive", socketMaxAlive);
+                .append("timeout", timeout).append("discoveryTimeToLive", discoveryTimeToLive)
+                .append("installModeDuration", installModeDuration).append("socketMaxAlive", socketMaxAlive);
         return tsb.toString();
     }
 }

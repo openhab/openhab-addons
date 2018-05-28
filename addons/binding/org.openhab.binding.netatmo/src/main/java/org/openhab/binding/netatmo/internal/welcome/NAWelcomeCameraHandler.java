@@ -25,7 +25,7 @@ import io.swagger.client.model.NAWelcomeCamera;
 /**
  * {@link NAWelcomeCameraHandler} is the class used to handle the Welcome Camera Data
  *
- * @author Ing. Peter Weiss - Welcome camera implementation
+ * @author Ing. Peter Weiss - Initial contribution
  *
  */
 public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
@@ -37,6 +37,11 @@ public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
 
     public NAWelcomeCameraHandler(@NonNull Thing thing) {
         super(thing);
+    }
+
+    @Override
+    protected void updateProperties(NAWelcomeCamera moduleData) {
+        updateProperties(null, moduleData.getType());
     }
 
     @Override

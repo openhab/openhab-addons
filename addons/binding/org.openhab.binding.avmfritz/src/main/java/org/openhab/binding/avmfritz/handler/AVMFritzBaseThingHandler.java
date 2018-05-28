@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -63,9 +64,12 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
         super(thing);
     }
 
-    /**
-     * Handle the commands for switchable outlets or heating thermostats.
-     */
+    @Override
+    public void initialize() {
+        logger.debug("Initializing handler for {}", getClass().getName());
+        updateStatus(ThingStatus.UNKNOWN);
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getIdWithoutGroup();

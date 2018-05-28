@@ -20,15 +20,19 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
+import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+
+import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Configs.CONFIG_ZONE;
 
 /**
  * After the AVR bridge thing has been added and a connection could be established,
  * the user is presented with the available zones.
  *
  * @author David Gräff - Initial contribution
+ * @author Tomasz Maruszak - Introduced config object
  */
 public class ZoneDiscoveryService extends AbstractDiscoveryService {
     private final ServiceRegistration<?> reg;
@@ -36,14 +40,13 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
     /**
      * Constructs a zone discovery service.
      * Registers this zone discovery service programmatically.
-     * Call {@link ZoneDiscoveryService.destroy()} to unregister the service after use.
+     * Call {@link ZoneDiscoveryService#destroy()} to unregister the service after use.
      */
     public ZoneDiscoveryService(BundleContext bundleContext) {
         super(YamahaReceiverBindingConstants.ZONE_THING_TYPES_UIDS, 0, false);
         // Allow bundleContext to be null for the test suite
         if (bundleContext != null) {
-            reg = bundleContext.registerService(DiscoveryService.class.getName(), this,
-                    new Hashtable<String, Object>());
+            reg = bundleContext.registerService(DiscoveryService.class.getName(), this, new Hashtable<>());
         } else {
             reg = null;
         }
@@ -77,18 +80,19 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
     public void publishZones(DeviceInformationState state, ThingUID bridgeUid) {
         // Create a copy of the list to avoid concurrent modification exceptions, because
         // the state update takes place in another thread
-        List<YamahaReceiverBindingConstants.Zone> zoneCopy = new ArrayList<YamahaReceiverBindingConstants.Zone>(
-                state.zones);
-
-        for (YamahaReceiverBindingConstants.Zone zone : zoneCopy) {
+        List<Zone> zoneCopy = new ArrayList<>(state.zones);
+        for (Zone zone : zoneCopy) {
             String zoneName = zone.name();
             ThingUID uid = zoneThing(bridgeUid, zoneName);
 
             Map<String, Object> properties = new HashMap<>();
-            properties.put(YamahaReceiverBindingConstants.CONFIG_ZONE, zoneName);
+            properties.put(CONFIG_ZONE, zoneName);
 
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel(state.name + " " + zoneName).withBridge(bridgeUid).build();
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid)
+                    .withProperties(properties)
+                    .withLabel(state.name + " " + zoneName)
+                    .withBridge(bridgeUid)
+                    .build();
             thingDiscovered(discoveryResult);
         }
     }

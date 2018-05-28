@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * The IP-address from the Niko Home Control IP-interface is then extracted from the response packet.
  * The data content of the response packet is used as a unique identifier for the bridge.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 public final class NikoHomeControlDiscover {
 

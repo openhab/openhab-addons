@@ -16,8 +16,8 @@ Of course, you can add multiple Things, e.g. for measuring AQI for different loc
 
 ## Discovery
 
-There is no discovery implemented.
-You have to create your things manually.
+Local Air Quality can be autodiscovered based on system location.
+You'll have complete default configuration with your apiKey.
 
 ## Binding Configuration
 
@@ -47,22 +47,23 @@ If you always want to receive data from specific station and you know its unique
 
 The AirQuality information that is retrieved is available as these channels:
 
-| Channel ID      | Item Type | Description                                  |
-|-----------------|-----------|----------------------------------------------|
-| aqiLevel        | Number    | Air Quality Index                            |
-| aqiDescription  | String    | AQI Description                              |
-| locationName    | String    | Nearest measuring station location           |
-| stationId       | Number    | Measuring station ID                         |
-| stationLocation | Location  | Latitude/longitude of measuring station      |
-| pm25            | Number    | Fine particles pollution level (PM2.5)       |
-| pm10            | Number    | Coarse dust particles pollution level (PM10) |
-| o3              | Number    | Ozone level (O3)                             |
-| no2             | Number    | Nitrogen Dioxide level (NO2)                 |
-| co              | Number    | Carbon monoxide level (CO)                   |
-| observationTime | DateTime  | Observation date and time                    |
-| temperature     | Number    | Temperature in Celsius degrees               |
-| pressure        | Number    | Pressure level                               |
-| humidity        | Number    | Humidity level                               |
+| Channel ID      | Item Type            | Description                                  |
+|-----------------|----------------------|----------------------------------------------|
+| aqiLevel        | Number               | Air Quality Index                            |
+| aqiDescription  | String               | AQI Description                              |
+| locationName    | String               | Nearest measuring station location           |
+| stationId       | Number               | Measuring station ID                         |
+| stationLocation | Location             | Latitude/longitude of measuring station      |
+| pm25            | Number               | Fine particles pollution level (PM2.5)       |
+| pm10            | Number               | Coarse dust particles pollution level (PM10) |
+| o3              | Number               | Ozone level (O3)                             |
+| no2             | Number               | Nitrogen Dioxide level (NO2)                 |
+| co              | Number               | Carbon monoxide level (CO)                   |
+| observationTime | DateTime             | Observation date and time                    |
+| temperature     | Number:Temperature   | Temperature in Celsius degrees               |
+| pressure        | Number:Pressure      | Pressure level                               |
+| humidity        | Number:Dimensionless | Humidity level                               |
+| dominentPol     | String               | Dominent Polutor                             |
 
 `AQI Description` item provides a human-readable output that can be interpreted e.g. by MAP transformation.
 
@@ -112,9 +113,9 @@ Location Aqi_StationGeo      "Station Location" <office> (AirQuality) { channel=
 Number   Aqi_StationId       "Station ID" <pie> (AirQuality) { channel="airquality:aqi:home:stationId" }
 DateTime Aqi_ObservationTime "Time of observation [%1$tH:%1$tM]" <clock> (AirQuality) { channel="airquality:aqi:home:observationTime" }
 
-Number   Aqi_Temperature     "Temperature" <temperature> (AirQuality) { channel="airquality:aqi:home:temperature" }
-Number   Aqi_Pressure        "Pressure" <pressure> (AirQuality) { channel="airquality:aqi:home:pressure" }
-Number   Aqi_Humidity        "Humidity" <humidity> (AirQuality) { channel="airquality:aqi:home:humidity" }
+Number:Temperature  Aqi_Temperature     "Temperature" <temperature> (AirQuality) { channel="airquality:aqi:home:temperature" }
+Number:Pressure     Aqi_Pressure        "Pressure" <pressure> (AirQuality) { channel="airquality:aqi:home:pressure" }
+Number:DimensionLess Aqi_Humidity        "Humidity" <humidity> (AirQuality) { channel="airquality:aqi:home:humidity" }
 ```
 
 airquality.sitemap:

@@ -14,7 +14,7 @@ Bundle-Name: HomeKit Integration
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.io.homekit;singleton:=true
 Bundle-Vendor: openhab.org
-Bundle-Version: 2.3.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Export-Package: org.openhab.io.homekit
 Import-Package: 
  com.google.common.collect,
@@ -35,7 +35,6 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.console,
  org.eclipse.smarthome.io.console.extensions,
- org.eclipse.smarthome.model.item,
  org.openhab.io.homekit,
  org.osgi.framework,
  org.osgi.service.component,

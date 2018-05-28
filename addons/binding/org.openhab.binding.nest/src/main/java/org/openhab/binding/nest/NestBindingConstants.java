@@ -58,6 +58,10 @@ public class NestBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_STRUCTURE = new ThingTypeUID(BINDING_ID, "structure");
 
+    // List of all channel group prefixes
+    public static final String CHANNEL_GROUP_CAMERA_PREFIX = "camera#";
+    public static final String CHANNEL_GROUP_LAST_EVENT_PREFIX = "last_event#";
+
     // List of all Channel IDs
     // read only channels (common)
     public static final String CHANNEL_LAST_CONNECTION = "last_connection";
@@ -71,6 +75,8 @@ public class NestBindingConstants {
     public static final String CHANNEL_FAN_TIMER_DURATION = "fan_timer_duration";
 
     // read only channels (thermostat)
+    public static final String CHANNEL_ECO_MAX_SET_POINT = "eco_max_set_point";
+    public static final String CHANNEL_ECO_MIN_SET_POINT = "eco_min_set_point";
     public static final String CHANNEL_LOCKED = "locked";
     public static final String CHANNEL_LOCKED_MAX_SET_POINT = "locked_max_set_point";
     public static final String CHANNEL_LOCKED_MIN_SET_POINT = "locked_min_set_point";
@@ -85,21 +91,33 @@ public class NestBindingConstants {
     public static final String CHANNEL_HAS_LEAF = "has_leaf";
     public static final String CHANNEL_SUNLIGHT_CORRECTION_ENABLED = "sunlight_correction_enabled";
     public static final String CHANNEL_SUNLIGHT_CORRECTION_ACTIVE = "sunlight_correction_active";
-    public static final String CHANNEL_TIME_TO_TARGET_MINS = "time_to_target_mins";
+    public static final String CHANNEL_TIME_TO_TARGET = "time_to_target";
     public static final String CHANNEL_USING_EMERGENCY_HEAT = "using_emergency_heat";
 
     // read/write channels (camera)
-    public static final String CHANNEL_STREAMING = "streaming";
+    public static final String CHANNEL_CAMERA_STREAMING = "camera#streaming";
 
     // read only channels (camera)
-    public static final String CHANNEL_AUDIO_INPUT_ENABLED = "audio_input_enabled";
-    public static final String CHANNEL_VIDEO_HISTORY_ENABLED = "video_history_enabled";
-    public static final String CHANNEL_WEB_URL = "web_url";
-    public static final String CHANNEL_APP_URL = "app_url";
-    public static final String CHANNEL_PUBLIC_SHARE_ENABLED = "public_share_enabled";
-    public static final String CHANNEL_PUBLIC_SHARE_URL = "public_share_url";
-    public static final String CHANNEL_SNAPSHOT_URL = "snapshot_url";
-    public static final String CHANNEL_LAST_ONLINE_CHANGE = "last_online_change";
+    public static final String CHANNEL_CAMERA_AUDIO_INPUT_ENABLED = "camera#audio_input_enabled";
+    public static final String CHANNEL_CAMERA_VIDEO_HISTORY_ENABLED = "camera#video_history_enabled";
+    public static final String CHANNEL_CAMERA_WEB_URL = "camera#web_url";
+    public static final String CHANNEL_CAMERA_APP_URL = "camera#app_url";
+    public static final String CHANNEL_CAMERA_PUBLIC_SHARE_ENABLED = "camera#public_share_enabled";
+    public static final String CHANNEL_CAMERA_PUBLIC_SHARE_URL = "camera#public_share_url";
+    public static final String CHANNEL_CAMERA_SNAPSHOT_URL = "camera#snapshot_url";
+    public static final String CHANNEL_CAMERA_LAST_ONLINE_CHANGE = "camera#last_online_change";
+
+    public static final String CHANNEL_LAST_EVENT_HAS_SOUND = "last_event#has_sound";
+    public static final String CHANNEL_LAST_EVENT_HAS_MOTION = "last_event#has_motion";
+    public static final String CHANNEL_LAST_EVENT_HAS_PERSON = "last_event#has_person";
+    public static final String CHANNEL_LAST_EVENT_START_TIME = "last_event#start_time";
+    public static final String CHANNEL_LAST_EVENT_END_TIME = "last_event#end_time";
+    public static final String CHANNEL_LAST_EVENT_URLS_EXPIRE_TIME = "last_event#urls_expire_time";
+    public static final String CHANNEL_LAST_EVENT_WEB_URL = "last_event#web_url";
+    public static final String CHANNEL_LAST_EVENT_APP_URL = "last_event#app_url";
+    public static final String CHANNEL_LAST_EVENT_IMAGE_URL = "last_event#image_url";
+    public static final String CHANNEL_LAST_EVENT_ANIMATED_IMAGE_URL = "last_event#animated_image_url";
+    public static final String CHANNEL_LAST_EVENT_ACTIVITY_ZONES = "last_event#activity_zones";
 
     // read/write channels (smoke detector)
 
@@ -122,4 +140,5 @@ public class NestBindingConstants {
     public static final String CHANNEL_TIME_ZONE = "time_zone";
     public static final String CHANNEL_ETA_BEGIN = "eta_begin";
     public static final String CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT = "rush_hour_rewards_enrollment";
+    public static final String CHANNEL_SECURITY_STATE = "security_state";
 }

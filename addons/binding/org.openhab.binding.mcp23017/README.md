@@ -27,7 +27,7 @@ mcp23017 supports 16 channels in 2 groups:
  | Group |                       Channels                                   |           Additional parameters           |
  |  ---  |                          ---                                     |                      ---                  |
  | input | A0, A1, A2, A3, A4, A5, A6, A7, B0, B1, B2, B3, B4, B5, B6, B7   | pull_mode (OFF, PULL_UP), default is OFF  |
- | output| A0, A1, A2, A3, A4, A5, A6, A7, B0, B1, B2, B3, B4, B5, B6, B7   | default_state (LOW, HIGH), defauld is LOW |
+ | output| A0, A1, A2, A3, A4, A5, A6, A7, B0, B1, B2, B3, B4, B5, B6, B7   | default_state (LOW, HIGH), default is LOW |
 
  Channel determines MCP23017 PIN we want to use.
 
@@ -50,8 +50,20 @@ Let's imagine a setup with:
 
 *   Things:
 
+Minimal configuration:
 ```
 Thing mcp23017:mcp23017:chipA  "MCP23017 chip A" [address=20,bus=1]
+```
+
+Configuration with default_state and pull_mode:
+```
+Thing mcp23017:mcp23017:chipA  "MCP23017 chip A" [address=20,bus=1] {
+    Type output_pin : output#A0 [default_state="HIGH"]
+    Type output_pin : output#A1 [default_state="LOW"]
+
+    Type input_pin : input#B0 [pull_mode="PULL_UP"]
+    Type input_pin : input#B1 [pull_mode="OFF"]
+}
 ```
 
 *   Items:

@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * {@link NikoHomeControlDiscoveryService}
  * is used to return Niko Home Control Actions as things to the framework.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
 

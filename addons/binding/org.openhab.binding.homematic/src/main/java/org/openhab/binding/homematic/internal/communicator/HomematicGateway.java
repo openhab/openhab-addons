@@ -111,4 +111,14 @@ public interface HomematicGateway {
      */
     public void startWatchdogs();
 
+    /**
+     * Deletes the device from the gateway.
+     *
+     * @param address The address of the device to be deleted
+     * @param reset <i>true</i> will perform a factory reset on the device before deleting it.
+     * @param force <i>true</i> will delete the device even if it is not reachable.
+     * @param defer <i>true</i> will delete the device once it becomes available.
+     */
+    public void deleteDevice(String address, boolean reset, boolean force, boolean defer);
+
 }

@@ -30,10 +30,12 @@
 			<channel id="sunlight_correction_enabled" typeId="SunlightCorrectionEnabled" />
 			<channel id="sunlight_correction_active" typeId="SunlightCorrectionActive" />
 			<channel id="using_emergency_heat" typeId="UsingEmergencyHeat" />
+			<channel id="eco_max_set_point" typeId="EcoMaxSetPoint" />
+			<channel id="eco_min_set_point" typeId="EcoMinSetPoint" />
 			<channel id="locked" typeId="Locked" />
 			<channel id="locked_max_set_point" typeId="LockedMaxSetPoint" />
 			<channel id="locked_min_set_point" typeId="LockedMinSetPoint" />
-			<channel id="time_to_target_mins" typeId="TimeToTarget" />
+			<channel id="time_to_target" typeId="TimeToTarget" />
 			<channel id="last_connection" typeId="LastConnection" />
 		</channels>
 

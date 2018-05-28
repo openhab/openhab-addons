@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	id="amazonechocontrol" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>Amazon Echo Control Binding</name>
+	<description>Binding to control Amazon Echo devices (Alexa). This binding enables openHAB to control the volume, playing state, bluetooth connection of your amazon echo devices or allow to use it as TTS device.</description>
+	<author>Michael Geramb</author>
+
+</binding:binding>

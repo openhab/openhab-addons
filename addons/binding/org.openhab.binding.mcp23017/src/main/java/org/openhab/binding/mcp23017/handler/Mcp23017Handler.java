@@ -158,7 +158,7 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
         Pin pin = PinMapper.get(channel.getIdWithoutGroup());
 
         String pullMode = DEFAULT_PULL_MODE;
-        if (thing.getChannel(channel.getIdWithoutGroup()) != null) {
+        if (thing.getChannel(channel.getId ()) != null) {
             Configuration configuration = thing.getChannel(channel.getId()).getConfiguration();
             pullMode = ((String) configuration.get(PULL_MODE)) != null ? ((String) configuration.get(PULL_MODE))
                     : DEFAULT_PULL_MODE;

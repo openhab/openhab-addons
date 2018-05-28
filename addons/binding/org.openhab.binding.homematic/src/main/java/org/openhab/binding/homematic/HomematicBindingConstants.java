@@ -22,7 +22,12 @@ public class HomematicBindingConstants {
     public static final String BINDING_ID = "homematic";
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final String CONFIG_DESCRIPTION_URI_CHANNEL = "channel-type:homematic:config";
-    public static final String CONFIG_DESCRIPTION_URI_THING = "thing-type:homematic:config";
+    
+    /**
+     * A thing's config-description-uri is generally composed as follows:<br>
+     * {@link #CONFIG_DESCRIPTION_URI_THING_PREFIX}:{@link ThingTypeUID}
+     */
+    public static final String CONFIG_DESCRIPTION_URI_THING_PREFIX = "thing-type";
 
     public static final String PROPERTY_VENDOR_NAME = "eQ-3 AG";
 

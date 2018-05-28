@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.nest.internal.listener;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nest.internal.data.TopLevelData;
 import org.openhab.binding.nest.internal.rest.NestStreamingRestClient;
 
@@ -16,6 +17,7 @@ import org.openhab.binding.nest.internal.rest.NestStreamingRestClient;
  *
  * @author Wouter Born - Replace polling with REST streaming
  */
+@NonNullByDefault
 public interface NestStreamingDataListener {
 
     /**

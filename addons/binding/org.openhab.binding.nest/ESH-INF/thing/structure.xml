@@ -22,6 +22,7 @@
 			<channel id="eta_begin" typeId="EtaBegin" />
 			<channel id="co_alarm_state" typeId="CoAlarmState" />
 			<channel id="smoke_alarm_state" typeId="SmokeAlarmState" />
+			<channel id="security_state" typeId="SecurityState" />
 			<channel id="away" typeId="Away" />
 		</channels>
 

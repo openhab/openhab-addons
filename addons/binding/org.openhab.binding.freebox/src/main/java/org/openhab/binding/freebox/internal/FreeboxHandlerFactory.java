@@ -98,7 +98,6 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(FreeboxBindingConstants.FREEBOX_BRIDGE_TYPE_SERVER)) {
@@ -128,7 +127,7 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
 
     private void registerDiscoveryService(FreeboxHandler bridgeHandler) {
         FreeboxDiscoveryService discoveryService = new FreeboxDiscoveryService(bridgeHandler);
-        discoveryService.activate();
+        discoveryService.activate(null);
         discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }

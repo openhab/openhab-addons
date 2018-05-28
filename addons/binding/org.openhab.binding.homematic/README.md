@@ -119,6 +119,9 @@ Think in hours when configuring (one hour = 3600)
 -   **timeout**  
 The timeout in seconds for connections to a Homematic gateway (default = 15)
 
+-   **discoveryTimeToLive**  
+The time to live in seconds for discovery results of a Homematic gateway (default = -1, which means infinite)
+
 -   **socketMaxAlive**  
 The maximum lifetime of a pooled socket connection to the Homematic gateway in seconds (default = 900)
 
@@ -136,6 +139,9 @@ The port number of the CUxD daemon (default = 8701)
 
 -   **installModeDuration**
 Time in seconds that the controller will be in install mode when a device discovery is initiated (default = 60)
+
+-   **unpairOnDeletion**
+If true, devices are automatically unpaired from a gateway when the corresponding thing is deleted (default = false)
 
 The syntax for a bridge is:
 

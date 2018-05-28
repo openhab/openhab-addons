@@ -13,6 +13,8 @@ import java.net.UnknownHostException;
 import java.util.Dictionary;
 
 import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides the configured and static settings for the Homekit addon
@@ -25,6 +27,8 @@ public class HomekitSettings {
     private static final String MANUFACTURER = "openHAB";
     private static final String SERIAL_NUMBER = "none";
 
+    /* Name under which openHAB announces itself as HomeKit bridge (#1946) */
+    private String name = NAME;
     private int port = 9123;
     private String pin = "031-45-154";
     private boolean useFahrenheitTemperature = false;
@@ -36,7 +40,13 @@ public class HomekitSettings {
     private String thermostatOffMode = "Off";
     private InetAddress networkInterface;
 
+    private final Logger logger = LoggerFactory.getLogger(HomekitSettings.class);
+
     public void fill(Dictionary<String, ?> properties) throws UnknownHostException {
+        Object name = properties.get("name");
+        if (name instanceof String && ((String) name).length() > 0) {
+            this.name = (String) name;
+        }
         Object port = properties.get("port");
         if (port instanceof Integer) {
             this.port = (Integer) port;
@@ -82,7 +92,8 @@ public class HomekitSettings {
     }
 
     public String getName() {
-        return NAME;
+        logger.debug("Using homekit name '{}'", name);
+        return name;
     }
 
     public String getManufacturer() {
