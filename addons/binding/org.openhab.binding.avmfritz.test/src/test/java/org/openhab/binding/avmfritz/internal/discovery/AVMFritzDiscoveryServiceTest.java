@@ -92,7 +92,8 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
 
     @Test
     public void invalidDiscoveryResult() throws JAXBException {
-        String xml = "<devicelist version=\"1\"><device identifier=\"11934 0110051-1\" id=\"2000\" functionbitmask=\"8208\" fwversion=\"0.0\" manufacturer=\"0x0feb\" productname=\"HAN-FUN\"><present>1</present><name>HAN-FUN #1</name><etsiunitinfo><etsideviceid>411</etsideviceid><unittype>514</unittype><interfaces>256</interfaces></etsiunitinfo><alert><state>0</state></alert></device></devicelist>";
+        // attribute productname is important for a valid discovery result
+        String xml = "<devicelist version=\"1\"><device identifier=\"08761 0000434\" id=\"17\" functionbitmask=\"2944\" fwversion=\"03.83\" manufacturer=\"AVM\" productname=\"\"><present>1</present><name>FRITZ!DECT 210 #1</name><switch><state>0</state><mode>manuell</mode><lock>0</lock><devicelock>1</devicelock></switch><powermeter><power>45</power><energy>166</energy></powermeter><temperature><celsius>255</celsius><offset>0</offset></temperature></device></devicelist>";
 
         Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
         DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
@@ -151,6 +152,33 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
         assertEquals(new ThingUID("avmfritz:FRITZ_DECT_200:1:087610000434"), discoveryResult.getThingUID());
         assertEquals(DECT200_THING_TYPE, discoveryResult.getThingTypeUID());
+        assertEquals(BRIGE_THING_ID, discoveryResult.getBridgeUID());
+        assertEquals("087610000434", discoveryResult.getProperties().get(THING_AIN));
+        assertEquals("AVM", discoveryResult.getProperties().get(PROPERTY_VENDOR));
+        assertEquals("17", discoveryResult.getProperties().get(PROPERTY_MODEL_ID));
+        assertEquals("087610000434", discoveryResult.getProperties().get(PROPERTY_SERIAL_NUMBER));
+        assertEquals("03.83", discoveryResult.getProperties().get(PROPERTY_FIRMWARE_VERSION));
+        assertEquals(THING_AIN, discoveryResult.getRepresentationProperty());
+    }
+
+    @Test
+    public void validDECT210DiscoveryResult() throws JAXBException {
+        String xml = "<devicelist version=\"1\"><device identifier=\"08761 0000434\" id=\"17\" functionbitmask=\"2944\" fwversion=\"03.83\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 210\"><present>1</present><name>FRITZ!DECT 210 #1</name><switch><state>0</state><mode>manuell</mode><lock>0</lock><devicelock>1</devicelock></switch><powermeter><power>45</power><energy>166</energy></powermeter><temperature><celsius>255</celsius><offset>0</offset></temperature></device></devicelist>";
+
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
+        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        assertNotNull(devices);
+        assertEquals(1, devices.getDevicelist().size());
+
+        AVMFritzBaseModel device = devices.getDevicelist().get(0);
+        assertNotNull(device);
+
+        discovery.onDeviceAddedInternal(device);
+        assertNotNull(discoveryResult);
+
+        assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
+        assertEquals(new ThingUID("avmfritz:FRITZ_DECT_210:1:087610000434"), discoveryResult.getThingUID());
+        assertEquals(DECT210_THING_TYPE, discoveryResult.getThingTypeUID());
         assertEquals(BRIGE_THING_ID, discoveryResult.getBridgeUID());
         assertEquals("087610000434", discoveryResult.getProperties().get(THING_AIN));
         assertEquals("AVM", discoveryResult.getProperties().get(PROPERTY_VENDOR));

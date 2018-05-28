@@ -16,7 +16,8 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -177,22 +178,24 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      *
      * @param model Device model with updated data.
      */
-    public void addDeviceList(AVMFritzBaseModel device) {
-        logger.debug("set device model: {}", device);
-        ThingUID thingUID = getThingUID(device);
-        if (thingUID != null) {
-            Thing thing = getThingByUID(thingUID);
-            if (thing != null) {
-                logger.debug("update thing {} with device model: {}", thingUID, device);
-                AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
-                if (handler != null) {
+    public void addDeviceList(ArrayList<AVMFritzBaseModel> devicelist) {
+        for (Thing thing : getThing().getThings()) {
+            AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
+            if (handler != null) {
+                Optional<AVMFritzBaseModel> optionalDevice = devicelist.stream()
+                        .filter(it -> it.getIdentifier().equals(handler.getIdentifier())).findFirst();
+                if (optionalDevice.isPresent()) {
+                    AVMFritzBaseModel device = optionalDevice.get();
+                    logger.debug("update thing {} with device model: {}", thing.getUID(), device);
                     handler.setState(device);
+                    updateThingFromDevice(thing, device);
+                } else {
+                    thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                            "Device not present in response"));
                 }
-                updateThingFromDevice(thing, device);
             } else {
-                logger.debug("no thing {} found for device model: {}", thingUID, device);
+                logger.debug("handler missing for thing {}", thing.getUID());
             }
-            logger.debug("no thing UID found for device model: {}", device);
         }
     }
 
@@ -296,21 +299,6 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             updateState(channel.getUID(), state);
         } else {
             logger.warn("Channel {} in thing {} does not exist, please recreate the thing", channelId, thing.getUID());
-        }
-    }
-
-    /**
-     * Called from {@link FritzAhaUpdateXmlCallback} to set missing devices to OFFLINE.
-     */
-    public void setMissingThingsOffline(Set<String> ains) {
-        for (Thing thing : getThing().getThings()) {
-            AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
-            if (handler != null) {
-                if (!ains.contains(handler.getState().getIdentifier())) {
-                    thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
-                            "Device not present in response"));
-                }
-            }
         }
     }
 
