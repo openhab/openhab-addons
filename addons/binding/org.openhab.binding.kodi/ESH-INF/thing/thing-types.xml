@@ -32,6 +32,9 @@
 			<channel id="fanart" typeId="fanart" />
 			<channel id="playfavorite" typeId="playfavorite" />
 			<channel id="playnotification" typeId="playnotification" />
+			<channel id="currenttime" typeId="currenttime" />
+			<channel id="currenttimepercentage" typeId="currenttimepercentage" />
+			<channel id="duration" typeId="duration" />
 		</channels>
 
 		<properties>
@@ -96,11 +99,15 @@
 		<label>Show Notification</label>
 		<description>Shows a notification on the UI</description>
 	</channel-type>
+	<channel-type id="playnotification" advanced="true">
+		<item-type>String</item-type>
+		<label>Play Notification</label>
+		<description>Plays a notification sound by a given URI</description>
+	</channel-type>
 	<channel-type id="input" advanced="true">
 		<item-type>String</item-type>
 		<label>Send a key</label>
-		<description>Sends a key stroke to the Kodi Player to navigate in the UI
-		</description>
+		<description>Sends a key stroke to the Kodi Player to navigate in the UI</description>
 		<state>
 			<options>
 				<option value="Left">Left</option>
@@ -393,9 +400,22 @@
 		<description>The current fanart</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="playnotification" advanced="true">
-		<item-type>String</item-type>
-		<label>Play Notification</label>
-		<description>Plays a notification sound by a given URI</description>
+	<channel-type id="currenttime">
+		<item-type>Number:Time</item-type>
+		<label>Current Time</label>
+		<description>Current time of currently playing media</description>
+		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+	<channel-type id="currenttimepercentage" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Current Time in percent</label>
+		<description>Current time of currently playing media</description>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+	</channel-type>
+	<channel-type id="duration">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<description>Length of currently playing media</description>
+		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 </thing:thing-descriptions>
