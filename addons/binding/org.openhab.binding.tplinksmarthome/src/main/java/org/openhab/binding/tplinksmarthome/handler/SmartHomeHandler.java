@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -90,7 +89,10 @@ public class SmartHomeHandler extends BaseThingHandler {
         connection = createConnection(configuration);
         cache = new ExpiringCache<DeviceState>(TimeUnit.SECONDS.toMillis(configuration.refresh), this::refreshCache);
         updateStatus(ThingStatus.UNKNOWN);
-        startAutomaticRefresh(configuration);
+        // While config.xml defines refresh as min 1, this check is used to run a test that doesn't start refresh.
+        if (configuration.refresh > 0) {
+            startAutomaticRefresh(configuration);
+        }
     }
 
     /**
@@ -123,9 +125,7 @@ public class SmartHomeHandler extends BaseThingHandler {
             Runnable runnable = () -> {
                 logger.trace("Update Channels for:{}", thing.getUID());
                 DeviceState value = cache.getValue();
-                for (Channel channel : getThing().getChannels()) {
-                    updateChannelState(channel.getUID(), value);
-                }
+                getThing().getChannels().forEach(channel -> updateChannelState(channel.getUID(), value));
             };
 
             refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, config.refresh.intValue(), TimeUnit.SECONDS);

@@ -69,7 +69,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>This channel supports adjusting the brightness.</description>
-		<category>ColorLight</category>
+		<category>DimmableLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Misc Channel types -->

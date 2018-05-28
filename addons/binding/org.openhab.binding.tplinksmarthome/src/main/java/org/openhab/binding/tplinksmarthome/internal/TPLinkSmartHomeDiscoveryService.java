@@ -160,7 +160,8 @@ public class TPLinkSmartHomeDiscoveryService extends AbstractDiscoveryService {
     private void detectThing(DatagramPacket packet) throws IOException {
         String ipAddress = packet.getAddress().getHostAddress();
         String rawData = CryptUtil.decrypt(packet.getData(), packet.getLength());
-        Sysinfo sysinfo = commands.getSysinfoReponse(rawData);
+        Sysinfo sysinfoRaw = commands.getSysinfoReponse(rawData);
+        Sysinfo sysinfo = sysinfoRaw.getActualSysinfo();
 
         logger.trace("Detected TP-Link Smart Home device: {}", rawData);
         String deviceId = sysinfo.getDeviceId();
@@ -171,7 +172,7 @@ public class TPLinkSmartHomeDiscoveryService extends AbstractDiscoveryService {
             ThingUID thingUID = new ThingUID(thingTypeUID.get(),
                     deviceId.substring(deviceId.length() - 6, deviceId.length()));
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(sysinfo.getAlias())
-                    .withProperties(PropertiesCollector.collectProperties(thingTypeUID.get(), ipAddress, sysinfo))
+                    .withProperties(PropertiesCollector.collectProperties(thingTypeUID.get(), ipAddress, sysinfoRaw))
                     .build();
             thingDiscovered(discoveryResult);
         } else {

@@ -9,7 +9,7 @@
 package org.openhab.binding.tplinksmarthome.internal;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -18,11 +18,16 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
@@ -35,7 +40,11 @@ import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@RunWith(value = Parameterized.class)
 public class TPLinkSmartHomeDiscoveryServiceTest {
+
+    private static final List<Object[]> TESTS = Arrays.asList(
+            new Object[][] { { "bulb_get_sysinfo_response_on", 11 }, { "rangeextender_get_sysinfo_response", 11 } });
 
     @Mock
     private DatagramSocket discoverSocket;
@@ -44,6 +53,19 @@ public class TPLinkSmartHomeDiscoveryServiceTest {
     private DiscoveryListener discoveryListener;
 
     private TPLinkSmartHomeDiscoveryService discoveryService;
+
+    private final String filename;
+    private final int propertiesSize;
+
+    public TPLinkSmartHomeDiscoveryServiceTest(String filename, int propertiesSize) {
+        this.filename = filename;
+        this.propertiesSize = propertiesSize;
+    }
+
+    @Parameters(name = "{0}")
+    public static List<Object[]> data() {
+        return TESTS;
+    }
 
     @Before
     public void setUp() throws IOException {
@@ -64,7 +86,7 @@ public class TPLinkSmartHomeDiscoveryServiceTest {
                 }
                 DatagramPacket packet = (DatagramPacket) invocation.getArguments()[0];
                 packet.setAddress(InetAddress.getLocalHost());
-                packet.setData(CryptUtil.encrypt(ModelTestUtil.readJson("bulb_get_sysinfo_response_on")));
+                packet.setData(CryptUtil.encrypt(ModelTestUtil.readJson(filename)));
                 return null;
             }
 
@@ -83,7 +105,8 @@ public class TPLinkSmartHomeDiscoveryServiceTest {
         DiscoveryResult discoveryResult = discoveryResultCaptor.getValue();
         assertEquals("Check if correct binding id found", TPLinkSmartHomeBindingConstants.BINDING_ID,
                 discoveryResult.getBindingId());
-        assertEquals("Check if expected number of properties found", 11, discoveryResult.getProperties().size());
+        assertEquals("Check if expected number of properties found", propertiesSize,
+                discoveryResult.getProperties().size());
     }
 
 }

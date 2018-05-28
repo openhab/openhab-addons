@@ -16,7 +16,7 @@
 			<unitLabel>milliseconds</unitLabel>
 			<default>0</default>
 		</parameter>
-		<parameter name="refresh" type="integer" min="0">
+		<parameter name="refresh" type="integer" min="1">
 			<label>Refresh rate</label>
 			<description>Refresh of device state in seconds.</description>
 			<unitLabel>seconds</unitLabel>
@@ -30,7 +30,7 @@
 			<label>IP Address</label>
 			<description>IP Address of the device.</description>
 		</parameter>
-		<parameter name="refresh" type="integer">
+		<parameter name="refresh" type="integer" min="1">
 			<label>Refresh rate</label>
 			<description>Refresh of device state in seconds.</description>
 			<unitLabel>seconds</unitLabel>
@@ -44,7 +44,7 @@
 			<label>IP Address</label>
 			<description>IP Address of the device.</description>
 		</parameter>
-		<parameter name="refresh" type="integer">
+		<parameter name="refresh" type="integer" min="1">
 			<label>Refresh rate</label>
 			<description>Refresh of device state in seconds.</description>
 			<unitLabel>seconds</unitLabel>

@@ -17,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.junit.Before;
@@ -79,10 +80,12 @@ public class DeviceTestBase {
      * @param responseFilename name of the file to read that contains the answer. It's the unencrypted json string
      * @throws IOException exception in case device not reachable
      */
-    protected void setSocketReturnAssert(@NonNull String responseFilename) throws IOException {
-        String stateResponse = ModelTestUtil.readJson(responseFilename);
+    protected void setSocketReturnAssert(@NonNull String... responseFilenames) throws IOException {
+        AtomicInteger index = new AtomicInteger();
 
         doAnswer(i -> {
+            String stateResponse = ModelTestUtil.readJson(responseFilenames[index.getAndIncrement()]);
+
             return new ByteArrayInputStream(CryptUtil.encryptWithLength(stateResponse));
         }).when(socket).getInputStream();
 
@@ -95,12 +98,15 @@ public class DeviceTestBase {
      * @param filename name of the file containing the reference json
      * @throws IOException exception in case device not reachable
      */
-    protected void assertInput(@NonNull String filename) throws IOException {
-        String json = ModelTestUtil.readJson(filename);
+    protected void assertInput(@NonNull String... filename) throws IOException {
+        AtomicInteger index = new AtomicInteger();
 
         doAnswer(i -> {
+            String json = ModelTestUtil.readJson(filename[index.get()]);
+
             byte[] input = (byte[]) i.getArguments()[0];
-            assertEquals(filename, json, CryptUtil.decryptWithLength(new ByteArrayInputStream(input)));
+            assertEquals(filename[index.get()], json, CryptUtil.decryptWithLength(new ByteArrayInputStream(input)));
+            index.incrementAndGet();
             return null;
         }).when(outputStream).write(any());
     }

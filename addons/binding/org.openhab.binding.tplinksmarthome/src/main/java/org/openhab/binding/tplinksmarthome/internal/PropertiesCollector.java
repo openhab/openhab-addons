@@ -41,11 +41,15 @@ public final class PropertiesCollector {
         Map<String, Object> properties = new TreeMap<>();
 
         putNonNull(properties, CONFIG_IP, ipAddress);
-        collectProperties(properties, sysinfo);
-        if (TPLinkSmartHomeThingType.isBulbDevice(thingTypeUID)) {
-            collectPropertiesBulb(properties, sysinfo);
+        if (TPLinkSmartHomeThingType.isRangeExtenderDevice(thingTypeUID)) {
+            collectPropertiesRangeExtender(properties, sysinfo);
         } else {
-            collectPropertiesOther(properties, sysinfo);
+            collectProperties(properties, sysinfo);
+            if (TPLinkSmartHomeThingType.isBulbDevice(thingTypeUID)) {
+                collectPropertiesBulb(properties, sysinfo);
+            } else {
+                collectPropertiesOther(properties, sysinfo);
+            }
         }
         return properties;
     }
@@ -72,10 +76,25 @@ public final class PropertiesCollector {
      * @param sysinfo system info data returned from the device
      */
     private static void collectPropertiesBulb(Map<String, Object> properties, Sysinfo sysinfo) {
-        putNonNull(properties, PROPERTY_TYPE, sysinfo.getMicType());
-        putNonNull(properties, PROPERTY_MAC, sysinfo.getMicMac());
+        putNonNull(properties, PROPERTY_TYPE, sysinfo.getType());
+        putNonNull(properties, PROPERTY_MAC, sysinfo.getMac());
         putNonNull(properties, PROPERTY_PROTOCOL_NAME, sysinfo.getProtocolName());
         putNonNull(properties, PROPERTY_PROTOCOL_VERSION, sysinfo.getProtocolVersion());
+    }
+
+    /**
+     * Collect Smart Range Extender specific properties.
+     *
+     * @param properties properties object to store properties in
+     * @param sysinfo system info data returned from the device
+     */
+    private static void collectPropertiesRangeExtender(Map<String, Object> properties, Sysinfo sysinfo) {
+        Sysinfo system = sysinfo.getSystem();
+        collectProperties(properties, system);
+        putNonNull(properties, PROPERTY_TYPE, system.getType());
+        putNonNull(properties, PROPERTY_MAC, system.getMac());
+        putNonNull(properties, PROPERTY_DEVICE_NAME, system.getDevName());
+        putNonNull(properties, PROPERTY_FEATURE, sysinfo.getPlug().getFeature());
     }
 
     /**
