@@ -76,13 +76,14 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
         logger.debug("Handle command '{}' for channel {}", command, channelId);
         FritzAhaWebInterface fritzBox = getWebInterface();
         if (fritzBox == null) {
+            logger.debug("Cannot handle command '{}' because connection is missing", command);
             return;
         }
-        if (getThing().getConfiguration().get(THING_AIN) == null) {
+        String ain = getIdentifier();
+        if (ain == null) {
             logger.debug("Cannot handle command '{}' because AIN is missing", command);
             return;
         }
-        String ain = getThing().getConfiguration().get(THING_AIN).toString();
         switch (channelId) {
             case CHANNEL_MODE:
             case CHANNEL_LOCKED:
@@ -192,6 +193,12 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
             }
         }
         return null;
+    }
+
+    @Nullable
+    public String getIdentifier() {
+        Object ain = getThing().getConfiguration().get(THING_AIN);
+        return ain != null ? ain.toString() : null;
     }
 
     @Nullable
