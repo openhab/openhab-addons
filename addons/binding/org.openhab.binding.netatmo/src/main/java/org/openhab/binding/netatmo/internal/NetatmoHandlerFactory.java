@@ -114,6 +114,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private void registerDeviceDiscoveryService(@NonNull NetatmoBridgeHandler netatmoBridgeHandler) {
         if (bundleContext != null) {
             NetatmoModuleDiscoveryService discoveryService = new NetatmoModuleDiscoveryService(netatmoBridgeHandler);
+            discoveryService.activate(null);
             discoveryServiceRegs.put(netatmoBridgeHandler.getThing().getUID(), bundleContext.registerService(
                     DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
         }
@@ -122,6 +123,9 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private void unregisterDeviceDiscoveryService(ThingUID thingUID) {
         ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(thingUID);
         if (serviceReg != null) {
+            NetatmoModuleDiscoveryService service = (NetatmoModuleDiscoveryService) bundleContext
+                    .getService(serviceReg.getReference());
+            service.deactivate();
             serviceReg.unregister();
             discoveryServiceRegs.remove(thingUID);
         }

@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -69,6 +70,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     private ScheduledFuture<?> refreshJob;
     private APIMap apiMap;
     private WelcomeWebHookServlet webHookServlet;
+    private List<NetatmoDataListener> dataListeners = new CopyOnWriteArrayList<>();
 
     @NonNullByDefault
     private class APIMap extends HashMap<Class<?>, Object> {
@@ -337,4 +339,17 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         return webHookURI;
     }
 
+    public boolean registerDataListener(@NonNull NetatmoDataListener dataListener) {
+        return dataListeners.add(dataListener);
+    }
+
+    public boolean unregisterDataListener(@NonNull NetatmoDataListener dataListener) {
+        return dataListeners.remove(dataListener);
+    }
+
+    public void checkForNewThings(Object data) {
+        for (NetatmoDataListener dataListener : dataListeners) {
+            dataListener.onDataRefreshed(data);
+        }
+    }
 }
