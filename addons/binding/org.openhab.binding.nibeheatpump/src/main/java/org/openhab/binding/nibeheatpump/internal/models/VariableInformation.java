@@ -48,6 +48,8 @@ public class VariableInformation {
         switch (model) {
             case F1X45:
                 return F1X45.getVariableInfo(key);
+            case F750:
+                return F750.getVariableInfo(key);
             default:
                 return null;
         }

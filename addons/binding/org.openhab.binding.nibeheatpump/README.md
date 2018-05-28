@@ -1,6 +1,7 @@
 # Nibe Heatpump Binding
 
-The Nibe Heatpump binding is used to get live data from from Nibe heat pumps without using expensive MODBUS40 adapter. This binding should be compatible with at least the F1145 and F1245 heat pump models.
+The Nibe Heatpump binding is used to get live data from from Nibe heat pumps without using expensive MODBUS40 adapter.
+This binding should be compatible at least the F750, F1145 and F1245 heat pump models.
 
 The binding support data telegrams (contains max 20 registers) from the heat pump, but binding can also read other registers from the pump.
 It's recommend to add most changed variables to telegram, binding will then read all other registers automatically from the pump when channels are linked to item.
@@ -18,6 +19,9 @@ This binding supports direct serial port connection (RS-485 adapter needed) to h
 | f1x45-serial    | Serial port connected F1145 and F1245 Heat Pumps |
 | f1x45-udp       | UDP connected Nibe F1145 and F1245 Heat Pumps    |
 | f1x45-simulator | Simulator for Nibe F1145 and F1245 Heat Pumps    |
+| f750-serial     | Serial port connected F750 Heat Pumps            |
+| f750-udp        | UDP connected Nibe F750 Heat Pumps               |
+| f750-simulator  | Simulator for Nibe F750 Heat Pumps               |
 
 ## Discovery
 
@@ -884,5 +888,3 @@ This binding currently supports following channels for F1x45 pump models:
 | 48458 | Number | 50 | 100 | Setting | Max speed circ.pump Heat |  |
 | 48459 | Number | 0 | 100 | Setting | Speed brine pump cooling |  |
 | 48487 | Number | 1 | 100 | Setting | Speed circ.pump Cooling |  |
-
-
