@@ -8,17 +8,22 @@
  */
 package org.openhab.binding.kostal.inverter;
 
+import javax.measure.Unit;
+
 /**
  * @author Christian Schneider - Initial contribution
+ * @author Christoph Weitkamp - Incorporated new QuantityType (Units of Measurement)
  */
 public class ChannelConfig {
-    public ChannelConfig(String id, String tag, int num) {
+    public ChannelConfig(String id, String tag, int num, Unit<?> unit) {
         this.id = id;
         this.tag = tag;
         this.num = num;
+        this.unit = unit;
     }
 
     String id;
     String tag;
     int num;
+    Unit<?> unit;
 }

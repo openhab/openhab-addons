@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="kostalinverter"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="kostalinverter">
 		<label>Kostal Inverter</label>
 		<description>Kostal Inverter</description>
 		<channels>
-			<channel typeId="acPower" id="acPower" ></channel>
-			<channel typeId="totalEnergy" id="totalEnergy" ></channel>
-			<channel typeId="dayEnergy" id="dayEnergy" ></channel>
-			<channel typeId="status" id="status" ></channel>
+			<channel typeId="acPower" id="acPower"></channel>
+			<channel typeId="totalEnergy" id="totalEnergy"></channel>
+			<channel typeId="dayEnergy" id="dayEnergy"></channel>
+			<channel typeId="status" id="status"></channel>
 		</channels>
 
 		<config-description>
@@ -31,37 +31,37 @@
 				<default>pvwr</default>
 			</parameter>
 
-			<parameter name="refreshInterval" type="integer">
+			<parameter name="refreshInterval" type="integer" unit="s">
 				<label>Refresh Interval</label>
-				<description>States how often a refresh shall occur (in ms)</description>
+				<description>States how often a refresh shall occur (in s)</description>
 				<default>60</default>
 			</parameter>
 		</config-description>
 	</thing-type>
 
 	<channel-type id="acPower">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>AC Power</label>
-		<state readOnly="true" pattern="%.2f W" />
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
 
 	<channel-type id="totalEnergy">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Total Energy</label>
-		<state readOnly="true" pattern="%.2f kwh" />
+		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
 
 	<channel-type id="dayEnergy">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Day Energy</label>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f kwh" />
+		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
 
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>
-		<category>Energy</category>
 		<state readOnly="true" />
 	</channel-type>
 
