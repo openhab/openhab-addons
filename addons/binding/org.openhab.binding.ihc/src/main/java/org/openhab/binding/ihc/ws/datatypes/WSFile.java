@@ -1,0 +1,72 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.openhab.binding.ihc.ws.datatypes;
+
+import org.openhab.binding.ihc.ws.exeptions.IhcExecption;
+
+/**
+ * Java class for WSFile complex type.
+ *
+ * @author Pauli Anttila - Initial contribution
+ */
+public class WSFile extends WSBaseDataType {
+    private byte[] data;
+    private String filename;
+
+    public WSFile() {
+    }
+
+    public WSFile(byte[] data, String filename) {
+        this.data = data;
+        this.filename = filename;
+    }
+
+    /**
+     * Gets the data value for this WSFile.
+     *
+     * @return data
+     */
+    public byte[] getData() {
+        return data;
+    }
+
+    /**
+     * Sets the data value for this WSFile.
+     *
+     * @param data
+     */
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
+    /**
+     * Gets the filename value for this WSFile.
+     *
+     * @return filename
+     */
+    public String getFilename() {
+        return filename;
+    }
+
+    /**
+     * Sets the filename value for this WSFile.
+     *
+     * @param filename
+     */
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public WSFile parseXMLData(String data) throws IhcExecption {
+        filename = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getIHCProjectSegment4/ns1:filename");
+        this.data = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getIHCProjectSegment4/ns1:data")
+                .getBytes();
+        return this;
+    }
+}

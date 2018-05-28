@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ihc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="controller-state" advanced="true">
+		<item-type>String</item-type>
+		<label>Controller State</label>
+		<description>Displays IHC / ELKO controller state</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="controller-sw-version" advanced="true">
+		<item-type>String</item-type>
+		<label>Controller Software Version</label>
+		<description>Displays IHC / ELKO controller software version</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="controller-hw-version" advanced="true">
+		<item-type>String</item-type>
+		<label>Controller Hardware Version</label>
+		<description>Displays IHC / ELKO controller hardware version</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="controller-uptime" advanced="true">
+		<item-type>Number</item-type>
+		<label>Controller Uptime</label>
+		<description>Displays IHC / ELKO controller uptime in seconds</description>
+		<state readOnly="true" pattern="%.3f sec"></state>
+	</channel-type>
+    <channel-type id="controller-time" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Controller Date and Time</label>
+        <description>Displays IHC / ELKO controller date and time</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+	<channel-type id="switch-channel">
+		<item-type>Switch</item-type>
+		<label>Generic Switch</label>
+		<description>Generic switch channel</description>
+		<state readOnly="false"></state>
+		<config-description>
+			<parameter name="resourceId" type="integer" required="true">
+				<label>Resource Id</label>
+				<description></description>
+			</parameter>
+			<parameter name="direction" type="text" required="false">
+				<label>Channel direction</label>
+				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
+				<default>ReadWrite</default>
+				<options>
+					<option value="ReadWrite">Read Write</option>
+					<option value="WriteOnly">Write only</option>
+					<option value="ReadOnly">Read only</option>
+				</options>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="contact-channel">
+		<item-type>Contact</item-type>
+		<label>Generic Contact</label>
+		<description>Generic contact channel</description>
+		<state readOnly="true"></state>
+		<config-description>
+			<parameter name="resourceId" type="integer" required="true">
+				<label>Resource Id</label>
+				<description></description>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="number-channel">
+		<item-type>Number</item-type>
+		<label>Generic Number</label>
+		<description>Generic number channel</description>
+		<state readOnly="false"></state>
+		<config-description>
+			<parameter name="resourceId" type="integer" required="true">
+				<label>Resource Id</label>
+				<description></description>
+			</parameter>
+			<parameter name="direction" type="text" required="false">
+				<label>Channel direction</label>
+				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
+				<default>ReadWrite</default>
+				<options>
+					<option value="ReadWrite">Read Write</option>
+					<option value="WriteOnly">Write only</option>
+					<option value="ReadOnly">Read only</option>
+				</options>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="dimmer-channel">
+		<item-type>Dimmer</item-type>
+		<label>Generic Dimmer</label>
+		<description>Generic dimmer channel</description>
+		<state readOnly="false"></state>
+		<config-description>
+			<parameter name="resourceId" type="integer" required="true">
+				<label>Resource Id</label>
+				<description></description>
+			</parameter>
+			<parameter name="direction" type="text" required="false">
+				<label>Channel direction</label>
+				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
+				<default>ReadWrite</default>
+				<options>
+					<option value="ReadWrite">Read Write</option>
+					<option value="WriteOnly">Write only</option>
+					<option value="ReadOnly">Read only</option>
+				</options>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="datetime-channel">
+		<item-type>DateTime</item-type>
+		<label>Generic Datetime</label>
+		<description>Generic datetime channel</description>
+		<state readOnly="false"></state>
+		<config-description>
+			<parameter name="resourceId" type="integer" required="true">
+				<label>Resource Id</label>
+				<description></description>
+			</parameter>
+			<parameter name="direction" type="text" required="false">
+				<label>Channel direction</label>
+				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
+				<default>ReadWrite</default>
+				<options>
+					<option value="ReadWrite">Read Write</option>
+					<option value="WriteOnly">Write only</option>
+					<option value="ReadOnly">Read only</option>
+				</options>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="string-channel">
+		<item-type>String</item-type>
+		<label>Generic String</label>
+		<description>Generic string channel</description>
+		<state readOnly="false"></state>
+		<config-description>
+			<parameter name="resourceId" type="integer" required="true">
+				<label>Resource Id</label>
+				<description></description>
+			</parameter>
+			<parameter name="direction" type="text" required="false">
+				<label>Channel direction</label>
+				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
+				<default>ReadWrite</default>
+				<options>
+					<option value="ReadWrite">Read Write</option>
+					<option value="WriteOnly">Write only</option>
+					<option value="ReadOnly">Read only</option>
+				</options>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="rollershutter-channel">
+		<item-type>RollerShutter</item-type>
+		<label>Generic Roller Shutter</label>
+		<description>Generic roller shutter channel</description>
+		<state readOnly="false"></state>
+		<config-description>
+			<parameter name="resourceId" type="integer" required="true">
+				<label>Resource Id</label>
+				<description></description>
+			</parameter>
+			<parameter name="direction" type="text" required="false">
+				<label>Channel direction</label>
+				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
+				<default>ReadWrite</default>
+				<options>
+					<option value="ReadWrite">Read Write</option>
+					<option value="WriteOnly">Write only</option>
+					<option value="ReadOnly">Read only</option>
+				</options>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="pulse-output-channel">
+		<item-type>Switch</item-type>
+		<label>Pulse output</label>
+		<description>Generic pulse output channel</description>
+		<state readOnly="false"></state>
+		<config-description>
+			<parameter name="resourceId" type="integer" required="true">
+				<label>Resource Id</label>
+				<description></description>
+			</parameter>
+			<parameter name="direction" type="text" required="false">
+				<label>Channel direction</label>
+				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
+				<default>ReadWrite</default>
+				<options>
+					<option value="ReadWrite">Read Write</option>
+					<option value="WriteOnly">Write only</option>
+					<option value="ReadOnly">Read only</option>
+				</options>
+			</parameter>
+			<parameter name="pulseLength" type="integer" required="true" min="0" max="4000" step="100" unit="ms">
+				<label>Pulse length</label>
+				<description>Pulse length in milliseconds.</description>
+				<default>100</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="rf-device-low-battery-channel">
+		<item-type>Switch</item-type>
+		<label>RF device low battery warning</label>
+		<description>RF device low battery warning.</description>
+		<category>Battery</category>
+		<state readOnly="true"></state>
+		<config-description>
+			<parameter name="serialNumber" type="integer" required="true">
+				<label>Serial number of RF device in decimal format.</label>
+				<description></description>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="rf-device-signal-strength-channel">
+		<item-type>String</item-type>
+		<label>RF device signal strength</label>
+		<description>RF device signal strength.</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" min="0" max="4">
+			<options>
+				<option value="0">No signal</option>
+				<option value="1">Weak</option>
+				<option value="2">Average</option>
+				<option value="3">Good</option>
+				<option value="4">Excellent</option>
+			</options>
+		</state>
+		<config-description>
+			<parameter name="serialNumber" type="integer" required="true">
+				<label>Serial number of RF device in decimal format.</label>
+				<description></description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="push-button-trigger">
+		<kind>trigger</kind>
+		<label>Push button trigger channel</label>
+		<event>
+			<options>
+				<option value="SHORT_PRESS">Short press</option>
+				<option value="LONG_PRESS">Long press</option>
+				<option value="EXTRA_LONG_PRESS">Extra long press</option>
+			</options>
+		</event>
+		<config-description>
+			<parameter name="resourceId" type="integer" required="true">
+				<label>Resource Id</label>
+				<description></description>
+			</parameter>
+			<parameter name="shortPressMaxTime" type="integer" required="true" step="1000" min="0" max="5000" unit="ms">
+				<label>Short press max time</label>
+				<description>Short press max time in milliseconds.</description>
+				<default>1000</default>
+			</parameter>
+			<parameter name="longPressMaxTime" type="integer" required="true" step="1000"  min="0" max="5000" unit="ms">
+				<label>Long press max time</label>
+				<description>Long press max time in milliseconds.</description>
+				<default>2000</default>
+			</parameter>
+			<parameter name="extraLongPressMaxTime" type="integer" required="true" step="1000" min="0" max="5000" unit="ms">
+				<label>Extra long press max time</label>
+				<description>Extra long press max time in milliseconds.</description>
+				<default>4000</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ihc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="controller"
+		extensible="switch-channel, contact-channel, number-channel, dimmmer-channel, datetime-channel, string-channel, rollershutter-channel, pulse-output-channel, rf-device-battery-level-channel, rf-device-signal-strength-channel, push-button-trigger">
+
+		<label>IHC / ELKO Controller</label>
+		<description></description>
+
+		<channels>
+			<channel typeId="controller-state" id="controllerState" />
+			<channel typeId="controller-sw-version" id="controllerSwVersion" />
+			<channel typeId="controller-hw-version" id="controllerHwVersion" />
+			<channel typeId="controller-uptime" id="controllerUptime" />
+			<channel typeId="controller-time" id="controllerTime" />
+		</channels>
+
+		<config-description>
+			<parameter name="ip" type="text" required="true">
+				<context>network-address</context>
+				<label>Network Address</label>
+				<description>Network address of the IHC / ELKO controller.</description>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<label>User name</label>
+				<description>User name to login to the IHC / ELKO controller.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to login to the IHC / ELKO controller.</description>
+			</parameter>
+			<parameter name="timeout" type="integer" required="false" step="1000" unit="ms">
+				<label>Timeout</label>
+				<description>Timeout to communicate to IHC / ELKO controller.</description>
+				<default>5000</default>
+			</parameter>
+			<parameter name="loadProjectFile" type="boolean" required="false">
+				<label>Load Project File</label>
+				<description>Load project file from controller.</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="createChannelsAutomatically" type="boolean" required="false">
+				<label>Create channels automatically</label>
+				<description>Create channels automatically from project file. Project file loading parameter should be enabled as well.</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
