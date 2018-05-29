@@ -48,7 +48,9 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.internal.BindingConstants;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
+import org.openhab.binding.avmfritz.internal.ahamodel.AlertModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
+import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel.Etsiunitinfo;
 import org.openhab.binding.avmfritz.internal.ahamodel.GroupModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
@@ -186,7 +188,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                         .filter(it -> it.getIdentifier().equals(handler.getIdentifier())).findFirst();
                 if (optionalDevice.isPresent()) {
                     AVMFritzBaseModel device = optionalDevice.get();
-                    logger.debug("update thing {} with device model: {}", thing.getUID(), device);
+                    logger.debug("update thing '{}' with device model: {}", thing.getUID(), device);
                     handler.setState(device);
                     if (device.getPresent() == 1) {
                         handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
@@ -199,7 +201,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                             "Device not present in response");
                 }
             } else {
-                logger.debug("handler missing for thing {}", thing.getUID());
+                logger.debug("handler missing for thing '{}'", thing.getUID());
             }
         }
     }
@@ -262,9 +264,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             updateThingChannelState(thing, CHANNEL_RADIATOR_MODE, new StringType(device.getHkr().getRadiatorMode()));
             if (device.getHkr().getNextchange() != null) {
                 if (device.getHkr().getNextchange().getEndperiod() == 0) {
-                    updateThingChannelState(thing, CHANNEL_NEXTCHANGE, UnDefType.UNDEF);
+                    updateThingChannelState(thing, CHANNEL_NEXT_CHANGE, UnDefType.UNDEF);
                 } else {
-                    updateThingChannelState(thing, CHANNEL_NEXTCHANGE,
+                    updateThingChannelState(thing, CHANNEL_NEXT_CHANGE,
                             new DateTimeType(ZonedDateTime.ofInstant(
                                     Instant.ofEpochSecond(device.getHkr().getNextchange().getEndperiod()),
                                     ZoneId.systemDefault())));
@@ -288,6 +290,27 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                         HeatingModel.BATTERY_ON.equals(device.getHkr().getBatterylow()) ? OnOffType.ON : OnOffType.OFF);
             }
         }
+        if (device instanceof DeviceModel && device.isAlarmSensor() && ((DeviceModel) device).getAlert() != null) {
+            updateThingChannelState(thing, CHANNEL_CONTACT_STATE,
+                    AlertModel.ON.equals(((DeviceModel) device).getAlert().getState()) ? OpenClosedType.OPEN
+                            : OpenClosedType.CLOSED);
+        }
+        if (device instanceof DeviceModel && device.isButton() && ((DeviceModel) device).getButton() != null) {
+            if (((DeviceModel) device).getButton().getLastpressedtimestamp() == 0) {
+                updateThingChannelState(thing, CHANNEL_LAST_CHANGE, UnDefType.UNDEF);
+            } else {
+                ZoneId zoneId = ZoneId.systemDefault();
+                ZonedDateTime timestamp = ZonedDateTime.ofInstant(
+                        Instant.ofEpochSecond(((DeviceModel) device).getButton().getLastpressedtimestamp()), zoneId);
+                Instant then = timestamp.toInstant();
+                ZonedDateTime now = ZonedDateTime.now(zoneId);
+                Instant someSecondsEarlier = now.minusSeconds(refreshInterval).toInstant();
+                if (then.isAfter(someSecondsEarlier) && then.isBefore(now.toInstant())) {
+                    triggerThingChannel(thing, CHANNEL_PRESS);
+                }
+                updateThingChannelState(thing, CHANNEL_LAST_CHANGE, new DateTimeType(timestamp));
+            }
+        }
     }
 
     /**
@@ -307,6 +330,21 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             if (handler != null) {
                 handler.createChannel(channelId);
             }
+        }
+    }
+
+    /**
+     * Triggers thing channels.
+     *
+     * @param thing     Thing which channels should be triggered.
+     * @param channelId ID of the channel to be triggered.
+     */
+    private void triggerThingChannel(Thing thing, String channelId) {
+        Channel channel = thing.getChannel(channelId);
+        if (channel != null) {
+            triggerChannel(channel.getUID());
+        } else {
+            logger.debug("Channel '{}' in thing '{}' does not exist.", channelId, thing.getUID());
         }
     }
 
@@ -374,6 +412,15 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                 return GROUP_HEATING;
             } else if (device.isSwitchableOutlet()) {
                 return GROUP_SWITCH;
+            }
+        }
+        if (device instanceof DeviceModel && ((DeviceModel) device).getEtsiunitinfo() != null) {
+            String unittype = ((DeviceModel) device).getEtsiunitinfo().getUnittype();
+            switch (unittype) {
+                case Etsiunitinfo.HAN_FUN_SWITCH_UNITTYPE:
+                    return DEVICE_HAN_FUN_SWITCH;
+                case Etsiunitinfo.HAN_FUN_CONTACT_UNITTYPE:
+                    return DEVICE_HAN_FUN_CONTACT;
             }
         }
         return device.getProductName().replaceAll(INVALID_PATTERN, "_");

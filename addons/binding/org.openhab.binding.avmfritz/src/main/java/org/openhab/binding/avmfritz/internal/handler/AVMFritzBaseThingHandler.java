@@ -45,8 +45,7 @@ import org.slf4j.LoggerFactory;
  * Abstract handler for a FRITZ! thing. Handles commands, which are sent to one of the channels.
  *
  * @author Robert Bausdorf - Initial contribution
- * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
- *         DECT
+ * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
  */
 @NonNullByDefault
@@ -120,10 +119,12 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
             case CHANNEL_ACTUALTEMP:
             case CHANNEL_ECOTEMP:
             case CHANNEL_COMFORTTEMP:
-            case CHANNEL_NEXTCHANGE:
+            case CHANNEL_NEXT_CHANGE:
             case CHANNEL_NEXTTEMP:
             case CHANNEL_BATTERY:
             case CHANNEL_BATTERY_LOW:
+            case CHANNEL_CONTACT_STATE:
+            case CHANNEL_LAST_CHANGE:
                 logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
                 break;
             case CHANNEL_OUTLET:
@@ -237,8 +238,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
-            if (handler != null && handler instanceof AVMFritzBaseBridgeHandler) {
-                return ((AVMFritzBaseBridgeHandler) handler).getWebInterface();
+            if (handler != null && handler instanceof BoxHandler) {
+                return ((BoxHandler) handler).getWebInterface();
             }
         }
         return null;
