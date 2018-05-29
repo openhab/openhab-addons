@@ -20,9 +20,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * This class defines common constants, which are used across the whole binding.
  *
  * @author Robert Bausdorf - Initial contribution
- * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
- *         DECT
+ * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
+ * @author Christoph Weitkamp - Added channels 'voltage' and 'battery_level'
  */
 @NonNullByDefault
 public class BindingConstants {
@@ -30,12 +30,6 @@ public class BindingConstants {
     public static final String INVALID_PATTERN = "[^a-zA-Z0-9_]";
 
     public static final String BINDING_ID = "avmfritz";
-    public static final String CONFIG_IP_ADDRESS = "ipAddress";
-    public static final String CONFIG_PROTOCOL = "protocol";
-    public static final String CONFIG_USER = "user";
-    public static final String CONFIG_PASSWORD = "password";
-    public static final String CONFIG_POLLING_INTERVAL = "pollingInterval";
-    public static final String CONFIG_SYNC_TIMEOUT = "syncTimeout";
     public static final String BRIDGE_FRITZBOX = "fritzbox";
     public static final String BOX_MODEL_NAME = "FRITZ!Box";
     public static final String POWERLINE_MODEL_NAME = "FRITZ!Powerline";
@@ -69,6 +63,14 @@ public class BindingConstants {
     public static final ThingTypeUID GROUP_HEATING_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_HEATING);
     public static final ThingTypeUID GROUP_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_SWITCH);
 
+    // List of all Thing config ids
+    public static final String CONFIG_IP_ADDRESS = "ipAddress";
+    public static final String CONFIG_PROTOCOL = "protocol";
+    public static final String CONFIG_USER = "user";
+    public static final String CONFIG_PASSWORD = "password";
+    public static final String CONFIG_POLLING_INTERVAL = "pollingInterval";
+    public static final String CONFIG_SYNC_TIMEOUT = "syncTimeout";
+
     // List of all Properties
     public static final String PROPERTY_MASTER = "master";
     public static final String PROPERTY_MEMBERS = "members";
@@ -80,6 +82,7 @@ public class BindingConstants {
     public static final String CHANNEL_TEMP = "temperature";
     public static final String CHANNEL_ENERGY = "energy";
     public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_VOLTAGE = "voltage";
     public static final String CHANNEL_SWITCH = "outlet";
     public static final String CHANNEL_ACTUALTEMP = "actual_temp";
     public static final String CHANNEL_SETTEMP = "set_temp";
@@ -88,7 +91,11 @@ public class BindingConstants {
     public static final String CHANNEL_RADIATOR_MODE = "radiator_mode";
     public static final String CHANNEL_NEXTCHANGE = "next_change";
     public static final String CHANNEL_NEXTTEMP = "next_temp";
-    public static final String CHANNEL_BATTERY = "battery_low";
+    public static final String CHANNEL_BATTERY_LOW = "battery_low";
+    public static final String CHANNEL_BATTERY = "battery_level";
+
+    // List of all Channel config ids
+    public static final String CONFIG_CHANNEL_TEMP_OFFSET = "offset";
 
     // List of all Input tags
     public static final String INPUT_PRESENT = "present";
@@ -103,11 +110,13 @@ public class BindingConstants {
     // List of all Mode types
     public static final String MODE_AUTO = "AUTOMATIC";
     public static final String MODE_MANUAL = "MANUAL";
+    public static final String MODE_VACATION = "VACATION";
     public static final String MODE_ON = "ON";
     public static final String MODE_OFF = "OFF";
     public static final String MODE_COMFORT = "COMFORT";
     public static final String MODE_ECO = "ECO";
     public static final String MODE_BOOST = "BOOST";
+    public static final String MODE_WINDOW_OPEN = "WINDOW_OPEN";
     public static final String MODE_UNKNOWN = "UNKNOWN";
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections

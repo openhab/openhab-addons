@@ -18,12 +18,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.avmfritz.BindingConstants;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
@@ -84,7 +87,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
     /**
      * Updates things from device model.
      *
-     * @param thing Thing to be updated.
+     * @param thing  Thing to be updated.
      * @param device Device model with new data.
      */
     @Override
@@ -140,6 +143,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
             case CHANNEL_DEVICE_LOCKED:
             case CHANNEL_ENERGY:
             case CHANNEL_POWER:
+            case CHANNEL_VOLTAGE:
                 logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
                 break;
             case CHANNEL_SWITCH:
@@ -153,6 +157,21 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
             default:
                 super.handleCommand(channelUID, command);
                 break;
+        }
+    }
+
+    /**
+     * Creates new channels for the thing.
+     *
+     * @param channelId ID of the channel to be created.
+     */
+    public void createChannel(String channelId) {
+        ThingHandlerCallback callback = getCallback();
+        if (callback != null) {
+            ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
+            Channel channel = callback.createChannelBuilder(channelUID, new ChannelTypeUID(BINDING_ID, channelId))
+                    .build();
+            updateThing(editThing().withoutChannel(channelUID).withChannel(channel).build());
         }
     }
 

@@ -26,6 +26,7 @@
 			<channel id="radiator_mode" typeId="radiator_mode" />
 			<channel id="next_change" typeId="next_change" />
 			<channel id="next_temp" typeId="next_temp" />
+			<channel id="battery_level" typeId="system.battery-level" />
 			<channel id="battery_low" typeId="system.low-battery" />
 		</channels>
 
@@ -55,6 +56,7 @@
 			<channel id="radiator_mode" typeId="radiator_mode" />
 			<channel id="next_change" typeId="next_change" />
 			<channel id="next_temp" typeId="next_temp" />
+			<channel id="battery_level" typeId="system.battery-level" />
 			<channel id="battery_low" typeId="system.low-battery" />
 		</channels>
 
@@ -84,6 +86,7 @@
 			<channel id="radiator_mode" typeId="radiator_mode" />
 			<channel id="next_change" typeId="next_change" />
 			<channel id="next_temp" typeId="next_temp" />
+			<channel id="battery_level" typeId="system.battery-level" />
 			<channel id="battery_low" typeId="system.low-battery" />
 		</channels>
 
@@ -108,6 +111,7 @@
 			<channel id="temperature" typeId="temperature" />
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
+			<channel id="voltage" typeId="voltage" />
 			<channel id="outlet" typeId="outlet" />
 		</channels>
 
@@ -132,6 +136,7 @@
 			<channel id="temperature" typeId="temperature" />
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
+			<channel id="voltage" typeId="voltage" />
 			<channel id="outlet" typeId="outlet" />
 		</channels>
 
@@ -156,6 +161,7 @@
 			<channel id="device_locked" typeId="device_locked" />
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
+			<channel id="voltage" typeId="voltage" />
 			<channel id="outlet" typeId="outlet" />
 		</channels>
 
@@ -226,6 +232,7 @@
 			<channel id="device_locked" typeId="device_locked" />
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
+			<channel id="voltage" typeId="voltage" />
 			<channel id="outlet" typeId="outlet" />
 		</channels>
 
