@@ -25,3 +25,6 @@ marytts:bits1hsmm bits1-hsmm (de)
 
 The MaryTTS service produces audio streams using WAV containers and PCM (signed) codec with 16bit depth.
 The sample frequency depends on the chosen voice and ranges from 16kHz to 48kHz.
+
+## Log files
+The log files of Mary TTS are not bundled with the openHAB log files in `userdata/logs/openhab.log` but are stored in their own log files at `userdata/log/server.log`.
