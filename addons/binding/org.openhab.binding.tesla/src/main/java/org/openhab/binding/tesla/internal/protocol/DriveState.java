@@ -18,8 +18,12 @@ public class DriveState {
 
     public double latitude;
     public double longitude;
-    public int heading;
+    public double native_latitude;
+    public double native_longitude;
     public int gps_as_of;
+    public int heading;
+    public int native_location_supported;
+    public String native_type;
     public String shift_state;
     public String speed;
 
