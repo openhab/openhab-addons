@@ -106,6 +106,15 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_LAST_PLUG_SEEN = "LastPlugSeen";
     public static final String CHANNEL_LAST_BILAN = "LastBilan";
 
+    public static final String CHANNEL_PLANNING = "Planning";
+
+    public static final String CHANNEL_SETPOINT_MODE_MANUAL = "manual";
+    public static final String CHANNEL_SETPOINT_MODE_AWAY = "away";
+    public static final String CHANNEL_SETPOINT_MODE_HG = "hg";
+    public static final String CHANNEL_SETPOINT_MODE_OFF = "off";
+    public static final String CHANNEL_SETPOINT_MODE_MAX = "max";
+    public static final String CHANNEL_SETPOINT_MODE_PROGRAM = "program";
+
     // Module Properties
     public static final String PROPERTY_SIGNAL_LEVELS = "signalLevels";
     public static final String PROPERTY_BATTERY_LEVELS = "batteryLevels";

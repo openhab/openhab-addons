@@ -145,7 +145,7 @@
 		<item-type>DateTime</item-type>
 		<label>Setpoint end</label>
 		<description>Thermostat goes back to schedule after that timestamp.</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM" />
 	</channel-type>
 
 	<channel-type id="lastThermSeen" advanced="true">
@@ -206,6 +206,13 @@
 			</options>
 		</state>
 	</channel-type>
+
+	<channel-type id="planning" advanced="false">
+ 		<item-type>String</item-type>
+ 		<label>Planning</label>
+ 		<description>Heat planning currently used</description>
+ 		<state pattern="%s" />
+ 	</channel-type>	
 
 	<channel-type id="absolutePressure" advanced="true">
 		<item-type>Number:Pressure</item-type>

@@ -313,6 +313,7 @@ All these channels are read only.
 | Temperature         | Number:Temperature | Current temperature                                        |
 | Sp_Temperature      | Number:Temperature | Thermostat temperature setpoint                            |
 | SetpointMode        | String             | Chosen setpoint_mode (program, away, hg, manual, off, max) |
+| Planning            | String             | Id of the currently active planning when mode = program    |
 | ThermRelayCmd       | Switch             | Indicates whether the furnace is heating or not            |
 | ThermOrientation    | Number             | Physical orientation of the thermostat module              |
 | TimeStamp           | DateTime           | Timestamp when data was measured                           |
@@ -322,7 +323,7 @@ All these channels are read only.
 | BatteryVP           | Number             | Battery level                                              |
 | RfStatus            | Number             | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 
-All these channels except Sp_Temperature and SetpointMode are read only.
+All these channels except Sp_Temperature, SetpointMode and Planning are read only.
 
 
 ### Welcome Home

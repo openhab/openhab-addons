@@ -222,4 +222,8 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
 
     protected abstract @Nullable Integer getDataTimestamp();
 
+    public void expireData() {
+        refreshStrategy.expireData();
+    }
+
 }

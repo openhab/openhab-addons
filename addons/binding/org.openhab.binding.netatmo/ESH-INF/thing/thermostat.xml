@@ -47,6 +47,7 @@
 			<channel id="ThermRelayCmd" typeId="ThermRelayCmd" />
 			<channel id="ThermOrientation" typeId="ThermOrientation"/>
 			<channel id="TimeStamp" typeId="timeUtc" />
+			<channel id="Planning" typeId="planning" />
 			<channel id="SetpointEndTime" typeId="setpointEndTime"/>
 
 			<!--  Common to all modules -->

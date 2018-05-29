@@ -13,8 +13,11 @@ import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import javax.measure.quantity.Temperature;
 
@@ -29,9 +32,12 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
-import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
+import org.openhab.binding.netatmo.internal.NATherm1StateDescriptionProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.swagger.client.api.ThermostatApi;
 import io.swagger.client.model.NAMeasureResponse;
@@ -39,6 +45,7 @@ import io.swagger.client.model.NASetpoint;
 import io.swagger.client.model.NAThermProgram;
 import io.swagger.client.model.NAThermostat;
 import io.swagger.client.model.NATimeTableItem;
+import io.swagger.client.model.NAZone;
 
 /**
  * {@link NATherm1Handler} is the class used to handle the thermostat
@@ -48,9 +55,12 @@ import io.swagger.client.model.NATimeTableItem;
  *
  */
 public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
+    private final Logger logger = LoggerFactory.getLogger(NATherm1Handler.class);
+    private final NATherm1StateDescriptionProvider stateDescriptionProvider;
 
-    public NATherm1Handler(@NonNull Thing thing) {
+    public NATherm1Handler(@NonNull Thing thing, NATherm1StateDescriptionProvider stateDescriptionProvider) {
         super(thing);
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -59,7 +69,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
     }
 
     @Override
-    public void updateChannels(Object module) {
+    public void updateChannels(Object moduleObject) {
         if (isRefreshRequired()) {
             measurableChannels.getAsCsv().ifPresent(csvParams -> {
                 ThermostatApi thermostatApi = getBridgeHandler().getThermostatApi();
@@ -69,7 +79,19 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
             });
             setRefreshRequired(false);
         }
-        super.updateChannels(module);
+        super.updateChannels(moduleObject);
+
+        if (module != null) {
+            updateStateDescription(module);
+        }
+    }
+
+    private void updateStateDescription(NAThermostat thermostat) {
+        List<StateOption> options = new ArrayList<>();
+        for (NAThermProgram planning : thermostat.getThermProgramList()) {
+            options.add(new StateOption(planning.getProgramId(), planning.getName()));
+        }
+        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_PLANNING), options);
     }
 
     @Override
@@ -84,8 +106,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                 return module != null ? toQuantityType(module.getMeasured().getTemperature(), API_TEMPERATURE_UNIT)
                         : UnDefType.UNDEF;
             case CHANNEL_SETPOINT_TEMP:
-                return module != null ? toQuantityType(module.getMeasured().getSetpointTemp(), API_TEMPERATURE_UNIT)
-                        : UnDefType.UNDEF;
+                return getCurrentSetpoint();
             case CHANNEL_TIMEUTC:
                 return module != null ? toDateTimeType(module.getMeasured().getTime()) : UnDefType.UNDEF;
             case CHANNEL_SETPOINT_END_TIME: {
@@ -94,7 +115,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                     if (setpoint != null) {
                         Integer endTime = setpoint.getSetpointEndtime();
                         if (endTime == null) {
-                            endTime = getNextSchedule(module.getThermProgramList());
+                            endTime = getNextProgramTime(module.getThermProgramList());
                         }
                         return toDateTimeType(endTime);
                     }
@@ -102,24 +123,92 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                 }
                 return UnDefType.UNDEF;
             }
-            case CHANNEL_SETPOINT_MODE: {
-                return module != null ? module.getSetpoint() != null
-                        ? ChannelTypeUtils.toStringType(module.getSetpoint().getSetpointMode())
-                        : UnDefType.NULL : UnDefType.UNDEF;
+            case CHANNEL_SETPOINT_MODE:
+                return getSetpoint();
+            case CHANNEL_PLANNING: {
+                String currentPlanning = "-";
+                if (module != null) {
+                    for (NAThermProgram program : module.getThermProgramList()) {
+                        if (program.getSelected() == Boolean.TRUE) {
+                            currentPlanning = program.getProgramId();
+                        }
+                    }
+                    return toStringType(currentPlanning);
+                }
             }
         }
         return super.getNAThingProperty(channelId);
     }
 
-    private int getNextSchedule(List<NAThermProgram> thermProgramList) {
+    private State getSetpoint() {
+        return module != null
+                ? module.getSetpoint() != null ? toStringType(module.getSetpoint().getSetpointMode()) : UnDefType.NULL
+                : UnDefType.UNDEF;
+    }
+
+    private State getCurrentSetpoint() {
+        if (module != null && module.getSetpoint() != null) {
+            NASetpoint setPoint = module.getSetpoint();
+            String currentMode = setPoint.getSetpointMode();
+
+            NAThermProgram currentProgram = module.getThermProgramList().stream()
+                    .filter(p -> p.getSelected() != null && p.getSelected()).findFirst().get();
+            switch (currentMode) {
+                case CHANNEL_SETPOINT_MODE_MANUAL:
+                    return toDecimalType(setPoint.getSetpointTemp());
+                case CHANNEL_SETPOINT_MODE_AWAY:
+                    NAZone zone = getZone(currentProgram.getZones(), 2);
+                    return toDecimalType(zone.getTemp());
+                case CHANNEL_SETPOINT_MODE_HG:
+                    NAZone zone1 = getZone(currentProgram.getZones(), 3);
+                    return toDecimalType(zone1.getTemp());
+                case CHANNEL_SETPOINT_MODE_PROGRAM:
+                    NATimeTableItem currentProgramMode = getCurrentProgramMode(module.getThermProgramList());
+                    if (currentProgramMode != null) {
+                        NAZone zone2 = getZone(currentProgram.getZones(), currentProgramMode.getId());
+                        return toDecimalType(zone2.getTemp());
+                    }
+                case CHANNEL_SETPOINT_MODE_OFF:
+                case CHANNEL_SETPOINT_MODE_MAX:
+                    return UnDefType.UNDEF;
+            }
+        }
+        return UnDefType.NULL;
+    }
+
+    private NAZone getZone(List<NAZone> zones, int searchedId) {
+        return zones.stream().filter(z -> z.getId() == searchedId).findFirst().get();
+    }
+
+    private long getNetatmoProgramBaseTime() {
         Calendar mondayZero = Calendar.getInstance();
         mondayZero.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         mondayZero.set(Calendar.HOUR_OF_DAY, 0);
         mondayZero.set(Calendar.MINUTE, 0);
         mondayZero.set(Calendar.SECOND, 0);
+        return mondayZero.getTimeInMillis();
+    }
 
+    private NATimeTableItem getCurrentProgramMode(List<NAThermProgram> thermProgramList) {
+        NATimeTableItem lastProgram = null;
         Calendar now = Calendar.getInstance();
-        long diff = (now.getTimeInMillis() - mondayZero.getTimeInMillis()) / 1000 / 60;
+        long diff = (now.getTimeInMillis() - getNetatmoProgramBaseTime()) / 1000 / 60;
+
+        Optional<NAThermProgram> currentProgram = thermProgramList.stream()
+                .filter(p -> p.getSelected() != null && p.getSelected()).findFirst();
+
+        if (currentProgram.isPresent()) {
+            Stream<NATimeTableItem> pastPrograms = currentProgram.get().getTimetable().stream()
+                    .filter(t -> t.getMOffset() < diff);
+            lastProgram = pastPrograms.reduce((first, second) -> second).orElse(null);
+        }
+
+        return lastProgram;
+    }
+
+    private int getNextProgramTime(List<NAThermProgram> thermProgramList) {
+        Calendar now = Calendar.getInstance();
+        long diff = (now.getTimeInMillis() - getNetatmoProgramBaseTime()) / 1000 / 60;
 
         int result = -1;
 
@@ -136,7 +225,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                     }
                 }
 
-                result = (int) (next * 60 + (mondayZero.getTimeInMillis() / 1000));
+                result = (int) (next * 60 + (getNetatmoProgramBaseTime() / 1000));
             }
         }
         return result;
@@ -149,11 +238,14 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
             try {
                 switch (channelUID.getId()) {
                     case CHANNEL_SETPOINT_MODE: {
-                        getBridgeHandler().getThermostatApi().setthermpoint(getParentId(), getId(), command.toString(),
-                                null, null);
-
-                        updateState(channelUID, new StringType(command.toString()));
-                        requestParentRefresh();
+                        String target_mode = command.toString();
+                        if (CHANNEL_SETPOINT_MODE_MANUAL.equals(target_mode)) {
+                            logger.info(
+                                    "Switching to manual mode is done by assigning a setpoint temperature - command dropped");
+                            updateState(channelUID, getSetpoint());
+                        } else {
+                            pushSetpointUpdate(target_mode, null, null);
+                        }
                         break;
                     }
                     case CHANNEL_SETPOINT_TEMP: {
@@ -168,15 +260,16 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                             spTemp = new BigDecimal(command.toString()).setScale(1, RoundingMode.HALF_UP);
                         }
                         if (spTemp != null) {
-                            // Switch the thermostat to manual mode on the desired setpoint for given duration
-                            Calendar cal = Calendar.getInstance();
-                            cal.add(Calendar.MINUTE, getSetPointDefaultDuration());
-                            getBridgeHandler().getThermostatApi().setthermpoint(getParentId(), getId(), "manual",
-                                    (int) (cal.getTimeInMillis() / 1000), spTemp.floatValue());
-                            updateState(channelUID, new QuantityType<Temperature>(spTemp, API_TEMPERATURE_UNIT));
-                            requestParentRefresh();
+                            pushSetpointUpdate(CHANNEL_SETPOINT_MODE_MANUAL, getSetpointEndTime(), spTemp.floatValue());
                         }
+
                         break;
+                    }
+                    case CHANNEL_PLANNING: {
+                        getBridgeHandler().getThermostatApi().switchschedule(getParentId(), getId(),
+                                command.toString());
+                        updateState(channelUID, new StringType(command.toString()));
+                        invalidateParentCacheAndRefresh();
                     }
                 }
             } catch (Exception e) {
@@ -185,7 +278,22 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
         }
     }
 
+    private void pushSetpointUpdate(String target_mode, Integer setpointEndtime, Float setpointTemp) {
+        getBridgeHandler().getThermostatApi().setthermpoint(getParentId(), getId(), target_mode, setpointEndtime,
+                setpointTemp);
+        invalidateParentCacheAndRefresh();
+    }
+
+    private int getSetpointEndTime() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MINUTE, getSetPointDefaultDuration());
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return (int) (cal.getTimeInMillis() / 1000);
+    }
+
     private int getSetPointDefaultDuration() {
+        // TODO : this informations could be sourced from Netatmo API instead of a local configuration element
         return ((Number) config.get(SETPOINT_DEFAULT_DURATION)).intValue();
     }
 
