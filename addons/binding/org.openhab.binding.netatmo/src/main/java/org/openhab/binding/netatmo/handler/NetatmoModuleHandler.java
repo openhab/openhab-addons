@@ -99,12 +99,12 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     }
 
     protected void invalidateParentCacheAndRefresh() {
-        // Leave a bit of time to Netatmo Server to get in sync with new values sent
         setRefreshRequired(true);
+        // Leave a bit of time to Netatmo Server to get in sync with new values sent
         scheduler.schedule(() -> {
             invalidateParentCache();
             requestParentRefresh();
-        }, 1800, TimeUnit.MILLISECONDS);
+        }, 2, TimeUnit.SECONDS);
     }
 
     protected void requestParentRefresh() {

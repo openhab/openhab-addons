@@ -153,26 +153,24 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
 
             NAThermProgram currentProgram = module.getThermProgramList().stream()
                     .filter(p -> p.getSelected() != null && p.getSelected()).findFirst().get();
-            if (currentProgram != null) {
-                switch (currentMode) {
-                    case CHANNEL_SETPOINT_MODE_MANUAL:
-                        return toDecimalType(setPoint.getSetpointTemp());
-                    case CHANNEL_SETPOINT_MODE_AWAY:
-                        NAZone zone = getZone(currentProgram.getZones(), 2);
-                        return toDecimalType(zone.getTemp());
-                    case CHANNEL_SETPOINT_MODE_HG:
-                        NAZone zone1 = getZone(currentProgram.getZones(), 3);
-                        return toDecimalType(zone1.getTemp());
-                    case CHANNEL_SETPOINT_MODE_PROGRAM:
-                        NATimeTableItem currentProgramMode = getCurrentProgramMode(module.getThermProgramList());
-                        if (currentProgramMode != null) {
-                            NAZone zone2 = getZone(currentProgram.getZones(), currentProgramMode.getId());
-                            return toDecimalType(zone2.getTemp());
-                        }
-                    case CHANNEL_SETPOINT_MODE_OFF:
-                    case CHANNEL_SETPOINT_MODE_MAX:
-                        return UnDefType.UNDEF;
-                }
+            switch (currentMode) {
+                case CHANNEL_SETPOINT_MODE_MANUAL:
+                    return toDecimalType(setPoint.getSetpointTemp());
+                case CHANNEL_SETPOINT_MODE_AWAY:
+                    NAZone zone = getZone(currentProgram.getZones(), 2);
+                    return toDecimalType(zone.getTemp());
+                case CHANNEL_SETPOINT_MODE_HG:
+                    NAZone zone1 = getZone(currentProgram.getZones(), 3);
+                    return toDecimalType(zone1.getTemp());
+                case CHANNEL_SETPOINT_MODE_PROGRAM:
+                    NATimeTableItem currentProgramMode = getCurrentProgramMode(module.getThermProgramList());
+                    if (currentProgramMode != null) {
+                        NAZone zone2 = getZone(currentProgram.getZones(), currentProgramMode.getId());
+                        return toDecimalType(zone2.getTemp());
+                    }
+                case CHANNEL_SETPOINT_MODE_OFF:
+                case CHANNEL_SETPOINT_MODE_MAX:
+                    return UnDefType.UNDEF;
             }
         }
         return UnDefType.NULL;

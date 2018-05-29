@@ -317,7 +317,7 @@ All these channels are read only.
 | BatteryVP           | Number             | Battery Level                                              |
 | RfStatus            | Number             | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 
-All these channels except Sp_Temperature,SetpointMode and Planning are read only.
+All these channels except Sp_Temperature, SetpointMode and Planning are read only.
 
 
 ### Welcome Home
