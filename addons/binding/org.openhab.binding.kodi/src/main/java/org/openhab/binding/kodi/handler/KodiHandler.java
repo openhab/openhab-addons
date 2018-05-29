@@ -245,6 +245,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             case CHANNEL_TITLE:
             case CHANNEL_SHOWTITLE:
             case CHANNEL_MEDIATYPE:
+            case CHANNEL_GENRELIST:
             case CHANNEL_PVR_CHANNEL:
             case CHANNEL_THUMBNAIL:
             case CHANNEL_FANART:
@@ -627,42 +628,47 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void updateTitle(String title) {
-        updateState(CHANNEL_TITLE, createState(title));
+        updateState(CHANNEL_TITLE, createStringState(title));
     }
 
     @Override
     public void updateShowTitle(String title) {
-        updateState(CHANNEL_SHOWTITLE, createState(title));
+        updateState(CHANNEL_SHOWTITLE, createStringState(title));
     }
 
     @Override
     public void updateAlbum(String album) {
-        updateState(CHANNEL_ALBUM, createState(album));
+        updateState(CHANNEL_ALBUM, createStringState(album));
     }
 
     @Override
     public void updateArtist(String artist) {
-        updateState(CHANNEL_ARTIST, createState(artist));
+        updateState(CHANNEL_ARTIST, createStringState(artist));
     }
 
     @Override
     public void updateMediaType(String mediaType) {
-        updateState(CHANNEL_MEDIATYPE, createState(mediaType));
+        updateState(CHANNEL_MEDIATYPE, createStringState(mediaType));
+    }
+
+    @Override
+    public void updateGenreList(List<String> genreList) {
+        updateState(CHANNEL_GENRELIST, createStringListState(genreList));
     }
 
     @Override
     public void updatePVRChannel(final String channel) {
-        updateState(CHANNEL_PVR_CHANNEL, createState(channel));
+        updateState(CHANNEL_PVR_CHANNEL, createStringState(channel));
     }
 
     @Override
     public void updateThumbnail(RawType thumbnail) {
-        updateState(CHANNEL_THUMBNAIL, createImage(thumbnail));
+        updateState(CHANNEL_THUMBNAIL, createImageState(thumbnail));
     }
 
     @Override
     public void updateFanart(RawType fanart) {
-        updateState(CHANNEL_FANART, createImage(fanart));
+        updateState(CHANNEL_FANART, createImageState(fanart));
     }
 
     @Override
@@ -686,7 +692,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     /**
      * Wrap the given String in a new {@link StringType} or returns {@link UnDefType#UNDEF} if the String is empty.
      */
-    private State createState(String string) {
+    private State createStringState(String string) {
         if (string == null || string.isEmpty()) {
             return UnDefType.UNDEF;
         } else {
@@ -695,9 +701,29 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     /**
+     * Wrap the given list of Strings in a new {@link StringType} or returns {@link UnDefType#UNDEF} if the list of
+     * Strings is empty.
+     */
+    private State createStringListState(List<String> list) {
+        if (list == null || list.isEmpty()) {
+            return UnDefType.UNDEF;
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (String genre : list) {
+                sb.append(genre).append(",");
+            }
+            if (sb.length() > 0) {
+                // drop last comma
+                sb.setLength(sb.length() - 1);
+            }
+            return createStringState(sb.toString());
+        }
+    }
+
+    /**
      * Wrap the given RawType and return it as {@link State} or return {@link UnDefType#UNDEF} if the RawType is null.
      */
-    private State createImage(RawType image) {
+    private State createImageState(RawType image) {
         if (image == null) {
             return UnDefType.UNDEF;
         } else {

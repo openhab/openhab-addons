@@ -443,7 +443,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private void requestPlayerItemUpdate(int activePlayer) {
         final String[] properties = { "title", "album", "artist", "director", "thumbnail", "file", "fanart",
-                "showtitle", "streamdetails", "channel", "channeltype", "duration", "runtime" };
+                "showtitle", "streamdetails", "channel", "channeltype", "duration", "runtime", "genre" };
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
@@ -483,10 +483,18 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
                 String artist = "";
                 if ("movie".equals(mediaType)) {
-                    artist = convertFromArray(item.get("director").getAsJsonArray());
+                    artist = convertFromArrayToString(item.get("director").getAsJsonArray());
                 } else {
                     if (item.has("artist")) {
-                        artist = convertFromArray(item.get("artist").getAsJsonArray());
+                        artist = convertFromArrayToString(item.get("artist").getAsJsonArray());
+                    }
+                }
+
+                List<String> genreList = null;
+                if (item.has("genre")) {
+                    JsonElement genre = item.get("genre");
+                    if (genre instanceof JsonArray) {
+                        genreList = convertFromArrayToList(genre.getAsJsonArray());
                     }
                 }
 
@@ -518,6 +526,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 listener.updateShowTitle(showTitle);
                 listener.updateArtist(artist);
                 listener.updateMediaType(mediaType);
+                listener.updateGenreList(genreList);
                 listener.updatePVRChannel(channel);
                 listener.updateThumbnail(thumbnail);
                 listener.updateFanart(fanart);
@@ -566,15 +575,24 @@ public class KodiConnection implements KodiClientSocketEventListener {
         return result;
     }
 
-    private String convertFromArray(JsonArray data) {
+    private String convertFromArrayToString(JsonArray data) {
         StringBuilder result = new StringBuilder();
         for (JsonElement element : data) {
-            if (result.length() > 0) {
-                result.append(", ");
-            }
-            result.append(element.getAsString());
+            result.append(element.getAsString()).append(", ");
+        }
+        if (result.length() > 0) {
+            // drop last comma
+            result.setLength(result.length() - 1);
         }
         return result.toString();
+    }
+
+    private List<String> convertFromArrayToList(JsonArray data) {
+        List<String> result = new ArrayList<>();
+        for (JsonElement element : data) {
+            result.add(element.getAsString());
+        }
+        return result;
     }
 
     private String convertToImageUrl(JsonElement element) {
@@ -631,6 +649,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
             listener.updateShowTitle("");
             listener.updateArtist("");
             listener.updateMediaType("");
+            listener.updateGenreList(null);
             listener.updatePVRChannel("");
             listener.updateThumbnail(null);
             listener.updateFanart(null);

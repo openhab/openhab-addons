@@ -9,6 +9,7 @@
 package org.openhab.binding.kodi.internal;
 
 import java.util.EventListener;
+import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
@@ -61,6 +62,8 @@ public interface KodiEventListener extends EventListener {
     void updateArtist(String artist);
 
     void updateMediaType(String mediaType);
+
+    void updateGenreList(List<String> genreList);
 
     void updatePVRChannel(final String channel);
 
