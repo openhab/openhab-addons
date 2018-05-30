@@ -101,6 +101,11 @@ public class AutelisHandler extends BaseThingHandler {
     static final int COMMAND_UPDATE_TIME = 6; // 6 seconds
 
     /**
+     * The autelis unit will 'loose' commands if sent to fast
+     */
+    static final int THROTTLE_TIME = 500; // milliseconds
+
+    /**
      * Autelis web port
      */
     static final int WEB_PORT = 80;
@@ -128,12 +133,17 @@ public class AutelisHandler extends BaseThingHandler {
     /**
      * Our poll rate
      */
-    int refresh;
+    private int refresh;
 
     /**
      * The http client used for polling requests
      */
     private HttpClient client = new HttpClient();
+
+    /**
+     * last time we finished a request
+     */
+    private long lastRequestTime = 0;
 
     /**
      * Authentication for login
@@ -451,13 +461,22 @@ public class AutelisHandler extends BaseThingHandler {
      * @param timeout
      * @return
      */
-    private String getUrl(String url, int timeout) {
+    private synchronized String getUrl(String url, int timeout) {
+        // throttle commands for a very short time to avoid 'loosing' them
+        long now = System.currentTimeMillis();
+        long nextReq = lastRequestTime + THROTTLE_TIME;
+        if (nextReq > now) {
+            try {
+                logger.trace("Throttling request for {} mills", nextReq - now);
+                Thread.sleep(nextReq - now);
+            } catch (InterruptedException ignored) {
+            }
+        }
         String getURL = url + (url.contains("?") ? "&" : "?") + "timestamp=" + System.currentTimeMillis();
         startHttpClient(client);
         logger.trace("Gettiing URL {} ", getURL);
         Request request = client.newRequest(getURL).timeout(TIMEOUT, TimeUnit.MILLISECONDS);
         request.header(HttpHeader.AUTHORIZATION, basicAuthentication);
-
         try {
             ContentResponse response = request.send();
             int statusCode = response.getStatus();
@@ -465,6 +484,7 @@ public class AutelisHandler extends BaseThingHandler {
                 logger.trace("Method failed: {}", response.getStatus() + " " + response.getReason());
                 return null;
             }
+            lastRequestTime = System.currentTimeMillis();
             return response.getContentAsString();
         } catch (Exception e) {
             logger.debug("Could not make http connection", e);
