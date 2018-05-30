@@ -52,7 +52,6 @@ public class SomfyTahomaAwningHandler extends SomfyTahomaBaseThingHandler {
         } else {
             String cmd = getTahomaCommand(command.toString());
             //Check if the rollershutter is not moving
-            //String executionId = getBridgeHandler().getCurrentExecutions(url);
             String executionId = getCurrentExecutions();
             if (executionId != null) {
                 //STOP command should be interpreted if rollershutter moving

@@ -53,9 +53,6 @@ public class SomfyTahomaDoorLockHandler extends SomfyTahomaBaseThingHandler {
             sendCommand(command.equals(OnOffType.ON) ? "lock" : "unlock", "[]");
         }
         if (command.equals(RefreshType.REFRESH)) {
-            //if (channelUID.getId().equals(LOCK)) {
-            //    sendCommand("refreshLockedUnlocked", "[]");
-            //}
             updateChannelState(channelUID);
         }
     }

@@ -45,13 +45,11 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaBridgeHandler.class);
 
-    private String cookie;
-
     // Instantiate and configure the SslContextFactory
-    SslContextFactory sslContextFactory = new SslContextFactory();
+    private SslContextFactory sslContextFactory = new SslContextFactory();
 
     // Instantiate HttpClient with the SslContextFactory
-    HttpClient httpClient = new HttpClient(sslContextFactory);
+    private HttpClient httpClient = new HttpClient(sslContextFactory);
 
     /**
      * Future to poll for updated
@@ -82,13 +80,6 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
         httpClient.setFollowRedirects(false);
 
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            logger.error("Cannot start http client!", e);
-            return;
-        }
-
         login();
 
         initPolling(thingConfig.getRefresh());
@@ -100,14 +91,11 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
      */
     private void initPolling(int refresh) {
         stopPolling();
-        pollFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    updateTahomaStates();
-                } catch (Exception e) {
-                    logger.debug("Exception during poll!", e);
-                }
+        pollFuture = scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                updateTahomaStates();
+            } catch (Exception e) {
+                logger.debug("Exception during poll!", e);
             }
         }, 10, refresh, TimeUnit.SECONDS);
 
@@ -115,7 +103,6 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     public synchronized void login() {
         String url;
-        cookie = "";
 
         if (StringUtils.isEmpty(thingConfig.getEmail()) || StringUtils.isEmpty(thingConfig.getPassword())) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -124,6 +111,11 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         }
 
         try {
+            if(httpClient.isStarted()) {
+                httpClient.stop();
+            }
+            httpClient.start();
+
             url = TAHOMA_URL + "login";
             String urlParameters = "userId=" + thingConfig.getEmail() + "&userPassword=" + thingConfig.getPassword();
 
@@ -138,16 +130,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
             SomfyTahomaLoginResponse data = gson.fromJson(response.getContentAsString(), SomfyTahomaLoginResponse.class);
 
-            CookieStore cookieStore = httpClient.getCookieStore();
-            for (HttpCookie hc : cookieStore.getCookies()) {
-                logger.debug("Cookie: {} with value: {}", hc.getName(), hc.getValue());
-                if (hc.getName().equals("JSESSIONID")) {
-                    cookie = hc.getName() + "=" + hc.getValue();
-                }
-            }
-
             if (data.isSuccess()) {
-                logger.debug("SomfyTahoma cookie: {}", cookie);
                 logger.debug("SomfyTahoma version: {}", data.getVersion());
                 updateStatus(ThingStatus.ONLINE);
             } else {
@@ -299,7 +282,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
 
     public List<SomfyTahomaState> getAllStates(Collection<String> stateNames, String deviceUrl) {
-        String url = null;
+        String url;
         String line = "";
 
         logger.debug("Getting states for a device: {}", deviceUrl);
@@ -363,7 +346,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     private void updateTahomaStates() {
         logger.debug("Updating Tahoma States...");
         if (thing.getStatus().equals(ThingStatus.OFFLINE)) {
-            logger.info("Doing relogin");
+            logger.debug("Doing relogin");
             login();
         }
 
@@ -412,7 +395,6 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     private void logout() {
         try {
             sendToTahomaWithCookie(TAHOMA_URL + "logout");
-            cookie = "";
         } catch (Exception e) {
             logger.error("Cannot send logout command!", e);
         }
@@ -496,7 +478,6 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             String value = params.equals("[]") ? command : params.replace("\"", "");
             String urlParameters = "{\"label\":\"" + getThingLabelByURL(io) + " - " + value + " - OH2\",\"actions\":[{\"deviceURL\":\"" + io + "\",\"commands\":[{\"name\":\""
                     + command + "\",\"parameters\":" + params + "}]}]}";
-            logger.info("Sending apply: {}", urlParameters);
 
             line = sendDataToTahomaWithCookie(url, urlParameters);
 
@@ -527,7 +508,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 return th.getProperties().get("label").replace("\"", "");
             }
             //Return label from OH2
-            return th.getLabel().replace("\"", "");
+            return th.getLabel() != null ? th.getLabel().replace("\"", "") : "";
         }
         return "null";
     }

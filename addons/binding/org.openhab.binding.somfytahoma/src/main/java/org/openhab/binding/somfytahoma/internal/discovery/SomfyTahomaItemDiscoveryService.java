@@ -72,12 +72,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     protected void startBackgroundDiscovery() {
         logger.debug("Starting SomfyTahoma background discovery");
 
-        Runnable discoveryRunnable = () -> {
-            runDiscovery();
-        };
         if (discoveryJob == null || discoveryJob.isCancelled()) {
             try {
-                discoveryJob = scheduler.scheduleWithFixedDelay(discoveryRunnable, 10, DISCOVERY_REFRESH_SEC,
+                discoveryJob = scheduler.scheduleWithFixedDelay(this::runDiscovery, 10, DISCOVERY_REFRESH_SEC,
                         TimeUnit.MINUTES);
             } catch (java.lang.IncompatibleClassChangeError ex) {
                 logger.warn("This binding is most probably running in an OpenHAB 2.2.x or older environment.");
@@ -119,7 +116,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     }
 
     private synchronized void runDiscovery() {
-        logger.info("Starting scanning for things...");
+        logger.debug("Starting scanning for things...");
 
         if (bridge.getThing().getStatus().equals(ThingStatus.ONLINE)) {
             SomfyTahomaSetup devices = bridge.listDevices();

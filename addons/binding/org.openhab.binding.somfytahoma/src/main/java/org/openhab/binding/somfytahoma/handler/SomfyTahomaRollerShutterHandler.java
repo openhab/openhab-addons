@@ -37,7 +37,6 @@ public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler
     @Override
     public Hashtable<String, String> getStateNames() {
         return new Hashtable<String, String>() {{
-            //put(POSITION, "core:ClosureState");
             put(CONTROL, "core:ClosureState");
         }};
     }

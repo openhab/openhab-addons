@@ -37,19 +37,16 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
     private Hashtable<String, Integer> typeTable = new Hashtable<>();
 
     //cache
-    //private ExpiringCacheMap<String, List<SomfyTahomaState>> thingStates;
     private ExpiringCache<List<SomfyTahomaState>> thingStates;
 
     public SomfyTahomaBaseThingHandler(Thing thing) {
         super(thing);
     }
 
-
     @Override
     public void initialize() {
         thingStates = new ExpiringCache<>(CACHE_EXPIRY, () -> getThingStates());
 
-        //SomfyTahomaState state = getBridgeHandler().getState(getURL(), STATUS_STATE);
         SomfyTahomaState state = getCachedThingState(STATUS_STATE);
         updateThingStatus(state);
     }
@@ -268,7 +265,6 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
             if (state.equals(UnDefType.NULL)) {
                 // relogin
                 getBridgeHandler().login();
-                //tahomaState = getBridgeHandler().getState(url, stateName);
                 tahomaState = getCachedThingState(stateName);
                 state = parseTahomaState(channel.getAcceptedItemType(), tahomaState);
             }
