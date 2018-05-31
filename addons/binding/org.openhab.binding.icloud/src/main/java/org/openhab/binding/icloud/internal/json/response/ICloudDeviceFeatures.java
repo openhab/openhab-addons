@@ -6,14 +6,15 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.icloud.internal.json;
+package org.openhab.binding.icloud.internal.json.response;
 
 /**
+ * Serializable class to parse json response received from the Apple server.
  *
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class Features {
+public class ICloudDeviceFeatures {
     private boolean CLK;
 
     private boolean CLT;
@@ -144,93 +145,5 @@ public class Features {
 
     public boolean getXRM() {
         return this.XRM;
-    }
-
-    public void setCLK(boolean CLK) {
-        this.CLK = CLK;
-    }
-
-    public void setCLT(boolean CLT) {
-        this.CLT = CLT;
-    }
-
-    public void setCWP(boolean CWP) {
-        this.CWP = CWP;
-    }
-
-    public void setKEY(boolean KEY) {
-        this.KEY = KEY;
-    }
-
-    public void setKPD(boolean KPD) {
-        this.KPD = KPD;
-    }
-
-    public void setLCK(boolean LCK) {
-        this.LCK = LCK;
-    }
-
-    public void setLKL(boolean LKL) {
-        this.LKL = LKL;
-    }
-
-    public void setLKM(boolean LKM) {
-        this.LKM = LKM;
-    }
-
-    public void setLLC(boolean LLC) {
-        this.LLC = LLC;
-    }
-
-    public void setLMG(boolean LMG) {
-        this.LMG = LMG;
-    }
-
-    public void setLOC(boolean LOC) {
-        this.LOC = LOC;
-    }
-
-    public void setLST(boolean LST) {
-        this.LST = LST;
-    }
-
-    public void setMCS(boolean MCS) {
-        this.MCS = MCS;
-    }
-
-    public void setMSG(boolean MSG) {
-        this.MSG = MSG;
-    }
-
-    public void setPIN(boolean PIN) {
-        this.PIN = PIN;
-    }
-
-    public void setREM(boolean REM) {
-        this.REM = REM;
-    }
-
-    public void setSND(boolean SND) {
-        this.SND = SND;
-    }
-
-    public void setSVP(boolean SVP) {
-        this.SVP = SVP;
-    }
-
-    public void setTEU(boolean TEU) {
-        this.TEU = TEU;
-    }
-
-    public void setWIP(boolean WIP) {
-        this.WIP = WIP;
-    }
-
-    public void setWMG(boolean WMG) {
-        this.WMG = WMG;
-    }
-
-    public void setXRM(boolean XRM) {
-        this.XRM = XRM;
     }
 }

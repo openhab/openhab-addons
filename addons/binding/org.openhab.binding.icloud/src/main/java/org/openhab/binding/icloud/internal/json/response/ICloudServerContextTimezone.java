@@ -6,14 +6,15 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.icloud.internal.json;
+package org.openhab.binding.icloud.internal.json.response;
 
 /**
+ * Serializable class to parse json response received from the Apple server.
  *
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class Timezone {
+public class ICloudServerContextTimezone {
     private int currentOffset;
 
     private int previousOffset;
@@ -42,25 +43,5 @@ public class Timezone {
 
     public String getTzName() {
         return this.tzName;
-    }
-
-    public void setCurrentOffset(int currentOffset) {
-        this.currentOffset = currentOffset;
-    }
-
-    public void setPreviousOffset(int previousOffset) {
-        this.previousOffset = previousOffset;
-    }
-
-    public void setPreviousTransition(long previousTransition) {
-        this.previousTransition = previousTransition;
-    }
-
-    public void setTzCurrentName(String tzCurrentName) {
-        this.tzCurrentName = tzCurrentName;
-    }
-
-    public void setTzName(String tzName) {
-        this.tzName = tzName;
     }
 }

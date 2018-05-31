@@ -8,10 +8,11 @@
  */
 package org.openhab.binding.icloud.handler;
 
-import static org.openhab.binding.icloud.BindingConstants.*;
+import static org.openhab.binding.icloud.ICloudBindingConstants.*;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -31,13 +32,13 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
-import org.openhab.binding.icloud.internal.configuration.DeviceThingConfiguration;
-import org.openhab.binding.icloud.internal.json.DeviceInformation;
+import org.openhab.binding.icloud.internal.configuration.ICloudDeviceThingConfiguration;
+import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles updates of an icloud device thing.
+ * Handles updates of an icloud device Thing.
  *
  * @author Patrik Gfeller - Initial Contribution
  * @author Hans-Jörg Merk
@@ -52,8 +53,8 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
     }
 
     @Override
-    public void deviceInformationUpdate(List<DeviceInformation> deviceInformationList) {
-        DeviceInformation deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
+    public void deviceInformationUpdate(List<ICloudDeviceInformation> deviceInformationList) {
+        ICloudDeviceInformation deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
         if (deviceInformationRecord != null) {
             deviceId = deviceInformationRecord.getId();
 
@@ -78,6 +79,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         }
     }
 
+    @SuppressWarnings("null")
     @Override
     public void initialize() {
         logger.debug("Initializing iCloud device handler.");
@@ -111,7 +113,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         super.dispose();
     }
 
-    private void updateLocationRelatedStates(DeviceInformation deviceInformationRecord) {
+    private void updateLocationRelatedStates(ICloudDeviceInformation deviceInformationRecord) {
         DecimalType latitude = new DecimalType(deviceInformationRecord.getLocation().getLatitude());
         DecimalType longitude = new DecimalType(deviceInformationRecord.getLocation().getLongitude());
         DecimalType accuracy = new DecimalType(deviceInformationRecord.getLocation().getHorizontalAccuracy());
@@ -123,10 +125,11 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         updateState(LOCATION_LASTUPDATE, getLastLocationUpdateDateTimeState(deviceInformationRecord));
     }
 
+    @SuppressWarnings("null")
     private void initializeThing(ThingStatus bridgeStatus) {
         logger.debug("initializeThing thing [{}]; bridge status: [{}]", getThing().getUID(), bridgeStatus);
 
-        DeviceThingConfiguration configuration = getConfigAs(DeviceThingConfiguration.class);
+        ICloudDeviceThingConfiguration configuration = getConfigAs(ICloudDeviceThingConfiguration.class);
         this.deviceId = configuration.deviceId;
 
         bridge = (ICloudAccountBridgeHandler) getBridge().getHandler();
@@ -144,10 +147,10 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         }
     }
 
-    private DeviceInformation getDeviceInformationRecord(List<DeviceInformation> deviceInformationList) {
+    private ICloudDeviceInformation getDeviceInformationRecord(List<ICloudDeviceInformation> deviceInformationList) {
         logger.debug("Device: [{}]", deviceId);
 
-        for (DeviceInformation deviceInformationRecord : deviceInformationList) {
+        for (ICloudDeviceInformation deviceInformationRecord : deviceInformationList) {
             String currentId = deviceInformationRecord.getId();
 
             logger.debug("Current data element: [{}]", currentId);
@@ -161,15 +164,13 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         return null;
     }
 
-    private State getLastLocationUpdateDateTimeState(DeviceInformation deviceInformationRecord) {
+    private State getLastLocationUpdateDateTimeState(ICloudDeviceInformation deviceInformationRecord) {
         State dateTime = UnDefType.UNDEF;
 
         if (deviceInformationRecord.getLocation().getTimeStamp() > 0) {
-            Date javaDate = new Date(deviceInformationRecord.getLocation().getTimeStamp());
-            SimpleDateFormat javaDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
-            String lastUpdate = javaDateFormat.format(javaDate);
-
-            dateTime = new DateTimeType(lastUpdate);
+            Date date = new Date(deviceInformationRecord.getLocation().getTimeStamp());
+            ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+            dateTime = new DateTimeType(zonedDateTime);
         }
 
         return dateTime;

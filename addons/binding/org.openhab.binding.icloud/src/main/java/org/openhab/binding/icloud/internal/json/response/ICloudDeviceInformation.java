@@ -6,18 +6,18 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.icloud.internal.json;
+package org.openhab.binding.icloud.internal.json.response;
 
 import java.util.ArrayList;
 
 /**
- *
- * Contains device information received via iCloud (json).
+ * Serializable class to parse json response received from the Apple server.
+ * Contains device specific status information.
  *
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class DeviceInformation {
+public class ICloudDeviceInformation {
     private boolean activationLocked;
 
     private ArrayList<Object> audioChannels;
@@ -40,7 +40,7 @@ public class DeviceInformation {
 
     private int deviceStatus;
 
-    private Features features;
+    private ICloudDeviceFeatures features;
 
     private boolean fmlyShare;
 
@@ -50,7 +50,7 @@ public class DeviceInformation {
 
     private boolean isMac;
 
-    private Location location;
+    private ICloudDeviceLocation location;
 
     private boolean locationCapable;
 
@@ -144,7 +144,7 @@ public class DeviceInformation {
         return this.deviceStatus;
     }
 
-    public Features getFeatures() {
+    public ICloudDeviceFeatures getFeatures() {
         return this.features;
     }
 
@@ -164,7 +164,7 @@ public class DeviceInformation {
         return this.isMac;
     }
 
-    public Location getLocation() {
+    public ICloudDeviceLocation getLocation() {
         return this.location;
     }
 
@@ -262,169 +262,5 @@ public class DeviceInformation {
 
     public boolean getWipeInProgress() {
         return this.wipeInProgress;
-    }
-
-    public void setActivationLocked(boolean activationLocked) {
-        this.activationLocked = activationLocked;
-    }
-
-    public void setAudioChannels(ArrayList<Object> audioChannels) {
-        this.audioChannels = audioChannels;
-    }
-
-    public void setBatteryLevel(double batteryLevel) {
-        this.batteryLevel = batteryLevel;
-    }
-
-    public void setBatteryStatus(String batteryStatus) {
-        this.batteryStatus = batteryStatus;
-    }
-
-    public void setCanWipeAfterLock(boolean canWipeAfterLock) {
-        this.canWipeAfterLock = canWipeAfterLock;
-    }
-
-    public void setDarkWake(boolean darkWake) {
-        this.darkWake = darkWake;
-    }
-
-    public void setDeviceClass(String deviceClass) {
-        this.deviceClass = deviceClass;
-    }
-
-    public void setDeviceColor(String deviceColor) {
-        this.deviceColor = deviceColor;
-    }
-
-    public void setDeviceDisplayName(String deviceDisplayName) {
-        this.deviceDisplayName = deviceDisplayName;
-    }
-
-    public void setDeviceModel(String deviceModel) {
-        this.deviceModel = deviceModel;
-    }
-
-    public void setDeviceStatus(int deviceStatus) {
-        this.deviceStatus = deviceStatus;
-    }
-
-    public void setFeatures(Features features) {
-        this.features = features;
-    }
-
-    public void setFmlyShare(boolean fmlyShare) {
-        this.fmlyShare = fmlyShare;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setIsLocating(boolean isLocating) {
-        this.isLocating = isLocating;
-    }
-
-    public void setIsMac(boolean isMac) {
-        this.isMac = isMac;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public void setLocationCapable(boolean locationCapable) {
-        this.locationCapable = locationCapable;
-    }
-
-    public void setLocationEnabled(boolean locationEnabled) {
-        this.locationEnabled = locationEnabled;
-    }
-
-    public void setLocFoundEnabled(boolean locFoundEnabled) {
-        this.locFoundEnabled = locFoundEnabled;
-    }
-
-    public void setLockedTimestamp(Object lockedTimestamp) {
-        this.lockedTimestamp = lockedTimestamp;
-    }
-
-    public void setLostDevice(Object lostDevice) {
-        this.lostDevice = lostDevice;
-    }
-
-    public void setLostModeCapable(boolean lostModeCapable) {
-        this.lostModeCapable = lostModeCapable;
-    }
-
-    public void setLostModeEnabled(boolean lostModeEnabled) {
-        this.lostModeEnabled = lostModeEnabled;
-    }
-
-    public void setLostTimestamp(String lostTimestamp) {
-        this.lostTimestamp = lostTimestamp;
-    }
-
-    public void setLowPowerMode(boolean lowPowerMode) {
-        this.lowPowerMode = lowPowerMode;
-    }
-
-    public void setMaxMsgChar(int maxMsgChar) {
-        this.maxMsgChar = maxMsgChar;
-    }
-
-    public void setMesg(Object mesg) {
-        this.mesg = mesg;
-    }
-
-    public void setModelDisplayName(String modelDisplayName) {
-        this.modelDisplayName = modelDisplayName;
-    }
-
-    public void setMsg(Object msg) {
-        this.msg = msg;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setPasscodeLength(int passcodeLength) {
-        this.passcodeLength = passcodeLength;
-    }
-
-    public void setPrsId(String prsId) {
-        this.prsId = prsId;
-    }
-
-    public void setRawDeviceModel(String rawDeviceModel) {
-        this.rawDeviceModel = rawDeviceModel;
-    }
-
-    public void setRemoteLock(Object remoteLock) {
-        this.remoteLock = remoteLock;
-    }
-
-    public void setRemoteWipe(Object remoteWipe) {
-        this.remoteWipe = remoteWipe;
-    }
-
-    public void setSnd(Object snd) {
-        this.snd = snd;
-    }
-
-    public void setThisDevice(boolean thisDevice) {
-        this.thisDevice = thisDevice;
-    }
-
-    public void setTrackingInfo(Object trackingInfo) {
-        this.trackingInfo = trackingInfo;
-    }
-
-    public void setWipedTimestamp(Object wipedTimestamp) {
-        this.wipedTimestamp = wipedTimestamp;
-    }
-
-    public void setWipeInProgress(boolean wipeInProgress) {
-        this.wipeInProgress = wipeInProgress;
     }
 }

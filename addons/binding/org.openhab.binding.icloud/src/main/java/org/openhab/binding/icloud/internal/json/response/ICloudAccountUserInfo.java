@@ -6,14 +6,15 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.icloud.internal.json;
+package org.openhab.binding.icloud.internal.json.response;
 
 /**
+ * Serializable class to parse json response received from the Apple server.
  *
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class UserInfo {
+public class ICloudAccountUserInfo {
     private int accountFormatter;
 
     private String firstName;

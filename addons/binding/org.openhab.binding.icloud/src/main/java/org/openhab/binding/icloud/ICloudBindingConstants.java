@@ -16,13 +16,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link BindingConstants} class defines common constants, which are
+ * The {@link ICloudBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Patrik Gfeller - Initial contribution
+ * @author Patrik Gfeller
+ *         - Class renamed to be more consistent
+ *         - Constant FIND_MY_DEVICE_REQUEST_SUBJECT introduced
  */
 @NonNullByDefault
-public class BindingConstants {
+public class ICloudBindingConstants {
 
     private static final String BINDING_ID = "icloud";
 
@@ -48,4 +51,11 @@ public class BindingConstants {
     // Device properties
     public static final String DEVICE_PROPERTY_IDHASH = "deviceIdHash";
     public static final String DEVICE_PROPERTY_ID = "deviceId";
+
+    // i18n
+    public static final String DEVICE_PROPERTY_ID_LABEL = "icloud.device-thing.parameter.id.label";
+    public static final String DEVICE_PROPERTY_OWNER_LABEL = "icloud.account-thing.property.owner";
+
+    // Miscellaneous
+    public static final String FIND_MY_DEVICE_REQUEST_SUBJECT = "Find My Device alert";
 }

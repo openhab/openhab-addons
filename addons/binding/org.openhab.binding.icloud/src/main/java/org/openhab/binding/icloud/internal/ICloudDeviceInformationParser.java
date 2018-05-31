@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.icloud.internal;
 
-import org.openhab.binding.icloud.internal.json.JSONRootObject;
+import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataResponse;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,10 +19,10 @@ import com.google.gson.GsonBuilder;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class DeviceInformationParser {
+public class ICloudDeviceInformationParser {
     private final Gson gson = new GsonBuilder().create();
 
-    public JSONRootObject parse(String json) {
-        return gson.fromJson(json, JSONRootObject.class);
+    public ICloudAccountDataResponse parse(String json) {
+        return gson.fromJson(json, ICloudAccountDataResponse.class);
     }
 }

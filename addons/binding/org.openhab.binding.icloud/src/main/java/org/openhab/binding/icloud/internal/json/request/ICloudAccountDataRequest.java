@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.icloud.internal;
+package org.openhab.binding.icloud.internal.json.request;
 
 /**
  * Serializable request for icloud device data.
@@ -14,16 +14,16 @@ package org.openhab.binding.icloud.internal;
  * @author Patrik Gfeller
  *
  */
-public class ICloudDataRequest {
+public class ICloudAccountDataRequest {
     @SuppressWarnings("unused")
     private ClientContext clientContext;
 
-    private ICloudDataRequest() {
+    private ICloudAccountDataRequest() {
         this.clientContext = ClientContext.defaultInstance();
     }
 
-    public static ICloudDataRequest defaultInstance() {
-        return new ICloudDataRequest();
+    public static ICloudAccountDataRequest defaultInstance() {
+        return new ICloudAccountDataRequest();
     }
 
     public static class ClientContext {

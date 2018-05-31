@@ -8,17 +8,21 @@
  */
 package org.openhab.binding.icloud.internal.discovery;
 
-import static org.openhab.binding.icloud.BindingConstants.*;
+import static org.openhab.binding.icloud.ICloudBindingConstants.*;
 
 import java.util.List;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.i18n.LocaleProvider;
+import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.icloud.handler.ICloudAccountBridgeHandler;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
-import org.openhab.binding.icloud.internal.json.DeviceInformation;
+import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
+import org.openhab.binding.icloud.internal.utilities.ICloudTextTranslator;
+import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,23 +33,26 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class DeviceDiscovery extends AbstractDiscoveryService implements ICloudDeviceInformationListener {
-    private final Logger logger = LoggerFactory.getLogger(DeviceDiscovery.class);
+public class ICloudDeviceDiscovery extends AbstractDiscoveryService implements ICloudDeviceInformationListener {
+    private final Logger logger = LoggerFactory.getLogger(ICloudDeviceDiscovery.class);
     private static final int TIMEOUT = 10;
     private ThingUID bridgeUID;
     private ICloudAccountBridgeHandler handler;
+    private ICloudTextTranslator translatorService;
 
-    public DeviceDiscovery(ICloudAccountBridgeHandler bridgeHandler) {
+    public ICloudDeviceDiscovery(ICloudAccountBridgeHandler bridgeHandler, Bundle bundle,
+            TranslationProvider i18nProvider, LocaleProvider localeProvider) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
 
         this.handler = bridgeHandler;
         this.bridgeUID = bridgeHandler.getThing().getUID();
+        this.translatorService = new ICloudTextTranslator(bundle, i18nProvider, localeProvider);
     }
 
     @Override
-    public void deviceInformationUpdate(List<DeviceInformation> deviceInformationList) {
+    public void deviceInformationUpdate(List<ICloudDeviceInformation> deviceInformationList) {
         if (deviceInformationList != null) {
-            for (DeviceInformation deviceInformationRecord : deviceInformationList) {
+            for (ICloudDeviceInformation deviceInformationRecord : deviceInformationList) {
 
                 String deviceTypeName = deviceInformationRecord.getDeviceDisplayName();
                 String deviceOwnerName = deviceInformationRecord.getName();
@@ -58,7 +65,9 @@ public class DeviceDiscovery extends AbstractDiscoveryService implements ICloudD
 
                 ThingUID uid = new ThingUID(THING_TYPE_ICLOUDDEVICE, bridgeUID, deviceIdHash);
                 DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                        .withProperty(DEVICE_NAME, deviceOwnerName).withProperty(DEVICE_PROPERTY_ID, deviceId)
+                        .withProperty(DEVICE_PROPERTY_ID, deviceId)
+                        .withProperty(translatorService.getText(DEVICE_PROPERTY_ID_LABEL), deviceId)
+                        .withProperty(translatorService.getText(DEVICE_PROPERTY_OWNER_LABEL), deviceOwnerName)
                         .withRepresentationProperty(DEVICE_PROPERTY_ID).withLabel(thingLabel).build();
 
                 logger.debug("Device [{}, {}] found.", deviceIdHash, deviceId);
@@ -82,5 +91,4 @@ public class DeviceDiscovery extends AbstractDiscoveryService implements ICloudD
         super.deactivate();
         handler.unregisterListener(this);
     }
-
 }
