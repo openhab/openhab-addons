@@ -6,13 +6,13 @@ This binding integrates the [Smappee energy monitor](http://www.smappee.com).
 
 The Smappee energy monitor monitors how much power your appliances consume and how much you gain from your solar power system in realtime. It can automatically detect the appliances based on their energy consumption pattern. Smappee also offers a water and a gas sensor consumption monitor.
 
-Both the Energy monitor and the Solar energy monitor can be used. These can be bought online in the [smappee webshop] (http://www.smappee.com/be_en/eshop/monitors.html).
+Both the Energy monitor and the Solar energy monitor can be used. These can be bought online in the [smappee webshop](http://www.smappee.com/be_en/eshop/monitors.html).
 
 The smappee supports clamps for 3 phase and 1 phase systems and there is a separate circuit clamp for your solar system. Installation manuals can be found on [their support page](https://www.smappee.com/be_en/support)
 
 ## Supported Things
 
-This binding provides one bridge thing type : 'smappee'. There should be only one smappee device installed in your home.
+This binding provides one bridge thing type 'smappee'. There should be only one smappee device installed in your home.
 This thing act like a bridge and represents your smappee monitor device and should be configured first. Once configured, this will autodetect all other smappee things.
 
 Detected things:
@@ -25,45 +25,45 @@ Detected things:
 
 The smappee thing must be configured manually. Appliances, actuators and the sensors are autodetected. 
 
-## Smappee thing configuration
+## Smappee Thing Configuration
 
-As described on their [support page] (https://support.smappee.com/hc/en-us/articles/202153935-Where-can-I-find-the-API-documentation-), you need to email [support@smappee.com] (mailto:support@smappee.com) to get a client ID and a client secret to access the API. In that mail you need to provide them:
+As described on their [support page](https://support.smappee.com/hc/en-us/articles/202153935-Where-can-I-find-the-API-documentation-), you need to email [support@smappee.com](mailto:support@smappee.com) to get a client ID and a client secret to access the API. In that mail you need to provide them:
 
 - Full name: your full name
 - Monitor serial number: this can be found at the back of your smappee
 - Account username: the username you use to log in in Smappee, same as thing setting 'Username'
 
-Following settings must be configured in order to make your smappee binding work:
+The following settings must be configured in order to make your smappee binding work:
 
 #### Smappee Bridge
 
-| Setting              |                                                                        |
-|----------------------|------------------------------------------------------------------------|
-|ClientId              | The Smappee Api Oauth client id (obtain by mail from smappee support) |
-|ClientSecret          | The Smappee Api Oauth client secret (obtain by mail from smappee support)|
-|Username              | The username for your Smappee Account|
-|Password              | The password for your Smappee Account|
-|ServiceLocationName   | The name of your Smappee installation|
-|PollingInterval       | How often (in minutes) does the smappee needs to be checked ?|
+| Configuration Parameter  |                                                                                    |
+|--------------------------|------------------------------------------------------------------------------------|
+|ClientId                  | The Smappee Api Oauth client id (obtain by mail from smappee support)              |
+|ClientSecret              | The Smappee Api Oauth client secret (obtain by mail from smappee support)          |
+|Username                  | The username for your Smappee Account                                              |
+|Password                  | The password for your Smappee Account                                              |
+|ServiceLocationName       | The name of your Smappee installation                                              |
+|PollingInterval           | How often (in minutes) does the smappee needs to be checked ? Default is 5 minutes |
 
 #### Appliance Thing
 
-| Setting              |                                                                                                              |
-|----------------------|--------------------------------------------------------------------------------------------------------------|
-|Id                    | The unique identifier of the detected appliance, This is the number after "Find Me" for unlabeled appliances |
-|Type                  | This is the smappee category ("Air Conditioner", "Blinds", "Microwave", ...                                  |
+| Configuration Parameter |                                                                                                              |
+|-------------------------|--------------------------------------------------------------------------------------------------------------|
+|Id                       | The unique identifier of the detected appliance, This is the number after "Find Me" for unlabeled appliances |
+|Type                     | This is the smappee category ("Air Conditioner", "Blinds", "Microwave", ...                                  |
 
 #### Actuator Thing
 
-| Setting              |                                                                                                              |
-|----------------------|--------------------------------------------------------------------------------------------------------------|
-|Id                    | The unique identifier of the linked plug, This is a unique number starting from 1 for each installed plug    |
+| Configuration Parameter |                                                                                                              |
+|-------------------------|--------------------------------------------------------------------------------------------------------------|
+|Id                       | The unique identifier of the linked plug, This is a unique number starting from 1 for each installed plug    |
 
 #### Sensor Thing
 
-| Setting              |                                                                                                              |
-|----------------------|--------------------------------------------------------------------------------------------------------------|
-|Id                    | The unique identifier of the sensor, is a combined identifier. Format: [SensorId-ChannelId], eg 1-1    |
+| Configuration Parameter |                                                                                                              |
+|-------------------------|--------------------------------------------------------------------------------------------------------------|
+|Id                       | The unique identifier of the sensor, is a combined identifier. Format: [SensorId-ChannelId], eg 1-1          |
 
 ## Channels
 

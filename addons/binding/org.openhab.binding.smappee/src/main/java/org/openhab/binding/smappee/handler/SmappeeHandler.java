@@ -10,11 +10,10 @@ package org.openhab.binding.smappee.handler;
 
 import static org.openhab.binding.smappee.SmappeeBindingConstants.*;
 
-import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -28,8 +27,6 @@ import org.openhab.binding.smappee.internal.ReadingsUpdate;
 import org.openhab.binding.smappee.internal.SmappeeConfigurationParameters;
 import org.openhab.binding.smappee.internal.SmappeeDeviceReading;
 import org.openhab.binding.smappee.internal.SmappeeService;
-import org.openhab.binding.smappee.internal.discovery.SmappeeDiscoveryService;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +41,8 @@ public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate 
     private final Logger logger = LoggerFactory.getLogger(SmappeeHandler.class);
     private SmappeeService smappeeService;
 
-    private SmappeeDiscoveryService discoveryService;
-    private ServiceRegistration<?> discoveryServiceRegistration;
+    // private SmappeeDiscoveryService discoveryService;
+    // private ServiceRegistration<?> discoveryServiceRegistration;
 
     public SmappeeHandler(Bridge bridge) {
         super(bridge);
@@ -72,9 +69,9 @@ public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate 
     @Override
     public void newState(SmappeeDeviceReading readings) {
         if (readings != null) {
-            updateState(CHANNEL_CONSUMPTION, new DecimalType(readings.getLatestConsumption()));
-            updateState(CHANNEL_SOLAR, new DecimalType(readings.getLatestSolar()));
-            updateState(CHANNEL_ALWAYSON, new DecimalType(readings.getLatestAlwaysOn()));
+            updateState(CHANNEL_CONSUMPTION, new QuantityType<>(readings.getLatestConsumption(), SmartHomeUnits.WATT));
+            updateState(CHANNEL_SOLAR, new QuantityType<>(readings.getLatestSolar(), SmartHomeUnits.WATT));
+            updateState(CHANNEL_ALWAYSON, new QuantityType<>(readings.getLatestAlwaysOn(), SmartHomeUnits.WATT));
         }
     }
 
@@ -113,29 +110,18 @@ public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate 
         smappeeService = new SmappeeService(config);
 
         // contact Smappee API
-        scheduler.submit(new Runnable() {
-            @Override
-            public void run() {
-                initializeSmappeeService();
-            }
-        });
+        scheduler.submit(() -> initializeSmappeeService());
     }
 
     private void initializeSmappeeService() {
         try {
             smappeeService.initialize();
         } catch (CommunicationException ex) {
-
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not contact Smappee, retrying");
 
             // try again in 30 seconds
-            scheduler.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    initializeSmappeeService();
-                }
-            }, 30, TimeUnit.SECONDS);
+            scheduler.schedule(() -> initializeSmappeeService(), 30, TimeUnit.SECONDS);
 
             return;
         } catch (InvalidConfigurationException ex) {
@@ -149,10 +135,6 @@ public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate 
         smappeeService.startAutomaticRefresh(scheduler, this);
 
         updateStatus(ThingStatus.ONLINE);
-
-        logger.debug("Initialize discovery service.");
-        registerDeviceDiscoveryService();
-        discoveryService.startScan(null);
     }
 
     @Override
@@ -161,25 +143,26 @@ public class SmappeeHandler extends BaseBridgeHandler implements ReadingsUpdate 
             smappeeService.stopAutomaticRefresh();
         }
 
-        if (discoveryService != null) {
-            discoveryService.stopScan();
-            unregisterDeviceDiscoveryService();
-        }
+        // if (discoveryService != null) {
+        // discoveryService.stopScan();
+        // unregisterDeviceDiscoveryService();
+        // }
     }
-
-    private void registerDeviceDiscoveryService() {
-        discoveryService = new SmappeeDiscoveryService(this.smappeeService, this.thing.getUID());
-        discoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                new Hashtable<String, Object>());
-        discoveryService.activate();
-    }
-
-    private void unregisterDeviceDiscoveryService() {
-        if (discoveryServiceRegistration != null) {
-            discoveryServiceRegistration.unregister();
-            discoveryServiceRegistration = null;
-            discoveryService.deactivate();
-            discoveryService = null;
-        }
-    }
+    /*
+     * private void registerDeviceDiscoveryService() {
+     * discoveryService = new SmappeeDiscoveryService(this.smappeeService, this.thing.getUID());
+     * discoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
+     * new Hashtable<String, Object>());
+     * discoveryService.activate();
+     * }
+     *
+     * private void unregisterDeviceDiscoveryService() {
+     * if (discoveryServiceRegistration != null) {
+     * discoveryServiceRegistration.unregister();
+     * discoveryServiceRegistration = null;
+     * discoveryService.deactivate();
+     * discoveryService = null;
+     * }
+     * }
+     */
 }

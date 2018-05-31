@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.smappee.internal.SmappeeSensorConsumptionRecord;
@@ -71,8 +70,6 @@ public class SmappeeSensorHandler extends AbstractSmappeeHandler {
         sensorId = thing.getConfiguration().get(PARAMETER_SENSOR_ID).toString();
         channelId = thing.getConfiguration().get(PARAMETER_SENSOR_CHANNEL_ID).toString();
 
-        updateStatus(ThingStatus.ONLINE);
-
         // start automatic refresh
         startAutomaticRefresh();
     }
@@ -100,7 +97,7 @@ public class SmappeeSensorHandler extends AbstractSmappeeHandler {
     private void readSensor(SmappeeService smappeeService) {
         SmappeeSensorConsumptionRecord readings = smappeeService.getLatestSensorConsumption(sensorId);
         if (readings == null) {
-            logger.warn("failed to read to read power consumption for sensor {}", sensorId);
+            logger.debug("failed to read to read power consumption for sensor {}", sensorId);
         } else {
             newState(readings);
         }

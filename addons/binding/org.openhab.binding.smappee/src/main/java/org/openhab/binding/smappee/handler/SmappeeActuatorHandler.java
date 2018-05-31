@@ -13,7 +13,6 @@ import static org.openhab.binding.smappee.SmappeeBindingConstants.PARAMETER_ACTU
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.smappee.internal.SmappeeService;
 import org.slf4j.Logger;
@@ -28,7 +27,7 @@ public class SmappeeActuatorHandler extends AbstractSmappeeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SmappeeActuatorHandler.class);
 
-    private String thingId;
+    private String applianceId;
 
     public SmappeeActuatorHandler(Thing thing) {
         super(thing);
@@ -44,7 +43,7 @@ public class SmappeeActuatorHandler extends AbstractSmappeeHandler {
         if (command instanceof OnOffType) {
             OnOffType commandOnOff = (OnOffType) command;
 
-            smappeeService.putPlugOnOff(thingId, commandOnOff == OnOffType.ON);
+            smappeeService.putPlugOnOff(applianceId, commandOnOff == OnOffType.ON);
 
         } else {
             logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
@@ -53,8 +52,6 @@ public class SmappeeActuatorHandler extends AbstractSmappeeHandler {
 
     @Override
     public void initialize() {
-        thingId = thing.getConfiguration().get(PARAMETER_ACTUATOR_ID).toString();
-
-        updateStatus(ThingStatus.ONLINE);
+        applianceId = thing.getConfiguration().get(PARAMETER_ACTUATOR_ID).toString();
     }
 }

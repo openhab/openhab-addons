@@ -6,13 +6,13 @@ Bundle-Name: Smappee Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.smappee;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Export-Package: 
  org.openhab.binding.smappee,
  org.openhab.binding.smappee.handler
 Import-Package: 
- com.google.common.collect,
  com.google.gson,
+ javax.measure.quantity,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.client,
  org.eclipse.jetty.client.api,
@@ -24,13 +24,12 @@ Import-Package:
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.joda.time,
- org.joda.time.base,
  org.openhab.binding.smappee,
  org.openhab.binding.smappee.handler,
  org.osgi.framework,

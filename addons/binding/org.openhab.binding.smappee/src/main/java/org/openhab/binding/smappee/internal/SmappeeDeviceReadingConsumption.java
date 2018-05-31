@@ -8,8 +8,9 @@
  */
 package org.openhab.binding.smappee.internal;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /**
  * The result of a smappee reading, the energy consumption
@@ -23,7 +24,7 @@ public class SmappeeDeviceReadingConsumption {
     public double solar;
     public double alwaysOn;
 
-    public DateTime timestampDateTime() {
-        return new DateTime(timestamp, DateTimeZone.UTC);
+    public LocalDateTime timestampDateTime() {
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("UTC"));
     }
 }

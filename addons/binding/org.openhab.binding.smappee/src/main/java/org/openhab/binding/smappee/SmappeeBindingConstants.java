@@ -8,11 +8,12 @@
  */
 package org.openhab.binding.smappee;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link Smappee2BindingConstants} class defines common constants, which are
@@ -31,11 +32,11 @@ public class SmappeeBindingConstants {
     public final static ThingTypeUID THING_TYPE_SENSOR = new ThingTypeUID(BINDING_ID, "sensor");
 
     // All supported Bridge types
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_SMAPPEE);
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Collections.singleton(THING_TYPE_SMAPPEE);
 
     // All supported Thing types
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_APPLIANCE,
-            THING_TYPE_ACTUATOR, THING_TYPE_SENSOR);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(THING_TYPE_APPLIANCE, THING_TYPE_ACTUATOR, THING_TYPE_SENSOR).collect(Collectors.toSet());
 
     // List of all Channel ids
     // Smappee

@@ -17,7 +17,6 @@ import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.smappee.internal.SmappeeApplianceEvent;
@@ -36,7 +35,7 @@ public class SmappeeApplianceHandler extends AbstractSmappeeHandler {
 
     ScheduledFuture<?> scheduledJob;
 
-    private String thingId;
+    private String applianceId;
 
     public SmappeeApplianceHandler(Thing thing) {
         super(thing);
@@ -65,9 +64,7 @@ public class SmappeeApplianceHandler extends AbstractSmappeeHandler {
 
     @Override
     public void initialize() {
-        thingId = thing.getConfiguration().get(PARAMETER_APPLIANCE_ID).toString();
-
-        updateStatus(ThingStatus.ONLINE);
+        applianceId = thing.getConfiguration().get(PARAMETER_APPLIANCE_ID).toString();
 
         // start automatic refresh
         startAutomaticRefresh();
@@ -94,9 +91,9 @@ public class SmappeeApplianceHandler extends AbstractSmappeeHandler {
     }
 
     private void readAppliance(SmappeeService smappeeService) {
-        SmappeeApplianceEvent readings = smappeeService.getLatestApplianceReading(thingId);
+        SmappeeApplianceEvent readings = smappeeService.getLatestApplianceReading(applianceId);
         if (readings == null) {
-            logger.warn("failed to read to read power consumption for appliance {}", thingId);
+            logger.debug("failed to read to read power consumption for appliance {}", applianceId);
         } else {
             newState(readings);
         }

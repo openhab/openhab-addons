@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.smappee.internal;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -23,8 +25,6 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +53,7 @@ public class SmappeeService {
     private final Gson gson;
 
     private String accessToken;
-    private DateTime accessTokenValidity;
+    private OffsetDateTime accessTokenValidity;
     private String refreshToken;
 
     private static HttpClient httpClient = new HttpClient(new SslContextFactory());
@@ -111,11 +111,11 @@ public class SmappeeService {
         int currentTry = 0;
         do {
             try {
-                DateTime nowUtc = DateTime.now(DateTimeZone.UTC).minusMinutes(1);
-                DateTime nowUtcMinus20Min = DateTime.now(DateTimeZone.UTC).minusMinutes(20);
+                OffsetDateTime nowUtc = OffsetDateTime.now(ZoneId.of("UTC")).minusMinutes(1);
+                OffsetDateTime nowUtcMinus20Min = OffsetDateTime.now(ZoneId.of("UTC")).minusMinutes(20);
 
-                String nowUtcMillis = String.valueOf(nowUtc.getMillis());
-                String nowUtcMinus20MinMillis = String.valueOf(nowUtcMinus20Min.getMillis());
+                String nowUtcMillis = String.valueOf(nowUtc.toInstant().toEpochMilli());
+                String nowUtcMinus20MinMillis = String.valueOf(nowUtcMinus20Min.toInstant().toEpochMilli());
 
                 // sample API method to call :
                 // https://app1pub.smappee.net/dev/v1/servicelocation/123/consumption?aggregation=1&from=1388534400000&to=1391212800000
@@ -169,7 +169,7 @@ public class SmappeeService {
                 return readings;
 
             } catch (CommunicationException se) {
-                logger.warn("failed to read servicelocationinfo '{}'", se.getMessage());
+                logger.debug("failed to read servicelocationinfo '{}'", se.getMessage());
             } catch (JsonSyntaxException pe) {
                 logger.warn("failed to read response from smappee : {}", pe.getMessage());
             }
@@ -187,11 +187,11 @@ public class SmappeeService {
         int currentTry = 0;
         do {
             try {
-                DateTime nowUtc = DateTime.now(DateTimeZone.UTC).minusMinutes(1);
-                DateTime nowUtcMinus1Year = DateTime.now(DateTimeZone.UTC).minusYears(1);
+                OffsetDateTime nowUtc = OffsetDateTime.now(ZoneId.of("UTC")).minusMinutes(1);
+                OffsetDateTime nowUtcMinus1Year = OffsetDateTime.now(ZoneId.of("UTC")).minusYears(1);
 
-                String nowUtcMillis = String.valueOf(nowUtc.getMillis());
-                String nowUtcMinus1YearMillis = String.valueOf(nowUtcMinus1Year.getMillis());
+                String nowUtcMillis = String.valueOf(nowUtc.toInstant().toEpochMilli());
+                String nowUtcMinus1YearMillis = String.valueOf(nowUtcMinus1Year.toInstant().toEpochMilli());
 
                 // sample API method to call :
                 // https://app1pub.smappee.net/dev/v1/servicelocation/123123/events?
@@ -215,7 +215,7 @@ public class SmappeeService {
                 return null;
 
             } catch (CommunicationException se) {
-                logger.warn("failed to read smappee '{}' - appliance '{}' : {}", this.serviceLocationId, applianceId,
+                logger.debug("failed to read smappee '{}' - appliance '{}' : {}", this.serviceLocationId, applianceId,
                         se.getMessage());
             } catch (JsonSyntaxException pe) {
                 logger.warn("failed to read response from smappee '{}' - appliance '{}' : {}", this.serviceLocationId,
@@ -235,11 +235,11 @@ public class SmappeeService {
         int currentTry = 0;
         do {
             try {
-                DateTime nowUtc = DateTime.now(DateTimeZone.UTC).minusMinutes(1);
-                DateTime nowUtcMinus1Year = DateTime.now(DateTimeZone.UTC).minusYears(1);
+                OffsetDateTime nowUtc = OffsetDateTime.now(ZoneId.of("UTC")).minusMinutes(1);
+                OffsetDateTime nowUtcMinus1Year = OffsetDateTime.now(ZoneId.of("UTC")).minusYears(1);
 
-                String nowUtcMillis = String.valueOf(nowUtc.getMillis());
-                String nowUtcMinus1YearMillis = String.valueOf(nowUtcMinus1Year.getMillis());
+                String nowUtcMillis = String.valueOf(nowUtc.toInstant().toEpochMilli());
+                String nowUtcMinus1YearMillis = String.valueOf(nowUtcMinus1Year.toInstant().toEpochMilli());
 
                 // sample API method to call :
                 // https://app1pub.smappee.net/dev/v1/servicelocation/1/sensor/4/consumption?
@@ -262,7 +262,7 @@ public class SmappeeService {
                 return null;
 
             } catch (CommunicationException ce) {
-                logger.warn("failed to read smappee '{}' - sensorId '{}' : {}, Retry ({}/{})", this.serviceLocationId,
+                logger.debug("failed to read smappee '{}' - sensorId '{}' : {}, Retry ({}/{})", this.serviceLocationId,
                         sensorId, ce.getMessage(), currentTry + 1, this.retry);
             } catch (JsonSyntaxException pe) {
                 logger.warn("failed to read response from smappee '{}' - sensorId '{}' : {}", this.serviceLocationId,
@@ -391,7 +391,7 @@ public class SmappeeService {
 
         // current access token is still valid ?
         if (accessToken != null && !accessToken.isEmpty() && accessTokenValidity != null
-                && accessTokenValidity.isBeforeNow()) {
+                && accessTokenValidity.isBefore(OffsetDateTime.now(ZoneId.of("UTC")))) {
             return accessToken;
         }
 
@@ -421,7 +421,7 @@ public class SmappeeService {
 
                 accessToken = accessTokenResponse.access_token;
                 refreshToken = accessTokenResponse.refresh_token;
-                accessTokenValidity = DateTime.now().plusSeconds(accessTokenResponse.expires_in);
+                accessTokenValidity = OffsetDateTime.now(ZoneId.of("UTC")).plusSeconds(accessTokenResponse.expires_in);
 
                 return accessToken;
 
@@ -461,7 +461,7 @@ public class SmappeeService {
 
             accessToken = accessTokenResponse.access_token;
             refreshToken = accessTokenResponse.refresh_token;
-            accessTokenValidity = DateTime.now().plusSeconds(accessTokenResponse.expires_in);
+            accessTokenValidity = OffsetDateTime.now(ZoneId.of("UTC")).plusSeconds(accessTokenResponse.expires_in);
 
             return accessToken;
         } catch (InterruptedException e) {

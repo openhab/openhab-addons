@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -20,6 +22,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.smappee.SmappeeBindingConstants;
+import org.openhab.binding.smappee.handler.SmappeeHandler;
 import org.openhab.binding.smappee.internal.SmappeeService;
 import org.openhab.binding.smappee.internal.SmappeeServiceLocationInfo;
 import org.openhab.binding.smappee.internal.SmappeeServiceLocationInfoActuator;
@@ -29,8 +32,6 @@ import org.openhab.binding.smappee.internal.SmappeeServiceLocationInfoSensorChan
 import org.openhab.binding.smappee.internal.ThingProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * Discovery class for the Smappee.
@@ -43,27 +44,25 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
     private static final int SEARCH_TIME = 60;
 
     private final Logger logger = LoggerFactory.getLogger(SmappeeDiscoveryService.class);
-    private SmappeeService smappeeService;
-    private ThingUID bridgeUID;
+    private SmappeeHandler smappeeHandler;
 
     private ScheduledFuture<?> scheduledJob;
 
     /**
      * Whether we are currently scanning or not
      */
-    private boolean _scanning;
+    private boolean isScanning;
 
     /**
      * Constructs the discovery class using the thing IDs that smappee can discover
      * - actuators (plugs)
      * - detected appliances
      */
-    public SmappeeDiscoveryService(SmappeeService smappeeService, ThingUID bridgeUID) {
-        super(ImmutableSet.of(SmappeeBindingConstants.THING_TYPE_ACTUATOR,
-                SmappeeBindingConstants.THING_TYPE_APPLIANCE), SEARCH_TIME, false);
+    public SmappeeDiscoveryService(SmappeeHandler smappeeHandler) {
+        super(Stream.of(SmappeeBindingConstants.THING_TYPE_ACTUATOR, SmappeeBindingConstants.THING_TYPE_APPLIANCE)
+                .collect(Collectors.toSet()), SEARCH_TIME, false);
 
-        this.smappeeService = smappeeService;
-        this.bridgeUID = bridgeUID;
+        this.smappeeHandler = smappeeHandler;
     }
 
     @Override
@@ -76,6 +75,7 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
      */
     public void activate() {
         super.activate(null);
+        startScan();
     }
 
     /**
@@ -84,6 +84,7 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
     @Override
     public void deactivate() {
         super.deactivate();
+        stopScan();
     }
 
     /**
@@ -98,7 +99,7 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
      */
     @Override
     protected void startScan() {
-        if (_scanning) {
+        if (isScanning) {
             stopScan();
         }
 
@@ -106,15 +107,17 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
         // somehow this is not working, so starting a scheduler instead
         startAutomaticRefresh();
 
-        _scanning = true;
+        isScanning = true;
     }
 
     public void startAutomaticRefresh() {
-        scheduledJob = scheduler.scheduleWithFixedDelay(this::scanForNewDevices, 0, 5, TimeUnit.MILLISECONDS);
+        scheduledJob = scheduler.scheduleWithFixedDelay(this::scanForNewDevices, 0, 5, TimeUnit.MINUTES);
     }
 
     private void scanForNewDevices() {
-        if (!smappeeService.isInitialized()) {
+        SmappeeService smappeeService = smappeeHandler.getSmappeeService();
+
+        if (smappeeService == null || !smappeeService.isInitialized()) {
             logger.debug("skipping discovery because smappee service is not up yet (config error ?)");
             return;
         }
@@ -173,6 +176,7 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
             }
         }
 
+        ThingUID bridgeUID = smappeeHandler.getThing().getUID();
         DiscoveryResult result = DiscoveryResultBuilder.create(newthing).withBridge(bridgeUID)
                 .withProperties(thingProperties).withLabel(label).build();
         thingDiscovered(result);
@@ -189,6 +193,6 @@ public class SmappeeDiscoveryService extends AbstractDiscoveryService {
             scheduledJob.cancel(true);
         }
 
-        _scanning = false;
+        isScanning = false;
     }
 }
