@@ -8,17 +8,19 @@
  */
 package org.openhab.binding.icloud.internal.json.request;
 
+import static org.openhab.binding.icloud.ICloudBindingConstants.FIND_MY_DEVICE_REQUEST_SUBJECT;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Serializable class to create a "Find My Device" json request string.
  *
- * @author Patrik Gfeller
+ * @author Patrik Gfeller - Initial Contribution
  */
 public class ICloudFindMyDeviceRequest {
     @SerializedName("device")
     String deviceId;
-    final String subject = "Find My Device alert";
+    final String subject = FIND_MY_DEVICE_REQUEST_SUBJECT;
 
     public ICloudFindMyDeviceRequest(String id) {
         deviceId = id;
