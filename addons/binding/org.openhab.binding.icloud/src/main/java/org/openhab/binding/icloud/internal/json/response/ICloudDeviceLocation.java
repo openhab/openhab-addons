@@ -6,14 +6,16 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.icloud.internal.json;
+package org.openhab.binding.icloud.internal.json.response;
 
 /**
+ * Serializable class to parse json response received from the Apple server.
+ * Contains device location information.
  *
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class Location {
+public class ICloudDeviceLocation {
     private double altitude;
 
     private int floorLevel;
@@ -84,53 +86,5 @@ public class Location {
 
     public double getVerticalAccuracy() {
         return this.verticalAccuracy;
-    }
-
-    public void setAltitude(double altitude) {
-        this.altitude = altitude;
-    }
-
-    public void setFloorLevel(int floorLevel) {
-        this.floorLevel = floorLevel;
-    }
-
-    public void setHorizontalAccuracy(double horizontalAccuracy) {
-        this.horizontalAccuracy = horizontalAccuracy;
-    }
-
-    public void setIsInaccurate(boolean isInaccurate) {
-        this.isInaccurate = isInaccurate;
-    }
-
-    public void setIsOld(boolean isOld) {
-        this.isOld = isOld;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public void setLocationFinished(boolean locationFinished) {
-        this.locationFinished = locationFinished;
-    }
-
-    public void setLocationType(String locationType) {
-        this.locationType = locationType;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    public void setPositionType(String positionType) {
-        this.positionType = positionType;
-    }
-
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
-    public void setVerticalAccuracy(double verticalAccuracy) {
-        this.verticalAccuracy = verticalAccuracy;
     }
 }

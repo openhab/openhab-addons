@@ -9,10 +9,11 @@
 package org.openhab.binding.icloud.internal.configuration;
 
 /**
+ * Represents the configuration of an iCloud Device Thing.
  *
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class DeviceThingConfiguration {
+public class ICloudDeviceThingConfiguration {
     public String deviceId;
 }

@@ -6,14 +6,15 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.icloud.internal.json;
+package org.openhab.binding.icloud.internal.json.response;
 
 /**
+ * Serializable class to parse json response received from the Apple server.
  *
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-public class ServerContext {
+public class ICloudServerContext {
     private String authToken;
 
     private int callbackIntervalInMS;
@@ -66,7 +67,7 @@ public class ServerContext {
 
     private boolean showSllNow;
 
-    private Timezone timezone;
+    private ICloudServerContextTimezone timezone;
 
     private int trackInfoCacheDurationInSecs;
 
@@ -178,7 +179,7 @@ public class ServerContext {
         return this.showSllNow;
     }
 
-    public Timezone getTimezone() {
+    public ICloudServerContextTimezone getTimezone() {
         return this.timezone;
     }
 
@@ -192,125 +193,5 @@ public class ServerContext {
 
     public boolean getValidRegion() {
         return this.validRegion;
-    }
-
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
-    }
-
-    public void setCallbackIntervalInMS(int callbackIntervalInMS) {
-        this.callbackIntervalInMS = callbackIntervalInMS;
-    }
-
-    public void setClassicUser(boolean classicUser) {
-        this.classicUser = classicUser;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
-    public void setCloudUser(boolean cloudUser) {
-        this.cloudUser = cloudUser;
-    }
-
-    public void setDeviceLoadStatus(String deviceLoadStatus) {
-        this.deviceLoadStatus = deviceLoadStatus;
-    }
-
-    public void setEnable2FAErase(boolean enable2FAErase) {
-        this.enable2FAErase = enable2FAErase;
-    }
-
-    public void setEnable2FAFamilyActions(boolean enable2FAFamilyActions) {
-        this.enable2FAFamilyActions = enable2FAFamilyActions;
-    }
-
-    public void setEnable2FAFamilyRemove(boolean enable2FAFamilyRemove) {
-        this.enable2FAFamilyRemove = enable2FAFamilyRemove;
-    }
-
-    public void setEnableMapStats(boolean enableMapStats) {
-        this.enableMapStats = enableMapStats;
-    }
-
-    public void setImageBaseUrl(String imageBaseUrl) {
-        this.imageBaseUrl = imageBaseUrl;
-    }
-
-    public void setInfo(String info) {
-        this.info = info;
-    }
-
-    public void setIsHSA(boolean isHSA) {
-        this.isHSA = isHSA;
-    }
-
-    public void setLastSessionExtensionTime(Object lastSessionExtensionTime) {
-        this.lastSessionExtensionTime = lastSessionExtensionTime;
-    }
-
-    public void setMacCount(int macCount) {
-        this.macCount = macCount;
-    }
-
-    public void setMaxCallbackIntervalInMS(int maxCallbackIntervalInMS) {
-        this.maxCallbackIntervalInMS = maxCallbackIntervalInMS;
-    }
-
-    public void setMaxDeviceLoadTime(int maxDeviceLoadTime) {
-        this.maxDeviceLoadTime = maxDeviceLoadTime;
-    }
-
-    public void setMaxLocatingTime(int maxLocatingTime) {
-        this.maxLocatingTime = maxLocatingTime;
-    }
-
-    public void setMinCallbackIntervalInMS(int minCallbackIntervalInMS) {
-        this.minCallbackIntervalInMS = minCallbackIntervalInMS;
-    }
-
-    public void setMinTrackLocThresholdInMts(int minTrackLocThresholdInMts) {
-        this.minTrackLocThresholdInMts = minTrackLocThresholdInMts;
-    }
-
-    public void setPreferredLanguage(String preferredLanguage) {
-        this.preferredLanguage = preferredLanguage;
-    }
-
-    public void setPrefsUpdateTime(long prefsUpdateTime) {
-        this.prefsUpdateTime = prefsUpdateTime;
-    }
-
-    public void setPrsId(String prsId) {
-        this.prsId = prsId;
-    }
-
-    public void setServerTimestamp(long serverTimestamp) {
-        this.serverTimestamp = serverTimestamp;
-    }
-
-    public void setSessionLifespan(int sessionLifespan) {
-        this.sessionLifespan = sessionLifespan;
-    }
-
-    public void setShowSllNow(boolean showSllNow) {
-        this.showSllNow = showSllNow;
-    }
-
-    public void setTimezone(Timezone timezone) {
-        this.timezone = timezone;
-    }
-
-    public void setTrackInfoCacheDurationInSecs(int trackInfoCacheDurationInSecs) {
-        this.trackInfoCacheDurationInSecs = trackInfoCacheDurationInSecs;
-    }
-
-    public void setUseAuthWidget(boolean useAuthWidget) {
-        this.useAuthWidget = useAuthWidget;
-    }
-
-    public void setValidRegion(boolean validRegion) {
-        this.validRegion = validRegion;
     }
 }
