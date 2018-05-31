@@ -20,6 +20,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Patrik Gfeller - Initial contribution
+ * @author Patrik Gfeller
+ *         - Class renamed to be more consistent
+ *         - Constant FIND_MY_DEVICE_REQUEST_SUBJECT introduced
  */
 @NonNullByDefault
 public class ICloudBindingConstants {
@@ -52,4 +55,7 @@ public class ICloudBindingConstants {
     // i18n
     public static final String DEVICE_PROPERTY_ID_LABEL = "icloud.device-thing.parameter.id.label";
     public static final String DEVICE_PROPERTY_OWNER_LABEL = "icloud.account-thing.property.owner";
+
+    // Miscellaneous
+    public static final String FIND_MY_DEVICE_REQUEST_SUBJECT = "Find My Device alert";
 }
