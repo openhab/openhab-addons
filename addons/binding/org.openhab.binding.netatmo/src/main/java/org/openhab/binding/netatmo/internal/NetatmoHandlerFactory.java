@@ -59,6 +59,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
     private HttpService httpService;
+    private NATherm1StateDescriptionProvider stateDescriptionProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -88,7 +89,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(PLUG_THING_TYPE)) {
             return new NAPlugHandler(thing);
         } else if (thingTypeUID.equals(THERM1_THING_TYPE)) {
-            return new NATherm1Handler(thing);
+            return new NATherm1Handler(thing, stateDescriptionProvider);
         } else if (thingTypeUID.equals(WELCOME_HOME_THING_TYPE)) {
             return new NAWelcomeHomeHandler(thing);
         } else if (thingTypeUID.equals(WELCOME_CAMERA_THING_TYPE)) {
@@ -156,6 +157,15 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
     public void unsetHttpService(HttpService httpService) {
         this.httpService = null;
+    }
+
+    @Reference
+    protected void setDynamicStateDescriptionProvider(NATherm1StateDescriptionProvider provider) {
+        this.stateDescriptionProvider = provider;
+    }
+
+    protected void unsetDynamicStateDescriptionProvider(NATherm1StateDescriptionProvider provider) {
+        this.stateDescriptionProvider = null;
     }
 
 }
