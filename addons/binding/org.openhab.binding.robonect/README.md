@@ -82,7 +82,7 @@ Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInte
 Items file `.items`
 
 ```java
-String    mowerName            "Mower name"                                    {robonect:mower:automower:name"}
+String    mowerName            "Mower name"                                    {channel="robonect:mower:automower:name"}
 Number    mowerBattery         "Mower battery [%d %%]" <energy>                {channel="robonect:mower:automower:battery"}
 Number    mowerHours           "Mower operation hours [%d h]" <clock>          {channel="robonect:mower:automower:mowing-hours"}
 Number    mowerDuration        "Duration of current mode"                      {channel="robonect:mower:automower:status-duration"}
@@ -98,7 +98,7 @@ String    mowerJobStart        "Job start time"                                {
 String    mowerJobEnd          "Job end time"                                  {channel="robonect:mower:automower:job-end"}
 Number    mowerErrorCode       "Error code"                                    {channel="robonect:mower:automower:error-code"}
 String    mowerErrorMessage    "Error message"                                 {channel="robonect:mower:automower:error-message"}
-DateTie   mowerErrorDate       "Error date [%1$td/%1$tm %1$tH:%1$tM]"          {channel="robonect:mower:automower:error-date"}
+DateTime  mowerErrorDate       "Error date [%1$td/%1$tm %1$tH:%1$tM]"          {channel="robonect:mower:automower:error-date"}
 ```
 
 Map transformation for mower status (`robonect_status.map`)
