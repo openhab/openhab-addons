@@ -21,6 +21,8 @@ Export-Package:
 Import-Package: 
  javax.measure,
  javax.measure.quantity,
+ javax.net,
+ javax.net.ssl,
  javax.servlet,
  javax.servlet.http,
  org.eclipse.jdt.annotation;resolution:=optional,
