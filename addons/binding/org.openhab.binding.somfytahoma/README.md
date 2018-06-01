@@ -144,6 +144,30 @@ Switch DoorLockOpenClose "Open/Close" { channel="somfytahoma:doorlock:237dbae7:6
 
 ```
 
+.sitemap file
+
+```
+Text item=TahomaVersion
+Switch item=Rollers1UP label="Roller shutters 1st floor" mappings=[ON="UP"]
+Switch item=Rollers1DOWN  label="Roller shutters 1st floor" mappings=[ON="DOWN"]
+Switch item=Rollers2UP label="Roller shutters 2nd floor" mappings=[ON="UP"]
+Switch item=Rollers2DOWN  label="Roller shutters 2nd floor" mappings=[ON="DOWN"]
+Switch item=RollerShutterBedroom
+Slider item=RollerShutterBedroomD
+Switch item=RollerShutterLiving
+Slider item=RollerShutterLivingD
+Switch item=TahomaZwaveSwitch
+Switch item=TahomaLightSwitch
+Text item=LightSensor
+Text item=OccupancySensor
+Text item=SmokeSensor
+Text item=ContactSensor
+Switch item=HeatingSystemOnOff
+Selection item=HeatingSystemLevel mappings=["frostprotection"="FROST PROTECTION", "comfort"="COMFORT", "eco"="ECO", "off"="OFF"]
+Switch item=DoorLock
+Switch item=DoorLockOpenClose
+```
+
 ## Alexa compatibility
 
 This binding is compatible with the official Alexa Smart Home Skill. 
