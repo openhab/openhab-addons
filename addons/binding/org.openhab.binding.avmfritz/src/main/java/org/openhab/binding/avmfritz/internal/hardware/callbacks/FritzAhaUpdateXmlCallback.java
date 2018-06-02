@@ -59,12 +59,14 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
                 DevicelistModel model = (DevicelistModel) u.unmarshal(new StringReader(response));
                 if (model != null) {
                     handler.addDeviceList(model.getDevicelist());
-                    handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "FRITZ!Box online");
                 } else {
                     logger.warn("no model in response");
                 }
+                handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
             } catch (JAXBException e) {
                 logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
+                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        e.getLocalizedMessage());
             }
         } else {
             logger.debug("request is invalid: {}", status);
