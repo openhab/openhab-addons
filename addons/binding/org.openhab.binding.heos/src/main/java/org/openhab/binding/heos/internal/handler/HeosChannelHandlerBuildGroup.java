@@ -15,7 +15,7 @@ import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
 /**
- * @author Johannes Einig - initial contributor
+ * @author Johannes Einig - Initial contribution
  *
  */
 public class HeosChannelHandlerBuildGroup extends HeosChannelHandler {
