@@ -8,9 +8,12 @@
  */
 package org.openhab.io.transport.modbus.internal;
 
+import java.util.Objects;
+
 import org.apache.commons.pool2.impl.DefaultEvictionPolicy;
 import org.apache.commons.pool2.impl.EvictionPolicy;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import net.wimpi.modbus.net.ModbusSlaveConnection;
 
@@ -24,6 +27,7 @@ import net.wimpi.modbus.net.ModbusSlaveConnection;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class ModbusPoolConfig extends GenericKeyedObjectPoolConfig {
 
     private EvictionPolicy<ModbusSlaveConnection> evictionPolicy = new DefaultEvictionPolicy<ModbusSlaveConnection>();
@@ -60,6 +64,6 @@ public class ModbusPoolConfig extends GenericKeyedObjectPoolConfig {
     }
 
     public void setEvictionPolicy(EvictionPolicy<ModbusSlaveConnection> evictionPolicy) {
-        this.evictionPolicy = evictionPolicy;
+        this.evictionPolicy = Objects.requireNonNull(evictionPolicy, "evictionPolicy should not be null!");
     }
 }

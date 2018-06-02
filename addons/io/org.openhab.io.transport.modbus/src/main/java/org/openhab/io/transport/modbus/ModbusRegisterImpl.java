@@ -8,6 +8,8 @@
  */
 package org.openhab.io.transport.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import net.wimpi.modbus.procimg.SimpleInputRegister;
 
 /**
@@ -15,6 +17,7 @@ import net.wimpi.modbus.procimg.SimpleInputRegister;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class ModbusRegisterImpl implements ModbusRegister {
 
     private SimpleInputRegister wrapped;

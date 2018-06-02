@@ -12,6 +12,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,6 +20,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.StandardToStringStyle;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -39,22 +42,11 @@ import org.slf4j.LoggerFactory;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class Transformation {
-
-    interface TransformationHelperWrapper {
-        public TransformationService getTransformationService(BundleContext context, String transformationServiceName);
-    }
-
-    private static final class TransformationHelperWrapperImpl implements TransformationHelperWrapper {
-        @Override
-        public TransformationService getTransformationService(BundleContext context, String transformationServiceName) {
-            return TransformationHelper.getTransformationService(context, transformationServiceName);
-        }
-    }
 
     public static final String TRANSFORM_DEFAULT = "default";
     public static final Transformation IDENTITY_TRANSFORMATION = new Transformation(TRANSFORM_DEFAULT, null, null);
-    private static final TransformationHelperWrapper DEFAULT_TRANSFORMATION_HELPER = new TransformationHelperWrapperImpl();
 
     /** RegEx to extract and parse a function String <code>'(.*?)\((.*)\)'</code> */
     private static final Pattern EXTRACT_FUNCTION_PATTERN = Pattern.compile("(?<service>.*?)\\((?<arg>.*)\\)");
@@ -78,10 +70,10 @@ public class Transformation {
     }
 
     private final String transformation;
+    @Nullable
     private final String transformationServiceName;
+    @Nullable
     private final String transformationServiceParam;
-
-    private TransformationHelperWrapper transformationHelper = DEFAULT_TRANSFORMATION_HELPER;
 
     /**
      *
@@ -116,24 +108,14 @@ public class Transformation {
     }
 
     /**
-     * For testing. Package level visibility on purpose
-     *
-     * @param transformation
-     * @param transformationHelper
-     */
-    Transformation(String transformation, TransformationHelperWrapper transformationHelper) {
-        this(transformation);
-        this.transformationHelper = transformationHelper;
-    }
-
-    /**
      * For testing, thus package visibility by design
      *
      * @param transformation
      * @param transformationServiceName
      * @param transformationServiceParam
      */
-    Transformation(String transformation, String transformationServiceName, String transformationServiceParam) {
+    Transformation(String transformation, @Nullable String transformationServiceName,
+            @Nullable String transformationServiceParam) {
         this.transformation = transformation;
         this.transformationServiceName = transformationServiceName;
         this.transformationServiceParam = transformationServiceParam;
@@ -144,8 +126,10 @@ public class Transformation {
 
         if (hasTransformationService()) {
             try {
-                TransformationService transformationService = this.transformationHelper
-                        .getTransformationService(context, transformationServiceName);
+                Objects.requireNonNull(transformationServiceName);
+                @Nullable
+                TransformationService transformationService = TransformationHelper.getTransformationService(context,
+                        transformationServiceName);
                 if (transformationService != null) {
                     transformedResponse = transformationService.transform(transformationServiceParam, value);
                 } else {
@@ -201,17 +185,8 @@ public class Transformation {
         return transformationServiceName != null;
     }
 
-    /**
-     * For testing only. Package level visibility on purpose
-     *
-     * @param transformationHelper
-     */
-    void setTransformationHelper(TransformationHelperWrapper transformationHelper) {
-        this.transformationHelper = transformationHelper;
-    }
-
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (null == obj) {
             return false;
         }

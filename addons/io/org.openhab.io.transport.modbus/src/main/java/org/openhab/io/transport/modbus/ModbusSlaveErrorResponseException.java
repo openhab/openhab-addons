@@ -8,12 +8,15 @@
  */
 package org.openhab.io.transport.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception for explicit exception responses from Modbus slave
  *
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class ModbusSlaveErrorResponseException extends ModbusTransportException {
 
     /**

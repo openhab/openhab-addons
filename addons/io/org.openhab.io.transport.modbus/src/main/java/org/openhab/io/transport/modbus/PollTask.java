@@ -8,6 +8,8 @@
  */
 package org.openhab.io.transport.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Poll task represents Modbus read request
  *
@@ -18,6 +20,7 @@ package org.openhab.io.transport.modbus;
  *
  * @see ModbusManager.registerRegularPoll
  */
+@NonNullByDefault
 public interface PollTask extends TaskWithEndpoint<ModbusReadRequestBlueprint, ModbusReadCallback> {
     @Override
     default int getMaxTries() {

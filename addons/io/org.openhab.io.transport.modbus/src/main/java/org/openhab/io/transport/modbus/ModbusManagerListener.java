@@ -8,6 +8,8 @@
  */
 package org.openhab.io.transport.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 
@@ -16,6 +18,7 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public interface ModbusManagerListener {
 
     /**
@@ -24,6 +27,7 @@ public interface ModbusManagerListener {
      * @param endpoint value passed in call of <code>setEndpointPoolConfiguration</code>
      * @param configuration value passed in call of <code>setEndpointPoolConfiguration</code>
      */
-    public void onEndpointPoolConfigurationSet(ModbusSlaveEndpoint endpoint, EndpointPoolConfiguration configuration);
+    public void onEndpointPoolConfigurationSet(ModbusSlaveEndpoint endpoint,
+            @Nullable EndpointPoolConfiguration configuration);
 
 }

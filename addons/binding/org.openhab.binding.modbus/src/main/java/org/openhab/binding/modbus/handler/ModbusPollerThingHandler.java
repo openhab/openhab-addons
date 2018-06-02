@@ -10,6 +10,8 @@ package org.openhab.binding.modbus.handler;
 
 import java.util.function.Supplier;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.PollTask;
 
@@ -19,6 +21,7 @@ import org.openhab.io.transport.modbus.PollTask;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public interface ModbusPollerThingHandler {
 
     /**
@@ -28,7 +31,7 @@ public interface ModbusPollerThingHandler {
      *
      * @return poll task represented by this poller
      */
-    public PollTask getPollTask();
+    public @Nullable PollTask getPollTask();
 
     /**
      * Get {@link ModbusManager} supplier

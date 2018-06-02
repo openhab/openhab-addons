@@ -8,6 +8,8 @@
  */
 package org.openhab.io.transport.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * <p>
  * ModbusWriteRequestBlueprintVisitor interface.
@@ -15,6 +17,7 @@ package org.openhab.io.transport.modbus;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public interface ModbusWriteRequestBlueprintVisitor {
 
     /**

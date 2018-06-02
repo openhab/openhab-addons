@@ -8,11 +8,14 @@
  */
 package org.openhab.io.transport.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface for 16 bit Modbus registers.
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public interface ModbusRegister {
 
     /**

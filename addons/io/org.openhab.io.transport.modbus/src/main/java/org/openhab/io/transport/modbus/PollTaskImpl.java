@@ -12,6 +12,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.StandardToStringStyle;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 
 /**
@@ -25,6 +27,7 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class PollTaskImpl implements PollTask {
 
     static StandardToStringStyle toStringStyle = new StandardToStringStyle();
@@ -34,11 +37,14 @@ public class PollTaskImpl implements PollTask {
 
     private ModbusSlaveEndpoint endpoint;
     private ModbusReadRequestBlueprintImpl request;
-    private ModbusReadCallback callback;
+    private @Nullable ModbusReadCallback callback;
+
+    public PollTaskImpl(ModbusSlaveEndpoint endpoint, ModbusReadRequestBlueprintImpl request) {
+        this(endpoint, request, null);
+    }
 
     public PollTaskImpl(ModbusSlaveEndpoint endpoint, ModbusReadRequestBlueprintImpl request,
-            ModbusReadCallback callback) {
-        super();
+            @Nullable ModbusReadCallback callback) {
         this.endpoint = endpoint;
         this.request = request;
         this.callback = callback;
@@ -55,7 +61,7 @@ public class PollTaskImpl implements PollTask {
     }
 
     @Override
-    public ModbusReadCallback getCallback() {
+    public @Nullable ModbusReadCallback getCallback() {
         return callback;
     }
 
@@ -71,7 +77,7 @@ public class PollTaskImpl implements PollTask {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == null) {
             return false;
         }

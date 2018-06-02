@@ -12,6 +12,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.StandardToStringStyle;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Common base class for ip based endpoints. Endpoint differentiates different modbus slaves only by the ip address
@@ -19,6 +21,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public abstract class ModbusIPSlaveEndpoint implements ModbusSlaveEndpoint {
 
     private String address;
@@ -59,7 +62,7 @@ public abstract class ModbusIPSlaveEndpoint implements ModbusSlaveEndpoint {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == null) {
             return false;
         }

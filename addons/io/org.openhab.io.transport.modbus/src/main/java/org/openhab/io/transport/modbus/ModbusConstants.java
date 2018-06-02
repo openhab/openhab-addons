@@ -11,6 +11,7 @@ package org.openhab.io.transport.modbus;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Constants for Modbus transport
@@ -18,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNull;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class ModbusConstants {
 
     /**
@@ -39,10 +41,10 @@ public class ModbusConstants {
         UINT32_SWAP("uint32_swap", 32),
         FLOAT32_SWAP("float32_swap", 32);
 
-        private final @NonNull String configValue;
+        private final String configValue;
         private final int bits;
 
-        ValueType(@NonNull String configValue, int bits) {
+        ValueType(String configValue, int bits) {
             this.configValue = configValue;
             this.bits = bits;
         }
@@ -61,7 +63,7 @@ public class ModbusConstants {
          *
          * @return config value as string
          */
-        public @NonNull String getConfigValue() {
+        public String getConfigValue() {
             return configValue;
         }
 

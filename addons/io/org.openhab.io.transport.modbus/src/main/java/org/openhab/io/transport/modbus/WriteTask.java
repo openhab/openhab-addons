@@ -8,6 +8,8 @@
  */
 package org.openhab.io.transport.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Poll task represents Modbus write request
  *
@@ -16,6 +18,7 @@ package org.openhab.io.transport.modbus;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public interface WriteTask extends TaskWithEndpoint<ModbusWriteRequestBlueprint, ModbusWriteCallback> {
     @Override
     default int getMaxTries() {

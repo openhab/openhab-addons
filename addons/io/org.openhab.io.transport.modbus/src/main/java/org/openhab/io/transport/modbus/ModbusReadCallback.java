@@ -8,11 +8,14 @@
  */
 package org.openhab.io.transport.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface for read callbacks
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public interface ModbusReadCallback extends ModbusCallback {
 
     /**

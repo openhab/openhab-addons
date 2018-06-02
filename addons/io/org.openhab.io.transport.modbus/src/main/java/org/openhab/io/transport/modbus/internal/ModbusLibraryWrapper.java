@@ -14,6 +14,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
@@ -63,6 +65,7 @@ import net.wimpi.modbus.util.BitVector;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class ModbusLibraryWrapper {
 
     private static Logger getLogger() {
@@ -170,19 +173,19 @@ public class ModbusLibraryWrapper {
         ModbusTransaction transaction = endpoint.accept(new ModbusSlaveEndpointVisitor<ModbusTransaction>() {
 
             @Override
-            public ModbusTransaction visit(ModbusTCPSlaveEndpoint modbusIPSlavePoolingKey) {
+            public @NonNull ModbusTransaction visit(ModbusTCPSlaveEndpoint modbusIPSlavePoolingKey) {
                 ModbusTCPTransaction transaction = new ModbusTCPTransaction();
                 transaction.setReconnecting(false);
                 return transaction;
             }
 
             @Override
-            public ModbusTransaction visit(ModbusSerialSlaveEndpoint modbusSerialSlavePoolingKey) {
+            public @NonNull ModbusTransaction visit(ModbusSerialSlaveEndpoint modbusSerialSlavePoolingKey) {
                 return new ModbusSerialTransaction();
             }
 
             @Override
-            public ModbusTransaction visit(ModbusUDPSlaveEndpoint modbusUDPSlavePoolingKey) {
+            public @NonNull ModbusTransaction visit(ModbusUDPSlaveEndpoint modbusUDPSlavePoolingKey) {
                 return new ModbusUDPTransaction();
             }
         });

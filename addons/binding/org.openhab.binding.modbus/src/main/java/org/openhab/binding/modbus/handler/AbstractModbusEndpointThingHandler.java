@@ -10,7 +10,8 @@ package org.openhab.binding.modbus.handler;
 
 import java.util.function.Supplier;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -32,18 +33,20 @@ import org.slf4j.LoggerFactory;
  * @param <E> endpoint class
  * @param <C> config class
  */
+@NonNullByDefault
 public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEndpoint, C> extends BaseBridgeHandler
         implements ModbusManagerListener, ModbusEndpointThingHandler {
 
+    @Nullable
     protected volatile C config;
+    @Nullable
     protected volatile E endpoint;
-
-    protected @NonNull Supplier<ModbusManager> managerRef;
+    protected Supplier<ModbusManager> managerRef;
+    @Nullable
     protected volatile EndpointPoolConfiguration poolConfiguration;
     private final Logger logger = LoggerFactory.getLogger(AbstractModbusEndpointThingHandler.class);
 
-    @SuppressWarnings("null")
-    public AbstractModbusEndpointThingHandler(@NonNull Bridge bridge, @NonNull Supplier<ModbusManager> managerRef) {
+    public AbstractModbusEndpointThingHandler(Bridge bridge, Supplier<ModbusManager> managerRef) {
         super(bridge);
         this.managerRef = managerRef;
     }
@@ -52,13 +55,17 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         synchronized (this) {
             logger.trace("Initializing {} from status {}", this.getThing().getUID(), this.getThing().getStatus());
             try {
                 configure();
+                @Nullable
+                E endpoint = this.endpoint;
+                if (endpoint == null) {
+                    throw new IllegalArgumentException("endpoint null after configuration!");
+                }
                 managerRef.get().addListener(this);
                 managerRef.get().setEndpointPoolConfiguration(endpoint, poolConfiguration);
                 updateStatus(ThingStatus.ONLINE);
@@ -79,7 +86,7 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     }
 
     @Override
-    public ModbusSlaveEndpoint asSlaveEndpoint() {
+    public @Nullable ModbusSlaveEndpoint asSlaveEndpoint() {
         return endpoint;
     }
 
@@ -90,13 +97,14 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
 
     @Override
     public void onEndpointPoolConfigurationSet(ModbusSlaveEndpoint otherEndpoint,
-            EndpointPoolConfiguration otherPoolConfiguration) {
+            @Nullable EndpointPoolConfiguration otherPoolConfiguration) {
         synchronized (this) {
             if (endpoint == null) {
                 return;
             }
-            if (this.poolConfiguration != null && otherEndpoint.equals(this.endpoint)
-                    && !this.poolConfiguration.equals(otherPoolConfiguration)) {
+            EndpointPoolConfiguration poolConfiguration = this.poolConfiguration;
+            if (poolConfiguration != null && otherEndpoint.equals(this.endpoint)
+                    && !poolConfiguration.equals(otherPoolConfiguration)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         formatConflictingParameterError(otherPoolConfiguration));
             }
@@ -118,5 +126,5 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
      * @param otherPoolConfig
      * @return
      */
-    protected abstract String formatConflictingParameterError(EndpointPoolConfiguration otherPoolConfig);
+    protected abstract String formatConflictingParameterError(@Nullable EndpointPoolConfiguration otherPoolConfig);
 }

@@ -12,6 +12,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.StandardToStringStyle;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Immutable implementation of {@link ModbusReadRequestBlueprint}
@@ -23,6 +25,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class ModbusReadRequestBlueprintImpl implements ModbusReadRequestBlueprint {
     private static StandardToStringStyle toStringStyle = new StandardToStringStyle();
     static {
@@ -83,7 +86,7 @@ public class ModbusReadRequestBlueprintImpl implements ModbusReadRequestBlueprin
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == null) {
             return false;
         }

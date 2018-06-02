@@ -8,12 +8,15 @@
  */
 package org.openhab.io.transport.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Write request for registers
  *
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public interface ModbusWriteRegisterRequestBlueprint extends ModbusWriteRequestBlueprint {
 
     public ModbusRegisterArray getRegisters();

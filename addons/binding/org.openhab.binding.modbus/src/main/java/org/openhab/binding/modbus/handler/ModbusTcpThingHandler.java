@@ -8,9 +8,13 @@
  */
 package org.openhab.binding.modbus.handler;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.openhab.binding.modbus.internal.config.ModbusTcpConfiguration;
 import org.openhab.io.transport.modbus.ModbusManager;
@@ -22,20 +26,27 @@ import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class ModbusTcpThingHandler
         extends AbstractModbusEndpointThingHandler<ModbusTCPSlaveEndpoint, ModbusTcpConfiguration> {
 
-    public ModbusTcpThingHandler(@NonNull Bridge bridge, @NonNull Supplier<ModbusManager> managerRef) {
+    public ModbusTcpThingHandler(Bridge bridge, Supplier<ModbusManager> managerRef) {
         super(bridge, managerRef);
     }
 
     @Override
     protected void configure() {
-        config = getConfigAs(ModbusTcpConfiguration.class);
+        ModbusTcpConfiguration config = getConfigAs(ModbusTcpConfiguration.class);
 
-        endpoint = new ModbusTCPSlaveEndpoint(config.getHost(), config.getPort());
+        Objects.requireNonNull(config.getHost(), "host must not be null");
+        Objects.requireNonNull(config.getPort(), "port must not be null");
+        String host = (@NonNull String) config.getHost();
 
-        poolConfiguration = new EndpointPoolConfiguration();
+        this.config = config;
+        endpoint = new ModbusTCPSlaveEndpoint(host, config.getPort());
+
+        EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
+        this.poolConfiguration = poolConfiguration;
         poolConfiguration.setConnectMaxTries(config.getConnectMaxTries());
         poolConfiguration.setConnectTimeoutMillis(config.getConnectTimeoutMillis());
         poolConfiguration.setInterConnectDelayMillis(config.getTimeBetweenReconnectMillis());
@@ -44,11 +55,12 @@ public class ModbusTcpThingHandler
     }
 
     @Override
-    protected String formatConflictingParameterError(EndpointPoolConfiguration otherPoolConfig) {
+    protected String formatConflictingParameterError(@Nullable EndpointPoolConfiguration otherPoolConfig) {
         return String.format(
                 "Endpoint '%s' has conflicting parameters: parameters of this thing (%s '%s') %s are different from some other things parameter: %s. Ensure that all endpoints pointing to tcp slave '%s:%s' have same parameters.",
                 endpoint, thing.getUID(), this.thing.getLabel(), this.poolConfiguration, otherPoolConfig,
-                this.endpoint.getAddress(), this.endpoint.getPort());
+                Optional.ofNullable(this.endpoint).map(e -> e.getAddress()).orElse("<null>"),
+                Optional.ofNullable(this.endpoint).map(e -> String.valueOf(e.getPort())).orElse("<null>"));
     }
 
     @Override

@@ -18,12 +18,15 @@
  */
 package org.openhab.io.transport.modbus.endpoint;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Endpoint for TCP slaves
  *
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class ModbusTCPSlaveEndpoint extends ModbusIPSlaveEndpoint {
 
     public ModbusTCPSlaveEndpoint(String address, int port) {

@@ -10,6 +10,8 @@ package org.openhab.binding.modbus.handler;
 
 import java.util.function.Supplier;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 
@@ -19,6 +21,7 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public interface ModbusEndpointThingHandler {
 
     /**
@@ -28,7 +31,7 @@ public interface ModbusEndpointThingHandler {
      *
      * @return endpoint represented by this thing handler
      */
-    public ModbusSlaveEndpoint asSlaveEndpoint();
+    public @Nullable ModbusSlaveEndpoint asSlaveEndpoint();
 
     /**
      * Get Slave ID, also called as unit id, represented by the thing

@@ -8,12 +8,15 @@
  */
 package org.openhab.io.transport.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Base exception for all exceptions in Modbus transport bundle
  *
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class ModbusTransportException extends Exception {
 
     private static final long serialVersionUID = 1684767401685843339L;

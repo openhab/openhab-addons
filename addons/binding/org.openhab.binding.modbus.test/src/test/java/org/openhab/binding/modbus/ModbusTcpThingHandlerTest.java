@@ -11,6 +11,8 @@ package org.openhab.binding.modbus;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
+import java.util.Objects;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -82,8 +84,9 @@ public class ModbusTcpThingHandlerTest {
 
         InOrder orderedVerify = Mockito.inOrder(modbusManager);
         orderedVerify.verify(modbusManager).addListener(thingHandler);
-        orderedVerify.verify(modbusManager).setEndpointPoolConfiguration(thingHandler.asSlaveEndpoint(),
-                expectedPoolConfiguration);
+        ModbusSlaveEndpoint endpoint = thingHandler.asSlaveEndpoint();
+        Objects.requireNonNull(endpoint);
+        orderedVerify.verify(modbusManager).setEndpointPoolConfiguration(endpoint, expectedPoolConfiguration);
     }
 
     @Test

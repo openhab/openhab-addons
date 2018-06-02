@@ -8,6 +8,8 @@
  */
 package org.openhab.io.transport.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import net.wimpi.modbus.Modbus;
 
 /**
@@ -16,6 +18,7 @@ import net.wimpi.modbus.Modbus;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public interface ModbusWriteRequestBlueprint extends ModbusRequestBlueprint {
 
     /**

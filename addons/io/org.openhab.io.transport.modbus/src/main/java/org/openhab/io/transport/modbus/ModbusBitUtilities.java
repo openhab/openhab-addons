@@ -15,6 +15,7 @@ import java.nio.charset.Charset;
 import java.util.Optional;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -26,6 +27,7 @@ import org.eclipse.smarthome.core.types.Command;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class ModbusBitUtilities {
 
     /**

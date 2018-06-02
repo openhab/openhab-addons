@@ -8,25 +8,36 @@
  */
 package org.openhab.binding.modbus.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Configuration for data thing
  *
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class ModbusDataConfiguration {
 
+    @Nullable
     private String readStart;
+    @Nullable
     private String readTransform;
+    @Nullable
     private String readValueType;
+    @Nullable
     private String writeStart;
+    @Nullable
     private String writeType;
+    @Nullable
     private String writeTransform;
+    @Nullable
     private String writeValueType;
     private boolean writeMultipleEvenWithSingleRegisterOrCoil;
     private int writeMaxTries = 3; // backwards compatibility and tests
 
-    public String getReadStart() {
+    public @Nullable String getReadStart() {
         return readStart;
     }
 
@@ -34,7 +45,7 @@ public class ModbusDataConfiguration {
         this.readStart = readStart;
     }
 
-    public String getReadTransform() {
+    public @Nullable String getReadTransform() {
         return readTransform;
     }
 
@@ -42,7 +53,7 @@ public class ModbusDataConfiguration {
         this.readTransform = readTransform;
     }
 
-    public String getReadValueType() {
+    public @Nullable String getReadValueType() {
         return readValueType;
     }
 
@@ -50,7 +61,7 @@ public class ModbusDataConfiguration {
         this.readValueType = readValueType;
     }
 
-    public String getWriteStart() {
+    public @Nullable String getWriteStart() {
         return writeStart;
     }
 
@@ -58,7 +69,7 @@ public class ModbusDataConfiguration {
         this.writeStart = writeStart;
     }
 
-    public String getWriteType() {
+    public @Nullable String getWriteType() {
         return writeType;
     }
 
@@ -66,7 +77,7 @@ public class ModbusDataConfiguration {
         this.writeType = writeType;
     }
 
-    public String getWriteTransform() {
+    public @Nullable String getWriteTransform() {
         return writeTransform;
     }
 
@@ -74,7 +85,7 @@ public class ModbusDataConfiguration {
         this.writeTransform = writeTransform;
     }
 
-    public String getWriteValueType() {
+    public @Nullable String getWriteValueType() {
         return writeValueType;
     }
 

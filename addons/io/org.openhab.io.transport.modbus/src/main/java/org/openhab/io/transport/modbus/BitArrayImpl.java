@@ -10,12 +10,16 @@ package org.openhab.io.transport.modbus;
 
 import java.util.BitSet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Class that implements a collection for
  * bits
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class BitArrayImpl implements BitArray {
 
     private BitSet wrapped;
@@ -71,7 +75,7 @@ public class BitArrayImpl implements BitArray {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         return sizeAndValuesEquals(obj);
     }
 }

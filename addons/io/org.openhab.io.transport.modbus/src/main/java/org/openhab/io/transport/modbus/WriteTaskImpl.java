@@ -10,6 +10,8 @@ package org.openhab.io.transport.modbus;
 
 import org.apache.commons.lang.builder.StandardToStringStyle;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 
 /**
@@ -18,6 +20,7 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class WriteTaskImpl implements WriteTask {
 
     private static final StandardToStringStyle TO_STRING_STYLE = new StandardToStringStyle();
@@ -48,7 +51,7 @@ public class WriteTaskImpl implements WriteTask {
     }
 
     @Override
-    public ModbusWriteCallback getCallback() {
+    public @Nullable ModbusWriteCallback getCallback() {
         return callback;
     }
 

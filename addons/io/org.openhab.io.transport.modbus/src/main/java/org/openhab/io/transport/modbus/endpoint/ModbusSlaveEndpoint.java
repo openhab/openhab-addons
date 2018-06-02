@@ -8,6 +8,8 @@
  */
 package org.openhab.io.transport.modbus.endpoint;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * ModbusSlaveEndpoint contains minimal connection information to establish connection to the slave. End point equals
  * and hashCode methods should be implemented such that
@@ -19,7 +21,7 @@ package org.openhab.io.transport.modbus.endpoint;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public interface ModbusSlaveEndpoint {
     public <R> R accept(ModbusSlaveEndpointVisitor<R> visitor);
-
 }

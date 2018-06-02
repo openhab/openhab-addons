@@ -12,6 +12,8 @@ import org.apache.commons.pool2.KeyedPooledObjectFactory;
 import org.apache.commons.pool2.impl.EvictionPolicy;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 
 import net.wimpi.modbus.net.ModbusSlaveConnection;
@@ -24,8 +26,11 @@ import net.wimpi.modbus.net.ModbusSlaveConnection;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class ModbusConnectionPool extends GenericKeyedObjectPool<ModbusSlaveEndpoint, ModbusSlaveConnection> {
 
+    // policy is set in super constructor via setConfig
+    @NonNullByDefault({})
     private volatile EvictionPolicy<ModbusSlaveConnection> policy;
 
     public ModbusConnectionPool(KeyedPooledObjectFactory<ModbusSlaveEndpoint, ModbusSlaveConnection> factory) {
@@ -33,8 +38,10 @@ public class ModbusConnectionPool extends GenericKeyedObjectPool<ModbusSlaveEndp
     }
 
     @Override
-    public void setConfig(GenericKeyedObjectPoolConfig conf) {
-        if (!(conf instanceof ModbusPoolConfig)) {
+    public void setConfig(@Nullable GenericKeyedObjectPoolConfig conf) {
+        if (conf == null) {
+            return;
+        } else if (!(conf instanceof ModbusPoolConfig)) {
             throw new IllegalArgumentException("Only ModbusPoolConfig accepted!");
         }
         setConfig((ModbusPoolConfig) conf);
@@ -63,9 +70,6 @@ public class ModbusConnectionPool extends GenericKeyedObjectPool<ModbusSlaveEndp
         setTimeBetweenEvictionRunsMillis(conf.getTimeBetweenEvictionRunsMillis());
         // setEvictionPolicyClassName(conf.getEvictionPolicyClassName());
         policy = conf.getEvictionPolicy();
-        if (policy == null) {
-            throw new IllegalArgumentException("policy is null");
-        }
         setEvictorShutdownTimeoutMillis(conf.getEvictorShutdownTimeoutMillis());
     }
 

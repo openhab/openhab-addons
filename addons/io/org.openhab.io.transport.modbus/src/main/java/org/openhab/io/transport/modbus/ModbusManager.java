@@ -11,7 +11,8 @@ package org.openhab.io.transport.modbus;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 
@@ -20,6 +21,7 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public interface ModbusManager {
 
     /**
@@ -29,7 +31,7 @@ public interface ModbusManager {
      * @param task
      * @return future representing the polled task
      */
-    public ScheduledFuture<?> submitOneTimePoll(@NonNull PollTask task);
+    public ScheduledFuture<?> submitOneTimePoll(PollTask task);
 
     /**
      * Register regularly polled task. The method returns immediately, and the execution of the poll task will happen in
@@ -38,7 +40,7 @@ public interface ModbusManager {
      * @param task
      * @return
      */
-    public void registerRegularPoll(@NonNull PollTask task, long pollPeriodMillis, long initialDelayMillis);
+    public void registerRegularPoll(PollTask task, long pollPeriodMillis, long initialDelayMillis);
 
     /**
      * Unregister regularly polled task
@@ -47,7 +49,7 @@ public interface ModbusManager {
      * @return whether poll task was unregistered. Poll task is not unregistered in case of unexpected errors or
      *         in the case where the poll task is not registered in the first place
      */
-    public boolean unregisterRegularPoll(@NonNull PollTask task);
+    public boolean unregisterRegularPoll(PollTask task);
 
     /**
      * Submit one-time write task. The method returns immediately, and the execution of the task will happen in
@@ -56,7 +58,7 @@ public interface ModbusManager {
      * @param task
      * @return future representing the task
      */
-    public ScheduledFuture<?> submitOneTimeWrite(@NonNull WriteTask task);
+    public ScheduledFuture<?> submitOneTimeWrite(WriteTask task);
 
     /**
      * Configure general connection settings with a given endpoint
@@ -64,8 +66,8 @@ public interface ModbusManager {
      * @param endpoint endpoint to configure
      * @param configuration configuration for the endpoint. Use null to reset the configuration to default settings.
      */
-    public void setEndpointPoolConfiguration(@NonNull ModbusSlaveEndpoint endpoint,
-            EndpointPoolConfiguration configuration);
+    public void setEndpointPoolConfiguration(ModbusSlaveEndpoint endpoint,
+            @Nullable EndpointPoolConfiguration configuration);
 
     /**
      * Get general configuration settings applied to a given endpoint
@@ -75,27 +77,27 @@ public interface ModbusManager {
      * @param endpoint endpoint to query
      * @return general connection settings of the given endpoint
      */
-    public @NonNull EndpointPoolConfiguration getEndpointPoolConfiguration(@NonNull ModbusSlaveEndpoint endpoint);
+    public @Nullable EndpointPoolConfiguration getEndpointPoolConfiguration(ModbusSlaveEndpoint endpoint);
 
     /**
      * Register listener for changes
      *
      * @param listener
      */
-    public void addListener(@NonNull ModbusManagerListener listener);
+    public void addListener(ModbusManagerListener listener);
 
     /**
      * Remove listener for changes
      *
      * @param listener
      */
-    public void removeListener(@NonNull ModbusManagerListener listener);
+    public void removeListener(ModbusManagerListener listener);
 
     /**
      * Get registered regular polls
      *
      * @return set of registered regular polls
      */
-    public Set<@NonNull PollTask> getRegisteredRegularPolls();
+    public Set<PollTask> getRegisteredRegularPolls();
 
 }

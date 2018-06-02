@@ -10,6 +10,7 @@ package org.openhab.io.transport.modbus.internal;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.transport.modbus.ModbusSlaveIOException;
 
 import net.wimpi.modbus.ModbusIOException;
@@ -20,6 +21,7 @@ import net.wimpi.modbus.ModbusIOException;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class ModbusSlaveIOExceptionImpl extends ModbusSlaveIOException {
 
     private static final long serialVersionUID = -8910463902857643468L;

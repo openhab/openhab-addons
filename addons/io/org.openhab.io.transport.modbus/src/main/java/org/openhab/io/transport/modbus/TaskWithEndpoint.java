@@ -8,6 +8,8 @@
  */
 package org.openhab.io.transport.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 
 /**
@@ -18,6 +20,7 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
  * @param <R> request type
  * @param <C> callback type
  */
+@NonNullByDefault
 public interface TaskWithEndpoint<R, C extends ModbusCallback> {
     /**
      * Gets endpoint associated with this task
@@ -38,6 +41,7 @@ public interface TaskWithEndpoint<R, C extends ModbusCallback> {
      *
      * @return
      */
+    @Nullable
     C getCallback();
 
     int getMaxTries();

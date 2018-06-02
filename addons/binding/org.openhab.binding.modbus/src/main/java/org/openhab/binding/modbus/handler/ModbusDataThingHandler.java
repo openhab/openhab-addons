@@ -15,11 +15,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.items.ContactItem;
 import org.eclipse.smarthome.core.library.items.DateTimeItem;
 import org.eclipse.smarthome.core.library.items.DimmerItem;
@@ -78,10 +81,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class ModbusDataThingHandler extends BaseThingHandler implements ModbusReadCallback, ModbusWriteCallback {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusDataThingHandler.class);
-    private volatile ModbusDataConfiguration config;
 
     private static final Map<String, List<Class<? extends State>>> CHANNEL_ID_TO_ACCEPTED_TYPES = new HashMap<>();
 
@@ -105,24 +108,25 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     //
     // If you change the below default/initial values, please update the corresponding values in dispose()
     //
-    private volatile ValueType readValueType;
-    private volatile ValueType writeValueType;
-    private volatile Transformation readTransformation;
-    private volatile Transformation writeTransformation;
+    private volatile @Nullable ModbusDataConfiguration config;
+    private volatile @Nullable ValueType readValueType;
+    private volatile @Nullable ValueType writeValueType;
+    private volatile @Nullable Transformation readTransformation;
+    private volatile @Nullable Transformation writeTransformation;
     private volatile Optional<Integer> readIndex = Optional.empty();
     private volatile Optional<Integer> readSubIndex = Optional.empty();
-    private volatile Integer writeStart;
+    private volatile @Nullable Integer writeStart;
     private volatile int pollStart;
     private volatile int slaveId;
-    private volatile ModbusSlaveEndpoint slaveEndpoint;
-    private volatile ModbusManager manager;
-    private volatile PollTask pollTask;
+    private volatile @Nullable ModbusSlaveEndpoint slaveEndpoint;
+    private volatile @Nullable ModbusManager manager;
+    private volatile @Nullable PollTask pollTask;
     private volatile boolean isWriteEnabled;
     private volatile boolean isReadEnabled;
     private volatile boolean transformationOnlyInWrite;
     private volatile boolean childOfEndpoint;
 
-    public ModbusDataThingHandler(@NonNull Thing thing) {
+    public ModbusDataThingHandler(Thing thing) {
         super(thing);
     }
 
@@ -133,6 +137,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 command, channelUID);
 
         if (RefreshType.REFRESH == command) {
+            PollTask pollTask = this.pollTask;
             if (pollTask == null || manager == null) {
                 logger.debug(
                         "Thing {} '{}' received REFRESH but no poll task and/or modbus manager is available. Aborting processing of command '{}' to channel '{}'. Not properly initialized or child of endpoint? ",
@@ -210,6 +215,13 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             request = new ModbusWriteCoilRequestBlueprintImpl(slaveId, writeStart, data, writeMultiple,
                     config.getWriteMaxTries());
         } else if (config.getWriteType().equals(WRITE_TYPE_HOLDING)) {
+            ValueType writeValueType = this.writeValueType;
+            if (writeValueType == null) {
+                // Should not happen in practice, since we are not in configuration error (checked above)
+                // This will make compiler happy anyways with the null checks
+                logger.warn("Received command but write value type not set! Ignoring command");
+                return;
+            }
             ModbusRegisterArray data = ModbusBitUtilities.commandToRegisters(transformedCommand.get(), writeValueType);
             writeMultiple = writeMultiple || data.size() > 1;
             request = new ModbusWriteRegisterRequestBlueprintImpl(slaveId, writeStart, data, writeMultiple,
@@ -217,6 +229,10 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         } else {
             // should not happen
             throw new NotImplementedException();
+        }
+        ModbusSlaveEndpoint slaveEndpoint = this.slaveEndpoint;
+        if (slaveEndpoint == null) {
+            return;
         }
 
         WriteTaskImpl writeTask = new WriteTaskImpl(slaveEndpoint, request, this);
@@ -304,6 +320,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
     @Override
     public synchronized void dispose() {
+        config = null;
         readValueType = null;
         writeValueType = null;
         readTransformation = null;
@@ -347,6 +364,9 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     }
 
     private boolean validateAndParseReadParameters() {
+        ModbusDataConfiguration config = this.config;
+        Objects.requireNonNull(config);
+        @SuppressWarnings("null")
         ModbusReadFunctionCode functionCode = pollTask == null ? null : pollTask.getRequest().getFunctionCode();
         boolean readingDiscreteOrCoil = functionCode == ModbusReadFunctionCode.READ_COILS
                 || functionCode == ModbusReadFunctionCode.READ_INPUT_DISCRETES;
@@ -409,7 +429,11 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             String[] readParts = config.getReadStart().split("\\.", 2);
             try {
                 readIndex = Optional.of(Integer.parseInt(readParts[0]));
-                readSubIndex = Optional.ofNullable(readParts.length == 2 ? Integer.parseInt(readParts[1]) : null);
+                if (readParts.length == 2) {
+                    readSubIndex = Optional.of(Integer.parseInt(readParts[1]));
+                } else {
+                    readSubIndex = Optional.empty();
+                }
             } catch (IllegalArgumentException e) {
                 logger.error("Thing {} invalid readStart: {}", getThing().getUID(), config.getReadStart());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -509,8 +533,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         return true;
     }
 
-    private boolean validateReadIndex(PollTask pollTask) {
-        if (!readIndex.isPresent()) {
+    private boolean validateReadIndex(@Nullable PollTask pollTask) {
+        if (!readIndex.isPresent() || pollTask == null) {
             return true;
         }
         // bits represented by the value type, e.g. int32 -> 32
@@ -594,6 +618,10 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         if (hasConfigurationError()) {
             return;
         } else if (!isReadEnabled) {
+            return;
+        }
+        ValueType readValueType = this.readValueType;
+        if (readValueType == null) {
             return;
         }
         DecimalType numericState;

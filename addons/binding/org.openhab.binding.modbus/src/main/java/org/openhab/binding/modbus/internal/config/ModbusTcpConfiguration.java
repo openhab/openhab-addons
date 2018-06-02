@@ -8,13 +8,18 @@
  */
 package org.openhab.binding.modbus.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Configuration for tcp thing
  *
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class ModbusTcpConfiguration {
+    @Nullable
     private String host;
     private int port;
     private int id;
@@ -24,7 +29,7 @@ public class ModbusTcpConfiguration {
     private int reconnectAfterMillis;
     private int connectTimeoutMillis;
 
-    public String getHost() {
+    public @Nullable String getHost() {
         return host;
     }
 

@@ -11,12 +11,16 @@ package org.openhab.io.transport.modbus;
 import java.util.Iterator;
 import java.util.stream.IntStream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Class that implements a collection for
  * bits
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public interface BitArray extends Iterable<Boolean> {
     /**
      * Returns the state of the bit at the given index
@@ -25,10 +29,8 @@ public interface BitArray extends Iterable<Boolean> {
      * <p>
      *
      * @param index the index of the bit to be returned.
-     *
      * @return true if the bit at the specified index is set,
      *         false otherwise.
-     *
      * @throws IndexOutOfBoundsException if the index is out of bounds.
      */
     public boolean getBit(int index);
@@ -45,7 +47,7 @@ public interface BitArray extends Iterable<Boolean> {
         return IntStream.range(0, size()).mapToObj(i -> getBit(i)).iterator();
     }
 
-    public default boolean sizeAndValuesEquals(Object obj) {
+    public default boolean sizeAndValuesEquals(@Nullable Object obj) {
         if (obj == null) {
             return false;
         }

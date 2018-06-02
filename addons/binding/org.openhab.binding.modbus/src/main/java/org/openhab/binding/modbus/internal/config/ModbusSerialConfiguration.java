@@ -8,29 +8,39 @@
  */
 package org.openhab.binding.modbus.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Configuration for serial thing
  *
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class ModbusSerialConfiguration {
+    @Nullable
     private String port;
     private int id;
     private int baud;
+    @Nullable
     private String stopBits;
+    @Nullable
     private String parity;
     private int dataBits;
+    @Nullable
     private String encoding;
     private boolean echo;
     private int receiveTimeoutMillis;
+    @Nullable
     private String flowControlIn;
+    @Nullable
     private String flowControlOut;
     private int timeBetweenTransactionsMillis;
     private int connectMaxTries;
     private int connectTimeoutMillis;
 
-    public String getPort() {
+    public @Nullable String getPort() {
         return port;
     }
 
@@ -54,7 +64,7 @@ public class ModbusSerialConfiguration {
         this.baud = baud;
     }
 
-    public String getStopBits() {
+    public @Nullable String getStopBits() {
         return stopBits;
     }
 
@@ -62,7 +72,7 @@ public class ModbusSerialConfiguration {
         this.stopBits = stopBits;
     }
 
-    public String getParity() {
+    public @Nullable String getParity() {
         return parity;
     }
 
@@ -78,7 +88,7 @@ public class ModbusSerialConfiguration {
         this.dataBits = dataBits;
     }
 
-    public String getEncoding() {
+    public @Nullable String getEncoding() {
         return encoding;
     }
 
@@ -102,7 +112,7 @@ public class ModbusSerialConfiguration {
         this.receiveTimeoutMillis = receiveTimeoutMillis;
     }
 
-    public String getFlowControlIn() {
+    public @Nullable String getFlowControlIn() {
         return flowControlIn;
     }
 
@@ -110,7 +120,7 @@ public class ModbusSerialConfiguration {
         this.flowControlIn = flowControlIn;
     }
 
-    public String getFlowControlOut() {
+    public @Nullable String getFlowControlOut() {
         return flowControlOut;
     }
 

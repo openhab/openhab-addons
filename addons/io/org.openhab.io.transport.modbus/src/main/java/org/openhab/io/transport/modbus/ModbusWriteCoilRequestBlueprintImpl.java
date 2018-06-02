@@ -10,6 +10,7 @@ package org.openhab.io.transport.modbus;
 
 import org.apache.commons.lang.builder.StandardToStringStyle;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Implementation for writing coils
@@ -17,6 +18,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class ModbusWriteCoilRequestBlueprintImpl implements ModbusWriteCoilRequestBlueprint {
 
     private static StandardToStringStyle toStringStyle = new StandardToStringStyle();

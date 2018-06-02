@@ -18,15 +18,18 @@
  */
 package org.openhab.io.transport.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception representing situation where transaction id of the response does not match request
  *
  * @author Sami Salonen - Initial contribution
  *
  */
-@SuppressWarnings("serial")
+@NonNullByDefault
 public class ModbusUnexpectedTransactionIdException extends ModbusTransportException {
 
+    private static final long serialVersionUID = -2453232634024813933L;
     private int requestId;
     private int responseId;
 

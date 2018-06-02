@@ -8,11 +8,14 @@
  */
 package org.openhab.io.transport.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Immutable {@link ModbusRegisterArray} implementation
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class ModbusRegisterArrayImpl implements ModbusRegisterArray {
 
     private ModbusRegister[] registers;

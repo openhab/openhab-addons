@@ -8,9 +8,12 @@
  */
 package org.openhab.binding.modbus.handler;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.openhab.binding.modbus.internal.config.ModbusSerialConfiguration;
 import org.openhab.io.transport.modbus.ModbusManager;
@@ -22,18 +25,34 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSerialSlaveEndpoint;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class ModbusSerialThingHandler
         extends AbstractModbusEndpointThingHandler<ModbusSerialSlaveEndpoint, ModbusSerialConfiguration> {
 
-    public ModbusSerialThingHandler(@NonNull Bridge bridge, @NonNull Supplier<ModbusManager> managerRef) {
+    public ModbusSerialThingHandler(Bridge bridge, Supplier<ModbusManager> managerRef) {
         super(bridge, managerRef);
     }
 
     @Override
     protected void configure() {
-        config = getConfigAs(ModbusSerialConfiguration.class);
+        ModbusSerialConfiguration config = getConfigAs(ModbusSerialConfiguration.class);
+        String port = Objects.requireNonNull(config.getPort(), "port must not be null");
+        Integer baud = Objects.requireNonNull(config.getBaud(), "baud must not be null");
+        String flowControlIn = Objects.requireNonNull(config.getFlowControlIn(), "flowControlIn must not be null");
+        String flowControlOut = Objects.requireNonNull(config.getFlowControlOut(), "flowControlOut must not be null");
+        String stopBits = Objects.requireNonNull(config.getStopBits(), "stopBits must not be null");
+        String parity = Objects.requireNonNull(config.getParity(), "parity must not be null");
+        String encoding = Objects.requireNonNull(config.getEncoding(), "encoding must not be null");
+        if (port == null || baud == null || flowControlIn == null || flowControlOut == null || stopBits == null
+                || parity == null || encoding == null) {
+            // Just to make compiler happy (null checks), NullPointerException has been raised above already
+            throw new IllegalArgumentException();
+        }
 
-        poolConfiguration = new EndpointPoolConfiguration();
+        this.config = config;
+
+        EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
+        this.poolConfiguration = poolConfiguration;
         poolConfiguration.setConnectMaxTries(config.getConnectMaxTries());
         poolConfiguration.setConnectTimeoutMillis(config.getConnectTimeoutMillis());
         poolConfiguration.setInterTransactionDelayMillis(config.getTimeBetweenTransactionsMillis());
@@ -42,21 +61,21 @@ public class ModbusSerialThingHandler
         poolConfiguration.setInterConnectDelayMillis(1000);
         poolConfiguration.setReconnectAfterMillis(-1);
 
-        endpoint = new ModbusSerialSlaveEndpoint(config.getPort(), config.getBaud(), config.getFlowControlIn(),
-                config.getFlowControlOut(), config.getDataBits(), config.getStopBits(), config.getParity(),
-                config.getEncoding(), config.isEcho(), config.getReceiveTimeoutMillis());
+        endpoint = new ModbusSerialSlaveEndpoint(port, baud, flowControlIn, flowControlOut, config.getDataBits(),
+                stopBits, parity, encoding, config.isEcho(), config.getReceiveTimeoutMillis());
     }
 
     @Override
-    protected String formatConflictingParameterError(EndpointPoolConfiguration otherPoolConfig) {
+    protected String formatConflictingParameterError(@Nullable EndpointPoolConfiguration otherPoolConfig) {
         return String.format(
                 "Endpoint '%s' has conflicting parameters: parameters of this thing (%s '%s') %s are different from some other things parameter: %s. Ensure that all endpoints pointing to serial port '%s' have same parameters.",
                 endpoint, thing.getUID(), this.thing.getLabel(), this.poolConfiguration, otherPoolConfig,
-                this.endpoint.getPortName());
+                Optional.ofNullable(this.endpoint).map(e -> e.getPortName()).orElse("<null>"));
     }
 
     @Override
     public int getSlaveId() {
+        ModbusSerialConfiguration config = this.config;
         if (config == null) {
             throw new IllegalStateException("Poller not configured, but slave id is queried!");
         }

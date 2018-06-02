@@ -19,6 +19,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.function.LongSupplier;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -396,7 +397,7 @@ public class IntegrationTestSupport {
 
     public static class NonOSGIModbusManager extends ModbusManagerImpl implements AutoCloseable {
         public NonOSGIModbusManager() {
-            activate(null);
+            activate(new HashMap<>());
         }
 
         @Override

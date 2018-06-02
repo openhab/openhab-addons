@@ -8,17 +8,17 @@
  */
 package org.openhab.io.transport.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception for all IO errors
  *
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class ModbusSlaveIOException extends ModbusTransportException {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -8568199166837844463L;
 
 }

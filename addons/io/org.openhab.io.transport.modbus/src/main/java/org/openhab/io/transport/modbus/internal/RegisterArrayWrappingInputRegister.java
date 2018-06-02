@@ -11,6 +11,7 @@ package org.openhab.io.transport.modbus.internal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 
@@ -21,6 +22,7 @@ import net.wimpi.modbus.procimg.InputRegister;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class RegisterArrayWrappingInputRegister implements ModbusRegisterArray {
 
     private class RegisterReference implements ModbusRegister {

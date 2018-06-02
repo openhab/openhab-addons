@@ -8,6 +8,7 @@
  */
 package org.openhab.io.transport.modbus.internal.pooling;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpointVisitor;
 
 import net.wimpi.modbus.net.ModbusSlaveConnection;
@@ -17,6 +18,7 @@ import net.wimpi.modbus.net.ModbusSlaveConnection;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public interface ModbusSlaveConnectionFactory extends ModbusSlaveEndpointVisitor<ModbusSlaveConnection> {
 
 }

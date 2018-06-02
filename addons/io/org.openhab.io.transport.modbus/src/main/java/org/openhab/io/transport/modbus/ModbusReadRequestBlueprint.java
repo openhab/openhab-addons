@@ -8,12 +8,15 @@
  */
 package org.openhab.io.transport.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Low-level interface representing a read request
  *
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public interface ModbusReadRequestBlueprint extends ModbusRequestBlueprint {
 
     /**

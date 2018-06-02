@@ -8,6 +8,8 @@
  */
 package org.openhab.io.transport.modbus.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.BitArray;
 
 import net.wimpi.modbus.util.BitVector;
@@ -17,6 +19,7 @@ import net.wimpi.modbus.util.BitVector;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class BitArrayWrappingBitVector implements BitArray {
 
     private BitVector wrapped;
@@ -51,12 +54,12 @@ public class BitArrayWrappingBitVector implements BitArray {
 
     @Override
     public String toString() {
-        return new StringBuilder("BitArrayWrappingBitVector(bits=")
-                .append(safeSize == 0 ? "<empty>" : toBinaryString()).append(")").toString();
+        return new StringBuilder("BitArrayWrappingBitVector(bits=").append(safeSize == 0 ? "<empty>" : toBinaryString())
+                .append(")").toString();
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         return sizeAndValuesEquals(obj);
     }
 

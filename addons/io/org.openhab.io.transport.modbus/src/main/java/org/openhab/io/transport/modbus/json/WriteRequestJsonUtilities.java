@@ -14,6 +14,8 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.BitArrayImpl;
 import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArrayImpl;
@@ -34,6 +36,7 @@ import com.google.gson.JsonParser;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public final class WriteRequestJsonUtilities {
     /**
      * Constant for the function code key in the JSON
@@ -105,10 +108,14 @@ public final class WriteRequestJsonUtilities {
         } catch (IllegalStateException e) {
             throw new IllegalStateException("JSON array contained something else than a JSON object!", e);
         }
+        @Nullable
         JsonElement functionCode = writeObject.get(JSON_FUNCTION_CODE);
+        @Nullable
         JsonElement address = writeObject.get(JSON_ADDRESS);
+        @Nullable
         JsonElement maxTries = writeObject.get(JSON_MAX_TRIES);
-        final JsonArray valuesElem;
+        @Nullable
+        JsonArray valuesElem;
 
         try {
             valuesElem = writeObject.get(JSON_VALUE).getAsJsonArray();
@@ -118,8 +125,8 @@ public final class WriteRequestJsonUtilities {
         return constructBluerint(unitId, functionCode, address, maxTries, valuesElem);
     }
 
-    private static ModbusWriteRequestBlueprint constructBluerint(int unitId, JsonElement functionCodeElem,
-            JsonElement addressElem, JsonElement maxTriesElem, JsonArray valuesElem) {
+    private static ModbusWriteRequestBlueprint constructBluerint(int unitId, @Nullable JsonElement functionCodeElem,
+            @Nullable JsonElement addressElem, @Nullable JsonElement maxTriesElem, @Nullable JsonArray valuesElem) {
         int functionCodeNumeric;
         if (functionCodeElem == null || functionCodeElem.isJsonNull()) {
             throw new IllegalStateException(String.format("Value for '%s' is invalid", JSON_FUNCTION_CODE));
@@ -149,6 +156,10 @@ public final class WriteRequestJsonUtilities {
             } catch (ClassCastException | IllegalStateException e) {
                 throw new IllegalStateException(String.format("Value for '%s' is invalid", JSON_MAX_TRIES), e);
             }
+        }
+
+        if (valuesElem == null || valuesElem.isJsonNull()) {
+            throw new IllegalArgumentException(String.format("Expecting non-null value, got: %s", valuesElem));
         }
 
         AtomicBoolean writeSingle = new AtomicBoolean(false);

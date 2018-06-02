@@ -8,16 +8,21 @@
  */
 package org.openhab.binding.modbus.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Configuration for poller thing
  *
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class ModbusPollerConfiguration {
     private long refresh;
     private int start;
     private int length;
+    @Nullable
     private String type;
     private int maxTries = 3;// backwards compatibility and tests
 
@@ -70,7 +75,7 @@ public class ModbusPollerConfiguration {
      * Gets type of modbus items to poll
      *
      */
-    public String getType() {
+    public @Nullable String getType() {
         return type;
     }
 

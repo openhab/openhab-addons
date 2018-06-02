@@ -8,17 +8,24 @@
  */
 package org.openhab.io.transport.modbus.endpoint;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Visitor for ModbusSlaveEndpoint
  *
  * @param <R> return type from visit
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public interface ModbusSlaveEndpointVisitor<R> {
 
+    @Nullable
     R visit(ModbusTCPSlaveEndpoint endpoint);
 
+    @Nullable
     R visit(ModbusSerialSlaveEndpoint endpoint);
 
+    @Nullable
     R visit(ModbusUDPSlaveEndpoint endpoint);
 }

@@ -11,11 +11,14 @@ package org.openhab.io.transport.modbus;
 import java.util.Iterator;
 import java.util.stream.IntStream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface for immutable sequence of Modbus registers
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public interface ModbusRegisterArray extends Iterable<ModbusRegister> {
     /**
      * Return register at the given index
