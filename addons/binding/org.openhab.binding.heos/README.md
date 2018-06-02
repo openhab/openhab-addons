@@ -107,12 +107,13 @@ Interpret | String | Song Interpret
 Album | String  | Album Title
 ImageUrl | String |The URL where the cover can be found 
 Inputs | String | The input to be switched to. Input values from HEOS protocol
-OnlineStatus | String | Indicates the status ONLINE or OFFLINE
 CurrentPosition | String | Shows the current trakc position in milliseconds
 Duration | String | The overall track duration in milliseconds
 Type | String | The type of the played media. Station or song for example
 Station | String | The station name if it is a station (Spotify shows track name....)
 PlayUrl | String | Plays a media file located at the URL
+Shuffle | Switch | Switches shuffle ON or OFF 
+RepeatMode | String | Defines the repeat mode: Inputs are: "One" ; "All" or "Off"
 
 
 ####Example:
@@ -133,22 +134,23 @@ Interpret | String | Song Interpret
 Album | String  | Album Title
 Ungroup | Switch | Deletes the group (OFF) or generate the group again (ON) 
 ImageUrl | String |The URL where the cover can be found
-OnlineStatus | String | Indicates the status ONLINE or OFFLINE
 CurrentPosition | String | Shows the current track position in milliseconds
 Duration | String | The overall track duration in milliseconds
 Type | String | The type of the played media. Station or song for example
 Station | String | The station name if it is a station (Spotify shows track name....)
 Inputs | String | The input to be switched to. Input values from HEOS protocol
 PlayUrl | String | Plays a media file located at the URL
+Shuffle | Switch | Switches shuffle ON or OFF
+RepeatMode | String | Defines the repeat mode: Inputs are: "One" ; "All" or "Off" 
 
 #### Inputs depending on Player type (Date 12.02.2017):
 
 Input names |
 ----------------|
-aux_in_1 /
-aux_in_2 /
-aux_in_3 /
-aux_in_4 /
+aux_in_1 
+aux_in_2 
+aux_in_3 
+aux_in_4 
 aux1 /
 aux2 /
 aux3 /
@@ -326,16 +328,41 @@ Sitemap:
 Switch item=HeosKitchen_InputSelect	mappings=[aux_in_1 = "Aux In" , LivingRoom = "Living Room"]
 ```
 
-### The OnlineState
+### The OnlineState of Groups and Players
 
-The online state shows if an item is online or offline. This can be helpful for groups to control the visibility of group items within the sitemap. So if the group is removed the visibility of those items is also changed.,
+The online state of a Thing can be helpful for groups to control the visibility of group items within sitemap. So if the group is removed the visibility of those items is also changed.
 
 #### Example
+
+First you have to define a new Item within the Item section which is used later within the Sitemap:
+
+Items:
+
+```
+String HeosGroup_Status
+
+```
+
+Then we need a rule which triggers the state if an Item goes Online or Offline.
+
+Rules:
+
+```
+rule "Online State Heos Group" 
+
+when
+    Thing "heos:group:1747557118" changed 
+then
+    var thingStatus = getThingStatusInfo("heos:group:1747557118")
+    sendCommand(HeosGroup_Status, thingStatus.getStatus.toString)    
+end
+
+```
 
 Sitemap:
 
 ```
-Frame label="Heos Group" visibility=[HeosGroup1_Status==ONLINE] {
+Frame label="Heos Group" visibility=[HeosGroup_Status==ONLINE] {
 	
 	Default item=HeosGroup1_Player
 	Default item=HeosGroup1_Volume
