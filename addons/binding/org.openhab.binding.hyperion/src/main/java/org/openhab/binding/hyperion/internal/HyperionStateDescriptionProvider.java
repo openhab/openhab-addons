@@ -47,6 +47,9 @@ public class HyperionStateDescriptionProvider implements DynamicStateDescription
     public @Nullable StateDescription getStateDescription(@NonNull Channel channel, @Nullable StateDescription original,
             @Nullable Locale locale) {
         List<StateOption> options = channelOptionsMap.get(channel.getUID());
+        if (options == null) {
+            return null;
+        }
 
         if (original != null) {
             return new StateDescription(original.getMinimum(), original.getMaximum(), original.getStep(),
