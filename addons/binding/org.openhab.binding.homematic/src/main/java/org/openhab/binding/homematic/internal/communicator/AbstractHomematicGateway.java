@@ -214,7 +214,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     /**
      * Starts the Homematic gateway client.
      */
-    protected void startClients() throws IOException {
+    protected synchronized void startClients() throws IOException {
         for (TransferMode mode : availableInterfaces.values()) {
             if (!rpcClients.containsKey(mode)) {
                 rpcClients.put(mode,
@@ -226,7 +226,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     /**
      * Stops the Homematic gateway client.
      */
-    protected void stopClients() {
+    protected synchronized void stopClients() {
         for (RpcClient<?> rpcClient : rpcClients.values()) {
             rpcClient.dispose();
         }
@@ -236,7 +236,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     /**
      * Starts the Homematic RPC server.
      */
-    private void startServers() throws IOException {
+    private synchronized void startServers() throws IOException {
         for (TransferMode mode : availableInterfaces.values()) {
             if (!rpcServers.containsKey(mode)) {
                 RpcServer rpcServer = mode == TransferMode.XML_RPC ? new XmlRpcServer(this, config)
@@ -253,7 +253,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     /**
      * Stops the Homematic RPC server.
      */
-    private void stopServers() {
+    private synchronized void stopServers() {
         for (HmInterface hmInterface : availableInterfaces.keySet()) {
             try {
                 getRpcClient(hmInterface).release(hmInterface);
@@ -891,7 +891,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         public void run() {
             try {
                 if (ping && !pong) {
-                    handleInvalidConnection();
+                    handleInvalidConnection("No Pong received!");
                 }
 
                 pong = false;
@@ -906,7 +906,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 ping = true;
             } catch (IOException ex) {
                 try {
-                    handleInvalidConnection();
+                    handleInvalidConnection("IOException " + ex.getMessage());
                 } catch (IOException ex2) {
                     // ignore
                 }
@@ -926,11 +926,11 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
             }
         }
 
-        private void handleInvalidConnection() throws IOException {
+        private void handleInvalidConnection(String cause) throws IOException {
             ping = false;
             if (!connectionLost) {
                 connectionLost = true;
-                logger.warn("Connection lost on gateway '{}'", id);
+                logger.warn("Connection lost on gateway '{}', cause: \"{}\"", id, cause);
                 gatewayAdapter.onConnectionLost();
             }
             stopServers();
