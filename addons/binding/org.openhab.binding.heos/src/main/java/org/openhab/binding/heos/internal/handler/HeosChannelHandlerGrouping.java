@@ -15,7 +15,7 @@ import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.resources.HeosGroup;
 
 /**
- * @author Johannes Einig - initial contributor
+ * @author Johannes Einig - Initial contribution
  *
  */
 public class HeosChannelHandlerGrouping extends HeosChannelHandler {

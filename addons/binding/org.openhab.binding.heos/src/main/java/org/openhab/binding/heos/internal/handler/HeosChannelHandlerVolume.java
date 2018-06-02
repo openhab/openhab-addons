@@ -15,7 +15,7 @@ import org.openhab.binding.heos.internal.api.HeosFacade;
 /**
  * This class handles volume changes from the OpenHAb HEOS Volume channel
  *
- * @author Johannes Einig - initial contributor
+ * @author Johannes Einig - Initial contribution
  *
  */
 
