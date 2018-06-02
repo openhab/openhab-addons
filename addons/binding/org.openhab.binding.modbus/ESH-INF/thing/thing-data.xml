@@ -45,7 +45,7 @@
 	<br /><br />Use "default" to communicate that no transformation is done and value should be passed as is.
 	<br />Use SERVICENAME(ARG) to use transformation service.
 	<br />Any other value than the above types will be interpreted as static text, in which case the actual content of the polled 
-		 value is ignored.]]></description>
+		value is ignored.]]></description>
 				<default>default</default>
 			</parameter>
 			<parameter name="readValueType" type="text">
