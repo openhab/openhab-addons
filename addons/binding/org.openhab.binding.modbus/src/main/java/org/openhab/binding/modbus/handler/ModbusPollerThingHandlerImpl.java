@@ -145,7 +145,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
      */
     private static class ModbusPollerReadRequest extends ModbusReadRequestBlueprintImpl {
 
-        private static ModbusReadFunctionCode getFunctionCode(String type) {
+        private static ModbusReadFunctionCode getFunctionCode(@Nullable String type) {
             if (!ModbusBindingConstants.READ_FUNCTION_CODES.containsKey(type)) {
                 Object[] acceptedTypes = ModbusBindingConstants.READ_FUNCTION_CODES.keySet().toArray();
                 Arrays.sort(acceptedTypes);
