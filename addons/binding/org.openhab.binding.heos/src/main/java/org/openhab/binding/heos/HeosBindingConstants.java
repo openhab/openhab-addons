@@ -57,13 +57,14 @@ public class HeosBindingConstants {
     public static final String CH_ID_IMAGE_URL = "ImageUrl";
     public static final String CH_ID_PLAYLISTS = "Playlists";
     public static final String CH_ID_INPUTS = "Inputs";
-    public static final String CH_ID_STATUS = "OnlineStatus";
     public static final String CH_ID_CUR_POS = "CurrentPosition";
     public static final String CH_ID_DURATION = "Duration";
     public static final String CH_ID_STATION = "Station";
     public static final String CH_ID_RAW_COMMAND = "RawCommand";
     public static final String CH_ID_TYPE = "Type";
     public static final String CH_ID_PLAY_URL = "PlayUrl";
+    public static final String CH_ID_SHUFFLE_MODE = "Shuffel";
+    public static final String CH_ID_REPEAT_MODE = "RepeatMode";
 
     public static final String HOST = "ipAddress";
     public static final String PLAYER_TYPE = "model";

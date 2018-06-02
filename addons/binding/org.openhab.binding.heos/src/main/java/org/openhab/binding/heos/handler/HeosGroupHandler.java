@@ -19,7 +19,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
@@ -30,6 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.api.HeosSystem;
+import org.openhab.binding.heos.internal.resources.HeosConstants;
 import org.openhab.binding.heos.internal.resources.HeosGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +86,7 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
     }
 
     @Override
-    public void playerStateChangeEvent(String pid, String event, @Nullable String command) {
+    public void playerStateChangeEvent(String pid, String event, String command) {
         if (this.getThing().getStatus().equals(ThingStatus.UNINITIALIZED)) {
             logger.info("Can't Handle Event. Group {} not initialized. Status is: {}", this.getConfig().get(NAME),
                     this.getThing().getStatus().toString());
@@ -127,7 +127,6 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
     @Override
     public void setStatusOffline() {
         api.unregisterforChangeEvents(this);
-        updateState(CH_ID_STATUS, StringType.valueOf(OFFLINE));
         updateState(CH_ID_UNGROUP, OnOffType.OFF);
         updateState(CH_ID_CONTROL, PlayPauseType.PAUSE);
         updateStatus(ThingStatus.OFFLINE);
@@ -143,7 +142,6 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
     }
 
     @Override
-
     protected void updateHeosThingState() {
         heosGroup = heos.getGroupState(heosGroup);
     }
@@ -165,6 +163,12 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
         if (heosGroup.getState().equals(PAUSE) || heosGroup.getState().equals(STOP)) {
             updateState(CH_ID_CONTROL, PlayPauseType.PAUSE);
         }
+        if (heosGroup.getShuffle().equals(HeosConstants.HEOS_ON)) {
+            updateState(CH_ID_SHUFFLE_MODE, OnOffType.ON);
+        }
+        if (heosGroup.getShuffle().equals(HeosConstants.HEOS_OFF)) {
+            updateState(CH_ID_SHUFFLE_MODE, OnOffType.OFF);
+        }
         updateState(CH_ID_SONG, StringType.valueOf(heosGroup.getSong()));
         updateState(CH_ID_ARTIST, StringType.valueOf(heosGroup.getArtist()));
         updateState(CH_ID_ALBUM, StringType.valueOf(heosGroup.getAlbum()));
@@ -173,7 +177,7 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
         updateState(CH_ID_TYPE, StringType.valueOf(heosGroup.getType()));
         updateState(CH_ID_CUR_POS, StringType.valueOf("0"));
         updateState(CH_ID_DURATION, StringType.valueOf("0"));
-        updateState(CH_ID_STATUS, StringType.valueOf(ONLINE));
+        updateState(CH_ID_REPEAT_MODE, StringType.valueOf(heosGroup.getRepeatMode()));
     }
 
     public class InitializationRunnable implements Runnable {
@@ -193,6 +197,7 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
             HashMap<String, HeosGroup> usedToFillOldGroupMap = new HashMap<>();
             usedToFillOldGroupMap.put(heosGroup.getNameHash(), heosGroup);
             heos.addHeosGroupToOldGroupMap(usedToFillOldGroupMap);
+            id = heosGroup.getGid(); // Updates the id of the group. Needed if group leader has changed
             refreshChannels();
         }
     }

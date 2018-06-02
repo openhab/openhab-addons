@@ -103,6 +103,13 @@ public class HeosEventController extends MyEventListener {
             case USER_CHANGED:
                 userChanged();
                 break;
+            case SHUFFLE_MODE_CHANGED:
+                shuffleModeChanged();
+                break;
+            case REPEAT_MODE_CHANGED:
+                repeatModeChanged();
+                break;
+
         }
     }
 
@@ -191,6 +198,15 @@ public class HeosEventController extends MyEventListener {
         if (response.getEvent().getMessagesMap().get(COM_UNDER_PROCESS).equals(FALSE)) {
             fireBridgeEvent(EVENTTYPE_SYSTEM, SUCCESS, SING_IN);
         }
+    }
+
+    private void shuffleModeChanged() {
+        fireStateEvent(response.getPid(), SHUFFLE_MODE_CHANGED, response.getEvent().getMessagesMap().get(HEOS_SHUFFLE));
+    }
+
+    private void repeatModeChanged() {
+        fireStateEvent(response.getPid(), REPEAT_MODE_CHANGED,
+                response.getEvent().getMessagesMap().get(HEOS_REPEAT_MODE));
     }
 
     private void userChanged() {

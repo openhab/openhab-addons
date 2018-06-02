@@ -385,6 +385,9 @@ public class HeosSystem {
         heosPlayer.setLevel(response.getEvent().getMessagesMap().get(HEOS_LEVEL));
         send(command().getNowPlayingMedia(pid));
         heosPlayer.updateMediaInfo(response.getPayload().getPayloadList().get(0));
+        send(command().getPlayMode(pid));
+        heosPlayer.setShuffle(response.getEvent().getMessagesMap().get(HEOS_SHUFFLE));
+        heosPlayer.setRepeatMode(response.getEvent().getMessagesMap().get(HEOS_REPEAT_MODE));
 
         return heosPlayer;
     }
@@ -493,6 +496,9 @@ public class HeosSystem {
         heosGroup.setLevel(response.getEvent().getMessagesMap().get(HEOS_LEVEL));
         send(command().getNowPlayingMedia(gid));
         heosGroup.updateMediaInfo(response.getPayload().getPayloadList().get(0));
+        send(command().getPlayMode(gid));
+        heosGroup.setShuffle(response.getEvent().getMessagesMap().get(HEOS_SHUFFLE));
+        heosGroup.setRepeatMode(response.getEvent().getMessagesMap().get(HEOS_REPEAT_MODE));
 
         return heosGroup;
     }

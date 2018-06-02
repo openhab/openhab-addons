@@ -47,7 +47,7 @@ public class HeosCommands {
     private String playQueueItem = "heos://player/play_queue?pid=";
     private String clearQueue = "heos://player/clear_queue?pid=";
     private String deleteQueueItem = "heos://player/remove_from_queue?pid=";
-    // private String saveQueueToPlayList = ""
+    private String setPlayMode = "heos://player/set_play_mode?pid=";
 
     // Group Commands Control
     private final String getGroups = "heos://group/get_groups";
@@ -70,6 +70,7 @@ public class HeosCommands {
     private String getVolume = "heos://player/get_volume?pid=";
     private String getMute = "heos://player/get_mute?pid=";
     private String getQueue = "heos://player/get_queue?pid=";
+    private String getPlayMode = "heos://player/get_play_mode?pid=";
 
     // Browse Commands
     private String getMusicSources = "heos://browse/get_music_sources";
@@ -136,6 +137,18 @@ public class HeosCommands {
 
     public String setMuteToggle(String pid) {
         return setMuteToggle + pid + "&state=off";
+    }
+
+    public String setShuffleMode(String pid, String shuffle) {
+        return setPlayMode + pid + "&shuffle=" + shuffle;
+    }
+
+    public String setRepeatMode(String pid, String repeat) {
+        return setPlayMode + pid + "&repeat=" + repeat;
+    }
+
+    public String getPlayMode(String pid) {
+        return getPlayMode + pid;
     }
 
     public String playNext(String pid) {

@@ -102,6 +102,29 @@ public class HeosFacade {
     }
 
     /**
+     * Set the play mode of the player or group
+     *
+     *
+     * @param pid The PID of the dedicated player or group
+     * @param mode The shuffle mode: Allowed commands: on; off
+     */
+
+    public void setShuffleMode(String pid, String mode) {
+        controller.send(controller.command().setShuffleMode(pid, mode));
+    }
+
+    /**
+     * Sets the repeat mode of the player or group
+     *
+     * @param pid The PID of the dedicated player or group
+     * @param mode The repeat mode. Allowed commands: on_all; on_one; off
+     */
+
+    public void setRepeatMode(String pid, String mode) {
+        controller.send(controller.command().setRepeatMode(pid, mode));
+    }
+
+    /**
      * Set the HEOS player to a dedicated volume
      *
      * @param vol The volume the player shall be set to (value between 0 -100)

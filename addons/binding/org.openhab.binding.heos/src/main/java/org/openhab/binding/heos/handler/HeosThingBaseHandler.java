@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * The {@link HeosThingBaseHandler} class is the base Class all HEOS handler have to extend.
  * It provides basic command handling and common needed methods.
  *
- * @author Johannes Einig - initial contributor
+ * @author Johannes Einig - Initial contribution
  *
  */
 
@@ -174,7 +174,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      * @param command
      */
 
-    protected void handleThingStateUpdate(String event, String command) {
+    protected void handleThingStateUpdate(@NonNull String event, @NonNull String command) {
         if (event.equals(HEOS_STATE)) {
             switch (command) {
                 case PLAY:
@@ -208,6 +208,22 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
         }
         if (event.equals(HEOS_DURATION)) {
             this.updateState(CH_ID_DURATION, StringType.valueOf(command));
+        }
+        if (event.equals(SHUFFLE_MODE_CHANGED)) {
+            if (command.equals(HEOS_ON)) {
+                this.updateState(CH_ID_SHUFFLE_MODE, OnOffType.ON);
+            } else {
+                this.updateState(CH_ID_SHUFFLE_MODE, OnOffType.OFF);
+            }
+        }
+        if (event.equals(REPEAT_MODE_CHANGED)) {
+            if (command.toString().equals(HEOS_REPEAT_ALL)) {
+                this.updateState(CH_ID_REPEAT_MODE, StringType.valueOf(HEOS_UI_ALL));
+            } else if (command.toString().equals(HEOS_REPEAT_ONE)) {
+                this.updateState(CH_ID_REPEAT_MODE, StringType.valueOf(HEOS_UI_ONE));
+            } else if (command.toString().equals(HEOS_OFF)) {
+                this.updateState(CH_ID_REPEAT_MODE, StringType.valueOf(HEOS_UI_OFF));
+            }
         }
     }
 

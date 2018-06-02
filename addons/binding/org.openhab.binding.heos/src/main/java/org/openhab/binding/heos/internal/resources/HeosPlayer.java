@@ -42,6 +42,8 @@ public class HeosPlayer extends HeosMediaObject {
     private String mute;
     private String duration;
     private String cur_pos;
+    private String shuffle;
+    private String repeatMode;
 
     public HeosPlayer() {
         super();
@@ -254,5 +256,21 @@ public class HeosPlayer extends HeosMediaObject {
 
     public void setOnline(boolean online) {
         this.online = online;
+    }
+
+    public String getShuffle() {
+        return shuffle;
+    }
+
+    public void setShuffle(String shuffle) {
+        this.shuffle = shuffle;
+    }
+
+    public String getRepeatMode() {
+        return repeatMode;
+    }
+
+    public void setRepeatMode(String repeatMode) {
+        this.repeatMode = repeatMode;
     }
 }

@@ -38,6 +38,8 @@ public class HeosGroup extends HeosMediaObject {
     private String groupMembersHash;
     private String groupUIDHash;
     private boolean online;
+    private String shuffle;
+    private String repeatMode;
 
     // Group State Variables
     private String state;
@@ -196,6 +198,22 @@ public class HeosGroup extends HeosMediaObject {
 
     public String getLevel() {
         return level;
+    }
+
+    public String getShuffle() {
+        return shuffle;
+    }
+
+    public void setShuffle(String shuffle) {
+        this.shuffle = shuffle;
+    }
+
+    public String getRepeatMode() {
+        return repeatMode;
+    }
+
+    public void setRepeatMode(String repeatMode) {
+        this.repeatMode = repeatMode;
     }
 
     public void setLevel(String level) {

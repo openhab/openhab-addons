@@ -68,10 +68,6 @@
         <item-type>String</item-type>
         <label>Input Source</label>
      </channel-type>
-     <channel-type id="onlineStatus" advanced="true">
-        <item-type>String</item-type>
-        <label>Thing Status</label>
-     </channel-type>
      <channel-type id="currentPosition" advanced="true">
         <item-type>String</item-type>
         <label>Current track position</label>
@@ -95,5 +91,14 @@
      <channel-type id="playUrl" advanced="true">
         <item-type>String</item-type>
         <label>Play a media file from URL</label>
-     </channel-type>    
+     </channel-type> 
+     <channel-type id="shuffleMode" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Sets the shuffle mode</label>
+     </channel-type>
+     <channel-type id="repeatMode" advanced="true">
+        <item-type>String</item-type>
+        <label>Sets the repeat mode</label>
+     </channel-type>
+        
 </thing:thing-descriptions>

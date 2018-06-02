@@ -15,8 +15,7 @@
 		        <channel id="Control"         typeId="control"/>
 		        <channel id="Volume"          typeId="volume" />
 		        <channel id="Mute"            typeId="mute" />		        
-		        <channel id="Inputs"          typeId="input" />
-		        <channel id="OnlineStatus"    typeId="onlineStatus"/>
+		        <channel id="Inputs"          typeId="input" />		        
 		        <channel id="Title"           typeId="title"/> 
 		        <channel id="Interpret"       typeId="interpret"/>   
 		        <channel id="Album"           typeId="album"/> 
@@ -26,7 +25,9 @@
 		        <channel id="Type"            typeId="type"/>
 		        <channel id="Station"         typeId="station"/>
 		        <channel id="PlayUrl"         typeId="playUrl"/>
-		        <channel id="Ungroup"         typeId="ungroup" />  		             
+		        <channel id="Ungroup"         typeId="ungroup" />
+		        <channel id="Shuffel"         typeId="shuffleMode" />  
+                <channel id="RepeatMode"      typeId="repeatMode" />		             
             </channels>
             
             <config-description>

@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.api.HeosSystem;
+import org.openhab.binding.heos.internal.resources.HeosConstants;
 import org.openhab.binding.heos.internal.resources.HeosPlayer;
 
 /**
@@ -92,7 +93,6 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
     @SuppressWarnings("null")
     public void setStatusOffline() {
         api.unregisterforChangeEvents(this);
-        updateState(CH_ID_STATUS, StringType.valueOf(OFFLINE));
         updateStatus(ThingStatus.OFFLINE);
     }
 
@@ -119,16 +119,23 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
         if (player.getState().equals(PAUSE) || player.getState().equals(STOP)) {
             updateState(CH_ID_CONTROL, PlayPauseType.PAUSE);
         }
+        if (player.getShuffle().equals(HeosConstants.HEOS_ON)) {
+            updateState(CH_ID_SHUFFLE_MODE, OnOffType.ON);
+        }
+        if (player.getShuffle().equals(HeosConstants.HEOS_OFF)) {
+            updateState(CH_ID_SHUFFLE_MODE, OnOffType.OFF);
+        }
         updateState(CH_ID_SONG, StringType.valueOf(player.getSong()));
         updateState(CH_ID_ARTIST, StringType.valueOf(player.getArtist()));
         updateState(CH_ID_ALBUM, StringType.valueOf(player.getAlbum()));
         updateState(CH_ID_IMAGE_URL, StringType.valueOf(player.getImageUrl()));
-        updateState(CH_ID_STATUS, StringType.valueOf(ONLINE));
         updateState(CH_ID_STATION, StringType.valueOf(player.getStation()));
         updateState(CH_ID_TYPE, StringType.valueOf(player.getType()));
         updateState(CH_ID_CUR_POS, StringType.valueOf("0"));
         updateState(CH_ID_DURATION, StringType.valueOf("0"));
         updateState(CH_ID_INPUTS, StringType.valueOf("NULL"));
+        updateState(CH_ID_REPEAT_MODE, StringType.valueOf(player.getRepeatMode()));
+
     }
 
     public class InitializationRunnable implements Runnable {
