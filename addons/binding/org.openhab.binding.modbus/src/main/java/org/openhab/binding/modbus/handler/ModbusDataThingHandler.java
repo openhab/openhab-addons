@@ -165,30 +165,11 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             return;
         }
 
-        String transformOutput;
-        Optional<Command> transformedCommand;
-        Transformation writeTransformation = this.writeTransformation;
-        if (writeTransformation == null || writeTransformation.isIdentityTransform()) {
-            transformedCommand = Optional.of(command);
-        } else {
-            transformOutput = writeTransformation.transform(bundleContext, command.toString());
-            if (transformOutput.contains("[")) {
-                processJsonTransform(command, transformOutput);
-                return;
-            } else if (transformationOnlyInWrite) {
-                logger.error(
-                        "Thing {} seems to have writeTransformation but no other write parameters. Since the transformation did not return a JSON for command '{}' (channel {}), this is a configuration error.",
-                        getThing().getUID(), command, channelUID);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
-                        "Seems to have writeTransformation but no other write parameters. Since the transformation did not return a JSON for command '%s' (channel %s), this is a configuration error",
-                        command, channelUID));
-                return;
-            } else {
-                transformedCommand = Transformation.tryConvertToCommand(transformOutput);
-                logger.trace("Converted transform output '{}' to command '{}' (type {})", transformOutput,
-                        transformedCommand.map(c -> c.toString()).orElse("<conversion failed>"),
-                        transformedCommand.map(c -> c.getClass().getName()).orElse("<conversion failed>"));
-            }
+        Optional<Command> transformedCommand = transformCommandAndProcessJSON(channelUID, command);
+        if (transformedCommand == null) {
+            // We have, JSON as transform output (which has been processed) or some error. See
+            // transformCommandAndProcessJSON javadoc
+            return;
         }
 
         // We did not have JSON output from the transformation, so writeStart is absolute required. Abort if it is
@@ -208,19 +189,73 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             return;
         }
 
+        ModbusWriteRequestBlueprint request = requestFromCommand(channelUID, command, config, transformedCommand.get(),
+                writeStart);
+        ModbusSlaveEndpoint slaveEndpoint = this.slaveEndpoint;
+        if (request == null || slaveEndpoint == null) {
+            return;
+        }
+
+        WriteTaskImpl writeTask = new WriteTaskImpl(slaveEndpoint, request, this);
+        logger.trace("Submitting write task: {}", writeTask);
+        manager.submitOneTimeWrite(writeTask);
+    }
+
+    /**
+     * Transform received command using the transformation.
+     *
+     * In case of JSON as transformation output, the output processed using {@link processJsonTransform}.
+     *
+     * @param channelUID channel UID corresponding to received command
+     * @param command command to be transformed
+     * @return transformed command. Null is returned with JSON transformation outputs and configuration errors
+     *
+     * @see processJsonTransform
+     */
+    private @Nullable Optional<Command> transformCommandAndProcessJSON(ChannelUID channelUID, Command command) {
+        String transformOutput;
+        Optional<Command> transformedCommand;
+        Transformation writeTransformation = this.writeTransformation;
+        if (writeTransformation == null || writeTransformation.isIdentityTransform()) {
+            transformedCommand = Optional.of(command);
+        } else {
+            transformOutput = writeTransformation.transform(bundleContext, command.toString());
+            if (transformOutput.contains("[")) {
+                processJsonTransform(command, transformOutput);
+                return null;
+            } else if (transformationOnlyInWrite) {
+                logger.error(
+                        "Thing {} seems to have writeTransformation but no other write parameters. Since the transformation did not return a JSON for command '{}' (channel {}), this is a configuration error.",
+                        getThing().getUID(), command, channelUID);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+                        "Seems to have writeTransformation but no other write parameters. Since the transformation did not return a JSON for command '%s' (channel %s), this is a configuration error",
+                        command, channelUID));
+                return null;
+            } else {
+                transformedCommand = Transformation.tryConvertToCommand(transformOutput);
+                logger.trace("Converted transform output '{}' to command '{}' (type {})", transformOutput,
+                        transformedCommand.map(c -> c.toString()).orElse("<conversion failed>"),
+                        transformedCommand.map(c -> c.getClass().getName()).orElse("<conversion failed>"));
+            }
+        }
+        return transformedCommand;
+    }
+
+    private @Nullable ModbusWriteRequestBlueprint requestFromCommand(ChannelUID channelUID, Command origCommand,
+            ModbusDataConfiguration config, Command transformedCommand, Integer writeStart) {
         ModbusWriteRequestBlueprint request;
         boolean writeMultiple = config.isWriteMultipleEvenWithSingleRegisterOrCoil();
         String writeType = config.getWriteType();
         if (writeType == null) {
-            return;
+            return null;
         }
         if (writeType.equals(WRITE_TYPE_COIL)) {
-            Optional<Boolean> commandAsBoolean = ModbusBitUtilities.translateCommand2Boolean(transformedCommand.get());
+            Optional<Boolean> commandAsBoolean = ModbusBitUtilities.translateCommand2Boolean(transformedCommand);
             if (!commandAsBoolean.isPresent()) {
                 logger.warn(
                         "Cannot process command {} with channel {} since command is not OnOffType, OpenClosedType or Decimal trying to write to coil. Do not know how to convert to 0/1. Transformed command was '{}'",
-                        command, channelUID, transformedCommand);
-                return;
+                        origCommand, channelUID, transformedCommand);
+                return null;
             }
             boolean data = commandAsBoolean.get();
             request = new ModbusWriteCoilRequestBlueprintImpl(slaveId, writeStart, data, writeMultiple,
@@ -231,9 +266,9 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 // Should not happen in practice, since we are not in configuration error (checked above)
                 // This will make compiler happy anyways with the null checks
                 logger.warn("Received command but write value type not set! Ignoring command");
-                return;
+                return null;
             }
-            ModbusRegisterArray data = ModbusBitUtilities.commandToRegisters(transformedCommand.get(), writeValueType);
+            ModbusRegisterArray data = ModbusBitUtilities.commandToRegisters(transformedCommand, writeValueType);
             writeMultiple = writeMultiple || data.size() > 1;
             request = new ModbusWriteRegisterRequestBlueprintImpl(slaveId, writeStart, data, writeMultiple,
                     config.getWriteMaxTries());
@@ -241,14 +276,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             // should not happen
             throw new NotImplementedException();
         }
-        ModbusSlaveEndpoint slaveEndpoint = this.slaveEndpoint;
-        if (slaveEndpoint == null) {
-            return;
-        }
-
-        WriteTaskImpl writeTask = new WriteTaskImpl(slaveEndpoint, request, this);
-        logger.trace("Submitting write task: {}", writeTask);
-        manager.submitOneTimeWrite(writeTask);
+        return request;
     }
 
     private void processJsonTransform(Command command, String transformOutput) {
