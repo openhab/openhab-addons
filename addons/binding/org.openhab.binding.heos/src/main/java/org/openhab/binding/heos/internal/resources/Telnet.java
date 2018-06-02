@@ -46,7 +46,7 @@ public class Telnet {
     private InputStream inputStream = null;
     private BufferedInputStream bufferedStream = null;
 
-    private MyStringPropertyChangeListener eolNotifyer = new MyStringPropertyChangeListener();
+    private HeosStringPropertyChangeListener eolNotifyer = new HeosStringPropertyChangeListener();
 
     private TelnetInputListener inputListener = null;
 
@@ -318,7 +318,7 @@ public class Telnet {
         }
     }
 
-    public MyStringPropertyChangeListener getReadResultListener() {
+    public HeosStringPropertyChangeListener getReadResultListener() {
         return eolNotifyer;
     }
 

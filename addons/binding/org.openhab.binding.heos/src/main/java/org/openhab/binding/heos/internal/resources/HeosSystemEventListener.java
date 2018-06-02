@@ -15,16 +15,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MyEventListener } is used for classes which
+ * The {@link HeosSystemEventListener } is used for classes which
  * wants to inform players or groups about change events
  * from the HEOS system. Classes which wants to be informed
  * has to implement the {@link HeosEventListener} and register at
- * the class which extends this {@link MyEventListener} *
+ * the class which extends this {@link HeosSystemEventListener} *
  *
  * @author Johannes Einig - Initial contribution
  */
 
-public class MyEventListener {
+public class HeosSystemEventListener {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 

@@ -12,7 +12,7 @@ import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
 import org.openhab.binding.heos.internal.resources.HeosCommands;
 import org.openhab.binding.heos.internal.resources.HeosResponse;
-import org.openhab.binding.heos.internal.resources.MyEventListener;
+import org.openhab.binding.heos.internal.resources.HeosSystemEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Einig - Initial contribution
  */
 
-public class HeosEventController extends MyEventListener {
+public class HeosEventController extends HeosSystemEventListener {
     private HeosResponse response = null;
     private HeosSystem system = null;
     private HeosCommands command = null;

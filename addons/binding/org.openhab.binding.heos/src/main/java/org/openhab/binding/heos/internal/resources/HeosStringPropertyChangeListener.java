@@ -16,7 +16,7 @@ import java.beans.PropertyChangeSupport;
  * @author Johannes Einig - Initial contribution
  */
 
-public class MyStringPropertyChangeListener {
+public class HeosStringPropertyChangeListener {
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     public void addPropertyChangeListener(PropertyChangeListener propertyChangeListener) {
