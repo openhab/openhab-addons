@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -68,6 +69,17 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing handler for {}", getClass().getName());
         updateStatus(ThingStatus.UNKNOWN);
+    }
+
+    /**
+     * Called from {@link AVMFritzBaseBridgeHandler)} to update the thing status because updateStatus is protected.
+     *
+     * @param status Thing status
+     * @param statusDetail Thing status detail
+     * @param description Thing status description
+     */
+    public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        updateStatus(status, statusDetail, description);
     }
 
     @Override

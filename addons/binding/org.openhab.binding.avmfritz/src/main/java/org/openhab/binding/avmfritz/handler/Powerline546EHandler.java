@@ -22,7 +22,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.Command;
@@ -70,10 +69,14 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
             devicelist.remove(device);
             logger.debug("update self {} with device model: {}", getThing().getUID(), device);
             setState(device);
-            updateThingFromDevice(getThing(), device);
+            if (device.getPresent() == 1) {
+                setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                updateThingFromDevice(getThing(), device);
+            } else {
+                setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device not present");
+            }
         } else {
-            getThing().setStatusInfo(
-                    new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Device not present in response"));
+            setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Device not present in response");
         }
         super.addDeviceList(devicelist);
     }
