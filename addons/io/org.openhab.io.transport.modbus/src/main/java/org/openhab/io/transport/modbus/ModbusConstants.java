@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Constants for Modbus transport
@@ -83,7 +84,8 @@ public class ModbusConstants {
          * @throws IllegalArgumentException with unknown value types
          */
         @SuppressWarnings("null")
-        public static @NonNull ValueType fromConfigValue(String configValueType) throws IllegalArgumentException {
+        public static @NonNull ValueType fromConfigValue(@Nullable String configValueType)
+                throws IllegalArgumentException {
             return Stream.of(ValueType.values()).filter(v -> v.getConfigValue().equals(configValueType)).findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("Invalid valueType " + configValueType));
         }

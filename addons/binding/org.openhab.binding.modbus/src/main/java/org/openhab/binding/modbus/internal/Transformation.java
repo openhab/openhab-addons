@@ -69,6 +69,7 @@ public class Transformation {
         toStringStyle.setUseShortClassName(true);
     }
 
+    @Nullable
     private final String transformation;
     @Nullable
     private final String transformationServiceName;
@@ -81,7 +82,7 @@ public class Transformation {
      *            (output equals input)) or some other value (output is a constant). Futhermore, empty string is
      *            considered the same way as "default".
      */
-    public Transformation(String transformation) {
+    public Transformation(@Nullable String transformation) {
         this.transformation = transformation;
         //
         // Parse transformation configuration here on construction, but delay the
@@ -153,7 +154,7 @@ public class Transformation {
             transformedResponse = this.transformation;
         }
 
-        return transformedResponse;
+        return transformedResponse == null ? "" : transformedResponse;
     }
 
     public boolean isIdentityTransform() {

@@ -41,6 +41,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -130,11 +131,15 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         super(thing);
     }
 
-    @SuppressWarnings("null")
     @Override
     public synchronized void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Thing {} '{}' received command '{}' to channel '{}'", getThing().getUID(), getThing().getLabel(),
                 command, channelUID);
+        ModbusDataConfiguration config = this.config;
+        ModbusManager manager = this.manager;
+        if (config == null || manager == null) {
+            return;
+        }
 
         if (RefreshType.REFRESH == command) {
             PollTask pollTask = this.pollTask;
@@ -162,6 +167,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
         String transformOutput;
         Optional<Command> transformedCommand;
+        Transformation writeTransformation = this.writeTransformation;
         if (writeTransformation == null || writeTransformation.isIdentityTransform()) {
             transformedCommand = Optional.of(command);
         } else {
@@ -187,6 +193,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
         // We did not have JSON output from the transformation, so writeStart is absolute required. Abort if it is
         // missing
+        Integer writeStart = this.writeStart;
         if (writeStart == null) {
             logger.warn(
                     "Thing {} '{}': not processing command {} since writeStart is missing and transformation output is not a JSON",
@@ -203,7 +210,11 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
         ModbusWriteRequestBlueprint request;
         boolean writeMultiple = config.isWriteMultipleEvenWithSingleRegisterOrCoil();
-        if (config.getWriteType().equals(WRITE_TYPE_COIL)) {
+        String writeType = config.getWriteType();
+        if (writeType == null) {
+            return;
+        }
+        if (writeType.equals(WRITE_TYPE_COIL)) {
             Optional<Boolean> commandAsBoolean = ModbusBitUtilities.translateCommand2Boolean(transformedCommand.get());
             if (!commandAsBoolean.isPresent()) {
                 logger.warn(
@@ -214,7 +225,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             boolean data = commandAsBoolean.get();
             request = new ModbusWriteCoilRequestBlueprintImpl(slaveId, writeStart, data, writeMultiple,
                     config.getWriteMaxTries());
-        } else if (config.getWriteType().equals(WRITE_TYPE_HOLDING)) {
+        } else if (writeType.equals(WRITE_TYPE_HOLDING)) {
             ValueType writeValueType = this.writeValueType;
             if (writeValueType == null) {
                 // Should not happen in practice, since we are not in configuration error (checked above)
@@ -240,8 +251,12 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         manager.submitOneTimeWrite(writeTask);
     }
 
-    @SuppressWarnings("null")
     private void processJsonTransform(Command command, String transformOutput) {
+        ModbusSlaveEndpoint slaveEndpoint = this.slaveEndpoint;
+        ModbusManager manager = this.manager;
+        if (slaveEndpoint == null || manager == null) {
+            return;
+        }
         Collection<ModbusWriteRequestBlueprint> requests;
         try {
             requests = WriteRequestJsonUtilities.fromJson(slaveId, transformOutput);
@@ -271,26 +286,25 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No poller bridge");
                 return;
             }
-            if (bridge.getHandler() == null) {
+            BridgeHandler bridgeHandler = bridge.getHandler();
+            if (bridgeHandler == null) {
                 logger.warn("Bridge {} '{}' has no handler.", bridge.getUID(), bridge.getLabel());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                         "Bridge %s '%s' configuration incomplete or with errors", bridge.getUID(), bridge.getLabel()));
                 return;
             }
-            if (bridge.getHandler() instanceof ModbusEndpointThingHandler) {
+            if (bridgeHandler instanceof ModbusEndpointThingHandler) {
                 // Write-only thing, parent is endpoint
-                @SuppressWarnings("null")
-                @NonNull
-                ModbusEndpointThingHandler bridgeHandler = (@NonNull ModbusEndpointThingHandler) bridge.getHandler();
-                slaveId = bridgeHandler.getSlaveId();
-                slaveEndpoint = bridgeHandler.asSlaveEndpoint();
-                manager = bridgeHandler.getManagerRef().get();
+                ModbusEndpointThingHandler endpointHandler = (ModbusEndpointThingHandler) bridgeHandler;
+                slaveId = endpointHandler.getSlaveId();
+                slaveEndpoint = endpointHandler.asSlaveEndpoint();
+                manager = endpointHandler.getManagerRef().get();
                 childOfEndpoint = true;
+                pollTask = null;
             } else {
-                @SuppressWarnings("null")
-                @NonNull
-                ModbusPollerThingHandler bridgeHandler = (@NonNull ModbusPollerThingHandler) bridge.getHandler();
-                pollTask = bridgeHandler.getPollTask();
+                ModbusPollerThingHandler pollerHandler = (ModbusPollerThingHandler) bridgeHandler;
+                PollTask pollTask = pollerHandler.getPollTask();
+                this.pollTask = pollTask;
                 if (pollTask == null) {
                     logger.debug("Poller {} '{}' has no poll task -- configuration is changing?", bridge.getUID(),
                             bridge.getLabel());
@@ -300,7 +314,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 }
                 slaveId = pollTask.getRequest().getUnitID();
                 slaveEndpoint = pollTask.getEndpoint();
-                manager = bridgeHandler.getManagerRef().get();
+                manager = pollerHandler.getManagerRef().get();
                 pollStart = pollTask.getRequest().getReference();
                 childOfEndpoint = false;
             }
