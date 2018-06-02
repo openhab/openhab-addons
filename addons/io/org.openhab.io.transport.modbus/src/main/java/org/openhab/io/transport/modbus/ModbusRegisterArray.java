@@ -24,7 +24,6 @@ public interface ModbusRegisterArray extends Iterable<ModbusRegister> {
      * <p>
      *
      * @param index the index of the register to be returned.
-     *
      * @throws IndexOutOfBoundsException if the index is out of bounds.
      */
     ModbusRegister getRegister(int index);

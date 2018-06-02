@@ -67,15 +67,11 @@ public class ModbusBitUtilities {
      * FLOAT32_SWAP:
      * - Same as FLOAT32 but registers swapped
      *
-     * @param registers
-     *            list of registers, each register represent 16bit of data
-     * @param index
-     *            zero based item index. Interpretation of this depends on type, see examples above.
+     * @param registers list of registers, each register represent 16bit of data
+     * @param index zero based item index. Interpretation of this depends on type, see examples above.
      *            With type larger or equal to 16 bits, the index tells the register index to start reading from.
      *            With type less than 16 bits, the index tells the N'th item to read from the registers.
-     *
-     * @param type
-     *            item type, e.g. unsigned 16bit integer (<tt>ModbusBindingProvider.ValueType.UINT16</tt>)
+     * @param type item type, e.g. unsigned 16bit integer (<tt>ModbusBindingProvider.ValueType.UINT16</tt>)
      * @return number representation queried value
      * @throws NotImplementedException in cases where implementation is lacking for the type. This can be considered a
      *             bug
@@ -158,19 +154,13 @@ public class ModbusBitUtilities {
      * and a maximum of length bytes are read. However reading stops at the first
      * NUL byte encountered.
      *
-     * @param registers
-     *            list of registers, each register represent 16bit of data
-     * @param index
-     *            zero based register index. Registers are handled as 16bit registers,
+     * @param registers list of registers, each register represent 16bit of data
+     * @param index zero based register index. Registers are handled as 16bit registers,
      *            this parameter defines the starting register.
-     * @param length
-     *            maximum length of string in 8bit characters.
-     * @param charset
-     *            the character set used to construct the string.
-     *
+     * @param length maximum length of string in 8bit characters.
+     * @param charset the character set used to construct the string.
      * @return string representation queried value
      * @throws IllegalArgumentException when <tt>index</tt> is out of bounds of registers
-     *
      */
     public static StringType extractStringFromRegisters(ModbusRegisterArray registers, int index, int length,
             Charset charset) {

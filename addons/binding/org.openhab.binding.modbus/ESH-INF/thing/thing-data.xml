@@ -33,8 +33,8 @@
 				<br />
 				<br />With registers and value type less than 16 bits, you must use X.Y format where Y specifies the sub-element to read from the 16 bit register:
 				<ul> 
-				  <li>For example, 3.1 would mean pick second bit from register index 3 with bit value type. </li>
-				  <li>With int8 valuetype, it would pick the high byte of register index 3.</li>
+					<li>For example, 3.1 would mean pick second bit from register index 3 with bit value type. </li>
+					<li>With int8 valuetype, it would pick the high byte of register index 3.</li>
 				</ul>
 				]]>
 				</description>
