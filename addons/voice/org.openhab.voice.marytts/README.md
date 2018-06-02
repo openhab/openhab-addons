@@ -27,4 +27,5 @@ The MaryTTS service produces audio streams using WAV containers and PCM (signed)
 The sample frequency depends on the chosen voice and ranges from 16kHz to 48kHz.
 
 ## Log files
-The log files of Mary TTS are not bundled with the openHAB log files in `userdata/logs/openhab.log` but are stored in their own log files at `userdata/log/server.log`.
+
+The log messages of Mary TTS are not bundled with the openHAB log messages in the `openhab.log` file of your log directory but are stored in their own log file at `server.log` of your log directory.
