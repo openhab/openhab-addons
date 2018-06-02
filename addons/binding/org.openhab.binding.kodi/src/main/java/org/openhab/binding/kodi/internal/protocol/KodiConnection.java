@@ -443,7 +443,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private void requestPlayerItemUpdate(int activePlayer) {
         final String[] properties = { "title", "album", "artist", "director", "thumbnail", "file", "fanart",
-                "showtitle", "streamdetails", "channel", "channeltype", "duration", "runtime", "genre" };
+                "showtitle", "streamdetails", "channel", "channeltype", "genre" };
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
@@ -513,14 +513,6 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     fanart = downloadImage(convertToImageUrl(item.get("fanart")));
                 }
 
-                // "duration" for audio files/streams and "runtime" for video files/streams
-                long duration = -1;
-                if (item.has("duration")) {
-                    duration = item.get("duration").getAsLong();
-                } else if (item.has("runtime")) {
-                    duration = item.get("runtime").getAsLong();
-                }
-
                 listener.updateAlbum(album);
                 listener.updateTitle(title);
                 listener.updateShowTitle(showTitle);
@@ -530,13 +522,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 listener.updatePVRChannel(channel);
                 listener.updateThumbnail(thumbnail);
                 listener.updateFanart(fanart);
-                listener.updateDuration(duration);
             }
         }
     }
 
     private void requestPlayerPropertiesUpdate(int activePlayer) {
-        final String[] properties = { "percentage", "time" };
+        final String[] properties = { "percentage", "time", "totaltime" };
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
@@ -554,16 +545,28 @@ public class KodiConnection implements KodiClientSocketEventListener {
             long currentTime = -1;
             if (result.has("time")) {
                 JsonObject time = result.get("time").getAsJsonObject();
-                KodiDuration duration = new KodiDuration();
-                duration.setHours(time.get("hours").getAsLong());
-                duration.setMinutes(time.get("minutes").getAsLong());
-                duration.setSeconds(time.get("seconds").getAsLong());
-                duration.setMilliseconds(time.get("milliseconds").getAsLong());
-                currentTime = duration.toSeconds();
+                KodiDuration tmpTime = new KodiDuration();
+                tmpTime.setHours(time.get("hours").getAsLong());
+                tmpTime.setMinutes(time.get("minutes").getAsLong());
+                tmpTime.setSeconds(time.get("seconds").getAsLong());
+                tmpTime.setMilliseconds(time.get("milliseconds").getAsLong());
+                currentTime = tmpTime.toSeconds();
+            }
+
+            long duration = -1;
+            if (result.has("totaltime")) {
+                JsonObject totalTime = result.get("totaltime").getAsJsonObject();
+                KodiDuration tmpTotalTime = new KodiDuration();
+                tmpTotalTime.setHours(totalTime.get("hours").getAsLong());
+                tmpTotalTime.setMinutes(totalTime.get("minutes").getAsLong());
+                tmpTotalTime.setSeconds(totalTime.get("seconds").getAsLong());
+                tmpTotalTime.setMilliseconds(totalTime.get("milliseconds").getAsLong());
+                duration = tmpTotalTime.toSeconds();
             }
 
             listener.updateCurrentTimePercentage(percentage);
             listener.updateCurrentTime(currentTime);
+            listener.updateDuration(duration);
         }
     }
 
@@ -641,9 +644,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
             listener.updatePVRChannel("");
             listener.updateThumbnail(null);
             listener.updateFanart(null);
-            listener.updateDuration(-1);
             listener.updateCurrentTimePercentage(-1);
             listener.updateCurrentTime(-1);
+            listener.updateDuration(-1);
         }
         // keep track of our current state
         currentState = state;
