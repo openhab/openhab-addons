@@ -10,6 +10,7 @@ package org.openhab.binding.homematic.internal.communicator.server;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -74,7 +75,9 @@ public class XmlRpcServer implements RpcServer {
     public void start() throws IOException {
         logger.debug("Initializing XML-RPC server at port {}", config.getXmlCallbackPort());
 
-        xmlRpcHTTPD = new Server(config.getXmlCallbackPort());
+        InetSocketAddress callbackAddress = new InetSocketAddress(config.getCallbackHost(),
+                config.getXmlCallbackPort());
+        xmlRpcHTTPD = new Server(callbackAddress);
         xmlRpcHTTPD.setHandler(jettyResponseHandler);
 
         try {
