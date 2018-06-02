@@ -28,10 +28,12 @@ import org.openhab.binding.heos.internal.handler.HeosChannelHandlerPlayerSelect;
 import org.openhab.binding.heos.internal.handler.HeosChannelHandlerPlaylist;
 import org.openhab.binding.heos.internal.handler.HeosChannelHandlerRawCommand;
 import org.openhab.binding.heos.internal.handler.HeosChannelHandlerReboot;
+import org.openhab.binding.heos.internal.handler.HeosChannelHandlerRepeatMode;
+import org.openhab.binding.heos.internal.handler.HeosChannelHandlerShuffleMode;
 import org.openhab.binding.heos.internal.handler.HeosChannelHandlerVolume;
 
 /**
- * @author Johannes Einig - initial contributor
+ * @author Johannes Einig - Initial contribution
  *
  */
 
@@ -86,6 +88,12 @@ public class HeosChannelHandlerFactory {
         }
         if (channelUID.getId().equals(CH_ID_PLAYLISTS)) {
             return new HeosChannelHandlerPlaylist(bridge, api);
+        }
+        if (channelUID.getId().equals(CH_ID_REPEAT_MODE)) {
+            return new HeosChannelHandlerRepeatMode(bridge, api);
+        }
+        if (channelUID.getId().equals(CH_ID_SHUFFLE_MODE)) {
+            return new HeosChannelHandlerShuffleMode(bridge, api);
         }
         if (channelTypeUID != null) {
             if (channelTypeUID.equals(CH_TYPE_FAVORIT)) {
