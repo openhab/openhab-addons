@@ -85,6 +85,16 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ModbusDataThingHandler extends BaseThingHandler implements ModbusReadCallback, ModbusWriteCallback {
 
+    private static class ModbusConfigurationException extends Exception {
+
+        public ModbusConfigurationException(String errmsg) {
+            super(errmsg);
+        }
+
+        private static final long serialVersionUID = -466597103876477780L;
+
+    }
+
     private final Logger logger = LoggerFactory.getLogger(ModbusDataThingHandler.class);
 
     private static final Map<String, List<Class<? extends State>>> CHANNEL_ID_TO_ACCEPTED_TYPES = new HashMap<>();
@@ -317,9 +327,9 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             BridgeHandler bridgeHandler = bridge.getHandler();
             if (bridgeHandler == null) {
                 logger.warn("Bridge {} '{}' has no handler.", bridge.getUID(), bridge.getLabel());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
-                        "Bridge %s '%s' configuration incomplete or with errors", bridge.getUID(), bridge.getLabel()));
-                return;
+                String errmsg = String.format("Bridge %s '%s' configuration incomplete or with errors", bridge.getUID(),
+                        bridge.getLabel());
+                throw new ModbusConfigurationException(errmsg);
             }
             if (bridgeHandler instanceof ModbusEndpointThingHandler) {
                 // Write-only thing, parent is endpoint
@@ -346,11 +356,15 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 pollStart = pollTask.getRequest().getReference();
                 childOfEndpoint = false;
             }
-            if (!validateAndParseReadParameters() || !validateAndParseWriteParameters() || !validateMustReadOrWrite()) {
-                // status already updated to OFFLINE
-                return;
-            }
+            validateAndParseReadParameters();
+            validateAndParseWriteParameters();
+            validateMustReadOrWrite();
+
             updateStatus(ThingStatus.ONLINE);
+        } catch (ModbusConfigurationException e) {
+            logger.error("Thing {} '{}' configuration error: {}", getThing().getUID(), getThing().getLabel(),
+                    e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (Exception e) {
             logger.error("Exception during initialization", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
@@ -395,17 +409,13 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 && statusInfo.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR;
     }
 
-    private boolean validateMustReadOrWrite() {
+    private void validateMustReadOrWrite() throws ModbusConfigurationException {
         if (!isReadEnabled && !isWriteEnabled) {
-            logger.error("Thing {} should try to read or write data!", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
-                    .format("Not reading or writing anything!", config.getReadStart(), config.getReadValueType()));
-            return false;
+            throw new ModbusConfigurationException("Should try to read or write data!");
         }
-        return true;
     }
 
-    private boolean validateAndParseReadParameters() {
+    private void validateAndParseReadParameters() throws ModbusConfigurationException {
         ModbusDataConfiguration config = this.config;
         Objects.requireNonNull(config);
         @SuppressWarnings("null")
@@ -417,13 +427,10 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
         if (childOfEndpoint && pollTask == null) {
             if (!readStartMissing || !readValueTypeMissing) {
-                logger.error(
-                        "Thing {} readStart={}, and readValueType={} were specified even though the data thing is child of endpoint (that is, write-only)!",
+                String errmsg = String.format(
+                        "Thing %s readStart=%s, and readValueType=%s were specified even though the data thing is child of endpoint (that is, write-only)!",
                         getThing().getUID(), config.getReadStart(), config.getReadValueType());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
-                        "readStart=%s, and readValueType=%s were specified even though the data thing is child of endpoint (that is, write-only)!",
-                        config.getReadStart(), config.getReadValueType()));
-                return false;
+                throw new ModbusConfigurationException(errmsg);
             }
         }
 
@@ -431,12 +438,10 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         boolean allMissingOrAllPresent = (readStartMissing && readValueTypeMissing)
                 || (!readStartMissing && (!readValueTypeMissing || readingDiscreteOrCoil));
         if (!allMissingOrAllPresent) {
-            logger.error("Thing {} readStart={}, and readValueType={} should be all present or all missing!",
+            String errmsg = String.format(
+                    "Thing %s readStart=%s, and readValueType=%s should be all present or all missing!",
                     getThing().getUID(), config.getReadStart(), config.getReadValueType());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    String.format("readStart=%s, and readValueType=%s should be all present or all missing!",
-                            config.getReadStart(), config.getReadValueType()));
-            return false;
+            throw new ModbusConfigurationException(errmsg);
         } else if (!readStartMissing) {
             // all read values are present
             isReadEnabled = true;
@@ -446,22 +451,17 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 try {
                     readValueType = ValueType.fromConfigValue(config.getReadValueType());
                 } catch (IllegalArgumentException e) {
-                    logger.error("Thing {} readValueType={} is invalid!", getThing().getUID(),
+                    String errmsg = String.format("Thing %s readValueType=%s is invalid!", getThing().getUID(),
                             config.getReadValueType());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
-                            "Thing %s readValueType=%s is invalid!", getThing().getUID(), config.getReadValueType()));
-                    return false;
+                    throw new ModbusConfigurationException(errmsg);
                 }
             }
 
             if (readingDiscreteOrCoil && !ModbusConstants.ValueType.BIT.equals(readValueType)) {
-                logger.error(
-                        "Thing {} invalid readValueType: Only readValueType='{}' (or undefined) supported with coils or discrete inputs. Value type was: {}",
+                String errmsg = String.format(
+                        "Thing %s invalid readValueType: Only readValueType='%s' (or undefined) supported with coils or discrete inputs. Value type was: %s",
                         getThing().getUID(), ModbusConstants.ValueType.BIT, config.getReadValueType());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
-                        "Only readValueType='%s' (or undefined) supported with coils or discrete inputs. Value type was: %s",
-                        ModbusConstants.ValueType.BIT, config.getReadValueType()));
-                return false;
+                throw new ModbusConfigurationException(errmsg);
             }
         } else {
             isReadEnabled = false;
@@ -477,18 +477,17 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                     readSubIndex = Optional.empty();
                 }
             } catch (IllegalArgumentException e) {
-                logger.error("Thing {} invalid readStart: {}", getThing().getUID(), config.getReadStart());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        String.format("Invalid readStart: %s", config.getReadStart()));
-                return false;
+                String errmsg = String.format("Thing %s invalid readStart: %s", getThing().getUID(),
+                        config.getReadStart());
+                throw new ModbusConfigurationException(errmsg);
             }
         }
         readTransformation = new Transformation(config.getReadTransform());
 
-        return validateReadIndex(pollTask);
+        validateReadIndex(pollTask);
     }
 
-    private boolean validateAndParseWriteParameters() {
+    private void validateAndParseWriteParameters() throws ModbusConfigurationException {
         boolean writeTypeMissing = StringUtils.isBlank(config.getWriteType());
         boolean writeStartMissing = StringUtils.isBlank(config.getWriteStart());
         boolean writeValueTypeMissing = StringUtils.isBlank(config.getWriteValueType());
@@ -502,24 +501,18 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 || (!writeTypeMissing && !writeStartMissing && (!writeValueTypeMissing || writingCoil))
                 || transformationOnlyInWrite;
         if (!allMissingOrAllPresentOrOnlyTransform) {
-            logger.error(
-                    "Thing {} writeType={}, writeStart={}, and writeValueType={} should be all present, or all missing! Alternatively, you can provide just writeTransformation, and use transformation returning JSON.",
-                    getThing().getUID(), config.getWriteType(), config.getWriteStart(), config.getWriteValueType());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+            String errmsg = String.format(
                     "writeType=%s, writeStart=%s, and writeValueType=%s should be all present, or all missing! Alternatively, you can provide just writeTransformation, and use transformation returning JSON.",
-                    config.getWriteType(), config.getWriteStart(), config.getWriteValueType()));
-            return false;
+                    config.getWriteType(), config.getWriteStart(), config.getWriteValueType());
+            throw new ModbusConfigurationException(errmsg);
         } else if (!writeTypeMissing || transformationOnlyInWrite) {
             isWriteEnabled = true;
             // all write values are present
             if (!transformationOnlyInWrite && !WRITE_TYPE_HOLDING.equals(config.getWriteType())
                     && !WRITE_TYPE_COIL.equals(config.getWriteType())) {
-                logger.error("Thing {} writeType={} is invalid. Expecting {} or {}!", getThing().getUID(),
-                        config.getWriteType(), WRITE_TYPE_HOLDING, WRITE_TYPE_COIL);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        String.format("writeType=%s is invalid. Expecting %s or %s!", config.getWriteType(),
-                                config.getWriteType(), WRITE_TYPE_HOLDING, WRITE_TYPE_COIL));
-                return false;
+                String errmsg = String.format("Invalid writeType=%s. Expecting %s or %s!", config.getWriteType(),
+                        WRITE_TYPE_HOLDING, WRITE_TYPE_COIL);
+                throw new ModbusConfigurationException(errmsg);
             }
             if (transformationOnlyInWrite) {
                 // Placeholder for further checks
@@ -530,32 +523,22 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 try {
                     writeValueType = ValueType.fromConfigValue(config.getWriteValueType());
                 } catch (IllegalArgumentException e) {
-                    logger.error("Thing {} writeValueType={} is invalid!", getThing().getUID(),
-                            config.getWriteValueType());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
-                            "Thing %s writeValueType=%s is invalid!", getThing().getUID(), config.getWriteValueType()));
-                    return false;
+                    String errmsg = String.format("Invalid writeValueType=%s!", config.getWriteValueType());
+                    throw new ModbusConfigurationException(errmsg);
                 }
             }
 
             if (writingCoil && !ModbusConstants.ValueType.BIT.equals(writeValueType)) {
-                logger.error(
-                        "Thing {} invalid writeValueType: Only writeValueType='{}' (or undefined) supported with coils. Value type was: {}",
-                        getThing().getUID(), ModbusConstants.ValueType.BIT, config.getWriteValueType());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        String.format(
-                                "Only writeValueType='%s' (or undefined) supported with coils. Value type was: %s",
-                                ModbusConstants.ValueType.BIT, config.getWriteType()));
-                return false;
+                String errmsg = String.format(
+                        "Invalid writeValueType: Only writeValueType='%s' (or undefined) supported with coils. Value type was: %s",
+                        ModbusConstants.ValueType.BIT, config.getWriteValueType());
+                throw new ModbusConfigurationException(errmsg);
             } else if (!writingCoil && writeValueType.getBits() < 16) {
-                // trying to write holding registers with < 16 bit value types. Not supports
-                logger.error(
-                        "Thing {} invalid writeValueType: Only writeValueType with larger or equal to 16 bits are supported holding registers. Value type was: {}",
-                        getThing().getUID(), config.getWriteValueType());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
-                        "Only writeValueType with larger or equal to 16 bits are supported holding registers. Value type was: %s",
-                        config.getWriteType()));
-                return false;
+                // trying to write holding registers with < 16 bit value types. Not supported
+                String errmsg = String.format(
+                        "Invalid writeValueType: Only writeValueType with larger or equal to 16 bits are supported holding registers. Value type was: %s",
+                        config.getWriteValueType());
+                throw new ModbusConfigurationException(errmsg);
             }
 
             try {
@@ -563,21 +546,19 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                     writeStart = Integer.parseInt(config.getWriteStart().trim());
                 }
             } catch (IllegalArgumentException e) {
-                logger.error("Thing {} invalid writeStart: {}", getThing().getUID(), config.getWriteStart());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        String.format("Invalid writeStart: %s", config.getWriteStart()));
-                return false;
+                String errmsg = String.format("Thing %s invalid writeStart: %s", getThing().getUID(),
+                        config.getWriteStart());
+                throw new ModbusConfigurationException(errmsg);
             }
         } else {
             isWriteEnabled = false;
         }
 
-        return true;
     }
 
-    private boolean validateReadIndex(@Nullable PollTask pollTask) {
+    private void validateReadIndex(@Nullable PollTask pollTask) throws ModbusConfigurationException {
         if (!readIndex.isPresent() || pollTask == null) {
-            return true;
+            return;
         }
         // bits represented by the value type, e.g. int32 -> 32
         int valueTypeBitCount = readValueType.getBits();
@@ -598,28 +579,20 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         boolean bitQuery = dataElementBits == 1;
         if (bitQuery && readSubIndex.isPresent()) {
             String errmsg = String.format("readStart=X.Y is not allowed to be used with coils or discrete inputs!");
-            logger.error("Thing '{}' invalid readStart: {}", getThing().getUID(), errmsg);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errmsg);
-            return false;
+            throw new ModbusConfigurationException(errmsg);
         }
 
         if (valueTypeBitCount >= 16 && readSubIndex.isPresent()) {
             String errmsg = String
                     .format("readStart=X.Y is not allowed to be used with value types larger than 16bit!");
-            logger.error("Thing '{}' invalid readStart: {}", getThing().getUID(), errmsg);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errmsg);
-            return false;
+            throw new ModbusConfigurationException(errmsg);
         } else if (!bitQuery && valueTypeBitCount < 16 && !readSubIndex.isPresent()) {
             String errmsg = String.format("readStart=X.Y must be used with value types less than 16bit!");
-            logger.error("Thing '{}' invalid readStart: {}", getThing().getUID(), errmsg);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errmsg);
-            return false;
+            throw new ModbusConfigurationException(errmsg);
         } else if (readSubIndex.isPresent() && (readSubIndex.get() + 1) * valueTypeBitCount > 16) {
             // the sub index Y (in X.Y) is above the register limits
             String errmsg = String.format("readStart=X.Y, the value Y is too large");
-            logger.error("Thing '{}' invalid readStart: {}", getThing().getUID(), errmsg);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errmsg);
-            return false;
+            throw new ModbusConfigurationException(errmsg);
         }
 
         // Determine bit positions polled, both start and end inclusive
@@ -635,12 +608,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                     "Out-of-bounds: Poller is reading from index %d to %d (inclusive) but this thing configured to read '%s' starting from element %d. Exceeds polled data bounds.",
                     pollStartBitIndex / dataElementBits, pollEndBitIndex / dataElementBits, readValueType,
                     readIndex.get());
-            logger.error("Thing {} '{}' readIndex is out of bounds: {}", getThing().getUID(), getThing().getLabel(),
-                    errmsg);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errmsg);
-            return false;
+            throw new ModbusConfigurationException(errmsg);
         }
-        return true;
     }
 
     private boolean containsOnOff(List<Class<? extends State>> channelAcceptedDataTypes) {
