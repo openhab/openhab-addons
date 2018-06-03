@@ -1,102 +1,141 @@
 # Jeelink Binding
 
-This binding integrates JeeLink USB RF receivers. 
+This binding integrates JeeLink USB RF receivers and LaCrosseGateways.
 
 ## Introduction
 
-Binding should be compatible with JeeLink USB receivers and connected LaCrosse temperature sensors as well as EC3000 sensors.
+Binding should be compatible with JeeLink USB receivers and LaCrosseGateways. It supports connected LaCrosse temperature sensors as well as EC3000 sensors and PCA301 power monitoring wireless sockets.
 
 ## Supported Things
 
 This binding supports:
 
-* JeeLink USB RF receivers (as bridge)
-* JeeLink USB RF receivers connected over TCP (as bridge)
-* LaCrosse Temperature Sensors connected to the bridge 
-* EC3000 Power Monitors connected to the bridge
+*   JeeLink (connected to USB)
+*   JeeLink (connected over TCP)
+*   LaCrosseGateway (connected to USB)
+*   LaCrosseGateway (connected over TCP)
+*   LaCrosse Temperature Sensors
+*   EC3000 Power Monitors
+*   PCA301 power monitoring wireless sockets
 
 ## Binding configuration
 
-Configuration of the binding is not needed. 
+Configuration of the binding is not needed.
 
 ## Thing discovery
 
-Only sensor discovery is supported, the thing for the USB receiver has to be created manually. Pay attention to use the correct serial port, as otherwise the binding may interfere with other bindings accessing serial ports.
+Only sensor discovery is supported, the thing for the USB receiver / LaCrosseGateway has to be created manually. Pay attention to use the correct serial port, as otherwise the binding may interfere with other bindings accessing serial ports.
 
-Afterwards, discovery reads from the USB receiver to find out which sensors are currently connected. It then creates a thing for every sensor for which currently no other thing with the same sensor ID is registered with the bridge. 
+Afterwards, discovery reads from the USB receiver / LaCrosseGateways to find out which sensors are currently connected.
+It then creates a thing for every unknown sensor and puts it in the Inbox.
+
+Discovery only creates things for sensors that actually send a value during discovery. LaCrosse temperature sensors send values every few seconds, so that they are normally caught by the discovery. In rare cases, a second discovery run is needed.
+
+PCA301 sockets are polled every 120 seconds by default. This results in sockets not being found by the discovery. In order to make sure the socket is discovered, press the button on the socket during discovery (and make sure you have paired the socket to the USB stick / LaCrosseGateway before by pressing the button for 3 seconds while the receiver is powered).
 
 ## Thing configuration
 
-#### JeeLink USB receivers
+#### JeeLink / LaCrosseGateway (connected to USB)
 
-| Parameter         | Item Type    | Description
-|-------------------|--------------|------------
-| Serial Port       | String       | The serial port name for the USB receiver. Valid values are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux
-| Baud Rate         | Number       | The baud rate of the USB Receiver. Valid values are 9600, 19200, 38400, 57600 (default), and 115200
-| Init Commands     | String       | A semicolon separated list of init commands that will be send to the Jeelink, e.g. "0a v" for disabling the LED
+| Parameter     | Item Type | Description                                                                                                                                  |
+|---------------|-----------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| Serial Port   | String    | The serial port name for the USB receiver / LaCrosseGateway. Valid values are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux |
+| Baud Rate     | Number    | The baud rate of the USB Receiver. Valid values are 9600, 19200, 38400, 57600 (default), and 115200                                          |
+| Init Commands | String    | A semicolon separated list of init commands that will be send to the Jeelink / LaCrosseGateway, e.g. "0a" for disabling the LED              |
 
-#### JeeLink receivers connected over TCP
+The available init commands depend on the sketch that is running on the USB stick / LaCrosseGateway.
 
-| Parameter         | Item Type    | Description
-|-------------------|--------------|------------
-| IP Address        | String       | The IP address of the Server to which the USB Receiver is connected
-| TCP Port          | Number       | The TCP port over which the serial port is made available
-| Init Commands     | String       | A semicolon separated list of init commands that will be send to the Jeelink, e.g. "0a v" for disabling the LED
+
+#### JeeLink / LaCrosseGateway (connected over TCP)
+
+| Parameter     | Item Type | Description                                                                                                                       |
+|---------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------|
+| IP Address    | String    | The IP address of the Server to which the USB Receiver is connected, or the IP address of the LaCrosseGateway                     |
+| TCP Port      | Number    | The TCP port over which the serial port is made available, or the LaCrosseGateway port (which usually is 81)                      |
+| Init Commands | String    | A semicolon separated list of init commands that will be send to the Jeelink / LaCrosseGateway, e.g. "0a" for disabling the LED   |
+
 
 #### LaCrosse temperature sensors
 
-| Parameter         | Item Type    | Description
-|-------------------|--------------|------------
-| Sensor ID         | Number       | The ID of the connected sensor
-| Sensor Timeout    | Number       | The amount of time in seconds that should result in OFFLINE status when no readings have been received from the sensor
-| Update Interval   | Number       | The update interval in seconds how often value updates are propagated. A value of 0 leads to propagation of every value
-| Buffer Size       | Number       | The number of readings used for computing the rolling average
-| Lower Temperature Limit | Decimal       | The lowest allowed valid temperature. Lower temperature readings will be ignored
-| Upper Temperature Limit | Decimal       | The highest allowed valid temperature. Higher temperature readings will be ignored
-| Maximum allowed difference | Decimal    | The maximum allowed difference from a value to the previous value (0 disables this check). If the difference is higher, the reading will be ignored.
+| Parameter                  | Item Type | Description                                                                                                                                          |
+|----------------------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Sensor ID                  | Number    | The ID of the connected sensor                                                                                                                       |
+| Sensor Timeout             | Number    | The amount of time in seconds that should result in OFFLINE status when no readings have been received from the sensor                               |
+| Update Interval            | Number    | The update interval in seconds how often value updates are propagated. A value of 0 leads to propagation of every value                              |
+| Buffer Size                | Number    | The number of readings used for computing the rolling average                                                                                        |
+| Lower Temperature Limit    | Decimal   | The lowest allowed valid temperature. Lower temperature readings will be ignored                                                                     |
+| Upper Temperature Limit    | Decimal   | The highest allowed valid temperature. Higher temperature readings will be ignored                                                                   |
+| Maximum allowed difference | Decimal   | The maximum allowed difference from a value to the previous value (0 disables this check). If the difference is higher, the reading will be ignored. |
+
 
 #### EC3000 power monitors
 
-| Parameter         | Item Type    | Description
-|-------------------|--------------|------------
-| Sensor ID         | Number       | The ID of the connected sensor
-| Sensor Timeout    | Number       | The amount of time in seconds that should result in OFFLINE status when no readings have been received from the sensor
-| Update Interval   | Number       | The update interval in seconds how often value updates are propagated. A value of 0 leads to propagation of every value
-| Buffer Size       | Number       | The number of readings used for computing the rolling average
+| Parameter       | Item Type | Description                                                                                                             |
+|-----------------|-----------|-------------------------------------------------------------------------------------------------------------------------|
+| Sensor ID       | Number    | The ID of the connected sensor                                                                                          |
+| Sensor Timeout  | Number    | The amount of time in seconds that should result in OFFLINE status when no readings have been received from the sensor  |
+| Update Interval | Number    | The update interval in seconds how often value updates are propagated. A value of 0 leads to propagation of every value |
+| Buffer Size     | Number    | The number of readings used for computing the rolling average                                                           |
 
+#### PCA301 power monitoring wireless sockets
+
+| Parameter         | Item Type    | Description                                                                                                            |
+|-------------------|--------------|------------------------------------------------------------------------------------------------------------------------|
+| Sensor ID         | Number       | The ID of the connected sensor                                                                                         |
+| Sensor Timeout    | Number       | The amount of time in seconds that should result in OFFLINE status when no readings have been received from the sensor |
+| Retry Count       | Number       | The number of times a switch command will be resent to the socket until giving up                                      |
 
 ## Channels
 
 #### LaCrosse temperature sensors
 
-| Channel Type ID         | Item Type    | Description
-|-------------------------|--------------|------------
-| temperature             | Number       | Temperature reading
-| humidity                | Number       | Humidity reading 
-| batteryNew              | Contact      | Whether the battery is new (CLOSED) or not (OPEN)
-| batteryLow              | Contact      | Whether the battery is low (CLOSED) or not (OPEN)
+| Channel Type ID | Item Type | Description                                       |
+|-----------------|-----------|---------------------------------------------------|
+| temperature     | Number    | Temperature reading                               |
+| humidity        | Number    | Humidity reading                                  |
+| batteryNew      | Contact   | Whether the battery is new (CLOSED) or not (OPEN) |
+| batteryLow      | Contact   | Whether the battery is low (CLOSED) or not (OPEN) |
 
 #### EC3000 power monitors
 
-| Channel Type ID         | Item Type    | Description
-|-------------------------|--------------|------------
-| currentWatt             | Number       | Instantaneous power in Watt
-| maxWatt                 | Number       | Maximum load power in Watt
-| consumptionTotal        | Number       | Total energy  consumption 
-| applianceTime           | Number       | Total electrical appliance operating time in hours
-| sensorTime              | Number       | Total turn on time of power monitor in hours
-| resets                  | Number       | Number of resets
+| Channel Type ID  | Item Type | Description                                        |
+|------------------|-----------|----------------------------------------------------|
+| currentWatt      | Number    | Instantaneous power in Watt                        |
+| maxWatt          | Number    | Maximum load power in Watt                         |
+| consumptionTotal | Number    | Total energy  consumption                          |
+| applianceTime    | Number    | Total electrical appliance operating time in hours |
+| sensorTime       | Number    | Total turn on time of power monitor in hours       |
+| resets           | Number    | Number of resets                                   |
+
+#### PCA301 power monitoring wireless sockets
+
+| Channel Type ID         | Item Type    | Description                                          |
+|-------------------------|--------------|------------------------------------------------------|
+| switchingState          | Switch       | Whether the sockets are currently switched on or off |
+| currentWatt             | Number       | Instantaneous power in Watt                          |
+| consumptionTotal        | Number       | Total energy consumption                             |
 
 ## Commands
 
-The binding does not handle commands.
+#### PCA301 power monitoring wireless sockets
+
+| Channel Type ID         | Item Type    | Description                                        |
+|-------------------------|--------------|----------------------------------------------------|
+| switchingState          | Switch       | Supports ON and OFF commands to switch the socket. |
 
 ## Full Example
 
-A typical Thing configuration for ec3k looks like this:
+A typical thing configuration for PCA301 looks like this:
 
 ```
-Thing jeelink:jeelinkUsb:ec3k "Jeelink ec3k" @ "home" [ serialPort="COM4", sketchName="ec3kSerial" ]
+Thing jeelink:jeelinkUsb:pca301 "Jeelink pca301" @ "home" [ serialPort="/dev/ttyUSB0" ]
+Thing jeelink:pca301:1-160-236 "ec3k 1" (jeelink:jeelinkUsb:pca301)  @ "home" [ sensorId="1-160-236"]
+```
+
+A typical thing configuration for EC3000 looks like this:
+
+```
+Thing jeelink:jeelinkUsb:ec3k "Jeelink ec3k" @ "home" [ serialPort="COM4" ]
 Thing jeelink:ec3k:0E3D "ec3k 1" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId="0E3D"]
 Thing jeelink:ec3k:14E7 "ec3k 2" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId="14E7"]
 ```
@@ -104,7 +143,7 @@ Thing jeelink:ec3k:14E7 "ec3k 2" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId=
 A typical Thing configuration for lacrosse looks like this:
 
 ```
-Thing jeelink:jeelinkUsb:lacrosse "Jeelink lacrosse" @ "home" [ serialPort="COM6", sketchName="LaCrosseITPlusReader" ]
+Thing jeelink:jeelinkUsb:lacrosse "Jeelink lacrosse" @ "home" [ serialPort="COM6" ]
 Thing jeelink:lacrosse:sensor1 "Jeelink lacrosse 1" (jeelink:jeelinkUsb:lacrosse)  @ "home" [ sensorId="16", minTemp=10, maxTemp=32]
 Thing jeelink:lacrosse:sensor2 "Jeelink lacrosse 2" (jeelink:jeelinkUsb:lacrosse)  @ "home" [ sensorId="18", minTemp=10, maxTemp=32]
 ```
@@ -118,3 +157,10 @@ Contact Battery_Low_LR "Battery Low Living Room" {channel="jeelink:lacrosse:42:b
 Contact Battery_New_LR "Battery New Living Room" {channel="jeelink:lacrosse:42:batteryLow"}
 ```
 
+A typical item configuration for a PCA301 power monitoring wireless sockets looks like this:
+
+```
+Switch SocketSwitch {channel="jeelink:pca301:1-160-236:switchingState"}
+Number SocketWattage {channel="jeelink:pca301:1-160-236:currentWatt"}
+Number SocketConsumption {channel="jeelink:pca301:1-160-236:consumptionTotal"}
+```

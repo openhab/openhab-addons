@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -31,7 +31,7 @@ import com.google.gson.Gson;
  * event processing and the ability to get the current {@link SocketSession}.
  * {@link #sendCommand(String)} and responses will be received on any {@link SocketSessionListener}
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public abstract class AbstractBridgeHandler<E extends AbstractRioProtocol> extends BaseBridgeHandler
         implements RioCallbackHandler {
@@ -77,7 +77,7 @@ public abstract class AbstractBridgeHandler<E extends AbstractRioProtocol> exten
      * @return the {@link RioHandlerCallback} or null if not found
      */
     @Override
-    public RioHandlerCallback getCallback() {
+    public RioHandlerCallback getRioHandlerCallback() {
         final E protocolHandler = getProtocolHandler();
         return protocolHandler == null ? null : protocolHandler.getCallback();
     }
@@ -165,7 +165,7 @@ public abstract class AbstractBridgeHandler<E extends AbstractRioProtocol> exten
             throw new IllegalArgumentException("channelId cannot be null or empty");
         }
 
-        final List<IdName> ids = new ArrayList<IdName>();
+        final List<IdName> ids = new ArrayList<>();
         for (Thing thn : getThing().getThings()) {
             if (thn.getStatus() == ThingStatus.ONLINE) {
                 final ThingHandler handler = thn.getHandler();

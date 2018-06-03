@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,6 +10,7 @@ package org.openhab.binding.homematic.internal.communicator.server;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -48,33 +49,21 @@ public class XmlRpcServer implements RpcServer {
         this.config = config;
         this.rpcResponseHander = new RpcResponseHandler<String>(listener) {
 
-            /**
-             * {@inheritDoc}
-             */
             @Override
             protected String getEmptyStringResult() {
                 return XML_EMPTY_STRING;
             }
 
-            /**
-             * {@inheritDoc}
-             */
             @Override
             protected String getEmptyEventListResult() {
                 return XML_EMPTY_EVENT_LIST;
             }
 
-            /**
-             * {@inheritDoc}
-             */
             @Override
             protected String getEmptyArrayResult() {
                 return XML_EMPTY_ARRAY;
             }
 
-            /**
-             * {@inheritDoc}
-             */
             @Override
             protected RpcRequest<String> createRpcRequest() {
                 return new XmlRpcRequest(null, XmlRpcRequest.TYPE.RESPONSE);
@@ -82,14 +71,13 @@ public class XmlRpcServer implements RpcServer {
         };
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void start() throws IOException {
         logger.debug("Initializing XML-RPC server at port {}", config.getXmlCallbackPort());
 
-        xmlRpcHTTPD = new Server(config.getXmlCallbackPort());
+        InetSocketAddress callbackAddress = new InetSocketAddress(config.getCallbackHost(),
+                config.getXmlCallbackPort());
+        xmlRpcHTTPD = new Server(callbackAddress);
         xmlRpcHTTPD.setHandler(jettyResponseHandler);
 
         try {
@@ -102,9 +90,6 @@ public class XmlRpcServer implements RpcServer {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void shutdown() {
         if (xmlRpcHTTPD != null) {
@@ -123,10 +108,6 @@ public class XmlRpcServer implements RpcServer {
      * @author Martin Herbst
      */
     private class ResponseHandler extends AbstractHandler {
-
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
                 throws IOException, ServletException {

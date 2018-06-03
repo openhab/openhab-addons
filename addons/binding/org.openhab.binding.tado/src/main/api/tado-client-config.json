@@ -1,0 +1,8 @@
+{
+    "apiPackage": "org.openhab.binding.tado.internal.api.client",
+    "modelPackage": "org.openhab.binding.tado.internal.api.model",
+    "invokerPackage": "org.openhab.binding.tado.internal.api",
+    "library": "retrofit2",
+    "dateLibrary": "legacy",
+    "artifactId": "tado-api-client"
+}

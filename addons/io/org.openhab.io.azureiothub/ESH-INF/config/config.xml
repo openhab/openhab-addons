@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	<config-description uri="io:azureiothub">
+		<parameter name="mode" type="text" required="true">
+			<label>Communication Mode</label>
+			<description>Type of communication to be used with the Azure IoT Hub.</description>
+			<options>
+				<option value="publish">Publish</option>
+				<option value="publishcommand">Publish &amp; Command</option>
+			</options>
+			<default>publishcommand</default>
+		</parameter>
+		<parameter name="connectionstring" type="text" required="false">
+			<label>Connection String</label>
+			<description>The "connectionstring" for authenticating against the Azure IoT Hub.</description>
+			<required>true</required>
+			<advanced>false</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

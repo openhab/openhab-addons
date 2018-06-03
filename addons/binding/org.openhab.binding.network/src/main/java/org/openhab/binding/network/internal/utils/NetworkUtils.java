@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,11 +8,12 @@
  */
 package org.openhab.binding.network.internal.utils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.InterfaceAddress;
@@ -23,17 +24,16 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.net.util.SubnetUtils;
+import org.eclipse.smarthome.io.net.exec.ExecUtil;
 
 /**
  * Network utility functions for pinging and for determining all interfaces and assigned IP addresses.
@@ -42,32 +42,24 @@ import org.apache.commons.net.util.SubnetUtils;
  */
 public class NetworkUtils {
     /**
-     * Use this within the class to internally call NetworkInterface.getNetworkInterfaces().
-     * This is done for testing purposes.
-     *
-     * @return
-     */
-    public Enumeration<NetworkInterface> getNetworkInterfaces() {
-        try {
-            return NetworkInterface.getNetworkInterfaces();
-        } catch (SocketException ignored) {
-            // If we are not allowed to enumerate, we return an empty result set.
-            return Collections.enumeration(new ArrayList<NetworkInterface>());
-        }
-
-    }
-
-    /**
      * Gets every IPv4 Address on each Interface except the loopback
      * The Address format is ip/subnet
      *
      * @return The collected IPv4 Addresses
      */
     public Set<String> getInterfaceIPs() {
-        Set<String> interfaceIPs = new HashSet<String>();
+        Set<String> interfaceIPs = new HashSet<>();
+
+        Enumeration<NetworkInterface> interfaces;
+        try {
+            interfaces = NetworkInterface.getNetworkInterfaces();
+        } catch (SocketException ignored) {
+            // If we are not allowed to enumerate, we return an empty result set.
+            return interfaceIPs;
+        }
 
         // For each interface ...
-        for (Enumeration<NetworkInterface> en = getNetworkInterfaces(); en.hasMoreElements();) {
+        for (Enumeration<NetworkInterface> en = interfaces; en.hasMoreElements();) {
             NetworkInterface networkInterface = en.nextElement();
             boolean isLoopback = true;
             try {
@@ -96,7 +88,7 @@ public class NetworkUtils {
      * @return Set of interface names
      */
     public Set<String> getInterfaceNames() {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
 
         try {
             // For each interface ...
@@ -116,27 +108,33 @@ public class NetworkUtils {
     /**
      * Determines every IP which can be assigned on all available interfaces
      *
+     * @param maximumPerInterface The maximum of IP addresses per interface or 0 to get all.
      * @return Every single IP which can be assigned on the Networks the computer is connected to
      */
-    public Set<String> getNetworkIPs() {
-        return getNetworkIPs(getInterfaceIPs());
+    public Set<String> getNetworkIPs(int maximumPerInterface) {
+        return getNetworkIPs(getInterfaceIPs(), maximumPerInterface);
     }
 
     /**
      * Takes the interfaceIPs and fetches every IP which can be assigned on their network
      *
      * @param networkIPs The IPs which are assigned to the Network Interfaces
+     * @param maximumPerInterface The maximum of IP addresses per interface or 0 to get all.
      * @return Every single IP which can be assigned on the Networks the computer is connected to
      */
-    public Set<String> getNetworkIPs(Set<String> interfaceIPs) {
-        LinkedHashSet<String> networkIPs = new LinkedHashSet<String>();
+    public Set<String> getNetworkIPs(Set<String> interfaceIPs, int maximumPerInterface) {
+        LinkedHashSet<String> networkIPs = new LinkedHashSet<>();
 
         for (String string : interfaceIPs) {
             try {
                 // gets every ip which can be assigned on the given network
                 SubnetUtils utils = new SubnetUtils(string);
                 String[] addresses = utils.getInfo().getAllAddresses();
-                for (int i = 0; i < addresses.length; i++) {
+                int len = addresses.length;
+                if (maximumPerInterface != 0 && maximumPerInterface < len) {
+                    len = maximumPerInterface;
+                }
+                for (int i = 0; i < len; i++) {
                     networkIPs.add(addresses[i]);
                 }
 
@@ -145,40 +143,6 @@ public class NetworkUtils {
         }
 
         return networkIPs;
-    }
-
-    /**
-     * Converts 32 bits int to IPv4 <tt>InetAddress</tt>.
-     *
-     * @param val int representation of IPv4 address
-     * @return the address object
-     */
-    public static final InetAddress int2InetAddress(int val) {
-        byte[] value = { (byte) ((val & 0xFF000000) >>> 24), (byte) ((val & 0X00FF0000) >>> 16),
-                (byte) ((val & 0x0000FF00) >>> 8), (byte) ((val & 0x000000FF)) };
-        try {
-            return InetAddress.getByAddress(value);
-        } catch (UnknownHostException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Converts IPv4 <tt>InetAddress</tt> to 32 bits int.
-     *
-     * @param addr IPv4 address object
-     * @return 32 bits int
-     * @throws NullPointerException <tt>addr</tt> is <tt>null</tt>.
-     * @throws IllegalArgumentException the address is not IPv4 (Inet4Address).
-     */
-    public static final int inetAddress2Int(InetAddress addr) {
-        if (!(addr instanceof Inet4Address)) {
-            throw new IllegalArgumentException("Only IPv4 supported");
-        }
-
-        byte[] addrBytes = addr.getAddress();
-        return ((addrBytes[0] & 0xFF) << 24) | ((addrBytes[1] & 0xFF) << 16) | ((addrBytes[2] & 0xFF) << 8)
-                | ((addrBytes[3] & 0xFF));
     }
 
     /**
@@ -197,44 +161,63 @@ public class NetworkUtils {
         try (Socket socket = new Socket()) {
             socket.connect(socketAddress, timeout);
             return true;
-        } catch (NoRouteToHostException ignored) {
+        } catch (ConnectException | SocketTimeoutException | NoRouteToHostException ignored) {
             return false;
-        } catch (SocketTimeoutException ignored) {
-            return false;
-        } catch (ConnectException e) {
-            // Connection refused, there is a device on the other end though
-            return true;
         }
     }
 
     /**
-     * Return true if the native system ping is working
+     * Return the working method for the native system ping. If no native ping
+     * works JavaPing is returned.
      */
-    public boolean isNativePingWorking() {
+    public IpPingMethodEnum determinePingMethod() {
+        IpPingMethodEnum method;
+        if (SystemUtils.IS_OS_WINDOWS) {
+            method = IpPingMethodEnum.WINDOWS_PING;
+        } else if (SystemUtils.IS_OS_MAC) {
+            method = IpPingMethodEnum.MAC_OS_PING;
+        } else if (SystemUtils.IS_OS_UNIX) {
+            method = IpPingMethodEnum.IPUTILS_LINUX_PING;
+        } else {
+            // We cannot estimate the command line for any other operating system and just return false
+            return IpPingMethodEnum.JAVA_PING;
+        }
+
         try {
-            return nativePing("127.0.0.1", 1000);
+            if (nativePing(method, "127.0.0.1", 1000)) {
+                return method;
+            }
         } catch (IOException ignored) {
-            return false;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Reset interrupt flag
-            return false;
         }
+        return IpPingMethodEnum.JAVA_PING;
     }
 
     /**
      * Return true if the external arp ping utility (arping) is available and executable on the given path.
      */
-    public boolean isNativeARPpingWorking(String arpToolPath) {
-        try {
-            // If no exception is thrown, the arp utility is working
-            nativeARPPing(arpToolPath, "lo", "127.0.0.1", 1000);
-            return true;
-        } catch (IOException ignored) {
-            return false;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Reset interrupt flag
-            return false;
+    public ArpPingUtilEnum determineNativeARPpingMethod(String arpToolPath) {
+        String result = ExecUtil.executeCommandLineAndWaitResponse(arpToolPath, 100);
+        if (StringUtils.isBlank(result)) {
+            return null;
+        } else if (result.contains("Thomas Habets")) {
+            if (result.contains("-w sec Specify a timeout")) {
+                return ArpPingUtilEnum.THOMAS_HABERT_ARPING;
+            } else {
+                return ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT;
+            }
+        } else if (result.contains("-w timeout")) {
+            return ArpPingUtilEnum.IPUTILS_ARPING;
         }
+        return ArpPingUtilEnum.UNKNOWN_TOOL;
+    }
+
+    public enum IpPingMethodEnum {
+        JAVA_PING,
+        WINDOWS_PING,
+        IPUTILS_LINUX_PING,
+        MAC_OS_PING
     }
 
     /**
@@ -245,20 +228,72 @@ public class NetworkUtils {
      * @return Returns true if the device responded
      * @throws IOException The ping command could probably not be found
      */
-    public boolean nativePing(String hostname, int timeoutInMS) throws IOException, InterruptedException {
+    public boolean nativePing(IpPingMethodEnum method, String hostname, int timeoutInMS)
+            throws IOException, InterruptedException {
         Process proc;
-        if (SystemUtils.IS_OS_WINDOWS) {
-            proc = new ProcessBuilder("ping", "-w", String.valueOf(timeoutInMS), "-n", "1", hostname).start();
-        } else { // We expect POSIX behaviour on any other OS
-            proc = new ProcessBuilder("ping", "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", hostname).start();
+        // Yes, all supported operating systems have their own ping utility with a different command line
+        switch (method) {
+            case IPUTILS_LINUX_PING:
+                proc = new ProcessBuilder("ping", "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", hostname)
+                        .start();
+                break;
+            case MAC_OS_PING:
+                proc = new ProcessBuilder("ping", "-t", String.valueOf(timeoutInMS / 1000), "-c", "1", hostname)
+                        .start();
+                break;
+            case WINDOWS_PING:
+                proc = new ProcessBuilder("ping", "-w", String.valueOf(timeoutInMS), "-n", "1", hostname).start();
+                break;
+            case JAVA_PING:
+            default:
+                // We cannot estimate the command line for any other operating system and just return false
+                return false;
+
         }
 
-        // The return code is 0 for a successful ping. 1 if device didn't respond and 2 if there is another error like
-        // network interface not ready.
-        return proc.waitFor() == 0;
+        // The return code is 0 for a successful ping, 1 if device didn't
+        // respond, and 2 if there is another error like network interface
+        // not ready.
+        // Exception: return code is also 0 in Windows for all requests on the local subnet.
+        // see https://superuser.com/questions/403905/ping-from-windows-7-get-no-reply-but-sets-errorlevel-to-0
+        if (method != IpPingMethodEnum.WINDOWS_PING) {
+            return proc.waitFor() == 0;
+        }
+
+        int result = proc.waitFor();
+        if (result != 0) {
+            return false;
+        }
+
+        try (BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
+            String line = r.readLine();
+            if (line == null) {
+                throw new IOException("Received no output from ping process.");
+            }
+            do {
+                if (line.contains("host unreachable") || line.contains("timed out")
+                        || line.contains("could not find host")) {
+                    return false;
+                }
+                line = r.readLine();
+            } while (line != null);
+
+            return true;
+        }
+    }
+
+    public enum ArpPingUtilEnum {
+        UNKNOWN_TOOL,
+        IPUTILS_ARPING,
+        THOMAS_HABERT_ARPING,
+        THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT
     }
 
     /**
+     * Execute the arping tool to perform an ARP ping (only for IPv4 addresses).
+     * There exist two different arping utils with the same name unfortunatelly.
+     * * iputils arping which is sometimes preinstalled on fedora/ubuntu and the
+     * * https://github.com/ThomasHabets/arping which also works on Windows and MacOS.
      *
      * @param arpUtilPath The arping absolute path including filename. Example: "arping" or "/usr/bin/arping" or
      *            "C:\something\arping.exe"
@@ -268,17 +303,21 @@ public class NetworkUtils {
      * @return Return true if the device responded
      * @throws IOException The ping command could probably not be found
      */
-    public boolean nativeARPPing(String arpUtilPath, String interfaceName, String ipV4address, int timeoutInMS)
-            throws IOException, InterruptedException {
-        if (arpUtilPath == null) {
+    public boolean nativeARPPing(ArpPingUtilEnum arpingTool, String arpUtilPath, String interfaceName,
+            String ipV4address, int timeoutInMS) throws IOException, InterruptedException {
+        if (arpUtilPath == null || arpingTool == null || arpingTool == ArpPingUtilEnum.UNKNOWN_TOOL) {
             return false;
         }
         Process proc;
-        // The syntax of the iputils arping which is preinstalled on fedora/ubuntu and the
-        // https://github.com/ThomasHabets/arping which also works on Windows and MacOS is similar enough to not use a
-        // different command line on different OSs.
-        proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", "-I", interfaceName,
-                ipV4address).start();
+        if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT) {
+            proc = new ProcessBuilder(arpUtilPath, "-c", "1", "-i", interfaceName, ipV4address).start();
+        } else if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING) {
+            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", "-i",
+                    interfaceName, ipV4address).start();
+        } else {
+            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", "-I",
+                    interfaceName, ipV4address).start();
+        }
 
         // The return code is 0 for a successful ping. 1 if device didn't respond and 2 if there is another error like
         // network interface not ready.
@@ -299,5 +338,4 @@ public class NetworkUtils {
             // We ignore the port unreachable error
         }
     }
-
 }

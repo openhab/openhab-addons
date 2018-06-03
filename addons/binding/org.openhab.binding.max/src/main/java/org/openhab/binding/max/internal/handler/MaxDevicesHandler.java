@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -86,9 +86,6 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         super(thing);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         try {
@@ -120,11 +117,6 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#dispose()
-     */
     @Override
     public void dispose() {
         logger.debug("Disposing MAX! device {} {}.", getThing().getUID(), maxDeviceSerial);
@@ -145,13 +137,6 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         super.dispose();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.smarthome.core.thing.binding.BaseThingHandler#thingUpdated
-     * (org.eclipse.smarthome.core.thing.Thing)
-     */
     @Override
     public void thingUpdated(Thing thing) {
         configSet = false;
@@ -339,9 +324,6 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         return this.bridgeHandler;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         MaxCubeBridgeHandler maxCubeBridge = getMaxCubeBridgeHandler();
@@ -551,9 +533,6 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#bridgeStatusChanged(org.eclipse.smarthome.core.thing.ThingStatusInfo)
-     */
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("Bridge Status updated to {} for device: {}", bridgeStatusInfo.getStatus().toString(),

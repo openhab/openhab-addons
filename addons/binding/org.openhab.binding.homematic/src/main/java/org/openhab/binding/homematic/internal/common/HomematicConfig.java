@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -32,6 +32,7 @@ public class HomematicConfig {
     private static final int DEFAULT_PORT_HMIP = 2010;
     private static final int DEFAULT_PORT_CUXD = 8701;
     private static final int DEFAULT_PORT_GROUP = 9292;
+    public static final int DEFAULT_INSTALL_MODE_DURATION = 60;
 
     private String gatewayAddress;
     private String gatewayType = GATEWAY_TYPE_AUTO;
@@ -46,10 +47,11 @@ public class HomematicConfig {
     private int xmlCallbackPort;
     private int binCallbackPort;
 
-    private Integer aliveInterval = 300;
     private int socketMaxAlive = 900;
     private int timeout = 15;
-    private int reconnectInterval = 0;
+    private int installModeDuration = DEFAULT_INSTALL_MODE_DURATION;
+    private long discoveryTimeToLive = -1;
+    private boolean unpairOnDeletion = false;
 
     private HmGatewayInfo gatewayInfo;
 
@@ -79,16 +81,6 @@ public class HomematicConfig {
      */
     public void setCallbackHost(String callbackHost) {
         this.callbackHost = callbackHost;
-    }
-
-    /**
-     * Returns the callback host port.
-     *
-     * @deprecated use getBinCallbackPort
-     */
-    @Deprecated
-    public int getCallbackPort() {
-        return binCallbackPort;
     }
 
     /**
@@ -127,20 +119,6 @@ public class HomematicConfig {
      */
     public void setBinCallbackPort(int binCallbackPort) {
         this.binCallbackPort = binCallbackPort;
-    }
-
-    /**
-     * Returns the alive interval in seconds.
-     */
-    public Integer getAliveInterval() {
-        return aliveInterval;
-    }
-
-    /**
-     * Sets the alive interval in seconds.
-     */
-    public void setAliveInterval(Integer aliveInterval) {
-        this.aliveInterval = aliveInterval;
     }
 
     /**
@@ -186,17 +164,17 @@ public class HomematicConfig {
     }
 
     /**
-     * Returns the interval in seconds to reconnect to the Homematic gateway.
+     * Returns the time to live for discovery results of a Homematic gateway in seconds.
      */
-    public int getReconnectInterval() {
-        return reconnectInterval;
+    public long getDiscoveryTimeToLive() {
+        return discoveryTimeToLive;
     }
 
     /**
-     * Sets the interval in seconds to reconnect to the Homematic gateway.
+     * Sets the time to live for discovery results of a Homematic gateway in seconds.
      */
-    public void setReconnectInterval(int reconnectInterval) {
-        this.reconnectInterval = reconnectInterval;
+    public void setDiscoveryTimeToLive(long discoveryTimeToLive) {
+        this.discoveryTimeToLive = discoveryTimeToLive;
     }
 
     /**
@@ -211,6 +189,45 @@ public class HomematicConfig {
      */
     public void setGatewayType(String gatewayType) {
         this.gatewayType = gatewayType;
+    }
+    
+    /**
+     * Returns time in seconds that the controller will be in install mode when
+     * a device discovery is initiated
+     * 
+     * @return time in seconds that the controller remains in install mode
+     */
+    public int getInstallModeDuration() {
+        return installModeDuration;
+    }
+    
+    /**
+     * Sets installModeDuration
+     * 
+     * @param installModeDuration time in seconds that the controller remains in
+     *        install mode
+     */
+    public void setInstallModeDuration(int installModeDuration) {
+        this.installModeDuration = installModeDuration;
+    }
+
+    /**
+     * Returns if devices are unpaired from the gateway when their corresponding things are removed
+     * 
+     * @return <i>true</i> if devices are unpaired from the gateway when their corresponding things are removed
+     */
+    public boolean isUnpairOnDeletion() {
+        return unpairOnDeletion;
+    }
+
+    /**
+     * Sets unpairOnDeletion
+     * 
+     * @param unpairOnDeletion if set to <i>true</i>, devices are unpaired from the gateway when their corresponding
+     *            things are removed
+     */
+    public void setUnpairOnDeletion(boolean unpairOnDeletion) {
+        this.unpairOnDeletion = unpairOnDeletion;
     }
 
     /**
@@ -332,9 +349,6 @@ public class HomematicConfig {
         return gatewayType.equalsIgnoreCase(HomematicConfig.GATEWAY_TYPE_NOCCU);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
@@ -342,8 +356,8 @@ public class HomematicConfig {
                 .append("xmlCallbackPort", xmlCallbackPort).append("binCallbackPort", binCallbackPort)
                 .append("gatewayType", gatewayType).append("rfPort", getRfPort()).append("wiredPort", getWiredPort())
                 .append("hmIpPort", getHmIpPort()).append("cuxdPort", getCuxdPort()).append("groupPort", getGroupPort())
-                .append("aliveInterval", aliveInterval).append("reconnectInterval", reconnectInterval)
-                .append("timeout", timeout).append("socketMaxAlive", socketMaxAlive);
+                .append("timeout", timeout).append("discoveryTimeToLive", discoveryTimeToLive)
+                .append("installModeDuration", installModeDuration).append("socketMaxAlive", socketMaxAlive);
         return tsb.toString();
     }
 }

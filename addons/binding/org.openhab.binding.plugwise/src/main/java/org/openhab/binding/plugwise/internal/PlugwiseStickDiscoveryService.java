@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,6 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
 import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -37,6 +38,10 @@ import org.openhab.binding.plugwise.internal.protocol.Message;
 import org.openhab.binding.plugwise.internal.protocol.NetworkStatusRequestMessage;
 import org.openhab.binding.plugwise.internal.protocol.NetworkStatusResponseMessage;
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +54,7 @@ import gnu.io.CommPortIdentifier;
  *
  * @author Wouter Born - Initial contribution
  */
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.plugwise")
 public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
         implements ExtendedDiscoveryService, PlugwiseMessageListener {
 
@@ -80,6 +86,7 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
         discovering = false;
     }
 
+    @Activate
     public void activate() {
         super.activate(new HashMap<>());
         communicationHandler.addMessageListener(this);
@@ -93,9 +100,11 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
                 .withProperty(PlugwiseBindingConstants.CONFIG_PROPERTY_MAC_ADDRESS, mac)
                 .withProperty(PlugwiseBindingConstants.CONFIG_PROPERTY_SERIAL_PORT,
                         communicationHandler.getConfiguration().getSerialPort())
-                .withProperties(new HashMap<>(properties)).withRepresentationProperty(mac).build();
+                .withProperties(new HashMap<>(properties))
+                .withRepresentationProperty(PlugwiseBindingConstants.PROPERTY_MAC_ADDRESS).build();
     }
 
+    @Deactivate
     @Override
     protected void deactivate() {
         super.deactivate();
@@ -203,7 +212,10 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
 
     private boolean isAlreadyDiscovered(MACAddress macAddress) {
         ThingUID thingUID = new ThingUID(THING_TYPE_STICK, macAddress.toString());
-        if (discoveryServiceCallback.getExistingDiscoveryResult(thingUID) != null) {
+        if (discoveryServiceCallback == null) {
+            logger.debug("Assuming Stick ({}) has not yet been discovered (callback null)", macAddress);
+            return false;
+        } else if (discoveryServiceCallback.getExistingDiscoveryResult(thingUID) != null) {
             logger.debug("Stick ({}) has existing discovery result: {}", macAddress, thingUID);
             return true;
         } else if (discoveryServiceCallback.getExistingThing(thingUID) != null) {
@@ -212,6 +224,12 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
         }
         logger.debug("Stick ({}) has not yet been discovered", macAddress);
         return false;
+    }
+
+    @Modified
+    @Override
+    protected void modified(Map<String, Object> configProperties) {
+        super.modified(configProperties);
     }
 
     private void sendMessage(Message message) {
@@ -237,16 +255,14 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
     protected void startBackgroundDiscovery() {
         logger.debug("Starting Plugwise Stick background discovery");
 
-        Runnable discoveryRunnable = new Runnable() {
-            @Override
-            public void run() {
-                logger.debug("Discover Sticks (background discovery)");
-                discoverSticks();
-            }
+        Runnable discoveryRunnable = () -> {
+            logger.debug("Discover Sticks (background discovery)");
+            discoverSticks();
         };
 
         if (discoveryJob == null || discoveryJob.isCancelled()) {
-            discoveryJob = scheduler.scheduleAtFixedRate(discoveryRunnable, 15, DISCOVERY_INTERVAL, TimeUnit.SECONDS);
+            discoveryJob = scheduler.scheduleWithFixedDelay(discoveryRunnable, 15, DISCOVERY_INTERVAL,
+                    TimeUnit.SECONDS);
         }
     }
 

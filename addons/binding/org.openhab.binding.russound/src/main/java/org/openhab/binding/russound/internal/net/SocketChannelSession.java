@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * {@link #sendCommand(String)} and responses will be received on any {@link SocketSessionListener}. This implementation
  * of {@link SocketSession} communicates using a {@link SocketChannel} connection.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class SocketChannelSession implements SocketSession {
     private final Logger logger = LoggerFactory.getLogger(SocketChannelSession.class);
@@ -46,17 +46,17 @@ public class SocketChannelSession implements SocketSession {
     /**
      * The actual socket being used. Will be null if not connected
      */
-    private final AtomicReference<SocketChannel> socketChannel = new AtomicReference<SocketChannel>();
+    private final AtomicReference<SocketChannel> socketChannel = new AtomicReference<>();
 
     /**
      * The responses read from the {@link #responseReader}
      */
-    private final BlockingQueue<Object> responses = new ArrayBlockingQueue<Object>(50);
+    private final BlockingQueue<Object> responses = new ArrayBlockingQueue<>(50);
 
     /**
      * The {@link SocketSessionListener} that the {@link #dispatcher} will call
      */
-    private List<SocketSessionListener> sessionListeners = new CopyOnWriteArrayList<SocketSessionListener>();
+    private List<SocketSessionListener> sessionListeners = new CopyOnWriteArrayList<>();
 
     /**
      * The thread dispatching responses - will be null if not connected
@@ -86,13 +86,6 @@ public class SocketChannelSession implements SocketSession {
         this.port = port;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.openhab.binding.russound.internal.net.SocketSession#addListener(org.openhab.binding.russound.internal.net.
-     * SocketSessionListener)
-     */
     @Override
     public void addListener(SocketSessionListener listener) {
         if (listener == null) {
@@ -101,43 +94,21 @@ public class SocketChannelSession implements SocketSession {
         sessionListeners.add(listener);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.russound.internal.net.SocketSession#clearListeners()
-     */
     @Override
     public void clearListeners() {
         sessionListeners.clear();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.openhab.binding.russound.internal.net.SocketSession#removeListener(org.openhab.binding.russound.internal.net.
-     * SocketSessionListener)
-     */
     @Override
     public boolean removeListener(SocketSessionListener listener) {
         return sessionListeners.remove(listener);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.russound.internal.net.SocketSession#connect()
-     */
     @Override
     public void connect() throws IOException {
         connect(2000);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.russound.internal.net.SocketSession#connect(int)
-     */
     @Override
     public void connect(int timeout) throws IOException {
         disconnect();
@@ -159,11 +130,6 @@ public class SocketChannelSession implements SocketSession {
         responseThread.start();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.russound.internal.net.SocketSession#disconnect()
-     */
     @Override
     public void disconnect() throws IOException {
         if (isConnected()) {
@@ -182,22 +148,12 @@ public class SocketChannelSession implements SocketSession {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.russound.internal.net.SocketSession#isConnected()
-     */
     @Override
     public boolean isConnected() {
         final SocketChannel channel = socketChannel.get();
         return channel != null && channel.isConnected();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.russound.internal.net.SocketSession#sendCommand(java.lang.String)
-     */
     @Override
     public synchronized void sendCommand(String command) throws IOException {
         if (command == null) {
@@ -283,7 +239,6 @@ public class SocketChannelSession implements SocketSession {
                     }
 
                     readBuffer.flip();
-
                 } catch (InterruptedException e) {
                     // Ending thread execution
                     Thread.currentThread().interrupt();
@@ -351,7 +306,7 @@ public class SocketChannelSession implements SocketSession {
                     // Ending thread execution
                     Thread.currentThread().interrupt();
                 } catch (Exception e) {
-                    logger.debug("Uncaught exception {}: {}", e.getMessage(), e);
+                    logger.debug("Uncaught exception {}: ", e.getMessage(), e);
                     Thread.currentThread().interrupt();
                 }
             }

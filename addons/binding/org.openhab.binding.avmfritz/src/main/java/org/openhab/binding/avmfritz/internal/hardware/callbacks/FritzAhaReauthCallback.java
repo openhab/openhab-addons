@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 
-import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
+import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 
 /**
  * Callback implementation for reauthorization and retry
@@ -30,7 +30,7 @@ public class FritzAhaReauthCallback implements FritzAhaCallback {
     /**
      * Web interface to use
      */
-    private FritzahaWebInterface webIface;
+    private FritzAhaWebInterface webIface;
 
     /**
      * HTTP Method for callback retries
@@ -96,13 +96,10 @@ public class FritzAhaReauthCallback implements FritzAhaCallback {
         return args;
     }
 
-    public FritzahaWebInterface getWebIface() {
+    public FritzAhaWebInterface getWebIface() {
         return webIface;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void execute(int status, String response) {
         if (status != 200 || "".equals(response) || ".".equals(response)) {
@@ -135,7 +132,7 @@ public class FritzAhaReauthCallback implements FritzAhaCallback {
      * @param retries
      *            Number of retries
      */
-    public FritzAhaReauthCallback(String path, String args, FritzahaWebInterface webIface, Method httpMethod,
+    public FritzAhaReauthCallback(String path, String args, FritzAhaWebInterface webIface, Method httpMethod,
             int retries) {
         this.path = path;
         this.args = args;

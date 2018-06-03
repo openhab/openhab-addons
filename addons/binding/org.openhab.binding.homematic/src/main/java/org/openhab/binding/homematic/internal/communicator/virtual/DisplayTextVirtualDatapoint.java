@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -213,17 +213,11 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getName() {
         return DATAPOINT_NAME_DISPLAY_SUBMIT;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize(HmDevice device) {
         if (isDisplay(device)) {
@@ -284,7 +278,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
      * Returns the number of lines of the display.
      */
     private int getLineCount(HmDevice device) {
-        return (DEVICE_TYPE_STATUS_DISPLAY.equals(device.getType()) ? 5 : 3);
+        return (DEVICE_TYPE_STATUS_DISPLAY.equals(device.getType()) ? 6 : 3);
     }
 
     /**
@@ -301,9 +295,6 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
         return device.getType().equals(DEVICE_TYPE_STATUS_DISPLAY) || isEpDisplay(device);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canHandleCommand(HmDatapoint dp, Object value) {
         HmDevice device = dp.getChannel().getDevice();
@@ -317,9 +308,6 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
                         || dp.getName().equals(DATAPOINT_NAME_DISPLAY_BEEPINTERVAL));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException {
@@ -331,7 +319,9 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
 
             List<String> message = new ArrayList<String>();
             message.add(START);
-            message.add(LF);
+            if (isEp) {
+                message.add(LF);
+            }
 
             for (int i = 1; i <= getLineCount(channel.getDevice()); i++) {
                 String line = ObjectUtils.toString(

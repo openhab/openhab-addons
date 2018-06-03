@@ -3,18 +3,20 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="kecontact">
 		<label>KeContact EV Charging Station</label>
 		<description>This Thing supports the KeContact EV Charging station</description>
 
 		<channels>
 			<channel id="state" typeId="state" />
-			<channel id="error" typeId="error" />
+			<channel id="error1" typeId="error1" />
+			<channel id="error2" typeId="error2" />
 			<channel id="wallbox" typeId="plug" />
-			<channel id="vehicule" typeId="plug" />
+			<channel id="vehicle" typeId="plug" />
 			<channel id="locked" typeId="locked" />
 			<channel id="enabled" typeId="switch" />
+			<channel id="maxpilotcurrent" typeId="current" />
+			<channel id="pwmpilotcurrent" typeId="pilotrange" />
 			<channel id="maxsystemcurrent" typeId="current" />
 			<channel id="maxpresetcurrentrange" typeId="range" />
 			<channel id="maxpresetcurrent" typeId="current_settable" />
@@ -63,9 +65,15 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="error" advanced="true">
+	<channel-type id="error1" advanced="true">
 		<item-type>String</item-type>
-		<label>Error Code</label>
+		<label>Error Code 1</label>
+		<description>Error code state, if in error. See the KeContact FAQ</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="error2" advanced="true">
+		<item-type>String</item-type>
+		<label>Error Code 2</label>
 		<description>Error code state, if in error. See the KeContact FAQ</description>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -104,6 +112,12 @@
 		<label>Current</label>
 		<description>Current in % of the 6000-63000 mA range accepted by the wallbox</description>
 		<state pattern="%d %" readOnly="false"></state>
+	</channel-type>
+	<channel-type id="pilotrange">
+		<item-type>Number</item-type>
+		<label>Current</label>
+		<description>Current preset value via Control pilot in 0,1% of the PWM value</description>
+		<state pattern="%d" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="uptime" advanced="true">
 		<item-type>DateTime</item-type>

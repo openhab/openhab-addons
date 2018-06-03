@@ -9,11 +9,11 @@
 		</supported-bridge-type-refs>
 		<label>Xiaomi "zero-fire" 1 Channel Wall Switch</label>
 		<channels>
-            <channel id="ch1" typeId="sw-btn">
-                <description>The pushbutton on the switch.</description>
-            </channel>
+			<channel id="ch1" typeId="sw-btn">
+				<description>The pushbutton on the switch.</description>
+			</channel>
 		</channels>
 		<config-description-ref uri="thing-type:mihome:device" />
 	</thing-type>
-	
+
 </thing:thing-descriptions>

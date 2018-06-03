@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,6 +10,7 @@ package org.openhab.binding.kodi.internal;
 
 import java.util.EventListener;
 
+import org.eclipse.smarthome.core.library.types.RawType;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 
 /**
@@ -18,21 +19,32 @@ import org.openhab.binding.kodi.internal.protocol.KodiConnection;
  *
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
- *
+ * @author Christoph Weitkamp - Improvements for playing audio notifications
  */
 public interface KodiEventListener extends EventListener {
     public enum KodiState {
-        Play,
-        Pause,
-        End,
-        Stop,
-        Rewind,
-        FastForward
+        PLAY,
+        PAUSE,
+        END,
+        STOP,
+        REWIND,
+        FASTFORWARD
+    }
+
+    public enum KodiPlaylistState {
+        ADD,
+        ADDED,
+        INSERT,
+        REMOVE,
+        REMOVED,
+        CLEAR
     }
 
     void updateConnectionState(boolean connected);
 
     void updateScreenSaverState(boolean screenSaveActive);
+
+    void updatePlaylistState(KodiPlaylistState playlistState);
 
     void updateVolume(int volume);
 
@@ -51,4 +63,14 @@ public interface KodiEventListener extends EventListener {
     void updateMediaType(String mediaType);
 
     void updatePVRChannel(final String channel);
+
+    void updateThumbnail(RawType thumbnail);
+
+    void updateFanart(RawType fanart);
+
+    void updateCurrentTime(long currentTime);
+
+    void updateCurrentTimePercentage(double currentTimePercentage);
+
+    void updateDuration(long duration);
 }

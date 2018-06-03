@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.homematic;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -15,12 +16,18 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HomematicBindingConstants {
 
     public static final String BINDING_ID = "homematic";
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final String CONFIG_DESCRIPTION_URI_CHANNEL = "channel-type:homematic:config";
-    public static final String CONFIG_DESCRIPTION_URI_THING = "thing-type:homematic:config";
+    
+    /**
+     * A thing's config-description-uri is generally composed as follows:<br>
+     * {@link #CONFIG_DESCRIPTION_URI_THING_PREFIX}:{@link ThingTypeUID}
+     */
+    public static final String CONFIG_DESCRIPTION_URI_THING_PREFIX = "thing-type";
 
     public static final String PROPERTY_VENDOR_NAME = "eQ-3 AG";
 
@@ -50,4 +57,7 @@ public class HomematicBindingConstants {
 
     public static final String PROPERTY_BATTERY_TYPE = "batteryType";
     public static final String PROPERTY_AES_KEY = "aesKey";
+    public static final String PROPERTY_DYNAMIC_FUNCTION_FORMAT = "dynamicFunction-%d";
+    
+    public static final int INSTALL_MODE_NORMAL = 1;
 }

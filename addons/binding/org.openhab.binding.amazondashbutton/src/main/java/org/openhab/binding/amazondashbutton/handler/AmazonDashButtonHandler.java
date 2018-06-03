@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,8 +24,6 @@ import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceSe
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceWrapper;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapUtil;
 import org.pcap4j.util.MacAddress;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link AmazonDashButtonHandler} is responsible for handling commands, which are
@@ -54,40 +52,35 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
         final String pcapNetworkInterfaceName = dashButtonConfig.pcapNetworkInterfaceName;
         final String macAddress = dashButtonConfig.macAddress;
         final Integer packetInterval = dashButtonConfig.packetInterval;
-        scheduler.submit(new Runnable() {
+        scheduler.submit(() -> {
+            PcapNetworkInterfaceWrapper pcapNetworkInterface = PcapUtil
+                    .getNetworkInterfaceByName(pcapNetworkInterfaceName);
+            if (pcapNetworkInterface == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                        "The networkinterface " + pcapNetworkInterfaceName + " is not present.");
+                return;
+            }
 
-            @Override
-            public void run() {
-                PcapNetworkInterfaceWrapper pcapNetworkInterface = PcapUtil
-                        .getNetworkInterfaceByName(pcapNetworkInterfaceName);
-                if (pcapNetworkInterface == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                            "The networkinterface " + pcapNetworkInterfaceName + " is not present.");
-                    return;
-                }
+            packetCapturingService = new PacketCapturingService(pcapNetworkInterface);
+            boolean capturingStarted = packetCapturingService.startCapturing(new PacketCapturingHandler() {
 
-                packetCapturingService = new PacketCapturingService(pcapNetworkInterface);
-                boolean capturingStarted = packetCapturingService.startCapturing(new PacketCapturingHandler() {
-
-                    @Override
-                    public void packetCaptured(MacAddress macAddress) {
-                        long now = System.currentTimeMillis();
-                        if (lastCommandHandled + packetInterval < now) {
-                            ChannelUID pressChannel = new ChannelUID(getThing().getUID(), PRESS);
-                            triggerChannel(pressChannel);
-                            lastCommandHandled = now;
-                        }
+                @Override
+                public void packetCaptured(MacAddress macAddress) {
+                    long now = System.currentTimeMillis();
+                    if (lastCommandHandled + packetInterval < now) {
+                        ChannelUID pressChannel = new ChannelUID(getThing().getUID(), PRESS);
+                        triggerChannel(pressChannel);
+                        lastCommandHandled = now;
                     }
-                }, macAddress);
-                if (capturingStarted) {
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "The capturing for " + pcapNetworkInterfaceName + " cannot be started.");
                 }
+            }, macAddress);
+            if (capturingStarted) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "The capturing for " + pcapNetworkInterfaceName + " cannot be started.");
             }
         });
-
     }
 
     @Override

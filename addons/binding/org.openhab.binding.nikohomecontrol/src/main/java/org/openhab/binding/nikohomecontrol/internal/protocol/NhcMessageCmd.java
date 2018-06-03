@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,7 +14,7 @@ package org.openhab.binding.nikohomecontrol.internal.protocol;
  * <p>
  * Example: <code>{"cmd":"executeactions","id":1,"value1":0}</code>
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 @SuppressWarnings("unused")
 class NhcMessageCmd extends NhcMessageBase {
@@ -23,8 +23,6 @@ class NhcMessageCmd extends NhcMessageBase {
     private Integer value1;
     private Integer value2;
     private Integer value3;
-    private Integer startValue;
-    private Integer endValue;
 
     NhcMessageCmd(String cmd) {
         super.setCmd(cmd);
@@ -40,13 +38,5 @@ class NhcMessageCmd extends NhcMessageBase {
         this(cmd, id, value1);
         this.value2 = value2;
         this.value3 = value3;
-    }
-
-    void setStartValue(Integer startValue) {
-        this.startValue = startValue;
-    }
-
-    void setEndValue(Integer endValue) {
-        this.endValue = endValue;
     }
 }

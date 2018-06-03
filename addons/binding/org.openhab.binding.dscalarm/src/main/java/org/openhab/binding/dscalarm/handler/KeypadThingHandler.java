@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(KeypadThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(KeypadThingHandler.class);
 
     /**
      * Constructor.
@@ -42,13 +42,9 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
         setDSCAlarmThingType(DSCAlarmThingType.KEYPAD);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void updateChannel(ChannelUID channelUID, int state, String description) {
         logger.debug("updateChannel(): Keypad Channel UID: {}", channelUID);
-
         if (channelUID != null) {
             switch (channelUID.getId()) {
                 case KEYPAD_READY_LED:
@@ -115,7 +111,6 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
             channel = channelTypes[i];
 
             if (channel != "") {
-
                 channelUID = new ChannelUID(getThing().getUID(), channel);
 
                 switch (dscAlarmCode) {
@@ -134,12 +129,8 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dscAlarmEventReceived(EventObject event, Thing thing) {
-
         if (thing != null) {
             if (getThing() == thing) {
                 DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;

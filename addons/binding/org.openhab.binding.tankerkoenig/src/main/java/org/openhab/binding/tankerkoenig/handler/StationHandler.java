@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,6 +13,7 @@ import static org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -24,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
 import org.openhab.binding.tankerkoenig.internal.config.LittleStation;
 import org.openhab.binding.tankerkoenig.internal.config.OpeningTimes;
@@ -36,8 +38,8 @@ import org.slf4j.LoggerFactory;
  * The {@link StationHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Dennis Dollinger
- * @author Jürgen Baginski
+ * @author Dennis Dollinger - Initial contribution
+ * @author Jürgen Baginski - Initial contribution
  */
 public class StationHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(StationHandler.class);
@@ -84,19 +86,15 @@ public class StationHandler extends BaseThingHandler {
         }
         updateStatus(ThingStatus.UNKNOWN);
 
-        pollingJob = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    logger.debug("Try to refresh detail data");
-                    updateDetailData();
-                } catch (RuntimeException r) {
-                    logger.debug(
-                            "Caught exception in ScheduledExecutorService of TankerkoenigHandler. RuntimeExcetion: {}",
-                            r);
-                    // no status change, since in case of error in here,
-                    // the old values for opening time will be continue to be used
-                }
+        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                logger.debug("Try to refresh detail data");
+                updateDetailData();
+            } catch (RuntimeException r) {
+                logger.debug("Caught exception in ScheduledExecutorService of TankerkoenigHandler. RuntimeExcetion: {}",
+                        r);
+                // no status change, since in case of error in here,
+                // the old values for opening time will be continue to be used
             }
         }, 15, 86400, TimeUnit.SECONDS);// 24*60*60 = 86400, a whole day in seconds!
         logger.debug("Refresh job scheduled to run every 24 hours for '{}'", getThing().getUID());
@@ -125,13 +123,25 @@ public class StationHandler extends BaseThingHandler {
      */
     public void updateData(LittleStation station) {
         logger.debug("Update Tankerkoenig data '{}'", getThing().getUID());
-        DecimalType diesel = new DecimalType(station.getDiesel());
-        DecimalType e10 = new DecimalType(station.getE10());
-        DecimalType e5 = new DecimalType(station.getE5());
+        if (StringUtils.containsOnly(station.getDiesel(), "01234567890.")) {
+            DecimalType diesel = new DecimalType(station.getDiesel());
+            updateState(CHANNEL_DIESEL, diesel);
+        } else {
+            updateState(CHANNEL_DIESEL, UnDefType.UNDEF);
+        }
+        if (StringUtils.containsOnly(station.getE10(), "01234567890.")) {
+            DecimalType e10 = new DecimalType(station.getE10());
+            updateState(CHANNEL_E10, e10);
+        } else {
+            updateState(CHANNEL_E10, UnDefType.UNDEF);
+        }
+        if (StringUtils.containsOnly(station.getE5(), "01234567890.")) {
+            DecimalType e5 = new DecimalType(station.getE5());
+            updateState(CHANNEL_E5, e5);
+        } else {
+            updateState(CHANNEL_E5, UnDefType.UNDEF);
+        }
         updateState(CHANNEL_STATION_OPEN, (station.isOpen() ? OpenClosedType.OPEN : OpenClosedType.CLOSED));
-        updateState(CHANNEL_DIESEL, diesel);
-        updateState(CHANNEL_E10, e10);
-        updateState(CHANNEL_E5, e5);
         updateStatus(ThingStatus.ONLINE);
     }
 

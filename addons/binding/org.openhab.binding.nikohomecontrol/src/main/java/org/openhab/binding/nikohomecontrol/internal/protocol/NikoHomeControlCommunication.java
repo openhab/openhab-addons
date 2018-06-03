@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -40,7 +40,7 @@ import com.google.gson.JsonParseException;
  *
  * A class instance is instantiated from the {@link NikoHomeControlBridgeHandler} class initialization.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 public final class NikoHomeControlCommunication {
 
@@ -168,35 +168,31 @@ public final class NikoHomeControlCommunication {
      * Control actions. It is started after initialization of the communication.
      *
      */
-    private Runnable nhcEvents = new Runnable() {
-        @Override
-        public void run() {
-            String nhcMessage;
+    private Runnable nhcEvents = () -> {
+        String nhcMessage;
 
-            logger.debug("Niko Home Control: listening for events on thread {}", Thread.currentThread().getId());
-            listenerStopped = false;
-            nhcEventsRunning = true;
+        logger.debug("Niko Home Control: listening for events on thread {}", Thread.currentThread().getId());
+        listenerStopped = false;
+        nhcEventsRunning = true;
 
-            try {
-                while (!listenerStopped & ((nhcMessage = nhcIn.readLine()) != null)) {
-                    readMessage(nhcMessage);
-                }
-            } catch (IOException e) {
-                if (!listenerStopped) {
-                    nhcEventsRunning = false;
-                    // this is a socket error, not a communication stop triggered from outside this runnable
-                    logger.warn("Niko Home Control: IO error in listener on thread {}", Thread.currentThread().getId());
-                    // the IO has stopped working, so we need to close cleanly and try to restart
-                    restartCommunication();
-                    return;
-                }
+        try {
+            while (!listenerStopped & ((nhcMessage = nhcIn.readLine()) != null)) {
+                readMessage(nhcMessage);
             }
-
-            nhcEventsRunning = false;
-            // this is a stop from outside the runnable, so just log it and stop
-            logger.debug("Niko Home Control: event listener thread stopped on thread {}",
-                    Thread.currentThread().getId());
+        } catch (IOException e) {
+            if (!listenerStopped) {
+                nhcEventsRunning = false;
+                // this is a socket error, not a communication stop triggered from outside this runnable
+                logger.warn("Niko Home Control: IO error in listener on thread {}", Thread.currentThread().getId());
+                // the IO has stopped working, so we need to close cleanly and try to restart
+                restartCommunication();
+                return;
+            }
         }
+
+        nhcEventsRunning = false;
+        // this is a stop from outside the runnable, so just log it and stop
+        logger.debug("Niko Home Control: event listener thread stopped on thread {}", Thread.currentThread().getId());
     };
 
     /**
@@ -325,6 +321,10 @@ public final class NikoHomeControlCommunication {
 
             int id = Integer.parseInt(action.get("id"));
             Integer state = Integer.valueOf(action.get("value1"));
+            String value2 = action.get("value2");
+            Integer closeTime = (value2 == null ? null : Integer.valueOf(value2));
+            String value3 = action.get("value3");
+            Integer openTime = (value3 == null ? null : Integer.valueOf(value3));
 
             if (!this.actions.containsKey(id)) {
                 // Initial instantiation of NhcAction class for action object
@@ -335,7 +335,7 @@ public final class NikoHomeControlCommunication {
                 if (locationId != null) {
                     location = this.locations.get(locationId).getName();
                 }
-                NhcAction nhcAction = new NhcAction(id, name, type, location);
+                NhcAction nhcAction = new NhcAction(id, name, type, location, closeTime, openTime);
                 nhcAction.setState(state);
                 nhcAction.setNhcComm(this);
                 this.actions.put(id, nhcAction);
@@ -361,7 +361,7 @@ public final class NikoHomeControlCommunication {
         for (Map<String, String> action : data) {
             int id = Integer.valueOf(action.get("id"));
             if (!this.actions.containsKey(id)) {
-                logger.warn("Niko Home Control: action in controller not known to openHab {}", id);
+                logger.warn("Niko Home Control: action in controller not known {}", id);
                 return;
             }
             Integer state = Integer.valueOf(action.get("value1"));
@@ -397,8 +397,7 @@ public final class NikoHomeControlCommunication {
         logger.debug("Niko Home Control: send json {} from thread {}", json, Thread.currentThread().getId());
         this.nhcOut.println(json);
         if (this.nhcOut.checkError()) {
-            logger.warn("Niko Home Control: error sending message, trying to restart communication",
-                    Thread.currentThread().getId());
+            logger.warn("Niko Home Control: error sending message, trying to restart communication");
             restartCommunication();
             // retry sending after restart
             logger.debug("Niko Home Control: resend json {} from thread {}", json, Thread.currentThread().getId());

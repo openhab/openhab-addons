@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,8 +10,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageTooLongException;
@@ -29,15 +28,15 @@ public class RFXComUndecodedRFMessageTest {
     private void testMessage(String hexMsg, RFXComUndecodedRFMessage.SubType subType, int seqNbr, String rawPayload)
             throws RFXComException {
         final RFXComUndecodedRFMessage msg = (RFXComUndecodedRFMessage) RFXComMessageFactory
-                .createMessage(DatatypeConverter.parseHexBinary(hexMsg));
+                .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals("SubType", subType, msg.subType);
         assertEquals("Seq Number", seqNbr, (short) (msg.seqNbr & 0xFF));
         assertEquals("Device Id", "UNDECODED", msg.getDeviceId());
-        assertEquals("Payload", rawPayload, DatatypeConverter.printHexBinary(msg.rawPayload));
+        assertEquals("Payload", rawPayload, HexUtils.bytesToHex(msg.rawPayload));
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMsg, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", hexMsg, HexUtils.bytesToHex(decoded));
     }
 
     @Test
@@ -51,8 +50,8 @@ public class RFXComUndecodedRFMessageTest {
                 .createMessage(PacketType.UNDECODED_RF_MESSAGE);
         msg.subType = RFXComUndecodedRFMessage.SubType.ARC;
         msg.seqNbr = 1;
-        msg.rawPayload = DatatypeConverter
-                .parseHexBinary("000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F2021");
+        msg.rawPayload = HexUtils
+                .hexToBytes("000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F2021");
         msg.decodeMessage();
     }
 }

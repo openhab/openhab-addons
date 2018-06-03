@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -29,9 +29,6 @@ public class CcuLoadDeviceNamesParser extends CommonRpcParser<TclScriptDataList,
         this.devices = devices;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Void parse(TclScriptDataList resultList) throws IOException {
         if (resultList.getEntries() != null) {
@@ -41,7 +38,7 @@ public class CcuLoadDeviceNamesParser extends CommonRpcParser<TclScriptDataList,
             }
 
             for (TclScriptDataEntry entry : resultList.getEntries()) {
-                HmDevice device = devicesByAddress.get(getAddress(entry.name));
+                HmDevice device = devicesByAddress.get(getSanitizedAddress(entry.name));
                 if (device != null) {
                     device.setName(entry.value);
                 }

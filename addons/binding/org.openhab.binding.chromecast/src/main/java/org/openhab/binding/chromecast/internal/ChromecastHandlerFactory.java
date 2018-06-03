@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,7 +27,6 @@ import org.openhab.binding.chromecast.handler.ChromecastHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,25 +37,27 @@ import org.slf4j.LoggerFactory;
  *
  * @author Kai Kreuzer - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.chromecast", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.chromecast")
 public class ChromecastHandlerFactory extends BaseThingHandlerFactory {
-
     private final Logger logger = LoggerFactory.getLogger(ChromecastHandlerFactory.class);
 
     private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
-
     private AudioHTTPServer audioHTTPServer;
     private NetworkAddressService networkAddressService;
 
-    // url (scheme+server+port) to use for playing notification sounds
+    /** url (scheme+server+port) to use for playing notification sounds. */
     private String callbackUrl = null;
+
+    public ChromecastHandlerFactory() {
+        logger.debug("Creating new instance of ChromecastHandlerFactory");
+    }
 
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
         Dictionary<String, Object> properties = componentContext.getProperties();
         callbackUrl = (String) properties.get("callbackUrl");
-    };
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -65,20 +66,15 @@ public class ChromecastHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
+        String callbackUrl = createCallbackUrl();
+        ChromecastHandler handler = new ChromecastHandler(thing, audioHTTPServer, callbackUrl);
 
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        @SuppressWarnings("unchecked")
+        ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
+                .registerService(AudioSink.class.getName(), handler, new Hashtable<>());
+        audioSinkRegistrations.put(thing.getUID().toString(), reg);
 
-        if (ChromecastBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            String callbackUrl = createCallbackUrl();
-            ChromecastHandler handler = new ChromecastHandler(thing, audioHTTPServer, callbackUrl);
-            @SuppressWarnings("unchecked")
-            ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                    .registerService(AudioSink.class.getName(), handler, new Hashtable<String, Object>());
-            audioSinkRegistrations.put(thing.getUID().toString(), reg);
-            return handler;
-        }
-
-        return null;
+        return handler;
     }
 
     private String createCallbackUrl() {

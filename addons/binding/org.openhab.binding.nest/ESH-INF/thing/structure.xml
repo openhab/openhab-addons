@@ -3,14 +3,14 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="structure" listed="false">
+	<thing-type id="structure">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account" />
 		</supported-bridge-type-refs>
 
 		<label>Nest Structure</label>
-		<description>THe nest structure defines the house the account has setup on nest.  
-		You will only have more than one structure if you have more than one house.</description>
+		<description>The Nest structure defines the house the account has setup on Nest.
+		You will only have more than one structure if you have more than one house</description>
 
 		<channels>
 			<channel id="country_code" typeId="CountryCode" />
@@ -22,87 +22,17 @@
 			<channel id="eta_begin" typeId="EtaBegin" />
 			<channel id="co_alarm_state" typeId="CoAlarmState" />
 			<channel id="smoke_alarm_state" typeId="SmokeAlarmState" />
+			<channel id="security_state" typeId="SecurityState" />
 			<channel id="away" typeId="Away" />
 		</channels>
 
 		<properties>
 			<property name="vendor">Nest</property>
 		</properties>
+
+		<representation-property>structureId</representation-property>
+
+		<config-description-ref uri="thing-type:nest:structure" />
 	</thing-type>
-
-	<channel-type id="Away">
-		<item-type>String</item-type>
-		<label>Away</label>
-		<description>Away state of the structure</description>
-		<state>
-			<options>
-				<option value="away">Away</option>
-				<option value="home">Home</option>
-				<option value="autoaway">Auto Away</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="CountryCode" advanced="true">
-		<item-type>String</item-type>
-		<label>Country Code</label>
-		<description>Country code of the structure</description>
-	</channel-type>
-
-	<channel-type id="PostalCode" advanced="true">
-		<item-type>String</item-type>
-		<label>Postal Code</label>
-		<description>Postal code of the structure</description>
-	</channel-type>
-
-	<channel-type id="TimeZone" advanced="false">
-		<item-type>String</item-type>
-		<label>Time Zone</label>
-		<description>The time zone for the structure</description>
-	</channel-type>
-
-	<channel-type id="PeakPeriodStartTime" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Peak Period Start Time</label>
-		<description>Peak period start for the Rush Hour Rewards program</description>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="PeakPeriodEndTime" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Peak Period End Time</label>
-		<description>Peak period end for the Rush Hour Rewards program</description>
-        <state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="EtaBegin" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>ETA</label>
-		<description>
-            Estimated time of arrival at home, will setup the heat to turn on and be warm 
-            by the time you arrive.
-        </description>
-	</channel-type>
-
-	<channel-type id="RushHourRewardsEnrollment">
-		<item-type>Switch</item-type>
-		<label>Rush Hour Rewards</label>
-		<description>If rush hour rewards system is enabled or not.</description>
-        <state readOnly="true" />
-	</channel-type>
-	
-    <channel-type id="CoAlarmState">
-        <item-type>Switch</item-type>
-        <label>CO Alarm State</label>
-        <description>If the structure has an active Carbon Monoxide alarm.</description>
-        <state readOnly="true" />
-    </channel-type>
-
-    <channel-type id="SmokeAlarmState">
-        <item-type>Switch</item-type>
-        <label>Smoke Alarm State</label>
-        <description>If the structure has an active Smoke alarm.</description>
-        <state readOnly="true" />
-    </channel-type>
 
 </thing:thing-descriptions>

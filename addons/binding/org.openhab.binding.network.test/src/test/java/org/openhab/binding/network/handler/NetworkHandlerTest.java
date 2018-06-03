@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.openhab.binding.network.NetworkBindingConstants;
+import org.openhab.binding.network.internal.NetworkBindingConfiguration;
 import org.openhab.binding.network.internal.PresenceDetection;
 import org.openhab.binding.network.internal.PresenceDetectionValue;
 
@@ -52,33 +53,19 @@ public class NetworkHandlerTest {
         when(thing.getUID()).thenReturn(thingUID);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void checkWrongBuilderArguments() {
-        NetworkHandlerBuilder.createPingDevice(thing).cacheTimeInMS(0).build().initialize();
-    }
-
-    @Test
-    public void checkBuilderArguments() {
-        NetworkHandler handler = spy(NetworkHandlerBuilder.createPingDevice(thing).cacheTimeInMS(2000)
-                .allowDHCPListen(true).allowSystemPings(true).arpPingToolPath("testpath").build());
-        Assert.assertThat(handler.arpPingToolPath, is("testpath"));
-        Assert.assertThat(handler.allowDHCPlisten, is(true));
-        Assert.assertThat(handler.allowSystemPings, is(true));
-        Assert.assertThat(handler.isTCPServiceDevice, is(false));
-    }
-
     @Test
     public void checkAllConfigurations() {
-        NetworkHandler handler = spy(NetworkHandlerBuilder.createServiceDevice(thing).cacheTimeInMS(2000).build());
+        NetworkBindingConfiguration config = new NetworkBindingConfiguration();
+        NetworkHandler handler = spy(new NetworkHandler(thing, true, config));
         handler.setCallback(callback);
         // Provide all possible configuration
         when(thing.getConfiguration()).thenAnswer(a -> {
             Configuration conf = new Configuration();
-            conf.put(NetworkBindingConstants.PARAMETER_RETRY, "10");
+            conf.put(NetworkBindingConstants.PARAMETER_RETRY, 10);
             conf.put(NetworkBindingConstants.PARAMETER_HOSTNAME, "127.0.0.1");
-            conf.put(NetworkBindingConstants.PARAMETER_PORT, "8080");
-            conf.put(NetworkBindingConstants.PARAMETER_REFRESH_INTERVAL, "101010");
-            conf.put(NetworkBindingConstants.PARAMETER_TIMEOUT, "1234");
+            conf.put(NetworkBindingConstants.PARAMETER_PORT, 8080);
+            conf.put(NetworkBindingConstants.PARAMETER_REFRESH_INTERVAL, 101010);
+            conf.put(NetworkBindingConstants.PARAMETER_TIMEOUT, 1234);
             return conf;
         });
         PresenceDetection presenceDetection = spy(new PresenceDetection(handler, 2000));
@@ -96,8 +83,9 @@ public class NetworkHandlerTest {
 
     @Test
     public void tcpDeviceInitTests() {
-        NetworkHandler handler = spy(NetworkHandlerBuilder.createServiceDevice(thing).cacheTimeInMS(2000).build());
-        Assert.assertThat(handler.isTCPServiceDevice, is(true));
+        NetworkBindingConfiguration config = new NetworkBindingConfiguration();
+        NetworkHandler handler = spy(new NetworkHandler(thing, true, config));
+        Assert.assertThat(handler.isTCPServiceDevice(), is(true));
         handler.setCallback(callback);
         // Port is missing, should make the device OFFLINE
         when(thing.getConfiguration()).thenAnswer(a -> {
@@ -116,8 +104,8 @@ public class NetworkHandlerTest {
 
     @Test
     public void pingDeviceInitTests() {
-        NetworkHandler handler = spy(NetworkHandlerBuilder.createPingDevice(thing).cacheTimeInMS(2000)
-                .allowDHCPListen(true).allowSystemPings(true).arpPingToolPath("testpath").build());
+        NetworkBindingConfiguration config = new NetworkBindingConfiguration();
+        NetworkHandler handler = spy(new NetworkHandler(thing, false, config));
         handler.setCallback(callback);
         // Provide minimal configuration
         when(thing.getConfiguration()).thenAnswer(a -> {

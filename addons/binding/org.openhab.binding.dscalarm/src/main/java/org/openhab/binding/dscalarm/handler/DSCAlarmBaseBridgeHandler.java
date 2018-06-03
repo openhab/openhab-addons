@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,13 +27,13 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.dscalarm.config.DSCAlarmPartitionConfiguration;
-import org.openhab.binding.dscalarm.config.DSCAlarmZoneConfiguration;
 import org.openhab.binding.dscalarm.internal.DSCAlarmCode;
 import org.openhab.binding.dscalarm.internal.DSCAlarmEvent;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage.DSCAlarmMessageInfoType;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage.DSCAlarmMessageType;
+import org.openhab.binding.dscalarm.internal.config.DSCAlarmPartitionConfiguration;
+import org.openhab.binding.dscalarm.internal.config.DSCAlarmZoneConfiguration;
 import org.openhab.binding.dscalarm.internal.discovery.DSCAlarmDiscoveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
 
-    private Logger logger = LoggerFactory.getLogger(DSCAlarmBaseBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DSCAlarmBaseBridgeHandler.class);
 
     /** The DSC Alarm bridge type. */
     private DSCAlarmBridgeType dscAlarmBridgeType = null;
@@ -84,13 +84,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
     private long refreshInterval = 5000;
 
     private ScheduledFuture<?> pollingTask;
-
-    private Runnable pollingRunnable = new Runnable() {
-        @Override
-        public void run() {
-            polling();
-        }
-    };
 
     /**
      * Constructor.
@@ -162,7 +155,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
      * Connect The Bridge.
      */
     private void connect() {
-
         openConnection();
 
         if (isConnected()) {
@@ -187,7 +179,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
      * Disconnect The Bridge.
      */
     private void disconnect() {
-
         closeConnection();
 
         if (!isConnected()) {
@@ -284,7 +275,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
     public void startPolling() {
         logger.debug("Starting DSC Alarm Polling Task.");
         if (pollingTask == null || pollingTask.isCancelled()) {
-            pollingTask = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval, TimeUnit.MILLISECONDS);
+            pollingTask = scheduler.scheduleWithFixedDelay(this::polling, 0, refreshInterval, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -306,7 +297,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
         logger.debug("DSC Alarm Polling Task - '{}' is {}", getThing().getUID(), getThing().getStatus());
 
         if (isConnected()) {
-
             if (pollStartTime == 0) {
                 pollStartTime = System.currentTimeMillis();
             }
@@ -360,7 +350,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                         handler.isThingHandlerInitialized());
 
                 if (!handler.isThingHandlerInitialized() || !thing.getStatus().equals(ThingStatus.ONLINE)) {
-
                     if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
                         handler.bridgeStatusChanged(getThing().getStatusInfo());
                     }
@@ -390,13 +379,11 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
      * @return thing
      */
     public Thing findThing(DSCAlarmThingType dscAlarmThingType, int partitionId, int zoneId) {
-
         List<Thing> things = getThing().getThings();
 
         Thing thing = null;
 
         for (Thing t : things) {
-
             try {
                 Configuration config = t.getConfiguration();
                 DSCAlarmBaseThingHandler handler = (DSCAlarmBaseThingHandler) t.getHandler();
@@ -510,7 +497,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
             }
 
             if (dscAlarmThingType != null) {
-
                 Thing thing = findThing(dscAlarmThingType, partitionId, zoneId);
 
                 logger.debug("handleIncomingMessage(): Thing Search - '{}'", thing);
@@ -541,7 +527,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         logger.debug("handleCommand(): Command Received - {} {}.", channelUID, command);
 
         if (command instanceof RefreshType) {
@@ -647,7 +632,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 }
 
                 if (password == null || password.length() < 1 || password.length() > 6) {
-                    logger.error("sendCommand(): Password is invalid, must be between 1 and 6 chars", password);
+                    logger.error("sendCommand(): Password is invalid, must be between 1 and 6 chars!");
                     break;
                 }
                 data = password;
@@ -795,7 +780,6 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 validCommand = true;
                 break;
             case CodeSend: /* 200 */
-
                 if (userCode == null || userCode.length() < 4 || userCode.length() > 6) {
                     logger.error("sendCommand(): Access Code is invalid, must be between 4 and 6 chars: {}",
                             dscAlarmData[0]);

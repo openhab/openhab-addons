@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.allplay;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Dominic Lerbs - Initial contribution
  */
+@NonNullByDefault
 public class AllPlayBindingConstants {
 
     public static final String BINDING_ID = "allplay";
@@ -24,6 +26,7 @@ public class AllPlayBindingConstants {
     public static final ThingTypeUID SPEAKER_THING_TYPE = new ThingTypeUID(BINDING_ID, "speaker");
 
     // List of all Channel ids
+    public static final String CLEAR_ZONE = "clearzone";
     public static final String CONTROL = "control";
     public static final String CURRENT_ALBUM = "currentalbum";
     public static final String CURRENT_ARTIST = "currentartist";
@@ -44,6 +47,7 @@ public class AllPlayBindingConstants {
     public static final String VOLUME = "volume";
     public static final String VOLUME_CONTROL = "volumecontrol";
     public static final String ZONE_ID = "zoneid";
+    public static final String ZONE_MEMBERS = "zonemembers";
 
     // Config properties
     public static final String DEVICE_ID = "deviceId";

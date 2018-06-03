@@ -1,100 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="plugwise" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <channel-type id="clock" advanced="true">
-        <item-type>String</item-type>
-        <label>Clock</label>
-        <description>Time as indicated by the internal clock of the device</description>
-        <state readOnly="true"></state>
-        <config-description-ref uri="channel-type:plugwise:slowerupdates" />
-    </channel-type>
+	<channel-type id="clock" advanced="true">
+		<item-type>String</item-type>
+		<label>Clock</label>
+		<description>Time as indicated by the internal clock of the device</description>
+		<state readOnly="true"></state>
+		<config-description-ref uri="channel-type:plugwise:slowerupdates" />
+	</channel-type>
 
-    <channel-type id="humidity">
-        <item-type>Number</item-type>
-        <label>Humidity</label>
-        <description>Current relative humidity</description>
-        <category>Humidity</category>
-        <state readOnly="true" pattern="%.1f %%" />
-    </channel-type>
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Current relative humidity</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
 
-    <channel-type id="energy">
-        <item-type>Number</item-type>
-        <label>Energy</label>
-        <description>Energy consumption/production during the last measurement interval</description>
-        <category>Energy</category>
-        <state readOnly="true" pattern="%.3f kWh" />
-        <config-description-ref uri="channel-type:plugwise:slowerupdates" />
-    </channel-type>
+	<channel-type id="energy">
+		<item-type>Number:Energy</item-type>
+		<label>Energy</label>
+		<description>Energy consumption/production during the last measurement interval</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.3f %unit%" />
+		<config-description-ref uri="channel-type:plugwise:slowerupdates" />
+	</channel-type>
 
-    <channel-type id="energystamp" advanced="true">
-        <item-type>DateTime</item-type>
-        <label>Energy timestamp</label>
-        <description>Timestamp of the start of the last energy measurement interval</description>
-        <state readOnly="true" />
-    </channel-type>
+	<channel-type id="energystamp" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Energy timestamp</label>
+		<description>Timestamp of the start of the last energy measurement interval</description>
+		<state readOnly="true" />
+	</channel-type>
 
-    <channel-type id="lastseen" advanced="true">
-        <item-type>DateTime</item-type>
-        <label>Last seen</label>
-        <description>Timestamp of the last received message</description>
-        <state readOnly="true" />
-    </channel-type>
+	<channel-type id="lastseen" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last seen</label>
+		<description>Timestamp of the last received message</description>
+		<state readOnly="true" />
+	</channel-type>
 
-    <channel-type id="leftbuttonstate">
-        <item-type>Switch</item-type>
-        <label>Left button state</label>
-        <description>Current state of the left button</description>
-        <state readOnly="true" />
-    </channel-type>
+	<channel-type id="leftbuttonstate">
+		<item-type>Switch</item-type>
+		<label>Left button state</label>
+		<description>Current state of the left button</description>
+		<state readOnly="true" />
+	</channel-type>
 
-    <channel-type id="power">
-        <item-type>Number</item-type>
-        <label>Power</label>
-        <description>Current power consumption/production</description>
-        <category>Energy</category>
-        <state readOnly="true" pattern="%.1f W" />
-        <config-description-ref uri="channel-type:plugwise:fasterupdates" />
-    </channel-type>
+	<channel-type id="power">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<description>Current power consumption/production</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+		<config-description-ref uri="channel-type:plugwise:fasterupdates" />
+	</channel-type>
 
-    <channel-type id="realtimeclock" advanced="true">
-        <item-type>DateTime</item-type>
-        <label>Real-time clock</label>
-        <description>Time as indicated by the real-time internal clock of the Circle+</description>
-        <state readOnly="true"></state>
-        <config-description-ref uri="channel-type:plugwise:slowerupdates" />
-    </channel-type>
+	<channel-type id="realtimeclock" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Real-time clock</label>
+		<description>Time as indicated by the real-time internal clock of the Circle+</description>
+		<state readOnly="true"></state>
+		<config-description-ref uri="channel-type:plugwise:slowerupdates" />
+	</channel-type>
 
-    <channel-type id="rightbuttonstate">
-        <item-type>Switch</item-type>
-        <label>Right button state</label>
-        <description>Current state of the right button</description>
-        <state readOnly="true" />
-    </channel-type>
+	<channel-type id="rightbuttonstate">
+		<item-type>Switch</item-type>
+		<label>Right button state</label>
+		<description>Current state of the right button</description>
+		<state readOnly="true" />
+	</channel-type>
 
-    <channel-type id="state">
-        <item-type>Switch</item-type>
-        <label>State</label>
-        <description>Switches the power state on/off</description>
-        <category>PowerOutlet</category>
-        <state readOnly="false" />
-        <config-description-ref uri="channel-type:plugwise:fasterupdates" />
-    </channel-type>
+	<channel-type id="state">
+		<item-type>Switch</item-type>
+		<label>State</label>
+		<description>Switches the power state on/off</description>
+		<category>PowerOutlet</category>
+		<state readOnly="false" />
+		<config-description-ref uri="channel-type:plugwise:fasterupdates" />
+	</channel-type>
 
-    <channel-type id="temperature">
-        <item-type>Number</item-type>
-        <label>Temperature</label>
-        <description>Current temperature</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C" />
-    </channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
 
-    <channel-type id="triggered">
-        <item-type>Switch</item-type>
-        <label>Triggered</label>
-        <description>Most recent switch action initiated by the device</description>
-        <state readOnly="true" />
-    </channel-type>
+	<channel-type id="triggered">
+		<item-type>Switch</item-type>
+		<label>Triggered</label>
+		<description>Most recent switch action initiated by the device</description>
+		<state readOnly="true" />
+	</channel-type>
 
 </thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,7 +17,7 @@ import java.util.Map;
  * <p>
  * Example: <code>{"cmd":"executeactions", "data":{"error":0}}</code>
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 class NhcMessageMap extends NhcMessageBase {
 

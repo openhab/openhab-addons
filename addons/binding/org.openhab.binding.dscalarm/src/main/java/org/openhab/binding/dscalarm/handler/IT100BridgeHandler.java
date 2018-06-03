@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,7 @@ import java.util.TooManyListenersException;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.openhab.binding.dscalarm.config.IT100BridgeConfiguration;
+import org.openhab.binding.dscalarm.internal.config.IT100BridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ import gnu.io.UnsupportedCommOperationException;
 
 public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements SerialPortEventListener {
 
-    private Logger logger = LoggerFactory.getLogger(IT100BridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(IT100BridgeHandler.class);
 
     /**
      * Constructor.
@@ -92,12 +92,8 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
         super.dispose();
     }
 
-    /**
-     * {@inheritDoc}
-     **/
     @Override
     public void openConnection() {
-
         try {
             logger.debug("openConnection(): Connecting to IT-100 ");
 
@@ -137,9 +133,6 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
         }
     }
 
-    /**
-     * {@inheritDoc}
-     **/
     @Override
     public void write(String writeString) {
         try {
@@ -155,9 +148,6 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
         }
     }
 
-    /**
-     * {@inheritDoc}
-     **/
     @Override
     public String read() {
         String message = "";
@@ -187,9 +177,6 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
         return serialInput.readLine();
     }
 
-    /**
-     * {@inheritDoc}
-     **/
     @Override
     public void closeConnection() {
         logger.debug("closeConnection(): Closing Serial Connection!");

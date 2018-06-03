@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,7 +13,9 @@ import static org.openhab.binding.plugwise.PlugwiseBindingConstants.*;
 import java.time.Duration;
 
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.plugwise.internal.config.PlugwiseSenseConfig;
 import org.openhab.binding.plugwise.internal.protocol.AcknowledgementMessage;
@@ -121,8 +123,8 @@ public class PlugwiseSenseHandler extends AbstractSleepingEndDeviceHandler {
 
     private void handleSenseReportRequestMessage(SenseReportRequestMessage message) {
         updateLastSeen();
-        updateState(CHANNEL_HUMIDITY, new DecimalType(message.getHumidity().getValue()));
-        updateState(CHANNEL_TEMPERATURE, new DecimalType(message.getTemperature().getValue()));
+        updateState(CHANNEL_HUMIDITY, new QuantityType<>(message.getHumidity().getValue(), SmartHomeUnits.PERCENT));
+        updateState(CHANNEL_TEMPERATURE, new QuantityType<>(message.getTemperature().getValue(), SIUnits.CELSIUS));
     }
 
     @Override

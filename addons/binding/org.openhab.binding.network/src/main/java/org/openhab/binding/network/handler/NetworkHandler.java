@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,7 +14,7 @@ import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.Collections;
 
-import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -27,8 +27,9 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.network.NetworkBindingConstants;
+import org.openhab.binding.network.internal.NetworkBindingConfiguration;
+import org.openhab.binding.network.internal.NetworkHandlerConfiguration;
 import org.openhab.binding.network.internal.PresenceDetection;
-import org.openhab.binding.network.internal.PresenceDetection.PingMethod;
 import org.openhab.binding.network.internal.PresenceDetectionListener;
 import org.openhab.binding.network.internal.PresenceDetectionValue;
 import org.openhab.binding.network.internal.utils.NetworkUtils;
@@ -47,28 +48,23 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
     private PresenceDetection presenceDetection;
     NetworkUtils networkUtils = new NetworkUtils();
 
-    boolean allowSystemPings;
-    boolean allowDHCPlisten;
-    String arpPingToolPath;
-    final boolean isTCPServiceDevice;
+    private boolean isTCPServiceDevice;
+    private NetworkBindingConfiguration configuration;
 
     // How many retries before a device is deemed offline
-    int retries = 1;
+    int retries;
     // Retry counter. Will be reset as soon as a device presence detection succeed.
     private int retryCounter = 0;
-    private int cacheDeviceStateTimeInMS;
+    private NetworkHandlerConfiguration handlerConfiguration;
 
     /**
      * Do not call this directly, but use the {@see NetworkHandlerBuilder} instead.
      */
-    NetworkHandler(Thing thing, boolean isTCPServiceDevice, boolean allowSystemPings, boolean allowDHCPlisten,
-            int cacheDeviceStateTimeInMS, String arpPingToolPath) {
+    public NetworkHandler(@NonNull Thing thing, boolean isTCPServiceDevice,
+            @NonNull NetworkBindingConfiguration configuration) {
         super(thing);
         this.isTCPServiceDevice = isTCPServiceDevice;
-        this.allowSystemPings = allowSystemPings;
-        this.allowDHCPlisten = allowDHCPlisten;
-        this.cacheDeviceStateTimeInMS = cacheDeviceStateTimeInMS;
-        this.arpPingToolPath = arpPingToolPath;
+        this.configuration = configuration;
     }
 
     private void refreshValue(ChannelUID channelUID) {
@@ -79,12 +75,15 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
 
         switch (channelUID.getId()) {
             case CHANNEL_ONLINE:
-                presenceDetection.getValue((PresenceDetectionValue value) -> updateState(CHANNEL_ONLINE,
-                        value.isReachable() ? OnOffType.ON : OnOffType.OFF));
+                presenceDetection.getValue(
+                        value -> updateState(CHANNEL_ONLINE, value.isReachable() ? OnOffType.ON : OnOffType.OFF));
                 break;
             case CHANNEL_LATENCY:
-                presenceDetection.getValue((PresenceDetectionValue value) -> updateState(CHANNEL_LATENCY,
-                        new DecimalType(value.getLowestLatency())));
+            case CHANNEL_DEPRECATED_TIME:
+                presenceDetection.getValue(value -> {
+                    updateState(CHANNEL_LATENCY, new DecimalType(value.getLowestLatency()));
+                    updateState(CHANNEL_DEPRECATED_TIME, new DecimalType(value.getLowestLatency()));
+                });
                 break;
             case CHANNEL_LASTSEEN:
                 if (presenceDetection.getLastSeen() > 0) {
@@ -114,6 +113,7 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
     public void partialDetectionResult(PresenceDetectionValue value) {
         updateState(CHANNEL_ONLINE, OnOffType.ON);
         updateState(CHANNEL_LATENCY, new DecimalType(value.getLowestLatency()));
+        updateState(CHANNEL_DEPRECATED_TIME, new DecimalType(value.getLowestLatency()));
     }
 
     @Override
@@ -125,6 +125,7 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
         if (retryCounter >= this.retries) {
             updateState(CHANNEL_ONLINE, OnOffType.OFF);
             updateState(CHANNEL_LATENCY, UnDefType.UNDEF);
+            updateState(CHANNEL_DEPRECATED_TIME, UnDefType.UNDEF);
             retryCounter = 0;
         }
 
@@ -135,11 +136,6 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
         }
 
         updateProperty(NetworkBindingConstants.PROPERTY_PRESENCE_DETECTION_TYPE, value.getSuccessfulDetectionTypes());
-    }
-
-    int confValueToInt(Object value) {
-        return value instanceof java.math.BigDecimal ? ((java.math.BigDecimal) value).intValue()
-                : Integer.valueOf((String) value);
     }
 
     @Override
@@ -153,26 +149,24 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
      * Used by testing for injecting.
      */
     void initialize(PresenceDetection presenceDetection) {
+        handlerConfiguration = getConfigAs(NetworkHandlerConfiguration.class);
         this.presenceDetection = presenceDetection;
-        Configuration conf = this.getConfig();
 
         try {
-            presenceDetection.setHostname(String.valueOf(conf.get(PARAMETER_HOSTNAME)));
+            presenceDetection.setHostname(handlerConfiguration.hostname);
         } catch (UnknownHostException e) {
             logger.error("Configuration for hostname is faulty", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
             return;
         }
-        Object value;
 
         if (isTCPServiceDevice) {
-            value = conf.get(PARAMETER_PORT);
-            if (value == null) {
+            if (handlerConfiguration.port == null) {
                 logger.error("You need to configure the port for a service device");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No port configured!");
                 return;
             }
-            presenceDetection.setServicePorts(Collections.singleton(confValueToInt(value)));
+            presenceDetection.setServicePorts(Collections.singleton(handlerConfiguration.port.intValue()));
         } else {
             // It does not harm to send an additional UDP packet to a device,
             // therefore we assume all ping devices are iOS devices. If this
@@ -180,41 +174,38 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
             // this a thing configuration variable.
             presenceDetection.setIOSDevice(true);
             // Hand over binding configurations to the network service
-            presenceDetection.setDHCPsniffing(allowDHCPlisten);
-            presenceDetection.setPingMethod(allowSystemPings ? PingMethod.SYSTEM_PING : PingMethod.JAVA_PING);
-            presenceDetection.setUseARPping(networkUtils.isNativeARPpingWorking(arpPingToolPath), arpPingToolPath);
+            presenceDetection.setUseDhcpSniffing(configuration.allowDHCPlisten);
+            presenceDetection.setUseIcmpPing(configuration.allowSystemPings);
+            presenceDetection.setUseArpPing(true, configuration.arpPingToolPath);
         }
 
-        value = conf.get(PARAMETER_RETRY);
-        if (value != null) {
-            this.retries = confValueToInt(value);
-        }
-
-        value = conf.get(PARAMETER_REFRESH_INTERVAL);
-        if (value != null) {
-            presenceDetection.setRefreshInterval(
-                    value instanceof java.math.BigDecimal ? ((java.math.BigDecimal) value).longValue()
-                            : Integer.valueOf((String) value));
-        }
-
-        value = conf.get(PARAMETER_TIMEOUT);
-        if (value != null) {
-            presenceDetection.setTimeout(confValueToInt(value));
-        }
-
-        // Update properties
-        updateProperty(NetworkBindingConstants.PROPERTY_ARP_ON, presenceDetection.isUseARPping() ? "On" : "Off");
-        updateProperty(NetworkBindingConstants.PROPERTY_DHCP_ON, presenceDetection.getDhcpState());
-        updateProperty(NetworkBindingConstants.PROPERTY_PRESENCE_DETECTION_TYPE, "");
-        updateProperty(NetworkBindingConstants.PROPERTY_IOS_WAKEUP, presenceDetection.isIOSdevice() ? "On" : "Off");
+        this.retries = handlerConfiguration.retry.intValue();
+        presenceDetection.setRefreshInterval(handlerConfiguration.refreshInterval.longValue());
+        presenceDetection.setTimeout(handlerConfiguration.timeout.intValue());
 
         updateStatus(ThingStatus.ONLINE);
         presenceDetection.startAutomaticRefresh(scheduler);
+
+        // Update properties (after startAutomaticRefresh, to get the correct dhcp state)
+        updateProperty(NetworkBindingConstants.PROPERTY_ARP_STATE,
+                presenceDetection.arpPingMethod() != null ? presenceDetection.arpPingMethod().name() : "Disabled");
+        updateProperty(NetworkBindingConstants.PROPERTY_ICMP_STATE,
+                presenceDetection.getPingMethod() != null ? presenceDetection.getPingMethod().name() : "Disabled");
+        updateProperty(NetworkBindingConstants.PROPERTY_PRESENCE_DETECTION_TYPE, "");
+        updateProperty(NetworkBindingConstants.PROPERTY_IOS_WAKEUP, presenceDetection.isIOSdevice() ? "On" : "Off");
+        updateProperty(NetworkBindingConstants.PROPERTY_DHCP_STATE, presenceDetection.getDhcpState());
     }
 
     // Create a new network service and apply all configurations.
     @Override
     public void initialize() {
-        initialize(new PresenceDetection(this, cacheDeviceStateTimeInMS));
+        initialize(new PresenceDetection(this, configuration.cacheDeviceStateTimeInMS.intValue()));
+    }
+
+    /**
+     * Returns true if this handler is for a TCP service device.
+     */
+    public boolean isTCPServiceDevice() {
+        return isTCPServiceDevice;
     }
 }

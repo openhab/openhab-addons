@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,6 +10,7 @@ package org.openhab.binding.vitotronic;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.ImmutableSet;
@@ -20,6 +21,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Stefan Andres - Initial contribution
  */
+@NonNullByDefault
 public class VitotronicBindingConstants {
 
     public static final String BROADCAST_MESSAGE = "@@@@VITOTRONIC@@@@/";

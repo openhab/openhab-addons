@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -50,9 +50,9 @@ public class RFXComMessageFactory {
                     // put(PacketType.REMOTE_CONTROL, RFXComRemoteControlMessage.class);
                     put(PacketType.THERMOSTAT1, RFXComThermostat1Message.class);
                     // put(PacketType.THERMOSTAT2, RFXComThermostat2Message.class);
-                    // put(PacketType.THERMOSTAT3, RFXComThermostat3Message.class);
+                    put(PacketType.THERMOSTAT3, RFXComThermostat3Message.class);
                     // put(PacketType.RADIATOR1, RFXComRadiator1Message.class);
-                    // put(PacketType.BBQ1, RFXComBBQMessage.class);
+                    put(PacketType.BBQ, RFXComBBQTemperatureMessage.class);
                     put(PacketType.TEMPERATURE_RAIN, RFXComTemperatureRainMessage.class);
                     put(PacketType.TEMPERATURE, RFXComTemperatureMessage.class);
                     put(PacketType.HUMIDITY, RFXComHumidityMessage.class);
@@ -63,7 +63,7 @@ public class RFXComMessageFactory {
                     put(PacketType.WIND, RFXComWindMessage.class);
                     put(PacketType.UV, RFXComUVMessage.class);
                     put(PacketType.DATE_TIME, RFXComDateTimeMessage.class);
-                    // put(PacketType.CURRENT, RFXComCurrentMessage.class);
+                    put(PacketType.CURRENT, RFXComCurrentMessage.class);
                     put(PacketType.ENERGY, RFXComEnergyMessage.class);
                     put(PacketType.CURRENT_ENERGY, RFXComCurrentEnergyMessage.class);
                     // put(PacketType.POWER, RFXComPowerMessage.class);
@@ -119,7 +119,7 @@ public class RFXComMessageFactory {
     }
 
     public static RFXComMessage createMessage(byte[] packet) throws RFXComException {
-        PacketType packetType = PacketType.fromByte(packet[1]);
+        PacketType packetType = ByteEnumUtil.fromByte(PacketType.class, (int) packet[1]);
 
         try {
             Class<? extends RFXComMessage> cl = MESSAGE_CLASSES.get(packetType);

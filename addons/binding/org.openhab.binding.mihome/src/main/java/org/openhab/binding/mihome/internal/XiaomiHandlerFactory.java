@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.mihome.handler.XiaomiActorCurtainHandler;
 import org.openhab.binding.mihome.handler.XiaomiActorGatewayHandler;
 import org.openhab.binding.mihome.handler.XiaomiActorPlugHandler;
@@ -33,12 +34,16 @@ import org.openhab.binding.mihome.handler.XiaomiAqaraSensorSwitch2Handler;
 import org.openhab.binding.mihome.handler.XiaomiBridgeHandler;
 import org.openhab.binding.mihome.handler.XiaomiDeviceBaseHandler;
 import org.openhab.binding.mihome.handler.XiaomiSensorCubeHandler;
+import org.openhab.binding.mihome.handler.XiaomiSensorGasHandler;
 import org.openhab.binding.mihome.handler.XiaomiSensorHtHandler;
 import org.openhab.binding.mihome.handler.XiaomiSensorMagnetHandler;
 import org.openhab.binding.mihome.handler.XiaomiSensorMotionHandler;
+import org.openhab.binding.mihome.handler.XiaomiSensorSmokeHandler;
 import org.openhab.binding.mihome.handler.XiaomiSensorSwitchHandler;
+import org.openhab.binding.mihome.handler.XiaomiSensorWaterHandler;
 import org.openhab.binding.mihome.internal.discovery.XiaomiItemDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.Sets;
 
@@ -49,7 +54,9 @@ import com.google.common.collect.Sets;
  * @author Patrick Boos - Initial contribution
  * @author Dieter Schmidt - Refactor, add devices
  * @author Daniel Walters - Added Aqara Door/Window sensor and Aqara temperature, humidity and pressure sensor
+ * @author Kuba Wolanin - Added Water Leak sensor and Aqara motion sensor
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.mihome")
 public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
@@ -115,6 +122,12 @@ public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
             return new XiaomiSensorMagnetHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SENSOR_CUBE)) {
             return new XiaomiSensorCubeHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_SENSOR_SMOKE)) {
+            return new XiaomiSensorSmokeHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_SENSOR_GAS)) {
+            return new XiaomiSensorGasHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_SENSOR_WATER)) {
+            return new XiaomiSensorWaterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SENSOR_AQARA1)) {
             return new XiaomiAqaraSensorSwitch1Handler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SENSOR_AQARA2)) {
@@ -135,6 +148,8 @@ public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
             return new XiaomiSensorHtHandler(thing);
         } else if (THING_TYPE_SENSOR_AQARA_MAGNET.equals(thingTypeUID)) {
             return new XiaomiSensorMagnetHandler(thing);
+        } else if (THING_TYPE_SENSOR_AQARA_MOTION.equals(thingTypeUID)) {
+            return new XiaomiSensorMotionHandler(thing);
         } else {
             return null;
         }
@@ -158,7 +173,7 @@ public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void registerItemDiscoveryService(XiaomiBridgeHandler bridgeHandler) {
         XiaomiItemDiscoveryService discoveryService = new XiaomiItemDiscoveryService(bridgeHandler);
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 }

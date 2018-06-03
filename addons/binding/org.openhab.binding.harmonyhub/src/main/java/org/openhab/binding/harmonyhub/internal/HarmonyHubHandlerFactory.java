@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,16 +25,18 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.harmonyhub.HarmonyHubBindingConstants;
-import org.openhab.binding.harmonyhub.discovery.HarmonyDeviceDiscoveryService;
 import org.openhab.binding.harmonyhub.handler.HarmonyDeviceHandler;
 import org.openhab.binding.harmonyhub.handler.HarmonyHubHandler;
+import org.openhab.binding.harmonyhub.internal.discovery.HarmonyDeviceDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.Sets;
 
@@ -44,6 +46,8 @@ import com.google.common.collect.Sets;
  *
  * @author Dan Cunningham - Initial contribution
  */
+@Component(service = { ThingHandlerFactory.class,
+        ChannelTypeProvider.class }, immediate = true, configurationPid = "binding.harmonyhub")
 public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory implements ChannelTypeProvider {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
@@ -61,7 +65,6 @@ public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory implements
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(HarmonyHubBindingConstants.HARMONY_HUB_THING_TYPE)) {

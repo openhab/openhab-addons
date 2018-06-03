@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,18 +8,39 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.junit.Assert.assertEquals;
+
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.messages.RFXComCurrentMessage.SubType;
 
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
- * @since 1.9.0
+ * @author Martin van Wingerden - Initial Contribution
  */
 public class RFXComCurrentMessageTest {
-    @Test(expected = RFXComMessageNotImplementedException.class)
-    public void checkNotImplemented() throws Exception {
-        RFXComMessageFactory.createMessage(RFXComBaseMessage.PacketType.CURRENT);
+
+    @Test
+    public void testSomeMessages() throws RFXComException {
+        String message = "0D59010F860004001D0000000049";
+
+        final RFXComCurrentMessage msg = (RFXComCurrentMessage) RFXComMessageFactory
+                .createMessage(HexUtils.hexToBytes(message));
+        assertEquals("SubType", SubType.ELEC1, msg.subType);
+        assertEquals("Seq Number", 15, (short) (msg.seqNbr & 0xFF));
+        assertEquals("Sensor Id", "34304", msg.getDeviceId());
+        assertEquals("Count", 4, msg.count);
+        assertEquals("Channel 1", 2.9d, msg.channel1Amps, 0.01);
+        assertEquals("Channel 2", 0d, msg.channel2Amps, 0.01);
+        assertEquals("Channel 3", 0d, msg.channel3Amps, 0.01);
+        assertEquals("Signal Level", 4, msg.signalLevel);
+        assertEquals("Battery Level", 9, msg.batteryLevel);
+
+        byte[] decoded = msg.decodeMessage();
+
+        assertEquals("Message converted back", message, HexUtils.bytesToHex(decoded));
+
     }
 }

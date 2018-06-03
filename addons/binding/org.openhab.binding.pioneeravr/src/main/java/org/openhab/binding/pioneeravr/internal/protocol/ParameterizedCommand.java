@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,21 +15,17 @@ import org.openhab.binding.pioneeravr.protocol.AvrConnectionException;
 /**
  * A command which accept a parameter.
  *
- * @author Antoine Besnard
- *
+ * @author Antoine Besnard - Initial contribution
  */
 public class ParameterizedCommand extends SimpleCommand {
 
     /**
      * List of the commands with a parameter.
-     *
-     * @author Antoine Besnard
-     *
      */
     public enum ParameterizedCommandType implements AvrCommand.CommandType {
 
-        VOLUME_SET("[0-9]{3}", "VL", "ZV", "YV"),
-        INPUT_CHANNEL_SET("[0-9]{2}", "FN", "ZS", "ZT");
+        VOLUME_SET("[0-9]{2,3}", "VL", "ZV", "YV", "HZV"),
+        INPUT_CHANNEL_SET("[0-9]{2}", "FN", "ZS", "ZT", "ZEA");
 
         private String[] zoneCommands;
         private String parameterPattern;
