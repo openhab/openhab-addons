@@ -29,7 +29,6 @@ import org.osgi.service.component.annotations.Deactivate;
  * @author Gregory Moyer - Initial contribution
  * @author Gaël L'hopital - Ported as-is in Netatmo binding
  */
-
 @Component(service = { DynamicStateDescriptionProvider.class,
         NATherm1StateDescriptionProvider.class }, immediate = true)
 @NonNullByDefault
@@ -43,7 +42,6 @@ public class NATherm1StateDescriptionProvider implements DynamicStateDescription
     @Override
     public @Nullable StateDescription getStateDescription(Channel channel, @Nullable StateDescription original,
             @Nullable Locale locale) {
-
         List<StateOption> options = channelOptionsMap.get(channel.getUID());
         if (options == null) {
             return null;
@@ -60,5 +58,4 @@ public class NATherm1StateDescriptionProvider implements DynamicStateDescription
     public void deactivate() {
         channelOptionsMap.clear();
     }
-
 }

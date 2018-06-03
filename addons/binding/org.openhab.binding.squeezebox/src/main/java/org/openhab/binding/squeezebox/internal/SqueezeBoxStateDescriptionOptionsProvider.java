@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Deactivate;
         SqueezeBoxStateDescriptionOptionsProvider.class }, immediate = true)
 @NonNullByDefault
 public class SqueezeBoxStateDescriptionOptionsProvider implements DynamicStateDescriptionProvider {
-    private final Map<ChannelUID, List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
+    private final Map<ChannelUID, @Nullable List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
 
     public void setStateOptions(ChannelUID channelUID, List<StateOption> options) {
         channelOptionsMap.put(channelUID, options);
