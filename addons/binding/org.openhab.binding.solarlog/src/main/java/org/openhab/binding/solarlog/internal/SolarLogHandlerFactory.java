@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Johann Richard - Initial contribution
  */
-@Component(configurationPid = "binding.solarlog", service = ThingHandlerFactory.class)
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.solarlog")
 public class SolarLogHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(SolarLogHandlerFactory.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_SOLARLOG);
