@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Dennis Frommknecht - Initial contribution
  */
-@Component(configurationPid = "binding.tado", name = "TadoHandlerFactory", service = ThingHandlerFactory.class)
+@Component(configurationPid = "binding.tado", service = ThingHandlerFactory.class)
 public class TadoHandlerFactory extends BaseThingHandlerFactory {
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections

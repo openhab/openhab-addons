@@ -19,18 +19,15 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.nest.handler.NestBridgeHandler;
 import org.openhab.binding.nest.internal.discovery.NestDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link NestTestHandlerFactory} is responsible for creating test things and thing handlers.
  *
  * @author Wouter Born - Increase test coverage
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.nest.test")
 public class NestTestHandlerFactory extends BaseThingHandlerFactory {
 
     private String redirectUrl = "http://localhost";
