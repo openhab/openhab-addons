@@ -54,6 +54,10 @@
 					<option value="ReadOnly">Read only</option>
 				</options>
 			</parameter>
+			<parameter name="specialCommand" type="text" required="false">
+                <label>Special Command</label>
+                <description></description>
+            </parameter>
 		</config-description>
 	</channel-type>
 	<channel-type id="contact-channel">
@@ -88,6 +92,10 @@
 					<option value="ReadOnly">Read only</option>
 				</options>
 			</parameter>
+            <parameter name="specialCommand" type="text" required="false">
+                <label>Special Command</label>
+                <description></description>
+            </parameter>
 		</config-description>
 	</channel-type>
 	<channel-type id="dimmer-channel">
@@ -110,6 +118,10 @@
 					<option value="ReadOnly">Read only</option>
 				</options>
 			</parameter>
+            <parameter name="specialCommand" type="text" required="false">
+                <label>Special Command</label>
+                <description></description>
+            </parameter>
 		</config-description>
 	</channel-type>
 	<channel-type id="datetime-channel">
@@ -132,6 +144,10 @@
 					<option value="ReadOnly">Read only</option>
 				</options>
 			</parameter>
+            <parameter name="specialCommand" type="text" required="false">
+                <label>Special Command</label>
+                <description></description>
+            </parameter>
 		</config-description>
 	</channel-type>
 	<channel-type id="string-channel">
@@ -154,6 +170,10 @@
 					<option value="ReadOnly">Read only</option>
 				</options>
 			</parameter>
+            <parameter name="specialCommand" type="text" required="false">
+                <label>Special Command</label>
+                <description></description>
+            </parameter>
 		</config-description>
 	</channel-type>
 	<channel-type id="rollershutter-channel">
@@ -176,6 +196,10 @@
 					<option value="ReadOnly">Read only</option>
 				</options>
 			</parameter>
+            <parameter name="specialCommand" type="text" required="false">
+                <label>Special Command</label>
+                <description></description>
+            </parameter>
 		</config-description>
 	</channel-type>
 	<channel-type id="pulse-output-channel">

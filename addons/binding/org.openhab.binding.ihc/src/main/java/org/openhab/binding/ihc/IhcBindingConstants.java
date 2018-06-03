@@ -42,7 +42,7 @@ public class IhcBindingConstants {
     public final static String CHANNEL_TYPE_NUMBER = "number-channel";
     public final static String CHANNEL_TYPE_SWITCH = "switch-channel";
     public final static String CHANNEL_TYPE_CONTACT = "contact-channel";
-    public final static String CHANNEL_TYPE_DIMMMER = "dimmmer-channel";
+    public final static String CHANNEL_TYPE_DIMMER = "dimmer-channel";
     public final static String CHANNEL_TYPE_DATETIME = "datetime-channel";
     public final static String CHANNEL_TYPE_STRING = "string-channel";
     public final static String CHANNEL_TYPE_ROLLERSHUTTER = "rollershutter-channel";
@@ -59,6 +59,7 @@ public class IhcBindingConstants {
     public final static String PARAM_EXTRA_LONG_PRESS_MAX_TIME = "extraLongPressMaxTime";
     public final static String PARAM_LONG_PRESS_MAX_TIME = "longPressMaxTime";
     public final static String PARAM_SHORT_PRESS_MAX_TIME = "shortPressMaxTime";
+    public final static String PARAM_SPECIAL_COMMAND = "specialCommand";
 
     public final static String DIRECTION_READ_WRITE = "ReadWrite";
     public final static String DIRECTION_WRITE_ONLY = "WriteOnly";

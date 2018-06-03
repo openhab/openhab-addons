@@ -10,11 +10,8 @@ package org.openhab.binding.ihc.handler;
 
 import static org.openhab.binding.ihc.IhcBindingConstants.*;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.security.InvalidParameterException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -30,11 +27,6 @@ import java.util.TimerTask;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.commons.io.FileUtils;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -54,20 +46,17 @@ import org.openhab.binding.ihc.ws.IhcClient;
 import org.openhab.binding.ihc.ws.IhcClient.ConnectionState;
 import org.openhab.binding.ihc.ws.IhcEventListener;
 import org.openhab.binding.ihc.ws.datatypes.WSControllerState;
-import org.openhab.binding.ihc.ws.datatypes.WSProjectInfo;
 import org.openhab.binding.ihc.ws.datatypes.WSRFDevice;
 import org.openhab.binding.ihc.ws.datatypes.WSSystemInfo;
 import org.openhab.binding.ihc.ws.exeptions.IhcExecption;
 import org.openhab.binding.ihc.ws.projectfile.IhcEnumValue;
+import org.openhab.binding.ihc.ws.projectfile.ProjectFileUtils;
 import org.openhab.binding.ihc.ws.resourcevalues.WSBooleanValue;
 import org.openhab.binding.ihc.ws.resourcevalues.WSEnumValue;
 import org.openhab.binding.ihc.ws.resourcevalues.WSResourceValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  * The {@link IhcHandler} is responsible for handling commands, which are
@@ -107,7 +96,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
      */
     private String controllerState = "";
 
-    private IhcConfiguration configuration;
+    private IhcConfiguration conf;
 
     private final Set<Integer> linkedResourceIds = Collections.synchronizedSet(new HashSet<>());
 
@@ -155,10 +144,18 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         }
     }
 
+    private String getFilePathInUserDataFolder(String fileName) {
+        String progArg = System.getProperty("smarthome.userdata");
+        if (progArg != null) {
+            return progArg + File.separator + fileName;
+        }
+        return fileName;
+    }
+
     @Override
     public void initialize() {
-        configuration = getConfigAs(IhcConfiguration.class);
-        logger.debug("Using configuration: {}", configuration);
+        conf = getConfigAs(IhcConfiguration.class);
+        logger.debug("Using configuration: {}", conf);
 
         if (controlJob == null || controlJob.isCancelled()) {
             logger.debug("Start control task, interval={}sec", 1);
@@ -264,49 +261,96 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 return;
             }
 
-            Integer resourceId = ChannelUtils.getResourceIdFromChannelParameters(getThing(), channelUID.getId());
-            WSResourceValue value = ihc.getResourceValueInformation(resourceId);
-            ArrayList<IhcEnumValue> enumValues = null;
-            if (value instanceof WSEnumValue) {
-                enumValues = enumDictionary.getEnumValues(((WSEnumValue) value).getDefinitionTypeID());
-            }
-
             String channelTypeId = ChannelUtils.getChannelTypeId(getThing(), channelUID.getId());
             if (channelTypeId != null) {
                 switch (channelTypeId) {
                     case CHANNEL_TYPE_PULSE_OUTPUT:
-                        updatePulseOutputChannel(channelUID, command, value);
+                        updatePulseOutputChannel(channelUID, command);
                         break;
 
                     default:
-                        value = IhcDataConverter.convertCommandToResourceValue(command, value, enumValues);
-                        logger.debug("Update resource to: {}", value);
-                        if (!updateResource(value)) {
-                            logger.warn("Channel {} update failed.", channelUID);
-                        }
+                        updateChannel(channelUID, command);
                 }
             }
-
         } catch (IhcExecption e) {
             logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage());
-        } catch (InvalidParameterException e) {
+        } catch (IllegalArgumentException e) {
             logger.warn("Can't find resource id, reason {}", e.getMessage());
         }
     }
 
-    private void updatePulseOutputChannel(ChannelUID channelUID, Command command, WSResourceValue value)
-            throws InvalidParameterException, IhcExecption {
+    private void updateChannel(ChannelUID channelUID, Command command) throws IllegalArgumentException, IhcExecption {
 
-        WSResourceValue val = null;
+        Integer resourceId = ChannelUtils.getResourceIdFromChannelParameters(getThing(), channelUID.getId());
+        WSResourceValue value = ihc.getResourceValueInformation(resourceId);
+
+        if (value != null) {
+            ArrayList<IhcEnumValue> enumValues = null;
+            if (value instanceof WSEnumValue) {
+                enumValues = enumDictionary.getEnumValues(((WSEnumValue) value).getDefinitionTypeID());
+            }
+            value = IhcDataConverter.convertCommandToResourceValue(command, value, enumValues);
+            logger.debug("Update resource: {}", value);
+            if (!updateResource(value)) {
+                logger.warn("Channel {} update to resource '{}' failed.", channelUID, value);
+            }
+        } else {
+            WSResourceValue val = null;
+
+            String specialCommandsStr = ChannelUtils.getSpecialCommandFromChannelParameters(getThing(),
+                    channelUID.getId());
+            logger.debug("specialCommandsStr: {}", specialCommandsStr);
+            if (specialCommandsStr != null) {
+                List<SpecialCommand> specialCommands = new SpecialCommandParser(specialCommandsStr).getAllOutCommands();
+                logger.debug("Out special commands: {}", specialCommands);
+                for (SpecialCommand specialCommand : specialCommands) {
+                    if (command.toString().equals(specialCommand.getCommandToReact())) {
+                        logger.debug("Match found to command {}: {}", command, specialCommand);
+                        OnOffType cmd = (OnOffType) specialCommand.getCommandToSend();
+                        val = ihc.getResourceValueInformation(specialCommand.getResourceId());
+                        val = IhcDataConverter.convertCommandToResourceValue(cmd, val, null);
+                        logger.debug("Update resource: {}", val);
+                        if (updateResource(val)) {
+                            if (specialCommand.getPulseWidth() > 0) {
+                                // sleep a while
+                                try {
+                                    int delay = Math.min(specialCommand.getPulseWidth(), 4000);
+                                    logger.debug("Sleep: {}ms", delay);
+                                    Thread.sleep(delay);
+                                } catch (InterruptedException e) {
+                                    // do nothing
+                                }
+                                cmd = cmd == OnOffType.ON ? OnOffType.OFF : OnOffType.ON;
+                                val = IhcDataConverter.convertCommandToResourceValue(cmd, val, null);
+                                logger.debug("Update resource: {}", val);
+                                if (!updateResource(val)) {
+                                    logger.warn("Channel {} update to resource '{}' failed.", channelUID, val);
+                                }
+                            }
+                        } else {
+                            logger.warn("Channel {} update to resource '{}' failed.", channelUID, val);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void updatePulseOutputChannel(ChannelUID channelUID, Command command)
+            throws IllegalArgumentException, IhcExecption {
+
+        Integer resourceId = ChannelUtils.getResourceIdFromChannelParameters(getThing(), channelUID.getId());
+        WSResourceValue value = ihc.getResourceValueInformation(resourceId);
+
         if (command == OnOffType.ON) {
             Integer delay = ChannelUtils.getPulseLengthFromChannelParameters(getThing(), channelUID.getId());
 
             logger.debug("Emulating {}ms pulse for resource: {}", delay, value.getResourceID());
 
             // set resource to ON
-            val = IhcDataConverter.convertCommandToResourceValue(OnOffType.ON, value, null);
-            logger.debug("Update resource to: {}", val);
-            if (updateResource(val)) {
+            value = IhcDataConverter.convertCommandToResourceValue(OnOffType.ON, value, null);
+            logger.debug("Update resource to: {}", value);
+            if (updateResource(value)) {
                 if (delay != null) {
                     // sleep a while
                     try {
@@ -317,19 +361,19 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     }
                 }
                 // set resource back to OFF
-                val = IhcDataConverter.convertCommandToResourceValue(OnOffType.OFF, value, null);
-                logger.debug("Update resource to: {}", val);
-                if (!updateResource(val)) {
-                    logger.warn("Channel {} update failed.", channelUID);
+                value = IhcDataConverter.convertCommandToResourceValue(OnOffType.OFF, value, null);
+                logger.debug("Update resource to: {}", value);
+                if (!updateResource(value)) {
+                    logger.warn("Channel {} update to resource '{}' failed.", channelUID, value);
                 }
             } else {
                 logger.warn("Channel {} update failed.", channelUID);
             }
         } else {
-            val = IhcDataConverter.convertCommandToResourceValue(command, value, null);
-            logger.debug("Update resource to: {}", val);
-            if (!updateResource(val)) {
-                logger.warn("Channel {} update failed.", channelUID);
+            value = IhcDataConverter.convertCommandToResourceValue(command, value, null);
+            logger.debug("Update resource to: {}", value);
+            if (!updateResource(value)) {
+                logger.warn("Channel {} update to resource '{}' failed.", channelUID, value);
             }
         }
     }
@@ -376,7 +420,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                         }
                         updateNotificationsRequestReminder();
                     }
-                } catch (InvalidParameterException e) {
+                } catch (IllegalArgumentException e) {
                     logger.warn("Can't find resource id, reason {}", e.getMessage());
                 }
         }
@@ -405,7 +449,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                         }
                         updateNotificationsRequestReminder();
                     }
-                } catch (InvalidParameterException e) {
+                } catch (IllegalArgumentException e) {
                     logger.warn("Can't find resource id, reason {}", e.getMessage());
                 }
         }
@@ -418,69 +462,72 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     public void connect() throws IhcExecption {
         try {
             setConnectingState(true);
-
             logger.debug("Connecting to IHC / ELKO LS controller [IP='{}' Username='{}' Password='{}'].",
-                    new Object[] { configuration.ip, configuration.username, "******" });
-
-            ihc = new IhcClient(configuration.ip, configuration.username, configuration.password,
-                    configuration.timeout);
-
+                    new Object[] { conf.ip, conf.username, "******" });
+            ihc = new IhcClient(conf.ip, conf.username, conf.password, conf.timeout);
             ihc.openConnection();
-
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     "Initializing communication to the IHC / ELKO controller");
-
-            boolean loadProject = false;
-            String fileName = String.format(LOCAL_IHC_PROJECT_FILE_NAME_TEMPLATE, thing.getUID().getId());
-            String filePath = getFilePathInUserDataFolder(fileName);
-
-            if (configuration.loadProjectFile && projectFile == null) {
-                projectFile = readProjectFileFromFile(filePath);
-                if (projectFile == null) {
-                    loadProject = true;
-                }
-            } else if (configuration.loadProjectFile
-                    && !projectEqualsToControllerProject(projectFile, ihc.getProjectInfo())) {
-                logger.debug(
-                        "Local project file is not same as in the controller, reload project file from controller!");
-                loadProject = true;
-            }
-
-            if (loadProject == true) {
-                logger.debug("Loading IHC /ELKO LS project file from controller...");
-                byte[] data = ihc.LoadProjectFileFromControllerAsByteArray();
-                logger.debug("Saving project file to local file '{}'", filePath);
-                saveProjectFile(filePath, data);
-                projectFile = converteBytesToDocument(data);
-            }
-
-            if (configuration.loadProjectFile && configuration.createChannelsAutomatically) {
-                logger.debug("Creating channels");
-                List<Channel> thingChannels = new ArrayList<>();
-                thingChannels.addAll(getThing().getChannels());
-                ChannelUtils.addControllerChannels(getThing(), thingChannels);
-                try {
-                    ChannelUtils.addRFDeviceChannels(getThing(), ihc.getDetectedRFDevices(), thingChannels);
-                } catch (IhcExecption e) {
-                    logger.debug("Error occured when fetching RF device information, reason: {} ", e.getMessage());
-                }
-                addChannelsFromProjectFile(projectFile, thingChannels);
-                updateThing(editThing().withChannels(thingChannels).build());
-            } else {
-                logger.debug("Automatic channel creation disabled");
-            }
-
+            loadProject();
+            createChannels();
             updateControllerStateChannel();
             updateControllerInformationChannels();
             ihc.addEventListener(this);
             ihc.startControllerEventListeners();
             setValueNotificationRequest(true);
-            if (pollingJobRf == null || pollingJobRf.isCancelled()) {
-                logger.debug("Start RF device refresh task, interval={}sec", 60);
-                pollingJobRf = scheduler.scheduleWithFixedDelay(pollingRunnableRF, 10, 60, TimeUnit.SECONDS);
-            }
+            startRFPolling();
         } finally {
             setConnectingState(false);
+        }
+    }
+
+    private void loadProject() throws IhcExecption {
+        boolean loadProject = false;
+        String fileName = String.format(LOCAL_IHC_PROJECT_FILE_NAME_TEMPLATE, thing.getUID().getId());
+        String filePath = getFilePathInUserDataFolder(fileName);
+
+        if (conf.loadProjectFile && projectFile == null) {
+            projectFile = ProjectFileUtils.readProjectFileFromFile(filePath);
+            if (projectFile == null) {
+                loadProject = true;
+            }
+        } else if (conf.loadProjectFile
+                && !ProjectFileUtils.projectEqualsToControllerProject(projectFile, ihc.getProjectInfo())) {
+            logger.debug("Local project file is not same as in the controller, reload project file from controller!");
+            loadProject = true;
+        }
+
+        if (loadProject == true) {
+            logger.debug("Loading IHC /ELKO LS project file from controller...");
+            byte[] data = ihc.LoadProjectFileFromControllerAsByteArray();
+            logger.debug("Saving project file to local file '{}'", filePath);
+            ProjectFileUtils.saveProjectFile(filePath, data);
+            projectFile = ProjectFileUtils.converteBytesToDocument(data);
+        }
+    }
+
+    private void createChannels() {
+        if (conf.loadProjectFile && conf.createChannelsAutomatically) {
+            logger.debug("Creating channels");
+            List<Channel> thingChannels = new ArrayList<>();
+            thingChannels.addAll(getThing().getChannels());
+            ChannelUtils.addControllerChannels(getThing(), thingChannels);
+            try {
+                ChannelUtils.addRFDeviceChannels(getThing(), ihc.getDetectedRFDevices(), thingChannels);
+            } catch (IhcExecption e) {
+                logger.debug("Error occured when fetching RF device information, reason: {} ", e.getMessage());
+            }
+            ChannelUtils.addChannelsFromProjectFile(getThing(), projectFile, thingChannels);
+            updateThing(editThing().withChannels(thingChannels).build());
+        } else {
+            logger.debug("Automatic channel creation disabled");
+        }
+    }
+
+    private void startRFPolling() {
+        if (pollingJobRf == null || pollingJobRf.isCancelled()) {
+            logger.debug("Start RF device refresh task, interval={}sec", 60);
+            pollingJobRf = scheduler.scheduleWithFixedDelay(pollingRunnableRF, 10, 60, TimeUnit.SECONDS);
         }
     }
 
@@ -549,18 +596,13 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     @Override
     public void resourceValueUpdateReceived(WSResourceValue value) {
         logger.debug("resourceValueUpdateReceived: {}", value);
-        thing.getChannels().forEach(c -> {
-            Integer resourceId = ChannelUtils.getResourceIdFromChannelParameters(getThing(), c.getUID().getId());
-            if (resourceId != null && resourceId.intValue() == value.getResourceID()) {
-                try {
-                    if (ChannelUtils.isChannelWriteOnly(getThing(), c.getUID().getId())) {
-                        logger.debug("Write only channel, skip the update to {}", c.getUID());
-                    } else {
-                        State state = IhcDataConverter.convertResourceValueToState(c.getAcceptedItemType(), value);
-                        updateState(c.getUID(), state);
-                    }
-                } catch (NumberFormatException e) {
-                    logger.debug("Can't convert resource value '{}' to item type {}", value, c.getAcceptedItemType());
+        thing.getChannels().forEach(channel -> {
+            Integer resourceId = ChannelUtils.getResourceIdFromChannelParameters(getThing(), channel.getUID().getId());
+            if (resourceId != null) {
+                if (resourceId.intValue() == value.getResourceID()) {
+                    updateChannelState(channel, value);
+                } else if (resourceId.intValue() == 0) {
+                    updateSpecialCommandChannelState(channel, value);
                 }
             }
         });
@@ -579,8 +621,38 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         }
     }
 
+    private void updateChannelState(Channel channel, WSResourceValue value) {
+        if (ChannelUtils.isChannelWriteOnly(getThing(), channel.getUID().getId())) {
+            logger.debug("Write only channel, skip update to {}", channel.getUID());
+        } else {
+            try {
+                State state = IhcDataConverter.convertResourceValueToState(channel.getAcceptedItemType(), value);
+                updateState(channel.getUID(), state);
+            } catch (NumberFormatException e) {
+                logger.debug("Can't convert resource value '{}' to item type {}", value, channel.getAcceptedItemType());
+            }
+        }
+    }
+
+    private void updateSpecialCommandChannelState(Channel channel, WSResourceValue value) {
+        String specialCommandsStr = ChannelUtils.getSpecialCommandFromChannelParameters(thing,
+                channel.getUID().getId());
+        if (specialCommandsStr != null) {
+            try {
+                List<SpecialCommand> specialCommands = new SpecialCommandParser(specialCommandsStr).getAllInCommands();
+                for (SpecialCommand specialCommand : specialCommands) {
+                    if (specialCommand.getResourceId() == value.getResourceID()) {
+                        updateChannelState(channel, value);
+                    }
+                }
+            } catch (IllegalArgumentException e) {
+
+            }
+        }
+    }
+
     private void updateTriggers(int resourceId, Duration duration) {
-        for (Channel channel : thing.getChannels()) {
+        thing.getChannels().forEach(channel -> {
             Integer id = ChannelUtils.getResourceIdFromChannelParameters(getThing(), channel.getUID().getId());
             if (id != null && id.intValue() == resourceId) {
                 String channelTypeId = ChannelUtils.getChannelTypeId(getThing(), channel.getUID().getId());
@@ -622,40 +694,11 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     }
                 }
             }
-        }
+        });
     }
 
     private boolean isBetween(long value, long minValue, long maxValueInclusive) {
         return (value > minValue && value <= maxValueInclusive);
-    }
-
-    private void addChannelsFromProjectFile(Document projectFile, List<Channel> thingChannels) {
-        logger.debug("Updating thing channels");
-
-        if (projectFile != null) {
-            try {
-                NodeList nodes = projectFile.getElementsByTagName("product_dataline");
-
-                for (int i = 0; i < nodes.getLength(); i++) {
-                    Element node = (Element) nodes.item(i);
-                    ChannelUtils.addChannelsFromProjectFile(getThing(), node.getElementsByTagName("dataline_input"),
-                            "Switch", "inputs#", CHANNEL_TYPE_SWITCH, thingChannels);
-                    ChannelUtils.addChannelsFromProjectFile(getThing(), node.getElementsByTagName("dataline_output"),
-                            "Switch", "outputs#", CHANNEL_TYPE_SWITCH, thingChannels);
-                    ChannelUtils.addChannelsFromProjectFile(getThing(), node.getElementsByTagName("airlink_input"),
-                            "Switch", "inputs#", CHANNEL_TYPE_SWITCH, thingChannels);
-                    ChannelUtils.addChannelsFromProjectFile(getThing(), node.getElementsByTagName("airlink_output"),
-                            "Switch", "outputs#", CHANNEL_TYPE_SWITCH, thingChannels);
-                    ChannelUtils.addChannelsFromProjectFile(getThing(),
-                            node.getElementsByTagName("resource_temperature"), "Number", "temperatures#",
-                            CHANNEL_TYPE_NUMBER, thingChannels);
-                }
-            } catch (Exception e) {
-                logger.warn("Error occured when adding channels, reason: {}", e.getMessage(), e);
-            }
-        } else {
-            logger.warn("Project file data doesn't exist, can't automatically create channels!");
-        }
     }
 
     private final Runnable pollingRunnableRF = new Runnable() {
@@ -685,8 +728,9 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                                                     dev.getBatteryLevel() == 1 ? OnOffType.OFF : OnOffType.ON);
                                             break;
                                         case CHANNEL_TYPE_RF_SIGNAL_STRENGTH:
-                                            updateState(channelId,
-                                                    convertSignalLevelToSystemWideLevel(dev.getSignalStrength()));
+                                            int signalLevel = new SignalLevelConverter(dev.getSignalStrength())
+                                                    .getSystemWideSignalLevel();
+                                            updateState(channelId, new StringType(String.valueOf(signalLevel)));
                                             break;
                                     }
                                 }
@@ -797,136 +841,5 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 timer.cancel();
             }
         }
-    }
-
-    private Document readProjectFileFromFile(String path) {
-        File fXmlFile = new File(path);
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        try {
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(fXmlFile);
-            return doc;
-        } catch (IOException | ParserConfigurationException | SAXException e) {
-            logger.warn("Error occured when read project file from file '{}', reason {}", path, e.getMessage());
-        }
-        return null;
-    }
-
-    private void saveProjectFile(String path, byte[] data) {
-        try {
-            FileUtils.writeByteArrayToFile(new File(path), data);
-        } catch (IOException e) {
-            logger.warn("Error occured when trying to write data to file '{}', reason {}", path, e.getMessage());
-        }
-    }
-
-    private Document converteBytesToDocument(byte[] data) {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        try {
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            return builder.parse(new ByteArrayInputStream(data));
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            logger.warn("Error occured when trying to convert data to XML, reason {}", e.getMessage());
-        }
-        return null;
-    }
-
-    private boolean projectEqualsToControllerProject(Document projectfile, WSProjectInfo projectInfo) {
-        if (projectInfo != null) {
-            try {
-                NodeList nodes = projectfile.getElementsByTagName("modified");
-                if (nodes.getLength() == 1) {
-                    Element node = (Element) nodes.item(0);
-                    int year = Integer.parseInt(node.getAttribute("year"));
-                    int month = Integer.parseInt(node.getAttribute("month"));
-                    int day = Integer.parseInt(node.getAttribute("day"));
-                    int hour = Integer.parseInt(node.getAttribute("hour"));
-                    int minute = Integer.parseInt(node.getAttribute("minute"));
-
-                    logger.debug("Project file from file, date: {}.{}.{} {}:{}", year, month, day, hour, minute);
-                    logger.debug("Project file in controller, date: {}.{}.{} {}:{}",
-                            projectInfo.getLastmodified().getYear(),
-                            projectInfo.getLastmodified().getMonthWithJanuaryAsOne(),
-                            projectInfo.getLastmodified().getDay(), projectInfo.getLastmodified().getHours(),
-                            projectInfo.getLastmodified().getMinutes());
-
-                    if (projectInfo.getLastmodified().getYear() == year
-                            && projectInfo.getLastmodified().getMonthWithJanuaryAsOne() == month
-                            && projectInfo.getLastmodified().getDay() == day
-                            && projectInfo.getLastmodified().getHours() == hour
-                            && projectInfo.getLastmodified().getMinutes() == minute) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            } catch (Exception e) {
-                // do nothing, but return false
-            }
-        }
-        return false;
-    }
-
-    private String getFilePathInUserDataFolder(String fileName) {
-        String progArg = System.getProperty("smarthome.userdata");
-        if (progArg != null) {
-            return progArg + File.separator + fileName;
-        }
-        return fileName;
-    }
-
-    /**
-     * Convert internal signal level (0-18) to system wide signal level (0-4).
-     *
-     * @param signalLevel Internal signal level
-     * @return Signal level in system wide level
-     */
-    private State convertSignalLevelToSystemWideLevel(int signalLevel) {
-        int newLevel;
-
-        /*
-         * IHC signal levels are always between 0-18.
-         *
-         * Use switch case to make level adaption easier in future if needed.
-         */
-
-        switch (signalLevel) {
-            case 0:
-            case 1:
-                newLevel = 0;
-                break;
-
-            case 2:
-            case 3:
-            case 4:
-                newLevel = 1;
-                break;
-
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-                newLevel = 2;
-                break;
-
-            case 9:
-            case 10:
-            case 11:
-            case 12:
-            case 13:
-                newLevel = 3;
-                break;
-
-            case 14:
-            case 15:
-            case 16:
-            case 17:
-            case 18:
-            default:
-                newLevel = 4;
-        }
-
-        return new StringType(String.valueOf(newLevel));
     }
 }

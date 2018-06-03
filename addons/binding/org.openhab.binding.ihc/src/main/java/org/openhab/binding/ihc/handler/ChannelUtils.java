@@ -11,7 +11,6 @@ package org.openhab.binding.ihc.handler;
 import static org.openhab.binding.ihc.IhcBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.security.InvalidParameterException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +25,9 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.ihc.ws.datatypes.WSRFDevice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -35,6 +37,36 @@ import org.w3c.dom.NodeList;
  * @author Pauli Anttila - Initial contribution
  */
 public class ChannelUtils {
+    private final static Logger LOGGER = LoggerFactory.getLogger(IhcHandler.class);
+
+    public static void addChannelsFromProjectFile(Thing thing, Document projectFile, List<Channel> thingChannels) {
+        LOGGER.debug("Updating thing channels");
+
+        if (projectFile != null) {
+            try {
+                NodeList nodes = projectFile.getElementsByTagName("product_dataline");
+
+                for (int i = 0; i < nodes.getLength(); i++) {
+                    Element node = (Element) nodes.item(i);
+                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("dataline_input"),
+                            "Switch", "inputs#", CHANNEL_TYPE_SWITCH, thingChannels);
+                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("dataline_output"),
+                            "Switch", "outputs#", CHANNEL_TYPE_SWITCH, thingChannels);
+                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_input"), "Switch",
+                            "inputs#", CHANNEL_TYPE_SWITCH, thingChannels);
+                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_output"),
+                            "Switch", "outputs#", CHANNEL_TYPE_SWITCH, thingChannels);
+                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("resource_temperature"),
+                            "Number", "temperatures#", CHANNEL_TYPE_NUMBER, thingChannels);
+                }
+            } catch (Exception e) {
+                LOGGER.warn("Error occured when adding channels, reason: {}", e.getMessage(), e);
+            }
+        } else {
+            LOGGER.warn("Project file data doesn't exist, can't automatically create channels!");
+        }
+    }
+
     public static void addControllerChannels(Thing thing, List<Channel> thingChannels) {
         if (thing != null && thingChannels != null) {
             Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), CHANNEL_CONTROLLER_STATE), "String")
@@ -134,16 +166,16 @@ public class ChannelUtils {
     }
 
     public static @NonNull Configuration getChannelParameters(Thing thing, String channelId)
-            throws InvalidParameterException {
+            throws IllegalArgumentException {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
             return channel.getConfiguration();
         }
-        throw new InvalidParameterException("Invalid channelId");
+        throw new IllegalArgumentException("Invalid channelId");
     }
 
     public static Integer getResourceIdFromChannelParameters(Thing thing, String channelId)
-            throws InvalidParameterException {
+            throws IllegalArgumentException {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
             Object resourceId = channel.getConfiguration().get(PARAM_RESOURCE_ID);
@@ -151,16 +183,16 @@ public class ChannelUtils {
                 try {
                     return ((BigDecimal) resourceId).intValue();
                 } catch (NumberFormatException e) {
-                    throw new InvalidParameterException(e.getMessage());
+                    throw new IllegalArgumentException(e.getMessage());
                 }
             }
             return null;
         }
-        throw new InvalidParameterException("Invalid channelId");
+        throw new IllegalArgumentException("Invalid channelId");
     }
 
     public static Integer getPulseLengthFromChannelParameters(Thing thing, String channelId)
-            throws InvalidParameterException {
+            throws IllegalArgumentException {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
             Object pulseLength = channel.getConfiguration().get(PARAM_PULSE_LENGTH);
@@ -168,16 +200,33 @@ public class ChannelUtils {
                 try {
                     return ((BigDecimal) pulseLength).intValue();
                 } catch (NumberFormatException e) {
-                    throw new InvalidParameterException(e.getMessage());
+                    throw new IllegalArgumentException(e.getMessage());
                 }
             }
             return null;
         }
-        throw new InvalidParameterException("Invalid channelId");
+        throw new IllegalArgumentException("Invalid channelId");
+    }
+
+    public static String getSpecialCommandFromChannelParameters(Thing thing, String channelId)
+            throws IllegalArgumentException {
+        Channel channel = thing.getChannel(channelId);
+        if (channel != null) {
+            Object test = channel.getConfiguration().get(PARAM_SPECIAL_COMMAND);
+            if (test != null) {
+                try {
+                    return (String) test;
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException(e.getMessage());
+                }
+            }
+            return null;
+        }
+        throw new IllegalArgumentException("Invalid channelId");
     }
 
     public static Long getSerialNumberFromChannelParameters(Thing thing, String channelId)
-            throws InvalidParameterException {
+            throws IllegalArgumentException {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
             Object serialNumber = channel.getConfiguration().get(PARAM_SERIAL_NUMBER);
@@ -185,16 +234,16 @@ public class ChannelUtils {
                 try {
                     return ((BigDecimal) serialNumber).longValue();
                 } catch (NumberFormatException e) {
-                    throw new InvalidParameterException(e.getMessage());
+                    throw new IllegalArgumentException(e.getMessage());
                 }
             }
             return null;
         }
-        throw new InvalidParameterException("Invalid channelId");
+        throw new IllegalArgumentException("Invalid channelId");
     }
 
     public static String getDirectionFromChannelParameters(Thing thing, String channelId)
-            throws InvalidParameterException {
+            throws IllegalArgumentException {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
             Object direction = channel.getConfiguration().get(PARAM_DIRECTION);
@@ -202,15 +251,15 @@ public class ChannelUtils {
                 try {
                     return (String) direction;
                 } catch (NumberFormatException e) {
-                    throw new InvalidParameterException(e.getMessage());
+                    throw new IllegalArgumentException(e.getMessage());
                 }
             }
             return null;
         }
-        throw new InvalidParameterException("Invalid channelId");
+        throw new IllegalArgumentException("Invalid channelId");
     }
 
-    public static boolean isChannelReadOnly(Thing thing, String channelId) throws InvalidParameterException {
+    public static boolean isChannelReadOnly(Thing thing, String channelId) throws IllegalArgumentException {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
             Object direction = channel.getConfiguration().get(PARAM_DIRECTION);
@@ -221,10 +270,10 @@ public class ChannelUtils {
             }
             return false;
         }
-        throw new InvalidParameterException("Invalid channelId");
+        throw new IllegalArgumentException("Invalid channelId");
     }
 
-    public static boolean isChannelWriteOnly(Thing thing, String channelId) throws InvalidParameterException {
+    public static boolean isChannelWriteOnly(Thing thing, String channelId) throws IllegalArgumentException {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
             Object direction = channel.getConfiguration().get(PARAM_DIRECTION);
@@ -235,7 +284,7 @@ public class ChannelUtils {
             }
             return false;
         }
-        throw new InvalidParameterException("Invalid channelId");
+        throw new IllegalArgumentException("Invalid channelId");
     }
 
     public static String getChannelTypeId(Thing thing, String channelId) {
@@ -255,7 +304,27 @@ public class ChannelUtils {
         thing.getChannels().forEach(c -> {
             Integer resourceId = ChannelUtils.getResourceIdFromChannelParameters(thing, c.getUID().getId());
             if (resourceId != null) {
-                resourceIds.add(resourceId);
+                if (resourceId != 0) {
+                    resourceIds.add(resourceId);
+                } else {
+                    String specialCommandsStr = ChannelUtils.getSpecialCommandFromChannelParameters(thing,
+                            c.getUID().getId());
+                    if (specialCommandsStr != null) {
+                        try {
+                            List<SpecialCommand> specialCommands = new SpecialCommandParser(specialCommandsStr)
+                                    .getAllOutCommands();
+                            for (SpecialCommand specialCommand : specialCommands) {
+                                resourceId = specialCommand.getResourceId();
+                                if (resourceId != 0) {
+                                    resourceIds.add(resourceId);
+                                }
+                            }
+                        } catch (IllegalArgumentException e) {
+                            LOGGER.warn("Illegal value found from channel '{}' special command '{}': {}", c.getUID(),
+                                    specialCommandsStr, e.getMessage());
+                        }
+                    }
+                }
             }
         });
 

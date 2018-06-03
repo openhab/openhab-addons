@@ -14,10 +14,10 @@ import java.util.HashMap;
 import org.openhab.binding.ihc.ws.projectfile.IhcEnumValue;
 
 /**
-*
-*
-* @author Pauli Anttila - Initial contribution
-*/
+ *
+ *
+ * @author Pauli Anttila - Initial contribution
+ */
 public class EnumDictionary {
 
     private HashMap<Integer, ArrayList<IhcEnumValue>> enumDictionary = new HashMap<Integer, ArrayList<IhcEnumValue>>();

@@ -358,14 +358,16 @@ public class IhcClient {
      * @return Resource value.
      */
     public WSResourceValue getResourceValueInformation(int resourceId) throws IhcExecption {
-
-        WSResourceValue data = resourceValues.get(resourceId);
-
-        if (data == null) {
-            // data is not available, read it from the controller
-            data = resourceInteractionService.resourceQuery(resourceId);
+        if (resourceId != 0) {
+            WSResourceValue data = resourceValues.get(resourceId);
+            if (data == null) {
+                // data is not available, read it from the controller
+                data = resourceInteractionService.resourceQuery(resourceId);
+            }
+            return data;
+        } else {
+            return null;
         }
-        return data;
     }
 
     /**
