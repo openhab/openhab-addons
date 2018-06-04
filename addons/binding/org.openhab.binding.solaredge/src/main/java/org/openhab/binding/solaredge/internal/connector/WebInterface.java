@@ -242,8 +242,8 @@ public class WebInterface {
                     logger.debug("{}: {}", TOKEN_COOKIE_NAME, cookie.getValue());
                     foundSecurityToken = true;
                 }
-                if (cookie.getName().equals(CLIENT_COOKIE_NAME)) {
-                    logger.debug("{}: {}", CLIENT_COOKIE_NAME, cookie.getValue());
+                if (cookie.getName().startsWith(CLIENT_COOKIE_NAME_PREFIX)) {
+                    logger.debug("{}: {}", cookie.getName(), cookie.getValue());
                     foundClientCookie = true;
                 }
             }
@@ -254,7 +254,7 @@ public class WebInterface {
                 handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
                 setAuthenticated(false);
             } else if (!foundClientCookie) {
-                String message = "Client-Cookie not found: " + CLIENT_COOKIE_NAME;
+                String message = "Client-Cookie not found: " + CLIENT_COOKIE_NAME_PREFIX + "*";
                 logger.warn(message);
                 handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
                 setAuthenticated(false);

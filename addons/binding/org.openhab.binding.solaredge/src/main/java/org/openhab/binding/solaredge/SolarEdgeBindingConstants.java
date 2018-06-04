@@ -46,7 +46,7 @@ public class SolarEdgeBindingConstants {
 
     // login field names
     public static final String TOKEN_COOKIE_NAME = "SPRING_SECURITY_REMEMBER_ME_COOKIE";
-    public static final String CLIENT_COOKIE_NAME = "SolarEdge_Client-1.5";
+    public static final String CLIENT_COOKIE_NAME_PREFIX = "SolarEdge_Client";
 
     public static final String LOGIN_COMMAND_FIELD = "cmd";
     public static final String LOGIN_COMMAND_VALUE = "login";
