@@ -324,7 +324,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
             modules.forEach(module -> {
                 Channel channel = module.getThing().getChannel(CHANNEL_WELCOME_HOME_EVENT);
                 if (channel != null) {
-                    triggerChannel(channel.getUID(), event.getAppType().toString());
+                    triggerChannel(channel.getUID(), event.getEventType().toString());
                 }
             });
         }
