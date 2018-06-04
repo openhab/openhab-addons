@@ -251,6 +251,8 @@ Number Netatmo_Wind_Strength "Wind Strength [%.0f KPH]" { channel = "netatmo:NAM
 | LowBattery          | Switch       | Low battery                                              |
 | BatteryVP           | Number       | Battery level                                            |
 | RfStatus            | Number       | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| MaxWindStrength     | Number:Speed | Maximum wind strength recorded                           |
+| DateMaxWindStrength | DateTime     | Timestamp when MaxWindStrength was recorded              |
 
 All these channels are read only.
 
@@ -395,9 +397,6 @@ Person things are automatically created in discovery process for all known perso
 | welcomePersonLastEvent        | Image     | Picture of the last event for this person              |
 
 All these channels except welcomePersonAtHome are read only.
-
-Warning : while setting person away using the channel welcomePersonAtHome is fine, the contrary does not seem supported officially by Netatmo API.
-
 
 # Configuration Examples
 

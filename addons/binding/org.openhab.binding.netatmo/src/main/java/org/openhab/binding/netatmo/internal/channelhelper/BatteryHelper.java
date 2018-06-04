@@ -32,18 +32,13 @@ import org.slf4j.LoggerFactory;
  */
 public class BatteryHelper {
     private Logger logger = LoggerFactory.getLogger(BatteryHelper.class);
-
-    private int batteryMin;
     private int batteryLow;
-    private int batteryMax;
 
     private Object module;
 
     public BatteryHelper(String batteryLevels) {
         List<String> thresholds = Arrays.asList(batteryLevels.split(","));
-        batteryMin = Integer.parseInt(thresholds.get(0));
         batteryLow = Integer.parseInt(thresholds.get(1));
-        batteryMax = Integer.parseInt(thresholds.get(2));
     }
 
     public void setModule(Object module) {
@@ -55,16 +50,15 @@ public class BatteryHelper {
             try {
                 if (CHANNEL_BATTERY_LEVEL.equalsIgnoreCase(channelId)
                         || CHANNEL_LOW_BATTERY.equalsIgnoreCase(channelId)) {
-                    Method getBatteryVp = module.getClass().getMethod("getBatteryVp");
-                    Integer value = (Integer) getBatteryVp.invoke(module);
                     switch (channelId) {
                         case CHANNEL_BATTERY_LEVEL:
-                            // when batteries are freshly changed, API may return a value superior to batteryMax !
-                            int correctedVp = Math.min(value, batteryMax);
-                            int batteryPercent = (100 * (correctedVp - batteryMin) / (batteryMax - batteryMin));
+                            Method getBatteryPercent = module.getClass().getMethod("getBatteryPercent");
+                            Integer batteryPercent = (Integer) getBatteryPercent.invoke(module);
                             return Optional.of(ChannelTypeUtils.toDecimalType(batteryPercent));
                         case CHANNEL_LOW_BATTERY:
-                            return Optional.of(value < batteryLow ? OnOffType.ON : OnOffType.OFF);
+                            Method getBatteryVp = module.getClass().getMethod("getBatteryVp");
+                            Integer batteryVp = (Integer) getBatteryVp.invoke(module);
+                            return Optional.of(batteryVp < batteryLow ? OnOffType.ON : OnOffType.OFF);
                     }
                 }
             } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
