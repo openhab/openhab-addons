@@ -8,16 +8,18 @@
  */
 package org.openhab.binding.nibeuplink.handler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
 import org.openhab.binding.nibeuplink.internal.model.CustomChannels;
 import org.openhab.binding.nibeuplink.internal.model.F1145Channels;
 
 /**
- * VVM320 specific implementation part of handler logic
+ * F1145 specific implementation part of handler logic
  *
  * @author Alexander Friese - initial contribution
  *
@@ -29,12 +31,25 @@ public class F1145Handler extends GenericUplinkHandler {
     }
 
     @Override
-    protected Channel getThingSpecificChannel(String id) {
-        Channel specific = F1145Channels.fromId(id);
-        if (specific == null) {
-            return CustomChannels.fromId(id);
+    protected @NonNull List<Channel> getAllSpecificChannels(String id) {
+        List<Channel> channels = new ArrayList<>(2);
+
+        Channel channel = F1145Channels.fromId(id);
+        if (channel != null) {
+            channels.add(channel);
         }
-        return specific;
+
+        channel = CustomChannels.fromId(id);
+        if (channel != null) {
+            channels.add(channel);
+        }
+
+        return channels;
+    }
+
+    @Override
+    protected @Nullable Channel getSpecificChannel(String id) {
+        return F1145Channels.fromId(id);
     }
 
     @Override

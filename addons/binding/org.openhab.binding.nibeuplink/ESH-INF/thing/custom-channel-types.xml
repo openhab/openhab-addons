@@ -4,59 +4,59 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="custom-type-CH01">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Custom Channel 01</label>
 		<description></description>
-		<state pattern="%s" readOnly="true">
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="custom-type-CH02">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Custom Channel 02</label>
 		<description></description>
-		<state pattern="%s" readOnly="true">
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="custom-type-CH03">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Custom Channel 03</label>
 		<description></description>
-		<state pattern="%s" readOnly="true">
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="custom-type-CH04">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Custom Channel 04</label>
 		<description></description>
-		<state pattern="%s" readOnly="true">
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="custom-type-CH05">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Custom Channel 05</label>
 		<description></description>
-		<state pattern="%s" readOnly="true">
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="custom-type-CH06">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Custom Channel 06</label>
 		<description></description>
-		<state pattern="%s" readOnly="true">
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="custom-type-CH07">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Custom Channel 07</label>
 		<description></description>
-		<state pattern="%s" readOnly="true">
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="custom-type-CH08">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Custom Channel 08</label>
 		<description></description>
-		<state pattern="%s" readOnly="true">
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 

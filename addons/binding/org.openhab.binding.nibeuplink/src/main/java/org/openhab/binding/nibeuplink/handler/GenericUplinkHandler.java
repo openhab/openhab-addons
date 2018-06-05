@@ -17,6 +17,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -90,7 +91,7 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (!(command instanceof RefreshType)) {
             logger.debug("command for {}: {}", channelUID.getIdWithoutGroup(), command.toString());
-            Channel channel = getThingSpecificChannel(channelUID.getIdWithoutGroup());
+            Channel channel = getSpecificChannel(channelUID.getIdWithoutGroup());
             if (!channel.isReadOnly()) {
                 webInterface.executeCommand(new UpdateSetting(this, channel, command.toString()));
             }
@@ -179,8 +180,8 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
         logger.debug("Handling channel update.");
 
         for (String key : values.keySet()) {
-            Channel channel = getThingSpecificChannel(key);
-            if (channel != null) {
+            List<Channel> channels = getAllSpecificChannels(key);
+            for (Channel channel : channels) {
                 String value = values.get(key);
                 logger.debug("Channel is to be updated: {}: {}", channel.getFQName(), value);
                 if (value != null && !value.equals(NO_VALUE)) {
@@ -200,7 +201,8 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
                     updateState(channel.getFQName(), UnDefType.UNDEF);
                     deadChannels.add(channel);
                 }
-            } else {
+            }
+            if (channels.size() == 0) {
                 logger.debug("Could not identify channel: {} for model {}", key,
                         getThing().getThingTypeUID().getAsString());
             }
@@ -249,7 +251,9 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
         return new DecimalType(value);
     }
 
-    protected abstract Channel getThingSpecificChannel(String id);
+    protected abstract @NonNull List<Channel> getAllSpecificChannels(String id);
+
+    protected abstract @Nullable Channel getSpecificChannel(String id);
 
     @Override
     public Set<Channel> getDeadChannels() {

@@ -17,14 +17,14 @@ package org.openhab.binding.nibeuplink.internal.model;
 public enum CustomChannels implements Channel {
 
     // Custom Channels
-    CH_CH01("00000", "CH01", ChannelGroup.CUSTOM, ValueType.STRING),
-    CH_CH02("00000", "CH02", ChannelGroup.CUSTOM, ValueType.STRING),
-    CH_CH03("00000", "CH03", ChannelGroup.CUSTOM, ValueType.STRING),
-    CH_CH04("00000", "CH04", ChannelGroup.CUSTOM, ValueType.STRING),
-    CH_CH05("00000", "CH05", ChannelGroup.CUSTOM, ValueType.STRING),
-    CH_CH06("00000", "CH06", ChannelGroup.CUSTOM, ValueType.STRING),
-    CH_CH07("00000", "CH07", ChannelGroup.CUSTOM, ValueType.STRING),
-    CH_CH08("00000", "CH08", ChannelGroup.CUSTOM, ValueType.STRING),
+    CH_CH01("00000", "CH01", ChannelGroup.CUSTOM, ValueType.NUMBER),
+    CH_CH02("00000", "CH02", ChannelGroup.CUSTOM, ValueType.NUMBER),
+    CH_CH03("00000", "CH03", ChannelGroup.CUSTOM, ValueType.NUMBER),
+    CH_CH04("00000", "CH04", ChannelGroup.CUSTOM, ValueType.NUMBER),
+    CH_CH05("00000", "CH05", ChannelGroup.CUSTOM, ValueType.NUMBER),
+    CH_CH06("00000", "CH06", ChannelGroup.CUSTOM, ValueType.NUMBER),
+    CH_CH07("00000", "CH07", ChannelGroup.CUSTOM, ValueType.NUMBER),
+    CH_CH08("00000", "CH08", ChannelGroup.CUSTOM, ValueType.NUMBER),
 
     /* END */
     ;
