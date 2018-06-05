@@ -41,13 +41,15 @@ public enum F730Channels implements Channel {
     CH_44304("44304", "Heat Meter - Pool Cpr EP14", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_44300("44300", "Heat Meter - Heat Cpr and Add EP14", ChannelGroup.GENERAL, ValueType.NUMBER_10),
 
+    CH_48043("48043", "Holiday Mode", ChannelGroup.GENERAL, ValueType.STRING, "/Manage/4.7", "[1]*[0]"),
+
     // Hotwater
     CH_40013("40013", "BT7 HW Top", ChannelGroup.HOTWATER, ValueType.NUMBER_10),
     CH_40014("40014", "BT6 HW Load", ChannelGroup.HOTWATER, ValueType.NUMBER_10),
     CH_44306("44306", "Heat Meter - HW Cpr EP14", ChannelGroup.HOTWATER, ValueType.NUMBER_10),
     CH_44298("44298", "Heat Meter - HW Cpr and Add EP14", ChannelGroup.HOTWATER, ValueType.NUMBER_10),
-    CH_48132("48132", "Temporary Lux", ChannelGroup.HOTWATER, ValueType.STRING),
-    CH_47041("47041", "Hot water mode", ChannelGroup.HOTWATER, ValueType.STRING),
+    CH_48132("48132", "Temporary Lux", ChannelGroup.HOTWATER, ValueType.STRING, "/Manage/2.1", "[01234]"),
+    CH_47041("47041", "Hot water mode", ChannelGroup.HOTWATER, ValueType.STRING, "/Manage/2.2", "[012]"),
 
     // Compressor
     CH_43181("43181", "Chargepump speed", ChannelGroup.COMPRESSOR, ValueType.NUMBER),

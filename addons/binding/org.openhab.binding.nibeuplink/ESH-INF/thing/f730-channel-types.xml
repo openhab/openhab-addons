@@ -347,6 +347,17 @@
 		<state min="0" max="4500" step="1" pattern="%.2f kW" readOnly="false">
 		</state>
 	</channel-type>
+	<channel-type id="f730-type-48043">
+		<item-type>String</item-type>
+		<label>Holiday</label>
+		<description>0=inactive, 10=active</description>
+		<state pattern="%s" readOnly="false">
+			<options>
+				<option value="0">inactive</option>
+				<option value="10">active</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="f730-type-48132">
 		<item-type>String</item-type>
 		<label>Temporary Lux</label>

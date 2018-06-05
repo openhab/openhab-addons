@@ -30,6 +30,8 @@
 			<channel id="44308" typeId="f730-type-44308" />
 			<channel id="44304" typeId="f730-type-44304" />
 			<channel id="44300" typeId="f730-type-44300" />
+
+			<channel id="48043" typeId="f730-type-48043" />
 		</channels>
 	</channel-group-type>
 
