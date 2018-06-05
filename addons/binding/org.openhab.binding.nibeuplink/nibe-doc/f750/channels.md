@@ -45,3 +45,4 @@
 | airsupply#40026 | Number | -32767 | 32767 | No | BT21 Vented air temp. 1 |  |
 | airsupply#43124 | Number | -32767 | 32767 | No | Airflow ref. |  |
 | airsupply#41026 | Number | -32767 | 32767 | No | EB100-Adjusted BS1 Air flow |  |
+| airsupply#43108 | String | --- | --- | Yes | Current fan speed | 0=normal, 1=speed 1, 2=speed 2, 3=speed 3, 4=speed 4 |
