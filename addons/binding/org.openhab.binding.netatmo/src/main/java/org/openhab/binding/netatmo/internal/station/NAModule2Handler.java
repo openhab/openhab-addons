@@ -52,6 +52,10 @@ public class NAModule2Handler extends NetatmoModuleHandler<NAStationModule> {
                     return toQuantityType(dashboardData.getGustStrength(), API_WIND_SPEED_UNIT);
                 case CHANNEL_TIMEUTC:
                     return toDateTimeType(dashboardData.getTimeUtc());
+                case CHANNEL_MAX_WIND_STRENGTH:
+                    return toQuantityType(dashboardData.getMaxWindStr(), API_WIND_SPEED_UNIT);
+                case CHANNEL_DATE_MAX_WIND_STRENGTH:
+                    return toDateTimeType(dashboardData.getDateMaxWindStr());
             }
         }
         return super.getNAThingProperty(channelId);

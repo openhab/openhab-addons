@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.netatmo.internal;
+package org.openhab.binding.netatmo.internal.webhook;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -23,8 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-
-import io.swagger.client.model.NAWebhookCameraEvent;
 
 /**
  * Main OSGi service and HTTP servlet for Netatmo Welcome Webhook.
