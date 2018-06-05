@@ -35,6 +35,7 @@ import org.openhab.binding.netatmo.internal.station.NAModule3Handler;
 import org.openhab.binding.netatmo.internal.station.NAModule4Handler;
 import org.openhab.binding.netatmo.internal.thermostat.NAPlugHandler;
 import org.openhab.binding.netatmo.internal.thermostat.NATherm1Handler;
+import org.openhab.binding.netatmo.internal.webhook.WelcomeWebHookServlet;
 import org.openhab.binding.netatmo.internal.welcome.NAWelcomeCameraHandler;
 import org.openhab.binding.netatmo.internal.welcome.NAWelcomeHomeHandler;
 import org.openhab.binding.netatmo.internal.welcome.NAWelcomePersonHandler;

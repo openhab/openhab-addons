@@ -14,8 +14,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import io.swagger.client.model.NAWebhookCameraEvent.EventTypeEnum;
+import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent.EventTypeEnum;
 
 /**
  * The {@link NetatmoBinding} class defines common constants, which are used
@@ -86,6 +85,8 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_SUM_RAIN24 = "SumRain24";
     public static final String CHANNEL_WIND_ANGLE = "WindAngle";
     public static final String CHANNEL_WIND_STRENGTH = "WindStrength";
+    public static final String CHANNEL_MAX_WIND_STRENGTH = "MaxWindStrength";
+    public static final String CHANNEL_DATE_MAX_WIND_STRENGTH = "DateMaxWindStrength";
     public static final String CHANNEL_GUST_ANGLE = "GustAngle";
     public static final String CHANNEL_GUST_STRENGTH = "GustStrength";
     public static final String CHANNEL_LOW_BATTERY = "LowBattery";
