@@ -10,11 +10,14 @@ package org.openhab.binding.homematic.internal.communicator.virtual;
 
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.VIRTUAL_DATAPOINT_NAME_BATTERY_TYPE;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmValueType;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,12 +32,11 @@ public class BatteryTypeVirtualDatapointHandler extends AbstractVirtualDatapoint
     private static final Properties batteries = new Properties();
 
     public BatteryTypeVirtualDatapointHandler() {
-        try {
-            InputStream is = Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream("homematic/batteries.properties");
-            batteries.load(is);
-        } catch (Exception e) {
-            logger.warn("Battery property file not found, battery type not available");
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        try (InputStream stream = bundle.getResource("homematic/batteries.properties").openStream()) {
+            batteries.load(stream);
+        } catch (IllegalStateException | IOException e) {
+            logger.warn("The resource homematic/batteries.properties could not be loaded! Battery types not available", e);
         }
     }
 

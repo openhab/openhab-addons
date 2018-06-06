@@ -171,7 +171,8 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService {
         } catch (Exception ex) {
             logger.error("Error waiting for device discovery scan: {}", ex.getMessage(), ex);
         }
-        String gatewayId = bridgeHandler != null ? bridgeHandler.getGateway().getId() : "UNKNOWN";
+        String gatewayId = bridgeHandler != null && bridgeHandler.getGateway() != null
+                ? bridgeHandler.getGateway().getId() : "UNKNOWN";
         logger.debug("Finished Homematic device discovery scan on gateway '{}'", gatewayId);
     }
 

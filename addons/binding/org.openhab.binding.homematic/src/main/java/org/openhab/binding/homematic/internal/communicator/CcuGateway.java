@@ -220,16 +220,18 @@ public class CcuGateway extends AbstractHomematicGateway {
      */
     private Map<String, String> loadTclRegaScripts() throws IOException {
         Bundle bundle = FrameworkUtil.getBundle(getClass());
-        InputStream stream = bundle.getResource("homematic/tclrega-scripts.xml").openStream();
-        TclScriptList scriptList = (TclScriptList) xStream.fromXML(stream);
-
-        Map<String, String> result = new HashMap<String, String>();
-        if (scriptList.getScripts() != null) {
-            for (TclScript script : scriptList.getScripts()) {
-                result.put(script.name, StringUtils.trimToNull(script.data));
+        try (InputStream stream = bundle.getResource("homematic/tclrega-scripts.xml").openStream()) {
+            TclScriptList scriptList = (TclScriptList) xStream.fromXML(stream);
+            Map<String, String> result = new HashMap<String, String>();
+            if (scriptList.getScripts() != null) {
+                for (TclScript script : scriptList.getScripts()) {
+                    result.put(script.name, StringUtils.trimToNull(script.data));
+                }
             }
+            return result;
+        } catch (IllegalStateException | IOException e) {
+            throw new IOException("The resource homematic/tclrega-scripts.xml could not be loaded!", e);
         }
-        return result;
     }
 
 }
