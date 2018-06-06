@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.handler.EchoHandler;
 import org.openhab.binding.amazonechocontrol.handler.FlashBriefingProfileHandler;
@@ -94,9 +95,9 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
             return null;
         }
 
+        String storageName = AmazonEchoControlBindingConstants.BINDING_ID + "_" + thing.getUID().getId().toString();
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
-            Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
-                    String.class.getClassLoader());
+            Storage<String> storage = storageService.getStorage(storageName, String.class.getClassLoader());
             AccountHandler bridgeHandler = new AccountHandler((Bridge) thing, httpService, storage);
             registerDiscoveryService(bridgeHandler);
             BindingServlet bindingServlet = this.bindingServlet;
@@ -106,8 +107,7 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
             return bridgeHandler;
         }
         if (thingTypeUID.equals(THING_TYPE_FLASH_BRIEFING_PROFILE)) {
-            Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
-                    String.class.getClassLoader());
+            Storage<String> storage = storageService.getStorage(storageName, String.class.getClassLoader());
             return new FlashBriefingProfileHandler(thing, storage);
         }
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
