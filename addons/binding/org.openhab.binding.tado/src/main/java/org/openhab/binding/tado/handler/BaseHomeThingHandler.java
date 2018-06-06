@@ -10,6 +10,7 @@ package org.openhab.binding.tado.handler;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.openhab.binding.tado.internal.api.TadoApiClient;
 
@@ -35,5 +36,12 @@ abstract public class BaseHomeThingHandler extends BaseThingHandler {
 
     protected TadoApiClient getApi() {
         return getHomeHandler().getApi();
+    }
+
+    protected void onSuccessfulOperation() {
+        // update without error -> we're back online
+        if (getThing().getStatus() == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 }

@@ -59,11 +59,17 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         api = new TadoApiClientFactory().create(configuration.username, configuration.password);
 
         if (this.initializationFuture == null || this.initializationFuture.isDone()) {
-            initializationFuture = scheduler.schedule(this::initializeBridgeStatusAndProperties, 0, TimeUnit.SECONDS);
+            initializationFuture = scheduler.scheduleWithFixedDelay(this::initializeBridgeStatusAndPropertiesIfOffline,
+                    0, 300, TimeUnit.SECONDS);
         }
     }
 
-    private void initializeBridgeStatusAndProperties() {
+    private void initializeBridgeStatusAndPropertiesIfOffline() {
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+            return;
+        }
+
         try {
             // Get user info to verify successful authentication and connection to server
             User user = api.getUserDetails();
