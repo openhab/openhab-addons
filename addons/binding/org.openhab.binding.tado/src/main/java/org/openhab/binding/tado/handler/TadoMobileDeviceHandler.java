@@ -125,6 +125,7 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
             throw new IOException(message);
         }
 
+        onSuccessfulOperation();
         return device;
     }
 

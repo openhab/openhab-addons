@@ -214,6 +214,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
         try {
             ZoneState zoneState = getZoneState();
+
             if (zoneState == null) {
                 return;
             }
@@ -235,6 +236,8 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             updateState(TadoBindingConstants.CHANNEL_ZONE_TIMER_DURATION, state.getRemainingTimerDuration());
 
             updateState(TadoBindingConstants.CHANNEL_ZONE_OVERLAY_EXPIRY, state.getOverlayExpiration());
+
+            onSuccessfulOperation();
         } catch (IOException | TadoClientException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to server due to " + e.getMessage());
