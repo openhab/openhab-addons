@@ -54,6 +54,14 @@
 					<option value="ReadOnly">Read only</option>
 				</options>
 			</parameter>
+			<parameter name="commandToReact" type="text" required="false">
+                <label>Command to react</label>
+                <description>Command to react. If not defined, channel react to all commands.</description>
+            </parameter>
+            <parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
+                <label>Pulse width</label>
+                <description>Pulse width in milliseconds. If defined, binding send pulse rather than command value to IHC controller.</description>
+            </parameter>
 			<parameter name="specialCommand" type="text" required="false">
                 <label>Special Command</label>
                 <description></description>
@@ -92,6 +100,14 @@
 					<option value="ReadOnly">Read only</option>
 				</options>
 			</parameter>
+			<parameter name="commandToReact" type="text" required="false">
+                <label>Command to react</label>
+                <description>Command to react. If not defined, channel react to all commands.</description>
+            </parameter>
+            <parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
+                <label>Pulse width</label>
+                <description>If defined, binding send pulse rather than command value to IHC controller.</description>
+            </parameter>
             <parameter name="specialCommand" type="text" required="false">
                 <label>Special Command</label>
                 <description></description>
@@ -118,6 +134,14 @@
 					<option value="ReadOnly">Read only</option>
 				</options>
 			</parameter>
+			<parameter name="commandToReact" type="text" required="false">
+                <label>Command to react</label>
+                <description>Command to react. If not defined, channel react to all commands.</description>
+            </parameter>
+            <parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
+                <label>Pulse width</label>
+                <description>If defined, binding send pulse rather than command value to IHC controller.</description>
+            </parameter>
             <parameter name="specialCommand" type="text" required="false">
                 <label>Special Command</label>
                 <description></description>
@@ -144,6 +168,14 @@
 					<option value="ReadOnly">Read only</option>
 				</options>
 			</parameter>
+			<parameter name="commandToReact" type="text" required="false">
+                <label>Command to react</label>
+                <description>Command to react. If not defined, channel react to all commands.</description>
+            </parameter>
+            <parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
+                <label>Pulse width</label>
+                <description>If defined, binding send pulse rather than command value to IHC controller.</description>
+            </parameter>
             <parameter name="specialCommand" type="text" required="false">
                 <label>Special Command</label>
                 <description></description>
@@ -170,6 +202,14 @@
 					<option value="ReadOnly">Read only</option>
 				</options>
 			</parameter>
+			<parameter name="commandToReact" type="text" required="false">
+                <label>Command to react</label>
+                <description>Command to react. If not defined, channel react to all commands.</description>
+            </parameter>
+            <parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
+                <label>Pulse width</label>
+                <description>If defined, binding send pulse rather than command value to IHC controller.</description>
+            </parameter>
             <parameter name="specialCommand" type="text" required="false">
                 <label>Special Command</label>
                 <description></description>
@@ -196,37 +236,18 @@
 					<option value="ReadOnly">Read only</option>
 				</options>
 			</parameter>
+			<parameter name="commandToReact" type="text" required="false">
+                <label>Command to react</label>
+                <description>Command to react. If not defined, channel react to all commands.</description>
+            </parameter>
+            <parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
+                <label>Pulse width</label>
+                <description>If defined, binding send pulse rather than command value to IHC controller.</description>
+            </parameter>
             <parameter name="specialCommand" type="text" required="false">
                 <label>Special Command</label>
                 <description></description>
             </parameter>
-		</config-description>
-	</channel-type>
-	<channel-type id="pulse-output-channel">
-		<item-type>Switch</item-type>
-		<label>Pulse output</label>
-		<description>Generic pulse output channel</description>
-		<state readOnly="false"></state>
-		<config-description>
-			<parameter name="resourceId" type="integer" required="true">
-				<label>Resource Id</label>
-				<description></description>
-			</parameter>
-			<parameter name="direction" type="text" required="false">
-				<label>Channel direction</label>
-				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
-				<default>ReadWrite</default>
-				<options>
-					<option value="ReadWrite">Read Write</option>
-					<option value="WriteOnly">Write only</option>
-					<option value="ReadOnly">Read only</option>
-				</options>
-			</parameter>
-			<parameter name="pulseLength" type="integer" required="true" min="0" max="4000" step="100" unit="ms">
-				<label>Pulse length</label>
-				<description>Pulse length in milliseconds.</description>
-				<default>100</default>
-			</parameter>
 		</config-description>
 	</channel-type>
 

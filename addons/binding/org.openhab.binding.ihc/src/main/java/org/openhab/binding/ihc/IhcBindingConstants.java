@@ -46,7 +46,6 @@ public class IhcBindingConstants {
     public final static String CHANNEL_TYPE_DATETIME = "datetime-channel";
     public final static String CHANNEL_TYPE_STRING = "string-channel";
     public final static String CHANNEL_TYPE_ROLLERSHUTTER = "rollershutter-channel";
-    public final static String CHANNEL_TYPE_PULSE_OUTPUT = "pulse-output-channel";
     public final static String CHANNEL_TYPE_RF_SIGNAL_STRENGTH = "rf-device-signal-strength-channel";
     public final static String CHANNEL_TYPE_RF_LOW_BATTERY = "rf-device-low-battery-channel";
     public final static String CHANNEL_TYPE_PUSH_BUTTON_TRIGGER = "push-button-trigger";
@@ -54,8 +53,9 @@ public class IhcBindingConstants {
     // List of all channel parameters
     public static final String PARAM_RESOURCE_ID = "resourceId";
     public final static String PARAM_DIRECTION = "direction";
+    public final static String PARAM_CMD_TO_REACT = "commandToReact";
     public static final String PARAM_SERIAL_NUMBER = "serialNumber";
-    public static final String PARAM_PULSE_LENGTH = "pulseLength";
+    public static final String PARAM_PULSE_WIDTH = "pulseWidth";
     public final static String PARAM_EXTRA_LONG_PRESS_MAX_TIME = "extraLongPressMaxTime";
     public final static String PARAM_LONG_PRESS_MAX_TIME = "longPressMaxTime";
     public final static String PARAM_SHORT_PRESS_MAX_TIME = "shortPressMaxTime";

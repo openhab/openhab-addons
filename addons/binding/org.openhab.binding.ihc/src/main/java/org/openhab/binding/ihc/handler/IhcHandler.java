@@ -264,10 +264,6 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             String channelTypeId = ChannelUtils.getChannelTypeId(getThing(), channelUID.getId());
             if (channelTypeId != null) {
                 switch (channelTypeId) {
-                    case CHANNEL_TYPE_PULSE_OUTPUT:
-                        updatePulseOutputChannel(channelUID, command);
-                        break;
-
                     default:
                         updateChannel(channelUID, command);
                 }
@@ -281,99 +277,111 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
     private void updateChannel(ChannelUID channelUID, Command command) throws IllegalArgumentException, IhcExecption {
 
+        String cmdToReact = ChannelUtils.getCmdToReactFromChannelParameters(getThing(), channelUID.getId());
+        if (cmdToReact != null) {
+            if (command.toString().equals(cmdToReact)) {
+                logger.debug("Command '{}' equal to channel reaction parameter '{}', execute it", command, cmdToReact);
+            } else {
+                logger.debug("Command '{}' doesn't equal to reaction trigger parameter '{}', skip it", command,
+                        cmdToReact);
+                return;
+            }
+        }
+
         Integer resourceId = ChannelUtils.getResourceIdFromChannelParameters(getThing(), channelUID.getId());
         WSResourceValue value = ihc.getResourceValueInformation(resourceId);
 
         if (value != null) {
-            ArrayList<IhcEnumValue> enumValues = null;
-            if (value instanceof WSEnumValue) {
-                enumValues = enumDictionary.getEnumValues(((WSEnumValue) value).getDefinitionTypeID());
-            }
-            value = IhcDataConverter.convertCommandToResourceValue(command, value, enumValues);
-            logger.debug("Update resource: {}", value);
-            if (!updateResource(value)) {
-                logger.warn("Channel {} update to resource '{}' failed.", channelUID, value);
+            Integer pulseWidth = ChannelUtils.getPulseWidthFromChannelParameters(getThing(), channelUID.getId());
+            if (pulseWidth != null) {
+                sendPulseCommand(channelUID, value, Math.min(pulseWidth, 4000));
+            } else {
+                sendNormalCommand(channelUID, command, value);
             }
         } else {
-            WSResourceValue val = null;
-
-            String specialCommandsStr = ChannelUtils.getSpecialCommandFromChannelParameters(getThing(),
-                    channelUID.getId());
-            logger.debug("specialCommandsStr: {}", specialCommandsStr);
-            if (specialCommandsStr != null) {
-                List<SpecialCommand> specialCommands = new SpecialCommandParser(specialCommandsStr).getAllOutCommands();
-                logger.debug("Out special commands: {}", specialCommands);
-                for (SpecialCommand specialCommand : specialCommands) {
-                    if (command.toString().equals(specialCommand.getCommandToReact())) {
-                        logger.debug("Match found to command {}: {}", command, specialCommand);
-                        OnOffType cmd = (OnOffType) specialCommand.getCommandToSend();
-                        val = ihc.getResourceValueInformation(specialCommand.getResourceId());
-                        val = IhcDataConverter.convertCommandToResourceValue(cmd, val, null);
-                        logger.debug("Update resource: {}", val);
-                        if (updateResource(val)) {
-                            if (specialCommand.getPulseWidth() > 0) {
-                                // sleep a while
-                                try {
-                                    int delay = Math.min(specialCommand.getPulseWidth(), 4000);
-                                    logger.debug("Sleep: {}ms", delay);
-                                    Thread.sleep(delay);
-                                } catch (InterruptedException e) {
-                                    // do nothing
-                                }
-                                cmd = cmd == OnOffType.ON ? OnOffType.OFF : OnOffType.ON;
-                                val = IhcDataConverter.convertCommandToResourceValue(cmd, val, null);
-                                logger.debug("Update resource: {}", val);
-                                if (!updateResource(val)) {
-                                    logger.warn("Channel {} update to resource '{}' failed.", channelUID, val);
-                                }
-                            }
-                        } else {
-                            logger.warn("Channel {} update to resource '{}' failed.", channelUID, val);
-                        }
-                    }
-                }
-            }
+            sendSpecialCommand(channelUID, command);
         }
     }
 
-    private void updatePulseOutputChannel(ChannelUID channelUID, Command command)
-            throws IllegalArgumentException, IhcExecption {
+    private void sendNormalCommand(ChannelUID channelUID, Command command, WSResourceValue value) throws IhcExecption {
+        logger.debug("Send command '{}' to resource '{}'", command, value.getResourceID());
 
-        Integer resourceId = ChannelUtils.getResourceIdFromChannelParameters(getThing(), channelUID.getId());
-        WSResourceValue value = ihc.getResourceValueInformation(resourceId);
+        ArrayList<IhcEnumValue> enumValues = null;
+        if (value instanceof WSEnumValue) {
+            enumValues = enumDictionary.getEnumValues(((WSEnumValue) value).getDefinitionTypeID());
+        }
+        WSResourceValue val = IhcDataConverter.convertCommandToResourceValue(command, value, enumValues);
+        logger.debug("Update resource value: {}", val);
+        if (!updateResource(val)) {
+            logger.warn("Channel {} update to resource '{}' failed.", channelUID, val);
+        }
+    }
 
-        if (command == OnOffType.ON) {
-            Integer delay = ChannelUtils.getPulseLengthFromChannelParameters(getThing(), channelUID.getId());
+    private void sendPulseCommand(ChannelUID channelUID, WSResourceValue value, Integer pulseWidth)
+            throws IhcExecption {
 
-            logger.debug("Emulating {}ms pulse for resource: {}", delay, value.getResourceID());
+        logger.debug("Send {}ms pulse to resource: {}", pulseWidth, value.getResourceID());
 
-            // set resource to ON
-            value = IhcDataConverter.convertCommandToResourceValue(OnOffType.ON, value, null);
-            logger.debug("Update resource to: {}", value);
-            if (updateResource(value)) {
-                if (delay != null) {
-                    // sleep a while
-                    try {
-                        logger.debug("Sleep: {}ms", delay.longValue());
-                        Thread.sleep(delay);
-                    } catch (InterruptedException e) {
-                        // do nothing
-                    }
-                }
-                // set resource back to OFF
-                value = IhcDataConverter.convertCommandToResourceValue(OnOffType.OFF, value, null);
-                logger.debug("Update resource to: {}", value);
-                if (!updateResource(value)) {
-                    logger.warn("Channel {} update to resource '{}' failed.", channelUID, value);
-                }
-            } else {
-                logger.warn("Channel {} update failed.", channelUID);
+        WSResourceValue val = null;
+
+        // set resource to ON
+        val = IhcDataConverter.convertCommandToResourceValue(OnOffType.ON, value, null);
+        logger.debug("Update resource value: {}", val);
+        if (updateResource(val)) {
+            // sleep a while
+            try {
+                logger.debug("Sleep: {}ms", pulseWidth);
+                Thread.sleep(pulseWidth);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
+            // set resource back to OFF
+            val = IhcDataConverter.convertCommandToResourceValue(OnOffType.OFF, value, null);
+            logger.debug("Update resource value: {}", val);
+            if (!updateResource(val)) {
+                logger.warn("Channel {} update to resource '{}' failed.", channelUID, val);
             }
         } else {
-            value = IhcDataConverter.convertCommandToResourceValue(command, value, null);
-            logger.debug("Update resource to: {}", value);
-            if (!updateResource(value)) {
-                logger.warn("Channel {} update to resource '{}' failed.", channelUID, value);
+            logger.warn("Channel {} update failed.", channelUID);
+        }
+    }
+
+    private void sendSpecialCommand(ChannelUID channelUID, Command command) throws IhcExecption {
+        WSResourceValue val = null;
+
+        String specialCommandsStr = ChannelUtils.getSpecialCommandFromChannelParameters(getThing(), channelUID.getId());
+        logger.debug("specialCommandsStr: {}", specialCommandsStr);
+        if (specialCommandsStr != null) {
+            List<SpecialCommand> specialCommands = new SpecialCommandParser(specialCommandsStr).getAllOutCommands();
+            logger.debug("Out special commands: {}", specialCommands);
+            for (SpecialCommand specialCommand : specialCommands) {
+                if (command.toString().equals(specialCommand.getCommandToReact())) {
+                    logger.debug("Match found to command {}: {}", command, specialCommand);
+                    OnOffType cmd = (OnOffType) specialCommand.getCommandToSend();
+                    val = ihc.getResourceValueInformation(specialCommand.getResourceId());
+                    val = IhcDataConverter.convertCommandToResourceValue(cmd, val, null);
+                    logger.debug("Update resource value: {}", val);
+                    if (updateResource(val)) {
+                        if (specialCommand.getPulseWidth() > 0) {
+                            // sleep a while
+                            try {
+                                int delay = Math.min(specialCommand.getPulseWidth(), 4000);
+                                logger.debug("Sleep: {}ms", delay);
+                                Thread.sleep(delay);
+                            } catch (InterruptedException e) {
+                                // do nothing
+                            }
+                            cmd = cmd == OnOffType.ON ? OnOffType.OFF : OnOffType.ON;
+                            val = IhcDataConverter.convertCommandToResourceValue(cmd, val, null);
+                            logger.debug("Update resource value: {}", val);
+                            if (!updateResource(val)) {
+                                logger.warn("Channel {} update to resource '{}' failed.", channelUID, val);
+                            }
+                        }
+                    } else {
+                        logger.warn("Channel {} update to resource '{}' failed.", channelUID, val);
+                    }
+                }
             }
         }
     }

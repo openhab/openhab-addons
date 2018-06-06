@@ -49,30 +49,31 @@ User can manually add other channels or disable channel auto generation and add 
 
 List of supported channel types.
 
-| Channel Type ID                   | Item Type     | Description                                                                                     | Channel parameters     |
-| --------------------------------- | ------------- | ----------------------------------------------------------------------------------------------- | ---------------------- | 
-| switch-channel                    | Switch        | Generic switch channel.                                                                         | REQ1, OPT1             |
-| contact-channel                   | Contact       | Generic contact channel.                                                                        | REQ1                   |
-| number-channel                    | Number        | Generic number channel.                                                                         | REQ1, OPT1             |
-| dimmer-channel                    | Dimmer        | Generic dimmer channel.                                                                         | REQ1, OPT1             |
-| datetime-channel                  | DateTime      | Generic datetime channel.                                                                       | REQ1, OPT1             |
-| string-channel                    | String        | Generic string (enum) channel.                                                                  | REQ1, OPT1             |
-| rollershutter-channel             | RollerShutter | Generic datetime channel.                                                                       | REQ1, OPT1             |
-| pulse-output-channel              | Switch        | Generic pulse output channel.                                                                   | REQ1, OPT1             |
-| rf-device-low-battery-channel     | Switch        | RF device low battery warning.                                                                  | REQ2                   |
-| rf-device-signal-strength-channel | String        | RF device signal strength.                                                                      | REQ2                   |
-| push-button-trigger               | Trigger       | Push button trigger channel. Possible trigger event: SHORT_PRESS, LONG_PRESS, EXTRA_LONG_PRESS. | REQ1, REQ3, REQ4, REQ5 |
+| Channel Type ID                   | Item Type     | Description                                                                                     | Supported channel parameters                                           |
+| --------------------------------- | ------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | 
+| switch-channel                    | Switch        | Generic switch channel.                                                                         | resourceId, direction, commandToReact, pulseWidth                      |
+| contact-channel                   | Contact       | Generic contact channel.                                                                        | resourceId                                                             |
+| number-channel                    | Number        | Generic number channel.                                                                         | resourceId, direction, commandToReact, pulseWidth                      |
+| dimmer-channel                    | Dimmer        | Generic dimmer channel.                                                                         | resourceId, direction, commandToReact, pulseWidth                      |
+| datetime-channel                  | DateTime      | Generic datetime channel.                                                                       | resourceId, direction, commandToReact, pulseWidth                      |
+| string-channel                    | String        | Generic string (enum) channel.                                                                  | resourceId, direction, commandToReact, pulseWidth                      |
+| rollershutter-channel             | RollerShutter | Generic datetime channel.                                                                       | resourceId, direction, commandToReact, pulseWidth                      |
+| rf-device-low-battery-channel     | Switch        | RF device low battery warning.                                                                  | serialNumber                                                           |
+| rf-device-signal-strength-channel | String        | RF device signal strength.                                                                      | serialNumber                                                           |
+| push-button-trigger               | Trigger       | Push button trigger channel. Possible trigger event: SHORT_PRESS, LONG_PRESS, EXTRA_LONG_PRESS. | resourceId, shortPressMaxTime, longPressMaxTime, extraLongPressMaxTime |
 
 Channel parameters:
 
-|      | Channel parameter     | Item Type    | Required | Default value | Description                                                |
-| ---- | --------------------- | ------------ | -------- | ------------- | ---------------------------------------------------------- |
-| REQ1 | resourceId            | Integer      | yes      |               | Resource Id in decimal format from project file.           |
-| OPT1 | direction             | Text         | no       | ReadWrite     | Direction of the channel (ReadWrite, WriteOnly, ReadOnly). |                                 
-| REQ2 | serialNumber          | Integer      | yes      |               | Serial number of RF device in decimal format.              |
-| REQ3 | shortPressMaxTime     | Integer      | yes      | 1000          | Short press max time in milliseconds.                      |
-| REQ4 | longPressMaxTime      | Integer      | yes      | 2000          | Long press max time in milliseconds.                       |
-| REQ5 | extraLongPressMaxTime | Integer      | yes      | 4000          | Extra long press max time in milliseconds.                 |
+| Channel parameter     | Item Type    | Required | Default value | Description                                                                                              |
+| --------------------- | ------------ | -------- | ------------- | -------------------------------------------------------------------------------------------------------- |
+| resourceId            | Integer      | yes      |               | Resource Id in decimal format from project file.                                                         |
+| direction             | Text         | no       | ReadWrite     | Direction of the channel (ReadWrite, WriteOnly, ReadOnly).                                               |                                 
+| commandToReact        | String       | no       |               | Command to react. If not defined, channel react to all commands.                                         |
+| pulseWidth            | Integer      | no       |               | Pulse width in milliseconds. If defined, binding send pulse rather than command value to IHC controller. |
+| serialNumber          | Integer      | yes      |               | Serial number of RF device in decimal format.                                                            |
+| shortPressMaxTime     | Integer      | yes      | 1000          | Short press max time in milliseconds.                                                                    |
+| longPressMaxTime      | Integer      | yes      | 2000          | Long press max time in milliseconds.                                                                     |
+| extraLongPressMaxTime | Integer      | yes      | 4000          | Extra long press max time in milliseconds.                                                               |
 
 
 ## Examples

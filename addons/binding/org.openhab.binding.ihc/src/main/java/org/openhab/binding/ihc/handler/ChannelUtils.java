@@ -191,11 +191,11 @@ public class ChannelUtils {
         throw new IllegalArgumentException("Invalid channelId");
     }
 
-    public static Integer getPulseLengthFromChannelParameters(Thing thing, String channelId)
+    public static Integer getPulseWidthFromChannelParameters(Thing thing, String channelId)
             throws IllegalArgumentException {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
-            Object pulseLength = channel.getConfiguration().get(PARAM_PULSE_LENGTH);
+            Object pulseLength = channel.getConfiguration().get(PARAM_PULSE_WIDTH);
             if (pulseLength != null) {
                 try {
                     return ((BigDecimal) pulseLength).intValue();
@@ -247,6 +247,23 @@ public class ChannelUtils {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
             Object direction = channel.getConfiguration().get(PARAM_DIRECTION);
+            if (direction != null) {
+                try {
+                    return (String) direction;
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException(e.getMessage());
+                }
+            }
+            return null;
+        }
+        throw new IllegalArgumentException("Invalid channelId");
+    }
+
+    public static String getCmdToReactFromChannelParameters(Thing thing, String channelId)
+            throws IllegalArgumentException {
+        Channel channel = thing.getChannel(channelId);
+        if (channel != null) {
+            Object direction = channel.getConfiguration().get(PARAM_CMD_TO_REACT);
             if (direction != null) {
                 try {
                     return (String) direction;
