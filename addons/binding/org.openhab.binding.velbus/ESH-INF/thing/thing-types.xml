@@ -393,7 +393,8 @@
 			<channel id="CH9" typeId="temperature" />
 		</channels>
 
-		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor" />
+		<config-description-ref
+			uri="thing-type:velbus:9channelDeviceWithTemperatureSensor" />
 	</thing-type>
 
 	<thing-type id="vmbgp2">
@@ -415,7 +416,8 @@
 			<channel id="CH9" typeId="temperature" />
 		</channels>
 
-        <config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor" />
+		<config-description-ref
+			uri="thing-type:velbus:9channelDeviceWithTemperatureSensor" />
 	</thing-type>
 
 	<thing-type id="vmbgp4">
@@ -437,7 +439,8 @@
 			<channel id="CH9" typeId="temperature" />
 		</channels>
 
-        <config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor" />
+		<config-description-ref
+			uri="thing-type:velbus:9channelDeviceWithTemperatureSensor" />
 	</thing-type>
 
 	<thing-type id="vmbgp4pir">
@@ -459,7 +462,8 @@
 			<channel id="CH9" typeId="temperature" />
 		</channels>
 
-        <config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor" />
+		<config-description-ref
+			uri="thing-type:velbus:9channelDeviceWithTemperatureSensor" />
 	</thing-type>
 
 	<thing-type id="vmbgpo">
@@ -505,7 +509,8 @@
 			<channel id="CH33" typeId="temperature" />
 		</channels>
 
-        <config-description-ref uri="thing-type:velbus:33channelDeviceWithTemperatureSensor" />
+		<config-description-ref
+			uri="thing-type:velbus:33channelDeviceWithTemperatureSensor" />
 	</thing-type>
 
 	<thing-type id="vmbgpod">
@@ -551,7 +556,8 @@
 			<channel id="CH33" typeId="temperature" />
 		</channels>
 
-        <config-description-ref uri="thing-type:velbus:33channelDeviceWithTemperatureSensor" />
+		<config-description-ref
+			uri="thing-type:velbus:33channelDeviceWithTemperatureSensor" />
 	</thing-type>
 
 	<thing-type id="vmbpirc">
@@ -571,7 +577,7 @@
 			<channel id="CH7" typeId="trigger-channel" />
 		</channels>
 
-        <config-description-ref uri="thing-type:velbus:7channelDevice" />
+		<config-description-ref uri="thing-type:velbus:7channelDevice" />
 	</thing-type>
 
 	<thing-type id="vmbpirm">
@@ -591,7 +597,7 @@
 			<channel id="CH7" typeId="trigger-channel" />
 		</channels>
 
-        <config-description-ref uri="thing-type:velbus:7channelDevice" />
+		<config-description-ref uri="thing-type:velbus:7channelDevice" />
 	</thing-type>
 
 	<thing-type id="vmbpiro">
@@ -613,7 +619,8 @@
 			<channel id="CH9" typeId="temperature" />
 		</channels>
 
-        <config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor" />
+		<config-description-ref
+			uri="thing-type:velbus:9channelDeviceWithTemperatureSensor" />
 	</thing-type>
 
 	<channel-type id="switch">
