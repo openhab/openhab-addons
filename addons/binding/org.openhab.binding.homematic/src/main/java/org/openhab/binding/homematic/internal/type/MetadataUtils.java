@@ -12,6 +12,7 @@ import static org.openhab.binding.homematic.HomematicBindingConstants.*;
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,6 +31,8 @@ import org.apache.commons.lang.WordUtils;
 import org.eclipse.smarthome.config.core.ConfigDescriptionParameter.Type;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,9 +68,9 @@ public class MetadataUtils {
      * Loads the standard datapoints for channel metadata generation.
      */
     private static void loadStandardDatapoints() {
-        try (InputStream is = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("homematic/standard-datapoints.properties")) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        Bundle bundle = FrameworkUtil.getBundle(MetadataUtils.class);
+        try (InputStream stream = bundle.getResource("homematic/standard-datapoints.properties").openStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
 
             String line;
             while ((line = reader.readLine()) != null) {
@@ -84,8 +87,8 @@ public class MetadataUtils {
                     channelDatapoints.add(datapointName);
                 }
             }
-        } catch (IOException ex) {
-            logger.warn("Can't load standard-datapoints.properties file!");
+        } catch (IllegalStateException | IOException e) {
+            logger.warn("Can't load standard-datapoints.properties file!", e);
         }
     }
 
