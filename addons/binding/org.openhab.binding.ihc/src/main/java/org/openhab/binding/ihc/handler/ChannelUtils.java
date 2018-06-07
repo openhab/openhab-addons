@@ -176,130 +176,98 @@ public class ChannelUtils {
 
     public static Integer getResourceIdFromChannelParameters(Thing thing, String channelId)
             throws IllegalArgumentException {
-        Channel channel = thing.getChannel(channelId);
-        if (channel != null) {
-            Object resourceId = channel.getConfiguration().get(PARAM_RESOURCE_ID);
-            if (resourceId != null) {
-                try {
-                    return ((BigDecimal) resourceId).intValue();
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException(e.getMessage());
-                }
-            }
-            return null;
-        }
-        throw new IllegalArgumentException("Invalid channelId");
+        return getChannelParameterAsInteger(thing, channelId, PARAM_RESOURCE_ID);
     }
 
     public static Integer getPulseWidthFromChannelParameters(Thing thing, String channelId)
             throws IllegalArgumentException {
-        Channel channel = thing.getChannel(channelId);
-        if (channel != null) {
-            Object pulseLength = channel.getConfiguration().get(PARAM_PULSE_WIDTH);
-            if (pulseLength != null) {
-                try {
-                    return ((BigDecimal) pulseLength).intValue();
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException(e.getMessage());
-                }
-            }
-            return null;
-        }
-        throw new IllegalArgumentException("Invalid channelId");
+        return getChannelParameterAsInteger(thing, channelId, PARAM_PULSE_WIDTH);
     }
 
     public static String getSpecialCommandFromChannelParameters(Thing thing, String channelId)
             throws IllegalArgumentException {
-        Channel channel = thing.getChannel(channelId);
-        if (channel != null) {
-            Object test = channel.getConfiguration().get(PARAM_SPECIAL_COMMAND);
-            if (test != null) {
-                try {
-                    return (String) test;
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException(e.getMessage());
-                }
-            }
-            return null;
-        }
-        throw new IllegalArgumentException("Invalid channelId");
+        return getChannelParameterAsString(thing, channelId, PARAM_SPECIAL_COMMAND);
     }
 
     public static Long getSerialNumberFromChannelParameters(Thing thing, String channelId)
             throws IllegalArgumentException {
-        Channel channel = thing.getChannel(channelId);
-        if (channel != null) {
-            Object serialNumber = channel.getConfiguration().get(PARAM_SERIAL_NUMBER);
-            if (serialNumber != null) {
-                try {
-                    return ((BigDecimal) serialNumber).longValue();
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException(e.getMessage());
-                }
-            }
-            return null;
-        }
-        throw new IllegalArgumentException("Invalid channelId");
+        return getChannelParameterAsLong(thing, channelId, PARAM_SERIAL_NUMBER);
     }
 
     public static String getDirectionFromChannelParameters(Thing thing, String channelId)
             throws IllegalArgumentException {
-        Channel channel = thing.getChannel(channelId);
-        if (channel != null) {
-            Object direction = channel.getConfiguration().get(PARAM_DIRECTION);
-            if (direction != null) {
-                try {
-                    return (String) direction;
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException(e.getMessage());
-                }
-            }
-            return null;
-        }
-        throw new IllegalArgumentException("Invalid channelId");
+        return getChannelParameterAsString(thing, channelId, PARAM_DIRECTION);
     }
 
     public static String getCmdToReactFromChannelParameters(Thing thing, String channelId)
             throws IllegalArgumentException {
-        Channel channel = thing.getChannel(channelId);
-        if (channel != null) {
-            Object direction = channel.getConfiguration().get(PARAM_CMD_TO_REACT);
-            if (direction != null) {
-                try {
-                    return (String) direction;
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException(e.getMessage());
-                }
-            }
-            return null;
-        }
-        throw new IllegalArgumentException("Invalid channelId");
+        return getChannelParameterAsString(thing, channelId, PARAM_CMD_TO_REACT);
     }
 
     public static boolean isChannelReadOnly(Thing thing, String channelId) throws IllegalArgumentException {
-        Channel channel = thing.getChannel(channelId);
-        if (channel != null) {
-            Object direction = channel.getConfiguration().get(PARAM_DIRECTION);
-            if (direction != null) {
-                if (DIRECTION_READ_ONLY.equals(direction)) {
-                    return true;
-                }
+        Object value = getChannelParameter(thing, channelId, PARAM_DIRECTION);
+        if (value != null) {
+            if (DIRECTION_READ_ONLY.equals(value)) {
+                return true;
             }
-            return false;
         }
-        throw new IllegalArgumentException("Invalid channelId");
+        return false;
     }
 
     public static boolean isChannelWriteOnly(Thing thing, String channelId) throws IllegalArgumentException {
+        Object value = getChannelParameter(thing, channelId, PARAM_DIRECTION);
+        if (value != null) {
+            if (DIRECTION_WRITE_ONLY.equals(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static Integer getChannelParameterAsInteger(Thing thing, String channelId, String paramName)
+            throws IllegalArgumentException {
+        Object value = getChannelParameter(thing, channelId, paramName);
+        if (value != null) {
+            try {
+                return ((BigDecimal) value).intValue();
+            } catch (ClassCastException | NumberFormatException e) {
+                throw new IllegalArgumentException(e.getMessage());
+            }
+        }
+        return null;
+    }
+
+    private static Long getChannelParameterAsLong(Thing thing, String channelId, String paramName)
+            throws IllegalArgumentException {
+        Object value = getChannelParameter(thing, channelId, paramName);
+        if (value != null) {
+            try {
+                return ((BigDecimal) value).longValue();
+            } catch (ClassCastException | NumberFormatException e) {
+                throw new IllegalArgumentException(e.getMessage());
+            }
+        }
+        return null;
+    }
+
+    private static String getChannelParameterAsString(Thing thing, String channelId, String paramName)
+            throws IllegalArgumentException {
+        Object value = getChannelParameter(thing, channelId, paramName);
+        if (value != null) {
+            try {
+                return (String) value;
+            } catch (ClassCastException e) {
+                throw new IllegalArgumentException(e.getMessage());
+            }
+        }
+        return null;
+    }
+
+    private static Object getChannelParameter(Thing thing, String channelId, String paramName)
+            throws IllegalArgumentException {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
-            Object direction = channel.getConfiguration().get(PARAM_DIRECTION);
-            if (direction != null) {
-                if (DIRECTION_WRITE_ONLY.equals(direction)) {
-                    return true;
-                }
-            }
-            return false;
+            return channel.getConfiguration().get(paramName);
         }
         throw new IllegalArgumentException("Invalid channelId");
     }
@@ -357,5 +325,4 @@ public class ChannelUtils {
         Predicate<Channel> channelPredicate = c -> c.getUID().getId().equals(channelUIDtoRemove.getId());
         thingChannels.removeIf(channelPredicate);
     }
-
 }

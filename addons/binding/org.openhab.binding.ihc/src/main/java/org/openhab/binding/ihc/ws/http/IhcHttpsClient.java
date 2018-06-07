@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NoHttpResponseException;
@@ -40,6 +41,8 @@ public abstract class IhcHttpsClient {
 
     private HttpClient client = null;
     private HttpPost postReq = null;
+
+    private AtomicInteger counter = new AtomicInteger();
 
     /**
      * @return the timeout in milliseconds
@@ -111,7 +114,13 @@ public abstract class IhcHttpsClient {
         postReq.setEntity(new StringEntity(query, "UTF-8"));
         postReq.addHeader("content-type", "text/xml");
 
-        logger.trace("Send query (timeout={}, headers={}): {}", timeout, postReq.getAllHeaders(), query);
+        int requestId = 0;
+
+        if (logger.isTraceEnabled()) {
+            requestId = counter.getAndIncrement();
+            logger.trace("Send query (clientId={} requestId={}, timeout={}, headers={}): {}", client.hashCode(),
+                    requestId, timeout, postReq.getAllHeaders(), query);
+        }
 
         final RequestConfig params = RequestConfig.custom().setConnectTimeout(connectTimeout).setSocketTimeout(timeout)
                 .build();
@@ -122,7 +131,8 @@ public abstract class IhcHttpsClient {
         HttpResponse response = client.execute(postReq, IhcConnectionPool.getInstance().getHttpContext());
         String resp = EntityUtils.toString(response.getEntity());
         if (logger.isTraceEnabled()) {
-            logger.trace("Received response (in {}): {}", Duration.between(start, LocalDateTime.now()), resp);
+            logger.trace("Received response (clientId={} requestId={}, in {}, headers={}): {}", client.hashCode(),
+                    requestId, Duration.between(start, LocalDateTime.now()), response.getAllHeaders(), resp);
         }
         return resp;
     }

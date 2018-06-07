@@ -61,5 +61,4 @@ public class SpecialCommandParser {
         }
         return list;
     }
-
 }

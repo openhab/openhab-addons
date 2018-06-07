@@ -418,7 +418,6 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 break;
 
             default:
-                // Add channel to polling loop
                 try {
                     Integer resourceId = ChannelUtils.getResourceIdFromChannelParameters(getThing(),
                             channelUID.getId());
@@ -447,7 +446,6 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 break;
 
             default:
-                // remove channel from polling loop
                 try {
                     Integer resourceId = ChannelUtils.getResourceIdFromChannelParameters(getThing(),
                             channelUID.getId());
