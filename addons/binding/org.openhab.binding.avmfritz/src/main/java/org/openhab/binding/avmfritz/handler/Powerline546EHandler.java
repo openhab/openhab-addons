@@ -10,6 +10,9 @@ package org.openhab.binding.avmfritz.handler;
 
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
+import java.util.ArrayList;
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -17,6 +20,8 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.Command;
@@ -56,16 +61,24 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
     }
 
     @Override
-    public void addDeviceList(AVMFritzBaseModel device) {
-        logger.debug("set device model: {}", device);
-        ThingUID thingUID = getThingUID(device);
-        if (getThing().getUID().equals(thingUID)) {
-            logger.debug("update self {} with device model: {}", thingUID, device);
+    public void addDeviceList(ArrayList<AVMFritzBaseModel> devicelist) {
+        Optional<AVMFritzBaseModel> optionalDevice = devicelist.stream()
+                .filter(it -> it.getIdentifier().equals(getIdentifier())).findFirst();
+        if (optionalDevice.isPresent()) {
+            AVMFritzBaseModel device = optionalDevice.get();
+            devicelist.remove(device);
+            logger.debug("update self {} with device model: {}", getThing().getUID(), device);
             setState(device);
-            updateThingFromDevice(getThing(), device);
+            if (device.getPresent() == 1) {
+                setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                updateThingFromDevice(getThing(), device);
+            } else {
+                setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device not present");
+            }
         } else {
-            super.addDeviceList(device);
+            setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Device not present in response");
         }
+        super.addDeviceList(devicelist);
     }
 
     /**
@@ -99,16 +112,14 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
         String ipAddress = getConfigAs(AVMFritzConfiguration.class).getIpAddress();
 
         if (PL546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
-            String thingName = "fritz.powerline".equals(ipAddress) ? ipAddress : ipAddress.replaceAll(INVALID_PATTERN, "_");
+            String thingName = "fritz.powerline".equals(ipAddress) ? ipAddress
+                    : ipAddress.replaceAll(INVALID_PATTERN, "_");
             return new ThingUID(thingTypeUID, thingName);
         } else {
             return super.getThingUID(device);
         }
     }
 
-    /**
-     * Handle the commands for switchable outlets.
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getIdWithoutGroup();
@@ -118,11 +129,11 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
             logger.debug("Cannot handle command '{}' because connection is missing", command);
             return;
         }
-        if (getThing().getConfiguration().get(THING_AIN) == null) {
+        String ain = getIdentifier();
+        if (ain == null) {
             logger.debug("Cannot handle command '{}' because AIN is missing", command);
             return;
         }
-        String ain = getThing().getConfiguration().get(THING_AIN).toString();
         switch (channelId) {
             case CHANNEL_MODE:
             case CHANNEL_LOCKED:
@@ -143,6 +154,12 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
                 super.handleCommand(channelUID, command);
                 break;
         }
+    }
+
+    @Nullable
+    public String getIdentifier() {
+        Object ain = getThing().getConfiguration().get(THING_AIN);
+        return ain != null ? ain.toString() : null;
     }
 
     @Nullable

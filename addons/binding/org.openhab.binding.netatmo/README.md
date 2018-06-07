@@ -11,7 +11,8 @@ See http://www.netatmo.com/ for details on their product.
 
 ## Binding Configuration
 
-The binding has no configuration options itself, all configuration is done at 'Things' level but before, you'll have to grant openHab to access Netatmo API. Here is the procedure:
+The binding has no configuration options itself, all configuration is done at 'Things' level but before, you'll have to grant openHAB to access Netatmo API.
+Here is the procedure:
 
 ### 1. Application Creation
 
@@ -49,7 +50,8 @@ Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_S
 ### Webhook
 
 For Welcome or Presence Camera, Netatmo servers can send push notifications to the Netatmo Binding by using a callback URL.
-The webhook URL is setup at bridge level using "Webhook Address" parameter. You'll define here public way to access your OH2 server:
+The webhook URL is setup at bridge level using "Webhook Address" parameter.
+You'll define here public way to access your OH2 server:
 
 ```
 http(s)://xx.yy.zz.ww:8080
@@ -69,9 +71,12 @@ Please be aware of Netatmo own limits regarding webhook usage that lead to a 24h
 ### Configure Things
 
 The IDs for the modules can be extracted from the developer documentation on the netatmo site.
-First login with your user. Then some examples of the documentation contain the **real results** of your weather station. Get the IDs of your devices (indoor, outdoor, rain gauge) [here](https://dev.netatmo.com/doc/methods/devicelist).
+First login with your user.
+Then some examples of the documentation contain the **real results** of your weather station.
+Get the IDs of your devices (indoor, outdoor, rain gauge) [here](https://dev.netatmo.com/doc/methods/devicelist).
 
-`main_device` is the ID of the "main device", the indoor sensor. This is equal to the MAC address of the Netatmo.
+`main_device` is the ID of the "main device", the indoor sensor.
+This is equal to the MAC address of the Netatmo.
 
 The other modules you can recognize by "module_name" and then note the "\_id" which you need later.
 
@@ -99,7 +104,8 @@ If you don't manually create things in the *.things file, the Netatmo Binding is
 
 ### Weather Station Main Indoor Device
 
-Weather station does not need any refreshInterval setting. Based on a standard update period of 10mn by Netatmo systems - it will auto adapt to stick closest as possible to last data availability.
+Weather station does not need any refreshInterval setting.
+Based on a standard update period of 10mn by Netatmo systems - it will auto adapt to stick closest as possible to last data availability.
 
 Example item for the **indoor module**:
 
@@ -111,25 +117,25 @@ Number Netatmo_Indoor_CO2 "CO2" <carbondioxide> { channel = "netatmo:NAMain:home
 
 | Channel ID          | Item Type            | Description                                              |
 |---------------------|----------------------|----------------------------------------------------------|
-| Co2                 | Number:Dimensionless | Air Quality                                              |
+| Co2                 | Number:Dimensionless | Air quality                                              |
 | Temperature         | Number:Temperature   | Current temperature                                      |
-| TempTrend           | String               | Temperature Evolution Trend (up, down, stable)           |
-| Noise               | Number:Dimensionless | Current Noise Level                                      |
+| TempTrend           | String               | Temperature evolution trend (up, down, stable)           |
+| Noise               | Number:Dimensionless | Current noise level                                      |
 | Pressure            | Number:Pressure      | Current pressure                                         |
 | PressTrend          | String               | Pressure evolution trend for last 12h (up, down, stable) |
 | AbsolutePressure    | Number:Pressure      | Absolute pressure                                        |
 | Humidity            | Number:Dimensionless | Current humidity                                         |
 | Humidex             | Number               | Computed Humidex index                                   |
 | HeatIndex           | Number:Temperature   | Computed Heat Index                                      |
-| Dewpoint            | Number:Temperature   | Computed Dewpoint Temperature                            |
-| DewpointDepression  | Number:Temperature   | Computed Dewpoint Depression                             |
-| MinTemp             | Number:Temperature   | Minimum Temperature on current day                       |
-| MaxTemp             | Number:Temperature   | Maximum Temperature on current day                       |
+| Dewpoint            | Number:Temperature   | Computed dewpoint temperature                            |
+| DewpointDepression  | Number:Temperature   | Computed dewpoint depression                             |
+| MinTemp             | Number:Temperature   | Minimum temperature on current day                       |
+| MaxTemp             | Number:Temperature   | Maximum temperature on current day                       |
 | DateMinTemp         | DateTime             | Date when minimum temperature was reached on current day |
 | DateMaxTemp         | DateTime             | Date when maximum temperature was reached on current day |
 | TimeStamp           | DateTime             | Timestamp when data was measured                         |
-| LastStatusStore     | DateTime             | Last Status Store                                        |
-| WifiStatus          | Number               | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| LastStatusStore     | DateTime             | Last status store                                        |
+| WifiStatus          | Number               | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 | Location            | Location             | Location of the device                                   |
 
 All these channels are read only.
@@ -148,21 +154,21 @@ Number Netatmo_Outdoor_Temperature "Temperature" { channel = "netatmo:NAModule1:
 | Channel ID          | Item Type            | Description                                              |
 |---------------------|----------------------|----------------------------------------------------------|
 | Temperature         | Number:Temperature   | Current temperature                                      |
-| TempTrend           | String               | Temperature Evolution Trend (up, down, stable)           |
+| TempTrend           | String               | Temperature evolution trend (up, down, stable)           |
 | Humidity            | Number:Dimensionless | Current humidity                                         |
 | Humidex             | Number               | Computed Humidex index                                   |
 | HeatIndex           | Number:Temperature   | Computed Heat Index                                      |
-| Dewpoint            | Number:Temperature   | Computed Dewpoint Temperature                            |
-| DewpointDepression  | Number:Temperature   | Computed Dewpoint Depression                             |
-| MinTemp             | Number:Temperature   | Minimum Temperature on current day                       |
-| MaxTemp             | Number:Temperature   | Maximum Temperature on current day                       |
+| Dewpoint            | Number:Temperature   | Computed dewpoint temperature                            |
+| DewpointDepression  | Number:Temperature   | Computed dewpoint depression                             |
+| MinTemp             | Number:Temperature   | Minimum temperature on current day                       |
+| MaxTemp             | Number:Temperature   | Maximum temperature on current day                       |
 | DateMinTemp         | DateTime             | Date when minimum temperature was reached on current day |
 | DateMaxTemp         | DateTime             | Date when maximum temperature was reached on current day |
 | TimeStamp           | DateTime             | Timestamp when data was measured                         |
-| LastMessage         | DateTime             | Last Message emitted by the module                       |
-| LowBattery          | Switch               | Low Battery                                              |
-| BatteryVP           | Number               | Battery Level                                            |
-| RfStatus            | Number               | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| LastMessage         | DateTime             | Last message emitted by the module                       |
+| LowBattery          | Switch               | Low battery                                              |
+| BatteryVP           | Number               | Battery level                                            |
+| RfStatus            | Number               | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 
 All these channels are read only.
 
@@ -179,23 +185,23 @@ Number Netatmo_Indoor2_Temperature "Temperature" { channel = "netatmo:NAModule4:
 
 | Channel ID          | Item Type            | Description                                              |
 |---------------------|----------------------|----------------------------------------------------------|
-| Co2                 | Number:Dimensionless | Air Quality                                              |
+| Co2                 | Number:Dimensionless | Air quality                                              |
 | Temperature         | Number:Temperature   | Current temperature                                      |
-| TempTrend           | String               | Temperature Evolution Trend (up, down, stable)           |
+| TempTrend           | String               | Temperature evolution trend (up, down, stable)           |
 | Humidity            | Number:Dimensionless | Current humidity                                         |
 | Humidex             | Number               | Computed Humidex index                                   |
 | HeatIndex           | Number:Temperature   | Computed Heat Index                                      |
-| Dewpoint            | Number:Temperature   | Computed Dewpoint Temperature                            |
-| DewpointDepression  | Number:Temperature   | Computed Dewpoint Depression                             |
-| MinTemp             | Number:Temperature   | Minimum Temperature on current day                       |
-| MaxTemp             | Number:Temperature   | Maximum Temperature on current day                       |
+| Dewpoint            | Number:Temperature   | Computed dewpoint temperature                            |
+| DewpointDepression  | Number:Temperature   | Computed dewpoint depression                             |
+| MinTemp             | Number:Temperature   | Minimum temperature on current day                       |
+| MaxTemp             | Number:Temperature   | Maximum temperature on current day                       |
 | DateMinTemp         | DateTime             | Date when minimum temperature was reached on current day |
 | DateMaxTemp         | DateTime             | Date when maximum temperature was reached on current day |
 | TimeStamp           | DateTime             | Timestamp when data was measured                         |
-| LastMessage         | DateTime             | Last Message emitted by the module                       |
-| LowBattery          | Switch               | Low Battery                                              |
-| BatteryVP           | Number               | Battery Level                                            |
-| RfStatus            | Number               | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| LastMessage         | DateTime             | Last message emitted by the module                       |
+| LowBattery          | Switch               | Low battery                                              |
+| BatteryVP           | Number               | Battery level                                            |
+| RfStatus            | Number               | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 
 All these channels are read only.
 
@@ -216,10 +222,10 @@ Number Netatmo_Rain_Current "Rain [%.1f mm]" { channel = "netatmo:NAModule3:home
 | SumRain1            | Number:Length | Quantity of water on last hour                           |
 | SumRain24           | Number:Length | Quantity of water on last day                            |
 | TimeStamp           | DateTime      | Timestamp when data was measured                         |
-| LastMessage         | DateTime      | Last Message emitted by the module                       |
-| LowBattery          | Switch        | Low Battery                                              |
-| BatteryVP           | Number        | Battery Level                                            |
-| RfStatus            | Number        | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| LastMessage         | DateTime      | Last message emitted by the module                       |
+| LowBattery          | Switch        | Low battery                                              |
+| BatteryVP           | Number        | Battery level                                            |
+| RfStatus            | Number        | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 
 All these channels are read only.
 
@@ -241,10 +247,12 @@ Number Netatmo_Wind_Strength "Wind Strength [%.0f KPH]" { channel = "netatmo:NAM
 | GustAngle           | Number:Angle | Direction of the last 5 minutes highest gust wind        |
 | GustStrength        | Number:Speed | Speed of the last 5 minutes highest gust wind            |
 | TimeStamp           | DateTime     | Timestamp when data was measured                         |
-| LastMessage         | DateTime     | Last Message emitted by the module                       |
-| LowBattery          | Switch       | Low Battery                                              |
-| BatteryVP           | Number       | Battery Level                                            |
-| RfStatus            | Number       | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| LastMessage         | DateTime     | Last message emitted by the module                       |
+| LowBattery          | Switch       | Low battery                                              |
+| BatteryVP           | Number       | Battery level                                            |
+| RfStatus            | Number       | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| MaxWindStrength     | Number:Speed | Maximum wind strength recorded                           |
+| DateMaxWindStrength | DateTime     | Timestamp when MaxWindStrength was recorded              |
 
 All these channels are read only.
 
@@ -261,22 +269,22 @@ String Netatmo_LivingRoom_HomeCoach_HealthIndex "Climate" { channel = "netatmo:N
 
 | Channel ID          | Item Type            | Description                                              |
 |---------------------|----------------------|----------------------------------------------------------|
-| HealthIndex         | String               | Health Index (healthy, fine, fair, poor, unhealthy)      |
-| Co2                 | Number:Dimensionless | Air Quality                                              |
+| HealthIndex         | String               | Health index (healthy, fine, fair, poor, unhealthy)      |
+| Co2                 | Number:Dimensionless | Air quality                                              |
 | Temperature         | Number:Temperature   | Current temperature                                      |
-| TempTrend           | String               | Temperature Evolution Trend (up, down, stable)           |
-| Noise               | Number:Dimensionless | Current Noise Level                                      |
+| TempTrend           | String               | Temperature evolution trend (up, down, stable)           |
+| Noise               | Number:Dimensionless | Current noise level                                      |
 | Pressure            | Number:Pressure      | Current pressure                                         |
 | PressTrend          | String               | Pressure evolution trend for last 12h (up, down, stable) |
 | AbsolutePressure    | Number:Pressure      | Absolute pressure                                        |
 | Humidity            | Number:Dimensionless | Current humidity                                         |
-| MinTemp             | Number:Temperature   | Minimum Temperature on current day                       |
-| MaxTemp             | Number:Temperature   | Maximum Temperature on current day                       |
+| MinTemp             | Number:Temperature   | Minimum temperature on current day                       |
+| MaxTemp             | Number:Temperature   | Maximum temperature on current day                       |
 | DateMinTemp         | DateTime             | Date when minimum temperature was reached on current day |
 | DateMaxTemp         | DateTime             | Date when maximum temperature was reached on current day |
 | TimeStamp           | DateTime             | Timestamp when data was measured                         |
-| LastStatusStore     | DateTime             | Last Status Store                                        |
-| WifiStatus          | Number               | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| LastStatusStore     | DateTime             | Last status store                                        |
+| WifiStatus          | Number               | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 | Location            | Location             | Location of the device                                   |
 
 All these channels are read only.
@@ -288,11 +296,11 @@ All these channels are read only.
 
 | Channel ID          | Item Type | Description                                              |
 |---------------------|-----------|----------------------------------------------------------|
-| ConnectedBoiler     | Switch    | Plug Connected Boiler                                    |
-| LastPlugSeen        | DateTime  | Last Plug Seen                                           |
+| ConnectedBoiler     | Switch    | Plug connected boiler                                    |
+| LastPlugSeen        | DateTime  | Last plug seen                                           |
 | LastBilan           | DateTime  | Month of the last available thermostat bilan             |
-| LastStatusStore     | DateTime  | Last Status Store                                        |
-| WifiStatus          | Number    | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| LastStatusStore     | DateTime  | Last status store                                        |
+| WifiStatus          | Number    | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 | Location            | Location  | Location of the device                                   |
 
 All these channels are read only.
@@ -307,16 +315,17 @@ All these channels are read only.
 | Temperature         | Number:Temperature | Current temperature                                        |
 | Sp_Temperature      | Number:Temperature | Thermostat temperature setpoint                            |
 | SetpointMode        | String             | Chosen setpoint_mode (program, away, hg, manual, off, max) |
+| Planning            | String             | Id of the currently active planning when mode = program    |
 | ThermRelayCmd       | Switch             | Indicates whether the furnace is heating or not            |
 | ThermOrientation    | Number             | Physical orientation of the thermostat module              |
 | TimeStamp           | DateTime           | Timestamp when data was measured                           |
 | SetpointEndTime     | DateTime           | Thermostat goes back to schedule after that timestamp      |
-| LastMessage         | DateTime           | Last Message emitted by the module                         |
-| LowBattery          | Switch             | Low Battery                                                |
-| BatteryVP           | Number             | Battery Level                                              |
-| RfStatus            | Number             | Signal Strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| LastMessage         | DateTime           | Last message emitted by the module                         |
+| LowBattery          | Switch             | Low battery                                                |
+| BatteryVP           | Number             | Battery level                                              |
+| RfStatus            | Number             | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 
-All these channels except Sp_Temperature and SetpointMode are read only.
+All these channels except Sp_Temperature, SetpointMode and Planning are read only.
 
 
 ### Welcome Home
@@ -335,8 +344,8 @@ All these channels except Sp_Temperature and SetpointMode are read only.
 | welcomeEventCameraId    | String    | Camera that detected the event                           |
 | welcomeEventPersonId    | String    | Id of the person the event is about (if any)             |
 | welcomeEventSnapshot    | Image     | picture of the last event, if it applies                 |
-| welcomeEventSnapshotURL | String    | if the last event (depending upon event type) in the home lead a a snapshot picture, the picture URL will be available here |
-| welcomeEventVideoURL    | String    | if the last event (depending upon event type) in the home lead a a snapshot picture, the corresponding video URL will be available here |
+| welcomeEventSnapshotURL | String    | if the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here |
+| welcomeEventVideoURL    | String    | if the last event (depending upon event type) in the home lead a snapshot picture, the corresponding video URL will be available here |
 | welcomeEventVideoStatus | String    | Status of the video (recording, deleted or available)    |
 | welcomeEventIsArrival   | Switch    | If person was considered "away" before being seen during this event |
 | welcomeEventMessage     | String    | Message sent by Netatmo corresponding to given event     |
@@ -354,14 +363,15 @@ All these channels are read only.
 | welcomeCameraStatus         | Switch    | State of the camera                                      |
 | welcomeCameraSdStatus       | Switch    | State of the SD card                                     |
 | welcomeCameraAlimStatus     | Switch    | State of the power connector                             |
-| welcomeCameraIsLocal        | Switch    | indicates whether the camera is on the same network than the openHab Netatmo Binding |
+| welcomeCameraIsLocal        | Switch    | indicates whether the camera is on the same network than the openHAB Netatmo Binding |
 | welcomeCameraLivePicture    | Image     | Camera Live Snapshot                                     |
 | welcomeCameraLivePictureUrl | String    | Url of the live snapshot for this camera                 |
 | welcomeCameraLiveStreamUrl  | String    | Url of the live stream for this camera                   |
 
 All these channels are read only.
 
-Warning : the URL of the live snapshot is a fixed URL so the value of the channel welcomeCameraLivePictureUrl will never be updated once first set by the binding. So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element. 
+Warning : the URL of the live snapshot is a fixed URL so the value of the channel welcomeCameraLivePictureUrl will never be updated once first set by the binding.
+So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element.
 
 
 ### Welcome Person
@@ -381,15 +391,12 @@ Person things are automatically created in discovery process for all known perso
 | welcomePersonAtHome           | Switch    | Indicates if this person is known to be at home or not |
 | welcomePersonAvatarUrl        | String    | URL for the avatar of this person                      |
 | welcomePersonAvatar           | Image     | Avatar of this person                                  |
-| welcomePersonLastEventMessage | String    | Last Event message from this person                    |
-| welcomePersonLastEventTime    | DateTime  | Last Event message time for this person                |
+| welcomePersonLastEventMessage | String    | Last event message from this person                    |
+| welcomePersonLastEventTime    | DateTime  | Last event message time for this person                |
 | welcomePersonLastEventUrl     | String    | URL for the picture of the last event for this person  |
 | welcomePersonLastEvent        | Image     | Picture of the last event for this person              |
 
 All these channels except welcomePersonAtHome are read only.
-
-Warning : while setting person away using the channel welcomePersonAtHome is fine, the contrary does not seem supported officially by Netatmo API. 
-
 
 # Configuration Examples
 
@@ -398,7 +405,7 @@ Warning : while setting person away using the channel welcomePersonAtHome is fin
 
 ```
 // Bridge configuration:
-Bridge netatmo:netatmoapi:home "Netatmo API" [ clientId="*********", clientSecret="**********", username = "me@example.com", password = "******", readStation=true, readThermostat=false] {
+Bridge netatmo:netatmoapi:home "Netatmo API" [ clientId="*********", clientSecret="**********", username = "mail@example.com", password = "******", readStation=true, readThermostat=false] {
     // Thing configuration:
     Thing netatmo:NAMain:home:inside "Netatmo Inside"  [ id="aa:aa:aa:aa:aa:aa" ]
     Thing netatmo:NAModule1:home:outside "Netatmo Outside"  [ id="bb:bb:bb:bb:bb:bb", parentId="aa:aa:aa:aa:aa:aa" ]
@@ -534,7 +541,8 @@ If it's set correctly then you should see something similar to:
 -rw-r--r-- 1 root root 101992 Nov 4 10:54 /usr/lib/jvm/java-8-oracle/jre/lib/security/cacerts
 ```
 
-Now try and rerun the keytool command. If you didn't get errors, you should be good to go [source](http://jinahya.wordpress.com/2013/04/28/installing-the-startcom-ca-certifcate-into-the-local-jdk/).  
+Now try and rerun the keytool command.
+If you didn't get errors, you should be good to go [source](http://jinahya.wordpress.com/2013/04/28/installing-the-startcom-ca-certifcate-into-the-local-jdk/).
 
 Alternative approach if above solution does not work: 
 

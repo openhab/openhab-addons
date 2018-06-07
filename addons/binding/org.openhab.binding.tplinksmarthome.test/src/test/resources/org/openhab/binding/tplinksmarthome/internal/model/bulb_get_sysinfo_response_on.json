@@ -9,10 +9,10 @@
 			},
 			"description": "Smart Wi-Fi LED Bulb with Color Changing",
 			"dev_state": "normal",
-			"deviceId": "80123C4640E9FC33A9019A0F3FD8BF5C17B7D9A8",
+			"deviceId": "DEVID_HERE",
 			"disco_ver": "1.0",
 			"heapsize": 347000,
-			"hwId": "111E35908497A05512E259BB76801E10",
+			"hwId": "HWID_HERE",
 			"hw_ver": "1.0",
 			"is_color": 1,
 			"is_dimmable": 1,
@@ -26,10 +26,10 @@
 				"on_off": 1,
 				"saturation": 44
 			},
-			"mic_mac": "50C7BF104865",
+			"mic_mac": "MAC_HERE",
 			"mic_type": "IOT.SMARTBULB",
 			"model": "LB130(US)",
-			"oemId": "05BF7B3BE1675C5A6867B7A7E4C9F6F7",
+			"oemId": "EOMiID_HERE",
 			"preferred_state": [
 				{
 					"brightness": 50,

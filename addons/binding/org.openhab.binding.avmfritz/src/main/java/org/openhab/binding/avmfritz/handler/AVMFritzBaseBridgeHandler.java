@@ -16,7 +16,8 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -35,7 +36,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
@@ -107,7 +107,6 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("About to initialize FRITZ!Box {}", BRIDGE_FRITZBOX);
-        Bridge bridge = getThing();
         AVMFritzConfiguration config = getConfigAs(AVMFritzConfiguration.class);
 
         logger.debug("Discovered FRITZ!Box initialized: {}", config);
@@ -117,8 +116,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         if (config.getPassword() != null) {
             onUpdate();
         } else {
-            bridge.setStatusInfo(
-                    new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no password set"));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no password set");
         }
     }
 
@@ -160,15 +158,15 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Called from {@link FritzAhaWebInterface#authenticate()} to update
-     * the bridge status because updateStatus is protected.
+     * Called from {@link FritzAhaWebInterface#authenticate()} to update the bridge status because updateStatus is
+     * protected.
      *
      * @param status Bridge status
      * @param statusDetail Bridge status detail
      * @param description Bridge status description
      */
-    public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description) {
-        super.updateStatus(status, statusDetail, description);
+    public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        updateStatus(status, statusDetail, description);
     }
 
     /**
@@ -177,22 +175,29 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      *
      * @param model Device model with updated data.
      */
-    public void addDeviceList(AVMFritzBaseModel device) {
-        logger.debug("set device model: {}", device);
-        ThingUID thingUID = getThingUID(device);
-        if (thingUID != null) {
-            Thing thing = getThingByUID(thingUID);
-            if (thing != null) {
-                logger.debug("update thing {} with device model: {}", thingUID, device);
-                AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
-                if (handler != null) {
+    public void addDeviceList(ArrayList<AVMFritzBaseModel> devicelist) {
+        for (Thing thing : getThing().getThings()) {
+            AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
+            if (handler != null) {
+                Optional<AVMFritzBaseModel> optionalDevice = devicelist.stream()
+                        .filter(it -> it.getIdentifier().equals(handler.getIdentifier())).findFirst();
+                if (optionalDevice.isPresent()) {
+                    AVMFritzBaseModel device = optionalDevice.get();
+                    logger.debug("update thing {} with device model: {}", thing.getUID(), device);
                     handler.setState(device);
+                    if (device.getPresent() == 1) {
+                        handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                        updateThingFromDevice(thing, device);
+                    } else {
+                        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device not present");
+                    }
+                } else {
+                    handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                            "Device not present in response");
                 }
-                updateThingFromDevice(thing, device);
             } else {
-                logger.debug("no thing {} found for device model: {}", thingUID, device);
+                logger.debug("handler missing for thing {}", thing.getUID());
             }
-            logger.debug("no thing UID found for device model: {}", device);
         }
     }
 
@@ -203,83 +208,73 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      * @param device Device model with new data.
      */
     protected void updateThingFromDevice(Thing thing, AVMFritzBaseModel device) {
-        if (device.getPresent() == 1) {
-            thing.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
-            thing.setProperty(PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
-            if (device instanceof GroupModel && ((GroupModel) device).getGroupinfo() != null) {
-                thing.setProperty(PROPERTY_MASTER, ((GroupModel) device).getGroupinfo().getMasterdeviceid());
-                thing.setProperty(PROPERTY_MEMBERS, ((GroupModel) device).getGroupinfo().getMembers());
+        thing.setProperty(PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
+        if (device instanceof GroupModel && ((GroupModel) device).getGroupinfo() != null) {
+            thing.setProperty(PROPERTY_MASTER, ((GroupModel) device).getGroupinfo().getMasterdeviceid());
+            thing.setProperty(PROPERTY_MEMBERS, ((GroupModel) device).getGroupinfo().getMembers());
+        }
+        if (device instanceof DeviceModel && device.isTempSensor() && ((DeviceModel) device).getTemperature() != null) {
+            updateThingChannelState(thing, CHANNEL_TEMP,
+                    new QuantityType<>(((DeviceModel) device).getTemperature().getCelsius(), CELSIUS));
+        }
+        if (device.isPowermeter() && device.getPowermeter() != null) {
+            updateThingChannelState(thing, CHANNEL_ENERGY,
+                    new QuantityType<>(device.getPowermeter().getEnergy(), SmartHomeUnits.WATT_HOUR));
+            updateThingChannelState(thing, CHANNEL_POWER,
+                    new QuantityType<>(device.getPowermeter().getPower(), SmartHomeUnits.WATT));
+        }
+        if (device.isSwitchableOutlet() && device.getSwitch() != null) {
+            updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getSwitch().getMode()));
+            updateThingChannelState(thing, CHANNEL_LOCKED,
+                    BigDecimal.ZERO.equals(device.getSwitch().getLock()) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+            updateThingChannelState(thing, CHANNEL_DEVICE_LOCKED,
+                    BigDecimal.ZERO.equals(device.getSwitch().getDevicelock()) ? OpenClosedType.OPEN
+                            : OpenClosedType.CLOSED);
+            if (device.getSwitch().getState() == null) {
+                updateThingChannelState(thing, CHANNEL_SWITCH, UnDefType.UNDEF);
+            } else {
+                updateThingChannelState(thing, CHANNEL_SWITCH,
+                        SwitchModel.ON.equals(device.getSwitch().getState()) ? OnOffType.ON : OnOffType.OFF);
             }
-            if (device instanceof DeviceModel && device.isTempSensor()
-                    && ((DeviceModel) device).getTemperature() != null) {
-                updateThingChannelState(thing, CHANNEL_TEMP,
-                        new QuantityType<>(((DeviceModel) device).getTemperature().getCelsius(), CELSIUS));
-            }
-            if (device.isPowermeter() && device.getPowermeter() != null) {
-                updateThingChannelState(thing, CHANNEL_ENERGY,
-                        new QuantityType<>(device.getPowermeter().getEnergy(), SmartHomeUnits.WATT_HOUR));
-                updateThingChannelState(thing, CHANNEL_POWER,
-                        new QuantityType<>(device.getPowermeter().getPower(), SmartHomeUnits.WATT));
-            }
-            if (device.isSwitchableOutlet() && device.getSwitch() != null) {
-                updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getSwitch().getMode()));
-                updateThingChannelState(thing, CHANNEL_LOCKED,
-                        BigDecimal.ZERO.equals(device.getSwitch().getLock()) ? OpenClosedType.OPEN
-                                : OpenClosedType.CLOSED);
-                updateThingChannelState(thing, CHANNEL_DEVICE_LOCKED,
-                        BigDecimal.ZERO.equals(device.getSwitch().getDevicelock()) ? OpenClosedType.OPEN
-                                : OpenClosedType.CLOSED);
-                if (device.getSwitch().getState() == null) {
-                    updateThingChannelState(thing, CHANNEL_SWITCH, UnDefType.UNDEF);
+        }
+        if (device.isHeatingThermostat() && device.getHkr() != null) {
+            updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getHkr().getMode()));
+            updateThingChannelState(thing, CHANNEL_LOCKED,
+                    BigDecimal.ZERO.equals(device.getHkr().getLock()) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+            updateThingChannelState(thing, CHANNEL_DEVICE_LOCKED,
+                    BigDecimal.ZERO.equals(device.getHkr().getDevicelock()) ? OpenClosedType.OPEN
+                            : OpenClosedType.CLOSED);
+            updateThingChannelState(thing, CHANNEL_ACTUALTEMP,
+                    new QuantityType<>(HeatingModel.toCelsius(device.getHkr().getTist()), CELSIUS));
+            updateThingChannelState(thing, CHANNEL_SETTEMP,
+                    new QuantityType<>(HeatingModel.toCelsius(device.getHkr().getTsoll()), CELSIUS));
+            updateThingChannelState(thing, CHANNEL_ECOTEMP,
+                    new QuantityType<>(HeatingModel.toCelsius(device.getHkr().getAbsenk()), CELSIUS));
+            updateThingChannelState(thing, CHANNEL_COMFORTTEMP,
+                    new QuantityType<>(HeatingModel.toCelsius(device.getHkr().getKomfort()), CELSIUS));
+            updateThingChannelState(thing, CHANNEL_RADIATOR_MODE, new StringType(device.getHkr().getRadiatorMode()));
+            if (device.getHkr().getNextchange() != null) {
+                if (device.getHkr().getNextchange().getEndperiod() == 0) {
+                    updateThingChannelState(thing, CHANNEL_NEXTCHANGE, UnDefType.UNDEF);
                 } else {
-                    updateThingChannelState(thing, CHANNEL_SWITCH,
-                            SwitchModel.ON.equals(device.getSwitch().getState()) ? OnOffType.ON : OnOffType.OFF);
+                    updateThingChannelState(thing, CHANNEL_NEXTCHANGE,
+                            new DateTimeType(ZonedDateTime.ofInstant(
+                                    Instant.ofEpochMilli(device.getHkr().getNextchange().getEndperiod()),
+                                    ZoneId.systemDefault())));
                 }
-            }
-            if (device.isHeatingThermostat() && device.getHkr() != null) {
-                updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getHkr().getMode()));
-                updateThingChannelState(thing, CHANNEL_LOCKED,
-                        BigDecimal.ZERO.equals(device.getHkr().getLock()) ? OpenClosedType.OPEN
-                                : OpenClosedType.CLOSED);
-                updateThingChannelState(thing, CHANNEL_DEVICE_LOCKED,
-                        BigDecimal.ZERO.equals(device.getHkr().getDevicelock()) ? OpenClosedType.OPEN
-                                : OpenClosedType.CLOSED);
-                updateThingChannelState(thing, CHANNEL_ACTUALTEMP,
-                        new QuantityType<>(HeatingModel.toCelsius(device.getHkr().getTist()), CELSIUS));
-                updateThingChannelState(thing, CHANNEL_SETTEMP,
-                        new QuantityType<>(HeatingModel.toCelsius(device.getHkr().getTsoll()), CELSIUS));
-                updateThingChannelState(thing, CHANNEL_ECOTEMP,
-                        new QuantityType<>(HeatingModel.toCelsius(device.getHkr().getAbsenk()), CELSIUS));
-                updateThingChannelState(thing, CHANNEL_COMFORTTEMP,
-                        new QuantityType<>(HeatingModel.toCelsius(device.getHkr().getKomfort()), CELSIUS));
-                updateThingChannelState(thing, CHANNEL_RADIATOR_MODE,
-                        new StringType(device.getHkr().getRadiatorMode()));
-                if (device.getHkr().getNextchange() != null) {
-                    if (device.getHkr().getNextchange().getEndperiod() == 0) {
-                        updateThingChannelState(thing, CHANNEL_NEXTCHANGE, UnDefType.UNDEF);
-                    } else {
-                        updateThingChannelState(thing, CHANNEL_NEXTCHANGE,
-                                new DateTimeType(ZonedDateTime.ofInstant(
-                                        Instant.ofEpochMilli(device.getHkr().getNextchange().getEndperiod()),
-                                        ZoneId.systemDefault())));
-                    }
-                    if (HeatingModel.TEMP_FRITZ_UNDEFINED.equals(device.getHkr().getNextchange().getTchange())) {
-                        updateThingChannelState(thing, CHANNEL_NEXTTEMP, UnDefType.UNDEF);
-                    } else {
-                        updateThingChannelState(thing, CHANNEL_NEXTTEMP, new QuantityType<>(
-                                HeatingModel.toCelsius(device.getHkr().getNextchange().getTchange()), CELSIUS));
-                    }
-                }
-                if (device.getHkr().getBatterylow() == null) {
-                    updateThingChannelState(thing, CHANNEL_BATTERY, UnDefType.UNDEF);
+                if (HeatingModel.TEMP_FRITZ_UNDEFINED.equals(device.getHkr().getNextchange().getTchange())) {
+                    updateThingChannelState(thing, CHANNEL_NEXTTEMP, UnDefType.UNDEF);
                 } else {
-                    updateThingChannelState(thing, CHANNEL_BATTERY,
-                            HeatingModel.BATTERY_ON.equals(device.getHkr().getBatterylow()) ? OnOffType.ON
-                                    : OnOffType.OFF);
+                    updateThingChannelState(thing, CHANNEL_NEXTTEMP, new QuantityType<>(
+                            HeatingModel.toCelsius(device.getHkr().getNextchange().getTchange()), CELSIUS));
                 }
             }
-        } else {
-            thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device not present"));
+            if (device.getHkr().getBatterylow() == null) {
+                updateThingChannelState(thing, CHANNEL_BATTERY, UnDefType.UNDEF);
+            } else {
+                updateThingChannelState(thing, CHANNEL_BATTERY,
+                        HeatingModel.BATTERY_ON.equals(device.getHkr().getBatterylow()) ? OnOffType.ON : OnOffType.OFF);
+            }
         }
     }
 
@@ -296,21 +291,6 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             updateState(channel.getUID(), state);
         } else {
             logger.warn("Channel {} in thing {} does not exist, please recreate the thing", channelId, thing.getUID());
-        }
-    }
-
-    /**
-     * Called from {@link FritzAhaUpdateXmlCallback} to set missing devices to OFFLINE.
-     */
-    public void setMissingThingsOffline(Set<String> ains) {
-        for (Thing thing : getThing().getThings()) {
-            AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
-            if (handler != null) {
-                if (!ains.contains(handler.getState().getIdentifier())) {
-                    thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
-                            "Device not present in response"));
-                }
-            }
         }
     }
 

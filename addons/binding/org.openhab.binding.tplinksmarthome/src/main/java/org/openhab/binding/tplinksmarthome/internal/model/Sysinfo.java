@@ -60,6 +60,33 @@ public class Sysinfo extends ErrorResponse {
         }
     }
 
+    /**
+     * Status of the plug as set in the range extender products.
+     */
+    public static class Plug {
+        private String feature;
+        private String relayStatus;
+
+        public String getFeature() {
+            return feature;
+        }
+
+        public OnOffType getRelayStatus() {
+            return "ON".equals(relayStatus) ? OnOffType.ON : OnOffType.OFF;
+        }
+    }
+
+    /**
+     * Status of the range extended Wi-Fi.
+     */
+    public static class RangeextenderWireless {
+        private int w2gRssi;
+
+        public int getW2gRssi() {
+            return w2gRssi;
+        }
+    }
+
     private String swVer;
     private String hwVer;
     private String model;
@@ -72,10 +99,12 @@ public class Sysinfo extends ErrorResponse {
     private String alias;
     private String activeMode;
     private int rssi;
+    @SerializedName(value = "type", alternate = "mic_type")
+    private String type;
+    @SerializedName(value = "mac", alternate = { "mic_mac", "ethernet_mac" })
+    private String mac;
 
     // switch and plug specific system info
-    private String type;
-    private String mac;
     @SerializedName("fwId")
     private String fwId;
     private String devName;
@@ -83,18 +112,27 @@ public class Sysinfo extends ErrorResponse {
     private int relayState; // 0 is off, 1 is on
     private long onTime;
     private String feature; // HS100 -> TIM, HS110 -> TIM:ENE
-    private int updating;
+    // Disabled updating as it's a different type for different devices.
+    // private int updating;
     private int ledOff;
     private double latitude;
     private double longitude;
 
+    // dimmer specific system info
+    private int brightness;
+
     // bulb specific system info
-    private String mic_type;
-    private String mic_mac;
     private boolean isFactory;
     private String discoVer;
     private CtrlProtocols ctrlProtocols;
     private WithDefaultLightState lightState = new WithDefaultLightState();
+
+    // range extender specific system info
+    private String ledStatus;
+    private Plug plug = new Plug();
+    private Sysinfo system;
+    @SerializedName("rangeextender.wireless")
+    private RangeextenderWireless reWireless;
 
     public String getSwVer() {
         return swVer;
@@ -148,6 +186,10 @@ public class Sysinfo extends ErrorResponse {
         return relayState == 1 ? OnOffType.ON : OnOffType.OFF;
     }
 
+    public int getBrightness() {
+        return brightness;
+    }
+
     public long getOnTime() {
         return onTime;
     }
@@ -160,12 +202,9 @@ public class Sysinfo extends ErrorResponse {
         return feature;
     }
 
-    public int getUpdating() {
-        return updating;
-    }
-
     public int getRssi() {
-        return rssi;
+        // for range extender use the 2g rssi.
+        return reWireless == null ? rssi : reWireless.getW2gRssi();
     }
 
     public OnOffType getLedOff() {
@@ -178,14 +217,6 @@ public class Sysinfo extends ErrorResponse {
 
     public double getLongitude() {
         return longitude;
-    }
-
-    public String getMicType() {
-        return mic_type;
-    }
-
-    public String getMicMac() {
-        return mic_mac;
     }
 
     public boolean isFactory() {
@@ -208,15 +239,42 @@ public class Sysinfo extends ErrorResponse {
         return lightState.getLightState();
     }
 
+    public OnOffType getLedStatus() {
+        return "ON".equals(ledStatus) ? OnOffType.OFF : OnOffType.ON;
+    }
+
+    public Plug getPlug() {
+        return plug;
+    }
+
+    public Sysinfo getSystem() {
+        return system;
+    }
+
+    /**
+     * Returns the {@link Sysinfo} object independent of the device. The range extender devices have the system
+     * information in another place as the other devices. This method returns the object independent of how the device
+     * returns it.
+     *
+     * @return device independent {@link Sysinfo} object.
+     */
+    public Sysinfo getActualSysinfo() {
+        return system == null ? this : system;
+    }
+
+    public RangeextenderWireless getReWireless() {
+        return reWireless;
+    }
+
     @Override
     public String toString() {
-        return "Sysinfo {swVer:" + swVer + ", hwVer:" + hwVer + ", model:" + model + ", deviceId:" + deviceId
-                + ", hwId:" + hwId + ", oemId:" + oemId + ", alias:" + alias + ", activeMode:" + activeMode + ", rssi:"
-                + rssi + ", type:" + type + ", mac:" + mac + ", fwId:" + fwId + ", devName:" + devName + ", iconHash:"
-                + iconHash + ", relayState:" + relayState + ", onTime:" + onTime + ", feature:" + feature
-                + ", updating:" + updating + ", ledOff:" + ledOff + ", latitude:" + latitude + ", longitude:"
-                + longitude + ", mic_type:" + mic_type + ", mic_mac:" + mic_mac + ", isFactory:" + isFactory
-                + ", discoVer:" + discoVer + ", ctrlProtocols:" + ctrlProtocols + ", lightState:" + lightState + "}"
-                + super.toString();
+        return "Sysinfo [swVer=" + swVer + ", hwVer=" + hwVer + ", model=" + model + ", deviceId=" + deviceId
+                + ", hwId=" + hwId + ", oemId=" + oemId + ", alias=" + alias + ", activeMode=" + activeMode + ", rssi="
+                + rssi + ", type=" + type + ", mac=" + mac + ", fwId=" + fwId + ", devName=" + devName + ", iconHash="
+                + iconHash + ", relayState=" + relayState + ", brightness=" + brightness + ", onTime=" + onTime
+                + ", feature=" + feature + ", ledOff=" + ledOff + ", latitude=" + latitude + ", longitude=" + longitude
+                + ", isFactory=" + isFactory + ", discoVer=" + discoVer + ", ctrlProtocols=" + ctrlProtocols
+                + ", lightState=" + lightState + ", ledStatus=" + ledStatus + ", plug=" + plug + ", system=" + system
+                + ", reWireless=" + reWireless + "]";
     }
 }

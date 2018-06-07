@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="icloud" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="icloud"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="account">
-		<label>iCloud Account</label>
-		<description>Provides various information for iCloud devices registered with this account.</description>
+		<label>@text/icloud.account-thing.label</label>
+		<description>@text/icloud.account-thing.description</description>
 
 		<config-description>
 			<parameter name="appleId" type="text" required="true">
 				<context>email</context>
-				<label>Apple Id</label>
-				<description>Apple Id (e-mail) to access iCloud information.</description>
+				<label>@text/icloud.account-thing.parameter.apple-id.label</label>
+				<description>@text/icloud.account-thing.parameter.apple-id.description</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<context>password</context>
-				<label>Password</label>
-				<description>Apple iCloud password for the given Id.</description>
+				<label>@text/icloud.account-thing.parameter.password.label</label>
+				<description>@text/icloud.account-thing.parameter.password.description</description>
 			</parameter>
 			<parameter name="refreshTimeInMinutes" type="integer" min="5" max="65535" unit="min">
-				<label>Refresh</label>
-				<description>Refresh time in minutes.</description>
+				<label>@text/icloud.account-thing.parameter.refresh.label</label>
+				<description>@text/icloud.account-thing.parameter.refresh.description</description>
 				<default>5</default>
 			</parameter>
 		</config-description>
@@ -30,7 +31,8 @@
 			<bridge-type-ref id="account" />
 		</supported-bridge-type-refs>
 
-		<label>iCloud Device</label>
+		<label>@text/icloud.device-thing.label</label>
+		<description>@text/icloud.device-thing.description</description>
 
 		<channels>
 			<channel typeId="BatteryStatus" id="batteryStatus" />
@@ -45,7 +47,7 @@
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
-				<label>Device id</label>
+				<label>@text/icloud.device-thing.parameter.id.label</label>
 			</parameter>
 		</config-description>
 
@@ -53,33 +55,33 @@
 
 	<channel-type id="BatteryStatus">
 		<item-type>String</item-type>
-		<label>Battery Status</label>
+		<label>@text/icloud.device-thing.channel.battery-status.label</label>
 		<state readOnly="true">
 			<options>
-				<option value="NotCharging">Not charging</option>
-				<option value="Charged">Charged</option>
-				<option value="Charging">Charging</option>
-				<option value="Unknown">Unknown</option>
+				<option value="NotCharging">@text/icloud.device-thing.channel.battery-status.state.not-charging</option>
+				<option value="Charged">@text/icloud.device-thing.channel.battery-status.state.charged</option>
+				<option value="Charging">@text/icloud.device-thing.channel.battery-status.state.charging</option>
+				<option value="Unknown">@text/icloud.device-thing.channel.battery-status.state.unknown</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="FindMyPhone">
 		<item-type>Switch</item-type>
-		<label>Find My Phone</label>
+		<label>@text/icloud.device-thing.channel.find-my-phone.label</label>
 	</channel-type>
 	<channel-type id="Location">
 		<item-type>Location</item-type>
-		<label>Location</label>
+		<label>@text/icloud.device-thing.channel.location.label</label>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="LocationAccuracy" advanced="true">
 		<item-type>Number</item-type>
-		<label>Location Accuracy</label>
+		<label>@text/icloud.device-thing.channel.location-accuracy</label>
 		<state readOnly="true" pattern="%d m" />
 	</channel-type>
 	<channel-type id="LocationLastUpdate" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Last Location Update</label>
+		<label>@text/icloud.device-thing.channel.location-last-update</label>
 		<state readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>

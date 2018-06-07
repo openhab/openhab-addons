@@ -137,6 +137,10 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                         refreshStrategy.setDataTimeStamp(dataTimeStamp);
                     }
                     radioHelper.ifPresent(helper -> helper.setModule(device));
+                    NetatmoBridgeHandler handler = getBridgeHandler();
+                    if (handler != null) {
+                        handler.checkForNewThings(newDeviceReading);
+                    }
                 } else {
                     logger.debug("Failed to update device {} readings! Skip updating channels", getId());
                 }
@@ -217,5 +221,9 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     }
 
     protected abstract @Nullable Integer getDataTimestamp();
+
+    public void expireData() {
+        refreshStrategy.expireData();
+    }
 
 }

@@ -15,7 +15,8 @@ package org.openhab.binding.nibeheatpump.internal.models;
  * @author Pauli Anttila - Initial contribution
  */
 public enum PumpModel {
-    F1X45("F1X45");
+    F1X45("F1X45"),
+    F750("F750");
 
     private final String pumpModel;
 

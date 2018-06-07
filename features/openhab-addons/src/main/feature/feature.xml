@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2010-2018 by the respective copyright holders.
+	Copyright (c) 2010-2018 by the respective copyright holders.
 
-    All rights reserved. This program and the accompanying materials
-    are made available under the terms of the Eclipse Public License v1.0
-    which accompanies this distribution, and is available at
-    http://www.eclipse.org/legal/epl-v10.html
+	All rights reserved. This program and the accompanying materials
+	are made available under the terms of the Eclipse Public License v1.0
+	which accompanies this distribution, and is available at
+	http://www.eclipse.org/legal/epl-v10.html
 
 -->
 <features name="${project.artifactId}-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
@@ -26,6 +26,11 @@
     <feature name="openhab-binding-amazondashbutton" description="Amazon Dash Button Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.amazondashbutton/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-amazonechocontrol" description="Amazon Echo Control Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.amazonechocontrol/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-atlona" description="Atlona PRO3 Switch Binding" version="${project.version}">
@@ -145,6 +150,13 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.harmonyhub/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-hyperion" description="Hyperion Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-mdns</feature>
+        <feature>openhab-transport-http</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.hyperion/${project.version}</bundle>
+    </feature>
+    
     <feature name="openhab-binding-helios" description="Helios Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.helios/${project.version}</bundle>
@@ -179,7 +191,6 @@
     <feature name="openhab-binding-innogysmarthome" description="innogy Smarthome Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-http</feature>
-        <feature>openhab-httpclient</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.innogysmarthome/${project.version}</bundle>
     </feature>
 
@@ -468,6 +479,11 @@
     <feature name="openhab-binding-systeminfo" description="System Info Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.systeminfo/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-tado" description="Tado Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.tado/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-tankerkoenig" description="Tankerkoenig Binding" version="${project.version}">

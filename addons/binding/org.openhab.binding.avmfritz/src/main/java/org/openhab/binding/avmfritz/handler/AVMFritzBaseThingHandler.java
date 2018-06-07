@@ -25,6 +25,8 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -63,22 +65,37 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
         super(thing);
     }
 
+    @Override
+    public void initialize() {
+        logger.debug("Initializing handler for {}", getClass().getName());
+        updateStatus(ThingStatus.UNKNOWN);
+    }
+
     /**
-     * Handle the commands for switchable outlets or heating thermostats.
+     * Called from {@link AVMFritzBaseBridgeHandler)} to update the thing status because updateStatus is protected.
+     *
+     * @param status Thing status
+     * @param statusDetail Thing status detail
+     * @param description Thing status description
      */
+    public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        updateStatus(status, statusDetail, description);
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getIdWithoutGroup();
         logger.debug("Handle command '{}' for channel {}", command, channelId);
         FritzAhaWebInterface fritzBox = getWebInterface();
         if (fritzBox == null) {
+            logger.debug("Cannot handle command '{}' because connection is missing", command);
             return;
         }
-        if (getThing().getConfiguration().get(THING_AIN) == null) {
+        String ain = getIdentifier();
+        if (ain == null) {
             logger.debug("Cannot handle command '{}' because AIN is missing", command);
             return;
         }
-        String ain = getThing().getConfiguration().get(THING_AIN).toString();
         switch (channelId) {
             case CHANNEL_MODE:
             case CHANNEL_LOCKED:
@@ -188,6 +205,12 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
             }
         }
         return null;
+    }
+
+    @Nullable
+    public String getIdentifier() {
+        Object ain = getThing().getConfiguration().get(THING_AIN);
+        return ain != null ? ain.toString() : null;
     }
 
     @Nullable

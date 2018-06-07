@@ -46,7 +46,7 @@ For example, if your openHAB instance is running at _<http://192.168.1.10:8080/>
 
 If you have port forwarding or similar set up to access your openHAB from the internet, you can also fill the Remote URL in the same way. For example: _<http://my-openhab-url.dyndns.org:8080/imperihome/iss>_.
 _Warning_: this service provides no authentication mechanism, so anyone could use the API to control your system when accessible from the internet.
-Add a secure proxy or use the openHAB Cloud proxy to protect your system ([more information](http://docs.openhab.org/installation/security.html)).  
+Add a secure proxy or use the openHAB Cloud proxy to protect your system ([more information](https://www.openhab.org/docs/installation/security.html)).
 
 Click Next to let ImperiHome validate the URL.
 After validation succeeded the system is added and you can continue to configure your Items for use in ImperiHome.

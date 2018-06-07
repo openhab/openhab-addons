@@ -28,9 +28,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pawel Pieczul - Initial contribution
  */
-@NonNullByDefault
 @Component(service = { DynamicStateDescriptionProvider.class,
         LoxoneDynamicStateDescriptionProvider.class }, immediate = true)
+@NonNullByDefault
 public class LoxoneDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
 
     private Map<ChannelUID, StateDescription> descriptions = new ConcurrentHashMap<>();

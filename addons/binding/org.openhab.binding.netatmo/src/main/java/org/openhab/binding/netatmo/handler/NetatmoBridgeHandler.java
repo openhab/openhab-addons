@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -31,8 +32,10 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.netatmo.internal.WelcomeWebHookServlet;
 import org.openhab.binding.netatmo.internal.config.NetatmoBridgeConfiguration;
+import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent;
+import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEventPerson;
+import org.openhab.binding.netatmo.internal.webhook.WelcomeWebHookServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +50,6 @@ import io.swagger.client.auth.OAuthFlow;
 import io.swagger.client.model.NAHealthyHomeCoachDataBody;
 import io.swagger.client.model.NAStationDataBody;
 import io.swagger.client.model.NAThermostatDataBody;
-import io.swagger.client.model.NAWebhookCameraEvent;
-import io.swagger.client.model.NAWebhookCameraEventPerson;
 import io.swagger.client.model.NAWelcomeHomeData;
 import retrofit.RestAdapter.LogLevel;
 import retrofit.RetrofitError;
@@ -69,6 +70,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     private ScheduledFuture<?> refreshJob;
     private APIMap apiMap;
     private WelcomeWebHookServlet webHookServlet;
+    private List<NetatmoDataListener> dataListeners = new CopyOnWriteArrayList<>();
 
     @NonNullByDefault
     private class APIMap extends HashMap<Class<?>, Object> {
@@ -292,8 +294,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     }
 
     public void webHookEvent(NAWebhookCameraEvent event) {
-        // This currently the only known event type but I suspect webhook usage
-        // can grow in the future...
+        // This currently the only known event type but I suspect usage can grow in the future...
         if (event.getAppType() == NAWebhookCameraEvent.AppTypeEnum.CAMERA) {
             Set<AbstractNetatmoThingHandler> modules = new HashSet<>();
             if (WELCOME_EVENTS.contains(event.getEventType()) || PRESENCE_EVENTS.contains(event.getEventType())) {
@@ -337,4 +338,17 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         return webHookURI;
     }
 
+    public boolean registerDataListener(@NonNull NetatmoDataListener dataListener) {
+        return dataListeners.add(dataListener);
+    }
+
+    public boolean unregisterDataListener(@NonNull NetatmoDataListener dataListener) {
+        return dataListeners.remove(dataListener);
+    }
+
+    public void checkForNewThings(Object data) {
+        for (NetatmoDataListener dataListener : dataListeners) {
+            dataListener.onDataRefreshed(data);
+        }
+    }
 }

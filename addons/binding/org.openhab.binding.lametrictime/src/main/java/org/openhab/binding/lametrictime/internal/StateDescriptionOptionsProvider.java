@@ -13,7 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -29,15 +29,16 @@ import org.osgi.service.component.annotations.Deactivate;
  * @author Gregory Moyer - Initial contribution
  */
 @Component(service = { DynamicStateDescriptionProvider.class, StateDescriptionOptionsProvider.class }, immediate = true)
+@NonNullByDefault
 public class StateDescriptionOptionsProvider implements DynamicStateDescriptionProvider {
-    private final Map<ChannelUID, List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
+    private final Map<ChannelUID, @Nullable List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
 
     public void setStateOptions(ChannelUID channelUID, List<StateOption> options) {
         channelOptionsMap.put(channelUID, options);
     }
 
     @Override
-    public @Nullable StateDescription getStateDescription(@NonNull Channel channel, @Nullable StateDescription original,
+    public @Nullable StateDescription getStateDescription(Channel channel, @Nullable StateDescription original,
             @Nullable Locale locale) {
         List<StateOption> options = channelOptionsMap.get(channel.getUID());
         if (options == null) {
@@ -48,7 +49,6 @@ public class StateDescriptionOptionsProvider implements DynamicStateDescriptionP
             return new StateDescription(original.getMinimum(), original.getMaximum(), original.getStep(),
                     original.getPattern(), original.isReadOnly(), options);
         }
-
         return new StateDescription(null, null, null, null, false, options);
     }
 

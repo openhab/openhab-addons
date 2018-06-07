@@ -24,11 +24,11 @@ public class ConnectorFactory {
     public static NibeHeatPumpConnector getConnector(ThingTypeUID type) throws NibeHeatPumpException {
         if (type != null) {
 
-            if (THING_TYPE_F1X45_UDP.equals(type)) {
+            if (THING_TYPE_F1X45_UDP.equals(type) || THING_TYPE_F750_UDP.equals(type)) {
                 return new UDPConnector();
-            } else if (THING_TYPE_F1X45_SERIAL.equals(type)) {
+            } else if (THING_TYPE_F1X45_SERIAL.equals(type) || THING_TYPE_F750_SERIAL.equals(type)) {
                 return new SerialConnector();
-            } else if (THING_TYPE_F1X45_SIMULATOR.equals(type)) {
+            } else if (THING_TYPE_F1X45_SIMULATOR.equals(type) || THING_TYPE_F750_SIMULATOR.equals(type)) {
                 return new SimulatorConnector();
             }
         }
