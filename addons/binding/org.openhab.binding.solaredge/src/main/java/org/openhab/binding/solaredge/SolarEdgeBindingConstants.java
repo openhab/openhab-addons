@@ -46,14 +46,9 @@ public class SolarEdgeBindingConstants {
 
     // login field names
     public static final String TOKEN_COOKIE_NAME = "SPRING_SECURITY_REMEMBER_ME_COOKIE";
+    public static final String TOKEN_COOKIE_DOMAIN = "monitoring.solaredge.com";
+    public static final String TOKEN_COOKIE_PATH = "/";
     public static final String CLIENT_COOKIE_NAME_PREFIX = "SolarEdge_Client";
-
-    public static final String LOGIN_COMMAND_FIELD = "cmd";
-    public static final String LOGIN_COMMAND_VALUE = "login";
-    public static final String LOGIN_DEMO_FIELD = "demo";
-    public static final String LOGIN_DEMO_VALUE = "false";
-    public static final String LOGIN_USERNAME_FIELD = "username";
-    public static final String LOGIN_PASSWORD_FIELD = "password";
 
     public static final String POST_LOGIN_CLIENT_CMD_FIELD = "cmd";
     public static final String POST_LOGIN_CLIENT_CMD_VALUE = "createCookie";

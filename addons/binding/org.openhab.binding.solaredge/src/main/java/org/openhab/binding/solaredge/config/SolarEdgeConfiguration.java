@@ -18,8 +18,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class SolarEdgeConfiguration {
 
-    private String username;
-    private String password;
+    private String token;
     private String solarId;
 
     private boolean legacyMode = false;
@@ -29,20 +28,12 @@ public class SolarEdgeConfiguration {
     private Integer liveDataPollingInterval;
     private Integer aggregateDataPollingInterval;
 
-    public final String getUsername() {
-        return username;
+    public final String getToken() {
+        return token;
     }
 
-    public final void setUsername(String username) {
-        this.username = username;
-    }
-
-    public final String getPassword() {
-        return password;
-    }
-
-    public final void setPassword(String password) {
-        this.password = password;
+    public final void setToken(String token) {
+        this.token = token;
     }
 
     public final String getSolarId() {
@@ -95,9 +86,8 @@ public class SolarEdgeConfiguration {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("username", getUsername()).append("password", getPassword())
-                .append("solarId", getSolarId()).append("legacyMode", isLegacyMode())
-                .append("live data pollingInterval", getLiveDataPollingInterval())
+        return new ToStringBuilder(this).append("token", getToken()).append("solarId", getSolarId())
+                .append("legacyMode", isLegacyMode()).append("live data pollingInterval", getLiveDataPollingInterval())
                 .append("aggregate data pollingInterval", getAggregateDataPollingInterval())
                 .append("asyncTimeout", getAsyncTimeout()).append("syncTimeout", getSyncTimeout()).toString();
     }

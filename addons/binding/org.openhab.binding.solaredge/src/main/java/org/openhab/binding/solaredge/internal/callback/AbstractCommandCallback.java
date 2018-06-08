@@ -8,7 +8,12 @@
  */
 package org.openhab.binding.solaredge.internal.callback;
 
+import static org.openhab.binding.solaredge.SolarEdgeBindingConstants.*;
+
+import java.net.CookieStore;
+import java.net.HttpCookie;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
@@ -124,6 +129,11 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     @Override
     public void performAction(HttpClient asyncclient) {
         Request request = asyncclient.newRequest(getURL()).timeout(config.getAsyncTimeout(), TimeUnit.SECONDS);
+        CookieStore cookieStore = asyncclient.getCookieStore();
+        HttpCookie c = new HttpCookie(TOKEN_COOKIE_NAME, config.getToken());
+        c.setDomain(TOKEN_COOKIE_DOMAIN);
+        c.setPath(TOKEN_COOKIE_PATH);
+        cookieStore.add(URI.create(getURL()), c);
         prepareRequest(request).send(this);
     }
 

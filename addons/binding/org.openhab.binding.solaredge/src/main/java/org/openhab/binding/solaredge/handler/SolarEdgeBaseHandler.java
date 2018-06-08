@@ -87,7 +87,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
 
         this.webInterface = new WebInterface(config, this);
 
-        if (config.getPassword() != null && config.getUsername() != null) {
+        if (config.getToken() != null) {
             this.startPolling();
         } else {
             thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

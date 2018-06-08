@@ -12,24 +12,22 @@ import static org.openhab.binding.solaredge.SolarEdgeBindingConstants.*;
 
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.solaredge.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
 
 /**
- * implements the login to the webinterface - second step: retrieval of the security token which is needed for all subsequent requests
+ * checks validity of the token by accessing the webinterface
  *
  * @author Alexander Friese - initial contribution
  *
  */
-public class PostLoginGetSpringSecurityToken extends AbstractCommandCallback implements SolarEdgeCommand {
+public class PseudoLogin extends AbstractCommandCallback implements SolarEdgeCommand {
 
     private final SolarEdgeHandler handler;
 
-    public PostLoginGetSpringSecurityToken(SolarEdgeHandler handler, StatusUpdateListener listener) {
+    public PseudoLogin(SolarEdgeHandler handler, StatusUpdateListener listener) {
         super(handler.getConfiguration(), listener);
         this.handler = handler;
     }
@@ -37,27 +35,22 @@ public class PostLoginGetSpringSecurityToken extends AbstractCommandCallback imp
     @Override
     protected Request prepareRequest(Request requestToPrepare) {
 
-        Fields fields = new Fields();
-        fields.add(LOGIN_USERNAME_FIELD, handler.getConfiguration().getUsername());
-        fields.add(LOGIN_PASSWORD_FIELD, handler.getConfiguration().getPassword());
-        FormContentProvider cp = new FormContentProvider(fields);
-
-        requestToPrepare.content(cp);
-        requestToPrepare.followRedirects(true);
-        requestToPrepare.method(HttpMethod.POST);
+        // as a token is used no real login is to be done here. IT is just checked if a protected page can be retrieved
+        // and therefore the token is valid.
+        requestToPrepare.followRedirects(false);
+        requestToPrepare.method(HttpMethod.GET);
 
         return requestToPrepare;
     }
 
     @Override
     protected String getURL() {
-        return POST_LOGIN_SESSION_TOKEN_URL;
+        return DATA_API_URL + config.getSolarId() + DATA_API_URL_LIVE_DATA_SUFFIX;
     }
 
     @Override
     public void onComplete(Result result) {
         getListener().update(getCommunicationStatus());
-
     }
 
 }

@@ -22,8 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.solaredge.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.command.PostLoginGetClientCookie;
-import org.openhab.binding.solaredge.internal.command.PostLoginGetSpringSecurityToken;
-import org.openhab.binding.solaredge.internal.command.PreLogin;
+import org.openhab.binding.solaredge.internal.command.PseudoLogin;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,7 +157,7 @@ public class WebInterface {
 
             };
 
-            StatusUpdateListener springSecurityTokenListener = new StatusUpdateListener() {
+            StatusUpdateListener pseudoLoginListener = new StatusUpdateListener() {
 
                 @Override
                 public void update(CommunicationStatus status) {
@@ -166,29 +165,10 @@ public class WebInterface {
                     if (status.getHttpCode().equals(Code.OK)) {
                         // perform second part of login process if first part is successful
                         new PostLoginGetClientCookie(handler, clientCookieListener).performAction(asyncclient);
-                    } else if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
-                        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                                status.getMessage());
+                    } else if (status.getHttpCode().equals(Code.FOUND)) {
+                        handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "invalid token");
                         setAuthenticated(false);
-                    } else {
-                        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                status.getMessage());
-                        setAuthenticated(false);
-                    }
-
-                }
-
-            };
-
-            StatusUpdateListener preStatusUpdater = new StatusUpdateListener() {
-
-                @Override
-                public void update(CommunicationStatus status) {
-
-                    if (status.getHttpCode().equals(Code.OK)) {
-                        // perform second part of login process if first part is successful
-                        new PostLoginGetSpringSecurityToken(handler, springSecurityTokenListener)
-                                .performAction(asyncclient);
                     } else if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
                         handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                                 status.getMessage());
@@ -202,7 +182,7 @@ public class WebInterface {
                 }
             };
 
-            new PreLogin(handler, preStatusUpdater).performAction(asyncclient);
+            new PseudoLogin(handler, pseudoLoginListener).performAction(asyncclient);
         }
     }
 
@@ -213,10 +193,12 @@ public class WebInterface {
      */
     private boolean preCheck() {
         String preCheckStatusMessage = "";
-        if (this.config.getUsername() == null || this.config.getUsername().isEmpty()) {
-            preCheckStatusMessage = "please configure username first";
-        } else if (this.config.getPassword() == null || this.config.getPassword().isEmpty()) {
-            preCheckStatusMessage = "please configure password first";
+        // if (this.config.getUsername() == null || this.config.getUsername().isEmpty()) {
+        // preCheckStatusMessage = "please configure username first";
+        // } else if (this.config.getPassword() == null || this.config.getPassword().isEmpty()) {
+        // preCheckStatusMessage = "please configure password first";
+        if (this.config.getToken() == null) {
+            preCheckStatusMessage = "please configure token first";
         } else if (this.config.getSolarId() == null || this.config.getSolarId().isEmpty()) {
             preCheckStatusMessage = "please configure solarId first";
         } else {

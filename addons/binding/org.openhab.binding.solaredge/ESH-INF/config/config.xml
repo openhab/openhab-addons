@@ -18,14 +18,9 @@
 			<description>General settings.</description>
 		</parameter-group>
 
-		<parameter name="username" type="text" required="true" groupName="authentication">
-			<label>Username</label>
-			<description>The username to login</description>
-		</parameter>
-		<parameter name="password" type="text" required="true" groupName="authentication">
-			<context>password</context>
-			<label>Password</label>
-			<description>The password to login</description>
+		<parameter name="token" type="text" required="true" groupName="authentication">
+			<label>Token</label>
+			<description>Spring Security Token (Check Browser Cookies when logged into website)</description>
 		</parameter>
 		<parameter name="solarId" type="text" required="true" groupName="general">
 			<label>Solar ID</label>

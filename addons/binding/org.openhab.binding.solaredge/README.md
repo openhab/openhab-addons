@@ -25,11 +25,8 @@ solaredge:generic:<NAME>
 
 There are a few settings this thing:
 
-- **username** (required)  
-username used to authenticate on SolarEdge
-
-- **password** (required)  
-password used to authenticate on SolarEdge
+- **token** (required)  
+can be retrieved from browser's cookie store when logged into the solaredge website. It is called 'SPRING_SECURITY_REMEMBER_ME_COOKIE'
 
 - **solarId** (required)  
 Id of your inverter at SolarEdge (can be found in the URL after successful login: https://monitoring.solaredge.com/solaredge-web/p/site/**<<solarId>>**/#/dashboard)
