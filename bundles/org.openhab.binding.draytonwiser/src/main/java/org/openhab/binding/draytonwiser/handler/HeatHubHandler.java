@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link HeatHubHandler} is responsible for handling commands, which are
@@ -148,8 +149,13 @@ public class HeatHubHandler extends BaseBridgeHandler {
             return null;
         }
 
-        Domain domain = gson.fromJson(response.getContentAsString(), Domain.class);
-        return domain;
+        try {
+            Domain domain = gson.fromJson(response.getContentAsString(), Domain.class);
+            return domain;
+        } catch (JsonSyntaxException e) {
+            logger.debug("Could not parse Json content: {}", e.getMessage(), e);
+            return null;
+        }
     }
 
     public List<RoomStat> getRoomStats() {
@@ -489,9 +495,12 @@ public class HeatHubHandler extends BaseBridgeHandler {
             }
         } catch (TimeoutException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect Heat Hub address");
+            logger.debug(e.getMessage(), e);
         } catch (ExecutionException e) {
+            logger.debug(e.getMessage(), e);
             e.getCause().printStackTrace();
         } catch (Exception e) {
+            logger.debug(e.getMessage(), e);
             e.printStackTrace();
             updateStatus(ThingStatus.OFFLINE);
         }
