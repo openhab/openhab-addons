@@ -69,6 +69,7 @@ public class WSIntegerValue extends WSResourceValue {
 
     @Override
     public String toString() {
-        return String.format("[resourceId=%d, value=%d, min=%d, max=%d]", super.resourceID, integer);
+        return String.format("[resourceId=%d, value=%d, min=%d, max=%d]", super.resourceID, integer, minimumValue,
+                maximumValue);
     }
 }

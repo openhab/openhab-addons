@@ -206,11 +206,28 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
             default:
                 if (command.equals(RefreshType.REFRESH)) {
-                    logger.debug("Channel {} doesn't support REFRESH command", channelUID);
+                    refreshChannel(channelUID);
                 } else {
                     updateResourceChannel(channelUID, command);
                 }
                 break;
+        }
+    }
+
+    private void refreshChannel(ChannelUID channelUID) {
+        logger.debug("REFRESH channel {}", channelUID);
+        try {
+            if (ChannelUtils.isChannelWriteOnly(getThing(), channelUID.getId())) {
+                logger.warn("Write only channel, skip refresh command to {}", channelUID);
+                return;
+            }
+            Integer resourceId = ChannelUtils.getResourceIdFromChannelParameters(getThing(), channelUID.getId());
+            WSResourceValue value = ihc.resourceQuery(resourceId);
+            resourceValueUpdateReceived(value);
+        } catch (IhcExecption e) {
+            logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.warn("Can't find resource id, reason {}", e.getMessage());
         }
     }
 
@@ -524,9 +541,28 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 logger.debug("Error occured when fetching RF device information, reason: {} ", e.getMessage());
             }
             ChannelUtils.addChannelsFromProjectFile(getThing(), projectFile, thingChannels);
+            printChannels(thingChannels);
             updateThing(editThing().withChannels(thingChannels).build());
         } else {
             logger.debug("Automatic channel creation disabled");
+        }
+    }
+
+    private void printChannels(List<Channel> thingChannels) {
+        if (logger.isDebugEnabled()) {
+
+            thingChannels.forEach(channel -> {
+                String resourceId;
+                try {
+                    Object id = channel.getConfiguration().get(PARAM_RESOURCE_ID);
+                    resourceId = id != null ? "0x" + Integer.toHexString(((BigDecimal) id).intValue()) : "";
+                } catch (IllegalArgumentException e) {
+                    resourceId = "";
+                }
+
+                logger.debug("Channel: {}",
+                        String.format("%-50s | %-10s | %s", channel.getUID(), resourceId, channel.getLabel()));
+            });
         }
     }
 

@@ -49,15 +49,25 @@ public class ChannelUtils {
                 for (int i = 0; i < nodes.getLength(); i++) {
                     Element node = (Element) nodes.item(i);
                     ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("dataline_input"),
-                            "Switch", "inputs#", CHANNEL_TYPE_SWITCH, thingChannels);
+                            "Switch", "input", CHANNEL_TYPE_SWITCH, thingChannels);
                     ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("dataline_output"),
-                            "Switch", "outputs#", CHANNEL_TYPE_SWITCH, thingChannels);
-                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_input"), "Switch",
-                            "inputs#", CHANNEL_TYPE_SWITCH, thingChannels);
-                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_output"),
-                            "Switch", "outputs#", CHANNEL_TYPE_SWITCH, thingChannels);
+                            "Switch", "output", CHANNEL_TYPE_SWITCH, thingChannels);
                     ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("resource_temperature"),
-                            "Number", "temperatures#", CHANNEL_TYPE_NUMBER, thingChannels);
+                            "Number", "temperature", CHANNEL_TYPE_NUMBER, thingChannels);
+                }
+            } catch (Exception e) {
+                LOGGER.warn("Error occured when adding channels, reason: {}", e.getMessage(), e);
+            }
+
+            try {
+                NodeList nodes = projectFile.getElementsByTagName("product_airlink");
+
+                for (int i = 0; i < nodes.getLength(); i++) {
+                    Element node = (Element) nodes.item(i);
+                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_input"), "Switch",
+                            "input", CHANNEL_TYPE_SWITCH, thingChannels);
+                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_output"),
+                            "Switch", "output", CHANNEL_TYPE_SWITCH, thingChannels);
                 }
             } catch (Exception e) {
                 LOGGER.warn("Error occured when adding channels, reason: {}", e.getMessage(), e);
