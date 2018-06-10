@@ -41,7 +41,7 @@ public class ProjectFileUtils {
             Document doc = dBuilder.parse(fXmlFile);
             return doc;
         } catch (IOException | ParserConfigurationException | SAXException e) {
-            LOGGER.warn("Error occured when read project file from file '{}', reason {}", path, e.getMessage());
+            LOGGER.debug("Error occured when read project file from file '{}', reason {}", path, e.getMessage());
         }
         return null;
     }
