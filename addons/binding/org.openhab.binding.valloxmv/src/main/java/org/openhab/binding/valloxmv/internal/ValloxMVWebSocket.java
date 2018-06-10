@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.valloxmv.handler;
+package org.openhab.binding.valloxmv.internal;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,12 +31,12 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.valloxmv.ValloxMVBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,14 +48,14 @@ import org.slf4j.LoggerFactory;
 public class ValloxMVWebSocket {
     private String ip;
     private ValloxMVHandler voHandler;
-    private Logger logger;
     private WebSocketClient client;
     private ValloxMVWebSocketListener socket;
+
+    private final Logger logger = LoggerFactory.getLogger(ValloxMVWebSocket.class);
 
     public ValloxMVWebSocket(ValloxMVHandler voHandler, String ip) {
         this.voHandler = voHandler;
         this.ip = ip;
-        logger = LoggerFactory.getLogger(ValloxMVWebSocket.class);
         client = new WebSocketClient();
     }
 
@@ -71,17 +71,19 @@ public class ValloxMVWebSocket {
             client.connect(socket, destUri, request);
             socket.awaitClose(10, TimeUnit.SECONDS);
         } catch (IOException e) {
-            logger.error("Error: {}", e.getMessage().toString());
+            logger.error("Error connecting vallox unit.", e);
         } catch (Exception e) {
-            logger.error("Error: {}", e.getMessage().toString());
+            logger.error("Error: {}", e.getMessage());
         }
     }
 
     public void close() {
         try {
             client.stop();
+        } catch (IOException e) {
+            logger.error("Error connecting vallox unit.", e);
         } catch (Exception e) {
-            logger.error("Error: {}", e.getMessage().toString());
+            logger.error("Error: {}", e.getMessage());
         }
         client.destroy();
         client = null;
@@ -96,7 +98,6 @@ public class ValloxMVWebSocket {
         private ChannelUID channelUID;
 
         public ValloxMVWebSocketListener(ChannelUID channelUID, String updateState) {
-            super();
             this.updateState = updateState;
             this.channelUID = channelUID;
         }
@@ -108,8 +109,10 @@ public class ValloxMVWebSocket {
                 logger.debug("Connect: {}", session.getRemoteAddress().getAddress());
                 ByteBuffer buf = generateRequest();
                 session.getRemote().sendBytes(buf);
+            } catch (IOException e) {
+                logger.error("Error connecting vallox unit.", e);
             } catch (Exception e) {
-                logger.error("Error: {}", e.getMessage().toString());
+                logger.error("Error: {}", e.getMessage());
             }
         }
 
@@ -211,7 +214,7 @@ public class ValloxMVWebSocket {
         @OnWebSocketError
         public void onError(Throwable cause) {
             voHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            logger.error("Error: {}", cause.getMessage().toString());
+            logger.debug("Error: {}", cause.getMessage().toString());
             ValloxMVWebSocket.this.close();
         }
 
@@ -266,11 +269,11 @@ public class ValloxMVWebSocket {
                 BigDecimal bdUptimeHoursCurrent = getNumber(bytes, 234);
 
                 BigDecimal bdState;
-                if (bytes[223] != 0) {
+                if (bdFireplaceTimer.compareTo(new BigDecimal(0)) == 1) {
                     bdState = new BigDecimal(ValloxMVBindingConstants.STATE_FIREPLACE);
-                } else if (bytes[221] != 0) {
+                } else if (bdBoostTimer.compareTo(new BigDecimal(0)) == 1) {
                     bdState = new BigDecimal(ValloxMVBindingConstants.STATE_BOOST);
-                } else if (bytes[215] == 1) {
+                } else if (bdStateOrig.compareTo(new BigDecimal(1)) == 0) {
                     bdState = new BigDecimal(ValloxMVBindingConstants.STATE_AWAY);
                 } else {
                     bdState = new BigDecimal(ValloxMVBindingConstants.STATE_ATHOME);
@@ -285,9 +288,9 @@ public class ValloxMVWebSocket {
 
                 updateChannel(ValloxMVBindingConstants.CHANNEL_ONOFF, onoff);
                 updateChannel(ValloxMVBindingConstants.CHANNEL_STATE, new DecimalType(bdState));
-                updateChannel(ValloxMVBindingConstants.CHANNEL_FAN_SPEED, new DecimalType(bdFanspeed));
-                updateChannel(ValloxMVBindingConstants.CHANNEL_FAN_SPEED_EXTRACT,
-                        new DecimalType(bdFanspeedExtract));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FAN_SPEED,
+                        new QuantityType<>(bdFanspeed, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FAN_SPEED_EXTRACT, new DecimalType(bdFanspeedExtract));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_FAN_SPEED_SUPPLY, new DecimalType(bdFanspeedSupply));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_TEMPERATURE_INSIDE,
                         new QuantityType<>(bdTempInside, SIUnits.CELSIUS));
@@ -299,28 +302,18 @@ public class ValloxMVWebSocket {
                         new QuantityType<>(bdTempIncomingBeforeHeating, SIUnits.CELSIUS));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_TEMPERATURE_INCOMING,
                         new QuantityType<>(bdTempIncoming, SIUnits.CELSIUS));
-                updateChannel(ValloxMVBindingConstants.CHANNEL_HUMIDITY, new DecimalType(bdHumidity));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_HUMIDITY,
+                        new QuantityType<>(bdHumidity, SmartHomeUnits.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_CELLSTATE, new DecimalType(bdCellstate));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_YEARS, new DecimalType(bdUptimeYears));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_HOURS, new DecimalType(bdUptimeHours));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_HOURS_CURRENT,
                         new DecimalType(bdUptimeHoursCurrent));
 
-                // logger.debug("Humidity: {}", bdHumidity);
-                // logger.debug(
-                // "FanSpeed: {}, Temp inside: {}, Temp outside: {}, Temp exhaust: {}, Temp incoming: {}, Humidity: {}",
-                // bdFanspeed, bdTempInside, bdTempOutside, bdTempExhaust, bdTempIncoming, bdHumidity);
-                logger.debug("Status: {} [State: {}, Boost timer: {}, Fireplace timer: {}]", bdState, bdStateOrig,
-                        bdBoostTimer, bdFireplaceTimer);
-                // logger.debug("Cellstate: {}, Uptime {}Y, {}h, Current Updtime {}h", bdCellstate, bdUptimeYears,
-                // bdUptimeHours, bdUptimeHoursCurrent);
-
-                // for (String key : ValloxMVBindingConstants.MAPADRESSRETURNBYTEARRAY.keySet()) {
-                // logger.debug("Key: {}, Value: {}", key,
-                // getNumber(bytes, ValloxMVBindingConstants.MAPADRESSRETURNBYTEARRAY.get(key)));
-                // }
+            } catch (IOException e) {
+                logger.error("Error connecting vallox unit.", e);
             } catch (Exception e) {
-                logger.error("Error: {}", e.getStackTrace().toString());
+                logger.error("Error: {}", e.getMessage());
             }
             logger.debug("Print final");
         }

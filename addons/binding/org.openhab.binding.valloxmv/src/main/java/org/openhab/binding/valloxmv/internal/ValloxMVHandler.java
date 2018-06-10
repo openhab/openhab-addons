@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.valloxmv.handler;
+package org.openhab.binding.valloxmv.internal;
 
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
@@ -20,8 +20,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.valloxmv.ValloxMVBindingConstants;
-import org.openhab.binding.valloxmv.internal.ValloxMVConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,8 +58,7 @@ public class ValloxMVHandler extends BaseThingHandler {
         if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_STATE)) {
             try {
                 int cmd = Integer.parseInt(command.toString());
-                if ((cmd == ValloxMVBindingConstants.STATE_FIREPLACE)
-                        || (cmd == ValloxMVBindingConstants.STATE_ATHOME)
+                if ((cmd == ValloxMVBindingConstants.STATE_FIREPLACE) || (cmd == ValloxMVBindingConstants.STATE_ATHOME)
                         || (cmd == ValloxMVBindingConstants.STATE_AWAY)
                         || (cmd == ValloxMVBindingConstants.STATE_BOOST)) {
                     logger.debug("Changing state to: {}", command.toString());
@@ -125,17 +122,18 @@ public class ValloxMVHandler extends BaseThingHandler {
     }
 
     @Override
-    public void updateState(ChannelUID uid, State dt) {
+    protected void updateState(ChannelUID uid, State dt) {
         super.updateState(uid, dt);
     }
 
     @Override
-    public void updateStatus(ThingStatus ts, ThingStatusDetail statusDetail) {
+    protected void updateStatus(ThingStatus ts, ThingStatusDetail statusDetail) {
         super.updateStatus(ts, statusDetail);
     }
 
     @Override
-    public void updateStatus(ThingStatus ts) {
+    protected void updateStatus(ThingStatus ts) {
         super.updateStatus(ts);
+
     }
 }
