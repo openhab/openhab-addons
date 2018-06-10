@@ -14,7 +14,7 @@
 			<parameter name="port" type="text" required="true">
 				<label>Serial Port</label>
 				<context>serial-port</context>
-				<description>Serial port that the Meteostick is plugged in to</description>
+				<description>Serial port that the Meteostick is plugged into</description>
 			</parameter>
 			<parameter name="mode" type="integer" required="true">
 				<label>Frequency Band</label>
@@ -67,13 +67,20 @@
 					<option value="8">Channel 8</option>
 				</options>
 			</parameter>
+
+			<parameter name="spoon" type="decimal" required="false">
+				<label>Spoon</label>
+				<description>Specifies the amount of rain needed to tip spoon</description>
+				<default>0.254</default>
+				<unitLabel>mm</unitLabel>
+			</parameter>
 		</config-description>
 	</thing-type>
 
 	<channel-type id="indoor-temperature">
 		<item-type>Number</item-type>
 		<label>Indoor Temperature</label>
-		<description>Current temperature in degrees celsius</description>
+		<description>Current temperature in degrees Celsius</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f °C">
 		</state>
@@ -82,7 +89,7 @@
 	<channel-type id="outdoor-temperature">
 		<item-type>Number</item-type>
 		<label>Outdoor Temperature</label>
-		<description>Current temperature in degrees celsius</description>
+		<description>Current temperature in degrees Celsius</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f °C">
 		</state>
@@ -91,7 +98,7 @@
 	<channel-type id="humidity">
 		<item-type>Number</item-type>
 		<label>Outdoor Humidity</label>
-		<description>Current humidity in %</description>
+		<description>Current humidity in percent</description>
 		<category>Humidity</category>
 		<state readOnly="true" pattern="%d %%">
 		</state>
@@ -100,7 +107,7 @@
 	<channel-type id="pressure">
 		<item-type>Number</item-type>
 		<label>Pressure</label>
-		<description>Current pressure in millibar</description>
+		<description>Current pressure in hectopascal</description>
 		<category>Pressure</category>
 		<state readOnly="true" pattern="%.1f hPa">
 		</state>
@@ -127,7 +134,7 @@
 	<channel-type id="rain-raw" advanced="true">
 		<item-type>Number</item-type>
 		<label>Rainfall (Raw)</label>
-		<description>A counter between 0 and 255 in 0.01mm steps</description>
+		<description>A counter between 0 and 255 in spoon-sized steps</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.1f">
 		</state>

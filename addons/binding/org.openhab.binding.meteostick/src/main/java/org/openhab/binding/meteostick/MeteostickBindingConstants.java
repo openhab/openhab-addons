@@ -42,4 +42,6 @@ public class MeteostickBindingConstants {
 
     // List of parameters
     public static final String PARAMETER_CHANNEL = "channel";
+    public static final String PARAMETER_SPOON = "spoon";
+    public static final String PARAMETER_SPOON_DEFAULT = "0.254";
 }

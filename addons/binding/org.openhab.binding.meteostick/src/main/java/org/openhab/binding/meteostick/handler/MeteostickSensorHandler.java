@@ -46,6 +46,7 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
     private final Logger logger = LoggerFactory.getLogger(MeteostickSensorHandler.class);
 
     private int channel = 0;
+    private BigDecimal spoon = new BigDecimal(PARAMETER_SPOON_DEFAULT);
     private MeteostickBridgeHandler bridgeHandler;
     private SlidingTimeWindow rainHourlyWindow = new SlidingTimeWindow(60000);
     private ScheduledFuture<?> rainHourlyJob;
@@ -62,10 +63,15 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         logger.debug("Initializing MeteoStick handler.");
 
         channel = ((BigDecimal) getConfig().get(PARAMETER_CHANNEL)).intValue();
-        logger.debug("Initializing MeteoStick handler - Channel {}.", channel);
+
+        spoon = (BigDecimal) getConfig().get(PARAMETER_SPOON);
+        if (spoon == null) {
+            spoon = new BigDecimal(PARAMETER_SPOON_DEFAULT);
+        }
+        logger.debug("Initializing MeteoStick handler - Channel {}, Spoon size {} mm.", channel, spoon);
 
         Runnable pollingRunnable = () -> {
-            BigDecimal rainfall = new BigDecimal((rainHourlyWindow.getTotal() * 0.254));
+            BigDecimal rainfall = BigDecimal.valueOf(rainHourlyWindow.getTotal()).multiply(spoon);
             rainfall.setScale(1, RoundingMode.DOWN);
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_LASTHOUR), new DecimalType(rainfall));
         };
@@ -160,9 +166,8 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
 
                 rainHourlyWindow.put(rain);
 
-                BigDecimal rainfall = new BigDecimal((rainHourlyWindow.getTotal() * 0.254));
+                BigDecimal rainfall = BigDecimal.valueOf(rainHourlyWindow.getTotal()).multiply(spoon);
                 rainfall.setScale(1, RoundingMode.DOWN);
-                // rainfall.round(new MathContext(1, RoundingMode.DOWN));
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_CURRENTHOUR), new DecimalType(rainfall));
                 break;
             case "W": // Wind

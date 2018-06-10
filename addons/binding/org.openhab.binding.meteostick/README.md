@@ -45,6 +45,7 @@ Set mode to one of the following depending on your device and region:
 | Option  | Description                               |
 |---------|-------------------------------------------|
 | channel | Sets the RF channel used for this sensor  |
+| spoon   | Size of rain spoon assembly for this sensor in mm.  Default value is 0.254 (0.01") for use with Davis part number 7345.280.  Set to 0.2 for use with Davis part number 7345.319 |
 
 ## Channels
 
