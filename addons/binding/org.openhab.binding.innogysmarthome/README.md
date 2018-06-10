@@ -181,11 +181,33 @@ Bridge innogysmarthome:bridge:mybride "innogy SmartHome Controller" [ refreshtok
 }
 ```
 
+## Items configuration
+
 You can then configure your items in your *.items config files as usual, for example:
 
 ```
-Contact myWindowContact       "Kitchen"     <window>  {channel="innogysmarthome:WDS:mybridge:myWindowContact:contact"}
-Switch myWindowContactBattery "Battery low" <battery> {channel="innogysmarthome:WDS:mybridge:myWindowContact:battery_low"}
+Contact myWindowContact        "Kitchen"                <window>      {channel="innogysmarthome:WDS:mybridge:myWindowContact:contact"}
+Switch myWindowContactBattery  "Battery low"            <battery>     {channel="innogysmarthome:WDS:mybridge:myWindowContact:battery_low"}
+Number myHeatingTemp           "Bath [%.1f °C]"         <temperature> {channel="innogysmarthome:RST:mybridge:myHeating:temperature"}
+Number myHeatingModeTempTarget "Settemp bath [%.1f °C]" <temperature> {channel="innogysmarthome:RST:mybridge:myHeating:set_temperature"}
+String myHeatingMode           "Mode bath [%s]"         <temperature> {channel="innogysmarthome:RST:mybridge:myHeating:operation_mode"}
+Number myHeatingHumidity       "Bath [%.1f %%]"         <humidity>    {channel="innogysmarthome:RST:mybridge:myHeating:humidity"}
+
+```
+
+## Sitemap configuration
+
+The site configuration works a usual. One special example 
+
+```
+sitemap default label="Home" {
+    Frame {
+        Text item=myHeatingTemp label="Temperature"
+        Text item=myHeatingHumidity label="Humidity"
+        Switch item=myHeatingMode label="Mode" mappings=[Manu="Manual", Auto="Auto"]
+        Setpoint item=myHeatingModeTempTarget label="Target temperature" minValue=16 maxValue=25 step=1
+    }
+}
 ```
 
 
