@@ -410,6 +410,8 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
      */
     private void restorePartitionsInAlarm(DSCAlarmCode dscAlarmCode) {
 
+        logger.debug("restorePartitionsInAlarm(): DSC Alarm Code: {}!", dscAlarmCode.toString());
+
         ChannelUID channelUID = null;
 
         if (dscAlarmCode == DSCAlarmCode.FireKeyRestored || dscAlarmCode == DSCAlarmCode.AuxiliaryKeyRestored
@@ -422,6 +424,8 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                     if (handler != null) {
                         channelUID = new ChannelUID(thg.getUID(), PARTITION_IN_ALARM);
                         handler.updateChannel(channelUID, 0, "");
+
+                        logger.debug("restorePartitionsInAlarm(): Partition In Alarm Restored: {}!", thg.getUID());
                     }
                 }
             }
