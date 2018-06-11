@@ -102,16 +102,11 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
         }
 
         if (dscAlarmBridgeHandler != null && dscAlarmBridgeHandler.isConnected()
-                && channelUID.getId() == ZONE_BYPASS_MODE) {
-            if (command == OnOffType.OFF) {
-                String data = String.valueOf(getPartitionNumber()) + "*1" + String.format("%02d", getZoneNumber())
-                        + "#";
-                dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
-            } else if (command == OnOffType.ON) {
-                String data = String.valueOf(getPartitionNumber()) + "*1" + String.format("%02d", getZoneNumber())
-                        + "#";
-                dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
-            }
+                && channelUID.getId().equals(ZONE_BYPASS_MODE)) {
+
+            String data = String.valueOf(getPartitionNumber()) + "*1" + String.format("%02d", getZoneNumber()) + "#";
+
+            dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
         }
     }
 
