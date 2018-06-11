@@ -2,7 +2,7 @@
 
 [ $# -lt 2 ] && { echo "Usage: $0 <BindingIdInCamelCase> <Author>"; exit 1; }
 
-bindingVersion=2.3.0-SNAPSHOT
+bindingVersion=2.4.0-SNAPSHOT
 archetypeVersion=0.10.0-SNAPSHOT
 
 camelcaseId=$1
