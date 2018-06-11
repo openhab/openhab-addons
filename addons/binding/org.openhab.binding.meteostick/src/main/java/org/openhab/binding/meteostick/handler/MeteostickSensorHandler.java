@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.meteostick.handler;
 
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MILLI;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.*;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
 import static org.openhab.binding.meteostick.MeteostickBindingConstants.*;
 
 import java.math.BigDecimal;
@@ -23,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -73,7 +77,8 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         Runnable pollingRunnable = () -> {
             BigDecimal rainfall = BigDecimal.valueOf(rainHourlyWindow.getTotal()).multiply(spoon);
             rainfall.setScale(1, RoundingMode.DOWN);
-            updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_LASTHOUR), new DecimalType(rainfall));
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_LASTHOUR),
+                    new QuantityType<>(rainfall, MILLI(METRE)));
         };
 
         // Scheduling a job on each hour to update the last hour rainfall
@@ -168,13 +173,14 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
 
                 BigDecimal rainfall = BigDecimal.valueOf(rainHourlyWindow.getTotal()).multiply(spoon);
                 rainfall.setScale(1, RoundingMode.DOWN);
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_CURRENTHOUR), new DecimalType(rainfall));
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_CURRENTHOUR),
+                        new QuantityType<>(rainfall, MILLI(METRE)));
                 break;
             case "W": // Wind
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_SPEED),
-                        new DecimalType(new BigDecimal(data[2])));
+                        new QuantityType<>(new BigDecimal(data[2]), METRE_PER_SECOND));
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_DIRECTION),
-                        new DecimalType(Integer.parseInt(data[3])));
+                        new QuantityType<>(Integer.parseInt(data[3]), DEGREE_ANGLE));
 
                 processSignalStrength(data[4]);
                 processBattery(data.length == 6);
@@ -182,7 +188,7 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
             case "T": // Temperature
                 BigDecimal temperature = new BigDecimal(data[2]);
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_OUTDOOR_TEMPERATURE),
-                        new DecimalType(temperature.setScale(1)));
+                        new QuantityType<>(temperature.setScale(1), CELSIUS));
 
                 BigDecimal humidity = new BigDecimal(data[3]);
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_HUMIDITY),
