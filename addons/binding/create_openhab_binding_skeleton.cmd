@@ -10,7 +10,7 @@ IF %ARGC% NEQ 2 (
 	exit /B 1
 )
 
-SET BindingVersion="2.3.0-SNAPSHOT"
+SET BindingVersion="2.4.0-SNAPSHOT"
 SET ArchetypeVersion="0.10.0-SNAPSHOT"
 
 SET BindingIdInCamelCase=%1
