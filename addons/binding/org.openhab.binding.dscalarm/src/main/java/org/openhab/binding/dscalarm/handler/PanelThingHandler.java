@@ -403,6 +403,35 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         }
     }
 
+    /**
+     * Restores all partitions that are in alarm after special panel alarm conditions have been restored.
+     *
+     * @param dscAlarmCode
+     */
+    private void restorePartitionsInAlarm(DSCAlarmCode dscAlarmCode) {
+
+        logger.debug("restorePartitionsInAlarm(): DSC Alarm Code: {}!", dscAlarmCode.toString());
+
+        ChannelUID channelUID = null;
+
+        if (dscAlarmCode == DSCAlarmCode.FireKeyRestored || dscAlarmCode == DSCAlarmCode.AuxiliaryKeyRestored
+                || dscAlarmCode == DSCAlarmCode.PanicKeyRestored
+                || dscAlarmCode == DSCAlarmCode.AuxiliaryInputAlarmRestored) {
+            List<Thing> things = dscAlarmBridgeHandler.getThing().getThings();
+            for (Thing thg : things) {
+                if (thg.getThingTypeUID().equals(PARTITION_THING_TYPE)) {
+                    DSCAlarmBaseThingHandler handler = (DSCAlarmBaseThingHandler) thg.getHandler();
+                    if (handler != null) {
+                        channelUID = new ChannelUID(thg.getUID(), PARTITION_IN_ALARM);
+                        handler.updateChannel(channelUID, 0, "");
+
+                        logger.debug("restorePartitionsInAlarm(): Partition In Alarm Restored: {}!", thg.getUID());
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public void dscAlarmEventReceived(EventObject event, Thing thing) {
         if (thing != null) {
@@ -453,24 +482,28 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                     case FireKeyRestored: /* 622 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_FIRE_KEY_ALARM);
                         updateChannel(channelUID, state, "");
+                        restorePartitionsInAlarm(dscAlarmCode);
                         break;
                     case AuxiliaryKeyAlarm: /* 623 */
                         state = 1;
                     case AuxiliaryKeyRestored: /* 624 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_AUX_KEY_ALARM);
                         updateChannel(channelUID, state, "");
+                        restorePartitionsInAlarm(dscAlarmCode);
                         break;
                     case PanicKeyAlarm: /* 625 */
                         state = 1;
                     case PanicKeyRestored: /* 626 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_PANIC_KEY_ALARM);
                         updateChannel(channelUID, state, "");
+                        restorePartitionsInAlarm(dscAlarmCode);
                         break;
                     case AuxiliaryInputAlarm: /* 631 */
                         state = 1;
                     case AuxiliaryInputAlarmRestored: /* 632 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_AUX_INPUT_ALARM);
                         updateChannel(channelUID, state, "");
+                        restorePartitionsInAlarm(dscAlarmCode);
                         break;
                     case TroubleLEDOn: /* 840 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_TROUBLE_LED);

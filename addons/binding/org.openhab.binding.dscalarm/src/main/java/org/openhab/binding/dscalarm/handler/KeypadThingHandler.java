@@ -148,8 +148,12 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
                     case KeypadLEDFlashState: /* 511 */
                         keypadLEDStateEventHandler(event);
                         break;
-                    case LCDUpdate:
-                    case LCDCursor:
+                    case LCDUpdate: /* 901 */
+                        channelUID = new ChannelUID(getThing().getUID(), KEYPAD_LCD_UPDATE);
+                        updateChannel(channelUID, 0, dscAlarmMessageData);
+                        break;
+                    case LCDCursor: /* 902 */
+                        channelUID = new ChannelUID(getThing().getUID(), KEYPAD_LCD_CURSOR);
                         updateChannel(channelUID, 0, dscAlarmMessageData);
                         break;
                     case LEDStatus: /* 903 */

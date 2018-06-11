@@ -631,8 +631,8 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                     break;
                 }
 
-                if (password == null || password.length() < 1 || password.length() > 6) {
-                    logger.error("sendCommand(): Password is invalid, must be between 1 and 6 chars!");
+                if (password == null) {
+                    logger.error("sendCommand(): No password!");
                     break;
                 }
                 data = password;
