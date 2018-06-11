@@ -4,29 +4,37 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<label>Qivicon Binding Thing</label>
-		<description>Sample thing for Qivicon Binding</description>
-
-		<channels>
-			<channel id="channel1" typeId="sample-channel" />
-		</channels>
+	<bridge-type id="bridge">
+		<label>Qivicon Bridge</label>
+		<description>This is the Qivicon device acting as a bridge</description>
 
 		<config-description>
-			<parameter name="config1" type="text" required="true">
-				<label>Sample parameter</label>
-				<description>This is a sample text configuration parameter.</description>
+			<parameter name="networkAddress" type="text" required="true">
+				<label>Network Address</label>
+				<description>IP or domain under which the Qivicon device is reachable.</description>
+			</parameter>
+			<parameter name="authKey" type="text" required="true">
+				<label>Authorization Key</label>
+				<description>Key to communicate with the Qivicon device.</description>
 			</parameter>
 		</config-description>
 
+	</bridge-type>
+
+	<thing-type id="connectedDevice">
+		<label>Connected Device</label>
+		<description>This is a device connected to the Qivicon bridge</description>
+
+		<channels>
+			<channel id="hmip_trv_3014f711a0000393c99ba7a4_01_SET_POINT_TEMPERATURE" typeId="number" />
+		</channels>
+
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>qiviconItem</item-type>
+	<channel-type id="number">
+		<item-type>Number</item-type>
 		<label>Qivicon Binding Channel</label>
-		<description>Sample channel for Qivicon Binding</description>
+		<description>Channel for Qivicon Binding</description>
 	</channel-type>
 
 </thing:thing-descriptions>

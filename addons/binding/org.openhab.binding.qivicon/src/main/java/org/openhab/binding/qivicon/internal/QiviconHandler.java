@@ -12,11 +12,10 @@ import static org.openhab.binding.qivicon.internal.QiviconBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.qivicon.internal.QiviconConfiguration;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,21 +27,27 @@ import org.slf4j.LoggerFactory;
  * @author Claudius Ellsel - Initial contribution
  */
 @NonNullByDefault
-public class QiviconHandler extends BaseThingHandler {
+public class QiviconHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(QiviconHandler.class);
+
+    // Reading the network address and authorization key from the properties map.
+    private String networkAddress = getThing().getConfiguration().get(PARAMETER_NETWORK_ADDRESS).toString();
+    private String authKey = getThing().getConfiguration().get(PARAMETER_AUTHORIZATION_KEY).toString();
 
     @Nullable
     private QiviconConfiguration config;
 
-    public QiviconHandler(Thing thing) {
-        super(thing);
+    public QiviconHandler(Bridge bridge) {
+        super(bridge);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(CHANNEL_1)) {
+        if (channelUID.getId().equals(CHANNEL_TEMPERATURE)) {
             // TODO: handle command
+            logger.debug("Handling Command {}", command.toString());
+            apiHelper(networkAddress, authKey, channelUID, command);
 
             // Note: if communication with thing fails for some reason,
             // indicate that by setting the status with detail information
@@ -51,9 +56,15 @@ public class QiviconHandler extends BaseThingHandler {
         }
     }
 
+    public void apiHelper(String networkAddress, String authKey, ChannelUID channelUID, Command command) {
+
+    }
+
     @Override
     public void initialize() {
         config = getConfigAs(QiviconConfiguration.class);
+
+        logger.debug("Initializing, network address: {}", networkAddress);
 
         // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
         // Long running initialization should be done asynchronously in background.
@@ -65,5 +76,13 @@ public class QiviconHandler extends BaseThingHandler {
         // as expected. E.g.
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
+    }
+
+    public String getNetworkAddress() {
+        return networkAddress;
+    }
+
+    public String getAuthKey() {
+        return authKey;
     }
 }
