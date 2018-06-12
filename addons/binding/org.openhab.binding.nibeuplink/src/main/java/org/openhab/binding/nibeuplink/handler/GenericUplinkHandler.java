@@ -177,10 +177,14 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
      */
     @Override
     public void updateChannelStatus(Map<String, String> values) {
-        logger.debug("Handling channel update.");
+        logger.debug("Handling channel update. ({} Channels)", values.size());
 
         for (String key : values.keySet()) {
             List<Channel> channels = getAllSpecificChannels(key);
+            if (channels.size() == 0) {
+                logger.info("Could not identify channel: {} for model {}", key,
+                        getThing().getThingTypeUID().getAsString());
+            }
             for (Channel channel : channels) {
                 String value = values.get(key);
                 logger.debug("Channel is to be updated: {}: {}", channel.getFQName(), value);
@@ -201,10 +205,6 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
                     updateState(channel.getFQName(), UnDefType.UNDEF);
                     deadChannels.add(channel);
                 }
-            }
-            if (channels.size() == 0) {
-                logger.debug("Could not identify channel: {} for model {}", key,
-                        getThing().getThingTypeUID().getAsString());
             }
         }
     }
