@@ -92,7 +92,7 @@ ihc:controller:elko [ ip="192.168.1.2", username="openhab", password="secret", t
         Type number-channel                : readonly_resource   "Read only resource"   [ resourceId=1212121, direction="ReadOnly" ]
         Type number-channel                : write1_resource     "Write 1 resource"     [ resourceId=1111111, direction="WriteOnly", commandToReact="1", pulseWidth=300 ]
         Type number-channel                : write2_resource     "Write 2 resource"     [ resourceId=2222222, direction="WriteOnly", commandToReact="2", pulseWidth=300 ]
-        Type number-channel                : write2_resource     "Write 3 resource"     [ resourceId=3333333, direction="WriteOnly", commandToReact="3", pulseWidth=300 ]
+        Type number-channel                : write3_resource     "Write 3 resource"     [ resourceId=3333333, direction="WriteOnly", commandToReact="3", pulseWidth=300 ]
 }
 ```
 
