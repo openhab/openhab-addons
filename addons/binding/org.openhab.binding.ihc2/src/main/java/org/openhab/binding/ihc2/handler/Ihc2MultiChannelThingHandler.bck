@@ -1,0 +1,328 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.openhab.binding.ihc2.handler;
+
+import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
+
+import java.util.EventObject;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.ihc2.internal.config.Ihc2MultiChannelThingConfig;
+import org.openhab.binding.ihc2.ws.Ihc2Client;
+import org.openhab.binding.ihc2.ws.Ihc2EventListener;
+import org.openhab.binding.ihc2.ws.Ihc2Execption;
+import org.openhab.binding.ihc2.ws.Ihc2TypeUtils;
+import org.openhab.binding.ihc2.ws.datatypes.WSControllerState;
+import org.openhab.binding.ihc2.ws.datatypes.WSResourceValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * The {@link Ihc2MultiChannelThingHandler} is responsible for handling commands, which are
+ * sent to one of the channels.
+ *
+ * @author Niels Peter Enemark - Initial contribution
+ */
+@NonNullByDefault
+public class Ihc2MultiChannelThingHandler extends BaseThingHandler implements Ihc2EventListener {
+
+    private final Logger logger = LoggerFactory.getLogger(Ihc2MultiChannelThingHandler.class);
+
+    private final Ihc2Client ihcClient = Ihc2Client.getInstance();
+
+    private boolean isPulsRunning = false;
+
+    private Map<ChannelUID, Ihc2ChannelInfo> channelInfoMap = new HashMap<ChannelUID, Ihc2ChannelInfo>();
+
+    @Nullable
+    private Ihc2MultiChannelThingConfig config = null;
+
+    public Ihc2MultiChannelThingHandler(Thing thing) {
+        super(thing);
+        logger.debug("Ihc2MultiChannelThingHandler() for: " + thing.getUID());
+        config = thing.getConfiguration().as(Ihc2MultiChannelThingConfig.class);
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("handleCommand() " + command.toFullString());
+
+        if (command == REFRESH) {
+
+            try {
+                Iterator iterator = channelInfoMap.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry entry = (Map.Entry) iterator.next();
+
+                    Ihc2ChannelInfo value = (Ihc2ChannelInfo) entry.getValue();
+
+                    Command cmd = Ihc2TypeUtils.IHC2OH(value.channelId, ihcClient.resourceQuery(value.getResourceId()));
+                    postCommand(value.channelId, cmd);
+                }
+            } catch (Ihc2Execption e) {
+                logger.error("handleCommand() ", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR, e.getMessage());
+            }
+            return;
+        }
+
+        Ihc2ChannelInfo channelInfo = channelInfoMap.get(channelUID);
+
+        try {
+            WSResourceValue rv;
+            rv = Ihc2TypeUtils.OH2IHC(null, command, channelInfo.getResourceId());
+            ihcClient.resourceUpdate(rv);
+            if (channelInfo.getPulseTime() > 0 && ((OnOffType) command) == OnOffType.ON) {
+                isPulsRunning = true;
+                Ihc2SwitchPulse pulseThread = new Ihc2SwitchPulse(channelInfo.getChannelId(),
+                        channelInfo.getResourceId(), channelInfo.getPulseTime());
+                pulseThread.start();
+            }
+
+        } catch (Ihc2Execption e) {
+            logger.error("handleCommand() ", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR, e.getMessage());
+        }
+
+    }
+
+    @Override
+    public void initialize() {
+        logger.debug("initialize()");
+
+        config = thing.getConfiguration().as(Ihc2MultiChannelThingConfig.class);
+        channelInfoMap.clear();
+
+        List<Channel> channelList = thing.getChannels();
+        for (Channel c : channelList) {
+            Map<String, String> p = c.getProperties();
+            int channelNumber = Integer.valueOf(p.get("channelNumber").toString());
+            String channelUID = c.getUID().getId();
+
+            String channelParts[] = channelUID.split("#|:");
+            String channelRaw = channelParts[channelParts.length - 1];
+
+            int resourceId = 0;
+            boolean readonly = false;
+            int pulseTime = 0;
+            switch (channelNumber) {
+                case 1:
+                    resourceId = config.getChannel1ResourceId();
+                    readonly = config.isChannel1Readonly();
+                    pulseTime = config.getChannel1PulseTime();
+                    break;
+                case 2:
+                    resourceId = config.getChannel2ResourceId();
+                    readonly = config.isChannel2Readonly();
+                    pulseTime = config.getChannel2PulseTime();
+                    break;
+                case 3:
+                    resourceId = config.getChannel3ResourceId();
+                    readonly = config.isChannel3Readonly();
+                    pulseTime = config.getChannel3PulseTime();
+                    break;
+                case 4:
+                    resourceId = config.getChannel4ResourceId();
+                    readonly = config.isChannel4Readonly();
+                    pulseTime = config.getChannel4PulseTime();
+                    break;
+                case 5:
+                    resourceId = config.getChannel5ResourceId();
+                    readonly = config.isChannel5Readonly();
+                    pulseTime = config.getChannel5PulseTime();
+                    break;
+                case 6:
+                    resourceId = config.getChannel6ResourceId();
+                    readonly = config.isChannel6Readonly();
+                    pulseTime = config.getChannel6PulseTime();
+                    break;
+            }
+
+            Ihc2ChannelInfo pair = new Ihc2ChannelInfo(resourceId, channelUID, channelRaw, readonly, pulseTime);
+            channelInfoMap.put(c.getUID(), pair);
+        }
+
+        try {
+            int numChannels = Integer.valueOf(config.getNumberOfChannels());
+            HashSet<Integer> resources = new HashSet<Integer>();
+            switch (numChannels) {
+                case 6:
+                    resources.add(config.getChannel6ResourceId());
+                case 5:
+                    resources.add(config.getChannel5ResourceId());
+                case 4:
+                    resources.add(config.getChannel4ResourceId());
+                case 3:
+                    resources.add(config.getChannel3ResourceId());
+                case 2:
+                    resources.add(config.getChannel2ResourceId());
+                case 1:
+                    resources.add(config.getChannel1ResourceId());
+                case 0:
+                    for (int r : resources) {
+                        ihcClient.addEventListener(this, r);
+                        ihcClient.addResourceId(r);
+                    }
+                    updateStatus(ThingStatus.ONLINE);
+                    return;
+                default:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
+                    break;
+            }
+        } catch (Ihc2Execption e) {
+            logger.error("enableRuntimeValueNotifications() FAILED", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
+        }
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("dispose()");
+        ihcClient.removeEventListener(this);
+        channelInfoMap.clear();
+
+    }
+
+    @Override
+    public void statusUpdateReceived(@Nullable EventObject event, @Nullable WSControllerState status) {
+        logger.debug("statusUpdateReceived()");
+    }
+
+    @Override
+    public void resourceValueUpdateReceived(@Nullable EventObject event, @Nullable WSResourceValue value) {
+        logger.debug("resourceValueUpdateReceived() " + value.getResourceID());
+        try {
+            if (isPulsRunning) {
+                return;
+            }
+
+            Iterator<Map.Entry<ChannelUID, Ihc2ChannelInfo>> iterator = channelInfoMap.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<ChannelUID, Ihc2ChannelInfo> entry = iterator.next();
+                Ihc2ChannelInfo info = entry.getValue();
+                if (info.getResourceId() == value.getResourceID()) {
+                    Command cmd = Ihc2TypeUtils.IHC2OH(info.channelRaw, value);
+                    postCommand(info.getChannelId(), cmd);
+                }
+            }
+        } catch (Ihc2Execption e) {
+            e.printStackTrace();
+            logger.error("resourceValueUpdateReceived() FAILED", e);
+        }
+    }
+
+    @Override
+    public void errorOccured(@Nullable EventObject event, @Nullable Ihc2Execption e) {
+        logger.debug("errorOccured()");
+    }
+
+    private class Ihc2SwitchPulse extends Thread {
+
+        private int resourceId;
+        private int pulseTime;
+        private String channelID;
+
+        protected Ihc2SwitchPulse(String channelID, int resourceId, int pulseTime) {
+            this.channelID = channelID;
+            this.resourceId = resourceId;
+            this.pulseTime = pulseTime;
+        }
+
+        @Override
+        public void run() {
+
+            logger.debug("Ihc2SwitchPulse");
+            try {
+                sleep(pulseTime);
+                WSResourceValue rv;
+                rv = Ihc2TypeUtils.OH2IHC(null, OnOffType.OFF, resourceId);
+                ihcClient.resourceUpdate(rv);
+                postCommand(channelID, OnOffType.OFF);
+                isPulsRunning = false;
+
+            } catch (InterruptedException | Ihc2Execption e) {
+
+            }
+        }
+    }
+
+    private class Ihc2ChannelInfo {
+        private int resourceId;
+        private String channelId = "";
+        private String channelRaw = "";
+        private boolean readonly;
+        private int pulseTime;
+
+        public Ihc2ChannelInfo(int resourceId, String channelId, String channelRaw, boolean readonly, int pulseTime) {
+            this.resourceId = resourceId;
+            this.channelId = channelId;
+            this.channelRaw = channelRaw;
+            this.readonly = readonly;
+            this.pulseTime = pulseTime;
+        }
+
+        public int getResourceId() {
+            return resourceId;
+        }
+
+        public void setResourceId(int resourceId) {
+            this.resourceId = resourceId;
+        }
+
+        public String getChannelId() {
+            return channelId;
+        }
+
+        public void setChannelId(String channelId) {
+            this.channelId = channelId;
+        }
+
+        public String getChannelRaw() {
+            return channelRaw;
+        }
+
+        public void setChannelRaw(String channelRaw) {
+            this.channelRaw = channelRaw;
+        }
+
+        public boolean isReadonly() {
+            return readonly;
+        }
+
+        public void setReadonly(boolean readonly) {
+            this.readonly = readonly;
+        }
+
+        public int getPulseTime() {
+            return pulseTime;
+        }
+
+        public void setPulseTime(int pulseTime) {
+            this.pulseTime = pulseTime;
+        }
+
+    }
+}
+
+
+

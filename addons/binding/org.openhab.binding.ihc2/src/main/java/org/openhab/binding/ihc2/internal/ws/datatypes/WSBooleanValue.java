@@ -1,0 +1,60 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.openhab.binding.ihc2.internal.ws.datatypes;
+
+/**
+ * <p>
+ * Java class for WSBooleanValue complex type.
+ *
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
+ *
+ * <pre>
+ * &lt;complexType name="WSBooleanValue">
+ *   &lt;complexContent>
+ *     &lt;extension base="{utcs.values}WSResourceValue">
+ *       &lt;sequence>
+ *         &lt;element name="value" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
+ *       &lt;/sequence>
+ *     &lt;/extension>
+ *   &lt;/complexContent>
+ * &lt;/complexType>
+ * </pre>
+ *
+ *
+ */
+
+/**
+ * IHC WSBooleanValue data value.
+ *
+ * @author Pauli Anttila
+ * @since 1.5.0
+ */
+public class WSBooleanValue extends WSResourceValue {
+
+    protected boolean value;
+
+    /**
+     * Gets the value of the value property.
+     *
+     */
+    public boolean isValue() {
+        return value;
+    }
+
+    /**
+     * Sets the value of the value property.
+     *
+     */
+    public void setValue(boolean value) {
+        this.value = value;
+    }
+
+}

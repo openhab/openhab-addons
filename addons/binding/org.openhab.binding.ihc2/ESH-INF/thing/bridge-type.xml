@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ihc2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="controller">
+		<label>IHC Controller</label>
+		<description>IHC Visual2 Controller</description>
+		<category>IHC</category>
+
+		<properties>
+			<property name="Lastmodified">UNINITIALISED</property>
+			<property name="ProjectMajorRevision">UNINITIALISED</property>
+			<property name="ProjectMinorRevision">UNINITIALISED</property>
+			<property name="VisualMajorVersion">UNINITIALISED</property>
+			<property name="VisualMinorVersion">UNINITIALISED</property>
+			<property name="CustomerName">UNINITIALISED</property>
+			<property name="InstallerName">UNINITIALISED</property>
+		</properties>
+
+		<representation-property>representation-property</representation-property>
+
+
+		<config-description>
+			<parameter-group name="host">
+				<context>communication</context>
+				<label>IHC Connection</label>
+				<description></description>
+			</parameter-group>
+			<parameter-group name="run">
+				<context>run</context>
+				<label>Run Parameters</label>
+				<description></description>
+			</parameter-group>
+			<parameter-group name="discovery">
+				<context>run</context>
+				<label>Discovery Parameters</label>
+				<description></description>
+			</parameter-group>
+
+			<parameter name="ipAddress" type="text" required="true" pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
+				groupName="host">
+				<context>network-address</context>
+				<label>IP or Host Name</label>
+				<description>The IP or host name of the IHC Controller</description>
+			</parameter>
+			<parameter name="user" type="text" required="true" groupName="host">
+				<label>User Name</label>
+				<description>The user name</description>
+			</parameter>
+			<parameter name="password" type="text" required="true" groupName="host">
+				<context>password</context>
+				<label>Password</label>
+				<description>The user password</description>
+			</parameter>
+			<parameter name="timeout" type="integer" required="true" groupName="host">
+				<context>timeout</context>
+				<label>Timeout</label>
+				<description>The time to wait for a response from the controller [ms]</description>
+				<default>15000</default>
+			</parameter>
+			<parameter name="projectFile" type="text" required="true" groupName="run">
+				<label>IHC Project File</label>
+				<description>File Name and Location of the IHC Project File</description>
+			</parameter>
+			<parameter name="resourceFile" type="text" groupName="run">
+				<label>Resource File</label>
+				<description>File Name and Location of debug file with mappable Resource Ids</description>
+			</parameter>
+
+			<parameter name="discoveryLevel" type="text" required="true" groupName="discovery">
+				<label>Discovery Level</label>
+				<description>Level of resources to include from the IHC project file</description>
+				<options>
+					<option value="NOTHING">Do nothing</option>
+					<option value="LINKED_RESOURCES">Only include Linked Resources</option>
+					<option value="ALL">Include ALL Resources</option>
+					<option value="CLEAN">Clear the Inbox</option>
+				</options>
+				<default>NOTHING</default>
+			</parameter>
+
+
+
+
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

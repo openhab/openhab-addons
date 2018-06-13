@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ihc2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="percent">
+		<item-type>Dimmer</item-type>
+		<label>Light Level</label>
+		<description>Increase/decrease the light level</description>
+		<category>Light</category>
+		<state min="0" max="100" pattern="%d %%" />
+	</channel-type>
+
+	<channel-type id="switchState">
+		<item-type>Switch</item-type>
+		<label>Switch State</label>
+		<description>On/Off status of the switch</description>
+		<category>Switch</category>
+		<event></event>
+	</channel-type>
+
+	<channel-type id="contactState">
+		<item-type>Contact</item-type>
+		<label>Contact State</label>
+		<category>Contact</category>
+		<state pattern="%s" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="dateTime">
+		<item-type>DateTime</item-type>
+		<label>Date Time</label>
+		<category>DateTime</category>
+		<state pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+	</channel-type>
+
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Integer</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>String Value</label>
+		<state pattern="%s" />
+	</channel-type>
+
+
+</thing:thing-descriptions>
+
+

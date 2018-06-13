@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ihc2"
+													xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+													xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+													xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		 
+
+
+	<thing-type id="multichannel">
+				<supported-bridge-type-refs>
+						<bridge-type-ref id="controller"/>
+				</supported-bridge-type-refs>
+
+				<label>Multi Channel</label>
+				<description>User defined thing with up to six channels</description>
+
+
+				<config-description>
+ <!-- Groups -->							
+						 <parameter-group name="common">
+								<label>Common</label>							 
+						 </parameter-group>
+						 <parameter-group name="channel1">
+								<label>Channel 1</label>							 
+						 </parameter-group>
+						 <parameter-group name="channel2">
+								<label>Channel 2</label>							 
+						 </parameter-group>
+						 <parameter-group name="channel3">
+								<label>Channel 3</label>							 
+						 </parameter-group>
+						 <parameter-group name="channel4">
+								<label>Channel 4</label>							 
+						 </parameter-group>
+						 <parameter-group name="channel5">
+								<label>Channel 5</label>							 
+						 </parameter-group>
+						 <parameter-group name="channel6">
+								<label>Channel 6</label>							 
+						 </parameter-group>
+				
+				
+ <!-- Common -->	
+ <!-- 
+						<parameter name="name" type="text" required="true" groupName="common">
+								<label>Thing Name</label>
+								<description>Name of this multichannel Thing</description>
+						</parameter>	 
+ -->								
+						<parameter name="numberOfChannels" type="integer" required="true" groupName="common">
+								<label>Number of Channels</label>
+								<description>How many channels are used</description>
+								<options>								
+										<option value="1">1</option>
+										<option value="2">2</option>
+										<option value="3">3</option>
+										<option value="4">4</option>
+										<option value="5">5</option>
+										<option value="6">6</option>							 
+								</options>
+								<default>1</default>
+						</parameter>
+						
+ <!-- Channel 1 -->			
+						<parameter name="channel1ResourceId" type="text" pattern="^(0x[0-9A-Fa-f]{1,6}|[0-9]{1,8})$" required="true" groupName="channel1">
+								<label>Channel 1 Resource ID</label>
+								<description>Resource ID of Channel 1</description>							 
+						</parameter>
+						<parameter name="channel1ResourceType" type="text" required="true" groupName="channel1">
+								<label>Channel 1 Type</label>
+								<description>The Resource Type of Channel 1</description>
+								<options>							
+									<option value="switchState">Switch</option>
+									<option value="contactState">Contact</option>
+					<option value="percent">Percent</option>
+					<option value="dateTime">Date Time</option>
+					<option value="number">Number</option>
+					<option value="string">String</option>							 
+								</options>
+								<default>switchState</default>
+						</parameter>					
+						<parameter name="channel1Readonly" type="boolean" required="true" groupName="channel1">
+								<label>Channel 1 Read Only [Switch]</label>
+								<description>Is Channel 1 read only</description>
+								<default>false</default>
+						</parameter> 
+						<parameter name="channel1PulseTime" type="integer" required="true" groupName="channel1">
+								<label>Channel 1 Pulse Time [Switch]</label>
+								<description>Auto turn off after[ms]. (0 disables this function)</description>
+								<default>0</default>
+						</parameter>	 
+						
+ <!-- Channel 2 -->							 
+						<parameter name="channel2ResourceId" type="text" pattern="^(0x[0-9A-Fa-f]{1,6}|[0-9]{1,8})$" required="true" groupName="channel2">
+								<label>Channel 2 Resource ID</label>
+								<description>Resource ID of Channel 2</description>
+								<default>0</default>
+						</parameter>
+						<parameter name="channel2ResourceType" type="text" required="true" groupName="channel2">
+								<label>Channel 2 Type</label>
+								<description>The Resource Type of Channel 2</description>
+								<options>
+										<option value="none">None</option>
+										<option value="switchState">Switch</option>
+										<option value="contactState">Contact</option>
+										<option value="percent">Percent</option>
+										<option value="dateTime">Date Time</option>
+										<option value="number">Number</option>
+										<option value="string">String</option>							 
+								</options>
+								<default>none</default>
+						</parameter>					
+						<parameter name="channel2Readonly" type="boolean" required="true" groupName="channel2">
+								<label>Channel 2 Read Only [Switch]</label>
+								<description>Is Channel 2 read only</description>
+								<default>false</default>
+						</parameter> 
+						<parameter name="channel2PulseTime" type="integer" required="true" groupName="channel2">
+								<label>Channel 2 Pulse Time [Switch]</label>
+								<description>Auto turn off after[ms]. (0 disables this function)</description>
+								<default>0</default>
+						</parameter>
+						
+<!-- Channel 3 -->							 
+						<parameter name="channel3ResourceId" type="text" pattern="^(0x[0-9A-Fa-f]{1,6}|[0-9]{1,8})$" required="true" groupName="channel3">
+								<label>Channel 3 Resource ID</label>
+								<description>Resource ID of Channel 3</description>
+								<default>0</default>
+						</parameter>
+						<parameter name="channel3ResourceType" type="text" required="true" groupName="channel3">
+								<label>Channel 3 Type</label>
+								<description>The Resource Type of Channel 3</description>
+								<options>
+										<option value="none">None</option>
+										<option value="switchState">Switch</option>
+										<option value="contactState">Contact</option>
+										<option value="percent">Percent</option>
+										<option value="dateTime">Date Time</option>
+										<option value="number">Number</option>
+										<option value="string">String</option>	
+								</options>
+								<default>none</default>
+						</parameter>					
+						<parameter name="channel3Readonly" type="boolean" required="true" groupName="channel3">
+								<label>Channel 3 Read Only [Switch]</label>
+								<description>Is Channel 3 read only</description>
+								<default>false</default>
+						</parameter>	 
+						<parameter name="channel3PulseTime" type="integer" required="true" groupName="channel3">
+								<label>Channel 3 Pulse Time [Switch]</label>
+								<description>Auto turn off after[ms]. (0 disables this function)</description>
+								<default>0</default>
+						</parameter>						 
+												 
+<!-- Channel 4 -->							 
+						<parameter name="channel4ResourceId" type="text" pattern="^(0x[0-9A-Fa-f]{1,6}|[0-9]{1,8})$" required="true" groupName="channel4">
+								<label>Channel 4 Resource ID</label>
+								<description>Resource ID of Channel 4</description>
+								<default>0</default>
+						</parameter>
+						<parameter name="channel4ResourceType" type="text" required="true" groupName="channel4">
+								<label>Channel 4 Type</label>
+								<description>The Resource Type of Channel 4</description>
+								<options>
+										<option value="none">None</option>
+										<option value="switchState">Switch</option>										
+										<option value="contactState">Contact</option>
+										<option value="percent">Percent</option>
+										<option value="dateTime">Date Time</option>
+										<option value="number">Number</option>
+										<option value="string">String</option>	
+								</options>
+								<default>none</default>
+						</parameter>					
+						<parameter name="channel4Readonly" type="boolean" required="true" groupName="channel4">
+								<label>Channel 4 Read Only [Switch]</label>
+								<description>Is Channel 4 read only</description>
+								<default>false</default>
+						</parameter>	 
+						<parameter name="channel4PulseTime" type="integer" required="true" groupName="channel4">
+								<label>Channel 4 Pulse Time [Switch]</label>
+								<description>Auto turn off after[ms]. (0 disables this function)</description>
+								<default>0</default>
+						</parameter>						
+						
+<!-- Channel 5 -->							 
+						<parameter name="channel5ResourceId" type="text" pattern="^(0x[0-9A-Fa-f]{1,6}|[0-9]{1,8})$" required="true" groupName="channel5">
+								<label>Channel 5 Resource ID</label>
+								<description>Resource ID of Channel 5</description>
+								<default>0</default>
+						</parameter>
+						<parameter name="channel5ResourceType" type="text" required="true" groupName="channel5">
+								<label>Channel 5 Type</label>
+								<description>The Resource Type of Channel 5</description>
+								<options>
+										<option value="none">None</option>
+										<option value="switchState">Switch</option>										
+										<option value="contactState">Contact</option>
+										<option value="percent">Percent</option>
+										<option value="dateTime">Date Time</option>
+										<option value="number">Number</option>
+										<option value="string">String</option>	 
+								</options>
+								<default>none</default>
+						</parameter>					
+						<parameter name="channel5Readonly" type="boolean" required="true" groupName="channel5">
+								<label>Channel 5 Read Only [Switch]</label>
+								<description>Is Channel 5 read only</description>
+								<default>false</default>
+						</parameter>	 
+						<parameter name="channel5PulseTime" type="integer" required="true" groupName="channel5">
+								<label>Channel 5 Pulse Time [Switch]</label>
+								<description>Auto turn off after[ms]. (0 disables this function)</description>
+								<default>0</default>
+						</parameter>						
+						
+<!-- Channel 6 -->							 
+						<parameter name="channel6ResourceId" type="text" pattern="^(0x[0-9A-Fa-f]{1,6}|[0-9]{1,8})$" required="true" groupName="channel6">
+								<label>Channel 6 Resource ID</label>
+								<description>Resource ID of Channel 6</description>
+								<default>0</default>
+						</parameter>
+						<parameter name="channel6ResourceType" type="text" required="true" groupName="channel6">
+								<label>Channel 6 Type</label>
+								<description>The Resource Type of Channel 6</description>
+								<options>
+										<option value="none">None</option>
+										<option value="switchState">Switch</option>
+										<option value="contactState">Contact</option>
+										<option value="percent">Percent</option>
+										<option value="dateTime">Date Time</option>
+										<option value="number">Number</option>
+										<option value="string">String</option>	
+								</options>
+								<default>none</default>
+						</parameter>					
+						<parameter name="channel6Readonly" type="boolean" required="true" groupName="channel6">
+								<label>Channel 6 Read Only [Switch]</label>
+								<description>Is Channel 6 read only</description>
+								<default>false</default>
+						</parameter>	 
+						<parameter name="channel6PulseTime" type="integer" required="true" groupName="channel6">
+								<label>Channel 6 Pulse Time [Switch]</label>
+								<description>Auto turn off after[ms]. (0 disables this function)</description>
+								<default>0</default>
+						</parameter>
+												
+						
+				</config-description>
+		</thing-type>
+		
+</thing:thing-descriptions>
+
+

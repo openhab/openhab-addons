@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="ihc2"
+				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+				xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+	<name>LK IHC OH2 Binding</name>
+	<description>Binding for LK IHC Visual 2 Controller.</description>
+	<author>Niels Peter Enemark based on the IHC OH1 work of: Pauli Anttila</author>
+	<service-id>IHC Controller</service-id>
+</binding:binding>
+
+
