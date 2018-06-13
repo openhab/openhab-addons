@@ -72,7 +72,7 @@ public enum CustomChannels implements Channel {
 
     public static CustomChannels fromId(String id) {
         for (CustomChannels channel : CustomChannels.values()) {
-            if (channel.id.equals(id)) {
+            if (channel.id != null && channel.id.equals(id)) {
                 return channel;
             }
         }
