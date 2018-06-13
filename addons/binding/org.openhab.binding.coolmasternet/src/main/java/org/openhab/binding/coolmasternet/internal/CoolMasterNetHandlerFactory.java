@@ -10,6 +10,8 @@ package org.openhab.binding.coolmasternet.internal;
 
 import static org.openhab.binding.coolmasternet.CoolMasterNetBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -25,6 +27,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Angus Gratton - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.coolmasternet")
 public class CoolMasterNetHandlerFactory extends BaseThingHandlerFactory {
 
@@ -34,7 +37,7 @@ public class CoolMasterNetHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_CONTROLLER)) {

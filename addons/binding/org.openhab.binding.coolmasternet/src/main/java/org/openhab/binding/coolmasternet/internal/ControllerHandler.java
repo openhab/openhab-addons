@@ -22,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -42,14 +44,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Angus Gratton - Initial contribution
  */
+@NonNullByDefault
 public class ControllerHandler extends BaseBridgeHandler {
     private static final int SOCKET_TIMEOUT = 2000;
     private final Logger logger = LoggerFactory.getLogger(ControllerHandler.class);
-    private String host;
+    private @Nullable String host;
     private int port;
-    private Socket socket;
+    private @Nullable Socket socket;
     private final Object lock = new Object();
-    private ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> refreshJob;
 
     public ControllerHandler(Bridge thing) {
         super(thing);
@@ -69,13 +72,15 @@ public class ControllerHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
                 for (Thing t : getThing().getThings()) {
                     HVACHandler h = (HVACHandler) t.getHandler();
-                    h.refresh();
+                    if (h != null) {
+                        h.refresh();
+                    }
                 }
             } catch (CoolMasterClientError e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         };
-        scheduler.scheduleWithFixedDelay(refreshHVACUnits, 0, config.refresh, TimeUnit.SECONDS);
+        refreshJob = scheduler.scheduleWithFixedDelay(refreshHVACUnits, 0, config.refresh, TimeUnit.SECONDS);
     }
 
     @Override
@@ -104,7 +109,7 @@ public class ControllerHandler extends BaseBridgeHandler {
      * If the "OK" prompt is not received then a CoolMasterClientError is thrown that contains whatever
      * error message was printed by the CoolMasterNet.
      */
-    public String sendCommand(String command) throws CoolMasterClientError {
+    public @Nullable String sendCommand(String command) throws CoolMasterClientError {
         synchronized (this.lock) {
             checkConnection();
 
