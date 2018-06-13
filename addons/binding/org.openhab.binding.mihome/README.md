@@ -124,6 +124,15 @@ DateTime MotionSensor_LastMotion "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> {
 Number MotionSensor_Battery <battery> { channel="mihome:sensor_motion:<ID>:batteryLevel" }
 Switch MotionSensor_BatteryLow <energy> { channel="mihome:sensor_motion:<ID>:lowBattery" }
 
+// Xiaomi Aqara Motion Sensor
+Switch MotionSensor_MotionStatus <motion>  { channel="mihome:sensor_motion_aq2:<ID>:motion" }
+// minimum 5 seconds - remember that the sensor only triggers every minute to save energy
+Number MotionSensor_MotionTimer <clock> { channel="mihome:sensor_motion_aq2:<ID>:motionOffTimer" }
+DateTime MotionSensor_LastMotion "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_motion_aq2:<ID>:lastMotion" }
+Number MotionSensor_Battery <battery> { channel="mihome:sensor_motion_aq2:<ID>:batteryLevel" }
+Switch MotionSensor_BatteryLow <energy> { channel="mihome:sensor_motion_aq2:<ID>:lowBattery" }
+Number MotionSensor_Lux "LUX [%.1f]" <sun> { channel="mihome:sensor_motion_aq2:<ID>:illumination" }
+
 // Xiaomi Plug
 Switch Plug_Switch <switch> { channel="mihome:sensor_plug:<ID>:power" }
 Switch Plug_Active <switch> { channel="mihome:sensor_plug:<ID>:inUse" }
