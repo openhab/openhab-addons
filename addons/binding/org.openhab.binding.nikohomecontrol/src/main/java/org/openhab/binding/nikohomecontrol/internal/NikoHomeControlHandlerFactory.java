@@ -22,8 +22,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlActionHandler;
 import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlBridgeHandler;
-import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlHandler;
+import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlThermostatHandler;
 import org.openhab.binding.nikohomecontrol.internal.discovery.NikoHomeControlDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
@@ -51,8 +52,10 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
             NikoHomeControlBridgeHandler handler = new NikoHomeControlBridgeHandler((Bridge) thing);
             registerNikoHomeControlDiscoveryService(handler);
             return handler;
-        } else if (SUPPORTED_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
-            return new NikoHomeControlHandler(thing);
+        } else if (THING_TYPE_THERMOSTAT.equals(thing.getThingTypeUID())) {
+            return new NikoHomeControlThermostatHandler(thing);
+        } else if (ACTION_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
+            return new NikoHomeControlActionHandler(thing);
         }
 
         return null;

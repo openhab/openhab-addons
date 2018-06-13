@@ -107,7 +107,7 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
             if (nhcDiscovery != null) {
                 nhcDiscovery.discoverDevices();
             } else {
-                logger.debug("Niko Home Control: cannot discover actions, discovery service not started");
+                logger.debug("Niko Home Control: cannot discover devices, discovery service not started");
             }
         });
     }
