@@ -225,7 +225,7 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         }
 
         public int getTotal() {
-            int last = -1;
+            int least = -1;
             int total = 0;
 
             long old = System.currentTimeMillis() - period;
@@ -238,15 +238,15 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
                 }
 
                 int value = storage.get(time);
-                if (last == -1) {
-                    last = value;
+                if (least == -1) {
+                    least = value;
                     continue;
                 }
 
-                if (value < last) {
-                    total += 256 - last + value;
+                if (value < least) {
+                    total = 256 - least + value;
                 } else {
-                    total += value - last;
+                    total = value - least;
                 }
             }
 
