@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -92,7 +91,7 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
         if (!(command instanceof RefreshType)) {
             logger.debug("command for {}: {}", channelUID.getIdWithoutGroup(), command.toString());
             Channel channel = getSpecificChannel(channelUID.getIdWithoutGroup());
-            if (!channel.isReadOnly()) {
+            if (channel != null && !channel.isReadOnly()) {
                 webInterface.executeCommand(new UpdateSetting(this, channel, command.toString()));
             }
         }
@@ -180,37 +179,32 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
         logger.debug("Handling channel update. ({} Channels)", values.size());
 
         try {
-            for (String key : values.keySet()) {
-                List<Channel> channels = getAllSpecificChannels(key);
-                if (channels.size() == 0) {
-                    logger.info("Could not identify channel: {} for model {}", key,
-                            getThing().getThingTypeUID().getAsString());
-                }
-                for (Channel channel : channels) {
-                    String value = values.get(key);
-                    logger.debug("Channel is to be updated: {}: {}", channel.getFQName(), value);
-                    if (value != null && !value.equals(NO_VALUE)) {
-                        if (channel.getValueType().equals(ValueType.STRING)) {
-                            updateState(channel.getFQName(), new StringType(value));
-                        } else {
-                            try {
-                                updateState(channel.getFQName(), convertToDecimal(value, channel.getValueType()));
-                            } catch (NumberFormatException ex) {
-                                logger.warn("Could not update channel {} - invalid number: '{}'", channel.getFQName(),
-                                        value);
-                                updateState(channel.getFQName(), UnDefType.UNDEF);
-                            }
-                        }
-                    } else {
-                        logger.debug("Value is null or not provided by heatpump (channel: {})", channel.getFQName());
+        for (String key : values.keySet()) {
+            List<Channel> channels = getAllSpecificChannels(key);
+            if (channels.size() == 0) {
+                logger.info("Could not identify channel: {} for model {}", key,
+                        getThing().getThingTypeUID().getAsString());
+            }
+            for (Channel channel : channels) {
+                String value = values.get(key);
+                logger.debug("Channel is to be updated: {}: {}", channel.getFQName(), value);
+                if (value != null && !value.equals(NO_VALUE)) {
+                    try {
+                        updateState(channel.getFQName(), convertToDecimal(value, channel.getValueType()));
+                    } catch (NumberFormatException ex) {
+                        logger.warn("Could not update channel {} - invalid number: '{}'", channel.getFQName(), value);
                         updateState(channel.getFQName(), UnDefType.UNDEF);
-                        deadChannels.add(channel);
                     }
+                } else {
+                    logger.debug("Value is null or not provided by heatpump (channel: {})", channel.getFQName());
+                    updateState(channel.getFQName(), UnDefType.UNDEF);
+                    deadChannels.add(channel);
                 }
             }
-        } catch (Exception ex) {
-            logger.warn("Updating channels failed due to '{}'\n", ex.getMessage(), ex);
         }
+        } catch (RuntimeException ex) {
+            logger.warn("Updating channels failed due to '{}'\n", ex.getMessage(), ex);
+    }
     }
 
     /**

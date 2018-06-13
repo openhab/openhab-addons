@@ -4,25 +4,17 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="vvm310-type-10012">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Compressor blocked</label>
 		<description>states if the compressor is blocked</description>
-		<state pattern="%s" readOnly="true">
-			<options>
-				<option value="0">Off</option>
-				<option value="1">On</option>
-			</options>
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-10033">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Int. el.add. blocked</label>
 		<description>states if internal electric additional heater is blocked</description>
-		<state pattern="%s" readOnly="true">
-			<options>
-				<option value="0">Off</option>
-				<option value="1">On</option>
-			</options>
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-40004">
@@ -166,14 +158,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-40942">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>External ERS accessory block status</label>
 		<description>Indicates if the ERS accessory is externaly blocked.</description>
-		<state pattern="%s" readOnly="true">
-			<options>
-				<option value="0">No</option>
-				<option value="1">Yes</option>
-			</options>
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-43005">
@@ -205,14 +193,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-43161">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>External adjustment activated via input S1</label>
 		<description></description>
-		<state pattern="%s" readOnly="true">
-			<options>
-				<option value="0">No</option>
-				<option value="1">Yes</option>
-			</options>
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-43437">
@@ -377,27 +361,17 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-44702">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>EB101-EP14 Protection Status Register Outdoor Unit</label>
 		<description></description>
-		<state pattern="%s" readOnly="true">
-			<options>
-				<option value="0">No</option>
-				<option value="1">Yes</option>
-			</options>
-
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-44703">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>EB101-EP14 Defrosting Outdoor Unit</label>
 		<description></description>
-		<state pattern="%s" readOnly="true">
-			<options>
-				<option value="0">No</option>
-				<option value="1">Active</option>
-				<option value="1">Passive</option>
-			</options>
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-47011">
@@ -408,15 +382,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-47041">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Hot water mode</label>
 		<description> 0=Economy 1=Normal 2=Luxury</description>
-		<state pattern="%s" readOnly="false">
-			<options>
-				<option value="0">Economy</option>
-				<option value="1">Normal</option>
-				<option value="2">Luxury</option>
-			</options>
+		<state pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-47212">
@@ -427,28 +396,17 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-47260">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Selected Fan speed</label>
 		<description></description>
-		<state pattern="%s" readOnly="false">
-			<options>
-				<option value="0">normal</option>
-				<option value="1">speed 1</option>
-				<option value="2">speed 2</option>
-				<option value="3">speed 3</option>
-				<option value="4">speed 4</option>
-			</options>
+		<state pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-47394">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Use room sensor S1</label>
 		<description>When activated the system uses the room sensor 0=Off 1=On</description>
-		<state pattern="%s" readOnly="false">
-			<options>
-				<option value="0">Off</option>
-				<option value="1">On</option>
-			</options>
+		<state pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-47402">
@@ -459,28 +417,17 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-48043">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Holiday</label>
 		<description>0=inactive, 10=active</description>
-		<state pattern="%s" readOnly="false">
-			<options>
-				<option value="0">inactive</option>
-				<option value="10">active</option>
-			</options>
+		<state pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-48132">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Temporary Lux</label>
 		<description>0=Off, 1=3h, 2=6h, 3=12h, 4=One time increase</description>
-		<state pattern="%s" readOnly="false">
-			<options>
-				<option value="0">Off</option>
-				<option value="1">3h</option>
-				<option value="2">6h</option>
-				<option value="3">12h</option>
-				<option value="4">One time</option>
-			</options>
+		<state pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-48793">

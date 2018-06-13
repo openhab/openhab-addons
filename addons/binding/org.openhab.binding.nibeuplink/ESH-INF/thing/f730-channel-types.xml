@@ -12,25 +12,17 @@
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-10012">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Compressor blocked</label>
 		<description>states if the compressor is blocked</description>
-		<state pattern="%s" readOnly="true">
-			<options>
-				<option value="0">Off</option>
-				<option value="1">On</option>
-			</options>
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-10033">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Int. el.add. blocked</label>
 		<description>states if internal electric additional heater is blocked</description>
-		<state pattern="%s" readOnly="true">
-			<options>
-				<option value="0">Off</option>
-				<option value="1">On</option>
-			</options>
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-40004">
@@ -174,10 +166,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-40919">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Air mix</label>
 		<description></description>
-		<state pattern="%s" readOnly="true">
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-41026">
@@ -259,10 +251,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-43161">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>External adjustment activated via input S1</label>
 		<description></description>
-		<state pattern="%s" readOnly="true">
+		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-43181">
@@ -329,15 +321,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-47041">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Hot water mode</label>
 		<description></description>
-		<state pattern="%s" readOnly="false">
-			<options>
-				<option value="economy">Economy</option>
-				<option value="normal">Normal</option>
-				<option value="luxury">Luxury</option>
-			</options>
+		<state pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-47212">
@@ -348,28 +335,17 @@
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-48043">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Holiday</label>
 		<description>0=inactive, 10=active</description>
-		<state pattern="%s" readOnly="false">
-			<options>
-				<option value="0">inactive</option>
-				<option value="10">active</option>
-			</options>
+		<state pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-48132">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Temporary Lux</label>
 		<description></description>
-		<state pattern="%s" readOnly="false">
-			<options>
-				<option value="off">Off</option>
-				<option value="3h">3h</option>
-				<option value="6h">6h</option>
-				<option value="12h">12h</option>
-				<option value="one time increase">One time increase</option>
-			</options>
+		<state pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-48914">

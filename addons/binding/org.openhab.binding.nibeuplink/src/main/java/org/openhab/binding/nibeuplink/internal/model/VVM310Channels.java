@@ -22,14 +22,14 @@ public enum VVM310Channels implements Channel {
     CH_43005("43005", "Degree Minutes (16 bit)", ChannelGroup.GENERAL, ValueType.NUMBER_10, "/Manage/4.9.3", "[0-9]+"),
     CH_43009("43009", "Calc. Supply S1", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_40033("40033", "BT50 Room Temp S1", ChannelGroup.GENERAL, ValueType.NUMBER_10),
-    CH_43161("43161", "External adjustment activated via input S1", ChannelGroup.GENERAL, ValueType.STRING),
+    CH_43161("43161", "External adjustment activated via input S1", ChannelGroup.GENERAL, ValueType.NUMBER),
     CH_40008("40008", "BT2 Supply temp S1", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_40012("40012", "EB100-EP14-BT3 Return temp", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_40072("40072", "BF1 EP14 Flow", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_40079("40079", "EB100-BE3 Current", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_40081("40081", "EB100-BE2 Current", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_40083("40083", "EB100-BE1 Current", ChannelGroup.GENERAL, ValueType.NUMBER_10),
-    CH_10033("10033", "Int. el.add. blocked", ChannelGroup.GENERAL, ValueType.STRING),
+    CH_10033("10033", "Int. el.add. blocked", ChannelGroup.GENERAL, ValueType.NUMBER),
 
     CH_44270("44270", "Calc. Cooling Supply S1", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_43081("43081", "Tot. op.time add.", ChannelGroup.GENERAL, ValueType.NUMBER_10),
@@ -45,26 +45,26 @@ public enum VVM310Channels implements Channel {
     CH_44300("44300", "Heat Meter - Heat Cpr and Add EP14", ChannelGroup.GENERAL, ValueType.NUMBER_10),
 
     CH_47011("47011", "Heat Offset S1", ChannelGroup.GENERAL, ValueType.NUMBER, "/Manage/1.9.1.1-S1", "[-1]*[0-9]"),
-    CH_47394("47394", "Room Sensor", ChannelGroup.GENERAL, ValueType.STRING, "/Manage/1.9.4", "[01]"),
+    CH_47394("47394", "Room Sensor", ChannelGroup.GENERAL, ValueType.NUMBER, "/Manage/1.9.4", "[01]"),
     CH_47402("47402", "Room sensor factor", ChannelGroup.GENERAL, ValueType.NUMBER_10, "/Manage/1.9.4",
             "[0123456]*[0-9]"),
     CH_48793("48793", "Room sensor cool factor", ChannelGroup.GENERAL, ValueType.NUMBER_10, "/Manage/1.9.4",
             "[0123456]*[0-9]"),
 
-    CH_48043("48043", "Holiday Mode", ChannelGroup.GENERAL, ValueType.STRING, "/Manage/4.7", "[1]*[0]"),
+    CH_48043("48043", "Holiday Mode", ChannelGroup.GENERAL, ValueType.NUMBER, "/Manage/4.7", "[1]*[0]"),
 
     // Hotwater
     CH_40013("40013", "BT7 HW Top", ChannelGroup.HOTWATER, ValueType.NUMBER_10),
     CH_40014("40014", "BT6 HW Load", ChannelGroup.HOTWATER, ValueType.NUMBER_10),
     CH_44306("44306", "Heat Meter - HW Cpr EP14", ChannelGroup.HOTWATER, ValueType.NUMBER_10),
     CH_44298("44298", "Heat Meter - HW Cpr and Add EP14", ChannelGroup.HOTWATER, ValueType.NUMBER_10),
-    CH_48132("48132", "Temporary Lux", ChannelGroup.HOTWATER, ValueType.STRING, "/Manage/2.1", "[01234]"),
-    CH_47041("47041", "Hot water mode", ChannelGroup.HOTWATER, ValueType.STRING, "/Manage/2.2", "[012]"),
+    CH_48132("48132", "Temporary Lux", ChannelGroup.HOTWATER, ValueType.NUMBER, "/Manage/2.1", "[01234]"),
+    CH_47041("47041", "Hot water mode", ChannelGroup.HOTWATER, ValueType.NUMBER, "/Manage/2.2", "[012]"),
 
     // Compressor
     CH_44362("44362", "EB101-EP14-BT28 Outdoor Temp", ChannelGroup.COMPRESSOR, ValueType.NUMBER_10),
     CH_44396("44396", "EB101 Speed charge pump", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
-    CH_44703("44703", "EB101-EP14 Defrosting Outdoor Unit", ChannelGroup.COMPRESSOR, ValueType.STRING),
+    CH_44703("44703", "EB101-EP14 Defrosting Outdoor Unit", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
     CH_44073("44073", "EB101-EP14 Tot. HW op.time compr", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
     CH_40737("40737", "EB101-EP14 Tot. Cooling op.time compr", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
     CH_44071("44071", "EB101-EP14 Tot. op.time compr", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
@@ -78,10 +78,10 @@ public enum VVM310Channels implements Channel {
     CH_44699("44699", "EB101-EP14-BP4 Pressure Sensor", ChannelGroup.COMPRESSOR, ValueType.NUMBER_10),
     CH_40782("40782", "EB101 Cpr Frequency Desired F2040", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
     CH_44701("44701", "EB101-EP14 Actual Cpr Frequency Outdoor Unit", ChannelGroup.COMPRESSOR, ValueType.NUMBER_10),
-    CH_44702("44702", "EB101-EP14 Protection Status Register Outdoor Unit", ChannelGroup.COMPRESSOR, ValueType.STRING),
+    CH_44702("44702", "EB101-EP14 Protection Status Register Outdoor Unit", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
     CH_44700("44700", "EB101-EP14 Low Pressure Sensor Outdoor Unit", ChannelGroup.COMPRESSOR, ValueType.NUMBER_10),
     CH_44457("44457", "EB101-EP14 Compressor State", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
-    CH_10012("10012", "Compressor blocked", ChannelGroup.COMPRESSOR, ValueType.STRING),
+    CH_10012("10012", "Compressor blocked", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
 
     // Airsupply
     CH_40025("40025", "BT20 Exhaust air temp. 1", ChannelGroup.AIRSUPPLY, ValueType.NUMBER_10),
@@ -90,8 +90,8 @@ public enum VVM310Channels implements Channel {
     CH_40183("40183", "AZ30-BT23 Outdoor temp. ERS", ChannelGroup.AIRSUPPLY, ValueType.NUMBER_10),
     CH_40311("40311", "External ERS accessory GQ2 speed", ChannelGroup.AIRSUPPLY, ValueType.NUMBER),
     CH_40312("40312", "External ERS accessory GQ3 speed", ChannelGroup.AIRSUPPLY, ValueType.NUMBER),
-    CH_40942("40942", "External ERS accessory block status", ChannelGroup.AIRSUPPLY, ValueType.STRING),
-    CH_47260("47260", "Selected Fan speed", ChannelGroup.AIRSUPPLY, ValueType.STRING, "/Manage/1.2", "[01234]"),
+    CH_40942("40942", "External ERS accessory block status", ChannelGroup.AIRSUPPLY, ValueType.NUMBER),
+    CH_47260("47260", "Selected Fan speed", ChannelGroup.AIRSUPPLY, ValueType.NUMBER, "/Manage/1.2", "[01234]"),
 
     /* END */
     ;

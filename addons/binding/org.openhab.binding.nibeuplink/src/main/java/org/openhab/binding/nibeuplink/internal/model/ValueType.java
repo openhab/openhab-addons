@@ -17,7 +17,6 @@ package org.openhab.binding.nibeuplink.internal.model;
  */
 public enum ValueType {
 
-    STRING,
     NUMBER,
     NUMBER_10,
     NUMBER_100

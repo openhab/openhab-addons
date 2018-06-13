@@ -23,14 +23,14 @@ public enum F1145Channels implements Channel {
     CH_43009("43009", "Calc. Supply S1", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_40071("40071", "BT25 Ext. Supply", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_40033("40033", "BT50 Room Temp S1", ChannelGroup.GENERAL, ValueType.NUMBER_10),
-    CH_43161("43161", "External adjustment activated via input S1", ChannelGroup.GENERAL, ValueType.STRING),
+    CH_43161("43161", "External adjustment activated via input S1", ChannelGroup.GENERAL, ValueType.NUMBER),
     CH_40008("40008", "BT2 Supply temp S1", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_40012("40012", "EB100-EP14-BT3 Return temp", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_40072("40072", "BF1 EP14 Flow", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_40079("40079", "EB100-BE3 Current", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_40081("40081", "EB100-BE2 Current", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_40083("40083", "EB100-BE1 Current", ChannelGroup.GENERAL, ValueType.NUMBER_10),
-    CH_10033("10033", "Int. el.add. blocked", ChannelGroup.GENERAL, ValueType.STRING),
+    CH_10033("10033", "Int. el.add. blocked", ChannelGroup.GENERAL, ValueType.NUMBER),
 
     CH_43081("43081", "Tot. op.time add.", ChannelGroup.GENERAL, ValueType.NUMBER_10),
     CH_43084("43084", "Int. el.add. Power", ChannelGroup.GENERAL, ValueType.NUMBER_100),
@@ -46,8 +46,8 @@ public enum F1145Channels implements Channel {
     CH_40014("40014", "BT6 HW Load", ChannelGroup.HOTWATER, ValueType.NUMBER_10),
     CH_44306("44306", "Heat Meter - HW Cpr EP14", ChannelGroup.HOTWATER, ValueType.NUMBER_10),
     CH_44298("44298", "Heat Meter - HW Cpr and Add EP14", ChannelGroup.HOTWATER, ValueType.NUMBER_10),
-    CH_48132("48132", "Temporary Lux", ChannelGroup.HOTWATER, ValueType.STRING),
-    CH_47041("47041", "Hot water mode", ChannelGroup.HOTWATER, ValueType.STRING),
+    CH_48132("48132", "Temporary Lux", ChannelGroup.HOTWATER, ValueType.NUMBER),
+    CH_47041("47041", "Hot water mode", ChannelGroup.HOTWATER, ValueType.NUMBER),
 
     // Compressor
     CH_43424("43424", "EB100-EP14 Tot. HW op.time compr", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
@@ -57,7 +57,7 @@ public enum F1145Channels implements Channel {
     CH_40019("40019", "EB100-EP14-BT15 Liquid Line", ChannelGroup.COMPRESSOR, ValueType.NUMBER_10),
     CH_40018("40018", "EB100-EP14-BT14 Hot Gas Temp", ChannelGroup.COMPRESSOR, ValueType.NUMBER_10),
     CH_40017("40017", "EB100-EP14-BT12 Condensor Out", ChannelGroup.COMPRESSOR, ValueType.NUMBER_10),
-    CH_10012("10012", "Compressor blocked", ChannelGroup.COMPRESSOR, ValueType.STRING),
+    CH_10012("10012", "Compressor blocked", ChannelGroup.COMPRESSOR, ValueType.NUMBER),
 
     // Airsupply
     CH_40025("40025", "BT20 Exhaust air temp. 1", ChannelGroup.AIRSUPPLY, ValueType.NUMBER_10),
