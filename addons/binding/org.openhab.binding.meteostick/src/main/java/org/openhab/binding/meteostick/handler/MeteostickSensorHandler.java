@@ -52,7 +52,7 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
     private int channel = 0;
     private BigDecimal spoon = new BigDecimal(PARAMETER_SPOON_DEFAULT);
     private MeteostickBridgeHandler bridgeHandler;
-    private SlidingTimeWindow rainHourlyWindow = new SlidingTimeWindow(60000);
+    private SlidingTimeWindow rainHourlyWindow = new SlidingTimeWindow(HOUR_IN_MSEC);
     private ScheduledFuture<?> rainHourlyJob;
     private ScheduledFuture<?> offlineTimerJob;
 
@@ -82,8 +82,8 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         };
 
         // Scheduling a job on each hour to update the last hour rainfall
-        long start = 3600 - ((System.currentTimeMillis() % 3600000) / 1000);
-        rainHourlyJob = scheduler.scheduleWithFixedDelay(pollingRunnable, start, 3600, TimeUnit.SECONDS);
+        long start = HOUR_IN_SEC - ((System.currentTimeMillis() % HOUR_IN_MSEC) / 1000);
+        rainHourlyJob = scheduler.scheduleWithFixedDelay(pollingRunnable, start, HOUR_IN_SEC, TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.UNKNOWN);
     }
@@ -209,14 +209,14 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
     }
 
     class SlidingTimeWindow {
-        int period = 0;
+        long period = 0;
         private final Map<Long, Integer> storage = new TreeMap<>();
 
         /**
          *
          * @param period window period in milliseconds
          */
-        public SlidingTimeWindow(int period) {
+        public SlidingTimeWindow(long period) {
             this.period = period;
         }
 
