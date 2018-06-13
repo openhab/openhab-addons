@@ -114,6 +114,10 @@ public class Device {
     }
 
     public Integer getBatteryVoltage() {
+        if (batteryVoltage == null) {
+            return Integer.MIN_VALUE;
+        }
+
         return batteryVoltage;
     }
 
@@ -122,10 +126,18 @@ public class Device {
     }
 
     public Integer getRssi() {
+        if (rssi == null) {
+            return Integer.MIN_VALUE;
+        }
+
         return rssi;
     }
 
     public Integer getLqi() {
+        if (lqi == null) {
+            return Integer.MIN_VALUE;
+        }
+
         return lqi;
     }
 
