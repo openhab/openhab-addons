@@ -50,15 +50,14 @@ import com.google.gson.JsonDeserializer;
  * @author Gaël L'hopital - Initial contribution
  */
 public class OpenUVHandler extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(OpenUVHandler.class);
     private static final int DEFAULT_REFRESH_PERIOD = 30;
+    private final Logger logger = LoggerFactory.getLogger(OpenUVHandler.class);
+    private final Gson gson;
 
-    OpenUVJsonResult openUVData;
+    private OpenUVJsonResult openUVData;
 
     private ScheduledFuture<?> refreshJob;
     private ScheduledFuture<?> uvMaxJob;
-
-    private Gson gson;
 
     public OpenUVHandler(Thing thing) {
         super(thing);
@@ -88,7 +87,6 @@ public class OpenUVHandler extends BaseThingHandler {
         if (errorMsg == null) {
             updateStatus(ThingStatus.ONLINE);
             startAutomaticRefresh();
-            startUVMaxScreening();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         }
@@ -97,25 +95,15 @@ public class OpenUVHandler extends BaseThingHandler {
     /**
      * Start the job screening UV Max reached
      */
-    private void startUVMaxScreening() {
-        if (uvMaxJob == null || uvMaxJob.isCancelled()) {
-            Runnable runnable = () -> {
-                try {
-                    if (openUVData != null) {
-                        long timeDiff = ChronoUnit.MINUTES.between(ZonedDateTime.now(ZoneId.systemDefault()),
-                                openUVData.getUVMaxTimeAsZDT());
-                        if (timeDiff == 0 || timeDiff == 1) {
-                            triggerChannel(UVMAXEVENT);
-                        }
+    private void scheduleUVMaxEvent() {
+        if ((uvMaxJob == null || uvMaxJob.isCancelled()) && openUVData != null) {
+            long timeDiff = ChronoUnit.MINUTES.between(ZonedDateTime.now(ZoneId.systemDefault()),
+                    openUVData.getUVMaxTimeAsZDT());
 
-                        logger.debug("Time to Max UV : {} min", timeDiff);
-                    }
-                } catch (Exception e) {
-                    logger.error("Exception occurred during execution: {}", e.getMessage(), e);
-                }
-            };
-
-            uvMaxJob = scheduler.scheduleWithFixedDelay(runnable, 0, 1, TimeUnit.MINUTES);
+            if (timeDiff > 0) {
+                logger.debug("Scheduling {} in {} minutes", UVMAXEVENT, timeDiff);
+                uvMaxJob = scheduler.schedule(() -> triggerChannel(UVMAXEVENT), timeDiff, TimeUnit.MINUTES);
+            }
         }
     }
 
@@ -127,7 +115,7 @@ public class OpenUVHandler extends BaseThingHandler {
             Runnable runnable = () -> {
                 try {
                     getOpenUVData();
-
+                    scheduleUVMaxEvent();
                     for (Channel channel : getThing().getChannels()) {
                         updateChannel(channel.getUID());
                     }
@@ -231,14 +219,14 @@ public class OpenUVHandler extends BaseThingHandler {
     private String buildRequestURL() {
         OpenUVConfiguration config = getConfigAs(OpenUVConfiguration.class);
 
-        String urlStr = "https://api.openuv.io/api/v1/uv?lat=" + config.getLatitude();
-        urlStr += "&lng=" + config.getLongitude();
+        StringBuilder urlBuilder = new StringBuilder("https://api.openuv.io/api/v1/uv?lat=")
+                .append(config.getLatitude()).append("&lng=").append(config.getLongitude());
 
         if (config.getAltitude() != null) {
-            urlStr += "&alt=" + config.getAltitude();
+            urlBuilder.append("&alt=").append(config.getAltitude());
         }
 
-        return urlStr;
+        return urlBuilder.toString();
     }
 
     /**

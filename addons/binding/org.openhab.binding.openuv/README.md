@@ -37,9 +37,30 @@ For the location parameter, the following syntax is allowed (comma separated lat
 
 The OpenUV information that is retrieved is available as these channels:
 
-| Channel ID      | Item Type            | Description                                  |
-|-----------------|----------------------|----------------------------------------------|
-| Current         | UVIndex              | Number | UV Index |
+| Channel ID   | Item Type   | Description                                    |
+|--------------|-------------|------------------------------------------------|
+| UVIndex      | Number      | UV Index                                       |
+| UVColor      | Color       | Color associated to given UV Index.            |
+| UVMax        | Number      | Max UV Index for the day (at solar noon)       |
+| UVMaxTime    | DateTime    | Max UV Index datetime (solar noon)             |
+| Ozone        | Number      | Ozone level in du (Dobson Units) from OMI data |
+| OzoneTime    | DateTime    | Latest OMI ozone update datetime               |
+| UVTime       | DateTime    | UV Index datetime                              |
+| SafeExposure | Number:Time | Safe exposure time for Fitzpatrick Skin Types  |
 
-## Full Example
+## Examples
+
+demo.things:
+
+```xtend
+Thing openuv:openuv:home [ apikey="xxxxYYYxxxx", location="52.5200066,13.4049540", refresh=10 ]
+```
+
+demo.items:
+
+```xtend
+Number UVIndex                  "UV Index"   { channel = "openuv:openuv:home:UVIndex" }   
+Number UVMax                    "UV Max"  { channel = "openuv:openuv:home:UVMax" }   
+Number Ozone                    "Ozone"  { channel = "openuv:openuv:home:Ozone" }   
+```
 

@@ -39,7 +39,7 @@ public class OpenUVConfiguration {
             elements = location.split(",");
         }
         if (index < elements.length) {
-            return elements[index];
+            return elements[index].trim();
         } else {
             return null;
         }
