@@ -74,6 +74,8 @@ public class HeatHubHandler extends BaseBridgeHandler {
 
         // attempt to prevent EOFException as per https://bugs.eclipse.org/bugs/show_bug.cgi?id=440729
         httpClient.setMaxConnectionsPerDestination(3);
+        httpClient.setConnectTimeout(10000);
+        httpClient.setAddressResolutionTimeout(10000);
 
         gson = new Gson();
 
@@ -120,7 +122,9 @@ public class HeatHubHandler extends BaseBridgeHandler {
         Thing thing = getThing();
         if (thing != null) {
             refreshJob = scheduler.scheduleWithFixedDelay(() -> {
+                logger.debug("Refreshing devices");
                 refresh();
+                logger.debug("Finished refreshing devices");
             }, 0, ((java.math.BigDecimal) thing.getConfiguration().get(DraytonWiserBindingConstants.REFRESH_INTERVAL))
                     .intValue(), TimeUnit.SECONDS);
         }
@@ -480,11 +484,12 @@ public class HeatHubHandler extends BaseBridgeHandler {
 
     private @Nullable ContentResponse sendMessageToHeatHub(String path, String method, String content) {
         try {
+            logger.debug("Sending message to heathub: " + path);
             String address = (String) getConfig().get(DraytonWiserBindingConstants.ADDRESS);
             String authtoken = (String) getConfig().get(DraytonWiserBindingConstants.AUTH_TOKEN);
             StringContentProvider contentProvider = new StringContentProvider(content);
             ContentResponse response = httpClient.newRequest("http://" + address + "/" + path).method(method)
-                    .header("SECRET", authtoken).content(contentProvider).send();
+                    .header("SECRET", authtoken).content(contentProvider).timeout(10, TimeUnit.SECONDS).send();
             if (response.getStatus() == 200) {
                 updateStatus(ThingStatus.ONLINE);
                 return response;
@@ -494,15 +499,12 @@ public class HeatHubHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } catch (TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect Heat Hub address");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Heathub didn't repond in time");
             logger.debug(e.getMessage(), e);
         } catch (ExecutionException e) {
             logger.debug(e.getMessage(), e);
-            e.getCause().printStackTrace();
         } catch (Exception e) {
             logger.debug(e.getMessage(), e);
-            e.printStackTrace();
-            updateStatus(ThingStatus.OFFLINE);
         }
 
         return null;
