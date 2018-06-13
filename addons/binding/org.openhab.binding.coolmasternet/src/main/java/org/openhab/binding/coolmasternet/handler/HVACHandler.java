@@ -13,6 +13,8 @@ import static org.openhab.binding.coolmasternet.CoolMasterNetBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -37,22 +39,27 @@ import org.slf4j.LoggerFactory;
  *
  * @author Angus Gratton - Initial contribution
  */
+@NonNullByDefault
 public class HVACHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HVACHandler.class);
-    private ControllerHandler controller;
 
     public HVACHandler(Thing thing) {
         super(thing);
+    }
+
+    private @Nullable ControllerHandler getControllerHandler() {
+        return (ControllerHandler) getBridge().getHandler();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String uid = getConfigAs(HVACConfiguration.class).uid;
         String channel = channelUID.getId();
+        ControllerHandler controller = getControllerHandler();
 
         try {
-            if (!controller.isConnected()) {
+            if (controller == null || !controller.isConnected()) {
                 ControllerConfiguration config = getBridge().getConfiguration().as(ControllerConfiguration.class);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         String.format("Could not connect to CoolMasterNet unit %s:%d", config.host, config.port));
@@ -83,7 +90,6 @@ public class HVACHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initialising CoolMasterNet HVAC handler...");
         updateStatus(ThingStatus.ONLINE);
-        controller = (ControllerHandler) getBridge().getHandler();
     }
 
     /* Update this HVAC unit's properties from the controller */
@@ -110,15 +116,18 @@ public class HVACHandler extends BaseThingHandler {
         }
     }
 
-    private String query(String queryChar) {
+    private @Nullable String query(String queryChar) {
         String uid = getConfigAs(HVACConfiguration.class).uid;
         String command = String.format("query %s %s", uid, queryChar);
-        try {
-            return controller.sendCommand(command);
-        } catch (CoolMasterClientError e) {
-            logger.error("Query {} failed: {}", command, e.getMessage());
-            return null; /* passing back null sets an invalid value on the channel */
+        ControllerHandler controller = getControllerHandler();
+        if (controller != null) {
+            try {
+                return controller.sendCommand(command);
+            } catch (CoolMasterClientError e) {
+                logger.error("Query {} failed: {}", command, e.getMessage());
+            }
         }
+        return null; /* passing back null sets an invalid value on the channel */
     }
 
     /*
@@ -126,7 +135,7 @@ public class HVACHandler extends BaseThingHandler {
      * but these don't map to any mode you can set on the device, so we use this
      * lookup table.
      */
-    private static final Map<String, String> MODE_NUM_TO_STR;
+    private static final Map<String, @Nullable String> MODE_NUM_TO_STR;
     static {
         MODE_NUM_TO_STR = new HashMap<>();
         MODE_NUM_TO_STR.put("0", "cool");
@@ -143,7 +152,7 @@ public class HVACHandler extends BaseThingHandler {
      * for fan speed, but the protocol's fan command (& matching
      * binding command) use single-letter abbreviations.
      */
-    private static final Map<String, String> FAN_NUM_TO_STR;
+    private static final Map<String, @Nullable String> FAN_NUM_TO_STR;
     static {
         FAN_NUM_TO_STR = new HashMap<>();
         FAN_NUM_TO_STR.put("0", "l"); /* Low */
