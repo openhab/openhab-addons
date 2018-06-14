@@ -64,6 +64,12 @@ public class Device {
     @SerializedName("Lqi")
     @Expose
     private Integer lqi;
+    @SerializedName("ReceptionOfDevice")
+    @Expose
+    private Reception receptionOfDevice;
+    @SerializedName("ReceptionOfController")
+    @Expose
+    private Reception receptionOfController;
 
     public Integer getId() {
         return id;
@@ -126,19 +132,28 @@ public class Device {
     }
 
     public Integer getRssi() {
-        if (rssi == null) {
-            return Integer.MIN_VALUE;
+        if (rssi != null) {
+            return rssi;
         }
 
-        return rssi;
+        // JSON response changed with firmware update to include RSSI and LQI on a separate object
+        if (receptionOfDevice != null) {
+            return receptionOfDevice.getRSSI();
+        }
+
+        return null;
     }
 
     public Integer getLqi() {
-        if (lqi == null) {
-            return Integer.MIN_VALUE;
+        if (lqi != null) {
+            return lqi;
         }
 
-        return lqi;
+        if (receptionOfDevice != null) {
+            return receptionOfDevice.getLQI();
+        }
+
+        return null;
     }
 
 }
