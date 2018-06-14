@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.meteostick.handler;
 
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MILLI;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.*;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
 import static org.openhab.binding.meteostick.MeteostickBindingConstants.*;
 
 import java.math.BigDecimal;
@@ -23,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -46,8 +50,9 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
     private final Logger logger = LoggerFactory.getLogger(MeteostickSensorHandler.class);
 
     private int channel = 0;
+    private BigDecimal spoon = new BigDecimal(PARAMETER_SPOON_DEFAULT);
     private MeteostickBridgeHandler bridgeHandler;
-    private SlidingTimeWindow rainHourlyWindow = new SlidingTimeWindow(60000);
+    private SlidingTimeWindow rainHourlyWindow = new SlidingTimeWindow(HOUR_IN_MSEC);
     private ScheduledFuture<?> rainHourlyJob;
     private ScheduledFuture<?> offlineTimerJob;
 
@@ -62,17 +67,23 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         logger.debug("Initializing MeteoStick handler.");
 
         channel = ((BigDecimal) getConfig().get(PARAMETER_CHANNEL)).intValue();
-        logger.debug("Initializing MeteoStick handler - Channel {}.", channel);
+
+        spoon = (BigDecimal) getConfig().get(PARAMETER_SPOON);
+        if (spoon == null) {
+            spoon = new BigDecimal(PARAMETER_SPOON_DEFAULT);
+        }
+        logger.debug("Initializing MeteoStick handler - Channel {}, Spoon size {} mm.", channel, spoon);
 
         Runnable pollingRunnable = () -> {
-            BigDecimal rainfall = new BigDecimal((rainHourlyWindow.getTotal() * 0.254));
+            BigDecimal rainfall = BigDecimal.valueOf(rainHourlyWindow.getTotal()).multiply(spoon);
             rainfall.setScale(1, RoundingMode.DOWN);
-            updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_LASTHOUR), new DecimalType(rainfall));
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_LASTHOUR),
+                    new QuantityType<>(rainfall, MILLI(METRE)));
         };
 
         // Scheduling a job on each hour to update the last hour rainfall
-        long start = 3600 - ((System.currentTimeMillis() % 3600000) / 1000);
-        rainHourlyJob = scheduler.scheduleWithFixedDelay(pollingRunnable, start, 3600, TimeUnit.SECONDS);
+        long start = HOUR_IN_SEC - ((System.currentTimeMillis() % HOUR_IN_MSEC) / 1000);
+        rainHourlyJob = scheduler.scheduleWithFixedDelay(pollingRunnable, start, HOUR_IN_SEC, TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.UNKNOWN);
     }
@@ -160,16 +171,16 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
 
                 rainHourlyWindow.put(rain);
 
-                BigDecimal rainfall = new BigDecimal((rainHourlyWindow.getTotal() * 0.254));
+                BigDecimal rainfall = BigDecimal.valueOf(rainHourlyWindow.getTotal()).multiply(spoon);
                 rainfall.setScale(1, RoundingMode.DOWN);
-                // rainfall.round(new MathContext(1, RoundingMode.DOWN));
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_CURRENTHOUR), new DecimalType(rainfall));
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_CURRENTHOUR),
+                        new QuantityType<>(rainfall, MILLI(METRE)));
                 break;
             case "W": // Wind
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_SPEED),
-                        new DecimalType(new BigDecimal(data[2])));
+                        new QuantityType<>(new BigDecimal(data[2]), METRE_PER_SECOND));
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_DIRECTION),
-                        new DecimalType(Integer.parseInt(data[3])));
+                        new QuantityType<>(Integer.parseInt(data[3]), DEGREE_ANGLE));
 
                 processSignalStrength(data[4]);
                 processBattery(data.length == 6);
@@ -177,7 +188,7 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
             case "T": // Temperature
                 BigDecimal temperature = new BigDecimal(data[2]);
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_OUTDOOR_TEMPERATURE),
-                        new DecimalType(temperature.setScale(1)));
+                        new QuantityType<>(temperature.setScale(1), CELSIUS));
 
                 BigDecimal humidity = new BigDecimal(data[3]);
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_HUMIDITY),
@@ -198,14 +209,14 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
     }
 
     class SlidingTimeWindow {
-        int period = 0;
+        long period = 0;
         private final Map<Long, Integer> storage = new TreeMap<>();
 
         /**
          *
          * @param period window period in milliseconds
          */
-        public SlidingTimeWindow(int period) {
+        public SlidingTimeWindow(long period) {
             this.period = period;
         }
 
@@ -214,7 +225,7 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         }
 
         public int getTotal() {
-            int last = -1;
+            int least = -1;
             int total = 0;
 
             long old = System.currentTimeMillis() - period;
@@ -227,15 +238,15 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
                 }
 
                 int value = storage.get(time);
-                if (last == -1) {
-                    last = value;
+                if (least == -1) {
+                    least = value;
                     continue;
                 }
 
-                if (value < last) {
-                    total += 256 - last + value;
+                if (value < least) {
+                    total = 256 - least + value;
                 } else {
-                    total += value - last;
+                    total = value - least;
                 }
             }
 

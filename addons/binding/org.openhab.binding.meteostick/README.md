@@ -45,30 +45,31 @@ Set mode to one of the following depending on your device and region:
 | Option  | Description                               |
 |---------|-------------------------------------------|
 | channel | Sets the RF channel used for this sensor  |
+| spoon   | Size of rain spoon assembly for this sensor in mm.  Default value is 0.254 (0.01") for use with Davis part number 7345.280.  Set to 0.2 for use with Davis part number 7345.319 |
 
 ## Channels
 
 ### Meteostick
 
-| Channel Type ID    | Item Type | Description        |
-|--------------------|-----------|--------------------|
-| pressure           | Number    | Air pressure       |
-| indoor-temperature | Number    | Indoor temperature |
+| Channel Type ID    | Item Type          | Description        |
+|--------------------|--------------------|--------------------|
+| pressure           | Number:Pressure    | Air pressure       |
+| indoor-temperature | Number:Temperature | Indoor temperature |
 
 ### Davis ISS
 
-| Channel Type ID     | Item Type | Description                                     |
-|---------------------|-----------|-------------------------------------------------|
-| outdoor-temperature | Number    | Outside temperature                             |
-| humidity            | Number    | Humidity                                        |
-| wind-direction      | Number    | Wind direction                                  |
-| wind-speed          | Number    | Wind speed                                      |
-| rain-raw            | Number    | Raw rain counter from the tipping bucket sensor |
-| rain-currenthour    | Number    | The rainfall in the last 60 minutes             |
-| rain-lasthour       | Number    | The rainfall in the previous hour               |
-| solar-power         | Number    | Solar power from the sensor station             |
-| signal-strength     | Number    | Received signal strength                        |
-| low-battery         | Number    | Low battery warning                             |
+| Channel Type ID     | Item Type             | Description                                     |
+|---------------------|-----------------------|-------------------------------------------------|
+| outdoor-temperature | Number:Temperature    | Outside temperature                             |
+| humidity            | Number                | Humidity                                        |
+| wind-direction      | Number:Angle          | Wind direction                                  |
+| wind-speed          | Number:Speed          | Wind speed                                      |
+| rain-raw            | Number                | Raw rain counter from the tipping bucket sensor |
+| rain-currenthour    | Number:Length         | The rainfall in the last 60 minutes             |
+| rain-lasthour       | Number:Length         | The rainfall in the previous hour               |
+| solar-power         | Number                | Solar power from the sensor station             |
+| signal-strength     | Number                | Received signal strength                        |
+| low-battery         | Switch                | Low battery warning                             |
 
 
 #### Rainfall
@@ -79,9 +80,9 @@ The rainfall in the previous hour is the rainfall for each hour of the day and i
 
 ## Full Example
 
-Things can be defined in the .thing file as follows
+Things can be defined in the .things file as follows
 
 ```
 meteostick:meteostick_bridge:receiver [ port="/dev/tty.usbserial-AI02XA60", mode=1 ]
-meteostick:meteostick_davis_iss:iss (meteostick:meteostick_bridge:receiver) [ channel=1 ]
+meteostick:meteostick_davis_iss:iss (meteostick:meteostick_bridge:receiver) [ channel=1, spoon=0.2 ]
 ```
