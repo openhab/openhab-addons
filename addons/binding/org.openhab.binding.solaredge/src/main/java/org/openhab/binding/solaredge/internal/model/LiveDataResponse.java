@@ -105,23 +105,25 @@ public class LiveDataResponse implements DataResponse {
             valueMap.put(LiveDataChannels.BATTERY_CHARGE_DISCHARGE.getFQName(), ZERO_POWER);
 
             // determine power flow from connection list
-            for (Connection con : siteCurrentPowerFlow.connections) {
-                if (con.from.equalsIgnoreCase(GRID)) {
-                    valueMap.put(LiveDataChannels.IMPORT.getFQName(), siteCurrentPowerFlow.grid.currentPower);
-                } else if (con.to.equalsIgnoreCase(GRID)) {
-                    valueMap.put(LiveDataChannels.EXPORT.getFQName(), siteCurrentPowerFlow.grid.currentPower);
+            if (siteCurrentPowerFlow.connections != null) {
+                for (Connection con : siteCurrentPowerFlow.connections) {
+                    if (con.from.equalsIgnoreCase(GRID)) {
+                        valueMap.put(LiveDataChannels.IMPORT.getFQName(), siteCurrentPowerFlow.grid.currentPower);
+                    } else if (con.to.equalsIgnoreCase(GRID)) {
+                        valueMap.put(LiveDataChannels.EXPORT.getFQName(), siteCurrentPowerFlow.grid.currentPower);
 
-                }
-                if (con.from.equalsIgnoreCase(STORAGE)) {
-                    valueMap.put(LiveDataChannels.BATTERY_DISCHARGE.getFQName(),
-                            siteCurrentPowerFlow.storage.currentPower);
-                    valueMap.put(LiveDataChannels.BATTERY_CHARGE_DISCHARGE.getFQName(),
-                            "-" + siteCurrentPowerFlow.storage.currentPower);
-                } else if (con.to.equalsIgnoreCase(STORAGE)) {
-                    valueMap.put(LiveDataChannels.BATTERY_CHARGE.getFQName(),
-                            siteCurrentPowerFlow.storage.currentPower);
-                    valueMap.put(LiveDataChannels.BATTERY_CHARGE_DISCHARGE.getFQName(),
-                            siteCurrentPowerFlow.storage.currentPower);
+                    }
+                    if (con.from.equalsIgnoreCase(STORAGE)) {
+                        valueMap.put(LiveDataChannels.BATTERY_DISCHARGE.getFQName(),
+                                siteCurrentPowerFlow.storage.currentPower);
+                        valueMap.put(LiveDataChannels.BATTERY_CHARGE_DISCHARGE.getFQName(),
+                                "-" + siteCurrentPowerFlow.storage.currentPower);
+                    } else if (con.to.equalsIgnoreCase(STORAGE)) {
+                        valueMap.put(LiveDataChannels.BATTERY_CHARGE.getFQName(),
+                                siteCurrentPowerFlow.storage.currentPower);
+                        valueMap.put(LiveDataChannels.BATTERY_CHARGE_DISCHARGE.getFQName(),
+                                siteCurrentPowerFlow.storage.currentPower);
+                    }
                 }
             }
         }
