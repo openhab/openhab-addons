@@ -27,7 +27,7 @@ import java.util.function.Function;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.events.EventPublisher;
-import org.eclipse.smarthome.core.items.GenericItem;
+import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemFactory;
 import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.items.ItemRegistry;
@@ -245,7 +245,7 @@ public abstract class NestThingHandlerOSGiTest extends JavaOSGiTest {
     protected void createAndLinkItems() {
         thing.getChannels().forEach(c -> {
             String itemName = getItemName(c.getUID().getId());
-            GenericItem item = itemFactory.createItem(c.getAcceptedItemType(), itemName);
+            Item item = itemFactory.createItem(c.getAcceptedItemType(), itemName);
             if (item != null) {
                 itemRegistry.add(item);
             }
