@@ -9,26 +9,20 @@
 package org.openhab.binding.openuv.internal.discovery;
 
 import static org.openhab.binding.openuv.OpenUVBindingConstants.*;
-import static org.openhab.binding.openuv.internal.OpenUVConfiguration.LOCATION;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
 import org.eclipse.smarthome.core.library.types.PointType;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.osgi.service.component.annotations.Component;
+import org.openhab.binding.openuv.handler.OpenUVBridgeHandler;
 import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,23 +31,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial Contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.openuv")
 public class OpenUVDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(OpenUVDiscoveryService.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_OPENUV);
     private static final int DISCOVER_TIMEOUT_SECONDS = 10;
     private static final int LOCATION_CHANGED_CHECK_INTERVAL = 60;
 
-    private LocationProvider locationProvider;
+    private final LocationProvider locationProvider;
+    private final OpenUVBridgeHandler bridgeHandler;
     private ScheduledFuture<?> discoveryJob;
     private PointType previousLocation;
 
     /**
      * Creates a OpenUVDiscoveryService with enabled autostart.
      */
-    public OpenUVDiscoveryService() {
-        super(SUPPORTED_THING_TYPES, DISCOVER_TIMEOUT_SECONDS, true);
+    public OpenUVDiscoveryService(OpenUVBridgeHandler bridgeHandler, LocationProvider locationProvider) {
+        super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS, true);
+        this.locationProvider = locationProvider;
+        this.bridgeHandler = bridgeHandler;
     }
 
     @Override
@@ -95,11 +90,12 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService {
     }
 
     public void createResults(PointType location) {
-        ThingUID localOpenUVThing = new ThingUID(THING_TYPE_OPENUV, LOCAL);
+        ThingUID localOpenUVThing = new ThingUID(LOCATION_REPORT_THING_TYPE, LOCAL);
+        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         Map<String, Object> properties = new HashMap<>();
         properties.put(LOCATION, location.toString());
-        thingDiscovered(DiscoveryResultBuilder.create(localOpenUVThing).withLabel("Local OpenUV")
-                .withProperties(properties).build());
+        thingDiscovered(DiscoveryResultBuilder.create(localOpenUVThing).withLabel("Local UV Information")
+                .withProperties(properties).withBridge(bridgeUID).build());
     }
 
     @Override
@@ -111,15 +107,6 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService {
                 logger.debug("Stopped OpenUV background discovery");
             }
         }
-    }
-
-    @Reference
-    protected void setLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = locationProvider;
-    }
-
-    protected void unsetLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = null;
     }
 
 }

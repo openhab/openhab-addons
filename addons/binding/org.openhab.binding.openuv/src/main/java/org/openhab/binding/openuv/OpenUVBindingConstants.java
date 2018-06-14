@@ -8,6 +8,11 @@
  */
 package org.openhab.binding.openuv;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -19,12 +24,18 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class OpenUVBindingConstants {
-
+    public static final String BASE_URL = "https://api.openuv.io/api/v1/uv";
     public static final String BINDING_ID = "openuv";
     public static final String LOCAL = "local";
 
-    // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_OPENUV = new ThingTypeUID(BINDING_ID, "openuv");
+    public static final String LOCATION = "location";
+    public static final String APIKEY = "apikey";
+
+    // List of Bridge Type UIDs
+    public static final ThingTypeUID APIBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "openuvapi");
+
+    // List of Things Type UIDs
+    public static final ThingTypeUID LOCATION_REPORT_THING_TYPE = new ThingTypeUID(BINDING_ID, "uvreport");
 
     // List of all Channel id's
     public static final String UVINDEX = "UVIndex";
@@ -38,4 +49,8 @@ public class OpenUVBindingConstants {
     public static final String SAFEEXPOSURE = "SafeExposure";
 
     public static final String PROPERTY_INDEX = "Index";
+
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(APIBRIDGE_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
+            Arrays.asList(LOCATION_REPORT_THING_TYPE));
 }

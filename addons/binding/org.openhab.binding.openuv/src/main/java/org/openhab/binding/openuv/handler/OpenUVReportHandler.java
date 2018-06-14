@@ -18,10 +18,8 @@ import java.util.Properties;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -39,35 +37,24 @@ import org.openhab.binding.openuv.json.OpenUVJsonResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
-
 /**
- * The {@link OpenUVHandler} is responsible for handling commands, which are
+ * The {@link OpenUVReportHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public class OpenUVHandler extends BaseThingHandler {
+public class OpenUVReportHandler extends BaseThingHandler {
     private static final int DEFAULT_REFRESH_PERIOD = 30;
-    private final Logger logger = LoggerFactory.getLogger(OpenUVHandler.class);
-    private final Gson gson;
+    private final Logger logger = LoggerFactory.getLogger(OpenUVReportHandler.class);
 
+    private OpenUVBridgeHandler bridge;
     private OpenUVJsonResult openUVData;
 
     private ScheduledFuture<?> refreshJob;
     private ScheduledFuture<?> uvMaxJob;
 
-    public OpenUVHandler(Thing thing) {
+    public OpenUVReportHandler(Thing thing) {
         super(thing);
-        gson = new GsonBuilder()
-                .registerTypeAdapter(DecimalType.class,
-                        (JsonDeserializer<DecimalType>) (json, type, jsonDeserializationContext) -> DecimalType
-                                .valueOf(json.getAsJsonPrimitive().getAsString()))
-                .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type,
-                        jsonDeserializationContext) -> ZonedDateTime.parse(json.getAsJsonPrimitive().getAsString()))
-                .create();
     }
 
     @Override
@@ -75,17 +62,21 @@ public class OpenUVHandler extends BaseThingHandler {
         logger.debug("Initializing OpenUV handler.");
 
         OpenUVConfiguration config = getConfigAs(OpenUVConfiguration.class);
+
         String errorMsg = null;
 
-        if (StringUtils.trimToNull(config.apikey) == null) {
-            errorMsg = "Parameter 'apikey' is mandatory and must be configured";
-        }
         if (config.refresh != null && config.refresh < 3) {
-            errorMsg = "Parameter 'refresh' must be at least 3 minutes to stay in free API plan";
+            errorMsg = "Parameter 'refresh' must be higher than 3 minutes to stay in free API plan";
+        }
+
+        if (this.getBridge() == null) {
+            errorMsg = "Invalid bridge";
+        } else {
+            bridge = (OpenUVBridgeHandler) this.getBridge().getHandler();
         }
 
         if (errorMsg == null) {
-            updateStatus(ThingStatus.ONLINE);
+            updateStatus(ThingStatus.UNKNOWN);
             startAutomaticRefresh();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
@@ -102,7 +93,10 @@ public class OpenUVHandler extends BaseThingHandler {
 
             if (timeDiff > 0) {
                 logger.debug("Scheduling {} in {} minutes", UVMAXEVENT, timeDiff);
-                uvMaxJob = scheduler.schedule(() -> triggerChannel(UVMAXEVENT), timeDiff, TimeUnit.MINUTES);
+                uvMaxJob = scheduler.schedule(() -> {
+                    triggerChannel(UVMAXEVENT);
+                    uvMaxJob = null;
+                }, timeDiff, TimeUnit.MINUTES);
             }
         }
     }
@@ -119,8 +113,10 @@ public class OpenUVHandler extends BaseThingHandler {
                     for (Channel channel : getThing().getChannels()) {
                         updateChannel(channel.getUID());
                     }
+                    updateStatus(ThingStatus.ONLINE);
                 } catch (Exception e) {
                     logger.error("Exception occurred during execution: {}", e.getMessage(), e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             };
 
@@ -168,7 +164,7 @@ public class OpenUVHandler extends BaseThingHandler {
                     updateState(channelUID, openUVData.getUv());
                     break;
                 case UVCOLOR:
-                    updateState(channelUID, getAsRGB(openUVData.getUv().floatValue()));
+                    updateState(channelUID, getAsHSB(openUVData.getUv().floatValue()));
                     break;
                 case UVMAX:
                     updateState(channelUID, openUVData.getUvMax());
@@ -189,15 +185,22 @@ public class OpenUVHandler extends BaseThingHandler {
                     Channel channel = getThing().getChannel(channelUID.getId());
                     if (channel != null) {
                         Configuration configuration = channel.getConfiguration();
-                        int index = Integer.parseInt(configuration.get(PROPERTY_INDEX).toString());
-                        updateState(channelUID, openUVData.getSafeExposureTime().getSafeExposure(index));
+                        int index = 1;
+                        Object skinIndex = configuration.get(PROPERTY_INDEX);
+                        if (skinIndex != null) {
+                            try {
+                                index = Integer.parseInt(skinIndex.toString());
+                            } finally {
+                                updateState(channelUID, openUVData.getSafeExposureTime().getSafeExposure(index));
+                            }
+                        }
                     }
                     break;
             }
         }
     }
 
-    private @NonNull State getAsRGB(float uv) {
+    private @NonNull State getAsHSB(float uv) {
         if (uv >= 11) {
             return HSBType.fromRGB(106, 27, 154);
         } else if (uv >= 8) {
@@ -219,8 +222,8 @@ public class OpenUVHandler extends BaseThingHandler {
     private String buildRequestURL() {
         OpenUVConfiguration config = getConfigAs(OpenUVConfiguration.class);
 
-        StringBuilder urlBuilder = new StringBuilder("https://api.openuv.io/api/v1/uv?lat=")
-                .append(config.getLatitude()).append("&lng=").append(config.getLongitude());
+        StringBuilder urlBuilder = new StringBuilder(BASE_URL).append("?lat=").append(config.getLatitude())
+                .append("&lng=").append(config.getLongitude());
 
         if (config.getAltitude() != null) {
             urlBuilder.append("&alt=").append(config.getAltitude());
@@ -234,16 +237,14 @@ public class OpenUVHandler extends BaseThingHandler {
      *
      */
     private void getOpenUVData() {
-        OpenUVConfiguration config = getConfigAs(OpenUVConfiguration.class);
-
         Properties header = new Properties();
-        header.put("x-access-token", config.apikey);
+        header.put("x-access-token", bridge.getApikey());
 
         try {
             String jsonData = HttpUtil.executeUrl("GET", buildRequestURL(), header, null, null, 2000);
 
             logger.debug("URL = {}", jsonData);
-            OpenUVJsonResponse result = gson.fromJson(jsonData, OpenUVJsonResponse.class);
+            OpenUVJsonResponse result = bridge.getGson().fromJson(jsonData, OpenUVJsonResponse.class);
 
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             openUVData = result.getResult();

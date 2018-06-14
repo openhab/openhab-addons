@@ -17,12 +17,17 @@ package org.openhab.binding.openuv.json;
 public class OpenUVJsonResponse {
 
     private OpenUVJsonResult result;
+    private String error;
 
     public OpenUVJsonResponse() {
     }
 
     public OpenUVJsonResult getResult() {
         return result;
+    }
+
+    public String getError() {
+        return error;
     }
 
 }

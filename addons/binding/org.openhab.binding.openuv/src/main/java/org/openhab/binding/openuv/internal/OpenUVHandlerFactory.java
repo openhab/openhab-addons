@@ -8,18 +8,23 @@
  */
 package org.openhab.binding.openuv.internal;
 
-import static org.openhab.binding.openuv.OpenUVBindingConstants.THING_TYPE_OPENUV;
+import static org.openhab.binding.openuv.OpenUVBindingConstants.*;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.Hashtable;
 
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.i18n.LocationProvider;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.openuv.handler.OpenUVHandler;
+import org.openhab.binding.openuv.handler.OpenUVBridgeHandler;
+import org.openhab.binding.openuv.handler.OpenUVReportHandler;
+import org.openhab.binding.openuv.internal.discovery.OpenUVDiscoveryService;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link OpenUVHandlerFactory} is responsible for creating things and thing
@@ -30,22 +35,46 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.openuv")
 public class OpenUVHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_OPENUV);
+    private LocationProvider locationProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID) || BRIDGE_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_OPENUV)) {
-            return new OpenUVHandler(thing);
+        if (APIBRIDGE_THING_TYPE.equals(thingTypeUID)) {
+            OpenUVBridgeHandler handler = new OpenUVBridgeHandler((Bridge) thing);
+            registerOpenUVDiscoveryService(handler);
+            return handler;
+        } else if (LOCATION_REPORT_THING_TYPE.equals(thingTypeUID)) {
+            return new OpenUVReportHandler(thing);
         }
 
         return null;
+    }
+
+    private void registerOpenUVDiscoveryService(OpenUVBridgeHandler bridgeHandler) {
+        OpenUVDiscoveryService discoveryService = new OpenUVDiscoveryService(bridgeHandler, locationProvider);
+        bridgeHandler.getDiscoveryServiceRegs().put(bridgeHandler.getThing().getUID(), bundleContext
+                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+
+    }
+
+    @Reference
+    protected void setLocationProvider(LocationProvider locationProvider) {
+        this.locationProvider = locationProvider;
+    }
+
+    protected void unsetLocationProvider(LocationProvider locationProvider) {
+        this.locationProvider = null;
+    }
+
+    public LocationProvider getLocationProvider() {
+        return locationProvider;
     }
 
 }

@@ -15,7 +15,6 @@ package org.openhab.binding.openuv.internal;
  * @author Gaël L"hopital - Initial contribution
  */
 public class OpenUVConfiguration {
-    public static final String LOCATION = "location";
     String[] elements = null;
 
     public String apikey;

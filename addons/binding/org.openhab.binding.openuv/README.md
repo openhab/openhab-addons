@@ -8,20 +8,26 @@ To use this binding, you first need to [register and get your API token](https:/
 
 ## Discovery
 
-Local UV Index informations can be autodiscovered based on system location.
-You'll have to complete default configuration with your apiKey.
+Once a bridge with the api Key has been created, Local UV Index informations can be autodiscovered based on system location.
 
 ## Binding Configuration
 
-The binding has no configuration options, all configuration is done at Thing level.
+The binding has no configuration options, all configuration is done at Bridge and Thing level.
 
-## Thing Configuration
+## Bridge Configuration
 
-The thing has a few configuration parameters:
+The bridge has only one configuration parameter :
 
 | Parameter | Description                                                  |
 |-----------|--------------------------------------------------------------|
 | apikey    | Data-platform token to access the OpenUV service. Mandatory. |
+
+## Thing Configuration
+
+The thing has a few configuration parameters :
+
+| Parameter | Description                                                  |
+|-----------|--------------------------------------------------------------|
 | location  | Geo coordinates to be considered by the service.             |
 | refresh   | Refresh interval in minutes. Optional.                       |
 
@@ -35,7 +41,7 @@ For the location parameter, the following syntax is allowed (comma separated lat
 
 ## Channels
 
-The OpenUV information that is retrieved is available as these channels:
+The OpenUV Report thing that is retrieved has these channels:
 
 | Channel ID   | Item Type   | Description                                    |
 |--------------|-------------|------------------------------------------------|
@@ -53,14 +59,17 @@ The OpenUV information that is retrieved is available as these channels:
 demo.things:
 
 ```xtend
-Thing openuv:openuv:home [ apikey="xxxxYYYxxxx", location="52.5200066,13.4049540", refresh=10 ]
+Bridge openuv:openuvapi:local "OpenUV Api" [ apikey="xxxxYYYxxxx" ] {
+    Thing uvreport city1 "UV In My City" [ location="52.5200066,13.4049540", refresh=10 ]
+}
+
 ```
 
 demo.items:
 
 ```xtend
-Number UVIndex                  "UV Index"   { channel = "openuv:openuv:home:UVIndex" }   
-Number UVMax                    "UV Max"  { channel = "openuv:openuv:home:UVMax" }   
-Number Ozone                    "Ozone"  { channel = "openuv:openuv:home:Ozone" }   
+Number UVIndex                  "UV Index"   { channel = "openuv:uvreport:local:city1:UVIndex" }   
+Number UVMax                    "UV Max"  { channel = "openuv:uvreport:local:city1:UVMaxEvent" }   
+Number Ozone                    "Ozone"  { channel = "openuv:uvreport:local:city1:Ozone" }   
 ```
 

@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
  * The {@link OpenUVJsonResult} is responsible for storing
  * the "result" node from the OpenUV JSON response
  *
- * s
+ * @author Gaël L'hopital - Initial contribution
  */
 public class OpenUVJsonResult {
 
