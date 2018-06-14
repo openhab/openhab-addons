@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" configuration-pid="discovery.zway" immediate="true" name="org.openhab.binding.zway.internal.discovery.ZWayBridgeDiscoveryService">
+   <service>
+      <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
+   </service>
+   <implementation class="org.openhab.binding.zway.internal.discovery.ZWayBridgeDiscoveryService"/>
+</scr:component>
