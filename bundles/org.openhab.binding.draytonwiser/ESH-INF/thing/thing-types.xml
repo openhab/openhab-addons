@@ -136,6 +136,7 @@
             <channel id="currentSignalStrength" typeId="signalStrength-channel" />
             <channel id="currentUnifiedSignalStrength" typeId="unifiedSignalStrength-channel" />
             <channel id="zigbeeConnected" typeId="zigbeeConnected-channel" />
+            <channel id="deviceLocked" typeId="deviceLocked-channel" />
        </channels>
         
         <config-description>
@@ -169,6 +170,7 @@
             <channel id="currentSignalStrength" typeId="signalStrength-channel" />
             <channel id="currentUnifiedSignalStrength" typeId="unifiedSignalStrength-channel" />
             <channel id="zigbeeConnected" typeId="zigbeeConnected-channel" />
+            <channel id="deviceLocked" typeId="deviceLocked-channel" />
         </channels>
         
         <config-description>
@@ -416,6 +418,12 @@
         <item-type>String</item-type>
         <label>Room Master Schedule</label>
         <description>The complete JSON representation of the room schedule</description>
+    </channel-type>
+    
+    <channel-type id="deviceLocked-channel" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Device locked</label>
+        <description>Has the device been locked to prevent local changes</description>
     </channel-type>
     
 </thing:thing-descriptions>

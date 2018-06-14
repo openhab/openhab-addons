@@ -468,6 +468,13 @@ public class HeatHubHandler extends BaseBridgeHandler {
         refresh();
     }
 
+    public void setDeviceLocked(Integer deviceId, Boolean locked) {
+        String payload = locked ? "true" : "false";
+        sendMessageToHeatHub(DraytonWiserBindingConstants.DEVICE_ENDPOINT + deviceId + "/DeviceLockEnabled", "PATCH",
+                payload);
+        refresh();
+    }
+
     public void setEcoMode(Boolean ecoMode) {
         String payload = "{\"EcoModeEnabled\":" + ecoMode + "}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.SYSTEM_ENDPOINT, "PATCH", payload);

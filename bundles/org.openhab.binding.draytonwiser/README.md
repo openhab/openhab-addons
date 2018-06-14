@@ -152,7 +152,19 @@ The `serialNumber` corresponds to the device serial number which can be found on
 | `manualModeState`      | Has manual mode been enabled                   |
 | `roomBoostDuration`    | Period in hours to boost the room temperature  |
 | `windowStateDetection` | Detect whether windows are open                |
-| `masterSchedule`       | The current schedule JSON for the room         |
+| `masterSchedule`       | The current schedule JSON for the room         
+
+#### Room Stat
+
+| Channel        | Description                      |
+|----------------|----------------------------------|
+| `deviceLocked` | Is the roomstat interface locked |
+
+#### Smart TRV
+
+| Channel        | Description                 |
+|----------------|-----------------------------|
+| `deviceLocked` | Are the TRV controls locked |
 
 When updating the `masterSchedule` state, only the schedule portion of the JSON that is returned when querying the state is required.
 The `id`, `Type`, `CurrentSetPoint`, `NextEventTime` and `NextEventSetpoint` should not be sent.

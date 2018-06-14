@@ -51,6 +51,11 @@ public class RoomStatHandler extends DraytonWiserThingHandler {
             refresh();
             return;
         }
+
+        if (channelUID.getId().equals(DraytonWiserBindingConstants.CHANNEL_DEVICE_LOCKED)) {
+            boolean deviceLocked = command.toString().toUpperCase().equals("ON");
+            setDeviceLocked(deviceLocked);
+        }
     }
 
     @Override
@@ -89,6 +94,8 @@ public class RoomStatHandler extends DraytonWiserThingHandler {
                         getUnifiedBatteryLevel());
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_ZIGBEE_CONNECTED),
                         getZigbeeConnected());
+                updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_DEVICE_LOCKED),
+                        getDeviceLocked());
             }
         } catch (Exception e) {
             logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
@@ -220,5 +227,28 @@ public class RoomStatHandler extends DraytonWiserThingHandler {
         }
 
         return OnOffType.OFF;
+    }
+
+    private State getDeviceLocked() {
+        if (roomStat != null) {
+            Device device = bridgeHandler.getExtendedDeviceProperties(roomStat.getId());
+            if (device != null) {
+                Boolean locked = device.getDeviceLockEnabled();
+                if (locked != null) {
+                    return locked ? OnOffType.ON : OnOffType.OFF;
+                }
+            }
+        }
+
+        return OnOffType.OFF;
+    }
+
+    private void setDeviceLocked(Boolean state) {
+        if (bridgeHandler != null) {
+            Device device = bridgeHandler.getExtendedDeviceProperties(roomStat.getId());
+            if (device != null) {
+                bridgeHandler.setDeviceLocked(device.getId(), state);
+            }
+        }
     }
 }

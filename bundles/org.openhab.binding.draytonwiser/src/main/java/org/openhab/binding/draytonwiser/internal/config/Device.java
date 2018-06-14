@@ -70,6 +70,9 @@ public class Device {
     @SerializedName("ReceptionOfController")
     @Expose
     private Reception receptionOfController;
+    @SerializedName("DeviceLockEnabled")
+    @Expose
+    private Boolean deviceLockEnabled;
 
     public Integer getId() {
         return id;
@@ -154,6 +157,10 @@ public class Device {
         }
 
         return null;
+    }
+
+    public Boolean getDeviceLockEnabled() {
+        return deviceLockEnabled;
     }
 
 }
