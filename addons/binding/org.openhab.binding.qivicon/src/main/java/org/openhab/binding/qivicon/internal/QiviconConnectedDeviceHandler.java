@@ -11,6 +11,7 @@ package org.openhab.binding.qivicon.internal;
 import static org.openhab.binding.qivicon.internal.QiviconBindingConstants.*;
 
 import java.net.HttpURLConnection;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -20,38 +21,56 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
- * The {@link QiviconHandler} is responsible for handling commands, which are
+ * The {@link QiviconConnectedDeviceHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Claudius Ellsel - Initial contribution
  */
 public class QiviconConnectedDeviceHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(QiviconHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(QiviconConnectedDeviceHandler.class);
     private HttpClient httpClient;
+    private Gson gson = new Gson();
+    private ESHThing[] eshThings;
 
     Bridge bridge = this.getBridge();
 
-    private String networkAddress;
-    private String authKey;
+    private String networkAddress = "ip";
+    private String authKey = "test";
 
     @Nullable
     private QiviconConfiguration config;
+    private List<org.eclipse.smarthome.core.thing.Channel> thingChannels;
 
     public QiviconConnectedDeviceHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
+        if (networkAddress != null && authKey != null) {
+            String requestAddress = "http://" + networkAddress + "/rest/things/";
+            String restThings;
+            try {
+                restThings = httpClient.GET(requestAddress).getContentAsString();
+                logger.debug("Response: {}", restThings);
+                eshThings = gson.fromJson(restThings, ESHThing[].class);
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                logger.debug("Problem with API communication: {}", e);
+            }
+        } else {
+            logger.debug("There are some parameters missing.");
+        }
     }
 
     @Override
@@ -59,12 +78,8 @@ public class QiviconConnectedDeviceHandler extends BaseThingHandler {
         // if (channelUID.getId().equals(CHANNEL_TEMPERATURE)) {
         // TODO: handle command
         logger.debug("Handling Command {}", command.toString());
-        try {
-            apiHelper(networkAddress, authKey, channelUID, command);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+
+        apiHelper(networkAddress, authKey, channelUID, command);
 
         // Note: if communication with thing fails for some reason,
         // indicate that by setting the status with detail information
@@ -73,24 +88,17 @@ public class QiviconConnectedDeviceHandler extends BaseThingHandler {
         // }
     }
 
-    public void apiHelper(String networkAddress, String authKey, ChannelUID channelUID, Command command)
-            throws Exception {
-        SslContextFactory sslContextFactory = new SslContextFactory(true);
-
-        HttpClient httpClient = new HttpClient(sslContextFactory);
-        httpClient.start();
-
+    public void apiHelper(String networkAddress, String authKey, ChannelUID channelUID, Command command) {
         logger.debug("Network address: {}", networkAddress);
         logger.debug("Channel UID: {}", channelUID.getId());
-        System.setProperty("jsse.enableSNIExtension", "false");
         if (networkAddress != null && authKey != null) {
-            String requestAddress = "https://" + networkAddress + "/rest/items/" + channelUID.getId();
+            String requestAddress = "http://" + networkAddress + "/rest/items/" + channelUID.getId();
             logger.debug("Request address: {}", requestAddress);
             Request request = httpClient.POST(requestAddress);
             request.header(HttpHeader.ACCEPT, "application/json");
             request.header(HttpHeader.CONTENT_TYPE, "text/plain");
-            String authHeader = "Bearer " + authKey;
-            request.header("Authorization", authHeader);
+            // String authHeader = "Bearer " + authKey;
+            // request.header("Authorization", authHeader);
             request.content(new StringContentProvider(command.toString()));
             logger.debug("Request: {}", request.toString());
             try {
@@ -98,7 +106,7 @@ public class QiviconConnectedDeviceHandler extends BaseThingHandler {
                 logger.debug("Response: {}", response.getContentAsString());
                 if (response.getStatus() == HttpURLConnection.HTTP_OK) {
                     String res = new String(response.getContent());
-                    System.out.println(res);
+                    logger.debug("Response: {}", res);
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 logger.debug("Error when trying to communicate with the Qivicon REST API: {}", e);
@@ -106,12 +114,13 @@ public class QiviconConnectedDeviceHandler extends BaseThingHandler {
         } else {
             logger.debug("There are some parameters missing.");
         }
-        System.setProperty("jsse.enableSNIExtension", "true");
-        httpClient.stop();
     }
 
     @Override
     public void initialize() {
+        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
+        // Long running initialization should be done asynchronously in background.
+
         logger.debug("Initializing Qivicon connected thing");
 
         config = getConfigAs(QiviconConfiguration.class);
@@ -121,9 +130,9 @@ public class QiviconConnectedDeviceHandler extends BaseThingHandler {
             authKey = bridge.getConfiguration().get(PARAMETER_AUTHORIZATION_KEY).toString();
         }
 
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
-        updateStatus(ThingStatus.ONLINE);
+        updateChannels();
+
+        updateStatusHelper();
 
         // Note: When initialization can NOT be done set the status with more details for further
         // analysis. See also class ThingStatusDetail for all available status details.
@@ -131,5 +140,53 @@ public class QiviconConnectedDeviceHandler extends BaseThingHandler {
         // as expected. E.g.
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
+    }
+
+    public void updateChannels() {
+        for (Channel channel : eshThings[3].getChannels()) {
+            String uId = channel.getUid();
+            String itemType = channel.getItemType();
+            logger.debug("Channel UID: {}", uId);
+            logger.debug("Channel Item Type: {}", itemType);
+            if (channel.getLinkedItems() != null) {
+                if (itemType != null) {
+                    org.eclipse.smarthome.core.thing.Channel thingChannel = ChannelBuilder
+                            .create(new ChannelUID(uId), itemType).withLabel(channel.getLabel())
+                            .withDescription(channel.getDescription()).build();
+                    // .withType(new ChannelType(new ChannelTypeUID(uId), false, "Test", "Test"))
+                    // ChannelBuilder.create(new ChannelUID(uId), itemType).build();
+                    if (thingChannels == null) {
+                        // thingChannels.add(thingChannel);
+                    } else if (!thingChannels.contains(thingChannel)) {
+                        // thingChannels.add(thingChannel);
+                    }
+                } else {
+                    logger.debug("No item type: {}", uId);
+                }
+            } else {
+                logger.debug("No item linked: {}", uId);
+            }
+        }
+        if (thingChannels != null) {
+            updateThing(editThing().withChannels(thingChannels).build());
+        }
+    }
+
+    public void updateStatusHelper() {
+        String status = eshThings[0].getStatusInfo().getStatus();
+        logger.debug("JSON Fetched String: {}", status);
+        switch (status) {
+            case "ONLINE":
+                updateStatus(ThingStatus.ONLINE);
+                break;
+            case "OFFLINE":
+                updateStatus(ThingStatus.OFFLINE);
+                break;
+            case "UNKNOWN":
+                updateStatus(ThingStatus.UNKNOWN);
+                break;
+            default:
+                break;
+        }
     }
 }
