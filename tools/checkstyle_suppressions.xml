@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suppressions PUBLIC "-//Puppy Crawl//DTD Suppressions 1.1//EN" "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+<suppressions>
+    <!-- These suppressions define which files to be suppressed for which checks. -->
+    <suppress files=".+[\\/]internal[\\/].+\.java" checks="JavadocType|JavadocVariable|JavadocMethod|JavadocFilterCheck"/>
+    <suppress files=".+DTO\.java" checks="JavadocType|JavadocVariable|JavadocMethod|JavadocFilterCheck" />
+    <suppress files=".+Impl\.java" checks="JavadocType|JavadocVariable|JavadocMethod|JavadocFilterCheck"/>
+    <!-- The WiFi led binding contains test packages that shouldn't be included in the binary build -->
+    <!-- The CometVisu UI contains files in the resources folder that are used only during the build -->
+    <suppress files=".+org.openhab.binding.wifiled.+|.+org.openhab.ui.cometvisu.+" checks="BuildPropertiesCheck"/>
+    <!-- Homematic and Tellstick bindings are creating and configuring things dynamically, they will log false positives for unused configuration -->
+    <!-- IO and Voice bundles have specific use cases - they use only the config .xml files and will log false positives as well -->
+    <suppress files=".+org.openhab.binding.homematic.+|.+org.openhab.binding.tellstick.+|.+org.openhab.io.+|.+org.openhab.voice.+" checks="EshInfXmlCheck"/>
+    <!-- All generated files will skip the author tag check -->
+    <suppress files=".+[\\/]gen[\\/].+\.java" checks="AuthorTagCheck"/>
+    <!-- Some checks will be supressed for test bundles -->
+    <suppress files=".+.test[\\/].+" checks="RequireBundleCheck"/>
+    <!--  There is a single class inside org.openhab.voice.voicerss.tool, which is meant to be called from the command line.
+    Moving it to "internal" is also not ideal as it is a documented tool. -->
+    <suppress files=".+org.openhab.voice.voicerss.+" checks="PackageExportsNameCheck"/>
+    <!--  Allow the usage of scheduleAtFixedRate in FadingWiFiLEDDriver class  -->
+    <suppress files=".+org.openhab.binding.wifiled.handler.FadingWiFiLEDDriver.java" checks="AvoidScheduleAtFixedRateCheck"/>
+    <suppress files=".+[\\/]pom\.xml" checks="OnlyTabIndentationInXmlFilesCheck"/>
+    <suppress files=".+[\\/]OSGI-INF[\\/]org.openhab.+\.xml" checks="OnlyTabIndentationInXmlFilesCheck|NewlineAtEndOfFileCheck"/>
+    <suppress files=".+org.openhab.binding.yeelight.+" checks="OutsideOfLibExternalLibrariesCheck" />
+</suppressions>
