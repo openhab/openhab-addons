@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,7 +10,6 @@ package org.openhab.binding.neato.internal.classes;
 
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,44 +19,26 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Robot {
 
-    @SerializedName("serial")
-    @Expose
     private String serial;
-    @SerializedName("prefix")
-    @Expose
     private Object prefix;
-    @SerializedName("name")
-    @Expose
     private String name;
-    @SerializedName("model")
-    @Expose
     private String model;
     @SerializedName("secret_key")
-    @Expose
     private String secretKey;
+    private List<Object> traits = null;
     @SerializedName("purchased_at")
-    @Expose
     private Object purchasedAt;
     @SerializedName("linked_at")
-    @Expose
     private String linkedAt;
-    @SerializedName("traits")
-    @Expose
-    private List<Object> traits = null;
     @SerializedName("proof_of_purchase_url")
-    @Expose
     private Object proofOfPurchaseUrl;
     @SerializedName("proof_of_purchase_url_valid_for_seconds")
-    @Expose
     private Integer proofOfPurchaseUrlValidForSeconds;
     @SerializedName("proof_of_purchase_generated_at")
-    @Expose
     private Object proofOfPurchaseGeneratedAt;
     @SerializedName("mac_address")
-    @Expose
     private String macAddress;
     @SerializedName("created_at")
-    @Expose
     private String createdAt;
 
     public String getSerial() {

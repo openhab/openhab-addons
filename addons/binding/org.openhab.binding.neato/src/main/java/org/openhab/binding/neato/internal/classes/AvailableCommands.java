@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.neato.internal.classes;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The {@link AvailableCommands} is responsible for listing all available commands.
  *
@@ -18,20 +15,10 @@ import com.google.gson.annotations.SerializedName;
  */
 public class AvailableCommands {
 
-    @SerializedName("start")
-    @Expose
     private Boolean start;
-    @SerializedName("stop")
-    @Expose
     private Boolean stop;
-    @SerializedName("pause")
-    @Expose
     private Boolean pause;
-    @SerializedName("resume")
-    @Expose
     private Boolean resume;
-    @SerializedName("goToBase")
-    @Expose
     private Boolean goToBase;
 
     public Boolean getStart() {
