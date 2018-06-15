@@ -10,6 +10,7 @@ Export-Package:
 Fragment-Host: org.openhab.binding.avmfritz
 Import-Package: 
  org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.jetty.util.component,
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.events,
  org.eclipse.smarthome.core.thing,
