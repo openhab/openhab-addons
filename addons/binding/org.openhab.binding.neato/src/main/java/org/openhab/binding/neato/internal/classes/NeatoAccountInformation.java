@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,7 +10,6 @@ package org.openhab.binding.neato.internal.classes;
 
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,38 +19,20 @@ import com.google.gson.annotations.SerializedName;
  */
 public class NeatoAccountInformation {
 
-    @SerializedName("email")
-    @Expose
     private String email;
-    @SerializedName("first_name")
-    @Expose
     private Object firstName;
-    @SerializedName("last_name")
-    @Expose
     private Object lastName;
-    @SerializedName("locale")
-    @Expose
     private String locale;
     @SerializedName("country_code")
-    @Expose
     private String countryCode;
-    @SerializedName("developer")
-    @Expose
     private Boolean developer;
-    @SerializedName("newsletter")
-    @Expose
     private Boolean newsletter;
     @SerializedName("created_at")
-    @Expose
     private String createdAt;
     @SerializedName("verified_at")
-    @Expose
     private String verifiedAt;
-    @SerializedName("robots")
-    @Expose
     private List<Robot> robots = null;
     @SerializedName("recent_firmwares")
-    @Expose
     private RecentFirmwares recentFirmwares;
 
     public String getEmail() {

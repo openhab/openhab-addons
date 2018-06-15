@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.neato.internal.classes;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -18,236 +17,158 @@ import com.google.gson.annotations.SerializedName;
  */
 public class RobotInfoData {
 
-    @SerializedName("modelName")
-    @Expose
     private String modelName;
     @SerializedName("CPUMACID")
-    @Expose
-    private String cPUMACID;
+    private String cpuMacId;
     @SerializedName("MainBrdMfgDate")
-    @Expose
     private String mainBrdMfgDate;
     @SerializedName("RobotMfgDate")
-    @Expose
     private String robotMfgDate;
     @SerializedName("BoardRev")
-    @Expose
     private Integer boardRev;
     @SerializedName("ChassisRev")
-    @Expose
     private Integer chassisRev;
     @SerializedName("BatteryType")
-    @Expose
     private Integer batteryType;
     @SerializedName("WheelPodType")
-    @Expose
     private Integer wheelPodType;
     @SerializedName("DropSensorType")
-    @Expose
     private Integer dropSensorType;
     @SerializedName("MagSensorType")
-    @Expose
     private Integer magSensorType;
     @SerializedName("WallSensorType")
-    @Expose
     private Integer wallSensorType;
     @SerializedName("LDSMotorType")
-    @Expose
-    private Integer lDSMotorType;
+    private Integer ldsMotorType;
     @SerializedName("Locale")
-    @Expose
     private Integer locale;
     @SerializedName("USMode")
-    @Expose
-    private Integer uSMode;
-    @SerializedName("InternalModelName")
-    @Expose
+    private Integer usMode;
+    @SerializedName(value = "InternalModelName", alternate = "ModelName")
     private String internalModelName;
     @SerializedName("NeatoServer")
-    @Expose
     private String neatoServer;
     @SerializedName("CartID")
-    @Expose
-    private Integer cartID;
+    private Integer cartId;
     @SerializedName("brushSpeed")
-    @Expose
     private Integer brushSpeed;
     @SerializedName("brushSpeedEco")
-    @Expose
     private Integer brushSpeedEco;
     @SerializedName("vacuumSpeed")
-    @Expose
     private Integer vacuumSpeed;
     @SerializedName("vacuumPwrPercent")
-    @Expose
     private Integer vacuumPwrPercent;
     @SerializedName("vacuumPwrPercentEco")
-    @Expose
     private Integer vacuumPwrPercentEco;
     @SerializedName("runTime")
-    @Expose
     private Integer runTime;
     @SerializedName("BrushPresent")
-    @Expose
     private Integer brushPresent;
     @SerializedName("VacuumPresent")
-    @Expose
     private Integer vacuumPresent;
     @SerializedName("PadPresent")
-    @Expose
     private Integer padPresent;
     @SerializedName("PlatenPresent")
-    @Expose
     private Integer platenPresent;
     @SerializedName("BrushDirection")
-    @Expose
     private Integer brushDirection;
     @SerializedName("VacuumDirection")
-    @Expose
     private Integer vacuumDirection;
     @SerializedName("PadDirection")
-    @Expose
     private Integer padDirection;
     @SerializedName("CumulativeCartridgeTimeInSecs")
-    @Expose
     private Integer cumulativeCartridgeTimeInSecs;
     @SerializedName("nCleaningsStartedWhereDustBinWasFull")
-    @Expose
     private Integer nCleaningsStartedWhereDustBinWasFull;
     @SerializedName("BlowerType")
-    @Expose
     private Integer blowerType;
     @SerializedName("BrushMotorType")
-    @Expose
     private Integer brushMotorType;
     @SerializedName("SideBrushType")
-    @Expose
     private Integer sideBrushType;
     @SerializedName("SideBrushPower")
-    @Expose
     private Integer sideBrushPower;
     @SerializedName("nAutoCycleCleaningsStarted")
-    @Expose
     private Integer nAutoCycleCleaningsStarted;
     @SerializedName("hardware_version_major")
-    @Expose
     private Integer hardwareVersionMajor;
     @SerializedName("hardware_version_minor")
-    @Expose
     private Integer hardwareVersionMinor;
     @SerializedName("software_version_major")
-    @Expose
     private Integer softwareVersionMajor;
     @SerializedName("software_version_minor")
-    @Expose
     private Integer softwareVersionMinor;
     @SerializedName("max_voltage")
-    @Expose
     private Integer maxVoltage;
     @SerializedName("max_current")
-    @Expose
     private Integer maxCurrent;
     @SerializedName("voltage_multiplier")
-    @Expose
     private Integer voltageMultiplier;
     @SerializedName("current_multiplier")
-    @Expose
     private Integer currentMultiplier;
     @SerializedName("capacity_mode")
-    @Expose
     private Integer capacityMode;
     @SerializedName("design_capacity")
-    @Expose
     private Integer designCapacity;
     @SerializedName("design_voltage")
-    @Expose
     private Integer designVoltage;
     @SerializedName("mfg_day")
-    @Expose
     private Integer mfgDay;
     @SerializedName("mfg_month")
-    @Expose
     private Integer mfgMonth;
     @SerializedName("mfg_year")
-    @Expose
     private Integer mfgYear;
     @SerializedName("serial_number")
-    @Expose
     private Integer serialNumber;
     @SerializedName("sw_ver")
-    @Expose
     private Integer swVer;
     @SerializedName("data_ver")
-    @Expose
     private Integer dataVer;
     @SerializedName("mfg_access")
-    @Expose
     private Integer mfgAccess;
     @SerializedName("mfg_name")
-    @Expose
     private String mfgName;
     @SerializedName("device_name")
-    @Expose
     private String deviceName;
     @SerializedName("chemistry_name")
-    @Expose
     private String chemistryName;
     @SerializedName("Major")
-    @Expose
     private Integer major;
     @SerializedName("Minor")
-    @Expose
     private Integer minor;
     @SerializedName("Build")
-    @Expose
     private Integer build;
     @SerializedName("ldsVer")
-    @Expose
     private String ldsVer;
     @SerializedName("ldsSerial")
-    @Expose
     private String ldsSerial;
     @SerializedName("ldsCPU")
-    @Expose
-    private String ldsCPU;
+    private String ldsCpu;
     @SerializedName("ldsBuildNum")
-    @Expose
     private String ldsBuildNum;
     @SerializedName("bootLoaderVersion")
-    @Expose
     private Integer bootLoaderVersion;
     @SerializedName("uiBoardSWVer")
-    @Expose
     private Integer uiBoardSWVer;
     @SerializedName("uiBoardHWVer")
-    @Expose
     private Integer uiBoardHWVer;
     @SerializedName("qaState")
-    @Expose
     private Integer qaState;
     @SerializedName("manufacturer")
-    @Expose
     private Integer manufacturer;
     @SerializedName("driverVersion")
-    @Expose
     private Integer driverVersion;
     @SerializedName("driverID")
-    @Expose
-    private Integer driverID;
+    private Integer driverId;
     @SerializedName("ultrasonicSW")
-    @Expose
     private Integer ultrasonicSW;
     @SerializedName("ultrasonicHW")
-    @Expose
     private Integer ultrasonicHW;
     @SerializedName("blowerHW")
-    @Expose
     private Integer blowerHW;
     @SerializedName("blowerSWMajor")
-    @Expose
     private Integer blowerSWMajor;
     @SerializedName("blowerSWMinor")
-    @Expose
     private Integer blowerSWMinor;
 
     public String getModelName() {
@@ -258,12 +179,12 @@ public class RobotInfoData {
         this.modelName = modelName;
     }
 
-    public String getCPUMACID() {
-        return cPUMACID;
+    public String getCpuMacId() {
+        return cpuMacId;
     }
 
-    public void setCPUMACID(String cPUMACID) {
-        this.cPUMACID = cPUMACID;
+    public void setCpuMacId(String cpuMacId) {
+        this.cpuMacId = cpuMacId;
     }
 
     public String getMainBrdMfgDate() {
@@ -339,11 +260,11 @@ public class RobotInfoData {
     }
 
     public Integer getLDSMotorType() {
-        return lDSMotorType;
+        return ldsMotorType;
     }
 
     public void setLDSMotorType(Integer lDSMotorType) {
-        this.lDSMotorType = lDSMotorType;
+        this.ldsMotorType = lDSMotorType;
     }
 
     public Integer getLocale() {
@@ -355,11 +276,11 @@ public class RobotInfoData {
     }
 
     public Integer getUSMode() {
-        return uSMode;
+        return usMode;
     }
 
     public void setUSMode(Integer uSMode) {
-        this.uSMode = uSMode;
+        this.usMode = uSMode;
     }
 
     public String getInternalModelName() {
@@ -379,11 +300,11 @@ public class RobotInfoData {
     }
 
     public Integer getCartID() {
-        return cartID;
+        return cartId;
     }
 
     public void setCartID(Integer cartID) {
-        this.cartID = cartID;
+        this.cartId = cartID;
     }
 
     public Integer getBrushSpeed() {
@@ -755,11 +676,11 @@ public class RobotInfoData {
     }
 
     public String getLdsCPU() {
-        return ldsCPU;
+        return ldsCpu;
     }
 
     public void setLdsCPU(String ldsCPU) {
-        this.ldsCPU = ldsCPU;
+        this.ldsCpu = ldsCPU;
     }
 
     public String getLdsBuildNum() {
@@ -819,11 +740,11 @@ public class RobotInfoData {
     }
 
     public Integer getDriverID() {
-        return driverID;
+        return driverId;
     }
 
     public void setDriverID(Integer driverID) {
-        this.driverID = driverID;
+        this.driverId = driverID;
     }
 
     public Integer getUltrasonicSW() {

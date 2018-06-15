@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.neato.internal.classes;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The {@link Battery} is the internal class for battery information.
  *
@@ -18,26 +15,12 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Battery {
 
-    @SerializedName("level")
-    @Expose
     private Integer level;
-    @SerializedName("timeToEmpty")
-    @Expose
     private Integer timeToEmpty;
-    @SerializedName("timeToFullCharge")
-    @Expose
     private Integer timeToFullCharge;
-    @SerializedName("totalCharges")
-    @Expose
     private Integer totalCharges;
-    @SerializedName("manufacturingDate")
-    @Expose
     private String manufacturingDate;
-    @SerializedName("authorizationStatus")
-    @Expose
     private Integer authorizationStatus;
-    @SerializedName("vendor")
-    @Expose
     private String vendor;
 
     public Integer getLevel() {

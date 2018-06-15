@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.neato.internal.classes;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The {@link NeatoGeneralInfo} is the internal class for Neato general information.
  *
@@ -18,23 +15,11 @@ import com.google.gson.annotations.SerializedName;
  */
 public class NeatoGeneralInfo {
 
-    @SerializedName("productNumber")
-    @Expose
     private String productNumber;
-    @SerializedName("serial")
-    @Expose
     private String serial;
-    @SerializedName("model")
-    @Expose
     private String model;
-    @SerializedName("language")
-    @Expose
     private String language;
-    @SerializedName("firmware")
-    @Expose
     private String firmware;
-    @SerializedName("battery")
-    @Expose
     private Battery battery;
 
     public String getProductNumber() {

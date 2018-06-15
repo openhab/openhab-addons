@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.neato.internal.classes;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -19,10 +18,8 @@ import com.google.gson.annotations.SerializedName;
 public class BeehiveAuthentication {
 
     @SerializedName("access_token")
-    @Expose
     private String accessToken;
     @SerializedName("current_time")
-    @Expose
     private String currentTime;
 
     public String getAccessToken() {

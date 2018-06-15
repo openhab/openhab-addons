@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.neato.internal.classes;
 
-import static org.openhab.binding.neato.NeatoBindingConstants.*;
-
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -21,78 +18,144 @@ import com.google.gson.annotations.SerializedName;
 public class Cleaning {
 
     @SerializedName("category")
-    @Expose
-    private Integer category;
+    private Integer categoryValue;
     @SerializedName("mode")
-    @Expose
-    private Integer mode;
+    private Integer modeValue;
     @SerializedName("modifier")
-    @Expose
-    private Integer modifier;
-    @SerializedName("spotWidth")
-    @Expose
+    private Integer modifierValue;
+    @SerializedName("navigationMode")
+    private Integer navigationModeValue;
     private Integer spotWidth;
-    @SerializedName("spotHeight")
-    @Expose
     private Integer spotHeight;
 
-    public Integer getCategory() {
-        return category;
-    }
+    public enum Category {
+        MANUAL(1),
+        HOUSE(2),
+        SPOT(3),
+        UNRECOGNIZED(-1);
 
-    public String getCategoryString() {
-        switch (category) {
-            case NEATO_CLEAN_CATEGORY_MANUAL:
-                return "CLEAN-CATEGORY-MANUAL";
+        private int value;
 
-            case NEATO_CLEAN_CATEGORY_SPOT:
-                return "CLEAN-CATEGORY-SPOT";
-
-            case NEATO_CLEAN_CATEGORY_HOUSE:
-                return "CLEAN-CATEGORY-HOUSE";
+        private Category(int value) {
+            this.value = value;
         }
 
-        return "";
-    }
-
-    public void setCategory(Integer category) {
-        this.category = category;
-    }
-
-    public Integer getMode() {
-        return mode;
-    }
-
-    public void setMode(Integer mode) {
-        this.mode = mode;
-    }
-
-    public String getModeString() {
-        switch (this.mode) {
-            case NEATO_CLEAN_MODE_ECO:
-                return "CLEAN-MODE-ECO";
-            case NEATO_CLEAN_MODE_TURBO:
-                return "CLEAN-MODE-TURBO";
+        public static Category fromValue(int value) {
+            for (Category c : values()) {
+                if (c.value == value) {
+                    return c;
+                }
+            }
+            return UNRECOGNIZED;
         }
-        return "";
     }
 
-    public Integer getModifier() {
-        return modifier;
-    }
+    public enum Mode {
+        ECO(1),
+        TURBO(2);
 
-    public void setModifier(Integer modifier) {
-        this.modifier = modifier;
-    }
+        private int value;
 
-    public String getModifierString() {
-        switch (this.modifier) {
-            case NEATO_CLEAN_MODIFIER_NORMAL:
-                return "CLEAN-MODIFIER-NORMAL";
-            case NEATO_CLEAN_MODIFIER_DOUBLE:
-                return "CLEAN-MODIFIER-DOUBLE";
+        private Mode(int value) {
+            this.value = value;
         }
-        return "";
+
+        public static Mode fromValue(int value) {
+            for (Mode m : values()) {
+                if (m.value == value) {
+                    return m;
+                }
+            }
+            return TURBO;
+        }
+    }
+
+    public enum Modifier {
+        NORMAL(1),
+        DOUBLE(2);
+
+        private int value;
+
+        private Modifier(int value) {
+            this.value = value;
+        }
+
+        public static Modifier fromValue(int value) {
+            for (Modifier m : values()) {
+                if (m.value == value) {
+                    return m;
+                }
+            }
+            return NORMAL;
+        }
+    }
+
+    public enum NavigationMode {
+        NORMAL(1),
+        EXTRA_CARE(2);
+
+        private int value;
+
+        private NavigationMode(int value) {
+            this.value = value;
+        }
+
+        public static NavigationMode fromValue(int value) {
+            for (NavigationMode m : values()) {
+                if (m.value == value) {
+                    return m;
+                }
+            }
+            return NORMAL;
+        }
+    }
+
+    public Integer getCategoryValue() {
+        return categoryValue;
+    }
+
+    public void setCategoryValue(Integer categoryValue) {
+        this.categoryValue = categoryValue;
+    }
+
+    public Category getCategory() {
+        return Category.fromValue(categoryValue);
+    }
+
+    public Integer getModeValue() {
+        return modeValue;
+    }
+
+    public void setModeValue(Integer modeValue) {
+        this.modeValue = modeValue;
+    }
+
+    public Mode getMode() {
+        return Mode.fromValue(modeValue);
+    }
+
+    public Integer getModifierValue() {
+        return modifierValue;
+    }
+
+    public void setModifierValue(Integer modifierValue) {
+        this.modifierValue = modifierValue;
+    }
+
+    public Modifier getModifier() {
+        return Modifier.fromValue(modifierValue);
+    }
+
+    public Integer getNavigationModeValue() {
+        return navigationModeValue;
+    }
+
+    public void setNavigationModeValue(Integer navigationMode) {
+        this.navigationModeValue = navigationMode;
+    }
+
+    public NavigationMode getNavigationMode() {
+        return NavigationMode.fromValue(navigationModeValue);
     }
 
     public Integer getSpotWidth() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.neato.internal.classes;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The {@link NeatoRobotInfo} is the internal class for the Neato Robot information.
  *
@@ -18,20 +15,10 @@ import com.google.gson.annotations.SerializedName;
  */
 public class NeatoRobotInfo {
 
-    @SerializedName("version")
-    @Expose
     private Integer version;
-    @SerializedName("reqId")
-    @Expose
     private String reqId;
-    @SerializedName("result")
-    @Expose
     private String result;
-    @SerializedName("error")
-    @Expose
     private String error;
-    @SerializedName("data")
-    @Expose
     private RobotInfoData data;
 
     public Integer getVersion() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.neato.internal.classes;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The {@link Details} is the internal class for detailed information about the vacuum cleaner.
  *
@@ -18,20 +15,10 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Details {
 
-    @SerializedName("isCharging")
-    @Expose
     private Boolean isCharging;
-    @SerializedName("isDocked")
-    @Expose
     private Boolean isDocked;
-    @SerializedName("isScheduleEnabled")
-    @Expose
     private Boolean isScheduleEnabled;
-    @SerializedName("dockHasBeenSeen")
-    @Expose
     private Boolean dockHasBeenSeen;
-    @SerializedName("charge")
-    @Expose
     private Integer charge;
 
     public Boolean getIsCharging() {
