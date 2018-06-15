@@ -29,8 +29,7 @@ import org.osgi.service.component.annotations.Deactivate;
  * @author Gregory Moyer - Initial contribution
  * @author Gaël L'hopital - Ported as-is in Netatmo binding
  */
-@Component(service = { DynamicStateDescriptionProvider.class,
-        NATherm1StateDescriptionProvider.class }, immediate = true)
+@Component(service = { DynamicStateDescriptionProvider.class, NATherm1StateDescriptionProvider.class })
 @NonNullByDefault
 public class NATherm1StateDescriptionProvider implements DynamicStateDescriptionProvider {
     private final Map<ChannelUID, @Nullable List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();

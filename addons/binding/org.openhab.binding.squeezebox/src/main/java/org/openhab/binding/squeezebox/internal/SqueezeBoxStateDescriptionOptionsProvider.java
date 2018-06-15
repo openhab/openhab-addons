@@ -29,8 +29,7 @@ import org.osgi.service.component.annotations.Deactivate;
  * @author Gregory Moyer - Initial contribution
  * @author Mark Hilbush - Adapted to squeezebox binding
  */
-@Component(service = { DynamicStateDescriptionProvider.class,
-        SqueezeBoxStateDescriptionOptionsProvider.class }, immediate = true)
+@Component(service = { DynamicStateDescriptionProvider.class, SqueezeBoxStateDescriptionOptionsProvider.class })
 @NonNullByDefault
 public class SqueezeBoxStateDescriptionOptionsProvider implements DynamicStateDescriptionProvider {
     private final Map<ChannelUID, @Nullable List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();

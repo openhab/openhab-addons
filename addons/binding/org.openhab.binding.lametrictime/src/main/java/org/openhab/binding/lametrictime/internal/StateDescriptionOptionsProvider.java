@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.Deactivate;
  *
  * @author Gregory Moyer - Initial contribution
  */
-@Component(service = { DynamicStateDescriptionProvider.class, StateDescriptionOptionsProvider.class }, immediate = true)
+@Component(service = { DynamicStateDescriptionProvider.class, StateDescriptionOptionsProvider.class })
 @NonNullByDefault
 public class StateDescriptionOptionsProvider implements DynamicStateDescriptionProvider {
     private final Map<ChannelUID, @Nullable List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();

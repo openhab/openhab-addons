@@ -28,8 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pawel Pieczul - Initial contribution
  */
-@Component(service = { DynamicStateDescriptionProvider.class,
-        LoxoneDynamicStateDescriptionProvider.class }, immediate = true)
+@Component(service = { DynamicStateDescriptionProvider.class, LoxoneDynamicStateDescriptionProvider.class })
 @NonNullByDefault
 public class LoxoneDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
 

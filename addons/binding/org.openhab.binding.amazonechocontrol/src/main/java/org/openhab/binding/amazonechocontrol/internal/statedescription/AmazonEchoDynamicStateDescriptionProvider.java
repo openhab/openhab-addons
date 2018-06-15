@@ -56,8 +56,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Michael Geramb - Initial contribution
  */
-@Component(service = { DynamicStateDescriptionProvider.class,
-        AmazonEchoDynamicStateDescriptionProvider.class }, immediate = true)
+@Component(service = { DynamicStateDescriptionProvider.class, AmazonEchoDynamicStateDescriptionProvider.class })
 @NonNullByDefault
 public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
 
