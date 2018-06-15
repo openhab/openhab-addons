@@ -56,7 +56,7 @@ import com.google.common.collect.Sets;
  * @author Daniel Walters - Added Aqara Door/Window sensor and Aqara temperature, humidity and pressure sensor
  * @author Kuba Wolanin - Added Water Leak sensor and Aqara motion sensor
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.mihome")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.mihome")
 public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets

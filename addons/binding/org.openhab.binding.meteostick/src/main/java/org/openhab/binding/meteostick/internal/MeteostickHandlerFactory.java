@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Jackson - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.meteostick")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.meteostick")
 public class MeteostickHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(MeteostickHandlerFactory.class);
 

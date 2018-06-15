@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mattias Markehed - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.minecraft")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.minecraft")
 public class MinecraftHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MinecraftHandlerFactory.class);

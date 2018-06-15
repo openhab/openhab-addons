@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Gaël L'hopital - Initial contribution
  */
 
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.synopanalyzer")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.synopanalyzer")
 public class SynopAnalyzerHandlerFactory extends BaseThingHandlerFactory {
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_SYNOP);

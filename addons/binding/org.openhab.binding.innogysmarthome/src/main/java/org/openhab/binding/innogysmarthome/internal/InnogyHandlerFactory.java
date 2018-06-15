@@ -37,7 +37,7 @@ import com.google.common.collect.Sets;
  *
  * @author Oliver Kuhl - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.innogysmarthome")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.innogysmarthome")
 public class InnogyHandlerFactory extends BaseThingHandlerFactory implements ThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.union(InnogyBridgeHandler.SUPPORTED_THING_TYPES,

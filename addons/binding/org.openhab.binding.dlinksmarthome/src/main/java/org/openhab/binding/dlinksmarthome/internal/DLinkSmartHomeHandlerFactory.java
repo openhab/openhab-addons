@@ -24,7 +24,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Mike Major - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.dlinksmarthome")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.dlinksmarthome")
 public class DLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

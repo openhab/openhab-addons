@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Mark Herwege - Initial Contribution
  */
 
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.nikohomecontrol")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.nikohomecontrol")
 public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();

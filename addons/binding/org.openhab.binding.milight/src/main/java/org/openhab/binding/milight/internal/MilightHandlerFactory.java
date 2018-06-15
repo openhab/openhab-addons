@@ -30,7 +30,7 @@ import com.google.common.collect.Sets;
  *
  * @author David Graeff - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.milight")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.milight")
 public class MilightHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .union(MilightBindingConstants.BRIDGE_THING_TYPES_UIDS, MilightBindingConstants.SUPPORTED_THING_TYPES_UIDS);

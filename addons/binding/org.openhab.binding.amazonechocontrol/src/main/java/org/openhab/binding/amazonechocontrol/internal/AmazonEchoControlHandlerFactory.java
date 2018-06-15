@@ -44,7 +44,7 @@ import org.osgi.service.http.HttpService;
  *
  * @author Michael Geramb - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.amazonechocontrol")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.amazonechocontrol")
 @NonNullByDefault
 public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
 

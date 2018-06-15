@@ -38,7 +38,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Patrik Gfeller - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.icloud")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.icloud")
 public class ICloudHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
     private LocaleProvider localeProvider;

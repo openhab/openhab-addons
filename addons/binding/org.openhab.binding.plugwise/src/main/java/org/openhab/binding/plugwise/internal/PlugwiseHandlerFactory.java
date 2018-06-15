@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Wouter Born - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.plugwise")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.plugwise")
 public class PlugwiseHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Jan-Willem Veldhuis - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.denonmarantz")
 public class DenonMarantzHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AVR);
