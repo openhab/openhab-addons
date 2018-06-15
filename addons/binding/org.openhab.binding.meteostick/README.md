@@ -71,6 +71,13 @@ Set mode to one of the following depending on your device and region:
 | signal-strength     | Number                | Received signal strength                        |
 | low-battery         | Switch                | Low battery warning                             |
 
+Advanced channels:
+
+| Channel Type ID                 | Item Type    | Description                                  |
+|---------------------------------|--------------|----------------------------------------------|
+| wind-direction-last2min-average | Number:Angle | Wind direction average over last 2 minutes   |
+| wind-speed-last2min-average     | Number:Speed | Wind speed average over last 2 minutes       |
+| wind-speed-last2min-maximum     | Number:Speed | Wind speed maximum over last 2 minutes       |
 
 #### Rainfall
 
