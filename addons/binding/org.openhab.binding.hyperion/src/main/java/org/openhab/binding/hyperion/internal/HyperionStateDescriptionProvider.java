@@ -30,8 +30,7 @@ import org.osgi.service.component.annotations.Deactivate;
  * @author Gregory Moyer - Initial contribution
  * @author Daniel Walters - Adapted for Hyperion Binding
  */
-@Component(service = { DynamicStateDescriptionProvider.class,
-        HyperionStateDescriptionProvider.class }, immediate = true)
+@Component(service = { DynamicStateDescriptionProvider.class, HyperionStateDescriptionProvider.class })
 @NonNullByDefault
 public class HyperionStateDescriptionProvider implements DynamicStateDescriptionProvider {
     private final Map<ChannelUID, @Nullable List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
