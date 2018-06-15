@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,11 +8,6 @@
  */
 package org.openhab.binding.neato.internal.classes;
 
-import static org.openhab.binding.neato.NeatoBindingConstants.*;
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The {@link NeatoState} is the internal class for state information from the vacuum cleaner.
  *
@@ -20,42 +15,75 @@ import com.google.gson.annotations.SerializedName;
  */
 public class NeatoState {
 
-    @SerializedName("version")
-    @Expose
     private Integer version;
-    @SerializedName("reqId")
-    @Expose
     private String reqId;
-    @SerializedName("result")
-    @Expose
     private String result;
-    @SerializedName("error")
-    @Expose
     private String error;
-    @SerializedName("data")
-    @Expose
     private RobotInfoData data;
-    @SerializedName("state")
-    @Expose
     private Integer state;
-    @SerializedName("action")
-    @Expose
     private Integer action;
-    @SerializedName("cleaning")
-    @Expose
     private Cleaning cleaning;
-    @SerializedName("details")
-    @Expose
     private Details details;
-    @SerializedName("availableCommands")
-    @Expose
     private AvailableCommands availableCommands;
-    @SerializedName("availableServices")
-    @Expose
     private AvailableServices availableServices;
-    @SerializedName("meta")
-    @Expose
     private Meta meta;
+
+    public enum RobotState {
+        INVALID(0),
+        IDLE(1),
+        BUSY(2),
+        PAUSED(3),
+        ERROR(4);
+
+        private int value;
+
+        private RobotState(int value) {
+            this.value = value;
+        }
+
+        public static RobotState fromValue(int value) {
+            for (RobotState s : RobotState.values()) {
+                if (s.value == value) {
+                    return s;
+                }
+            }
+            return INVALID;
+        }
+    }
+
+    public enum RobotAction {
+        INVALID(0),
+        HOUSE_CLEANING(1),
+        SPOT_CLEANING(2),
+        MANUAL_CLEANING(3),
+        DOCKING(4),
+        USER_MENU_ACTIVE(5),
+        SUSPENDED_CLEANING(6),
+        UPDATING(7),
+        COPYING_LOGS(8),
+        RECOVERING_LOCATION(9),
+        IEC_TEST(10),
+        MAP_CLEANING(11),
+        EXPLORING_MAP(12),
+        AQUIRING_MAP_IDS(13),
+        CREATING_MAP(14),
+        SUSPENDED_EXPLORATION(15);
+
+        private int value;
+
+        private RobotAction(int value) {
+            this.value = value;
+        }
+
+        public static RobotAction fromValue(int value) {
+            for (RobotAction a : RobotAction.values()) {
+                if (a.value == value) {
+                    return a;
+                }
+            }
+            return INVALID;
+        }
+    }
 
     public Integer getVersion() {
         return version;
@@ -82,12 +110,7 @@ public class NeatoState {
     }
 
     public String getError() {
-
-        if (!error.equalsIgnoreCase("ui_alert_invalid")) {
-            return error;
-        } else {
-            return "";
-        }
+        return error;
     }
 
     public void setError(String error) {
@@ -106,25 +129,8 @@ public class NeatoState {
         return state;
     }
 
-    public String getStateString() {
-        switch (this.state) {
-            case NEATO_STATE_INVALID:
-                return "INVALID";
-
-            case NEATO_STATE_IDLE:
-                return "IDLE";
-
-            case NEATO_STATE_BUSY:
-                return "BUSY";
-
-            case NEATO_STATE_PAUSED:
-                return "PAUSED";
-
-            case NEATO_STATE_ERROR:
-                return "ERROR";
-
-        }
-        return "NONE";
+    public RobotState getRobotState() {
+        return RobotState.fromValue(this.state);
     }
 
     public void setState(Integer state) {
@@ -135,37 +141,8 @@ public class NeatoState {
         return action;
     }
 
-    public String getActionString() {
-
-        if (this.state == NEATO_STATE_IDLE || this.state == NEATO_STATE_ERROR) {
-            return "";
-        }
-
-        switch (this.action) {
-            case NEATO_ACTION_INVALID:
-                return "INVALID";
-            case NEATO_ACTION_HOUSECLEANING:
-                return "HOUSE CLEANING";
-            case NEATO_ACTION_SPOTCLEANING:
-                return "SPOT CLEANING";
-            case NEATO_ACTION_MANUALCLEANING:
-                return "MANUAL CLEANING";
-            case NEATO_ACTION_DOCKING:
-                return "DOCKING";
-            case NEATO_ACTION_USERMENUACTIVE:
-                return "USER MENU ACTIVE";
-            case NEATO_ACTION_SUSPENDEDCLEANING:
-                return "SUSPENDED CLEANING";
-            case NEATO_ACTION_UPDATING:
-                return "UPDATING";
-            case NEATO_ACTION_COPYINGLOGS:
-                return "COPYING LOGS";
-            case NEATO_ACTION_RECOVERINGLOCATION:
-                return "RECOVERING LOCATION";
-            case NEATO_ACTION_IECTEST:
-                return "IEC TEST";
-        }
-        return "";
+    public RobotAction getRobotAction() {
+        return RobotAction.fromValue(this.action);
     }
 
     public void setAction(Integer action) {

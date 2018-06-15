@@ -1,15 +1,17 @@
 Manifest-Version: 1.0
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: Neato Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.neato;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Bundle-ClassPath: .,
- lib/gson-2.8.0-sources.jar,
- lib/gson-2.8.0.jar
+Bundle-Version: 2.4.0.qualifier
 Import-Package: 
+ com.google.gson,
+ com.google.gson.annotations,
  org.apache.commons.codec.binary,
+ org.apache.commons.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
@@ -21,6 +23,7 @@ Import-Package:
  org.eclipse.smarthome.io.net.http,
  org.openhab.binding.neato,
  org.openhab.binding.neato.handler,
+ org.osgi.framework,
  org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
