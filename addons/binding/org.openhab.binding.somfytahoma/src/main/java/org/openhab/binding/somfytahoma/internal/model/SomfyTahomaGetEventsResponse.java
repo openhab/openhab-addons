@@ -6,9 +6,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.somfytahoma.model;
+package org.openhab.binding.somfytahoma.internal.model;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * The {@link SomfyTahomaGetEventsResponse} holds information about response to getEvents
@@ -18,9 +19,9 @@ import java.util.ArrayList;
  */
 public class SomfyTahomaGetEventsResponse {
 
-    ArrayList<SomfyTahomaEvent> events;
+    Collection<SomfyTahomaEvent> events = Collections.emptyList();
 
-    public ArrayList<SomfyTahomaEvent> getEvents() {
+    public Collection<SomfyTahomaEvent> getEvents() {
         return events;
     }
 }

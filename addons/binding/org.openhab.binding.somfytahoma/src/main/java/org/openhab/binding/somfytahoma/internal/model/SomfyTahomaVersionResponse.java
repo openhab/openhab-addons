@@ -6,21 +6,21 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.somfytahoma.model;
+package org.openhab.binding.somfytahoma.internal.model;
 
 import java.util.ArrayList;
 
 /**
- * The {@link SomfyTahomaStatesResponse} holds information about
- * response to getting device's states command.
+ * The {@link SomfyTahomaVersionResponse} holds information about
+ * response to getting gateway's firmware version.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaStatesResponse {
+public class SomfyTahomaVersionResponse {
 
-    private ArrayList<SomfyTahomaDeviceWithState> devices;
+    private String result;
 
-    public ArrayList<SomfyTahomaDeviceWithState> getDevices() {
-        return devices;
+    public String getResult() {
+        return result;
     }
 }

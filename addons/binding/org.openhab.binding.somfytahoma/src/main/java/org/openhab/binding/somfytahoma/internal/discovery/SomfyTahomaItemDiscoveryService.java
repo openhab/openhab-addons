@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.somfytahoma.handler.SomfyTahomaBaseThingHandler;
 import org.openhab.binding.somfytahoma.handler.SomfyTahomaBridgeHandler;
-import org.openhab.binding.somfytahoma.model.*;
+import org.openhab.binding.somfytahoma.internal.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,15 +73,8 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
         logger.debug("Starting SomfyTahoma background discovery");
 
         if (discoveryJob == null || discoveryJob.isCancelled()) {
-            try {
-                discoveryJob = scheduler.scheduleWithFixedDelay(this::runDiscovery, 10, DISCOVERY_REFRESH_SEC,
-                        TimeUnit.MINUTES);
-            } catch (java.lang.IncompatibleClassChangeError ex) {
-                logger.warn("This binding is most probably running in an OpenHAB 2.2.x or older environment.");
-                logger.warn("Auto discovery is not compatible, please use manual one.");
-            } catch (Exception ex) {
-                logger.error("Exception during background discovery!", ex);
-            }
+            discoveryJob = scheduler.scheduleWithFixedDelay(this::runDiscovery, 10, DISCOVERY_REFRESH_SEC,
+                    TimeUnit.MINUTES);
         }
 
     }
@@ -127,7 +120,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 gatewayDiscovered(gw.getGatewayId());
             }
 
-            ArrayList<SomfyTahomaActionGroup> actions = bridge.listActionGroups();
+            List<SomfyTahomaActionGroup> actions = bridge.listActionGroups();
 
             for (SomfyTahomaActionGroup group : actions) {
                 String oid = group.getOid();
@@ -137,7 +130,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 actionGroupDiscovered(label, oid, oid);
             }
         } else {
-            logger.warn("Cannot start discovery since the bridge is not online!");
+            logger.debug("Cannot start discovery since the bridge is not online!");
         }
     }
 
@@ -249,25 +242,16 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     }
 
     private void deviceDiscovered(String label, String deviceURL, String oid, ThingTypeUID thingTypeUID) {
-        Map<String, Object> properties = new HashMap<>(2);
+        Map<String, Object> properties = new HashMap<>();
         properties.put("url", deviceURL);
         properties.put("label", label);
 
         ThingUID thingUID = new ThingUID(thingTypeUID, bridge.getThing().getUID(), oid);
 
-        Thing th = discoveryServiceCallback.getExistingThing(thingUID);
-        if (th == null) {
-            logger.debug("Detected a/an {} - label: {} oid: {}", thingTypeUID.getId(), label, oid);
-            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                    .withProperties(properties).withRepresentationProperty("url").withLabel(label)
-                    .withBridge(bridge.getThing().getUID()).build());
-        } else {
-            SomfyTahomaBaseThingHandler handler = (SomfyTahomaBaseThingHandler) th.getHandler();
-            if (handler != null) {
-                handler.updateLabelProperty(label);
-            }
-        }
-
+        logger.debug("Detected a/an {} - label: {} oid: {}", thingTypeUID.getId(), label, oid);
+        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
+                .withProperties(properties).withRepresentationProperty("url").withLabel(label)
+                .withBridge(bridge.getThing().getUID()).build());
     }
 
     private void actionGroupDiscovered(String label, String deviceURL, String oid) {
@@ -287,5 +271,4 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                     .withBridge(bridge.getThing().getUID()).build());
         }
     }
-
 }

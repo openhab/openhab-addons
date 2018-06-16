@@ -113,10 +113,10 @@
 	</channel-type>
 
 	<channel-type id="current_temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Somfy Current Temperature</label>
 		<description>The current temperature of the heating system</description>
-		<state pattern="%.1f ˚C" readOnly="true"/>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="current_state">
@@ -127,17 +127,10 @@
 	</channel-type>
 
 	<channel-type id="target_temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Somfy Target Temperature</label>
-		<description>The target temperature of heating system</description>
-		<state pattern="%.1f ˚C"/>
-	</channel-type>
-
-	<channel-type id="battery_level">
-		<item-type>Number</item-type>
-		<label>Somfy Battery Level</label>
-		<description>The battery level in percentage</description>
-		<state readOnly="true" pattern="%d %%"/>
+		<description>The target temperature of the heating system</description>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="target_heating_level">

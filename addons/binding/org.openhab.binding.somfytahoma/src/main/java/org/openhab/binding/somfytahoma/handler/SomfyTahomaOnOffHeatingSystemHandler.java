@@ -38,7 +38,6 @@ public class SomfyTahomaOnOffHeatingSystemHandler extends SomfyTahomaBaseThingHa
     public Hashtable<String, String> getStateNames() {
         return new Hashtable<String, String>() {
             {
-                put(SWITCH, "core:OnOffState");
                 put(TARGET_HEATING_LEVEL, "io:TargetHeatingLevelState");
             }
         };
@@ -50,15 +49,10 @@ public class SomfyTahomaOnOffHeatingSystemHandler extends SomfyTahomaBaseThingHa
         if (command.equals(RefreshType.REFRESH)) {
             updateChannelState(channelUID);
         } else {
-            if (channelUID.getId().equals(SWITCH) && command.equals(OnOffType.OFF)) {
-                //this thing accepts only off command
-                sendCommand(COMMAND_OFF, "[]");
-            }
             if (channelUID.getId().equals(TARGET_HEATING_LEVEL)) {
                 String param = "[\"" + command.toString() + "\"]";
                 sendCommand(COMMAND_SET_HEATINGLEVEL, param);
             }
         }
-
     }
 }

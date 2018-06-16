@@ -33,6 +33,4 @@ Import-Package: com.google.gson,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.somfytahoma,
- org.openhab.binding.somfytahoma.handler,
- org.openhab.binding.somfytahoma.config; x-internal:=true,
- org.openhab.binding.somfytahoma.model; x-internal:=true
+ org.openhab.binding.somfytahoma.handler

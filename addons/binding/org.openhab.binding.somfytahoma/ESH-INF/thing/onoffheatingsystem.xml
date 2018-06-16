@@ -10,7 +10,6 @@
 		<label>Somfy Heating System with On/Off</label>
 		<channels>
 			<channel id="target_heating_level" typeId="target_heating_level"></channel>
-			<channel id="switch" typeId="switch"></channel>
 		</channels>
 	<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>

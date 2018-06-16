@@ -56,6 +56,5 @@ public class SomfyTahomaHeatingSystemHandler extends SomfyTahomaBaseThingHandler
                 sendCommand("setTargetTemperature", param);
             }
         }
-
     }
 }

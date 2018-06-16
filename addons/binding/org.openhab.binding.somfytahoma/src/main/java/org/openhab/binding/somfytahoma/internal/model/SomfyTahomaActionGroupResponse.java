@@ -6,21 +6,20 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.somfytahoma.model;
+package org.openhab.binding.somfytahoma.internal.model;
 
 import java.util.ArrayList;
 
 /**
- * The {@link SomfyTahomaVersionResponse} holds information about
- * response to getting gateway's firmware version.
+ * The {@link SomfyTahomaActionGroupResponse} holds information about response
+ * to getting action groups command.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaVersionResponse {
+public class SomfyTahomaActionGroupResponse {
+    private ArrayList<SomfyTahomaActionGroup> actionGroups;
 
-    private String result;
-
-    public String getResult() {
-        return result;
+    public ArrayList<SomfyTahomaActionGroup> getActionGroups() {
+        return actionGroups;
     }
 }

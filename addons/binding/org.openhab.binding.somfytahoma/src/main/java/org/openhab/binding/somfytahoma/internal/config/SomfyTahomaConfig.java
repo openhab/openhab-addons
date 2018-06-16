@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.somfytahoma.config;
+package org.openhab.binding.somfytahoma.internal.config;
 
 /**
  * The {@link SomfyTahomaConfig} is  is the base class for configuration

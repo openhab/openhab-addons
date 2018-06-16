@@ -15,10 +15,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.somfytahoma.model.SomfyTahomaState;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -192,8 +193,8 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
                 default:
                     return null;
             }
-        } catch (Exception ex) {
-            logger.error("Error while parsing Tahoma state! Value: {} type: {}", state.getValue(), type, ex);
+        } catch (NumberFormatException ex) {
+            logger.debug("Error while parsing Tahoma state! Value: {} type: {}", state.getValue(), type, ex);
         }
         return null;
     }
@@ -215,7 +216,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
             case "unlocked":
                 return OpenClosedType.OPEN;
             default:
-                logger.warn("Unknown thing state returned: {}", value);
+                logger.debug("Unknown thing state returned: {}", value);
                 return UnDefType.UNDEF;
         }
     }
@@ -258,7 +259,6 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
             if (channel == null) {
                 return;
             }
-            //SomfyTahomaState tahomaState = getBridgeHandler().getState(url, stateName);
             SomfyTahomaState tahomaState = getCachedThingState(stateName);
             State state = parseTahomaState(channel.getAcceptedItemType(), tahomaState);
 
@@ -277,7 +277,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
         if (thing.getChannel(channelUID.getId()) != null) {
             return thing.getChannel(channelUID.getId());
         }
-        logger.error("Cannot find channel for UID: {}", channelUID.getId());
+        logger.debug("Cannot find channel for UID: {}", channelUID.getId());
         return null;
     }
 
@@ -293,14 +293,5 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
                 }
             }
         }
-    }
-
-    public void updateLabelProperty(String label) {
-        Map<String, String> properties = editProperties();
-        if (properties.get("label") != null) {
-            properties.remove("label");
-        }
-        properties.put("label", label);
-        updateProperties(properties);
     }
 }

@@ -12,7 +12,7 @@
 			<channel id="current_temperature" typeId="current_temperature"></channel>
 			<channel id="current_state" typeId="current_state"></channel>
 			<channel id="target_temperature" typeId="target_temperature"></channel>
-			<channel id="battery_level" typeId="battery_level"></channel>
+			<channel id="battery_level" typeId="system.battery-level"></channel>
 		</channels>
 	<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>

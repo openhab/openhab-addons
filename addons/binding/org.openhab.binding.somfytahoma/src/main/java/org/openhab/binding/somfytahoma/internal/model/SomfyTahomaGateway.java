@@ -6,24 +6,18 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.somfytahoma.model;
+package org.openhab.binding.somfytahoma.internal.model;
 
 /**
- * The {@link SomfyTahomaLoginResponse} holds information about login
- * response to your TahomaLink account.
- *
+ * The {@link SomfyTahomaGateway} holds information about a gateway bound
+ * to TahomaLink account.
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaLoginResponse {
+public class SomfyTahomaGateway {
 
-    private boolean success;
-    private String version;
+    private String gatewayId;
 
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public String getVersion() {
-        return version;
+    public String getGatewayId() {
+        return gatewayId;
     }
 }

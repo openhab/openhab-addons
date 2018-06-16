@@ -6,21 +6,21 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.somfytahoma.model;
+package org.openhab.binding.somfytahoma.internal.model;
 
 import java.util.ArrayList;
 
 /**
- * The {@link SomfyTahomaExecutionsResponse} holds information about response
- * to getting running executions command (moving devices).
+ * The {@link SomfyTahomaStatesResponse} holds information about
+ * response to getting device's states command.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaExecutionsResponse {
+public class SomfyTahomaStatesResponse {
 
-    private ArrayList<SomfyTahomaExecution> executions;
+    private ArrayList<SomfyTahomaDeviceWithState> devices;
 
-    public ArrayList<SomfyTahomaExecution> getExecutions() {
-        return executions;
+    public ArrayList<SomfyTahomaDeviceWithState> getDevices() {
+        return devices;
     }
 }

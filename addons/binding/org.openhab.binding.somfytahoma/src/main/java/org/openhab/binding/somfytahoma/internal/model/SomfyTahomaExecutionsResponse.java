@@ -6,20 +6,21 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.somfytahoma.model;
+package org.openhab.binding.somfytahoma.internal.model;
 
 import java.util.ArrayList;
 
 /**
- * The {@link SomfyTahomaActionGroupResponse} holds information about response
- * to getting action groups command.
+ * The {@link SomfyTahomaExecutionsResponse} holds information about response
+ * to getting running executions command (moving devices).
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaActionGroupResponse {
-    private ArrayList<SomfyTahomaActionGroup> actionGroups;
+public class SomfyTahomaExecutionsResponse {
 
-    public ArrayList<SomfyTahomaActionGroup> getActionGroups() {
-        return actionGroups;
+    private ArrayList<SomfyTahomaExecution> executions;
+
+    public ArrayList<SomfyTahomaExecution> getExecutions() {
+        return executions;
     }
 }
