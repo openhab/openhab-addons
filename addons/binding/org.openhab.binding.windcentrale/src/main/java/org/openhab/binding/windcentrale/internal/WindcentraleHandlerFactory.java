@@ -26,7 +26,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.windcentrale")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.windcentrale")
 @NonNullByDefault
 public class WindcentraleHandlerFactory extends BaseThingHandlerFactory {
 

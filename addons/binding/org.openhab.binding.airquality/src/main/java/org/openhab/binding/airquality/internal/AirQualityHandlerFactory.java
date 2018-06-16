@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Kuba Wolanin - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.airquality")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.airquality")
 public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AQI);

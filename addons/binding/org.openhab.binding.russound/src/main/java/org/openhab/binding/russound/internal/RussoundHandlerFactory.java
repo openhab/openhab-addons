@@ -36,7 +36,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Tim Roberts - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.russound")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.russound")
 public class RussoundHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(RussoundHandlerFactory.class);
 

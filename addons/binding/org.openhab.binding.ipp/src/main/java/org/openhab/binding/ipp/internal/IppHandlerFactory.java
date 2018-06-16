@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tobias Braeutigam - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.ipp")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.ipp")
 public class IppHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(IppHandlerFactory.class);
 

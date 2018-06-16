@@ -40,7 +40,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Cedric Boon - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.velbus")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.velbus")
 public class VelbusHandlerFactory extends BaseThingHandlerFactory {
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 

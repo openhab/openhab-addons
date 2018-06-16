@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Chris Graham - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.opensprinkler")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.opensprinkler")
 public class OpenSprinklerHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(OPENSPRINKLER_THING, OPENSPRINKLERPI_THING));

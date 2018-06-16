@@ -42,7 +42,7 @@ import com.google.common.collect.Sets;
  *
  * @author Tobias Bräutigam - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.pulseaudio")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.pulseaudio")
 public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(PulseaudioHandlerFactory.class);
 

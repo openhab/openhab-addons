@@ -36,7 +36,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Patrick Hecker - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.zway")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.zway")
 public class ZWayHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(

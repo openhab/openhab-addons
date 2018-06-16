@@ -29,7 +29,7 @@ import com.google.common.collect.Lists;
  *
  * @author Karel Goderis - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.oceanic")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.oceanic")
 public class OceanicHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(THING_TYPE_SERIAL,

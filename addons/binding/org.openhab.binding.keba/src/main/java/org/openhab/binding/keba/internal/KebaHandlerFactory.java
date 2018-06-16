@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Karel Goderis - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.keba")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.keba")
 public class KebaHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_KECONTACTP20);

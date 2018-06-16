@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bob Raker - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.cm11a")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.cm11a")
 public class Cm11aHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(Cm11aHandlerFactory.class);

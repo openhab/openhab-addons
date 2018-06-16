@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Osman Basha - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.wifiled")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.wifiled")
 public class WiFiLEDHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_WIFILED);

@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Angus Gratton - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.coolmasternet")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.coolmasternet")
 public class CoolMasterNetHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

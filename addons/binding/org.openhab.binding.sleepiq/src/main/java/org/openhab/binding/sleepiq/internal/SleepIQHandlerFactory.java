@@ -36,7 +36,7 @@ import com.google.common.collect.Sets;
  *
  * @author Gregory Moyer - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.sleepiq")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.sleepiq")
 public class SleepIQHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Sets
             .union(SleepIQCloudHandler.SUPPORTED_THING_TYPE_UIDS, SleepIQDualBedHandler.SUPPORTED_THING_TYPE_UIDS);

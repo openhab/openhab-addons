@@ -23,7 +23,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.gardena")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.gardena")
 public class GardenaHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

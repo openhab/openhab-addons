@@ -30,7 +30,7 @@ import com.google.common.collect.Lists;
  *
  * @author Oliver Libutzki - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.urtsi")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.urtsi")
 public class UrtsiHandlerFactory extends BaseThingHandlerFactory {
 
     private static final List<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(URTSI_DEVICE_THING_TYPE,

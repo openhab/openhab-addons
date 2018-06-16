@@ -31,7 +31,7 @@ import com.google.common.collect.Sets;
  *
  * @author Jonas Hohaus - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.phc")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.phc")
 public class PHCHandlerFactory extends BaseThingHandlerFactory {
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(

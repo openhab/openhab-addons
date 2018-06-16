@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Karel Goderis - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.rme")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.rme")
 public class RMEHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MANAGER);

@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Karel Goderis - Initial contribution
  * @author Nicolai Grødum - Adding token based auth
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.tesla")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.tesla")
 public class TeslaHandlerFactory extends BaseThingHandlerFactory {
 
     private StorageService storageService;

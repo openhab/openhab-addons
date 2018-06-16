@@ -33,7 +33,7 @@ import com.google.common.collect.Lists;
  * @since 2.3.0
  *
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.irtrans")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.irtrans")
 public class IRtransHandlerFactory extends BaseThingHandlerFactory {
 
     public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(

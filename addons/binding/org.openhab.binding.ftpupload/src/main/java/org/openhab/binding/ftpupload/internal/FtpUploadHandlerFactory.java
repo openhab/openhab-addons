@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.ftpupload")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.ftpupload")
 public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(FtpUploadHandlerFactory.class);
 

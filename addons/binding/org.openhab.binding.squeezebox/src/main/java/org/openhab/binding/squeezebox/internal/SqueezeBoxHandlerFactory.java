@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Dan Cunningham - Initial contribution
  * @author Mark Hilbush - Cancel request player job when handler removed
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.squeezebox")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.squeezebox")
 public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxHandlerFactory.class);

@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Hakan Tandogan - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.sensebox")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.sensebox")
 public class SenseBoxHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_BOX);

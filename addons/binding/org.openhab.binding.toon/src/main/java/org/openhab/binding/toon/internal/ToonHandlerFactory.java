@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jorg de Jong - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.toon")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.toon")
 public class ToonHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(ToonHandlerFactory.class);
 

@@ -31,7 +31,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Shawn Wilsher - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.onebusaway")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.onebusaway")
 public class OneBusAwayHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(ApiHandler.SUPPORTED_THING_TYPE,

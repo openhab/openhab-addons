@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Andy Lintner - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.hdpowerview")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.hdpowerview")
 public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

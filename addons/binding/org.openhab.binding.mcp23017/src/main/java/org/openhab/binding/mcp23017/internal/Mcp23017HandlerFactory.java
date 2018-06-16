@@ -30,7 +30,7 @@ import com.google.common.collect.Lists;
  *
  * @author Anatol Ogorek - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.mcp23017")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.mcp23017")
 public class Mcp23017HandlerFactory extends BaseThingHandlerFactory {
 
     private static final List<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(THING_TYPE_MCP23017);

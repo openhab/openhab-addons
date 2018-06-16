@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Svilen Valkanov - Initial contribution
  * @author Lyubomir Papazov - Pass systeminfo service to the SysteminfoHandler constructor
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.systeminfo")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.systeminfo")
 public class SysteminfoHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COMPUTER);

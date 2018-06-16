@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Marius Bjoernstad - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.folding")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.folding")
 public class FoldingHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(

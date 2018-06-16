@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Volker Bier - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.jeelink")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.jeelink")
 public class JeeLinkHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(JeeLinkHandlerFactory.class);
 

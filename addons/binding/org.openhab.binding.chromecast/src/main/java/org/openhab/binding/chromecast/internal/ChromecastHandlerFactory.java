@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Kai Kreuzer - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.chromecast")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.chromecast")
 public class ChromecastHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(ChromecastHandlerFactory.class);
 

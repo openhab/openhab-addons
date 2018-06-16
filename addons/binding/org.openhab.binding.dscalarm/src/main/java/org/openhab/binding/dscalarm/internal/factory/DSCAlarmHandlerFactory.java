@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Russell Stephens - Initial Contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.dscalarm")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.dscalarm")
 public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(DSCAlarmHandlerFactory.class);
