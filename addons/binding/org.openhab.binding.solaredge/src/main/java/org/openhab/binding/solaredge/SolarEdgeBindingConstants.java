@@ -8,12 +8,11 @@
  */
 package org.openhab.binding.solaredge;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link SolarEdgeBindingConstants} class defines common constants, which are
@@ -60,6 +59,6 @@ public class SolarEdgeBindingConstants {
     public static final String DATA_API_LEGACY_LIVE_DATA_FIELDID_FIELD = "fieldId";
     public static final String DATA_API_AGGREGATE_DATA_CHARTFIELD_FIELD = "chartField";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_GENERIC);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_GENERIC);
 
 }
