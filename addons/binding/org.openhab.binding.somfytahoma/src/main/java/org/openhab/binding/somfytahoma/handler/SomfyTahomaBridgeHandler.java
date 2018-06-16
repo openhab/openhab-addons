@@ -236,7 +236,15 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
             return UNAUTHORIZED;
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (ExecutionException e) {
+            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
+                return UNAUTHORIZED;
+            } else {
+                logger.error("Cannot send getActionGroups command!", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        } catch (InterruptedException | TimeoutException e) {
             logger.error("Cannot send getActionGroups command!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
@@ -256,7 +264,14 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             return data.getSetup();
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (ExecutionException e) {
+            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
+            } else {
+                logger.error("Cannot send listDevices command!", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        } catch (InterruptedException | TimeoutException e) {
             logger.error("Cannot send listDevices command!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
@@ -302,7 +317,14 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             return device.getStates();
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (ExecutionException e) {
+            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
+            } else {
+                logger.error("Cannot send getStates command!", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        } catch (InterruptedException | TimeoutException e) {
             logger.error("Cannot send getStates command!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
@@ -460,7 +482,15 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
             return false;
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (ExecutionException e) {
+            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
+                return false;
+            } else {
+                logger.error("Cannot send apply command {} with params {}!", command, params, e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        } catch (InterruptedException | TimeoutException e) {
             logger.error("Cannot send apply command {} with params {}!", command, params, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
@@ -513,7 +543,15 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
             return UNAUTHORIZED;
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (ExecutionException e) {
+            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
+                return UNAUTHORIZED;
+            } else {
+                logger.error("Cannot send getCurrentExecutions command!", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        } catch (InterruptedException | TimeoutException e) {
             logger.error("Cannot send getCurrentExecutions command!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
@@ -538,7 +576,15 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
             return false;
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (ExecutionException e) {
+            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
+                return false;
+            } else {
+                logger.error("Cannot cancel execution!", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        } catch (InterruptedException | TimeoutException e) {
             logger.error("Cannot cancel execution!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
@@ -585,7 +631,15 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
             return UNAUTHORIZED;
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (ExecutionException e) {
+            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
+                return UNAUTHORIZED;
+            } else {
+                logger.error("Cannot get Tahoma gateway version!", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        } catch (InterruptedException | TimeoutException e) {
             logger.error("Cannot get Tahoma gateway version!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
@@ -593,6 +647,14 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     public void executeActionGroup(String id) {
+        String execId = executeActionGroupInternal(id);
+        if (execId.equals(UNAUTHORIZED)) {
+            login();
+            executeActionGroupInternal(id);
+        }
+    }
+
+    public String executeActionGroupInternal(String id) {
         String line = "";
         try {
             String url = EXEC_URL + id;
@@ -602,12 +664,23 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             if (data.getExecId() == null) {
                 logger.warn("Got empty exec response");
             }
+            return data.getExecId();
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            return UNAUTHORIZED;
+        } catch (ExecutionException e) {
+            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
+                return UNAUTHORIZED;
+            } else {
+                logger.error("Cannot exec execution group!", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        } catch (InterruptedException | TimeoutException e) {
             logger.error("Cannot exec execution group!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
+        return null;
     }
 
     public String getTahomaStatus(String gatewayId) {
@@ -625,7 +698,15 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
             return UNAUTHORIZED;
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (ExecutionException e) {
+            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized");
+                return UNAUTHORIZED;
+            } else {
+                logger.error("Cannot get Tahoma gateway status!", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        } catch (InterruptedException | TimeoutException e) {
             logger.error("Cannot get Tahoma gateway status!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }

@@ -165,6 +165,7 @@ public class SomfyTahomaBindingConstants {
     final public static String COMMAND_OFF = "off";
     final public static String STATUS_STATE = "core:StatusState";
     final public static String UNAVAILABLE = "unavailable";
+    final public static String AUTHENTICATION_CHALLENGE = "HTTP protocol violation: Authentication challenge without WWW-Authenticate header";
 
     // supported uiClasses
     final public static String ROLLERSHUTTER = "RollerShutter";
