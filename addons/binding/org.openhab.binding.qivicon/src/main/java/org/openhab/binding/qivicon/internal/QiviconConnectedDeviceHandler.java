@@ -44,7 +44,7 @@ public class QiviconConnectedDeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(QiviconConnectedDeviceHandler.class);
     private HttpClient httpClient;
     private Gson gson = new Gson();
-    private ESHThing[] eshThings;
+    private ESHThing eshThing;
 
     Bridge bridge = this.getBridge();
 
@@ -55,16 +55,17 @@ public class QiviconConnectedDeviceHandler extends BaseThingHandler {
     private QiviconConfiguration config;
     private List<org.eclipse.smarthome.core.thing.Channel> thingChannels;
 
-    public QiviconConnectedDeviceHandler(Thing thing, HttpClient httpClient) {
+    public QiviconConnectedDeviceHandler(Thing thing, HttpClient httpClient, ESHThing eshThing) {
         super(thing);
         this.httpClient = httpClient;
+        this.eshThing = eshThing;
         if (networkAddress != null && authKey != null) {
             String requestAddress = "http://" + networkAddress + "/rest/things/";
             String restThings;
             try {
                 restThings = httpClient.GET(requestAddress).getContentAsString();
                 logger.debug("Response: {}", restThings);
-                eshThings = gson.fromJson(restThings, ESHThing[].class);
+                // eshThings = gson.fromJson(restThings, ESHThing[].class);
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 logger.debug("Problem with API communication: {}", e);
             }
@@ -143,7 +144,7 @@ public class QiviconConnectedDeviceHandler extends BaseThingHandler {
     }
 
     public void updateChannels() {
-        for (Channel channel : eshThings[3].getChannels()) {
+        for (Channel channel : eshThing.getChannels()) {
             String uId = channel.getUid();
             String itemType = channel.getItemType();
             logger.debug("Channel UID: {}", uId);
@@ -173,7 +174,7 @@ public class QiviconConnectedDeviceHandler extends BaseThingHandler {
     }
 
     public void updateStatusHelper() {
-        String status = eshThings[0].getStatusInfo().getStatus();
+        String status = eshThing.getStatusInfo().getStatus();
         logger.debug("JSON Fetched String: {}", status);
         switch (status) {
             case "ONLINE":

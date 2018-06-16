@@ -9,6 +9,12 @@
 
 package org.openhab.binding.qivicon.internal;
 
+/**
+ * The {@link Properties_} is a POJO for a response from the Rest API.
+ *
+ * @author Claudius Ellsel - Initial contribution
+ */
+
 public class Properties_ {
 
 }
