@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Improvements on channels for opening PVR TV or Radio streams
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.kodi")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.kodi")
 public class KodiHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(KodiHandlerFactory.class);

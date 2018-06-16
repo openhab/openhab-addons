@@ -30,7 +30,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Tim Roberts - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.atlona")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.atlona")
 public class AtlonaHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(AtlonaHandlerFactory.class);

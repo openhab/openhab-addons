@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Thomas Rokohl - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.fronius")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.fronius")
 public class FroniusHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>() {

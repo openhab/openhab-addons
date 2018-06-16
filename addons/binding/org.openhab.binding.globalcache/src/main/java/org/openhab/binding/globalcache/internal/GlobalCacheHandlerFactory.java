@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Hilbush - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.globalcache")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.globalcache")
 public class GlobalCacheHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(GlobalCacheHandlerFactory.class);
 

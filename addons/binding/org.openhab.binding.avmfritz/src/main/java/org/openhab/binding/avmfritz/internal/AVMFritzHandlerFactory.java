@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Robert Bausdorf - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.avmfritz")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.avmfritz")
 public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Logger
