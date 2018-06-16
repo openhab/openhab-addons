@@ -12,7 +12,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 
-import com.yeelight.sdk.device.DeviceStatus;
+import org.openhab.binding.yeelight.lib.device.DeviceStatus;
 
 /**
  * The {@link YeelightStripeHandler} is responsible for handling commands, which are

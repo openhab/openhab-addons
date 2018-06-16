@@ -29,16 +29,16 @@ import org.openhab.binding.yeelight.YeelightBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yeelight.sdk.device.ConnectState;
-import com.yeelight.sdk.device.DeviceBase;
-import com.yeelight.sdk.device.DeviceFactory;
-import com.yeelight.sdk.device.DeviceStatus;
-import com.yeelight.sdk.enums.DeviceAction;
-import com.yeelight.sdk.enums.DeviceMode;
-import com.yeelight.sdk.enums.DeviceType;
-import com.yeelight.sdk.listeners.DeviceConnectionStateListener;
-import com.yeelight.sdk.listeners.DeviceStatusChangeListener;
-import com.yeelight.sdk.services.DeviceManager;
+import org.openhab.binding.yeelight.lib.device.ConnectState;
+import org.openhab.binding.yeelight.lib.device.DeviceBase;
+import org.openhab.binding.yeelight.lib.device.DeviceFactory;
+import org.openhab.binding.yeelight.lib.device.DeviceStatus;
+import org.openhab.binding.yeelight.lib.enums.DeviceAction;
+import org.openhab.binding.yeelight.lib.enums.DeviceMode;
+import org.openhab.binding.yeelight.lib.enums.DeviceType;
+import org.openhab.binding.yeelight.lib.listeners.DeviceConnectionStateListener;
+import org.openhab.binding.yeelight.lib.listeners.DeviceStatusChangeListener;
+import org.openhab.binding.yeelight.lib.services.DeviceManager;
 
 /**
  * The {@link YeelightHandlerBase} is responsible for handling commands, which are

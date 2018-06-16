@@ -16,7 +16,7 @@ import org.openhab.binding.yeelight.YeelightBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yeelight.sdk.device.DeviceStatus;
+import org.openhab.binding.yeelight.lib.device.DeviceStatus;
 
 /**
  * The {@link YeelightWhiteHandler} is responsible for handling commands, which are

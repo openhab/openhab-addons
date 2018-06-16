@@ -18,9 +18,9 @@ import org.openhab.binding.yeelight.internal.YeelightHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yeelight.sdk.device.DeviceBase;
-import com.yeelight.sdk.listeners.DeviceListener;
-import com.yeelight.sdk.services.DeviceManager;
+import org.openhab.binding.yeelight.lib.device.DeviceBase;
+import org.openhab.binding.yeelight.lib.listeners.DeviceListener;
+import org.openhab.binding.yeelight.lib.services.DeviceManager;
 
 /**
  * The {@link DiscoveryService} is responsible for search and discovery of new devices.
