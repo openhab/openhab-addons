@@ -14,9 +14,6 @@ package org.openhab.binding.qivicon.internal;
  * @author Claudius Ellsel - Initial contribution
  */
 public class QiviconConfiguration {
-
-    /**
-     * Sample configuration parameter. Replace with your own.
-     */
+    // TODO: Check whether needed, add needed params and delete not used examples
     public String config1;
 }

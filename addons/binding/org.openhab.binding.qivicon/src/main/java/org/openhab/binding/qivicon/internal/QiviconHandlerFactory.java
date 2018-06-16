@@ -50,6 +50,8 @@ public class QiviconHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        // TODO: Try to move this somewhere else so this is only executed once, not for every thing (every request takes
+        // about 4 seconds)
         String networkAddress = thing.getConfiguration().get("networkAddress").toString();
         String requestAddress = "http://" + networkAddress + "/rest/things/";
         String restThings;

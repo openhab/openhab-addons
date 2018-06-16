@@ -26,6 +26,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+/**
+ * The {@link QiviconDiscovery} is responsible for device discovery.
+ *
+ * @author Claudius Ellsel - Initial contribution
+ */
 @Component(service = DiscoveryService.class, immediate = true)
 public class QiviconDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(QiviconDiscovery.class);
@@ -39,9 +44,7 @@ public class QiviconDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        // TODO Auto-generated method stub
-
-        // TODO: Add way to retrieve the config parameters
+        // TODO: Add way to retrieve the config parameters from the bridge
         // String networkAddress = thing.getConfiguration().get("networkAddress").toString();
         String networkAddress = "dummy";
         String requestAddress = "http://" + networkAddress + "/rest/things/";

@@ -59,6 +59,7 @@ public class QiviconConnectedDeviceHandler extends BaseThingHandler {
         super(thing);
         this.httpClient = httpClient;
         this.eshThing = eshThing;
+        // TODO: The following part is already in the Handler Factory, so probably can be deleted
         if (networkAddress != null && authKey != null) {
             String requestAddress = "http://" + networkAddress + "/rest/things/";
             String restThings;
@@ -127,6 +128,7 @@ public class QiviconConnectedDeviceHandler extends BaseThingHandler {
         config = getConfigAs(QiviconConfiguration.class);
 
         if (bridge != null) {
+            // TODO: This does not work currently
             networkAddress = bridge.getConfiguration().get(PARAMETER_NETWORK_ADDRESS).toString();
             authKey = bridge.getConfiguration().get(PARAMETER_AUTHORIZATION_KEY).toString();
         }
@@ -151,6 +153,7 @@ public class QiviconConnectedDeviceHandler extends BaseThingHandler {
             logger.debug("Channel Item Type: {}", itemType);
             if (channel.getLinkedItems() != null) {
                 if (itemType != null) {
+                    // TODO: This does not work currently, thingChannel seems to stay null
                     org.eclipse.smarthome.core.thing.Channel thingChannel = ChannelBuilder
                             .create(new ChannelUID(uId), itemType).withLabel(channel.getLabel())
                             .withDescription(channel.getDescription()).build();

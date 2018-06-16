@@ -16,5 +16,5 @@ package org.openhab.binding.qivicon.internal;
  */
 
 public class Properties_ {
-
+    // TODO: Check if this class is needed, since never used
 }

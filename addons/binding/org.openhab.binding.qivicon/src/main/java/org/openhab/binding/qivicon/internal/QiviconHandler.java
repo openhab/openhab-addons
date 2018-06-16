@@ -45,7 +45,7 @@ public class QiviconHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CHANNEL_TEMPERATURE)) {
-            // TODO: handle command
+            // TODO: Check whether commands should be handled here or in the things connected to the bridge
             logger.debug("Handling Command {}", command.toString());
             apiHelper(networkAddress, authKey, channelUID, command);
 
@@ -62,12 +62,13 @@ public class QiviconHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
+        // Long running initialization should be done asynchronously in background.
+
         config = getConfigAs(QiviconConfiguration.class);
 
         logger.debug("Initializing, network address: {}", networkAddress);
-
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
+        // TODO: Implement some kind of pinging to check bridge status
         updateStatus(ThingStatus.ONLINE);
 
         // Note: When initialization can NOT be done set the status with more details for further

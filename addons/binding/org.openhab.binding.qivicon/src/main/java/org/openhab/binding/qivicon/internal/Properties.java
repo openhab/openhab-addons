@@ -15,5 +15,5 @@ package org.openhab.binding.qivicon.internal;
  * @author Claudius Ellsel - Initial contribution
  */
 public class Properties {
-
+    // TODO: Check whether this is complete or just generated from a bad example
 }
