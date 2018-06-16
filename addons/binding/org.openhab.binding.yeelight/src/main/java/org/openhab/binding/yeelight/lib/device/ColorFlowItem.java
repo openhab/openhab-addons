@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.yeelight.lib.device;
 
+/**
+ * @author Coaster Li - Initial contribution
+ */
 public class ColorFlowItem {
     public int duration;
     public int mode;

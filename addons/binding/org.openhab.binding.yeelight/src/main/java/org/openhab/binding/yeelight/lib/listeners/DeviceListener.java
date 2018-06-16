@@ -10,6 +10,9 @@ package org.openhab.binding.yeelight.lib.listeners;
 
 import org.openhab.binding.yeelight.lib.device.DeviceBase;
 
+/**
+ * @author Coaster Li - Initial contribution
+ */
 public interface DeviceListener {
     void onDeviceFound(DeviceBase device);
 

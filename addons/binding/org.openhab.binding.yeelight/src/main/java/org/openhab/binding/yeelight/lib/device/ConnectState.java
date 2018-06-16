@@ -8,6 +8,11 @@
  */
 package org.openhab.binding.yeelight.lib.device;
 
+/**
+ * The {@link ConnectState} lists different connection states.
+ *
+ * @author Coaster Li - Initial contribution
+ */
 public enum ConnectState {
 
     DISCONNECTED,

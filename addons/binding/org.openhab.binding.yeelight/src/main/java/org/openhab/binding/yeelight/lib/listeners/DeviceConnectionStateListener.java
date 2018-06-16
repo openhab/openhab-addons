@@ -10,6 +10,9 @@ package org.openhab.binding.yeelight.lib.listeners;
 
 import org.openhab.binding.yeelight.lib.device.ConnectState;
 
+/**
+ * @author Coaster Li - Initial contribution
+ */
 public interface DeviceConnectionStateListener {
     void onConnectionStateChanged(ConnectState connectState);
 }

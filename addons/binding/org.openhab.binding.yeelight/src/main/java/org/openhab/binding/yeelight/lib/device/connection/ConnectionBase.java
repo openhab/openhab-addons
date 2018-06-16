@@ -12,8 +12,9 @@ import org.openhab.binding.yeelight.lib.device.DeviceMethod;
 
 /**
  * Created by jiang on 16/10/21.
+ *
+ * @author Coaster Li - Initial contribution
  */
-
 public interface ConnectionBase {
 
     boolean invoke(DeviceMethod method);

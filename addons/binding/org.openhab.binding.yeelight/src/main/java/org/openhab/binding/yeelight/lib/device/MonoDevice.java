@@ -8,13 +8,22 @@
  */
 package org.openhab.binding.yeelight.lib.device;
 
+import org.openhab.binding.yeelight.lib.device.connection.WifiConnection;
+import org.openhab.binding.yeelight.lib.enums.DeviceType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.openhab.binding.yeelight.lib.device.connection.WifiConnection;
-import org.openhab.binding.yeelight.lib.enums.DeviceType;
 
+/**
+ * The {@link MonoDevice} contains methods for handling the mono color device.
+ *
+ * @author Coaster Li - Initial contribution
+ */
 public class MonoDevice extends DeviceBase {
+    private final Logger logger = LoggerFactory.getLogger(MonoDevice.class);
 
     public MonoDevice(String id) {
         super(id);
@@ -51,7 +60,7 @@ public class MonoDevice extends DeviceBase {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.debug("Exception: {}", e);
         }
 
         super.onNotify(msg);

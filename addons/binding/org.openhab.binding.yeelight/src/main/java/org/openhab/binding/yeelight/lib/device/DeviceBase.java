@@ -15,19 +15,27 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import org.openhab.binding.yeelight.lib.CommonLogger;
 import org.openhab.binding.yeelight.lib.device.connection.ConnectionBase;
 import org.openhab.binding.yeelight.lib.enums.DeviceMode;
 import org.openhab.binding.yeelight.lib.enums.DeviceType;
 import org.openhab.binding.yeelight.lib.enums.MethodAction;
 import org.openhab.binding.yeelight.lib.listeners.DeviceConnectionStateListener;
-import org.openhab.binding.yeelight.lib.listeners.DeviceStatusChangeListener;;
+import org.openhab.binding.yeelight.lib.listeners.DeviceStatusChangeListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;;
+
+/**
+ * The {@link DeviceBase} is a generic class for all devices.
+ *
+ * @author Coaster Li - Initial contribution
+ */
 public abstract class DeviceBase {
+    private final Logger logger = LoggerFactory.getLogger(DeviceBase.class);
 
     private static final String TAG = DeviceBase.class.getSimpleName();
 
@@ -165,20 +173,19 @@ public abstract class DeviceBase {
                 // no method, but result : ["ok"]
                 JsonArray result = message.get("result").getAsJsonArray();
                 if (result.get(0).toString().equals("\"ok\"")) {
-                    System.out
-                            .println("######### this is control command response, don't need to notify status change!");
+                    logger.info("######### this is control command response, don't need to notify status change!");
                     needNotify = false;
                 }
             }
 
             if (needNotify) {
-                System.out.println("status = " + mDeviceStatus.toString());
+                logger.info("status = {}", mDeviceStatus.toString());
                 for (DeviceStatusChangeListener statusChangeListener : mStatusChangeListeners) {
                     statusChangeListener.onStatusChanged(updateProp.trim(), mDeviceStatus);
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.debug("Exception: {}", e);
         }
     }
 
@@ -241,7 +248,7 @@ public abstract class DeviceBase {
     }
 
     public void setConnectionState(ConnectState connectState) {
-        CommonLogger.debug(TAG + ": set connection state to: " + connectState.name());
+        logger.debug("{}: set connection state to: {}", TAG, connectState.name());
         if (connectState == ConnectState.DISCONNECTED) {
             setOnline(false);
         }
@@ -361,9 +368,9 @@ public abstract class DeviceBase {
     }
 
     private void checkAutoConnect() {
-        CommonLogger.debug(TAG + ": CheckAutoConnect: online: " + bIsOnline + ", autoConnect: " + bIsAutoConnect
-                + ", connection state: " + mConnectState.name() + ", device = " + this + ", device id: "
-                + this.getDeviceId());
+        logger.debug(
+                "{}: CheckAutoConnect: online: {}, autoConnect: {}, connection state: {}, device = {}, device id: {}",
+                TAG, bIsOnline, bIsAutoConnect, mConnectState.name(), this, this.getDeviceId());
         if (bIsOnline && bIsAutoConnect && mConnectState == ConnectState.DISCONNECTED) {
             connect();
         }

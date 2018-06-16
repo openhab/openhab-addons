@@ -13,16 +13,21 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import org.openhab.binding.yeelight.lib.CommonLogger;
 import org.openhab.binding.yeelight.lib.device.ConnectState;
 import org.openhab.binding.yeelight.lib.device.DeviceBase;
 import org.openhab.binding.yeelight.lib.device.DeviceMethod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by jiang on 16/10/25.
+ *
+ * @author Coaster Li - Initial contribution
  */
 
 public class WifiConnection implements ConnectionBase {
+
+    private final Logger logger = LoggerFactory.getLogger(WifiConnection.class);
 
     private static final String TAG = WifiConnection.class.getSimpleName();
 
@@ -43,11 +48,11 @@ public class WifiConnection implements ConnectionBase {
             try {
                 mWriter.write(method.getParamsStr().getBytes());
                 mWriter.flush();
-                CommonLogger.debug(TAG + ": Write Success!");
+                logger.debug("{}: Write Success!", TAG);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
-                CommonLogger.debug(TAG + ": write exception, set device to disconnected!");
-                e.printStackTrace();
+                logger.debug("{}: write exception, set device to disconnected!", TAG);
+                logger.debug("Exception: {}", e);
                 mDevice.setConnectionState(ConnectState.DISCONNECTED);
                 return false;
             }
@@ -58,9 +63,9 @@ public class WifiConnection implements ConnectionBase {
 
     @Override
     public boolean connect() {
-        CommonLogger.debug(TAG + ": connect() entering!");
+        logger.debug("{}: connect() entering!", TAG);
         if (mSocket != null && mSocket.isConnected()) {
-            CommonLogger.debug(TAG + ": socket not null, return!");
+            logger.debug("{}: socket not null, return!", TAG);
             return true;
         }
         mConnectThread = new Thread(new Runnable() {
@@ -68,7 +73,7 @@ public class WifiConnection implements ConnectionBase {
             public void run() {
                 try {
                     mCmdRun = true;
-                    CommonLogger.debug(TAG + ": connect device!" + mDevice.getAddress() + ", " + mDevice.getPort());
+                    logger.debug("{}: connect device! {}, {}", TAG, mDevice.getAddress(), mDevice.getPort());
                     mSocket = new Socket(mDevice.getAddress(), mDevice.getPort());
                     mSocket.setKeepAlive(true);
                     mWriter = new BufferedOutputStream(mSocket.getOutputStream());
@@ -77,21 +82,21 @@ public class WifiConnection implements ConnectionBase {
                     while (mCmdRun) {
                         try {
                             String value = mReader.readLine();
-                            CommonLogger.debug(TAG + ": get response:" + value);
+                            logger.debug("{}: get response: {}", TAG, value);
                             if (value == null) {
                                 mCmdRun = false;
                             } else {
                                 mDevice.onNotify(value);
                             }
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            logger.debug("Exception: {}", e);
                             mCmdRun = false;
                         }
                     }
                     mSocket.close();
                 } catch (Exception e) {
-                    CommonLogger.debug(TAG + ": connect device! ERROR!" + e.getMessage());
-                    e.printStackTrace();
+                    logger.debug("{}: connect device! ERROR! {}", TAG, e.getMessage());
+                    logger.debug("Exception: {}", e);
                 } finally {
                     mDevice.setConnectionState(ConnectState.DISCONNECTED);
                     mSocket = null;

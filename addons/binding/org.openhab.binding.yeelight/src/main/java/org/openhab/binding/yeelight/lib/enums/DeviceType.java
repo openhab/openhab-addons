@@ -8,6 +8,11 @@
  */
 package org.openhab.binding.yeelight.lib.enums;
 
+/**
+ * The {@link DeviceType} lists the available device/model types.
+ *
+ * @author Coaster Li - Initial contribution
+ */
 public enum DeviceType {
     mono,
     ct_bulb,

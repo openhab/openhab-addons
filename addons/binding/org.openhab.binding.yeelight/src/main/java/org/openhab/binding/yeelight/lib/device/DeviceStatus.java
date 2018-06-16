@@ -12,6 +12,9 @@ import java.util.List;
 
 import org.openhab.binding.yeelight.lib.enums.DeviceMode;
 
+/**
+ * @author Coaster Li - Initial contribution
+ */
 public class DeviceStatus {
 
     public static final int MODE_COLOR = 1;

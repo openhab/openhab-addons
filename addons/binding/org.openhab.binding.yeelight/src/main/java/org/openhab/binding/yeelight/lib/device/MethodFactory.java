@@ -11,6 +11,9 @@ package org.openhab.binding.yeelight.lib.device;
 import org.openhab.binding.yeelight.lib.enums.DeviceType;
 import org.openhab.binding.yeelight.lib.enums.MethodAction;
 
+/**
+ * @author Coaster Li - Initial contribution
+ */
 public class MethodFactory {
     public static DeviceMethod buildBrightnessMethd(int brightness, String effect, int duration) {
 

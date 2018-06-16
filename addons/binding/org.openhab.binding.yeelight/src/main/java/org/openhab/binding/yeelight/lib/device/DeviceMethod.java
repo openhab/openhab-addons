@@ -10,6 +10,9 @@ package org.openhab.binding.yeelight.lib.device;
 
 import org.openhab.binding.yeelight.lib.enums.MethodAction;
 
+/**
+ * @author Coaster Li - Initial contribution
+ */
 public class DeviceMethod {
 
     public final static String EFFECT_SMOOTH = "smooth";

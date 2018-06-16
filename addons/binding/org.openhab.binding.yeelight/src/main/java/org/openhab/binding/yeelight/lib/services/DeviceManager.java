@@ -17,14 +17,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openhab.binding.yeelight.lib.CommonLogger;
 import org.openhab.binding.yeelight.lib.device.DeviceBase;
 import org.openhab.binding.yeelight.lib.device.DeviceFactory;
 import org.openhab.binding.yeelight.lib.device.DeviceStatus;
 import org.openhab.binding.yeelight.lib.enums.DeviceAction;
 import org.openhab.binding.yeelight.lib.listeners.DeviceListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link DeviceManager} is a class for managing all devices.
+ *
+ * @author Coaster Li - Initial contribution
+ */
 public class DeviceManager {
+    private final Logger logger = LoggerFactory.getLogger(DeviceFactory.class);
 
     private static final String TAG = DeviceManager.class.getSimpleName();
 
@@ -77,7 +84,7 @@ public class DeviceManager {
                     try {
                         Thread.sleep(timeToStop);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        logger.debug("Exception: {}", e);
                     } finally {
                         stopDiscovery();
                     }
@@ -93,7 +100,7 @@ public class DeviceManager {
 
     private void searchDevice() {
         if (mSearching == true && mDiscoveryThread != null) {
-            CommonLogger.debug(TAG + ": Already in discovery, return!");
+            logger.debug("{}: Already in discovery, return!", TAG);
             return;
         }
         mSearching = true;
@@ -105,7 +112,7 @@ public class DeviceManager {
                     DatagramPacket dpSend = new DatagramPacket(DISCOVERY_MSG.getBytes(),
                             DISCOVERY_MSG.getBytes().length, InetAddress.getByName(MULTI_CAST_HOST), MULTI_CAST_PORT);
                     mDiscoverySocket.send(dpSend);
-                    CommonLogger.debug(TAG + ": send discovery message!");
+                    logger.debug("{}: send discovery message!", TAG);
                     while (mSearching) {
                         byte[] buf = new byte[1024];
                         DatagramPacket dpRecv = new DatagramPacket(buf, buf.length);
@@ -119,7 +126,7 @@ public class DeviceManager {
                             }
                             buffer.append((char) bytes[i]);
                         }
-                        CommonLogger.debug(TAG + ": got message:" + buffer.toString());
+                        logger.debug("{}: got message: {}", TAG, buffer.toString());
                         String[] infos = buffer.toString().split("\n");
                         HashMap<String, String> bulbInfo = new HashMap<String, String>();
                         for (String info : infos) {
@@ -132,7 +139,7 @@ public class DeviceManager {
 
                             bulbInfo.put(key, value);
                         }
-                        CommonLogger.debug(TAG + ": got bulbInfo:" + bulbInfo);
+                        logger.debug("{}: got bulbInfo: {}", TAG, bulbInfo);
                         if (bulbInfo.containsKey("model") && bulbInfo.containsKey("id")) {
                             DeviceBase device = DeviceFactory.build(bulbInfo);
                             if (bulbInfo.containsKey("name")) {
@@ -147,7 +154,7 @@ public class DeviceManager {
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.debug("Exception: {}", e);
                 }
             }
         });

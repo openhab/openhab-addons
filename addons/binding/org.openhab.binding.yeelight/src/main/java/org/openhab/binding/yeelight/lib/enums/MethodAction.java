@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.yeelight.lib.enums;
 
+/**
+ * @author Coaster Li - Initial contribution
+ */
 public enum MethodAction {
 
     PROP("get_prop"),

@@ -10,10 +10,17 @@ package org.openhab.binding.yeelight.lib.device;
 
 import java.util.HashMap;
 
-import org.openhab.binding.yeelight.lib.CommonLogger;
 import org.openhab.binding.yeelight.lib.enums.DeviceType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link DeviceFactory} creates device handler classes.
+ *
+ * @author Coaster Li - Initial contribution
+ */
 public class DeviceFactory {
+    private final static Logger logger = LoggerFactory.getLogger(DeviceFactory.class);
 
     private static final String TAG = DeviceFactory.class.getSimpleName();
 
@@ -65,14 +72,13 @@ public class DeviceFactory {
         HashMap<String, Object> infos = new HashMap<>();
         infos.putAll(bulbInfo);
         device.setBulbInfo(infos);
-        CommonLogger.debug(TAG + ": DeviceFactory Device = " + bulbInfo.get("Location"));
+        logger.debug("{}: DeviceFactory Device = {}", TAG, bulbInfo.get("Location"));
         // TODO enhancement!!!
         String[] addressInfo = bulbInfo.get("Location").split(":");
         device.setAddress(addressInfo[1].substring(2));
         device.setPort(Integer.parseInt(addressInfo[2]));
         device.setOnline(true);
-        CommonLogger
-                .debug(TAG + ": DeviceFactory Device info = " + device.getAddress() + ", port = " + device.getPort());
+        logger.debug("{}: DeviceFactory Device info = {}, port = {}", TAG, device.getAddress(), device.getPort());
         return device;
     }
 

@@ -10,12 +10,20 @@ package org.openhab.binding.yeelight.lib.device;
 
 import org.openhab.binding.yeelight.lib.device.connection.WifiConnection;
 import org.openhab.binding.yeelight.lib.enums.DeviceType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+/**
+ * The {@link CeilingDevice} contains methods for handling the ceiling device.
+ *
+ * @author Coaster Li - Initial contribution
+ */
 public class CeilingDevice extends DeviceBase {
+    private final Logger logger = LoggerFactory.getLogger(CeilingDevice.class);
 
     public CeilingDevice(String id) {
         super(id);
@@ -57,7 +65,7 @@ public class CeilingDevice extends DeviceBase {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.debug("Problem setting values: {}", e);
         }
 
         super.onNotify(msg);
