@@ -58,8 +58,12 @@ public class SolarEdgeAggregateDataPolling implements Runnable {
                 handler.getWebInterface().executeCommand(adu_week);
                 handler.getWebInterface().executeCommand(adu_month);
                 handler.getWebInterface().executeCommand(adu_year);
-            } catch (Exception e) {
-                logger.warn("Caught Exception: {}", e.getMessage());
+            } catch (RuntimeException e) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Caught Exception: {}", e.getMessage(), e);
+                } else {
+                    logger.warn("Caught Exception: {}", e.getMessage());
+                }
             }
 
         }

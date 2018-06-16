@@ -58,7 +58,11 @@ public class SolarEdgeLiveDataPolling implements Runnable {
             try {
                 handler.getWebInterface().executeCommand(ldu);
             } catch (RuntimeException e) {
-                logger.warn("Caught Exception: {}", e.getMessage());
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Caught Exception: {}", e.getMessage(), e);
+                } else {
+                    logger.warn("Caught Exception: {}", e.getMessage());
+                }
             }
 
         }

@@ -19,8 +19,6 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
@@ -31,7 +29,6 @@ import org.openhab.binding.solaredge.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
 import org.openhab.binding.solaredge.internal.connector.CommunicationStatus;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
-import org.openhab.binding.solaredge.internal.model.DataResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,12 +45,17 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     /**
      * logger
      */
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(AbstractCommandCallback.class);
 
     /**
      * the configuration
      */
     protected final SolarEdgeConfiguration config;
+
+    /**
+     * JSON deserializer
+     */
+    protected final Gson gson;
 
     /**
      * status code of fulfilled request
@@ -73,6 +75,8 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     public AbstractCommandCallback(SolarEdgeConfiguration config) {
         this.communicationStatus = new CommunicationStatus();
         this.config = config;
+        this.gson = new Gson();
+
     }
 
     /**
@@ -101,20 +105,14 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     @Override
     public final void onFailure(Response response, Throwable failure) {
         super.onFailure(response, failure);
-        try {
-            logger.warn("Request failed: {}", failure.toString());
-            communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
+        logger.warn("Request failed: {}", failure.toString());
+        communicationStatus.setError((Exception) failure);
 
-            // as we are not allowed to catch Throwables we must only throw Exceptions!
-            if (failure instanceof Exception) {
-                communicationStatus.setError((Exception) failure);
-                throw (Exception) failure;
-            }
-        } catch (SocketTimeoutException | TimeoutException e) {
+        if (failure instanceof SocketTimeoutException || failure instanceof TimeoutException) {
             communicationStatus.setHttpCode(Code.REQUEST_TIMEOUT);
-        } catch (UnknownHostException e) {
+        } else if (failure instanceof UnknownHostException) {
             communicationStatus.setHttpCode(Code.BAD_GATEWAY);
-        } catch (Exception e) {
+        } else {
             communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
         }
 
@@ -145,23 +143,6 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
             communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
         }
         return communicationStatus;
-    }
-
-    /**
-     * converts the json response into an object structure
-     *
-     * @param jsonInString json string to convert
-     * @param clazz class to map to
-     * @return mapped object
-     */
-    protected final <T extends DataResponse> @Nullable T convertJson(@NonNull String jsonInString, Class<T> clazz) {
-        Gson gson = new Gson();
-
-        @Nullable
-        T obj = null;
-        logger.debug("JSON String: {}", jsonInString);
-        obj = gson.fromJson(jsonInString, clazz);
-        return obj;
     }
 
     /**

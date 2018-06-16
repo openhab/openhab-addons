@@ -38,11 +38,13 @@ public class LegacyLiveDataUpdate extends AbstractCommandCallback implements Sol
     private static final String UNIT_W = "W";
 
     private final SolarEdgeHandler handler;
+    private final Pattern pattern;
     private int retries = 0;
 
     public LegacyLiveDataUpdate(SolarEdgeHandler handler) {
         super(handler.getConfiguration());
         this.handler = handler;
+        this.pattern = compile(NCG_NON_GREEDY_TEXT_OR_NUMBER, CG_CURRENT_POWER_AND_UNIT, NCG_NON_GREEDY_TEXT_OR_NUMBER);
     }
 
     @Override
@@ -90,9 +92,6 @@ public class LegacyLiveDataUpdate extends AbstractCommandCallback implements Sol
         String rawData = data.replaceAll("\\s+", "");
 
         logger.debug("RAW String: {}", rawData);
-
-        Pattern pattern = compile(NCG_NON_GREEDY_TEXT_OR_NUMBER, CG_CURRENT_POWER_AND_UNIT,
-                NCG_NON_GREEDY_TEXT_OR_NUMBER);
 
         Matcher matcher = pattern.matcher(rawData);
 

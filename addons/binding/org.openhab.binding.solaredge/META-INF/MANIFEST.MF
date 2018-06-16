@@ -26,6 +26,7 @@ Import-Package: com.google.common.collect,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.openhab.binding.solaredge,
+ org.openhab.binding.solaredge.config,
  org.openhab.binding.solaredge.handler,
  org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j

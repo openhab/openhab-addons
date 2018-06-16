@@ -63,7 +63,8 @@ public class LiveDataUpdate extends AbstractCommandCallback implements SolarEdge
 
             String json = getContentAsString(StandardCharsets.UTF_8);
             if (json != null) {
-                LiveDataResponse jsonObject = convertJson(json, LiveDataResponse.class);
+                logger.debug("JSON String: {}", json);
+                LiveDataResponse jsonObject = gson.fromJson(json, LiveDataResponse.class);
                 if (jsonObject != null) {
                     handler.updateChannelStatus(jsonObject.getValues());
                 }

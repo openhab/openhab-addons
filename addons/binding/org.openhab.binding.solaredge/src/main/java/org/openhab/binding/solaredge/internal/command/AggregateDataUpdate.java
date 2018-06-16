@@ -19,11 +19,11 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.solaredge.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
 import org.openhab.binding.solaredge.internal.model.AbstractAggregateDataResponse;
-import org.openhab.binding.solaredge.internal.model.DataResponse;
 import org.openhab.binding.solaredge.internal.model.AggregateDayDataResponse;
 import org.openhab.binding.solaredge.internal.model.AggregateMonthDataResponse;
 import org.openhab.binding.solaredge.internal.model.AggregateWeekDataResponse;
 import org.openhab.binding.solaredge.internal.model.AggregateYearDataResponse;
+import org.openhab.binding.solaredge.internal.model.DataResponse;
 
 /**
  * command that retrieves status values for aggregate data channels
@@ -94,7 +94,8 @@ public class AggregateDataUpdate extends AbstractCommandCallback implements Sola
 
             String json = getContentAsString(StandardCharsets.UTF_8);
             if (json != null) {
-                DataResponse jsonObject = convertJson(json, responseClass);
+                logger.debug("JSON String: {}", json);
+                DataResponse jsonObject = gson.fromJson(json, responseClass);
                 if (jsonObject != null) {
                     handler.updateChannelStatus(jsonObject.getValues());
                 }
