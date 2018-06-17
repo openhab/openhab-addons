@@ -8,6 +8,11 @@
  */
 package org.openhab.binding.gardena.internal.model.property;
 
+/**
+ * Base class to send properties to Gardena.
+ *
+ * @author Gerhard Riegler - Initial contribution
+ */
 public abstract class BaseProperty {
     private String name;
 
