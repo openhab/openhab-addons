@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -42,6 +43,7 @@ import org.openhab.binding.gardena.internal.model.Location;
 import org.openhab.binding.gardena.internal.model.Locations;
 import org.openhab.binding.gardena.internal.model.NoResult;
 import org.openhab.binding.gardena.internal.model.Property;
+import org.openhab.binding.gardena.internal.model.PropertyValue;
 import org.openhab.binding.gardena.internal.model.Session;
 import org.openhab.binding.gardena.internal.model.SessionWrapper;
 import org.openhab.binding.gardena.internal.model.Setting;
@@ -59,8 +61,11 @@ import org.openhab.binding.gardena.internal.model.command.SettingCommandWrapper;
 import org.openhab.binding.gardena.internal.model.command.WateringCancelOverrideCommand;
 import org.openhab.binding.gardena.internal.model.command.WateringManualOverrideCommand;
 import org.openhab.binding.gardena.internal.model.deser.DateDeserializer;
-import org.openhab.binding.gardena.internal.model.property.SimpleProperties;
-import org.openhab.binding.gardena.internal.model.property.SimplePropertiesWrapper;
+import org.openhab.binding.gardena.internal.model.deser.PropertyValueDeserializer;
+import org.openhab.binding.gardena.internal.model.property.BaseProperty;
+import org.openhab.binding.gardena.internal.model.property.IrrigationControlWateringProperty;
+import org.openhab.binding.gardena.internal.model.property.PropertyWrapper;
+import org.openhab.binding.gardena.internal.model.property.StringProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,9 +89,11 @@ public class GardenaSmartImpl implements GardenaSmart {
     private static final String ABILITY_SOIL_TEMPERATURE = "soil_temperature";
     private static final String ABILITY_PUMP_ON_OFF = "pump_on_off";
     private static final String ABILITY_POWER = "power";
+    private static final String ABILITY_WATERING = "watering";
 
     private static final String PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME = "button_manual_override_time";
     private static final String PROPERTY_POWER_TIMER = "power_timer";
+    private static final String PROPERTY_WATERING_TIMER = "watering_timer_";
 
     private static final String DEVICE_CATEGORY_MOWER = "mower";
     private static final String DEVICE_CATEGORY_GATEWAY = "gateway";
@@ -101,7 +108,8 @@ public class GardenaSmartImpl implements GardenaSmart {
     private static final String URL_PROPERTY = URL + "/sg-1/devices/%s/abilities/%s/properties/%s?locationId=%s";
     private static final String URL_SETTING = URL + "/sg-1/devices/%s/settings/%s?locationId=%s";
 
-    private Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new DateDeserializer()).create();
+    private Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new DateDeserializer())
+            .registerTypeAdapter(PropertyValue.class, new PropertyValueDeserializer()).create();
     private HttpClient httpClient;
 
     private String mowerDuration = DEFAULT_MOWER_DURATION;
@@ -236,7 +244,8 @@ public class GardenaSmartImpl implements GardenaSmart {
                     // special conversion for pump, convert on/off to boolean
                     if (device.getCategory().equals(DEVICE_CATEGORY_PUMP)
                             && property.getName().equals(ABILITY_PUMP_ON_OFF)) {
-                        property.setValue(String.valueOf("on".equalsIgnoreCase(property.getValue())));
+                        property.setValue(
+                                new PropertyValue(String.valueOf("on".equalsIgnoreCase(property.getValueAsString()))));
                     }
 
                 }
@@ -306,23 +315,16 @@ public class GardenaSmartImpl implements GardenaSmart {
                 if (value == null) {
                     throw new GardenaException("Command '" + commandName + "' requires a value");
                 }
-                SimpleProperties prop = new SimpleProperties(PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME,
+                StringProperty prop = new StringProperty(PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME,
                         ObjectUtils.toString(value));
-                String propertyUrl = String.format(URL_PROPERTY, device.getId(), ABILITY_OUTLET,
-                        PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME, device.getLocation().getId());
 
-                stopRefreshThread(false);
-                executeRequest(HttpMethod.PUT, propertyUrl, new SimplePropertiesWrapper(prop), NoResult.class);
-                device.getAbility(ABILITY_OUTLET).getProperty(PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME)
-                        .setValue(prop.getValue());
-                startRefreshThread();
-
+                executeSetProperty(device, ABILITY_OUTLET, PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME, prop);
                 break;
             case OUTLET_VALVE:
                 ability = device.getAbility(ABILITY_OUTLET);
                 if (value != null && value == Boolean.TRUE) {
                     String wateringDuration = device.getAbility(ABILITY_OUTLET)
-                            .getProperty(PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME).getValue();
+                            .getProperty(PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME).getValueAsString();
                     command = new WateringManualOverrideCommand(wateringDuration);
                 } else {
                     command = new WateringCancelOverrideCommand();
@@ -332,15 +334,25 @@ public class GardenaSmartImpl implements GardenaSmart {
                 if (value == null) {
                     throw new GardenaException("Command '" + commandName + "' requires a value");
                 }
-                prop = new SimpleProperties(PROPERTY_POWER_TIMER, ObjectUtils.toString(value));
-                propertyUrl = String.format(URL_PROPERTY, device.getId(), ABILITY_POWER, PROPERTY_POWER_TIMER,
-                        device.getLocation().getId());
-
-                stopRefreshThread(false);
-                executeRequest(HttpMethod.PUT, propertyUrl, new SimplePropertiesWrapper(prop), NoResult.class);
-                device.getAbility(ABILITY_POWER).getProperty(PROPERTY_POWER_TIMER).setValue(prop.getValue());
-                startRefreshThread();
-
+                prop = new StringProperty(PROPERTY_POWER_TIMER, ObjectUtils.toString(value));
+                executeSetProperty(device, ABILITY_POWER, PROPERTY_POWER_TIMER, prop);
+                break;
+            case WATERING_TIMER_VALVE_1:
+            case WATERING_TIMER_VALVE_2:
+            case WATERING_TIMER_VALVE_3:
+            case WATERING_TIMER_VALVE_4:
+            case WATERING_TIMER_VALVE_5:
+            case WATERING_TIMER_VALVE_6:
+                if (value == null) {
+                    throw new GardenaException("Command '" + commandName + "' requires a value");
+                } else if (!(value instanceof Integer)) {
+                    throw new GardenaException("Watering duration value '" + value + "' not a number");
+                }
+                int valveId = Integer.parseInt(StringUtils.right(commandName.toString(), 1));
+                String wateringTimerProperty = PROPERTY_WATERING_TIMER + valveId;
+                IrrigationControlWateringProperty irrigationProp = new IrrigationControlWateringProperty(
+                        wateringTimerProperty, (Integer) value, valveId);
+                executeSetProperty(device, ABILITY_WATERING, wateringTimerProperty, irrigationProp);
                 break;
             default:
                 throw new GardenaException("Unknown command " + commandName);
@@ -351,6 +363,19 @@ public class GardenaSmartImpl implements GardenaSmart {
             executeRequest(HttpMethod.POST, getCommandUrl(device, ability), command, NoResult.class);
             startRefreshThread();
         }
+    }
+
+    /**
+     * Sends the new property value for the ability.
+     */
+    private void executeSetProperty(Device device, String ability, String property, BaseProperty value)
+            throws GardenaException {
+        String propertyUrl = String.format(URL_PROPERTY, device.getId(), ability, property,
+                device.getLocation().getId());
+        stopRefreshThread(false);
+        executeRequest(HttpMethod.PUT, propertyUrl, new PropertyWrapper(value), NoResult.class);
+        device.getAbility(ability).getProperty(property).setValue(new PropertyValue(value.getValue()));
+        startRefreshThread();
     }
 
     @Override

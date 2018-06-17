@@ -899,4 +899,226 @@
 		</state>
 	</channel-type>
 
+
+	<!-- ############################### Irrigation Control ############################### -->
+
+	<thing-type id="ic24">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+
+		<label>Gardena Smart Irrigation Control</label>
+		<description>A Gardena Smart Irrigation Control</description>
+
+		<channel-groups>
+			<channel-group id="device_info" typeId="deviceInfo" />
+			<channel-group id="radio" typeId="radio" />
+
+			<channel-group id="watering" typeId="watering" />
+			<channel-group id="ic24" typeId="ic24" />
+			<channel-group id="scheduling" typeId="ic24scheduling" />
+
+			<channel-group id="firmware" typeId="firmware" />
+		</channel-groups>
+		<properties>
+			<!-- device info -->
+			<property name="manufacturer" />
+			<property name="product" />
+			<property name="serialNumber" />
+			<property name="sgtin" />
+			<property name="version" />
+			<property name="category" />
+		</properties>
+	</thing-type>
+
+	<channel-group-type id="watering">
+		<label>Watering</label>
+		<description>The watering</description>
+		<channels>
+			<channel id="watering_timer_1" typeId="wateringTimer">
+				<label>Watering Timer 1</label>
+				<description>The watering timer for valve 1</description>
+			</channel>
+			<channel id="watering_timer_2" typeId="wateringTimer">
+				<label>Watering Timer 2</label>
+				<description>The watering timer for valve 2</description>
+			</channel>
+			<channel id="watering_timer_3" typeId="wateringTimer">
+				<label>Watering Timer 3</label>
+				<description>The watering timer for valve 3</description>
+			</channel>
+			<channel id="watering_timer_4" typeId="wateringTimer">
+				<label>Watering Timer 4</label>
+				<description>The watering timer for valve 4</description>
+			</channel>
+			<channel id="watering_timer_5" typeId="wateringTimer">
+				<label>Watering Timer 5</label>
+				<description>The watering timer for valve 5</description>
+			</channel>
+			<channel id="watering_timer_6" typeId="wateringTimer">
+				<label>Watering Timer 6</label>
+				<description>The watering timer for valve 6</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="wateringTimer">
+		<item-type>Number</item-type>
+		<label>Watering Timer</label>
+		<state pattern="%d min">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">1</option>
+				<option value="3">3 min</option>
+				<option value="5">5 min</option>
+				<option value="10">10 min</option>
+				<option value="15">15 min</option>
+				<option value="20">20 min</option>
+				<option value="25">25 min</option>
+				<option value="30">30 min</option>
+				<option value="35">35 min</option>
+				<option value="40">40 min</option>
+				<option value="45">45 min</option>
+				<option value="50">50 min</option>
+				<option value="55">55 min</option>
+				<option value="59">59 min</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-group-type id="ic24" advanced="true">
+		<label>Irrigation Control</label>
+		<description>The irrigation control</description>
+		<channels>
+			<channel id="valves_connected" typeId="valvesConnected" />
+			<channel id="valves_master_config" typeId="valvesMasterConfig" />
+			<channel id="error" typeId="ic24error" />
+			<channel id="valve_error_0" typeId="valveError">
+				<label>Valve Error 0</label>
+				<description>The error for valve 0</description>
+			</channel>
+			<channel id="valve_error_1" typeId="valveError">
+				<label>Valve Error 1</label>
+				<description>The error for valve 1</description>
+			</channel>
+			<channel id="valve_error_2" typeId="valveError">
+				<label>Valve Error 2</label>
+				<description>The error for valve 2</description>
+			</channel>
+			<channel id="valve_error_3" typeId="valveError">
+				<label>Valve Error 3</label>
+				<description>The error for valve 3</description>
+			</channel>
+			<channel id="valve_error_4" typeId="valveError">
+				<label>Valve Error 4</label>
+				<description>The error for valve 4</description>
+			</channel>
+			<channel id="valve_error_5" typeId="valveError">
+				<label>Valve Error 5</label>
+				<description>The error for valve 5</description>
+			</channel>
+			<channel id="valve_error_6" typeId="valveError">
+				<label>Valve Error 6</label>
+				<description>The error for valve 6</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="valvesConnected" advanced="true">
+		<item-type>String</item-type>
+		<label>Valves Connected</label>
+		<description>The connected valves</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="valvesMasterConfig" advanced="true">
+		<item-type>String</item-type>
+		<label>Valves Master Config</label>
+		<description>The valves master config</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="ic24error" advanced="true">
+		<item-type>String</item-type>
+		<label>Irrigation Control Error</label>
+		<description>The irrigation control error</description>
+		<state readOnly="true">
+			<options>
+				<option value="ok">OK</option>
+				<option value="voltage_drop">Voltage Drop</option>
+				<option value="wrong_power_supply">Wrong Power Supply</option>
+				<option value="no_mcu_connection">No Mcu Connection</option>
+				<option value="unknown">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="valveError" advanced="true">
+		<item-type>String</item-type>
+		<label>Valve Error</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-group-type id="ic24scheduling">
+		<label>Scheduling</label>
+		<description>The scheduled watering</description>
+		<channels>
+			<channel id="scheduled_watering_next_start_1" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering Next Start 1</label>
+				<description>The scheduled watering next start for valve 1</description>
+			</channel>
+			<channel id="scheduled_watering_end_1" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering End 1</label>
+				<description>The scheduled watering end for valve 1</description>
+			</channel>
+			<channel id="scheduled_watering_next_start_2" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering Next Start 2</label>
+				<description>The scheduled watering next start for valve 2</description>
+			</channel>
+			<channel id="scheduled_watering_end_2" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering End 2</label>
+				<description>The scheduled watering end for valve 2</description>
+			</channel>
+			<channel id="scheduled_watering_next_start_3" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering Next Start 3</label>
+				<description>The scheduled watering next start for valve 3</description>
+			</channel>
+			<channel id="scheduled_watering_end_3" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering End 3</label>
+				<description>The scheduled watering end for valve 3</description>
+			</channel>
+			<channel id="scheduled_watering_next_start_4" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering Next Start 4</label>
+				<description>The scheduled watering next start for valve 4</description>
+			</channel>
+			<channel id="scheduled_watering_end_4" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering End 4</label>
+				<description>The scheduled watering end for valve 4</description>
+			</channel>
+			<channel id="scheduled_watering_next_start_5" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering Next Start 5</label>
+				<description>The scheduled watering next start for valve 5</description>
+			</channel>
+			<channel id="scheduled_watering_end_5" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering End 5</label>
+				<description>The scheduled watering end for valve 5</description>
+			</channel>
+			<channel id="scheduled_watering_next_start_6" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering Next Start 6</label>
+				<description>The scheduled watering next start for valve 6</description>
+			</channel>
+			<channel id="scheduled_watering_end_6" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering End 6</label>
+				<description>The scheduled watering end for valve 6</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="ic24ScheduledWatering" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Scheduled Watering</label>
+		<state readOnly="true" />
+	</channel-type>
+
+
 </thing:thing-descriptions>
