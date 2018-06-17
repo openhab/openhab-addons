@@ -52,6 +52,20 @@ public class IhcDataConverter {
      */
     public static State convertResourceValueToState(String acceptedItemType, WSResourceValue value)
             throws NumberFormatException {
+        return convertResourceValueToState(acceptedItemType, value, false);
+    }
+
+    /**
+     * Convert IHC data type to openHAB data type.
+     *
+     * @param itemType OpenHAB data type class
+     * @param value IHC data value
+     * @param inverted Invert value
+     *
+     * @return openHAB {@link State}
+     */
+    public static State convertResourceValueToState(String acceptedItemType, WSResourceValue value, boolean inverted)
+            throws NumberFormatException {
 
         State state = UnDefType.UNDEF;
 
@@ -106,9 +120,9 @@ public class IhcDataConverter {
 
             if (value instanceof WSBooleanValue) {
                 if (((WSBooleanValue) value).isValue()) {
-                    state = OnOffType.ON;
+                    state = inverted == false ? OnOffType.ON : OnOffType.OFF;
                 } else {
-                    state = OnOffType.OFF;
+                    state = inverted == false ? OnOffType.OFF : OnOffType.ON;
                 }
             } else {
                 throw new NumberFormatException("Can't convert " + value.getClass().toString() + " to SwitchItem");
@@ -118,9 +132,9 @@ public class IhcDataConverter {
 
             if (value instanceof WSBooleanValue) {
                 if (((WSBooleanValue) value).isValue()) {
-                    state = OpenClosedType.OPEN;
+                    state = inverted == false ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
                 } else {
-                    state = OpenClosedType.CLOSED;
+                    state = inverted == false ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
                 }
             } else {
                 throw new NumberFormatException("Can't convert " + value.getClass().toString() + " to ContactItem");
@@ -200,6 +214,21 @@ public class IhcDataConverter {
      */
     public static WSResourceValue convertCommandToResourceValue(Command type, WSResourceValue value,
             ArrayList<IhcEnumValue> enumValues) {
+        return convertCommandToResourceValue(type, value, enumValues, false);
+    }
+
+    /**
+     * Convert openHAB data type to IHC data type.
+     *
+     * @param type openHAB data type
+     * @param value
+     * @param enumValues
+     * @param inverted Invert value
+     *
+     * @return IHC data type
+     */
+    public static WSResourceValue convertCommandToResourceValue(Command type, WSResourceValue value,
+            ArrayList<IhcEnumValue> enumValues, boolean inverted) {
 
         if (type instanceof DecimalType) {
 
@@ -251,7 +280,10 @@ public class IhcDataConverter {
 
             if (value instanceof WSBooleanValue) {
 
-                ((WSBooleanValue) value).setValue(type == OnOffType.ON ? true : false);
+                boolean valON = inverted == false ? true : false;
+                boolean valOFF = inverted == false ? false : true;
+
+                ((WSBooleanValue) value).setValue(type == OnOffType.ON ? valON : valOFF);
 
             } else if (value instanceof WSIntegerValue) {
 
@@ -272,8 +304,10 @@ public class IhcDataConverter {
 
             }
         } else if (type instanceof OpenClosedType) {
+            boolean valON = inverted == false ? true : false;
+            boolean valOFF = inverted == false ? false : true;
 
-            ((WSBooleanValue) value).setValue(type == OpenClosedType.OPEN ? true : false);
+            ((WSBooleanValue) value).setValue(type == OpenClosedType.OPEN ? valON : valOFF);
 
         } else if (type instanceof DateTimeType) {
 

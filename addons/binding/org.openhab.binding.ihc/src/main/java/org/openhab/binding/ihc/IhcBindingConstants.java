@@ -60,6 +60,7 @@ public class IhcBindingConstants {
     public final static String PARAM_LONG_PRESS_MAX_TIME = "longPressMaxTime";
     public final static String PARAM_SHORT_PRESS_MAX_TIME = "shortPressMaxTime";
     public final static String PARAM_SPECIAL_COMMAND = "specialCommand";
+    public static final String PARAM_INVERTED = "inverted";
 
     public final static String DIRECTION_READ_WRITE = "ReadWrite";
     public final static String DIRECTION_WRITE_ONLY = "WriteOnly";

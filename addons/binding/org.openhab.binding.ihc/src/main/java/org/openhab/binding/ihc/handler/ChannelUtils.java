@@ -209,6 +209,16 @@ public class ChannelUtils {
         return getChannelParameterAsString(thing, channelId, PARAM_DIRECTION);
     }
 
+    public static boolean getInvertedFromChannelParameters(Thing thing, String channelId)
+            throws IllegalArgumentException {
+
+        Boolean value = getChannelParameterAsBoolean(thing, channelId, PARAM_INVERTED);
+        if (value != null) {
+            return value.booleanValue();
+        }
+        return false;
+    }
+
     public static String getCmdToReactFromChannelParameters(Thing thing, String channelId)
             throws IllegalArgumentException {
         return getChannelParameterAsString(thing, channelId, PARAM_CMD_TO_REACT);
@@ -232,6 +242,19 @@ public class ChannelUtils {
             }
         }
         return false;
+    }
+
+    private static Boolean getChannelParameterAsBoolean(Thing thing, String channelId, String paramName)
+            throws IllegalArgumentException {
+        Object value = getChannelParameter(thing, channelId, paramName);
+        if (value != null) {
+            try {
+                return ((Boolean) value).booleanValue();
+            } catch (ClassCastException | NumberFormatException e) {
+                throw new IllegalArgumentException(e.getMessage());
+            }
+        }
+        return null;
     }
 
     private static Integer getChannelParameterAsInteger(Thing thing, String channelId, String paramName)

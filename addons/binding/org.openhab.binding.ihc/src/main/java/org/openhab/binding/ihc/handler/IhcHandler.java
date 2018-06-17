@@ -327,7 +327,9 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         if (value instanceof WSEnumValue) {
             enumValues = enumDictionary.getEnumValues(((WSEnumValue) value).getDefinitionTypeID());
         }
-        WSResourceValue val = IhcDataConverter.convertCommandToResourceValue(command, value, enumValues);
+        boolean inverted = ChannelUtils.getInvertedFromChannelParameters(getThing(), channelUID.getId());
+        logger.debug("Inverted output: {}", inverted);
+        WSResourceValue val = IhcDataConverter.convertCommandToResourceValue(command, value, enumValues, inverted);
         logger.debug("Update resource value: {}", val);
         if (!updateResource(val)) {
             logger.warn("Channel {} update to resource '{}' failed.", channelUID, val);
@@ -340,9 +342,11 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         logger.debug("Send {}ms pulse to resource: {}", pulseWidth, value.getResourceID());
 
         WSResourceValue val = null;
+        boolean inverted = ChannelUtils.getInvertedFromChannelParameters(getThing(), channelUID.getId());
+        logger.debug("Inverted output: {}", inverted);
 
         // set resource to ON
-        val = IhcDataConverter.convertCommandToResourceValue(OnOffType.ON, value, null);
+        val = IhcDataConverter.convertCommandToResourceValue(OnOffType.ON, value, null, inverted);
         logger.debug("Update resource value: {}", val);
         if (updateResource(val)) {
             // sleep a while
@@ -353,7 +357,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 // do nothing
             }
             // set resource back to OFF
-            val = IhcDataConverter.convertCommandToResourceValue(OnOffType.OFF, value, null);
+            val = IhcDataConverter.convertCommandToResourceValue(OnOffType.OFF, value, null, inverted);
             logger.debug("Update resource value: {}", val);
             if (!updateResource(val)) {
                 logger.warn("Channel {} update to resource '{}' failed.", channelUID, val);
@@ -668,7 +672,10 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             logger.debug("Write only channel, skip update to {}", channel.getUID());
         } else {
             try {
-                State state = IhcDataConverter.convertResourceValueToState(channel.getAcceptedItemType(), value);
+                boolean inverted = ChannelUtils.getInvertedFromChannelParameters(getThing(), channel.getUID().getId());
+                logger.debug("Inverted input: {}", inverted);
+                State state = IhcDataConverter.convertResourceValueToState(channel.getAcceptedItemType(), value,
+                        inverted);
                 updateState(channel.getUID(), state);
             } catch (NumberFormatException e) {
                 logger.debug("Can't convert resource value '{}' to item type {}", value, channel.getAcceptedItemType());

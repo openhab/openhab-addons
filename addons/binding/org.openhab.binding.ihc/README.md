@@ -51,25 +51,27 @@ List of supported channel types.
 
 | Channel Type ID                   | Item Type     | Description                                                                                     | Supported channel parameters                                           |
 | --------------------------------- | ------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | 
-| switch-channel                    | Switch        | Generic switch channel.                                                                         | resourceId, direction, commandToReact, pulseWidth                      |
-| contact-channel                   | Contact       | Generic contact channel.                                                                        | resourceId                                                             |
+| switch-channel                    | Switch        | Generic switch channel.                                                                         | resourceId, direction, commandToReact, pulseWidth, inverted            |
+| contact-channel                   | Contact       | Generic contact channel.                                                                        | resourceId, inverted 
+                                                |    
 | number-channel                    | Number        | Generic number channel.                                                                         | resourceId, direction, commandToReact, pulseWidth                      |
 | dimmer-channel                    | Dimmer        | Generic dimmer channel.                                                                         | resourceId, direction, commandToReact, pulseWidth                      |
 | datetime-channel                  | DateTime      | Generic datetime channel.                                                                       | resourceId, direction, commandToReact, pulseWidth                      |
 | string-channel                    | String        | Generic string (enum) channel.                                                                  | resourceId, direction, commandToReact, pulseWidth                      |
-| rollershutter-channel             | RollerShutter | Generic datetime channel.                                                                       | resourceId, direction, commandToReact, pulseWidth                      |
+| rollershutter-channel             | RollerShutter | Generic rollershutter channel.                                                                  | resourceId, direction, commandToReact, pulseWidth                      |
 | rf-device-low-battery-channel     | Switch        | RF device low battery warning.                                                                  | serialNumber                                                           |
 | rf-device-signal-strength-channel | String        | RF device signal strength.                                                                      | serialNumber                                                           |
 | push-button-trigger               | Trigger       | Push button trigger channel. Possible trigger event: SHORT_PRESS, LONG_PRESS, EXTRA_LONG_PRESS. | resourceId, shortPressMaxTime, longPressMaxTime, extraLongPressMaxTime |
 
 Channel parameters:
 
-| Channel parameter     | Item Type    | Required | Default value | Description                                                                                              |
+| Channel parameter     | Param Type   | Required | Default value | Description                                                                                              |
 | --------------------- | ------------ | -------- | ------------- | -------------------------------------------------------------------------------------------------------- |
 | resourceId            | Integer      | yes      |               | Resource Id in decimal format from project file.                                                         |
 | direction             | Text         | no       | ReadWrite     | Direction of the channel (ReadWrite, WriteOnly, ReadOnly).                                               |                                 
 | commandToReact        | String       | no       |               | Command to react. If not defined, channel react to all commands.                                         |
 | pulseWidth            | Integer      | no       |               | Pulse width in milliseconds. If defined, binding send pulse rather than command value to IHC controller. |
+| inverted              | Boolean      | no       | false         | OpenHAB state is inverted compared to IHC output/input signal.                                           |
 | serialNumber          | Integer      | yes      |               | Serial number of RF device in decimal format.                                                            |
 | shortPressMaxTime     | Integer      | yes      | 1000          | Short press max time in milliseconds.                                                                    |
 | longPressMaxTime      | Integer      | yes      | 2000          | Long press max time in milliseconds.                                                                     |
