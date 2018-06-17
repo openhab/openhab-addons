@@ -6,35 +6,35 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.gardena.internal.model.property;
+package org.openhab.binding.gardena.internal.model;
 
 /**
- * Represents a simple Gardena property.
+ * Represents a Gardena property value.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class SimpleProperties {
-
-    private String name;
+public class PropertyValue {
     private String value;
 
-    public SimpleProperties(String name, String value) {
-        this.name = name;
+    public PropertyValue() {
+    }
+
+    public PropertyValue(String value) {
         this.value = value;
     }
 
     /**
-     * Returns the property name.
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Returns the property value.
+     * Returns the value of the property.
      */
     public String getValue() {
         return value;
+    }
+
+    /**
+     * Sets the value of the property.
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }

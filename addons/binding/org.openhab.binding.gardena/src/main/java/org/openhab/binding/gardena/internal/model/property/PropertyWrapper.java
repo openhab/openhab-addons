@@ -8,32 +8,35 @@
  */
 package org.openhab.binding.gardena.internal.model.property;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Property wrapper for valid Gardena JSON serialization.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class SimplePropertiesWrapper {
-    private SimpleProperties properties;
+public class PropertyWrapper {
+    @SerializedName("properties")
+    private BaseProperty property;
 
-    public SimplePropertiesWrapper() {
+    public PropertyWrapper() {
     }
 
-    public SimplePropertiesWrapper(SimpleProperties properties) {
-        this.properties = properties;
-    }
-
-    /**
-     * Returns the simple property.
-     */
-    public SimpleProperties getProperties() {
-        return properties;
+    public PropertyWrapper(BaseProperty property) {
+        this.property = property;
     }
 
     /**
-     * Sets the simple property.
+     * Returns the property.
      */
-    public void setProperties(SimpleProperties properties) {
-        this.properties = properties;
+    public BaseProperty getProperty() {
+        return property;
+    }
+
+    /**
+     * Sets the property.
+     */
+    public void setProperties(BaseProperty property) {
+        this.property = property;
     }
 }
