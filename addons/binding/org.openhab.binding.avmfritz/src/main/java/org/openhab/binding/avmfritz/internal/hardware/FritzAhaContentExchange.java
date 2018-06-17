@@ -22,8 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of Jetty ContextExchange to handle callbacks
  *
- * @author Robert Bausdorf
- *
+ * @author Robert Bausdorf - Initial contribution
  */
 public class FritzAhaContentExchange extends BufferingResponseListener
         implements SuccessListener, FailureListener, ContentListener, CompleteListener {

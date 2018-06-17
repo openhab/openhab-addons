@@ -11,8 +11,7 @@ package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 /**
  * Interface for callbacks in asynchronous requests.
  *
- * @author Robert Bausdorf
- *
+ * @author Robert Bausdorf - Initial contribution
  */
 public interface FritzAhaCallback {
     /**

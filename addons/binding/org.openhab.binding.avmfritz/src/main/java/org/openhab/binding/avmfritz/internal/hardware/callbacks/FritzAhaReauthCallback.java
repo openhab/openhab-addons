@@ -8,13 +8,15 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 
+import static org.eclipse.jetty.http.HttpMethod.*;
+
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 
 /**
  * Callback implementation for reauthorization and retry
  *
- * @author Robert Bausdorf, Christian Brauers
- *
+ * @author Robert Bausdorf, Christian Brauers - Initial contribution
  */
 public class FritzAhaReauthCallback implements FritzAhaCallback {
 
@@ -31,19 +33,10 @@ public class FritzAhaReauthCallback implements FritzAhaCallback {
      * Web interface to use
      */
     private FritzAhaWebInterface webIface;
-
-    /**
-     * HTTP Method for callback retries
-     */
-    public enum Method {
-        POST,
-        GET
-    };
-
     /**
      * Method used
      */
-    private Method httpMethod;
+    private HttpMethod httpMethod;
     /**
      * Number of remaining retries
      */
@@ -80,7 +73,7 @@ public class FritzAhaReauthCallback implements FritzAhaCallback {
      * after decremented retry counter)
      *
      * @param newRetryCallback
-     *            Callback to retry with
+     *                             Callback to retry with
      */
     public void setRetryCallback(FritzAhaCallback newRetryCallback) {
         retryCallback = newRetryCallback;
@@ -107,9 +100,9 @@ public class FritzAhaReauthCallback implements FritzAhaCallback {
             if (retries >= 1) {
                 webIface.authenticate();
                 retries--;
-                if (httpMethod == Method.GET) {
+                if (httpMethod == GET) {
                     webIface.asyncGet(path, args, retryCallback);
-                } else if (httpMethod == Method.POST) {
+                } else if (httpMethod == POST) {
                     webIface.asyncPost(path, args, retryCallback);
                 }
             }
@@ -119,20 +112,20 @@ public class FritzAhaReauthCallback implements FritzAhaCallback {
     }
 
     /**
-     * Constructor for retriable authentication
+     * Constructor for retryable authentication
      *
      * @param path
-     *            Path to HTTP interface
+     *                       Path to HTTP interface
      * @param args
-     *            Arguments to use
+     *                       Arguments to use
      * @param webIface
-     *            Web interface to use
+     *                       Web interface to use
      * @param httpMethod
-     *            Method used
+     *                       Method used
      * @param retries
-     *            Number of retries
+     *                       Number of retries
      */
-    public FritzAhaReauthCallback(String path, String args, FritzAhaWebInterface webIface, Method httpMethod,
+    public FritzAhaReauthCallback(String path, String args, FritzAhaWebInterface webIface, HttpMethod httpMethod,
             int retries) {
         this.path = path;
         this.args = args;
