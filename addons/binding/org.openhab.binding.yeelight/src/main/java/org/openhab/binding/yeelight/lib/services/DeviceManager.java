@@ -240,7 +240,7 @@ public class DeviceManager {
             case mono:
                 return "Yeelight White LED Bulb";
             case ct_bulb:
-                return "Yeelight White LED Bulb V2";
+                return "Yeelight White LED Bulb v2";
             case stripe:
                 return "Yeelight Color LED Stripe";
             default:

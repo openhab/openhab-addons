@@ -36,7 +36,7 @@ public class DeviceFactory {
             case mono:
                 return new MonoDevice(id);
             case ct_bulb:
-                return new MonoDevice(id);
+                return new CtBulbDevice(id);
             case stripe:
                 return new PitayaDevice(id);
             default:
@@ -61,7 +61,7 @@ public class DeviceFactory {
                 device = new MonoDevice(bulbInfo.get("id"));
                 break;
             case ct_bulb:
-                device = new MonoDevice(bulbInfo.get("id"));
+                device = new CtBulbDevice(bulbInfo.get("id"));
                 break;
             case stripe:
                 device = new PitayaDevice(bulbInfo.get("id"));

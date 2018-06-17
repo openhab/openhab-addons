@@ -160,6 +160,8 @@ public class MethodFactory {
                         new Object[] { "power", "name", "bright", "ct", "rgb", "hue", "sat" });
             case ceiling:
                 return new DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright", "ct" });
+            case ct_bulb:
+                return new DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright", "ct" });
             case stripe:
                 return new DeviceMethod(MethodAction.PROP,
                         new Object[] { "power", "name", "bright", "ct", "rgb", "hue", "sat" });

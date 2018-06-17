@@ -26,9 +26,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.yeelight.YeelightBindingConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.openhab.binding.yeelight.lib.device.ConnectState;
 import org.openhab.binding.yeelight.lib.device.DeviceBase;
 import org.openhab.binding.yeelight.lib.device.DeviceFactory;
@@ -39,6 +36,8 @@ import org.openhab.binding.yeelight.lib.enums.DeviceType;
 import org.openhab.binding.yeelight.lib.listeners.DeviceConnectionStateListener;
 import org.openhab.binding.yeelight.lib.listeners.DeviceStatusChangeListener;
 import org.openhab.binding.yeelight.lib.services.DeviceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link YeelightHandlerBase} is responsible for handling commands, which are
@@ -83,6 +82,8 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
             return DeviceType.color;
         } else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_DOLPHIN)) {
             return DeviceType.mono;
+        } else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_CTBULB)) {
+            return DeviceType.ct_bulb;
         } else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_STRIPE)) {
             return DeviceType.stripe;
         } else {

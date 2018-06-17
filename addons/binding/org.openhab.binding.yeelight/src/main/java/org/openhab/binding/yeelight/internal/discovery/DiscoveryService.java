@@ -86,7 +86,7 @@ public class DiscoveryService extends AbstractDiscoveryService implements Device
             case mono:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_DOLPHIN, device.getDeviceId());
             case ct_bulb:
-                return new ThingUID(YeelightBindingConstants.THING_TYPE_DOLPHIN, device.getDeviceId());
+                return new ThingUID(YeelightBindingConstants.THING_TYPE_CTBULB, device.getDeviceId());
             case stripe:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_STRIPE, device.getDeviceId());
             default:
@@ -105,7 +105,7 @@ public class DiscoveryService extends AbstractDiscoveryService implements Device
             case mono:
                 return YeelightBindingConstants.THING_TYPE_DOLPHIN;
             case ct_bulb:
-                return YeelightBindingConstants.THING_TYPE_DOLPHIN;
+                return YeelightBindingConstants.THING_TYPE_CTBULB;
             case stripe:
                 return YeelightBindingConstants.THING_TYPE_STRIPE;
             default:
