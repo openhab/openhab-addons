@@ -17,7 +17,6 @@ import com.google.gson.annotations.SerializedName;
  * this abstract class is used as base for the specific aggregate response classes
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public abstract class AbstractAggregateDataResponse implements DataResponse {
 

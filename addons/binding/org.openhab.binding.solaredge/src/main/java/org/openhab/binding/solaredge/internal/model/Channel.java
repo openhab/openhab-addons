@@ -14,7 +14,6 @@ import org.eclipse.jdt.annotation.NonNull;
  * interface to be implemented by all Channel Enumerations
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public interface Channel {
 

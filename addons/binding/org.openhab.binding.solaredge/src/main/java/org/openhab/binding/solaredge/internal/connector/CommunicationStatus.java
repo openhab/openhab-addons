@@ -15,7 +15,6 @@ import org.eclipse.jetty.http.HttpStatus.Code;
  * communication
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public class CommunicationStatus {
 

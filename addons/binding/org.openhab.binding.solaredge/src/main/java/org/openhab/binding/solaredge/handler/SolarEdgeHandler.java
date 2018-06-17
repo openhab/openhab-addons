@@ -23,7 +23,6 @@ import org.openhab.binding.solaredge.internal.model.Channel;
  * public interface of the {@link SolarEdgeHandler}
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public interface SolarEdgeHandler extends ThingHandler {
     /**

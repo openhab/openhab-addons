@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements SolarEdgeHandler {
 

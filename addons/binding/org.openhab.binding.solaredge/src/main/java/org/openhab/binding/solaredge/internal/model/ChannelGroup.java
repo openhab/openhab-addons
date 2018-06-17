@@ -12,7 +12,6 @@ package org.openhab.binding.solaredge.internal.model;
  * Live = current values, Aggregate = aggregated data by day/month/year
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public enum ChannelGroup {
     LIVE,

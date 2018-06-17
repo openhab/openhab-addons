@@ -30,7 +30,6 @@ import org.openhab.binding.solaredge.internal.model.LiveDataChannels;
  * command that retrieves values for live data channels - legacy version for old setups
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public class LegacyLiveDataUpdate extends AbstractCommandCallback implements SolarEdgeCommand {
     private static final String NCG_NON_GREEDY_TEXT_OR_NUMBER = "(?:.+?)";

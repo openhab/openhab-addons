@@ -14,7 +14,6 @@ import java.util.Map;
  * common interface for all data response classes
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public interface DataResponse {
     Map<String, String> getValues();

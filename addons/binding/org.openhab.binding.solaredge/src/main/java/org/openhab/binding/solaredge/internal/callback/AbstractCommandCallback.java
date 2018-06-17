@@ -38,7 +38,6 @@ import com.google.gson.Gson;
  * base class for all commands. common logic should be implemented here
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public abstract class AbstractCommandCallback extends BufferingResponseListener implements SolarEdgeCommand {
 

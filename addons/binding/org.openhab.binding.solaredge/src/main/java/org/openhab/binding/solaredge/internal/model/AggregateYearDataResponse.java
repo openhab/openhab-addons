@@ -15,7 +15,6 @@ import java.util.Map;
  * this class is used to map the yearly aggregate data json response
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public class AggregateYearDataResponse extends AbstractAggregateDataResponse {
 

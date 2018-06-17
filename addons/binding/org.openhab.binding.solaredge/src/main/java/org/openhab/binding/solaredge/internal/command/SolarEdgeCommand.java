@@ -19,7 +19,6 @@ import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
  * public interface for all commands
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public interface SolarEdgeCommand extends SuccessListener, FailureListener, ContentListener, CompleteListener {
 

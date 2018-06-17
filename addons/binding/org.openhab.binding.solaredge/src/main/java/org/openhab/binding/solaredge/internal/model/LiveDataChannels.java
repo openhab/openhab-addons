@@ -12,7 +12,6 @@ package org.openhab.binding.solaredge.internal.model;
  * list of all available channels
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public enum LiveDataChannels implements Channel {
 

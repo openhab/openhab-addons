@@ -15,7 +15,6 @@ import java.util.Map;
  * this class is used to map the daily aggregate data json response
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public class AggregateDayDataResponse extends AbstractAggregateDataResponse {
 

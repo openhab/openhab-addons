@@ -21,7 +21,6 @@ import com.google.gson.annotations.SerializedName;
  * this class is used to map the live data json response
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public class LiveDataResponse implements DataResponse {
     private static final String GRID = "GRID";

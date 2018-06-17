@@ -14,7 +14,6 @@ import java.util.Map;
  * this class is used to map the login response
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public class PreLoginResponse implements DataResponse {
     private String isLicensed;

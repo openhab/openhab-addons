@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
  * Polling worker class. This is responsible for periodic polling of sensor data.
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public class SolarEdgeAggregateDataPolling implements Runnable {
     /**

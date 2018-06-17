@@ -29,7 +29,6 @@ import org.openhab.binding.solaredge.internal.model.DataResponse;
  * command that retrieves status values for aggregate data channels
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public class AggregateDataUpdate extends AbstractCommandCallback implements SolarEdgeCommand {
 

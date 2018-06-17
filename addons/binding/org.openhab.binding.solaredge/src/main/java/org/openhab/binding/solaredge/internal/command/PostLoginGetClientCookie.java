@@ -24,7 +24,6 @@ import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
  * legacy-live-data retrieval
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public class PostLoginGetClientCookie extends AbstractCommandCallback implements SolarEdgeCommand {
 

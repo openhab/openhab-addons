@@ -24,7 +24,6 @@ import org.openhab.binding.solaredge.internal.model.LiveDataResponse;
  * command that retrieves status values for live data channels
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public class LiveDataUpdate extends AbstractCommandCallback implements SolarEdgeCommand {
 

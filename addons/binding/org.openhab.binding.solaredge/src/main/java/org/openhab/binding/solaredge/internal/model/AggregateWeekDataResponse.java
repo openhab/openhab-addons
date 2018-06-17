@@ -15,7 +15,6 @@ import java.util.Map;
  * this class is used to map the weekly aggregate data json response
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public class AggregateWeekDataResponse extends AbstractAggregateDataResponse {
 

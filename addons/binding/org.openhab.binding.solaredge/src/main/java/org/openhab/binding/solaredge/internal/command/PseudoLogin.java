@@ -21,7 +21,6 @@ import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
  * checks validity of the token by accessing the webinterface
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public class PseudoLogin extends AbstractCommandCallback implements SolarEdgeCommand {
 

@@ -12,7 +12,6 @@ package org.openhab.binding.solaredge.internal.command;
  * defines the level of data aggregation
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public enum AggregatePeriod {
     DAY,
