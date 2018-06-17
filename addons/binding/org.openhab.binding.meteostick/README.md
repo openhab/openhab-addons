@@ -63,21 +63,16 @@ Set mode to one of the following depending on your device and region:
 | outdoor-temperature | Number:Temperature    | Outside temperature                             |
 | humidity            | Number                | Humidity                                        |
 | wind-direction      | Number:Angle          | Wind direction                                  |
+| wind-direction-last2min-average | Number:Angle | Wind direction average over last 2 minutes   |
 | wind-speed          | Number:Speed          | Wind speed                                      |
-| rain-raw            | Number                | Raw rain counter from the tipping bucket sensor |
+| wind-speed-last2min-average     | Number:Speed | Wind speed average over last 2 minutes       |
+| wind-speed-last2min-maximum     | Number:Speed | Wind speed maximum over last 2 minutes       |
+| rain-raw            | Number                | Raw rain counter from the tipping spoon sensor  |
 | rain-currenthour    | Number:Length         | The rainfall in the last 60 minutes             |
 | rain-lasthour       | Number:Length         | The rainfall in the previous hour               |
 | solar-power         | Number                | Solar power from the sensor station             |
 | signal-strength     | Number                | Received signal strength                        |
 | low-battery         | Switch                | Low battery warning                             |
-
-Advanced channels:
-
-| Channel Type ID                 | Item Type    | Description                                  |
-|---------------------------------|--------------|----------------------------------------------|
-| wind-direction-last2min-average | Number:Angle | Wind direction average over last 2 minutes   |
-| wind-speed-last2min-average     | Number:Speed | Wind speed average over last 2 minutes       |
-| wind-speed-last2min-maximum     | Number:Speed | Wind speed maximum over last 2 minutes       |
 
 #### Rainfall
 
