@@ -8,19 +8,11 @@
  */
 package org.openhab.binding.gardena.internal.model.property;
 
-/**
- * Represents a simple Gardena property.
- *
- * @author Gerhard Riegler - Initial contribution
- */
-public class SimpleProperties {
-
+public abstract class BaseProperty {
     private String name;
-    private String value;
 
-    public SimpleProperties(String name, String value) {
+    public BaseProperty(String name) {
         this.name = name;
-        this.value = value;
     }
 
     /**
@@ -31,10 +23,7 @@ public class SimpleProperties {
     }
 
     /**
-     * Returns the property value.
+     * Returns the value of the property.
      */
-    public String getValue() {
-        return value;
-    }
-
+    public abstract String getValue();
 }
