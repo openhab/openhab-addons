@@ -18,8 +18,8 @@ import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Chris Jackson - Initial contribution
+ * @author John Cocula - Added variable spoon size, UoM, wind stats, bug fixes
  */
 public class MeteostickSensorHandler extends BaseThingHandler implements MeteostickEventListener {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DAVIS);
@@ -52,8 +53,10 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
     private int channel = 0;
     private BigDecimal spoon = new BigDecimal(PARAMETER_SPOON_DEFAULT);
     private MeteostickBridgeHandler bridgeHandler;
-    private SlidingTimeWindow rainHourlyWindow = new SlidingTimeWindow(HOUR_IN_MSEC);
+    private RainHistory rainHistory = new RainHistory(HOUR_IN_MSEC);
+    private WindHistory windHistory = new WindHistory(2 * 60 * 1000); // 2 minutes
     private ScheduledFuture<?> rainHourlyJob;
+    private ScheduledFuture<?> wind2MinJob;
     private ScheduledFuture<?> offlineTimerJob;
 
     private Date lastData;
@@ -74,8 +77,8 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         }
         logger.debug("Initializing MeteoStick handler - Channel {}, Spoon size {} mm.", channel, spoon);
 
-        Runnable pollingRunnable = () -> {
-            BigDecimal rainfall = BigDecimal.valueOf(rainHourlyWindow.getTotal()).multiply(spoon);
+        Runnable rainRunnable = () -> {
+            BigDecimal rainfall = rainHistory.getTotal(spoon);
             rainfall.setScale(1, RoundingMode.DOWN);
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_LASTHOUR),
                     new QuantityType<>(rainfall, MILLI(METRE)));
@@ -83,7 +86,20 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
 
         // Scheduling a job on each hour to update the last hour rainfall
         long start = HOUR_IN_SEC - ((System.currentTimeMillis() % HOUR_IN_MSEC) / 1000);
-        rainHourlyJob = scheduler.scheduleWithFixedDelay(pollingRunnable, start, HOUR_IN_SEC, TimeUnit.SECONDS);
+        rainHourlyJob = scheduler.scheduleWithFixedDelay(rainRunnable, start, HOUR_IN_SEC, TimeUnit.SECONDS);
+
+        Runnable windRunnable = () -> {
+            WindStats stats = windHistory.getStats();
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_SPEED_LAST2MIN_AVERAGE),
+                    new QuantityType<>(stats.averageSpeed, METRE_PER_SECOND));
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_SPEED_LAST2MIN_MAXIMUM),
+                    new QuantityType<>(stats.maxSpeed, METRE_PER_SECOND));
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_DIRECTION_LAST2MIN_AVERAGE),
+                    new QuantityType<>(stats.averageDirection, DEGREE_ANGLE));
+        };
+
+        // Scheduling a job to run every two minutes to update wind statistics
+        wind2MinJob = scheduler.scheduleWithFixedDelay(windRunnable, 2, 2, TimeUnit.MINUTES);
 
         updateStatus(ThingStatus.UNKNOWN);
     }
@@ -92,6 +108,10 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
     public void dispose() {
         if (rainHourlyJob != null) {
             rainHourlyJob.cancel(true);
+        }
+
+        if (wind2MinJob != null) {
+            wind2MinJob.cancel(true);
         }
 
         if (offlineTimerJob != null) {
@@ -169,18 +189,22 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
                 processSignalStrength(data[3]);
                 processBattery(data.length == 5);
 
-                rainHourlyWindow.put(rain);
+                rainHistory.put(rain);
 
-                BigDecimal rainfall = BigDecimal.valueOf(rainHourlyWindow.getTotal()).multiply(spoon);
+                BigDecimal rainfall = rainHistory.getTotal(spoon);
                 rainfall.setScale(1, RoundingMode.DOWN);
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_CURRENTHOUR),
                         new QuantityType<>(rainfall, MILLI(METRE)));
                 break;
             case "W": // Wind
+                BigDecimal windSpeed = new BigDecimal(data[2]);
+                int windDirection = Integer.parseInt(data[3]);
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_SPEED),
-                        new QuantityType<>(new BigDecimal(data[2]), METRE_PER_SECOND));
+                        new QuantityType<>(windSpeed, METRE_PER_SECOND));
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_DIRECTION),
-                        new QuantityType<>(Integer.parseInt(data[3]), DEGREE_ANGLE));
+                        new QuantityType<>(windDirection, DEGREE_ANGLE));
+
+                windHistory.put(windSpeed, windDirection);
 
                 processSignalStrength(data[4]);
                 processBattery(data.length == 6);
@@ -208,9 +232,9 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         }
     }
 
-    class SlidingTimeWindow {
-        long period = 0;
-        private final Map<Long, Integer> storage = new TreeMap<>();
+    class SlidingTimeWindow<T> {
+        private long period = 0;
+        protected final SortedMap<Long, T> storage = Collections.synchronizedSortedMap(new TreeMap<>());
 
         /**
          *
@@ -220,24 +244,37 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
             this.period = period;
         }
 
-        public void put(int value) {
+        public void put(T value) {
             storage.put(System.currentTimeMillis(), value);
         }
 
-        public int getTotal() {
+        public void removeOldEntries() {
+            long old = System.currentTimeMillis() - period;
+            synchronized (storage) {
+                for (Iterator<Long> iterator = storage.keySet().iterator(); iterator.hasNext();) {
+                    long time = iterator.next();
+                    if (time < old) {
+                        iterator.remove();
+                    }
+                }
+            }
+        }
+    }
+
+    class RainHistory extends SlidingTimeWindow<Integer> {
+
+        public RainHistory(long period) {
+            super(period);
+        }
+
+        public BigDecimal getTotal(BigDecimal spoon) {
+
+            removeOldEntries();
+
             int least = -1;
             int total = 0;
 
-            long old = System.currentTimeMillis() - period;
-            for (Iterator<Long> iterator = storage.keySet().iterator(); iterator.hasNext();) {
-                long time = iterator.next();
-                if (time < old) {
-                    // Remove
-                    iterator.remove();
-                    continue;
-                }
-
-                int value = storage.get(time);
+            for (int value : storage.values()) {
                 if (least == -1) {
                     least = value;
                     continue;
@@ -250,7 +287,74 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
                 }
             }
 
-            return total;
+            return BigDecimal.valueOf(total).multiply(spoon);
+        }
+    }
+
+    /**
+     * Store the wind direction as an east-west vector and a north-south vector
+     * so that an average direction can be calculated based on the wind speed
+     * at the time of the direction sample.
+     */
+    class WindSample {
+        double speed;
+        double ewVector;
+        double nsVector;
+
+        public WindSample(BigDecimal speed, int directionDegrees) {
+            this.speed = speed.doubleValue();
+            double direction = Math.toRadians(directionDegrees);
+            this.ewVector = this.speed * Math.sin(direction);
+            this.nsVector = this.speed * Math.cos(direction);
+        }
+    }
+
+    class WindStats {
+        BigDecimal averageSpeed;
+        int averageDirection;
+        BigDecimal maxSpeed;
+    }
+
+    class WindHistory extends SlidingTimeWindow<WindSample> {
+
+        public WindHistory(long period) {
+            super(period);
+        }
+
+        public void put(BigDecimal speed, int directionDegrees) {
+            put(new WindSample(speed, directionDegrees));
+        }
+
+        public WindStats getStats() {
+
+            removeOldEntries();
+
+            double ewSum = 0;
+            double nsSum = 0;
+            double totalSpeed = 0;
+            double maxSpeed = 0;
+            int size = storage.size();
+            for (WindSample sample : storage.values()) {
+                ewSum += sample.ewVector;
+                nsSum += sample.nsVector;
+                totalSpeed += sample.speed;
+                if (sample.speed > maxSpeed) {
+                    maxSpeed = sample.speed;
+                }
+            }
+
+            WindStats stats = new WindStats();
+
+            stats.averageDirection = (int) Math.toDegrees(Math.atan2(ewSum, nsSum));
+            if (stats.averageDirection < 0) {
+                stats.averageDirection += 360;
+            }
+
+            stats.averageSpeed = new BigDecimal(size > 0 ? totalSpeed / size : 0).setScale(3, RoundingMode.HALF_DOWN);
+
+            stats.maxSpeed = new BigDecimal(maxSpeed).setScale(3, RoundingMode.HALF_DOWN);
+
+            return stats;
         }
     }
 

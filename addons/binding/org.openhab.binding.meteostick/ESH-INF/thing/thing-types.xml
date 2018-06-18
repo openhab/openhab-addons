@@ -43,7 +43,10 @@
 			<channel id="outdoor-temperature" typeId="outdoor-temperature" />
 			<channel id="humidity" typeId="humidity" />
 			<channel id="wind-direction" typeId="wind-direction" />
+			<channel id="wind-direction-last2min-average" typeId="wind-direction-last2min-average" />
 			<channel id="wind-speed" typeId="wind-speed" />
+			<channel id="wind-speed-last2min-average" typeId="wind-speed-last2min-average" />
+			<channel id="wind-speed-last2min-maximum" typeId="wind-speed-last2min-maximum" />
 			<channel id="rain-raw" typeId="rain-raw" />
 			<channel id="rain-currenthour" typeId="rain-currenthour" />
 			<channel id="rain-lasthour" typeId="rain-lasthour" />
@@ -122,10 +125,37 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="wind-direction-last2min-average" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Wind Direction (Average)</label>
+		<description>Wind direction average over last two minutes</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.0f %unit%">
+		</state>
+	</channel-type>
+
 	<channel-type id="wind-speed">
 		<item-type>Number:Speed</item-type>
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-speed-last2min-average" advanced="true">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Speed (Average)</label>
+		<description>Wind speed average over last two minutes</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-speed-last2min-maximum" advanced="true">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Speed (Maximum)</label>
+		<description>Wind speed maximum over last two minutes</description>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>

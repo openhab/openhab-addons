@@ -36,6 +36,9 @@ public class MeteostickBindingConstants {
     public static final String CHANNEL_RAIN_LASTHOUR = "rain-lasthour";
     public static final String CHANNEL_WIND_SPEED = "wind-speed";
     public static final String CHANNEL_WIND_DIRECTION = "wind-direction";
+    public static final String CHANNEL_WIND_SPEED_LAST2MIN_AVERAGE = "wind-speed-last2min-average";
+    public static final String CHANNEL_WIND_SPEED_LAST2MIN_MAXIMUM = "wind-speed-last2min-maximum";
+    public static final String CHANNEL_WIND_DIRECTION_LAST2MIN_AVERAGE = "wind-direction-last2min-average";
     public static final String CHANNEL_SOLAR_POWER = "solar-power";
     public static final String CHANNEL_SIGNAL_STRENGTH = "signal-strength";
     public static final String CHANNEL_LOW_BATTERY = "low-battery";
