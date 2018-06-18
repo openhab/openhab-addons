@@ -18,8 +18,8 @@ import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -234,7 +234,7 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
 
     class SlidingTimeWindow<T> {
         private long period = 0;
-        protected final Map<Long, T> storage = new TreeMap<>();
+        protected final SortedMap<Long, T> storage = Collections.synchronizedSortedMap(new TreeMap<>());
 
         /**
          *
@@ -250,10 +250,12 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
 
         public void removeOldEntries() {
             long old = System.currentTimeMillis() - period;
-            for (Iterator<Long> iterator = storage.keySet().iterator(); iterator.hasNext();) {
-                long time = iterator.next();
-                if (time < old) {
-                    iterator.remove();
+            synchronized (storage) {
+                for (Iterator<Long> iterator = storage.keySet().iterator(); iterator.hasNext();) {
+                    long time = iterator.next();
+                    if (time < old) {
+                        iterator.remove();
+                    }
                 }
             }
         }
