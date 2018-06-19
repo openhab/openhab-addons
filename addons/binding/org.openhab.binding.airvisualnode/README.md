@@ -82,7 +82,7 @@ rule "AirVisual Node Temperature Rule"
 when
     Item Livingroom_Temperature changed
 then
-    if (Livingroom_Temperature.state > 25.0 [°C]) {
+    if (Livingroom_Temperature.state > 25.0|°C) {
         logInfo("avnode.rules", "Temperature is above 25°C")
     }
 end
@@ -91,7 +91,7 @@ rule "AirVisual Node Humidity Rule"
 when
     Item Livingroom_Humidity changed
 then
-    if (Livingroom_Humidity.state < 35.0 [%]) {
+    if (Livingroom_Humidity.state < 35.0|%) {
         logInfo("avnode.rules", "Humidity is below 35%")
     }
 end
@@ -100,8 +100,17 @@ rule "AirVisual Node CO₂ Level Rule"
 when
     Item Livingroom_CO2_Level changed
 then
-    if (Livingroom_CO2_Level.state > 1000.0 [ppm]) {
+    if (Livingroom_CO2_Level.state > 1000.0|"ppm") {
         logInfo("avnode.rules", "CO₂ level is above 1000 ppm")
+    }
+end
+
+rule "AirVisual Node PM2.5 Level Rule"
+when
+    Item Livingroom_Pm25_Level changed
+then
+    if (Livingroom_Pm25_Level.state > 25.0|"µg/m³") {
+        logInfo("avnode.rules", "PM2.5 level is above 25 µg/m³")
     }
 end
 ```
