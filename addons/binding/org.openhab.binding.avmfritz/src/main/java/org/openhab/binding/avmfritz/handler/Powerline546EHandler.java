@@ -93,8 +93,8 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
     @Override
     protected void updateThingFromDevice(Thing thing, AVMFritzBaseModel device) {
         // save AIN to config for FRITZ!Powerline 546E stand-alone
-        if (thing.getConfiguration().get(THING_AIN) == null) {
-            thing.getConfiguration().put(THING_AIN, device.getIdentifier());
+        if (thing.getConfiguration().get(CONFIG_AIN) == null) {
+            thing.getConfiguration().put(CONFIG_AIN, device.getIdentifier());
         }
         super.updateThingFromDevice(thing, device);
     }
@@ -146,12 +146,12 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
             case CHANNEL_VOLTAGE:
                 logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
                 break;
-            case CHANNEL_SWITCH:
+            case CHANNEL_OUTLET:
                 if (command instanceof OnOffType) {
                     state.getSwitch().setState(OnOffType.ON.equals(command) ? SwitchModel.ON : SwitchModel.OFF);
                     fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
                 } else {
-                    logger.warn("Received unknown command '{}' for channel {}", command, CHANNEL_SWITCH);
+                    logger.warn("Received unknown command '{}' for channel {}", command, CHANNEL_OUTLET);
                 }
                 break;
             default:
@@ -177,7 +177,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
 
     @Nullable
     public String getIdentifier() {
-        Object ain = getThing().getConfiguration().get(THING_AIN);
+        Object ain = getThing().getConfiguration().get(CONFIG_AIN);
         return ain != null ? ain.toString() : null;
     }
 

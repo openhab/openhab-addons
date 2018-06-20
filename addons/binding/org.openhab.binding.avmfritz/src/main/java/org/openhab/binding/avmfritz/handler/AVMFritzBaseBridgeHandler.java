@@ -217,9 +217,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             thing.setProperty(PROPERTY_MEMBERS, ((GroupModel) device).getGroupinfo().getMembers());
         }
         if (device instanceof DeviceModel && device.isTempSensor() && ((DeviceModel) device).getTemperature() != null) {
-            updateThingChannelState(thing, CHANNEL_TEMP,
+            updateThingChannelState(thing, CHANNEL_TEMPERATURE,
                     new QuantityType<>(((DeviceModel) device).getTemperature().getCelsius(), CELSIUS));
-            updateThingChannelConfiguration(thing, CHANNEL_TEMP, CONFIG_CHANNEL_TEMP_OFFSET,
+            updateThingChannelConfiguration(thing, CHANNEL_TEMPERATURE, CONFIG_CHANNEL_TEMP_OFFSET,
                     ((DeviceModel) device).getTemperature().getOffset());
         }
         if (device.isPowermeter() && device.getPowermeter() != null) {
@@ -238,9 +238,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                     BigDecimal.ZERO.equals(device.getSwitch().getDevicelock()) ? OpenClosedType.OPEN
                             : OpenClosedType.CLOSED);
             if (device.getSwitch().getState() == null) {
-                updateThingChannelState(thing, CHANNEL_SWITCH, UnDefType.UNDEF);
+                updateThingChannelState(thing, CHANNEL_OUTLET, UnDefType.UNDEF);
             } else {
-                updateThingChannelState(thing, CHANNEL_SWITCH,
+                updateThingChannelState(thing, CHANNEL_OUTLET,
                         SwitchModel.ON.equals(device.getSwitch().getState()) ? OnOffType.ON : OnOffType.OFF);
             }
         }

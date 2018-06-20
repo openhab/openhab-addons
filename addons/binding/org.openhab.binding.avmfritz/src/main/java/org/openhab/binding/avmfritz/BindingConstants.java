@@ -33,7 +33,6 @@ public class BindingConstants {
     public static final String BRIDGE_FRITZBOX = "fritzbox";
     public static final String BOX_MODEL_NAME = "FRITZ!Box";
     public static final String POWERLINE_MODEL_NAME = "FRITZ!Powerline";
-    public static final String THING_AIN = "ain";
 
     // List of main device types
     public static final String DEVICE_DECT301 = "FRITZ_DECT_301";
@@ -70,6 +69,7 @@ public class BindingConstants {
     public static final String CONFIG_PASSWORD = "password";
     public static final String CONFIG_POLLING_INTERVAL = "pollingInterval";
     public static final String CONFIG_SYNC_TIMEOUT = "syncTimeout";
+    public static final String CONFIG_AIN = "ain";
 
     // List of all Properties
     public static final String PROPERTY_MASTER = "master";
@@ -79,11 +79,11 @@ public class BindingConstants {
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_LOCKED = "locked";
     public static final String CHANNEL_DEVICE_LOCKED = "device_locked";
-    public static final String CHANNEL_TEMP = "temperature";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_ENERGY = "energy";
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_VOLTAGE = "voltage";
-    public static final String CHANNEL_SWITCH = "outlet";
+    public static final String CHANNEL_OUTLET = "outlet";
     public static final String CHANNEL_ACTUALTEMP = "actual_temp";
     public static final String CHANNEL_SETTEMP = "set_temp";
     public static final String CHANNEL_ECOTEMP = "eco_temp";
