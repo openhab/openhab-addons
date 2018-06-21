@@ -22,7 +22,6 @@
 			<channel id="device_locked" typeId="device_locked" />
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
-			<channel id="voltage" typeId="voltage" />
 			<channel id="outlet" typeId="outlet" />
 		</channels>
 

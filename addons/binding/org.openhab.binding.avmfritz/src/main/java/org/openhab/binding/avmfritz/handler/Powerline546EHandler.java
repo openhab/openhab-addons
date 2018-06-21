@@ -169,8 +169,11 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
         ThingHandlerCallback callback = getCallback();
         if (callback != null) {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
-            Channel channel = callback.createChannelBuilder(channelUID, new ChannelTypeUID(BINDING_ID, channelId))
-                    .build();
+            ChannelTypeUID channelTypeUID = CHANNEL_BATTERY.equals(channelId)
+                    ? new ChannelTypeUID("system:battery-level")
+                    : new ChannelTypeUID(BINDING_ID, channelId);
+
+            Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
             updateThing(editThing().withoutChannel(channelUID).withChannel(channel).build());
         }
     }

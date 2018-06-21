@@ -175,13 +175,15 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
                             BigDecimal comfortTemperature = state.getHkr().getKomfort();
                             state.getHkr().setTsoll(comfortTemperature);
                             fritzBox.setSetTemp(ain, comfortTemperature);
-                            updateState(CHANNEL_SETTEMP, new QuantityType<>(HeatingModel.toCelsius(comfortTemperature), CELSIUS));
+                            updateState(CHANNEL_SETTEMP,
+                                    new QuantityType<>(HeatingModel.toCelsius(comfortTemperature), CELSIUS));
                             break;
                         case MODE_ECO:
                             BigDecimal ecoTemperature = state.getHkr().getAbsenk();
                             state.getHkr().setTsoll(ecoTemperature);
                             fritzBox.setSetTemp(ain, ecoTemperature);
-                            updateState(CHANNEL_SETTEMP, new QuantityType<>(HeatingModel.toCelsius(ecoTemperature), CELSIUS));
+                            updateState(CHANNEL_SETTEMP,
+                                    new QuantityType<>(HeatingModel.toCelsius(ecoTemperature), CELSIUS));
                             break;
                         case MODE_BOOST:
                             state.getHkr().setTsoll(HeatingModel.TEMP_FRITZ_MAX);
@@ -214,8 +216,10 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
         ThingHandlerCallback callback = getCallback();
         if (callback != null) {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
-            Channel channel = callback.createChannelBuilder(channelUID, new ChannelTypeUID(BINDING_ID, channelId))
-                    .build();
+            ChannelTypeUID channelTypeUID = CHANNEL_BATTERY.equals(channelId)
+                    ? new ChannelTypeUID("system:battery-level")
+                    : new ChannelTypeUID(BINDING_ID, channelId);
+            Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
             updateThing(editThing().withoutChannel(channelUID).withChannel(channel).build());
         }
     }
