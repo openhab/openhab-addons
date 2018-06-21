@@ -126,11 +126,22 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     @Override
     public void performAction(HttpClient asyncclient) {
         Request request = asyncclient.newRequest(getURL()).timeout(config.getAsyncTimeout(), TimeUnit.SECONDS);
-        CookieStore cookieStore = asyncclient.getCookieStore();
-        HttpCookie c = new HttpCookie(TOKEN_COOKIE_NAME, config.getToken());
-        c.setDomain(TOKEN_COOKIE_DOMAIN);
-        c.setPath(TOKEN_COOKIE_PATH);
-        cookieStore.add(URI.create(getURL()), c);
+
+        // add authentication data for every request. Handling this here makes it obsolete to implement for each and
+        // every command
+        if (config.isUsePrivateApi()) {
+            // token cookie is only used by private API therefore this can be skipped when using public API
+            CookieStore cookieStore = asyncclient.getCookieStore();
+            HttpCookie c = new HttpCookie(PRIVATE_API_TOKEN_COOKIE_NAME, config.getTokenOrApiKey());
+            c.setDomain(PRIVATE_API_TOKEN_COOKIE_DOMAIN);
+            c.setPath(PRIVATE_API_TOKEN_COOKIE_PATH);
+            cookieStore.add(URI.create(getURL()), c);
+        } else {
+            // this is only relevant when using public API
+            request.param(PUBLIC_DATA_API_KEY_FIELD, config.getTokenOrApiKey());
+
+        }
+
         prepareRequest(request).send(this);
     }
 

@@ -18,19 +18,19 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.solaredge.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
-import org.openhab.binding.solaredge.internal.model.LiveDataResponse;
+import org.openhab.binding.solaredge.internal.model.LiveDataResponseMeterless;
 
 /**
- * command that retrieves status values for live data channels
+ * command that retrieves status values for live data channels via public API
  *
  * @author Alexander Friese - initial contribution
  */
-public class LiveDataUpdate extends AbstractCommandCallback implements SolarEdgeCommand {
+public class LiveDataUpdateMeterless extends AbstractCommandCallback implements SolarEdgeCommand {
 
     private final SolarEdgeHandler handler;
     private int retries = 0;
 
-    public LiveDataUpdate(SolarEdgeHandler handler) {
+    public LiveDataUpdateMeterless(SolarEdgeHandler handler) {
         super(handler.getConfiguration());
         this.handler = handler;
     }
@@ -45,25 +45,27 @@ public class LiveDataUpdate extends AbstractCommandCallback implements SolarEdge
 
     @Override
     protected String getURL() {
-        return DATA_API_URL + config.getSolarId() + DATA_API_URL_LIVE_DATA_SUFFIX;
+        return PUBLIC_DATA_API_URL + config.getSolarId() + PUBLIC_DATA_API_URL_LIVE_DATA_METERLESS_SUFFIX;
     }
 
     @Override
     public void onComplete(Result result) {
         logger.debug("onComplete()");
 
-        if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode()) && retries++ < MAX_RETRIES) {
+        if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
             if (getListener() != null) {
                 getListener().update(getCommunicationStatus());
             }
-            handler.getWebInterface().executeCommand(this);
+            if (retries++ < MAX_RETRIES) {
+                handler.getWebInterface().executeCommand(this);
+            }
 
         } else {
 
             String json = getContentAsString(StandardCharsets.UTF_8);
             if (json != null) {
                 logger.debug("JSON String: {}", json);
-                LiveDataResponse jsonObject = gson.fromJson(json, LiveDataResponse.class);
+                LiveDataResponseMeterless jsonObject = gson.fromJson(json, LiveDataResponseMeterless.class);
                 if (jsonObject != null) {
                     handler.updateChannelStatus(jsonObject.getValues());
                 }

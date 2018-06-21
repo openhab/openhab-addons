@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.solaredge.internal.command;
+package org.openhab.binding.solaredge.internal.model;
 
 /**
  * defines the level of data aggregation

@@ -18,7 +18,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Alexander Friese - initial contribution
  */
-public abstract class AbstractAggregateDataResponse implements DataResponse {
+public abstract class AbstractAggregateDataResponsePrivateApi implements DataResponse {
 
     private static final String UNIT_WH = "Wh";
     private static final String UNIT_KWH = "KWh";

@@ -18,24 +18,21 @@ import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
 
 /**
- * checks validity of the token by accessing the webinterface
+ * checks validity of the api key by accessing the webinterface
  *
  * @author Alexander Friese - initial contribution
  */
-public class PseudoLogin extends AbstractCommandCallback implements SolarEdgeCommand {
+public class PublicApiKeyCheck extends AbstractCommandCallback implements SolarEdgeCommand {
 
-    private final SolarEdgeHandler handler;
-
-    public PseudoLogin(SolarEdgeHandler handler, StatusUpdateListener listener) {
+    public PublicApiKeyCheck(SolarEdgeHandler handler, StatusUpdateListener listener) {
         super(handler.getConfiguration(), listener);
-        this.handler = handler;
     }
 
     @Override
     protected Request prepareRequest(Request requestToPrepare) {
 
-        // as a token is used no real login is to be done here. IT is just checked if a protected page can be retrieved
-        // and therefore the token is valid.
+        // as a key is used no real login is to be done here. It is just checked if a protected page can be retrieved
+        // and therefore the key is valid.
         requestToPrepare.followRedirects(false);
         requestToPrepare.method(HttpMethod.GET);
 
@@ -44,7 +41,7 @@ public class PseudoLogin extends AbstractCommandCallback implements SolarEdgeCom
 
     @Override
     protected String getURL() {
-        return DATA_API_URL + config.getSolarId() + DATA_API_URL_LIVE_DATA_SUFFIX;
+        return PUBLIC_DATA_API_URL + config.getSolarId() + PUBLIC_DATA_API_URL_LIVE_DATA_SUFFIX;
     }
 
     @Override

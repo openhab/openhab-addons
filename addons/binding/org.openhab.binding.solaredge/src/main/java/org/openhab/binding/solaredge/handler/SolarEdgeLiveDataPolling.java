@@ -8,8 +8,9 @@
  */
 package org.openhab.binding.solaredge.handler;
 
-import org.openhab.binding.solaredge.internal.command.LegacyLiveDataUpdate;
-import org.openhab.binding.solaredge.internal.command.LiveDataUpdate;
+import org.openhab.binding.solaredge.internal.command.LiveDataUpdateMeterless;
+import org.openhab.binding.solaredge.internal.command.LiveDataUpdatePrivateApi;
+import org.openhab.binding.solaredge.internal.command.LiveDataUpdatePublicApi;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,10 +49,15 @@ public class SolarEdgeLiveDataPolling implements Runnable {
             logger.debug("polling SolarEdge live data {}", handler.getConfiguration());
 
             SolarEdgeCommand ldu;
-            if (handler.getConfiguration().isLegacyMode()) {
-                ldu = new LegacyLiveDataUpdate(handler);
+
+            if (handler.getConfiguration().isUsePrivateApi()) {
+                ldu = new LiveDataUpdatePrivateApi(handler);
             } else {
-                ldu = new LiveDataUpdate(handler);
+                if (handler.getConfiguration().isMeterInstalled()) {
+                    ldu = new LiveDataUpdatePublicApi(handler);
+                } else {
+                    ldu = new LiveDataUpdateMeterless(handler);
+                }
             }
 
             try {

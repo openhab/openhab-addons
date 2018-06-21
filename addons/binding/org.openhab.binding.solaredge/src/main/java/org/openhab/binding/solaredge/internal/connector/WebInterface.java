@@ -8,11 +8,7 @@
  */
 package org.openhab.binding.solaredge.internal.connector;
 
-import static org.openhab.binding.solaredge.SolarEdgeBindingConstants.*;
-
 import java.io.UnsupportedEncodingException;
-import java.net.CookieStore;
-import java.net.HttpCookie;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus.Code;
@@ -21,8 +17,8 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.solaredge.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.handler.SolarEdgeHandler;
-import org.openhab.binding.solaredge.internal.command.PostLoginGetClientCookie;
-import org.openhab.binding.solaredge.internal.command.PseudoLogin;
+import org.openhab.binding.solaredge.internal.command.PrivateApiTokenCheck;
+import org.openhab.binding.solaredge.internal.command.PublicApiKeyCheck;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +30,8 @@ import org.slf4j.LoggerFactory;
  */
 public class WebInterface {
 
+    private static final long PUBLIC_API_DAY_LIMIT = 300;
+    private static final long MINUTES_PER_DAY = 1440;
     private static final long LOGIN_WAIT_TIME = 1000;
 
     private final Logger logger = LoggerFactory.getLogger(WebInterface.class);
@@ -53,11 +51,6 @@ public class WebInterface {
      * holds authentication status
      */
     private boolean authenticated = false;
-
-    /**
-     * holds cookie status
-     */
-    private boolean cookieOK = false;
 
     /**
      * HTTP client for asynchronous calls
@@ -134,7 +127,9 @@ public class WebInterface {
 
         if (preCheck()) {
 
-            StatusUpdateListener clientCookieListener = new StatusUpdateListener() {
+            SolarEdgeCommand tokenCheckCommand;
+
+            StatusUpdateListener tokenCheckListener = new StatusUpdateListener() {
 
                 @Override
                 public void update(CommunicationStatus status) {
@@ -142,32 +137,14 @@ public class WebInterface {
                     if (status.getHttpCode().equals(Code.OK)) {
                         handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "logged in");
                         setAuthenticated(true);
-                    } else if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
-                        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                                status.getMessage());
-                        setAuthenticated(false);
-                    } else {
-                        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                status.getMessage());
-                        setAuthenticated(false);
-                    }
-
-                }
-
-            };
-
-            StatusUpdateListener pseudoLoginListener = new StatusUpdateListener() {
-
-                @Override
-                public void update(CommunicationStatus status) {
-
-                    if (status.getHttpCode().equals(Code.OK)) {
-                        // perform second part of login process if first part is successful
-                        new PostLoginGetClientCookie(handler, clientCookieListener).performAction(asyncclient);
                     } else if (status.getHttpCode().equals(Code.FOUND)) {
                         handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
                                 "invalid token");
                         setAuthenticated(false);
+                    } else if (status.getHttpCode().equals(Code.FORBIDDEN)) {
+                        handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "invalid api key or solarId is not valid for this api key");
+                        setAuthenticated(false);
                     } else if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
                         handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                                 status.getMessage());
@@ -181,7 +158,12 @@ public class WebInterface {
                 }
             };
 
-            new PseudoLogin(handler, pseudoLoginListener).performAction(asyncclient);
+            if (config.isUsePrivateApi()) {
+                tokenCheckCommand = new PrivateApiTokenCheck(handler, tokenCheckListener);
+            } else {
+                tokenCheckCommand = new PublicApiKeyCheck(handler, tokenCheckListener);
+            }
+            tokenCheckCommand.performAction(asyncclient);
         }
     }
 
@@ -192,14 +174,15 @@ public class WebInterface {
      */
     private boolean preCheck() {
         String preCheckStatusMessage = "";
-        // if (this.config.getUsername() == null || this.config.getUsername().isEmpty()) {
-        // preCheckStatusMessage = "please configure username first";
-        // } else if (this.config.getPassword() == null || this.config.getPassword().isEmpty()) {
-        // preCheckStatusMessage = "please configure password first";
-        if (this.config.getToken() == null) {
-            preCheckStatusMessage = "please configure token first";
+        if (this.config.getTokenOrApiKey() == null) {
+            preCheckStatusMessage = "please configure token/api_key first";
         } else if (this.config.getSolarId() == null || this.config.getSolarId().isEmpty()) {
             preCheckStatusMessage = "please configure solarId first";
+        } else if (this.config.isUsePrivateApi() == false && calcRequestsPerDay() > PUBLIC_API_DAY_LIMIT) {
+            preCheckStatusMessage = "daily request limit (" + PUBLIC_API_DAY_LIMIT + ") exceeded: "
+                    + calcRequestsPerDay();
+        } else if (this.config.isUsePrivateApi() && !this.config.isMeterInstalled()) {
+            preCheckStatusMessage = "a meter must be present in order to use the private API";
         } else {
             return true;
         }
@@ -209,40 +192,17 @@ public class WebInterface {
 
     }
 
+    private long calcRequestsPerDay() {
+        return MINUTES_PER_DAY / this.config.getLiveDataPollingInterval()
+                + 4 * MINUTES_PER_DAY / this.config.getAggregateDataPollingInterval();
+    }
+
     /**
-     * returns authentication status. if already authenticated, cookie status is checked in addition.
+     * returns authentication status.
      *
      * @return
      */
     private synchronized boolean isAuthenticated() {
-        if (authenticated && !cookieOK) {
-            boolean foundSecurityToken = false;
-            boolean foundClientCookie = false;
-            for (HttpCookie cookie : getCookieStore().getCookies()) {
-                if (cookie.getName().equals(TOKEN_COOKIE_NAME)) {
-                    logger.debug("{}: {}", TOKEN_COOKIE_NAME, cookie.getValue());
-                    foundSecurityToken = true;
-                }
-                if (cookie.getName().startsWith(CLIENT_COOKIE_NAME_PREFIX)) {
-                    logger.debug("{}: {}", cookie.getName(), cookie.getValue());
-                    foundClientCookie = true;
-                }
-            }
-
-            if (!foundSecurityToken) {
-                String message = "Session-Cookie not found: " + TOKEN_COOKIE_NAME;
-                logger.warn(message);
-                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
-                setAuthenticated(false);
-            } else if (!foundClientCookie) {
-                String message = "Client-Cookie not found: " + CLIENT_COOKIE_NAME_PREFIX + "*";
-                logger.warn(message);
-                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
-                setAuthenticated(false);
-            } else {
-                cookieOK = true;
-            }
-        }
         return authenticated;
     }
 
@@ -250,7 +210,4 @@ public class WebInterface {
         this.authenticated = authenticated;
     }
 
-    public CookieStore getCookieStore() {
-        return asyncclient.getCookieStore();
-    }
 }

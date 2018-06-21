@@ -32,32 +32,37 @@ public class SolarEdgeBindingConstants {
 
     // List of all Channel ids ==> see DataChannels
 
-    // // URLs
-    public static final String PRE_LOGIN_URL = "https://monitoring.solaredge.com/solaredge-web/p/submitLogin";
-    public static final String POST_LOGIN_SESSION_TOKEN_URL = "https://monitoring.solaredge.com/solaredge-web/p/login";
-    public static final String POST_LOGIN_CLIENT_COOKIE_URL = "https://monitoring.solaredge.com/solaredge-web/p/initClient";
+    // PRIVATE API CONSTANTS
+    // URLs
+    public static final String PRIVATE_DATA_API_URL = "https://monitoring.solaredge.com/solaredge-apigw/api/site/";
+    public static final String PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_SUFFIX = "/powerDashboardChart";
+    public static final String PRIVATE_DATA_API_URL_AGGREGATE_DATA_MONTH_YEAR_SUFFIX = "/energyDashboardChart";
+    public static final String PRIVATE_DATA_API_URL_LIVE_DATA_SUFFIX = "/currentPowerFlow.json";
 
-    public static final String DATA_API_URL = "https://monitoring.solaredge.com/solaredge-apigw/api/site/";
-    public static final String DATA_API_LEGACY_LIVE_DATA_URL = "https://monitoring.solaredge.com/solaredge-web/p/overviewPanel/";
-    public static final String DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_SUFFIX = "/powerDashboardChart";
-    public static final String DATA_API_URL_AGGREGATE_DATA_MONTH_YEAR_SUFFIX = "/energyDashboardChart";
-    public static final String DATA_API_URL_LIVE_DATA_SUFFIX = "/currentPowerFlow.json";
+    // field names
+    public static final String PRIVATE_API_TOKEN_COOKIE_NAME = "SPRING_SECURITY_REMEMBER_ME_COOKIE";
+    public static final String PRIVATE_API_TOKEN_COOKIE_DOMAIN = "monitoring.solaredge.com";
+    public static final String PRIVATE_API_TOKEN_COOKIE_PATH = "/";
+    public static final String PRIVATE_DATA_API_AGGREGATE_DATA_CHARTFIELD_FIELD = "chartField";
 
-    // login field names
-    public static final String TOKEN_COOKIE_NAME = "SPRING_SECURITY_REMEMBER_ME_COOKIE";
-    public static final String TOKEN_COOKIE_DOMAIN = "monitoring.solaredge.com";
-    public static final String TOKEN_COOKIE_PATH = "/";
-    public static final String CLIENT_COOKIE_NAME_PREFIX = "SolarEdge_Client";
+    //
+    //
+    // PRIVATE API CONSTANTS
+    // URLs
+    public static final String PUBLIC_DATA_API_URL = "https://monitoringapi.solaredge.com/site/";
+    public static final String PUBLIC_DATA_API_URL_AGGREGATE_DATA_SUFFIX = "/energyDetails";
+    public static final String PUBLIC_DATA_API_URL_LIVE_DATA_SUFFIX = "/currentPowerFlow";
+    public static final String PUBLIC_DATA_API_URL_LIVE_DATA_METERLESS_SUFFIX = "/overview";
 
-    public static final String POST_LOGIN_CLIENT_CMD_FIELD = "cmd";
-    public static final String POST_LOGIN_CLIENT_CMD_VALUE = "createCookie";
-    public static final String POST_LOGIN_CLIENT_TARGET_FIELD = "target";
-    public static final String POST_LOGIN_CLIENT_TARGET_VALUE = "site/";
-    public static final String POST_LOGIN_CLIENT_CLIENT_FIELD = "client";
-    public static final String POST_LOGIN_CLIENT_CLIENT_VALUE = "touch:false|csstransforms3d:true|generatedcontent:true|fontface:true|flexbox:true|canvas:true|canvastext:true|webgl:true|geolocation:true|postmessage:true|websqldatabase:false|indexeddb:true|hashchange:true|history:true|draganddrop:true|websockets:true|rgba:true|hsla:true|multiplebgs:true|backgroundsize:true|borderimage:true|borderradius:true|boxshadow:true|textshadow:true|opacity:true|cssanimations:true|csscolumns:true|cssgradients:true|cssreflections:false|csstransforms:true|csstransitions:true|video:|ogg:true|h264:true|webm:true|audio:|ogg:true|mp3:true|wav:true|m4a:true|localstorage:true|sessionstorage:true|webworkers:true|applicationcache:true|svg:true|inlinesvg:true|smil:true|svgclippaths:true|input:|autocomplete:true|autofocus:true|list:true|placeholder:true|max:true|min:true|multiple:true|pattern:true|required:true|step:true|inputtypes:|search:true|tel:true|url:true|email:true|datetime:false|date:false|month:false|week:false|time:false|datetime-local:false|number:true|range:true|color:true|fileapi:true|fullscreen:true|clientWidth:1920|clientHeight:1080|windowInnerWidth:1920|windowInnerHeight:416|windowMaxWidth:1920|windowMaxHeight:1080|flash:false|mobile:false|phone:false|tablet:false|ie11:false";
+    // field names
+    public static final String PUBLIC_DATA_API_KEY_FIELD = "api_key";
+    public static final String PUBLIC_DATA_API_START_TIME_FIELD = "startTime";
+    public static final String PUBLIC_DATA_API_END_TIME_FIELD = "endTime";
+    public static final String PUBLIC_DATA_API_TIME_UNIT_FIELD = "timeUnit";
 
-    public static final String DATA_API_LEGACY_LIVE_DATA_FIELDID_FIELD = "fieldId";
-    public static final String DATA_API_AGGREGATE_DATA_CHARTFIELD_FIELD = "chartField";
+    // constants
+    public static final String BEGIN_OF_DAY_TIME = "00:00:00";
+    public static final String END_OF_DAY_TIME = "23:59:59";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_GENERIC);
 

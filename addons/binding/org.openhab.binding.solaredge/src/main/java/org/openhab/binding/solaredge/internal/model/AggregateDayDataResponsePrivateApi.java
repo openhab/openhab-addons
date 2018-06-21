@@ -12,11 +12,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * this class is used to map the monthly aggregate data json response
+ * this class is used to map the daily aggregate data json response
  *
  * @author Alexander Friese - initial contribution
  */
-public class AggregateMonthDataResponse extends AbstractAggregateDataResponse {
+public class AggregateDayDataResponsePrivateApi extends AbstractAggregateDataResponsePrivateApi {
 
     @Override
     public Map<String, String> getValues() {
@@ -24,34 +24,34 @@ public class AggregateMonthDataResponse extends AbstractAggregateDataResponse {
 
         if (getUtilizationMeasures() != null) {
             if (getUtilizationMeasures().production != null) {
-                valueMap.put(AggregateDataChannels.MONTH_PRODUCTION.getFQName(),
+                valueMap.put(AggregateDataChannels.DAY_PRODUCTION.getFQName(),
                         getValueAsKWh(getUtilizationMeasures().production));
             }
 
             if (getUtilizationMeasures().consumption != null) {
-                valueMap.put(AggregateDataChannels.MONTH_CONSUMPTION.getFQName(),
+                valueMap.put(AggregateDataChannels.DAY_CONSUMPTION.getFQName(),
                         getValueAsKWh(getUtilizationMeasures().consumption));
             }
 
             if (getUtilizationMeasures().selfConsumptionForConsumption != null) {
-                valueMap.put(AggregateDataChannels.MONTH_SELFCONSUMPTIONFORCONSUMPTION.getFQName(),
+                valueMap.put(AggregateDataChannels.DAY_SELFCONSUMPTIONFORCONSUMPTION.getFQName(),
                         getValueAsKWh(getUtilizationMeasures().selfConsumptionForConsumption));
-                valueMap.put(AggregateDataChannels.MONTH_SELFCONSUMPTIONCOVERAGE.getFQName(),
+                valueMap.put(AggregateDataChannels.DAY_SELFCONSUMPTIONCOVERAGE.getFQName(),
                         getValueAsPercent(getUtilizationMeasures().selfConsumptionForConsumption));
             }
 
             if (getUtilizationMeasures().batterySelfConsumption != null) {
-                valueMap.put(AggregateDataChannels.MONTH_BATTERYSELFCONSUMPTION.getFQName(),
+                valueMap.put(AggregateDataChannels.DAY_BATTERYSELFCONSUMPTION.getFQName(),
                         getValueAsKWh(getUtilizationMeasures().batterySelfConsumption));
             }
 
             if (getUtilizationMeasures().imported != null) {
-                valueMap.put(AggregateDataChannels.MONTH_IMPORT.getFQName(),
+                valueMap.put(AggregateDataChannels.DAY_IMPORT.getFQName(),
                         getValueAsKWh(getUtilizationMeasures().imported));
             }
 
             if (getUtilizationMeasures().export != null) {
-                valueMap.put(AggregateDataChannels.MONTH_EXPORT.getFQName(),
+                valueMap.put(AggregateDataChannels.DAY_EXPORT.getFQName(),
                         getValueAsKWh(getUtilizationMeasures().export));
             }
         }

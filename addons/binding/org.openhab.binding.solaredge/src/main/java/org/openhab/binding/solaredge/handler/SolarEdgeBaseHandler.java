@@ -86,7 +86,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
 
         this.webInterface = new WebInterface(config, this);
 
-        if (config.getToken() != null) {
+        if (config.getTokenOrApiKey() != null) {
             this.startPolling();
         } else {
             thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -102,7 +102,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
             logger.debug("start live data polling job at intervall {}",
                     getConfiguration().getLiveDataPollingInterval());
             liveDataPollingJob = scheduler.scheduleWithFixedDelay(liveDataPollingRunnable, 1,
-                    getConfiguration().getLiveDataPollingInterval(), TimeUnit.SECONDS);
+                    getConfiguration().getLiveDataPollingInterval(), TimeUnit.MINUTES);
         } else {
             logger.debug("live data pollingJob already active");
         }
@@ -110,7 +110,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
             logger.debug("start aggregate data polling job at intervall {}",
                     getConfiguration().getAggregateDataPollingInterval());
             liveDataPollingJob = scheduler.scheduleWithFixedDelay(aggregateDataPollingRunnable, 1,
-                    getConfiguration().getAggregateDataPollingInterval(), TimeUnit.SECONDS);
+                    getConfiguration().getAggregateDataPollingInterval(), TimeUnit.MINUTES);
         } else {
             logger.debug("aggregate data pollingJob already active");
         }

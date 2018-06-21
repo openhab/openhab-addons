@@ -17,22 +17,23 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class SolarEdgeConfiguration {
 
-    private String token;
+    private String tokenOrApiKey;
     private String solarId;
 
-    private boolean legacyMode = false;
+    private boolean meterInstalled = false;
+    private boolean usePrivateApi = false;
 
     private Integer asyncTimeout = 120;
     private Integer syncTimeout = 120;
     private Integer liveDataPollingInterval;
     private Integer aggregateDataPollingInterval;
 
-    public final String getToken() {
-        return token;
+    public final String getTokenOrApiKey() {
+        return tokenOrApiKey;
     }
 
-    public final void setToken(String token) {
-        this.token = token;
+    public final void setTokenOrApiKey(String tokenOrApiKey) {
+        this.tokenOrApiKey = tokenOrApiKey;
     }
 
     public final String getSolarId() {
@@ -59,14 +60,6 @@ public class SolarEdgeConfiguration {
         this.syncTimeout = syncTimeout;
     }
 
-    public final boolean isLegacyMode() {
-        return legacyMode;
-    }
-
-    public final void setLegacyMode(boolean legacyMode) {
-        this.legacyMode = legacyMode;
-    }
-
     public final Integer getLiveDataPollingInterval() {
         return liveDataPollingInterval;
     }
@@ -83,10 +76,27 @@ public class SolarEdgeConfiguration {
         this.aggregateDataPollingInterval = aggregateDataPollingInterval;
     }
 
+    public final boolean isMeterInstalled() {
+        return meterInstalled;
+    }
+
+    public final void setMeterInstalled(boolean meterInstalled) {
+        this.meterInstalled = meterInstalled;
+    }
+
+    public final boolean isUsePrivateApi() {
+        return usePrivateApi;
+    }
+
+    public final void setUsePrivateApi(boolean usePrivateApi) {
+        this.usePrivateApi = usePrivateApi;
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("token", getToken()).append("solarId", getSolarId())
-                .append("legacyMode", isLegacyMode()).append("live data pollingInterval", getLiveDataPollingInterval())
+        return new ToStringBuilder(this).append("tokenOrApiKey", getTokenOrApiKey()).append("solarId", getSolarId())
+                .append("meterInstalled", isMeterInstalled()).append("usePrivateApi", isUsePrivateApi())
+                .append("live data pollingInterval", getLiveDataPollingInterval())
                 .append("aggregate data pollingInterval", getAggregateDataPollingInterval())
                 .append("asyncTimeout", getAsyncTimeout()).append("syncTimeout", getSyncTimeout()).toString();
     }

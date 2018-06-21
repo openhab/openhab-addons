@@ -8,9 +8,10 @@
  */
 package org.openhab.binding.solaredge.handler;
 
-import org.openhab.binding.solaredge.internal.command.AggregateDataUpdate;
-import org.openhab.binding.solaredge.internal.command.AggregatePeriod;
+import org.openhab.binding.solaredge.internal.command.AggregateDataUpdatePrivateApi;
+import org.openhab.binding.solaredge.internal.command.AggregateDataUpdatePublicApi;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
+import org.openhab.binding.solaredge.internal.model.AggregatePeriod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,26 +46,40 @@ public class SolarEdgeAggregateDataPolling implements Runnable {
     @Override
     public void run() {
         if (handler.getWebInterface() != null) {
-            logger.debug("polling SolarEdge aggregate data {}", handler.getConfiguration());
+            // if no meter is present all data will be fetched by the 'LiveDataUpdateMeterless'
+            if (handler.getConfiguration().isMeterInstalled()) {
+                logger.debug("polling SolarEdge aggregate data {}", handler.getConfiguration());
 
-            SolarEdgeCommand adu_day = new AggregateDataUpdate(handler, AggregatePeriod.DAY);
-            SolarEdgeCommand adu_week = new AggregateDataUpdate(handler, AggregatePeriod.WEEK);
-            SolarEdgeCommand adu_month = new AggregateDataUpdate(handler, AggregatePeriod.MONTH);
-            SolarEdgeCommand adu_year = new AggregateDataUpdate(handler, AggregatePeriod.YEAR);
+                SolarEdgeCommand aduDay;
+                SolarEdgeCommand aduWeek;
+                SolarEdgeCommand aduMonth;
+                SolarEdgeCommand aduYear;
 
-            try {
-                handler.getWebInterface().executeCommand(adu_day);
-                handler.getWebInterface().executeCommand(adu_week);
-                handler.getWebInterface().executeCommand(adu_month);
-                handler.getWebInterface().executeCommand(adu_year);
-            } catch (RuntimeException e) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Caught Exception: {}", e.getMessage(), e);
+                if (handler.getConfiguration().isUsePrivateApi()) {
+                    aduDay = new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.DAY);
+                    aduWeek = new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.WEEK);
+                    aduMonth = new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.MONTH);
+                    aduYear = new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.YEAR);
                 } else {
-                    logger.warn("Caught Exception: {}", e.getMessage());
+                    aduDay = new AggregateDataUpdatePublicApi(handler, AggregatePeriod.DAY);
+                    aduWeek = new AggregateDataUpdatePublicApi(handler, AggregatePeriod.WEEK);
+                    aduMonth = new AggregateDataUpdatePublicApi(handler, AggregatePeriod.MONTH);
+                    aduYear = new AggregateDataUpdatePublicApi(handler, AggregatePeriod.YEAR);
+                }
+
+                try {
+                    handler.getWebInterface().executeCommand(aduDay);
+                    handler.getWebInterface().executeCommand(aduWeek);
+                    handler.getWebInterface().executeCommand(aduMonth);
+                    handler.getWebInterface().executeCommand(aduYear);
+                } catch (RuntimeException e) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Caught Exception: {}", e.getMessage(), e);
+                    } else {
+                        logger.warn("Caught Exception: {}", e.getMessage());
+                    }
                 }
             }
-
         }
     }
 }
