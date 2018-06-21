@@ -18,7 +18,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * The {@link CtBulbDevice} contains methods for handling the ceiling device.
+ * The {@link CtBulbDevice} contains methods for handling the CT bulb device.
  *
  * @author Claudius Ellsel - Initial contribution
  */

@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Coaster Li - Initial contribution
  */
 public class DeviceManager {
-    private final Logger logger = LoggerFactory.getLogger(DeviceFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(DeviceManager.class);
 
     private static final String TAG = DeviceManager.class.getSimpleName();
 
