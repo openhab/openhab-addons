@@ -19,6 +19,20 @@ public class WSTimeValue extends WSResourceValue {
     protected int minutes;
     protected int seconds;
 
+    public WSTimeValue() {
+    }
+
+    public WSTimeValue(int resourceID) {
+        super(resourceID);
+    }
+
+    public WSTimeValue(int resourceID, int hours, int minutes, int seconds) {
+        super(resourceID);
+        this.hours = hours;
+        this.minutes = minutes;
+        this.seconds = seconds;
+    }
+
     /**
      * Gets the value of the hours property.
      *

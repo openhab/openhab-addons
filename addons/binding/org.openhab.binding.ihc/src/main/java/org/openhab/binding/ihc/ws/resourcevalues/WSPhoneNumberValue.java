@@ -17,6 +17,18 @@ public class WSPhoneNumberValue extends WSResourceValue {
 
     protected String number;
 
+    public WSPhoneNumberValue() {
+    }
+
+    public WSPhoneNumberValue(int resourceID) {
+        super(resourceID);
+    }
+
+    public WSPhoneNumberValue(int resourceID, String number) {
+        super(resourceID);
+        this.number = number;
+    }
+
     /**
      * Gets the value of the number property.
      *

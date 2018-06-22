@@ -19,6 +19,20 @@ public class WSSceneDimmerValue extends WSResourceValue {
     protected int dimmerPercentage;
     protected int rampTime;
 
+    public WSSceneDimmerValue() {
+    }
+
+    public WSSceneDimmerValue(int resourceID) {
+        super(resourceID);
+    }
+
+    public WSSceneDimmerValue(int resourceID, int delayTime, int dimmerPercentage, int rampTime) {
+        super(resourceID);
+        this.delayTime = delayTime;
+        this.dimmerPercentage = dimmerPercentage;
+        this.rampTime = rampTime;
+    }
+
     /**
      * Gets the value of the delayTime property.
      *

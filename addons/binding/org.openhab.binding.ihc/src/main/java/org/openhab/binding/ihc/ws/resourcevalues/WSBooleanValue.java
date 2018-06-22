@@ -17,6 +17,18 @@ public class WSBooleanValue extends WSResourceValue {
 
     protected boolean value;
 
+    public WSBooleanValue() {
+    }
+
+    public WSBooleanValue(int resourceID) {
+        super(resourceID);
+    }
+
+    public WSBooleanValue(int resourceID, boolean value) {
+        super(resourceID);
+        this.value = value;
+    }
+
     /**
      * Gets the value of the value property.
      *

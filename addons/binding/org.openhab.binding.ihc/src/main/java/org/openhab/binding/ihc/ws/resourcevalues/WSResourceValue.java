@@ -18,7 +18,6 @@ public class WSResourceValue {
     protected int resourceID;
 
     WSResourceValue() {
-
     }
 
     WSResourceValue(int resourceID) {

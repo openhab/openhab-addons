@@ -18,6 +18,19 @@ public class WSSceneShutterSimpleValue extends WSResourceValue {
     protected int delayTime;
     protected boolean shutterPositionIsUp;
 
+    public WSSceneShutterSimpleValue() {
+    }
+
+    public WSSceneShutterSimpleValue(int resourceID) {
+        super(resourceID);
+    }
+
+    public WSSceneShutterSimpleValue(int resourceID, int delayTime, boolean shutterPositionIsUp) {
+        super(resourceID);
+        this.delayTime = delayTime;
+        this.shutterPositionIsUp = shutterPositionIsUp;
+    }
+
     /**
      * Gets the value of the delayTime property.
      *

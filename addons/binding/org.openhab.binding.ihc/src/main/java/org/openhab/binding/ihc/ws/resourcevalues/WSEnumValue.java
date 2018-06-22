@@ -19,6 +19,20 @@ public class WSEnumValue extends WSResourceValue {
     protected int enumValueID;
     protected String enumName;
 
+    public WSEnumValue() {
+    }
+
+    public WSEnumValue(int resourceID) {
+        super(resourceID);
+    }
+
+    public WSEnumValue(int resourceID, int definitionTypeID, int enumValueID, String enumName) {
+        super(resourceID);
+        this.definitionTypeID = definitionTypeID;
+        this.enumValueID = enumValueID;
+        this.enumName = enumName;
+    }
+
     /**
      * Gets the value of the definitionTypeID property.
      *

@@ -19,6 +19,20 @@ public class WSIntegerValue extends WSResourceValue {
     protected int maximumValue;
     protected int minimumValue;
 
+    public WSIntegerValue() {
+    }
+
+    public WSIntegerValue(int resourceID) {
+        super(resourceID);
+    }
+
+    public WSIntegerValue(int resourceID, int value, int maximumValue, int minimumValue) {
+        super(resourceID);
+        this.integer = value;
+        this.maximumValue = maximumValue;
+        this.minimumValue = minimumValue;
+    }
+
     /**
      * Gets the value of the integer property.
      *

@@ -40,8 +40,16 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.ihc.internal.IhcDataConverter;
+import org.eclipse.smarthome.core.types.Type;
+import org.openhab.binding.ihc.internal.ButtonPressDurationDetector;
+import org.openhab.binding.ihc.internal.ChannelUtils;
+import org.openhab.binding.ihc.internal.EnumDictionary;
+import org.openhab.binding.ihc.internal.SignalLevelConverter;
+import org.openhab.binding.ihc.internal.config.ChannelParams;
 import org.openhab.binding.ihc.internal.config.IhcConfiguration;
+import org.openhab.binding.ihc.internal.converters.Converter;
+import org.openhab.binding.ihc.internal.converters.ConverterAdditionalInfo;
+import org.openhab.binding.ihc.internal.converters.ConverterFactory;
 import org.openhab.binding.ihc.ws.IhcClient;
 import org.openhab.binding.ihc.ws.IhcClient.ConnectionState;
 import org.openhab.binding.ihc.ws.IhcEventListener;
@@ -65,9 +73,11 @@ import org.w3c.dom.Document;
  * @author Pauli Anttila - Initial contribution
  */
 public class IhcHandler extends BaseThingHandler implements IhcEventListener {
-    private static final String LOCAL_IHC_PROJECT_FILE_NAME_TEMPLATE = "ihc-project-file-%s.xml";
-
     private final Logger logger = LoggerFactory.getLogger(IhcHandler.class);
+
+    private static final int MAX_PULSE_WIDTH_IN_MS = 4000;
+
+    private static final String LOCAL_IHC_PROJECT_FILE_NAME_TEMPLATE = "ihc-project-file-%s.xml";
 
     /** Holds runtime notification reorder timeout in milliseconds */
     private final int NOTIFICATIONS_REORDER_WAIT_TIME = 2000;
@@ -103,6 +113,20 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     private Map<Integer, LocalDateTime> lastUpdate = new HashMap<>();
 
     private EnumDictionary enumDictionary;
+
+    private final Runnable pollingRunnableRF = new Runnable() {
+        @Override
+        public void run() {
+            updateRfDeviceStates();
+        }
+    };
+
+    private final Runnable controlRunnable = new Runnable() {
+        @Override
+        public void run() {
+            reconnectCheck();
+        }
+    };
 
     public IhcHandler(Thing thing) {
         super(thing);
@@ -217,12 +241,13 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     private void refreshChannel(ChannelUID channelUID) {
         logger.debug("REFRESH channel {}", channelUID);
         try {
-            if (ChannelUtils.isChannelWriteOnly(getThing(), channelUID.getId())) {
+            ChannelParams params = new ChannelParams(thing.getChannel(channelUID.getId()));
+            logger.debug("Channel params: {}", params);
+            if (params.isDirectionWriteOnly()) {
                 logger.warn("Write only channel, skip refresh command to {}", channelUID);
                 return;
             }
-            Integer resourceId = ChannelUtils.getResourceIdFromChannelParameters(getThing(), channelUID.getId());
-            WSResourceValue value = ihc.resourceQuery(resourceId);
+            WSResourceValue value = ihc.resourceQuery(params.getResourceId());
             resourceValueUpdateReceived(value);
         } catch (IhcExecption e) {
             logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage());
@@ -273,17 +298,15 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
     private void updateResourceChannel(ChannelUID channelUID, Command command) {
         try {
-            if (ChannelUtils.isChannelReadOnly(getThing(), channelUID.getId())) {
-                logger.warn("Read only channel, skip the update to {}", channelUID);
-                return;
-            }
-
-            String channelTypeId = ChannelUtils.getChannelTypeId(getThing(), channelUID.getId());
-            if (channelTypeId != null) {
-                switch (channelTypeId) {
-                    default:
-                        updateChannel(channelUID, command);
+            Channel channel = thing.getChannel(channelUID.getId());
+            if (channel != null) {
+                ChannelParams params = new ChannelParams(channel);
+                logger.debug("Channel params: {}", params);
+                if (params.isDirectionReadOnly()) {
+                    logger.warn("Read only channel, skip the update to {}", channelUID);
+                    return;
                 }
+                updateChannel(channelUID, channel.getAcceptedItemType(), params, command);
             }
         } catch (IhcExecption e) {
             logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage());
@@ -292,73 +315,75 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         }
     }
 
-    private void updateChannel(ChannelUID channelUID, Command command) throws IllegalArgumentException, IhcExecption {
+    private void updateChannel(ChannelUID channelUID, String AcceptedItemType, ChannelParams params, Command command)
+            throws IllegalArgumentException, IhcExecption {
 
-        String cmdToReact = ChannelUtils.getCmdToReactFromChannelParameters(getThing(), channelUID.getId());
-        if (cmdToReact != null) {
-            if (command.toString().equals(cmdToReact)) {
-                logger.debug("Command '{}' equal to channel reaction parameter '{}', execute it", command, cmdToReact);
+        if (params.getCommandToReact() != null) {
+            if (command.toString().equals(params.getCommandToReact())) {
+                logger.debug("Command '{}' equal to channel reaction parameter '{}', execute it", command,
+                        params.getCommandToReact());
             } else {
                 logger.debug("Command '{}' doesn't equal to reaction trigger parameter '{}', skip it", command,
-                        cmdToReact);
+                        params.getCommandToReact());
                 return;
             }
         }
-
-        Integer resourceId = ChannelUtils.getResourceIdFromChannelParameters(getThing(), channelUID.getId());
-        WSResourceValue value = ihc.getResourceValueInformation(resourceId);
-
+        WSResourceValue value = ihc.getResourceValueInformation(params.getResourceId());
         if (value != null) {
-            Integer pulseWidth = ChannelUtils.getPulseWidthFromChannelParameters(getThing(), channelUID.getId());
-            if (pulseWidth != null) {
-                sendPulseCommand(channelUID, value, Math.min(pulseWidth, 4000));
+            if (params.getPulseWidth() != null) {
+                sendPulseCommand(channelUID, AcceptedItemType, params, value,
+                        Math.min(params.getPulseWidth(), MAX_PULSE_WIDTH_IN_MS));
             } else {
-                sendNormalCommand(channelUID, command, value);
+                sendNormalCommand(channelUID, AcceptedItemType, params, command, value);
             }
-        } else {
-            sendSpecialCommand(channelUID, command);
         }
     }
 
-    private void sendNormalCommand(ChannelUID channelUID, Command command, WSResourceValue value) throws IhcExecption {
-        logger.debug("Send command '{}' to resource '{}'", command, value.getResourceID());
+    private void sendNormalCommand(ChannelUID channelUID, String AcceptedItemType, ChannelParams params,
+            Command command, WSResourceValue value) throws IhcExecption {
 
-        ArrayList<IhcEnumValue> enumValues = null;
-        if (value instanceof WSEnumValue) {
-            enumValues = enumDictionary.getEnumValues(((WSEnumValue) value).getDefinitionTypeID());
-        }
-        boolean inverted = ChannelUtils.getInvertedFromChannelParameters(getThing(), channelUID.getId());
-        logger.debug("Inverted output: {}", inverted);
-        WSResourceValue val = IhcDataConverter.convertCommandToResourceValue(command, value, enumValues, inverted);
-        logger.debug("Update resource value: {}", val);
+        logger.debug("Send command '{}' to resource '{}'", command, value.getResourceID());
+        ConverterAdditionalInfo converterAdditionalInfo = new ConverterAdditionalInfo(getEnumValues(value),
+                params.isInverted());
+        Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(value.getClass(),
+                AcceptedItemType);
+        WSResourceValue val = converter.convertFromOHType(command, value, converterAdditionalInfo);
+        logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), val);
         if (!updateResource(val)) {
             logger.warn("Channel {} update to resource '{}' failed.", channelUID, val);
         }
     }
 
-    private void sendPulseCommand(ChannelUID channelUID, WSResourceValue value, Integer pulseWidth)
-            throws IhcExecption {
+    private ArrayList<IhcEnumValue> getEnumValues(WSResourceValue value) {
+        if (value instanceof WSEnumValue) {
+            return enumDictionary.getEnumValues(((WSEnumValue) value).getDefinitionTypeID());
+        }
+        return null;
+    }
+
+    private void sendPulseCommand(ChannelUID channelUID, String AcceptedItemType, ChannelParams params,
+            WSResourceValue value, Integer pulseWidth) throws IhcExecption {
 
         logger.debug("Send {}ms pulse to resource: {}", pulseWidth, value.getResourceID());
-
-        WSResourceValue val = null;
-        boolean inverted = ChannelUtils.getInvertedFromChannelParameters(getThing(), channelUID.getId());
-        logger.debug("Inverted output: {}", inverted);
+        logger.debug("Channel params: {}", params);
+        Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(value.getClass(),
+                AcceptedItemType);
+        ConverterAdditionalInfo converterAdditionalInfo = new ConverterAdditionalInfo(null, params.isInverted());
 
         // set resource to ON
-        val = IhcDataConverter.convertCommandToResourceValue(OnOffType.ON, value, null, inverted);
-        logger.debug("Update resource value: {}", val);
+        WSResourceValue val = converter.convertFromOHType(OnOffType.ON, value, converterAdditionalInfo);
+        logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), val);
         if (updateResource(val)) {
             // sleep a while
             try {
-                logger.debug("Sleep: {}ms", pulseWidth);
+                logger.debug("Sleeping: {}ms", pulseWidth);
                 Thread.sleep(pulseWidth);
             } catch (InterruptedException e) {
                 // do nothing
             }
             // set resource back to OFF
-            val = IhcDataConverter.convertCommandToResourceValue(OnOffType.OFF, value, null, inverted);
-            logger.debug("Update resource value: {}", val);
+            val = converter.convertFromOHType(OnOffType.OFF, value, converterAdditionalInfo);
+            logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), val);
             if (!updateResource(val)) {
                 logger.warn("Channel {} update to resource '{}' failed.", channelUID, val);
             }
@@ -367,52 +392,11 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         }
     }
 
-    private void sendSpecialCommand(ChannelUID channelUID, Command command) throws IhcExecption {
-        WSResourceValue val = null;
-
-        String specialCommandsStr = ChannelUtils.getSpecialCommandFromChannelParameters(getThing(), channelUID.getId());
-        logger.debug("specialCommandsStr: {}", specialCommandsStr);
-        if (specialCommandsStr != null) {
-            List<SpecialCommand> specialCommands = new SpecialCommandParser(specialCommandsStr).getAllOutCommands();
-            logger.debug("Out special commands: {}", specialCommands);
-            for (SpecialCommand specialCommand : specialCommands) {
-                if (command.toString().equals(specialCommand.getCommandToReact())) {
-                    logger.debug("Match found to command {}: {}", command, specialCommand);
-                    OnOffType cmd = (OnOffType) specialCommand.getCommandToSend();
-                    val = ihc.getResourceValueInformation(specialCommand.getResourceId());
-                    val = IhcDataConverter.convertCommandToResourceValue(cmd, val, null);
-                    logger.debug("Update resource value: {}", val);
-                    if (updateResource(val)) {
-                        if (specialCommand.getPulseWidth() > 0) {
-                            // sleep a while
-                            try {
-                                int delay = Math.min(specialCommand.getPulseWidth(), 4000);
-                                logger.debug("Sleep: {}ms", delay);
-                                Thread.sleep(delay);
-                            } catch (InterruptedException e) {
-                                // do nothing
-                            }
-                            cmd = cmd == OnOffType.ON ? OnOffType.OFF : OnOffType.ON;
-                            val = IhcDataConverter.convertCommandToResourceValue(cmd, val, null);
-                            logger.debug("Update resource value: {}", val);
-                            if (!updateResource(val)) {
-                                logger.warn("Channel {} update to resource '{}' failed.", channelUID, val);
-                            }
-                        }
-                    } else {
-                        logger.warn("Channel {} update to resource '{}' failed.", channelUID, val);
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * Update resource value to IHC controller.
      */
     private boolean updateResource(WSResourceValue value) throws IhcExecption {
         boolean result = false;
-
         try {
             result = ihc.resourceUpdate(value);
         } catch (IhcExecption e) {
@@ -440,11 +424,10 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
             default:
                 try {
-                    Integer resourceId = ChannelUtils.getResourceIdFromChannelParameters(getThing(),
-                            channelUID.getId());
-                    if (resourceId != null) {
+                    ChannelParams params = new ChannelParams(thing.getChannel(channelUID.getId()));
+                    if (params.getResourceId() != null) {
                         synchronized (linkedResourceIds) {
-                            linkedResourceIds.add(resourceId);
+                            linkedResourceIds.add(params.getResourceId());
                         }
                         updateNotificationsRequestReminder();
                     }
@@ -468,11 +451,10 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
             default:
                 try {
-                    Integer resourceId = ChannelUtils.getResourceIdFromChannelParameters(getThing(),
-                            channelUID.getId());
-                    if (resourceId != null) {
+                    ChannelParams params = new ChannelParams(thing.getChannel(channelUID.getId()));
+                    if (params.getResourceId() != null) {
                         synchronized (linkedResourceIds) {
-                            linkedResourceIds.removeIf(c -> c.equals(resourceId));
+                            linkedResourceIds.removeIf(c -> c.equals(params.getResourceId()));
                         }
                         updateNotificationsRequestReminder();
                     }
@@ -486,7 +468,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
      * Initialize IHC client and open connection to IHC / ELKO LS controller.
      *
      */
-    public void connect() throws IhcExecption {
+    private void connect() throws IhcExecption {
         try {
             setConnectingState(true);
             logger.debug("Connecting to IHC / ELKO LS controller [IP='{}' Username='{}' Password='{}'].",
@@ -581,7 +563,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
      * Disconnect connection to IHC / ELKO LS controller.
      *
      */
-    public void disconnect() {
+    private void disconnect() {
         if (pollingJobRf != null && !pollingJobRf.isCancelled()) {
             pollingJobRf.cancel(true);
             pollingJobRf = null;
@@ -642,17 +624,44 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     @Override
     public void resourceValueUpdateReceived(WSResourceValue value) {
         logger.debug("resourceValueUpdateReceived: {}", value);
+
         thing.getChannels().forEach(channel -> {
-            Integer resourceId = ChannelUtils.getResourceIdFromChannelParameters(getThing(), channel.getUID().getId());
-            if (resourceId != null) {
-                if (resourceId.intValue() == value.getResourceID()) {
-                    updateChannelState(channel, value);
-                } else if (resourceId.intValue() == 0) {
-                    updateSpecialCommandChannelState(channel, value);
-                }
+            ChannelParams params = new ChannelParams(channel);
+            if (params.getResourceId() != null && params.getResourceId().intValue() == value.getResourceID()) {
+                updateChannelState(channel, params, value);
             }
         });
 
+        checkTriggers(value);
+    }
+
+    private void updateChannelState(Channel channel, ChannelParams params, WSResourceValue value) {
+        if (params.isDirectionWriteOnly()) {
+            logger.debug("Write only channel, skip update to {}", channel.getUID());
+        } else {
+            if (params.getChannelTypeId() != null) {
+                switch (params.getChannelTypeId()) {
+                    case CHANNEL_TYPE_PUSH_BUTTON_TRIGGER:
+                        break;
+
+                    default:
+                        try {
+                            logger.debug("Channel params: {}", params);
+                            Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance()
+                                    .getConverter(value.getClass(), channel.getAcceptedItemType());
+                            State state = (State) converter.convertFromResourceValue(value,
+                                    new ConverterAdditionalInfo(null, params.isInverted()));
+                            updateState(channel.getUID(), state);
+                        } catch (NumberFormatException e) {
+                            logger.debug("Can't convert resource value '{}' to item type {}", value,
+                                    channel.getAcceptedItemType());
+                        }
+                }
+            }
+        }
+    }
+
+    private void checkTriggers(WSResourceValue value) {
         if (value instanceof WSBooleanValue) {
             if (((WSBooleanValue) value).isValue() == false) {
                 LocalDateTime lastUpdateTime = lastUpdate.get(value.getResourceID());
@@ -667,161 +676,97 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         }
     }
 
-    private void updateChannelState(Channel channel, WSResourceValue value) {
-        if (ChannelUtils.isChannelWriteOnly(getThing(), channel.getUID().getId())) {
-            logger.debug("Write only channel, skip update to {}", channel.getUID());
-        } else {
-            try {
-                boolean inverted = ChannelUtils.getInvertedFromChannelParameters(getThing(), channel.getUID().getId());
-                logger.debug("Inverted input: {}", inverted);
-                State state = IhcDataConverter.convertResourceValueToState(channel.getAcceptedItemType(), value,
-                        inverted);
-                updateState(channel.getUID(), state);
-            } catch (NumberFormatException e) {
-                logger.debug("Can't convert resource value '{}' to item type {}", value, channel.getAcceptedItemType());
-            }
-        }
-    }
-
-    private void updateSpecialCommandChannelState(Channel channel, WSResourceValue value) {
-        String specialCommandsStr = ChannelUtils.getSpecialCommandFromChannelParameters(thing,
-                channel.getUID().getId());
-        if (specialCommandsStr != null) {
-            try {
-                List<SpecialCommand> specialCommands = new SpecialCommandParser(specialCommandsStr).getAllInCommands();
-                for (SpecialCommand specialCommand : specialCommands) {
-                    if (specialCommand.getResourceId() == value.getResourceID()) {
-                        updateChannelState(channel, value);
-                    }
-                }
-            } catch (IllegalArgumentException e) {
-
-            }
-        }
-    }
-
     private void updateTriggers(int resourceId, Duration duration) {
         thing.getChannels().forEach(channel -> {
-            Integer id = ChannelUtils.getResourceIdFromChannelParameters(getThing(), channel.getUID().getId());
-            if (id != null && id.intValue() == resourceId) {
-                String channelTypeId = ChannelUtils.getChannelTypeId(getThing(), channel.getUID().getId());
-                if (CHANNEL_TYPE_PUSH_BUTTON_TRIGGER.equals(channelTypeId)) {
-                    long short_press_max_time = ((BigDecimal) channel.getConfiguration()
-                            .get(PARAM_SHORT_PRESS_MAX_TIME)).longValue();
-                    long long_press_max_time = ((BigDecimal) channel.getConfiguration().get(PARAM_LONG_PRESS_MAX_TIME))
-                            .longValue();
-                    long extra_long_press_max_time = ((BigDecimal) channel.getConfiguration()
-                            .get(PARAM_EXTRA_LONG_PRESS_MAX_TIME)).longValue();
-
-                    logger.debug("resourceId={} press duration={}ms", resourceId, duration.toMillis());
-
-                    if (duration.toMillis() < 0) {
-                        logger.debug("resourceId={} press duration < 0ms");
-                    }
-
-                    else if (isBetween(duration.toMillis(), 0, short_press_max_time)) {
-                        logger.debug("resourceId={} press duration > {}ms and <= {}ms", resourceId, 0,
-                                short_press_max_time);
-                        triggerChannel(channel.getUID().getId(), EVENT_SHORT_PRESS);
-                    }
-
-                    else if (isBetween(duration.toMillis(), short_press_max_time, long_press_max_time)) {
-                        logger.debug("resourceId={} press duration > {}ms and <= {}ms", resourceId,
-                                short_press_max_time, long_press_max_time);
-                        triggerChannel(channel.getUID().getId(), EVENT_LONG_PRESS);
-                    }
-
-                    else if (isBetween(duration.toMillis(), long_press_max_time, extra_long_press_max_time)) {
-                        logger.debug("resourceId={} press duration > {}ms and <= {}ms", resourceId, long_press_max_time,
-                                extra_long_press_max_time);
-                        triggerChannel(channel.getUID().getId(), EVENT_EXTRA_LONG_PRESS);
-                    }
-
-                    else {
-                        logger.debug("resourceId={} press duration > {}ms, ignore it", resourceId,
-                                extra_long_press_max_time);
+            ChannelParams params = new ChannelParams(channel);
+            if (params.getResourceId() != null && params.getResourceId().intValue() == resourceId) {
+                if (params.getChannelTypeId() != null) {
+                    switch (params.getChannelTypeId()) {
+                        case CHANNEL_TYPE_PUSH_BUTTON_TRIGGER:
+                            ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration,
+                                    params.getShortPressMaxTime(), params.getLongPressMaxTime(),
+                                    params.getExtraLongPressMaxTime());
+                            logger.debug("resourceId={}, ButtonPressDurationDetector={}", resourceId, button);
+                            if (button.isShortPress()) {
+                                triggerChannel(channel.getUID().getId(), EVENT_SHORT_PRESS);
+                            } else if (button.isLongPress()) {
+                                triggerChannel(channel.getUID().getId(), EVENT_LONG_PRESS);
+                            } else if (button.isExtraLongPress()) {
+                                triggerChannel(channel.getUID().getId(), EVENT_EXTRA_LONG_PRESS);
+                            }
+                            break;
                     }
                 }
             }
         });
     }
 
-    private boolean isBetween(long value, long minValue, long maxValueInclusive) {
-        return (value > minValue && value <= maxValueInclusive);
-    }
+    private void updateRfDeviceStates() {
+        if (ihc != null) {
+            if (ihc.getConnectionState() != ConnectionState.CONNECTED) {
+                logger.debug("Controller is connecting, abort subscribe");
+                return;
+            }
 
-    private final Runnable pollingRunnableRF = new Runnable() {
-        @Override
-        public void run() {
-            if (ihc != null) {
-                if (ihc.getConnectionState() != ConnectionState.CONNECTED) {
-                    logger.debug("Controller is connecting, abort subscribe");
-                    return;
-                }
+            logger.debug("Update RF device data");
+            try {
+                List<WSRFDevice> devs = ihc.getDetectedRFDevices();
+                logger.debug("RF data: {}", devs);
 
-                logger.debug("Update RF device data");
-                try {
-                    List<WSRFDevice> devs = ihc.getDetectedRFDevices();
-                    logger.debug("RF data: {}", devs);
-
-                    devs.forEach(dev -> {
-                        thing.getChannels().forEach(channel -> {
+                devs.forEach(dev -> {
+                    thing.getChannels().forEach(channel -> {
+                        ChannelParams params = new ChannelParams(channel);
+                        if (params.getSerialNumber() != null
+                                && params.getSerialNumber().longValue() == dev.getSerialNumber()) {
                             String channelId = channel.getUID().getId();
-                            Long serialNumber = ChannelUtils.getSerialNumberFromChannelParameters(thing, channelId);
-                            if (serialNumber != null && serialNumber.longValue() == dev.getSerialNumber()) {
-                                String channelTypeId = ChannelUtils.getChannelTypeId(getThing(), channelId);
-                                if (channelTypeId != null) {
-                                    switch (channelTypeId) {
-                                        case CHANNEL_TYPE_RF_LOW_BATTERY:
-                                            updateState(channelId,
-                                                    dev.getBatteryLevel() == 1 ? OnOffType.OFF : OnOffType.ON);
-                                            break;
-                                        case CHANNEL_TYPE_RF_SIGNAL_STRENGTH:
-                                            int signalLevel = new SignalLevelConverter(dev.getSignalStrength())
-                                                    .getSystemWideSignalLevel();
-                                            updateState(channelId, new StringType(String.valueOf(signalLevel)));
-                                            break;
-                                    }
+                            if (params.getChannelTypeId() != null) {
+                                switch (params.getChannelTypeId()) {
+                                    case CHANNEL_TYPE_RF_LOW_BATTERY:
+                                        updateState(channelId,
+                                                dev.getBatteryLevel() == 1 ? OnOffType.OFF : OnOffType.ON);
+                                        break;
+                                    case CHANNEL_TYPE_RF_SIGNAL_STRENGTH:
+                                        int signalLevel = new SignalLevelConverter(dev.getSignalStrength())
+                                                .getSystemWideSignalLevel();
+                                        updateState(channelId, new StringType(String.valueOf(signalLevel)));
+                                        break;
                                 }
                             }
-                        });
+                        }
                     });
-                } catch (IhcExecption e) {
-                    logger.debug("Error occured when fetching RF device information, reason: {} ", e.getMessage());
-                    return;
-                }
+                });
+            } catch (IhcExecption e) {
+                logger.debug("Error occured when fetching RF device information, reason: {} ", e.getMessage());
+                return;
             }
         }
-    };
+    }
 
-    private final Runnable controlRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (ihc == null || isReconnectRequestActivated()) {
-                try {
-                    if (ihc != null) {
-                        disconnect();
-                    }
-                    connect();
-                    updateStatus(ThingStatus.ONLINE);
-                    setReconnectRequest(false);
-                } catch (IhcExecption e) {
-                    logger.debug("Can't open connection to controller", e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                    setReconnectRequest(true);
-                    return;
+    private void reconnectCheck() {
+        if (ihc == null || isReconnectRequestActivated()) {
+            try {
+                if (ihc != null) {
+                    disconnect();
                 }
-            }
-
-            if (isValueNotificationRequestActivated() && !isConnecting()) {
-                try {
-                    enableResourceValueNotifications();
-                } catch (IhcExecption e) {
-                    logger.warn("Can't enable resource value notifications from controller. ", e);
-                }
+                connect();
+                updateStatus(ThingStatus.ONLINE);
+                setReconnectRequest(false);
+            } catch (IhcExecption e) {
+                logger.debug("Can't open connection to controller", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                setReconnectRequest(true);
+                return;
             }
         }
-    };
+
+        if (isValueNotificationRequestActivated() && !isConnecting()) {
+            try {
+                enableResourceValueNotifications();
+            } catch (IhcExecption e) {
+                logger.warn("Can't enable resource value notifications from controller. ", e);
+            }
+        }
+    }
 
     /**
      * Order resource value notifications from IHC controller.
@@ -834,11 +779,12 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 logger.debug("Controller is connecting, abort subscribe");
                 return;
             }
-            Set<Integer> resourceIds = ChannelUtils.getAllChannelsResourceIds(getThing());
-
+            Set<Integer> resourceIds = ChannelUtils.getAllTriggerChannelsResourceIds(getThing());
+            logger.debug("Enable runtime notfications for {} trigger(s)", resourceIds.size());
+            logger.debug("Enable runtime notfications for {} channel(s)", linkedResourceIds.size());
+            resourceIds.addAll(linkedResourceIds);
             if (resourceIds.size() > 0) {
                 logger.debug("Enable runtime notfications for {} resources", resourceIds.size());
-
                 try {
                     ihc.enableRuntimeValueNotifications(resourceIds);
                 } catch (IhcExecption e) {

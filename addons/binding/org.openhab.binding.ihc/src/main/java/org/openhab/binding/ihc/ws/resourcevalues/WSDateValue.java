@@ -15,9 +15,23 @@ package org.openhab.binding.ihc.ws.resourcevalues;
  */
 public class WSDateValue extends WSResourceValue {
 
-    protected byte month;
     protected short year;
+    protected byte month;
     protected byte day;
+
+    public WSDateValue() {
+    }
+
+    public WSDateValue(int resourceID) {
+        super(resourceID);
+    }
+
+    public WSDateValue(int resourceID, short year, byte month, byte day) {
+        super(resourceID);
+        this.year = year;
+        this.month = month;
+        this.day = day;
+    }
 
     /**
      * Gets the value of the month property.

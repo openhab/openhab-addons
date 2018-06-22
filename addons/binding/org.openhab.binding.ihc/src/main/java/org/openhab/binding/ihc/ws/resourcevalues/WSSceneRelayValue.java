@@ -18,6 +18,19 @@ public class WSSceneRelayValue extends WSResourceValue {
     protected int delayTime;
     protected boolean relayValue;
 
+    public WSSceneRelayValue() {
+    }
+
+    public WSSceneRelayValue(int resourceID) {
+        super(resourceID);
+    }
+
+    public WSSceneRelayValue(int resourceID, int delayTime, boolean relayValue) {
+        super(resourceID);
+        this.delayTime = delayTime;
+        this.relayValue = relayValue;
+    }
+
     /**
      * Gets the value of the delayTime property.
      *

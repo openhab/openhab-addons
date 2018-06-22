@@ -17,6 +17,18 @@ public class WSTimerValue extends WSResourceValue {
 
     protected long milliseconds;
 
+    public WSTimerValue() {
+    }
+
+    public WSTimerValue(int resourceID) {
+        super(resourceID);
+    }
+
+    public WSTimerValue(int resourceID, long milliseconds) {
+        super(resourceID);
+        this.milliseconds = milliseconds;
+    }
+
     /**
      * Gets the value of the milliseconds property.
      *

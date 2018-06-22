@@ -19,6 +19,20 @@ public class WSFloatingPointValue extends WSResourceValue {
     protected double minimumValue;
     protected double floatingPointValue;
 
+    public WSFloatingPointValue() {
+    }
+
+    public WSFloatingPointValue(int resourceID) {
+        super(resourceID);
+    }
+
+    public WSFloatingPointValue(int resourceID, double value, double maximumValue, double minimumValue) {
+        super(resourceID);
+        this.floatingPointValue = value;
+        this.maximumValue = maximumValue;
+        this.minimumValue = minimumValue;
+    }
+
     /**
      * Gets the value of the maximumValue property.
      *

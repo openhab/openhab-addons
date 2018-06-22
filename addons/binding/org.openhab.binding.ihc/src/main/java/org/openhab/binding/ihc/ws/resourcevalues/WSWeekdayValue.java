@@ -17,6 +17,18 @@ public class WSWeekdayValue extends WSResourceValue {
 
     protected int weekdayNumber;
 
+    public WSWeekdayValue() {
+    }
+
+    public WSWeekdayValue(int resourceID) {
+        super(resourceID);
+    }
+
+    public WSWeekdayValue(int resourceID, int weekdayNumber) {
+        super(resourceID);
+        this.weekdayNumber = weekdayNumber;
+    }
+
     /**
      * Gets the value of the weekdayNumber property.
      *
