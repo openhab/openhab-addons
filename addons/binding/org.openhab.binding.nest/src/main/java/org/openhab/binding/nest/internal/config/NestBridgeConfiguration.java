@@ -11,7 +11,7 @@ package org.openhab.binding.nest.internal.config;
 /**
  * The configuration for the Nest bridge, allowing it to talk to Nest.
  *
- * @author David Bennett - initial contribution
+ * @author David Bennett - Initial contribution
  */
 public class NestBridgeConfiguration {
     public static final String PRODUCT_ID = "productId";
