@@ -266,7 +266,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                 } else {
                     updateThingChannelState(thing, CHANNEL_NEXTCHANGE,
                             new DateTimeType(ZonedDateTime.ofInstant(
-                                    Instant.ofEpochMilli(device.getHkr().getNextchange().getEndperiod()),
+                                    Instant.ofEpochSecond(device.getHkr().getNextchange().getEndperiod()),
                                     ZoneId.systemDefault())));
                 }
                 if (HeatingModel.TEMP_FRITZ_UNDEFINED.equals(device.getHkr().getNextchange().getTchange())) {
