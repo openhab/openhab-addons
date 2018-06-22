@@ -26,11 +26,11 @@ public class WSIntegerValue extends WSResourceValue {
         super(resourceID);
     }
 
-    public WSIntegerValue(int resourceID, int value, int maximumValue, int minimumValue) {
+    public WSIntegerValue(int resourceID, int value, int minimumValue, int maximumValue) {
         super(resourceID);
         this.integer = value;
-        this.maximumValue = maximumValue;
         this.minimumValue = minimumValue;
+        this.maximumValue = maximumValue;
     }
 
     /**
