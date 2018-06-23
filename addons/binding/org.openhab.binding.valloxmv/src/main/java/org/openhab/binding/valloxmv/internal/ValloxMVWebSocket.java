@@ -69,9 +69,9 @@ public class ValloxMVWebSocket {
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             logger.debug("Connecting to: {}", destUri);
             client.connect(socket, destUri, request);
-            socket.awaitClose(10, TimeUnit.SECONDS);
+            socket.awaitClose(2, TimeUnit.SECONDS);
         } catch (IOException e) {
-            logger.error("Error connecting vallox unit.", e);
+            connectionError(e);
         } catch (Exception e) {
             logger.error("Error: {}", e.getMessage());
         }
@@ -81,12 +81,17 @@ public class ValloxMVWebSocket {
         try {
             client.stop();
         } catch (IOException e) {
-            logger.error("Error connecting vallox unit.", e);
+            connectionError(e);
         } catch (Exception e) {
             logger.error("Error: {}", e.getMessage());
         }
         client.destroy();
         client = null;
+    }
+
+    public void connectionError(IOException e) {
+        logger.error("Error connecting vallox unit.", e);
+        voHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
     }
 
     @WebSocket
@@ -104,13 +109,12 @@ public class ValloxMVWebSocket {
 
         @OnWebSocketConnect
         public void onConnect(Session session) {
-            voHandler.updateStatus(ThingStatus.ONLINE);
             try {
                 logger.debug("Connect: {}", session.getRemoteAddress().getAddress());
                 ByteBuffer buf = generateRequest();
                 session.getRemote().sendBytes(buf);
             } catch (IOException e) {
-                logger.error("Error connecting vallox unit.", e);
+                connectionError(e);
             } catch (Exception e) {
                 logger.error("Error: {}", e.getMessage());
             }
@@ -310,8 +314,10 @@ public class ValloxMVWebSocket {
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_HOURS_CURRENT,
                         new DecimalType(bdUptimeHoursCurrent));
 
+                voHandler.updateStatus(ThingStatus.ONLINE);
+                voHandler.dataUpdated();
             } catch (IOException e) {
-                logger.error("Error connecting vallox unit.", e);
+                connectionError(e);
             } catch (Exception e) {
                 logger.error("Error: {}", e.getMessage());
             }

@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,15 +37,10 @@ public class ValloxMVHandler extends BaseThingHandler {
     ValloxMVWebSocket vows_send;
 
     /**
-     * Wait time for the creation of Item-Channel links in seconds. This delay is needed, because the Item-Channel
-     * links have to be created before the thing state is updated, otherwise item state will not be updated.
-     */
-    private static final int WAIT_TIME_CHANNEL_ITEM_LINK_INIT = 1;
-
-    /**
      * Refresh interval in seconds.
      */
     private int updateInterval;
+    private long lastUpdate;
 
     /**
      * IP of vallox ventilation unit web interface.
@@ -55,25 +51,33 @@ public class ValloxMVHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_STATE)) {
-            try {
-                int cmd = Integer.parseInt(command.toString());
-                if ((cmd == ValloxMVBindingConstants.STATE_FIREPLACE) || (cmd == ValloxMVBindingConstants.STATE_ATHOME)
-                        || (cmd == ValloxMVBindingConstants.STATE_AWAY)
-                        || (cmd == ValloxMVBindingConstants.STATE_BOOST)) {
-                    logger.debug("Changing state to: {}", command.toString());
-                    // Open WebSocket
-                    vows_send.request(channelUID, command.toString());
-                }
-            } catch (NumberFormatException nfe) {
-                // Other commands like refresh
-                return;
+        if (command instanceof RefreshType) {
+            if (lastUpdate > System.currentTimeMillis() + updateInterval * 1000) {
+                vows_send.request(null, null);
             }
-        } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_ONOFF)) {
-            if (command.toString() == "ON") {
-                vows_send.request(channelUID, "0");
-            } else if (command.toString() == "OFF") {
-                vows_send.request(channelUID, "5");
+        } else {
+            if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_STATE)) {
+                try {
+                    int cmd = Integer.parseInt(command.toString());
+                    if ((cmd == ValloxMVBindingConstants.STATE_FIREPLACE)
+                            || (cmd == ValloxMVBindingConstants.STATE_ATHOME)
+                            || (cmd == ValloxMVBindingConstants.STATE_AWAY)
+                            || (cmd == ValloxMVBindingConstants.STATE_BOOST)) {
+                        logger.debug("Changing state to: {}", command.toString());
+                        // Open WebSocket
+                        vows_send.request(channelUID, command.toString());
+                        vows_send.request(null, null);
+                    }
+                } catch (NumberFormatException nfe) {
+                    // Other commands like refresh
+                    return;
+                }
+            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_ONOFF)) {
+                if (command.toString() == "ON") {
+                    vows_send.request(channelUID, "0");
+                } else if (command.toString() == "OFF") {
+                    vows_send.request(channelUID, "5");
+                }
             }
         }
     }
@@ -113,7 +117,11 @@ public class ValloxMVHandler extends BaseThingHandler {
                 // Do a pure read request to websocket interface
                 vows.request(null, null);
             }
-        }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, updateInterval, TimeUnit.SECONDS);
+        }, 0, updateInterval, TimeUnit.SECONDS);
+    }
+
+    public void dataUpdated() {
+        lastUpdate = System.currentTimeMillis();
     }
 
     @Override
