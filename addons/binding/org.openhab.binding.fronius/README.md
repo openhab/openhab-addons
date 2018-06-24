@@ -67,8 +67,6 @@ Number UAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachan
 Number UDC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneludc" }
 Number Grid_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpgrid" }
 Number Load_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpload" }
-Number Load_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpload" }
-Number Load_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpload" }
 Number Battery_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpakku" }
 ```
 
