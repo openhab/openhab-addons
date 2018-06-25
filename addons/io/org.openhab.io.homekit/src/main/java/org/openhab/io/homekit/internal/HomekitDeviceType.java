@@ -33,8 +33,8 @@ public enum HomekitDeviceType {
     CONTACT_SENSOR("ContactSensor"),
     VALVE("Valve"),
     LEAK_SENSOR("LeakSensor"),
-    MOTION_SENSOR("MotionSensor");
-======= end
+    MOTION_SENSOR("MotionSensor"),
+    BLINDS("Blinds");
 
     private static final Map<String, HomekitDeviceType> TAG_MAP = new HashMap<>();
 
