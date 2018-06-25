@@ -34,6 +34,7 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.common.registry.AbstractRegistry;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.items.ItemBuilder;
 import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.items.ItemNotUniqueException;
 import org.eclipse.smarthome.core.items.ItemProvider;
@@ -184,12 +185,6 @@ public class ModbusDataHandlerTest {
         }
 
         @Override
-        public <T extends GenericItem> @NonNull Collection<T> getItemsByTag(@NonNull Class<T> typeFilter,
-                @NonNull String... tags) {
-            throw new IllegalStateException();
-        }
-
-        @Override
         public @Nullable Item remove(@NonNull String itemName, boolean recursive) {
             if (recursive) {
                 throw new IllegalStateException();
@@ -224,6 +219,27 @@ public class ModbusDataHandlerTest {
 
         @Override
         public boolean removeTags(String itemName, Collection<String> tags) {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public <T extends Item> @NonNull Collection<T> getItemsByTag(@NonNull Class<T> typeFilter,
+                @NonNull String... tags) {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public boolean removeTags(String itemName) {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public ItemBuilder newItemBuilder(Item item) {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public ItemBuilder newItemBuilder(String itemType, String itemName) {
             throw new IllegalStateException();
         }
 
