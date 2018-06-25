@@ -9,8 +9,9 @@
 package org.openhab.binding.modbus.handler;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
@@ -19,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
@@ -62,14 +64,6 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
      */
     private class ReadCallbackDelegator implements ModbusReadCallback {
 
-        private void forEachAllChildCallbacks(Consumer<ModbusReadCallback> callback) {
-            getThing().getThings().stream()
-                    .filter(thing -> thing.getHandler() != null && thing.getHandler() instanceof ModbusReadCallback)
-                    .map(thing -> {
-                        return (ModbusReadCallback) thing.getHandler();
-                    }).forEach(handler -> callback.accept(handler));
-        }
-
         @Override
         public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
             // Ignore all incoming data and errors if configuration is not correct
@@ -78,7 +72,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
             }
             logger.debug("Thing {} received registers {} for request {}", thing.getUID(), registers, request);
             resetCommunicationError();
-            forEachAllChildCallbacks(callback -> callback.onRegisters(request, registers));
+            childCallbacks.forEach(handler -> handler.onRegisters(request, registers));
         }
 
         @Override
@@ -89,7 +83,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
             }
             logger.debug("Thing {} received coils {} for request {}", thing.getUID(), coils, request);
             resetCommunicationError();
-            forEachAllChildCallbacks(callback -> callback.onBits(request, coils));
+            childCallbacks.forEach(handler -> handler.onBits(request, coils));
         }
 
         @Override
@@ -99,7 +93,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
                 return;
             }
             logger.debug("Thing {} received error {} for request {}", thing.getUID(), error, request);
-            forEachAllChildCallbacks(callback -> callback.onError(request, error));
+            childCallbacks.forEach(handler -> handler.onError(request, error));
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Error with read: %s: %s", error.getClass().getName(), error.getMessage()));
         }
@@ -171,6 +165,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
     private volatile @Nullable PollTask pollTask;
     private Supplier<ModbusManager> managerRef;
     private volatile boolean disposed;
+    private volatile List<ModbusReadCallback> childCallbacks = new CopyOnWriteArrayList<>();
 
     private ModbusReadCallback callbackDelegator = new ReadCallbackDelegator();
 
@@ -313,6 +308,21 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         logger.debug("bridgeStatusChanged for {}. Reseting handler", this.getThing().getUID());
         this.dispose();
         this.initialize();
+    }
+
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        if (childHandler instanceof ModbusReadCallback) {
+            this.childCallbacks.add((ModbusReadCallback) childHandler);
+        }
+    }
+
+    @SuppressWarnings("unlikely-arg-type")
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        if (childHandler instanceof ModbusReadCallback) {
+            this.childCallbacks.remove(childHandler);
+        }
     }
 
     @Override
