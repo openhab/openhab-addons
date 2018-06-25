@@ -556,7 +556,6 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         } else {
             isWriteEnabled = false;
         }
-
     }
 
     private void validateReadIndex(@Nullable PollTask pollTask) throws ModbusConfigurationException {

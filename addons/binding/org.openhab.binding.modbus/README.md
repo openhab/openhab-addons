@@ -20,8 +20,7 @@ The binding can also *write* data to Modbus slaves using FC05 (Write single coil
 Please note the following caveats or limitations
 
 * the binding does *not* act as Modbus slave (e.g. as Modbus TCP server).
-* the binding does *not* support Modbus RTU over Modbus TCP, also known as "Modbus over TCP/IP" or "Modbus over TCP" or "Modbus RTU/IP", although normal "Modbus TCP" is supported.
-However, there is a workaround: you can use a Virtual Serial Port Server, to emulate a COM Port and Bind it with OpenHab unsing Modbus Serial.
+* the binding does *not* support Modbus RTU over Modbus TCP, also known as "Modbus over TCP/IP" or "Modbus over TCP" or "Modbus RTU/IP", although normal "Modbus TCP" is supported. However, there is a workaround: you can use a Virtual Serial Port Server, to emulate a COM Port and Bind it with OpenHab unsing Modbus Serial.
 
 
 ## Background material
@@ -320,14 +319,13 @@ All data channels of children `data` things are refreshed per the normal logic.
 
 Every time data is read by the binding, these steps are taken to convert the raw binary data to actual item `State` in openHAB:
 
-1. Poll the data from Modbus slave. 
+1. Poll the data from Modbus slave.
 Data received is stored in list of bits (discrete inputs and coils), or in list of registers (input registers and holding registers)
 1. Extract a single number from the polled data, using specified location `readStart` and number "value type" `readValueType`.
 As an example, we can tell the binding to extract 32-bit float (`readValueType="float32"`) from register index `readStart="105"`.
 1. Number is converted to string (e.g. `"3.14"`) and passed as input to the transformation.
 Note that in case `readTransform="default"`, a default transformation provided by the binding is used. See [Transformations](#transformations) section for more details.
-1. For each [data channel](#channels), we try to convert the transformation output of previous step to a State type (e.g. `ON`/`OFF`, or `DecimalType`) accepted by the channel.
-If all the conversions fail (e.g. trying to convert `ON` to a number), the data channel is not updated.
+1. For each [data channel](#channels), we try to convert the transformation output of previous step to a State type (e.g. `ON`/`OFF`, or `DecimalType`) accepted by the channel. If all the conversions fail (e.g. trying to convert `ON` to a number), the data channel is not updated.
 
 In case of read errors, all data channels are left unchanged, and `lastReadError` channel is updated with current time. Examples of errors include connection errors, IO errors on read, and explicit exception responses from the slave.
 
@@ -345,12 +343,9 @@ Note that in case `readTransform="default"`, a default transformation provided b
 For example, `"3.14"` would convert to number (`DecimalType`), while `"CLOSED"` would convert to `CLOSED` (of `OpenClosedType`).'
 In case all conversions fail, the command is discarded and nothing is written to the Modbus slave.
 5. Next step depends on the `writeType`:
-   * `writeType="coil"`: the command from the transformation is converted to boolean. 
-   Non-zero numbers, `ON`, and `OPEN` are considered `true`; and rest as `false`.
-   * `writeType="holding"`: First, the command from the transformation is converted `1`/`0` number in case of `OPEN`/`ON` or `CLOSED`/`OFF`. The number is converted to one or more registers using `writeValueType`.
-   For example, number `3.14` would be converted to two registers when `writeValueType="float32"`: [0x4048, 0xF5C3].
-6. Boolean (`writeType="coil"`) or registers (`writeType="holding"`) are written to the Modbus slave using `FC05`, `FC06`, `FC15`, or `FC16`, depending on the value of `writeMultipleEvenWithSingleRegisterOrCoil`.
-Write address specified by `writeStart`.
+   * `writeType="coil"`: the command from the transformation is converted to boolean. Non-zero numbers, `ON`, and `OPEN` are considered `true`; and rest as `false`.
+   * `writeType="holding"`: First, the command from the transformation is converted `1`/`0` number in case of `OPEN`/`ON` or `CLOSED`/`OFF`. The number is converted to one or more registers using `writeValueType`. For example, number `3.14` would be converted to two registers when `writeValueType="float32"`: [0x4048, 0xF5C3].
+6. Boolean (`writeType="coil"`) or registers (`writeType="holding"`) are written to the Modbus slave using `FC05`, `FC06`, `FC15`, or `FC16`, depending on the value of `writeMultipleEvenWithSingleRegisterOrCoil`. Write address is specified by `writeStart`.
 
 #### Advanced write using JSON
 
@@ -379,8 +374,7 @@ For example, if the transformation returns the following JSON
 Two write requests would be sent to the Modbus slave
 
 1. FC16 (write multiple holding register), with start address 5412, having three registers of data (1, 0, and 5).
-2. FC06 (write single holding register), with start address 555, and single register of data (3).
-Write is tried maximum of 10 times in case some of the writes fail.
+2. FC06 (write single holding register), with start address 555, and single register of data (3). Write is tried maximum of 10 times in case some of the writes fail.
 
 The JSON transformation output can be useful when you need full control how the write goes, for example in case where the write address depends on the incoming command.
 Actually, you can omit specifying `writeStart`, `writeValueType` and `writeType` with JSON transformation output altogether.
@@ -415,17 +409,9 @@ Please also note that you should install relevant transformations, as necessary.
 
 There are three different format to specify the configuration:
 
-1. String `"default"`, in which case the default transformation is used.
-The default is to convert non-zero numbers to `ON`/`OPEN`, and zero numbers to `OFF`/`CLOSED`, respectively.
-If the item linked to the data channel does not accept these states, the number is converted to best-effort-basis to the states accepted by the item.
-For example, the extracted number is passed as-is for `Number` items, while `ON`/`OFF` would be used with `DimmerItem`.
-1. `"SERVICENAME(ARG)"` for calling a transformation service.
-The transformation receives the extracted number as input.
-This is useful for example scaling (divide by x) the polled data before it is used in openHAB.
-See examples for more details.
-1. Any other value is interpreted as static text, in which case the actual content of the polled value is ignored.
-Transformation result is always the same.
-The transformation output is converted to best-effort-basis to the states accepted by the item.
+1. String `"default"`, in which case the default transformation is used. The default is to convert non-zero numbers to `ON`/`OPEN`, and zero numbers to `OFF`/`CLOSED`, respectively. If the item linked to the data channel does not accept these states, the number is converted to best-effort-basis to the states accepted by the item. For example, the extracted number is passed as-is for `Number` items, while `ON`/`OFF` would be used with `DimmerItem`.
+1. `"SERVICENAME(ARG)"` for calling a transformation service. The transformation receives the extracted number as input. This is useful for example scaling (divide by x) the polled data before it is used in openHAB. See examples for more details.
+1. Any other value is interpreted as static text, in which case the actual content of the polled value is ignored. Transformation result is always the same. The transformation output is converted to best-effort-basis to the states accepted by the item.
 
 Consult [background documentation on items](http://docs.openhab.org/concepts/items.html) to understand accepted data types (state) by each item.
 
@@ -435,14 +421,9 @@ Consult [background documentation on items](http://docs.openhab.org/concepts/ite
 
 There are three different format to specify the configuration:
 
-1. String `"default"`, in which case the default transformation is used.
-The default is to do no conversion to the command.
-3. `"SERVICENAME(ARG)"` for calling a transformation service. 
-The transformation receives the command as input.
-This is useful for example scaling ("multiply by x") commands before the data is written to Modbus.
-See examples for more details.
-5. Any other value is interpreted as static text, in which case the actual command is ignored.
-Transformation result is always the same.
+1. String `"default"`, in which case the default transformation is used. The default is to do no conversion to the command.
+2. `"SERVICENAME(ARG)"` for calling a transformation service. The transformation receives the command as input. This is useful for example scaling ("multiply by x") commands before the data is written to Modbus. See examples for more details.
+3. Any other value is interpreted as static text, in which case the actual command is ignored. Transformation result is always the same.
 
 #### Transformation example: scaling
 
@@ -456,7 +437,7 @@ The data in Modbus slaves is quite commonly encoded as integers, and thus scalin
 // variable "input" contains data passed by openhab
 (function(inputData) {
     // on read: the polled number as string
-    // on write: i openHAB command as string
+    // on write: openHAB command as string
     var MULTIPLY_BY = 10;
     return Math.round(parseFloat(inputData, 10) * MULTIPLY_BY);
 })(input)
@@ -469,7 +450,7 @@ The data in Modbus slaves is quite commonly encoded as integers, and thus scalin
 // variable "input" contains data passed by openhab
 (function(inputData) {
     // on read: the polled number as string
-    // on write: i openHAB command as string
+    // on write: openHAB command as string
     var DIVIDE_BY = 10;
     return parseFloat(inputData) / DIVIDE_BY;
 })(input)
