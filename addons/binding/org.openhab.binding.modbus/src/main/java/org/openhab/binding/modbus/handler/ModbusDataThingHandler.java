@@ -397,7 +397,6 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         isReadEnabled = false;
         transformationOnlyInWrite = false;
         childOfEndpoint = false;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Thing disposed -- bridge initializing?");
     }
 
     @Override
