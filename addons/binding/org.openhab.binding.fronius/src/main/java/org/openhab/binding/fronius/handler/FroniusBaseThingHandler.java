@@ -95,7 +95,12 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
         if (!isLinked(channelId)) {
             return;
         }
+
         Object value = getValue(channelId);
+        if (value == null) {
+            logger.debug("Value retrieved for channel '{}' was null. Can't update.", channelId);
+            return;
+        }
 
         State state = null;
         if (value instanceof BigDecimal) {
