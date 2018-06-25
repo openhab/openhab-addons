@@ -9,7 +9,7 @@
 package org.openhab.binding.modbus;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
@@ -39,15 +39,20 @@ import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.openhab.binding.modbus.handler.ModbusDataThingHandler;
 import org.openhab.binding.modbus.handler.ModbusPollerThingHandlerImpl;
 import org.openhab.binding.modbus.handler.ModbusTcpThingHandler;
+import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
+import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.PollTask;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -215,25 +220,6 @@ public class ModbusPollerThingHandlerTest {
         };
     }
 
-    Matcher<PollTask> okCoilRequest() {
-        return new TypeSafeMatcher<PollTask>() {
-            @Override
-            public boolean matchesSafely(PollTask item) {
-                // we are not testing the callback at all!
-                return item.getEndpoint().equals(tcpThingHandler.asSlaveEndpoint())
-                        && item.getRequest().getDataLength() == 13
-                        && item.getRequest().getFunctionCode() == ModbusReadFunctionCode.READ_COILS
-                        && item.getRequest().getProtocolID() == 0 && item.getRequest().getReference() == 5
-                        && item.getRequest().getUnitID() == 9;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-
-            }
-        };
-    }
-
     @Test
     public void testInitializePollingWithCoils()
             throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
@@ -372,6 +358,192 @@ public class ModbusPollerThingHandlerTest {
         assertThat(poller.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.BRIDGE_OFFLINE)));
 
         verifyNoMoreInteractions(modbusManager);
+    }
+
+    @Test
+    public void testRegistersPassedToChildDataThings()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 150L);
+        pollerConfig.put("start", 5);
+        pollerConfig.put("length", 13);
+        pollerConfig.put("type", "coil");
+        poller = createPollerThingBuilder("poller").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
+                .build();
+        registerThingToMockRegistry(poller);
+
+        hookStatusUpdates(poller);
+
+        ModbusPollerThingHandlerImpl thingHandler = new ModbusPollerThingHandlerImpl(poller, () -> modbusManager);
+        thingHandler.setCallback(thingCallback);
+        poller.setHandler(thingHandler);
+        hookItemRegistry(thingHandler);
+
+        thingHandler.initialize();
+        assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+
+        ArgumentCaptor<PollTask> pollTaskCapturer = ArgumentCaptor.forClass(PollTask.class);
+        verify(modbusManager).registerRegularPoll(pollTaskCapturer.capture(), eq(150l), eq(0L));
+        ModbusReadCallback readCallback = pollTaskCapturer.getValue().getCallback();
+
+        assertNotNull(readCallback);
+
+        ModbusReadRequestBlueprint request = Mockito.mock(ModbusReadRequestBlueprint.class);
+        ModbusRegisterArray registers = Mockito.mock(ModbusRegisterArray.class);
+
+        ModbusDataThingHandler child1 = Mockito.mock(ModbusDataThingHandler.class);
+        ModbusDataThingHandler child2 = Mockito.mock(ModbusDataThingHandler.class);
+
+        // has one data child
+        thingHandler.childHandlerInitialized(child1, Mockito.mock(Thing.class));
+        readCallback.onRegisters(request, registers);
+        verify(child1).onRegisters(request, registers);
+        verifyNoMoreInteractions(child1);
+        verifyZeroInteractions(child2);
+
+        reset(child1);
+
+        // two children (one child initialized)
+        thingHandler.childHandlerInitialized(child2, Mockito.mock(Thing.class));
+        readCallback.onRegisters(request, registers);
+        verify(child1).onRegisters(request, registers);
+        verify(child2).onRegisters(request, registers);
+        verifyNoMoreInteractions(child1);
+        verifyNoMoreInteractions(child2);
+
+        reset(child1);
+        reset(child2);
+
+        // one child disposed
+        thingHandler.childHandlerDisposed(child1, Mockito.mock(Thing.class));
+        readCallback.onRegisters(request, registers);
+        verify(child2).onRegisters(request, registers);
+        verifyZeroInteractions(child1);
+        verifyNoMoreInteractions(child2);
+    }
+
+    @Test
+    public void testBitsPassedToChildDataThings()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 150L);
+        pollerConfig.put("start", 5);
+        pollerConfig.put("length", 13);
+        pollerConfig.put("type", "coil");
+        poller = createPollerThingBuilder("poller").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
+                .build();
+        registerThingToMockRegistry(poller);
+
+        hookStatusUpdates(poller);
+
+        ModbusPollerThingHandlerImpl thingHandler = new ModbusPollerThingHandlerImpl(poller, () -> modbusManager);
+        thingHandler.setCallback(thingCallback);
+        poller.setHandler(thingHandler);
+        hookItemRegistry(thingHandler);
+
+        thingHandler.initialize();
+        assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+
+        ArgumentCaptor<PollTask> pollTaskCapturer = ArgumentCaptor.forClass(PollTask.class);
+        verify(modbusManager).registerRegularPoll(pollTaskCapturer.capture(), eq(150l), eq(0L));
+        ModbusReadCallback readCallback = pollTaskCapturer.getValue().getCallback();
+
+        assertNotNull(readCallback);
+
+        ModbusReadRequestBlueprint request = Mockito.mock(ModbusReadRequestBlueprint.class);
+        BitArray bits = Mockito.mock(BitArray.class);
+
+        ModbusDataThingHandler child1 = Mockito.mock(ModbusDataThingHandler.class);
+        ModbusDataThingHandler child2 = Mockito.mock(ModbusDataThingHandler.class);
+
+        // has one data child
+        thingHandler.childHandlerInitialized(child1, Mockito.mock(Thing.class));
+        readCallback.onBits(request, bits);
+        verify(child1).onBits(request, bits);
+        verifyNoMoreInteractions(child1);
+        verifyZeroInteractions(child2);
+
+        reset(child1);
+
+        // two children (one child initialized)
+        thingHandler.childHandlerInitialized(child2, Mockito.mock(Thing.class));
+        readCallback.onBits(request, bits);
+        verify(child1).onBits(request, bits);
+        verify(child2).onBits(request, bits);
+        verifyNoMoreInteractions(child1);
+        verifyNoMoreInteractions(child2);
+
+        reset(child1);
+        reset(child2);
+
+        // one child disposed
+        thingHandler.childHandlerDisposed(child1, Mockito.mock(Thing.class));
+        readCallback.onBits(request, bits);
+        verify(child2).onBits(request, bits);
+        verifyZeroInteractions(child1);
+        verifyNoMoreInteractions(child2);
+    }
+
+    @Test
+    public void testErrorPassedToChildDataThings()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 150L);
+        pollerConfig.put("start", 5);
+        pollerConfig.put("length", 13);
+        pollerConfig.put("type", "coil");
+        poller = createPollerThingBuilder("poller").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
+                .build();
+        registerThingToMockRegistry(poller);
+
+        hookStatusUpdates(poller);
+
+        ModbusPollerThingHandlerImpl thingHandler = new ModbusPollerThingHandlerImpl(poller, () -> modbusManager);
+        thingHandler.setCallback(thingCallback);
+        poller.setHandler(thingHandler);
+        hookItemRegistry(thingHandler);
+
+        thingHandler.initialize();
+        assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+
+        ArgumentCaptor<PollTask> pollTaskCapturer = ArgumentCaptor.forClass(PollTask.class);
+        verify(modbusManager).registerRegularPoll(pollTaskCapturer.capture(), eq(150l), eq(0L));
+        ModbusReadCallback readCallback = pollTaskCapturer.getValue().getCallback();
+
+        assertNotNull(readCallback);
+
+        ModbusReadRequestBlueprint request = Mockito.mock(ModbusReadRequestBlueprint.class);
+        Exception error = Mockito.mock(Exception.class);
+
+        ModbusDataThingHandler child1 = Mockito.mock(ModbusDataThingHandler.class);
+        ModbusDataThingHandler child2 = Mockito.mock(ModbusDataThingHandler.class);
+
+        // has one data child
+        thingHandler.childHandlerInitialized(child1, Mockito.mock(Thing.class));
+        readCallback.onError(request, error);
+        verify(child1).onError(request, error);
+        verifyNoMoreInteractions(child1);
+        verifyZeroInteractions(child2);
+
+        reset(child1);
+
+        // two children (one child initialized)
+        thingHandler.childHandlerInitialized(child2, Mockito.mock(Thing.class));
+        readCallback.onError(request, error);
+        verify(child1).onError(request, error);
+        verify(child2).onError(request, error);
+        verifyNoMoreInteractions(child1);
+        verifyNoMoreInteractions(child2);
+
+        reset(child1);
+        reset(child2);
+
+        // one child disposed
+        thingHandler.childHandlerDisposed(child1, Mockito.mock(Thing.class));
+        readCallback.onError(request, error);
+        verify(child2).onError(request, error);
+        verifyZeroInteractions(child1);
+        verifyNoMoreInteractions(child2);
     }
 
 }
