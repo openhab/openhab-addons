@@ -283,8 +283,12 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             request = new ModbusWriteRegisterRequestBlueprintImpl(slaveId, writeStart, data, writeMultiple,
                     config.getWriteMaxTries());
         } else {
-            // should not happen
-            throw new NotImplementedException();
+            // Should not happen! This method is not called in case configuration errors and writeType is validated
+            // already in initialization (validateAndParseWriteParameters).
+            // We keep this here for future-proofing the code (new writeType values)
+            throw new NotImplementedException(String.format(
+                    "writeType does not equal %s or %s and thus configuration is invalid. Should not end up this far with configuration error.",
+                    WRITE_TYPE_COIL, WRITE_TYPE_HOLDING));
         }
         return request;
     }
