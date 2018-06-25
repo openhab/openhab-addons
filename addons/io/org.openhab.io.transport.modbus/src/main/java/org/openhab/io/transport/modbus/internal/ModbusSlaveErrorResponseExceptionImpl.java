@@ -30,6 +30,11 @@ public class ModbusSlaveErrorResponseExceptionImpl extends ModbusSlaveErrorRespo
     }
 
     @Override
+    public String getMessage() {
+        return String.format("Slave responsed with error=%d", type);
+    }
+
+    @Override
     public String toString() {
         return String.format("ModbusSlaveErrorResponseException(error=%d)", type);
     }

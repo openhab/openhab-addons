@@ -40,6 +40,11 @@ public class ModbusUnexpectedTransactionIdException extends ModbusTransportExcep
     }
 
     @Override
+    public String getMessage() {
+        return String.format("Transaction id of response (%d) does not equal request (%d)", requestId, responseId);
+    }
+
+    @Override
     public String toString() {
         return String.format(
                 "ModbusUnexpectedTransactionIdException(requestTransactionId=%d, responseTransactionId=%d)", requestId,
