@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
+import org.openhab.binding.upnpcontrol.internal.UpnpControlHandlerFactory;
 import org.openhab.binding.upnpcontrol.internal.UpnpEntry;
 import org.openhab.binding.upnpcontrol.internal.UpnpXMLParser;
 import org.slf4j.Logger;
@@ -51,6 +52,9 @@ public class UpnpRendererHandler extends UpnpHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private @Nullable Boolean audioSupport;
+    private boolean audioSinkRegistered;
+
+    private UpnpControlHandlerFactory factoryCallback;
 
     private String channel = "Master";
     private PercentType soundVolume = new PercentType();
@@ -59,10 +63,22 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     private @Nullable Queue<UpnpEntry> currentQueue;
 
-    public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService) {
+    public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpControlHandlerFactory factoryCallback) {
         super(thing, upnpIOService);
         service.addSubscription(this, "AVTransport", 3600);
-        getProtocolInfo();
+
+        this.factoryCallback = factoryCallback;
+    }
+
+    @Override
+    public void initialize() {
+        logger.debug("Initializing handler for media renderer device");
+
+        if (service.isRegistered(this)) {
+            getProtocolInfo();
+            registerAudioSink();
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 
     protected void handlePlayUri(Command command) {
@@ -232,7 +248,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                         if (transportState.equals("PLAYING")) {
                             newState = PlayPauseType.PLAY;
                         } else if (transportState.equals("STOPPED")) {
-                            newState = PlayPauseType.PAUSE;
+                            newState = PlayPauseType.PLAY;
                         } else if (transportState.equals("PAUSED_PLAYBACK")) {
                             newState = PlayPauseType.PAUSE;
                         }
@@ -249,11 +265,14 @@ public class UpnpRendererHandler extends UpnpHandler {
                         setMute((OnOffType) command);
                         break;
                     case STOP:
-                        stop();
-                        updateState(channelUID, OnOffType.OFF);
+                        if (command == OnOffType.ON) {
+                            updateState(CONTROL, PlayPauseType.PLAY);
+                            stop();
+                        }
                         break;
                     case CONTROL:
-                        if ((command instanceof PlayPauseType)) {
+                        updateState(STOP, OnOffType.OFF);
+                        if (command instanceof PlayPauseType) {
                             if (command == PlayPauseType.PLAY) {
                                 play();
                             } else if (command == PlayPauseType.PAUSE) {
@@ -277,6 +296,14 @@ public class UpnpRendererHandler extends UpnpHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not communicate with " + getThing().getLabel());
         }
+    }
+
+    @Override
+    public void onStatusChanged(boolean status) {
+        if (status) {
+            registerAudioSink();
+        }
+        super.onStatusChanged(status);
     }
 
     @Override
@@ -327,7 +354,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                 }
                 break;
             case "TransportState":
-                if (value.equals("STOPPED")) {
+                if ("STOPPED".equals(value)) {
                     serveNext();
                 }
                 break;
@@ -368,6 +395,18 @@ public class UpnpRendererHandler extends UpnpHandler {
             }
         }
         return sink;
+    }
+
+    private void registerAudioSink() {
+        logger.debug("Registering Audio Sink for renderer");
+        if (audioSinkRegistered) {
+            logger.debug("Audio Sink already registered");
+            return;
+        }
+        if (audioSupport()) {
+            factoryCallback.registerAudioSink(this);
+            audioSinkRegistered = true;
+        }
     }
 
     public boolean audioSupport() {

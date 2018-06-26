@@ -101,21 +101,13 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private UpnpRendererHandler addRenderer(Thing thing) {
-        UpnpRendererHandler handler = new UpnpRendererHandler(thing, upnpIOService);
+        callbackUrl = createCallbackUrl();
+        UpnpRendererHandler handler = new UpnpRendererHandler(thing, upnpIOService, this);
         String key = thing.getUID().toString();
         upnpRenderers.put(key, handler);
         upnpServers.forEach((thingId, value) -> value.addRendererOption(key, handler));
         logger.debug("Media renderer handler created for {}", thing.getLabel());
 
-        callbackUrl = createCallbackUrl();
-        if (handler.audioSupport() && !(callbackUrl.isEmpty())) {
-            UpnpAudioSink audioSink = new UpnpAudioSink(handler, audioHTTPServer, callbackUrl);
-            @SuppressWarnings("unchecked")
-            ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
-            audioSinkRegistrations.put(thing.getUID().toString(), reg);
-            logger.debug("Audio sink added for media renderer {}", thing.getLabel());
-        }
         return handler;
     }
 
@@ -131,6 +123,18 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory {
         }
         upnpServers.forEach((thingId, value) -> value.removeRendererOption(key));
         upnpRenderers.remove(key);
+    }
+
+    public void registerAudioSink(UpnpRendererHandler handler) {
+        if (!(callbackUrl.isEmpty())) {
+            UpnpAudioSink audioSink = new UpnpAudioSink(handler, audioHTTPServer, callbackUrl);
+            @SuppressWarnings("unchecked")
+            ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
+                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
+            Thing thing = handler.getThing();
+            audioSinkRegistrations.put(thing.getUID().toString(), reg);
+            logger.debug("Audio sink added for media renderer {}", thing.getLabel());
+        }
     }
 
     private String createCallbackUrl() {

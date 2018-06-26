@@ -89,8 +89,9 @@ public class UpnpServerHandler extends UpnpHandler {
             rendererStateOptionList.add(stateOption);
         });
         updateStateDescription(rendererChannelUID, rendererStateOptionList);
-
-        updateStatus(ThingStatus.ONLINE);
+        if (service.isRegistered(this)) {
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 
     @Override
@@ -116,10 +117,11 @@ public class UpnpServerHandler extends UpnpHandler {
                         logger.debug("{} with parent {} added to parent map", commandString, currentId);
                     }
                     currentSelection = commandString;
+                    updateState(SELECT, OnOffType.OFF);
                 }
                 break;
             case SELECT:
-                if (command instanceof OnOffType) {
+                if (command == OnOffType.ON) {
                     String browseTarget = currentSelection;
                     if (browseTarget != null) {
                         if (browseTarget.equals(UP)) {
@@ -129,10 +131,9 @@ public class UpnpServerHandler extends UpnpHandler {
                         updateTitleSelection(browseTarget, currentTitleChannelUID);
                     }
                 }
-                updateState(channelUID, OnOffType.OFF);
                 break;
             case SERVE:
-                if (command instanceof OnOffType) {
+                if (command == OnOffType.ON) {
                     serveMedia();
                 }
                 updateState(channelUID, OnOffType.OFF);

@@ -17,11 +17,9 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.audio.AudioFormat;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.slf4j.Logger;
@@ -54,15 +52,6 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     }
 
     @Override
-    public void initialize() {
-        logger.debug("Initializing handler for upnp media device");
-        for (Channel channel : getThing().getChannels()) {
-            handleCommand(channel.getUID(), RefreshType.REFRESH);
-        }
-        updateStatus(ThingStatus.ONLINE);
-    }
-
-    @Override
     public void dispose() {
         service.unregisterParticipant(this);
     }
@@ -84,6 +73,11 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     @Override
     public void onStatusChanged(boolean status) {
+        if (status) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE);
+        }
     }
 
     @Override

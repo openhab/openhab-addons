@@ -6,12 +6,12 @@ Bundle-Name: UPnPControlPoint Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.upnpcontrol;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Export-Package: 
  org.openhab.binding.upnpcontrol,
  org.openhab.binding.upnpcontrol.handler
 Import-Package: 
- org.apache.commons.lang;version="2.6.0",
+ org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
@@ -29,7 +29,7 @@ Import-Package:
  org.jupnp.model.types,
  org.openhab.binding.upnpcontrol,
  org.openhab.binding.upnpcontrol.handler,
- org.osgi.framework;version="1.8.0",
- org.osgi.service.component;version="1.3.0",
+ org.osgi.framework,
+ org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
