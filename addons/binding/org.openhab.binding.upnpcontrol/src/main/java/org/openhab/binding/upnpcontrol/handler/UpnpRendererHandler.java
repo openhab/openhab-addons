@@ -189,7 +189,6 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     public void setVolume(PercentType volume) throws IOException {
-
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", Integer.toString(instanceId));
         inputs.put("Channel", channel);
@@ -306,7 +305,6 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
-
         logger.debug("Received variable {} with value {} from service {}", variable, value, service);
         if (variable == null) {
             return;
