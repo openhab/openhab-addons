@@ -12,7 +12,8 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements SolarEdgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SolarEdgeBaseHandler.class);
@@ -42,6 +44,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     /**
      * Interface object for querying the Solaredge web interface
      */
+    @Nullable
     private WebInterface webInterface;
 
     /**
@@ -57,14 +60,16 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     /**
      * Schedule for polling
      */
+    @Nullable
     private ScheduledFuture<?> liveDataPollingJob;
 
     /**
      * Schedule for polling
      */
+    @Nullable
     private ScheduledFuture<?> aggregateDataPollingJob;
 
-    public SolarEdgeBaseHandler(@NonNull Thing thing) {
+    public SolarEdgeBaseHandler(Thing thing) {
         super(thing);
         this.liveDataPollingRunnable = new SolarEdgeLiveDataPolling(this);
         this.aggregateDataPollingRunnable = new SolarEdgeAggregateDataPolling(this);
@@ -135,7 +140,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     }
 
     @Override
-    public WebInterface getWebInterface() {
+    public @Nullable WebInterface getWebInterface() {
         return webInterface;
     }
 
@@ -143,7 +148,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
      * will update all channels provided in the map
      */
     @Override
-    public void updateChannelStatus(Map<String, String> values) {
+    public void updateChannelStatus(Map<String, @Nullable String> values) {
         logger.debug("Handling channel update.");
 
         for (String key : values.keySet()) {
@@ -181,10 +186,11 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
      * @param number as String
      * @return converted value to DecimalType
      */
-    private @NonNull DecimalType convertToDecimal(String number) {
+    private DecimalType convertToDecimal(String number) {
         return new DecimalType(number.replaceAll(",", ".").replaceAll("[^0-9.-]", ""));
     }
 
+    @Nullable
     protected abstract Channel getThingSpecificChannel(String id);
 
     @Override

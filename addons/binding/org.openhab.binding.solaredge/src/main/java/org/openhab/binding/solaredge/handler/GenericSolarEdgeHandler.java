@@ -12,7 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.solaredge.internal.model.AggregateDataChannels;
 import org.openhab.binding.solaredge.internal.model.Channel;
@@ -23,9 +24,10 @@ import org.openhab.binding.solaredge.internal.model.LiveDataChannels;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class GenericSolarEdgeHandler extends SolarEdgeBaseHandler {
 
-    public GenericSolarEdgeHandler(@NonNull Thing thing) {
+    public GenericSolarEdgeHandler(Thing thing) {
         super(thing);
     }
 
@@ -38,7 +40,7 @@ public class GenericSolarEdgeHandler extends SolarEdgeBaseHandler {
     }
 
     @Override
-    protected Channel getThingSpecificChannel(String fqName) {
+    protected @Nullable Channel getThingSpecificChannel(String fqName) {
         Channel live = LiveDataChannels.fromFQName(fqName);
         Channel agg = AggregateDataChannels.fromFQName(fqName);
         return live != null ? live : agg;

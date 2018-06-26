@@ -8,13 +8,14 @@
  */
 package org.openhab.binding.solaredge.internal.model;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * interface to be implemented by all Channel Enumerations
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public interface Channel {
 
     String getName();
@@ -27,7 +28,5 @@ public interface Channel {
 
     Class<?> getJavaType();
 
-    @NonNull
     String getFQName();
-
 }
