@@ -6,14 +6,14 @@
 | general#43009 | Number | -32767 | 32767 | No | Calc. Supply S1 |  |
 | general#40071 | Number | -32767 | 32767 | No | BT25 Ext. Supply |  |
 | general#40033 | Number | -32767 | 32767 | No | BT50 Room Temp S1 |  |
-| general#43161 | String | --- | --- | No | External adjustment activated via input S1 |  |
+| general#43161 | Number | --- | --- | No | External adjustment activated via input S1 |  |
 | general#40008 | Number | -32767 | 32767 | No | BT2 Supply temp S1 |  |
 | general#40012 | Number | -32767 | 32767 | No | EB100-EP14-BT3 Return temp |  |
 | general#40072 | Number | -32767 | 32767 | No | BF1 EP14 Flow |  |
 | general#40079 | Number | 0 | 4294967295 | No | EB100-BE3 Current |  |
 | general#40081 | Number | 0 | 4294967295 | No | EB100-BE2 Current |  |
 | general#40083 | Number | 0 | 4294967295 | No | EB100-BE1 Current |  |
-| general#10033 | String | --- | --- | No | Int. el.add. blocked |  |
+| general#10033 | Number | --- | --- | No | Int. el.add. blocked |  |
 | general#43081 | Number | 0 | 1000000 | No | Tot. op.time add. |  |
 | general#43084 | Number | -32767 | 32767 | No | Int. el.add. Power |  |
 | general#47212 | Number | 0 | 4500 | No | Max int add. power |  |
@@ -25,8 +25,8 @@
 | hotwater#40014 | Number | -32767 | 32767 | No | BT6 HW Load |  |
 | hotwater#44306 | Number | 0 | 9999999 | No | Heat Meter - HW Cpr EP14 |  |
 | hotwater#44298 | Number | 0 | 9999999 | No | Heat Meter - HW Cpr and Add EP14 |  |
-| hotwater#48132 | String | --- | --- | No | Temporary Lux | 0=Off, 1=3h, 2=6h, 3=12h, 4=One time increase |
-| hotwater#47041 | String | 0 | 2 | No | Hot water mode | 0=Economy, 1=Normal, 2=Luxury |
+| hotwater#48132 | Number | --- | --- | No | Temporary Lux | 0=Off, 1=3h, 2=6h, 3=12h, 4=One time increase |
+| hotwater#47041 | Number | 0 | 2 | No | Hot water mode | 0=Economy, 1=Normal, 2=Luxury |
 | compressor#43424 | Number | 0 | 9999999 | No | Tot. HW op.time compr. EB100-EP14 |  |
 | compressor#43420 | Number | 0 | 9999999 | No | Tot. op.time compr. EB100-EP14 |  |
 | compressor#43416 | Number | 0 | 9999999 | No | Compressor starts EB100-EP14 |  |
@@ -34,6 +34,6 @@
 | compressor#40019 | Number | -32767 | 32767 | No | EB100-EP14-BT15 Liquid Line |  |
 | compressor#40018 | Number | -32767 | 32767 | No | EB100-EP14-BT14 Hot Gas Temp |  |
 | compressor#40017 | Number | -32767 | 32767 | No | EB100-EP14-BT12 Condensor Out |  |
-| compressor#10012 | String | --- | --- | No | Compressor blocked |  |
+| compressor#10012 | Number | --- | --- | No | Compressor blocked |  |
 | airsupply#40025 | Number | -32767 | 32767 | No | BT20 Exhaust air temp. 1 |  |
 | airsupply#40026 | Number | -32767 | 32767 | No | BT21 Vented air temp. 1 |  |
