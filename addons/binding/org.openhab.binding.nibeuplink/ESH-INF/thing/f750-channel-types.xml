@@ -187,7 +187,7 @@
 		<state pattern="%.2f kW" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="f750-type-43108">
+	<channel-type id="f750-type-47260">
 		<item-type>Number</item-type>
 		<label>Current Fan speed</label>
 		<description></description>

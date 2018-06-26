@@ -71,7 +71,7 @@ public enum F750Channels implements Channel {
     CH_40026("40026", "BT21 Vented air temp. 1", ChannelGroup.AIRSUPPLY, ValueType.NUMBER_10),
     CH_43124("43124", "Air flow ref.", ChannelGroup.AIRSUPPLY, ValueType.NUMBER_10),
     CH_41026("41026", "EB100-Adjusted BS1 Air flow", ChannelGroup.AIRSUPPLY, ValueType.NUMBER),
-    CH_43108("43108", "Current Fan speed", ChannelGroup.AIRSUPPLY, ValueType.NUMBER, "/Manage/1.2", "[01234]"),
+    CH_47260("47260", "Current Fan speed", ChannelGroup.AIRSUPPLY, ValueType.NUMBER, "/Manage/1.2", "[01234]"),
 
     /* END */
     ;
