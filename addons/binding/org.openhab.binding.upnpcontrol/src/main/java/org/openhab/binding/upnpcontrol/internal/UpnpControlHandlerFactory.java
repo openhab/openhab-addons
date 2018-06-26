@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.upnpcontrol")
 @NonNullByDefault
-public class UpnpControlHandlerFactory extends BaseThingHandlerFactory {
+public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implements UpnpAudioSinkReg {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -125,6 +125,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory {
         upnpRenderers.remove(key);
     }
 
+    @Override
     public void registerAudioSink(UpnpRendererHandler handler) {
         if (!(callbackUrl.isEmpty())) {
             UpnpAudioSink audioSink = new UpnpAudioSink(handler, audioHTTPServer, callbackUrl);

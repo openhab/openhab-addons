@@ -52,6 +52,15 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     }
 
     @Override
+    public void initialize() {
+        if (service.isRegistered(this)) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE);
+        }
+    }
+
+    @Override
     public void dispose() {
         service.unregisterParticipant(this);
     }

@@ -35,7 +35,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
-import org.openhab.binding.upnpcontrol.internal.UpnpControlHandlerFactory;
+import org.openhab.binding.upnpcontrol.internal.UpnpAudioSinkReg;
 import org.openhab.binding.upnpcontrol.internal.UpnpEntry;
 import org.openhab.binding.upnpcontrol.internal.UpnpXMLParser;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class UpnpRendererHandler extends UpnpHandler {
     private @Nullable Boolean audioSupport;
     private boolean audioSinkRegistered;
 
-    private UpnpControlHandlerFactory factoryCallback;
+    private UpnpAudioSinkReg audioSinkReg;
 
     private String channel = "Master";
     private PercentType soundVolume = new PercentType();
@@ -63,22 +63,20 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     private @Nullable Queue<UpnpEntry> currentQueue;
 
-    public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpControlHandlerFactory factoryCallback) {
+    public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpAudioSinkReg audioSinkReg) {
         super(thing, upnpIOService);
         service.addSubscription(this, "AVTransport", 3600);
 
-        this.factoryCallback = factoryCallback;
+        this.audioSinkReg = audioSinkReg;
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing handler for media renderer device");
 
-        if (service.isRegistered(this)) {
-            getProtocolInfo();
-            registerAudioSink();
-            updateStatus(ThingStatus.ONLINE);
-        }
+        getProtocolInfo();
+        registerAudioSink();
+        super.initialize();
     }
 
     protected void handlePlayUri(Command command) {
@@ -398,13 +396,12 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     private void registerAudioSink() {
-        logger.debug("Registering Audio Sink for renderer");
-        if (audioSinkRegistered) {
-            logger.debug("Audio Sink already registered");
+        if (audioSinkRegistered || !service.isRegistered(this)) {
             return;
         }
         if (audioSupport()) {
-            factoryCallback.registerAudioSink(this);
+            logger.debug("Registering Audio Sink for renderer {}", thing.getLabel());
+            audioSinkReg.registerAudioSink(this);
             audioSinkRegistered = true;
         }
     }

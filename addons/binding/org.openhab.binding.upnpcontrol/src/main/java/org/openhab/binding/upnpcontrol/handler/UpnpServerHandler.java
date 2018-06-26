@@ -24,7 +24,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.StateDescription;
@@ -89,9 +88,7 @@ public class UpnpServerHandler extends UpnpHandler {
             rendererStateOptionList.add(stateOption);
         });
         updateStateDescription(rendererChannelUID, rendererStateOptionList);
-        if (service.isRegistered(this)) {
-            updateStatus(ThingStatus.ONLINE);
-        }
+        super.initialize();
     }
 
     @Override
