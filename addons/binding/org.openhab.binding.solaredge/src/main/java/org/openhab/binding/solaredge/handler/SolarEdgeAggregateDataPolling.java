@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.solaredge.handler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openhab.binding.solaredge.internal.command.AggregateDataUpdatePrivateApi;
 import org.openhab.binding.solaredge.internal.command.AggregateDataUpdatePublicApi;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
@@ -50,34 +53,34 @@ public class SolarEdgeAggregateDataPolling implements Runnable {
             if (handler.getConfiguration().isMeterInstalled()) {
                 logger.debug("polling SolarEdge aggregate data {}", handler.getConfiguration());
 
-                SolarEdgeCommand aduDay;
-                SolarEdgeCommand aduWeek;
-                SolarEdgeCommand aduMonth;
-                SolarEdgeCommand aduYear;
+                List<SolarEdgeCommand> commands = new ArrayList<>();
 
                 if (handler.getConfiguration().isUsePrivateApi()) {
-                    aduDay = new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.DAY);
-                    aduWeek = new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.WEEK);
-                    aduMonth = new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.MONTH);
-                    aduYear = new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.YEAR);
+                    commands.add(new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.DAY));
+                    commands.add(new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.WEEK));
+                    commands.add(new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.MONTH));
+                    commands.add(new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.YEAR));
                 } else {
-                    aduDay = new AggregateDataUpdatePublicApi(handler, AggregatePeriod.DAY);
-                    aduWeek = new AggregateDataUpdatePublicApi(handler, AggregatePeriod.WEEK);
-                    aduMonth = new AggregateDataUpdatePublicApi(handler, AggregatePeriod.MONTH);
-                    aduYear = new AggregateDataUpdatePublicApi(handler, AggregatePeriod.YEAR);
+                    commands.add(new AggregateDataUpdatePublicApi(handler, AggregatePeriod.DAY));
+                    commands.add(new AggregateDataUpdatePublicApi(handler, AggregatePeriod.WEEK));
+                    commands.add(new AggregateDataUpdatePublicApi(handler, AggregatePeriod.MONTH));
+                    commands.add(new AggregateDataUpdatePublicApi(handler, AggregatePeriod.YEAR));
                 }
 
                 try {
-                    handler.getWebInterface().executeCommand(aduDay);
-                    handler.getWebInterface().executeCommand(aduWeek);
-                    handler.getWebInterface().executeCommand(aduMonth);
-                    handler.getWebInterface().executeCommand(aduYear);
+                    for (SolarEdgeCommand command : commands) {
+                        handler.getWebInterface().executeCommand(command);
+                        // we must not flood the API with requests, otherwise we will get an exception
+                        Thread.sleep(5000);
+                    }
                 } catch (RuntimeException e) {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Caught Exception: {}", e.getMessage(), e);
                     } else {
                         logger.warn("Caught Exception: {}", e.getMessage());
                     }
+                } catch (InterruptedException e) {
+                    // no need to handle this
                 }
             }
         }

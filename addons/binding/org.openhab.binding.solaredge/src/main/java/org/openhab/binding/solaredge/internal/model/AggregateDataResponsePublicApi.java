@@ -14,6 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * this class is used to map the aggregate data response of the public API
  *
@@ -21,8 +24,9 @@ import java.util.Map;
  */
 public class AggregateDataResponsePublicApi implements DataResponse {
 
+    private final Logger logger = LoggerFactory.getLogger(AggregateDataResponsePublicApi.class);
+
     private static final String UNIT_WH = "Wh";
-    // private static final String UNIT_KWH = "KWh";
     private static final String UNIT_MWH = "MWh";
 
     private static final String METER_TYPE_PRODUCTION = "Production";
@@ -95,9 +99,13 @@ public class AggregateDataResponsePublicApi implements DataResponse {
                 valueMap.put(AggregateDataChannels.DAY_PRODUCTION.getFQName(), getValueAsKWh(meter.values.get(0)));
                 break;
             case WEEK:
-                // TODO: response data needs more clarification
-                // valueMap.put(AggregateDataChannels.WEEK_PRODUCTION.getFQName(),
-                // getValueAsKWh(meter.values.get(0)));
+                if (meter.values.size() == 2) {
+                    valueMap.put(AggregateDataChannels.WEEK_PRODUCTION.getFQName(),
+                            getValueAsKWh(meter.values.get(0), meter.values.get(1)));
+                } else {
+                    logger.warn("Response for weekly data has unexpected format, expected 2 entries got {}",
+                            meter.values.size());
+                }
                 break;
             case MONTH:
                 valueMap.put(AggregateDataChannels.MONTH_PRODUCTION.getFQName(), getValueAsKWh(meter.values.get(0)));
@@ -120,9 +128,13 @@ public class AggregateDataResponsePublicApi implements DataResponse {
                 valueMap.put(AggregateDataChannels.DAY_CONSUMPTION.getFQName(), getValueAsKWh(meter.values.get(0)));
                 break;
             case WEEK:
-                // TODO: response data needs more clarification
-                // valueMap.put(AggregateDataChannels.WEEK_CONSUMPTION.getFQName(),
-                // getValueAsKWh(meter.values.get(0)));
+                if (meter.values.size() == 2) {
+                    valueMap.put(AggregateDataChannels.WEEK_CONSUMPTION.getFQName(),
+                            getValueAsKWh(meter.values.get(0), meter.values.get(1)));
+                } else {
+                    logger.warn("Response for weekly data has unexpected format, expected 2 entries got {}",
+                            meter.values.size());
+                }
                 break;
             case MONTH:
                 valueMap.put(AggregateDataChannels.MONTH_CONSUMPTION.getFQName(), getValueAsKWh(meter.values.get(0)));
@@ -146,9 +158,14 @@ public class AggregateDataResponsePublicApi implements DataResponse {
                         getValueAsKWh(meter.values.get(0)));
                 break;
             case WEEK:
-                // TODO: response data needs more clarification
-                // valueMap.put(AggregateDataChannels.WEEK_SELFCONSUMPTIONFORCONSUMPTION.getFQName(),
-                // getValueAsKWh(meter.values.get(0)));
+                if (meter.values.size() == 2) {
+                    valueMap.put(AggregateDataChannels.WEEK_SELFCONSUMPTIONFORCONSUMPTION.getFQName(),
+                            getValueAsKWh(meter.values.get(0), meter.values.get(1)));
+                } else {
+                    logger.warn("Response for weekly data has unexpected format, expected 2 entries got {}",
+                            meter.values.size());
+                }
+
                 break;
             case MONTH:
                 valueMap.put(AggregateDataChannels.MONTH_SELFCONSUMPTIONFORCONSUMPTION.getFQName(),
@@ -173,9 +190,14 @@ public class AggregateDataResponsePublicApi implements DataResponse {
                 valueMap.put(AggregateDataChannels.DAY_IMPORT.getFQName(), getValueAsKWh(meter.values.get(0)));
                 break;
             case WEEK:
-                // TODO: response data needs more clarification
-                // valueMap.put(AggregateDataChannels.WEEK_IMPORT.getFQName(),
-                // getValueAsKWh(meter.values.get(0)));
+                if (meter.values.size() == 2) {
+                    valueMap.put(AggregateDataChannels.WEEK_IMPORT.getFQName(),
+                            getValueAsKWh(meter.values.get(0), meter.values.get(1)));
+                } else {
+                    logger.warn("Response for weekly data has unexpected format, expected 2 entries got {}",
+                            meter.values.size());
+                }
+
                 break;
             case MONTH:
                 valueMap.put(AggregateDataChannels.MONTH_IMPORT.getFQName(), getValueAsKWh(meter.values.get(0)));
@@ -198,9 +220,14 @@ public class AggregateDataResponsePublicApi implements DataResponse {
                 valueMap.put(AggregateDataChannels.DAY_EXPORT.getFQName(), getValueAsKWh(meter.values.get(0)));
                 break;
             case WEEK:
-                // TODO: response data needs more clarification
-                // valueMap.put(AggregateDataChannels.WEEK_EXPORT.getFQName(),
-                // getValueAsKWh(meter.values.get(0)));
+                if (meter.values.size() == 2) {
+                    valueMap.put(AggregateDataChannels.WEEK_EXPORT.getFQName(),
+                            getValueAsKWh(meter.values.get(0), meter.values.get(1)));
+                } else {
+                    logger.warn("Response for weekly data has unexpected format, expected 2 entries got {}",
+                            meter.values.size());
+                }
+
                 break;
             case MONTH:
                 valueMap.put(AggregateDataChannels.MONTH_EXPORT.getFQName(), getValueAsKWh(meter.values.get(0)));
@@ -227,7 +254,10 @@ public class AggregateDataResponsePublicApi implements DataResponse {
                         calculatePercent(selfConsumption, consumption));
                 break;
             case WEEK:
-                // TODO: response data needs more clarification
+                selfConsumption = valueMap.get(AggregateDataChannels.WEEK_SELFCONSUMPTIONFORCONSUMPTION.getFQName());
+                consumption = valueMap.get(AggregateDataChannels.WEEK_CONSUMPTION.getFQName());
+                valueMap.put(AggregateDataChannels.WEEK_SELFCONSUMPTIONCOVERAGE.getFQName(),
+                        calculatePercent(selfConsumption, consumption));
                 break;
             case MONTH:
                 selfConsumption = valueMap.get(AggregateDataChannels.MONTH_SELFCONSUMPTIONFORCONSUMPTION.getFQName());
@@ -245,23 +275,27 @@ public class AggregateDataResponsePublicApi implements DataResponse {
     }
 
     /**
-     * converts the meter value to kWh
+     * converts the meter value to kWh. If multiple meter value are provided a sum will be calculated.
      *
-     * @param value
+     * @param values one or more meter values
      * @return
      */
-    protected final String getValueAsKWh(MeterTelemetry value) {
-        Double convertedValue = value.value;
+    protected final String getValueAsKWh(MeterTelemetry... values) {
+        double sum = 0.0;
+
+        for (MeterTelemetry value : values) {
+            sum += value.value;
+        }
 
         if (energyDetails != null && energyDetails.unit != null && energyDetails.unit.equals(UNIT_WH)) {
-            convertedValue = convertedValue / 1000;
+            sum = sum / 1000;
         } else if (energyDetails != null && energyDetails.unit != null && energyDetails.unit.equals(UNIT_MWH)) {
-            convertedValue = convertedValue * 1000;
+            sum = sum * 1000;
         }
 
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.HALF_UP);
-        return df.format(convertedValue);
+        return df.format(sum);
     }
 
     /**
@@ -272,12 +306,14 @@ public class AggregateDataResponsePublicApi implements DataResponse {
      */
     protected final String calculatePercent(String dividendString, String divisorString) {
         if (dividendString != null && divisorString != null) {
-            Double dividend = Double.valueOf(dividendString);
-            Double divisor = Double.valueOf(divisorString);
+            double dividend = Double.valueOf(dividendString);
+            double divisor = Double.valueOf(divisorString);
 
-            DecimalFormat df = new DecimalFormat("#.##");
-            df.setRoundingMode(RoundingMode.HALF_UP);
-            return df.format(dividend / divisor);
+            if (dividend >= 0.0 && divisor > 0) {
+                DecimalFormat df = new DecimalFormat("#.##");
+                df.setRoundingMode(RoundingMode.HALF_UP);
+                return df.format(dividend / divisor * 100);
+            }
         }
         return null;
     }
