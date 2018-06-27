@@ -45,9 +45,24 @@ public interface SolarEdgeHandler extends ThingHandler {
     @Nullable
     WebInterface getWebInterface();
 
+    /**
+     * method which updates the channels.
+     *
+     * @param values key-value list where key is the channel id
+     */
     void updateChannelStatus(Map<String, String> values);
 
+    /**
+     * return the binding's configuration
+     *
+     * @return
+     */
     SolarEdgeConfiguration getConfiguration();
 
+    /**
+     * returns a list containing all channels
+     *
+     * @return
+     */
     List<Channel> getChannels();
 }

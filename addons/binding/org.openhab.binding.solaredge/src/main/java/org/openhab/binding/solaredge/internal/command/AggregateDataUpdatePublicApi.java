@@ -25,17 +25,34 @@ import org.openhab.binding.solaredge.internal.model.AggregatePeriod;
 import org.openhab.binding.solaredge.internal.model.DataResponse;
 
 /**
- * command that retrieves status values for aggregate data channels
+ * command that retrieves status values for aggregate data channels via public API
  *
  * @author Alexander Friese - initial contribution
  */
 public class AggregateDataUpdatePublicApi extends AbstractCommandCallback implements SolarEdgeCommand {
 
+    /**
+     * the solaredge handler
+     */
     private final SolarEdgeHandler handler;
+
+    /**
+     * data aggregation level
+     */
     private final AggregatePeriod period;
+
+    /**
+     * date format which is expected by the API
+     */
     private final SimpleDateFormat dateFormat;
     private int retries = 0;
 
+    /**
+     * the constructor
+     *
+     * @param handler
+     * @param period
+     */
     public AggregateDataUpdatePublicApi(SolarEdgeHandler handler, AggregatePeriod period) {
         super(handler.getConfiguration());
         this.dateFormat = new SimpleDateFormat("yyyy-MM-dd");

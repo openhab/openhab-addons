@@ -27,18 +27,39 @@ import org.openhab.binding.solaredge.internal.model.AggregateYearDataResponsePri
 import org.openhab.binding.solaredge.internal.model.DataResponse;
 
 /**
- * command that retrieves status values for aggregate data channels
+ * command that retrieves status values for aggregate data channels via private API
  *
  * @author Alexander Friese - initial contribution
  */
 public class AggregateDataUpdatePrivateApi extends AbstractCommandCallback implements SolarEdgeCommand {
 
+    /**
+     * the solaredge handler
+     */
     private final SolarEdgeHandler handler;
+
+    /**
+     * data aggregation level
+     */
     private final AggregatePeriod period;
+
+    /**
+     * url suffix depending on aggregation level
+     */
     private final String urlSuffix;
+
+    /**
+     * response class depending on aggregation level
+     */
     private final Class<? extends AbstractAggregateDataResponsePrivateApi> responseClass;
     private int retries = 0;
 
+    /**
+     * the constructor
+     *
+     * @param handler
+     * @param period
+     */
     public AggregateDataUpdatePrivateApi(SolarEdgeHandler handler, AggregatePeriod period) {
         super(handler.getConfiguration());
         this.handler = handler;
