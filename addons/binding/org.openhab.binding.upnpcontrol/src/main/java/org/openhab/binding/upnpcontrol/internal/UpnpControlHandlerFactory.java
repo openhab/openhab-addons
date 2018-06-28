@@ -105,18 +105,21 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         UpnpRendererHandler handler = new UpnpRendererHandler(thing, upnpIOService, this);
         String key = thing.getUID().toString();
         upnpRenderers.put(key, handler);
-        upnpServers.forEach((thingId, value) -> value.addRendererOption(key, handler));
+        upnpServers.forEach((thingId, value) -> value.addRendererOption(key));
         logger.debug("Media renderer handler created for {}", thing.getLabel());
 
         return handler;
     }
 
     private void removeServer(String key) {
+        logger.debug("Removing media server handler for {}", upnpServers.get(key).getThing().getLabel());
         upnpServers.remove(key);
     }
 
     private void removeRenderer(String key) {
+        logger.debug("Removing media renderer handler for {}", upnpRenderers.get(key).getThing().getLabel());
         if (audioSinkRegistrations.containsKey(key)) {
+            logger.debug("Removing audio sink registration for {}", upnpRenderers.get(key).getThing().getLabel());
             ServiceRegistration<AudioSink> reg = audioSinkRegistrations.get(key);
             reg.unregister();
             audioSinkRegistrations.remove(key);

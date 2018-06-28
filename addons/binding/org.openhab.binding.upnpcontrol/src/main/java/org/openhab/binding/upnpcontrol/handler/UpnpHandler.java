@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
@@ -36,16 +37,12 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected UpnpIOService service;
-    protected Set<AudioFormat> supportedFormats;
-    private String transportState;
-    protected int instanceId;
+    protected Set<AudioFormat> supportedFormats = new HashSet<AudioFormat>();;
+    private String transportState = "";
+    protected int instanceId = 0;
 
     public UpnpHandler(Thing thing, UpnpIOService upnpIOService) {
         super(thing);
-
-        this.supportedFormats = new HashSet<AudioFormat>();
-        this.transportState = "";
-        this.instanceId = 0;
 
         upnpIOService.registerParticipant(this);
         this.service = upnpIOService;
@@ -56,7 +53,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         if (service.isRegistered(this)) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Could not initialize communication with " + thing.getLabel());
         }
     }
 
@@ -77,7 +75,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     @Override
     public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
-        logger.debug("Received subscription reply {} from service {}", succeeded, service);
+        logger.debug("Upnp device {) received subscription reply {} from service {}", thing.getLabel(), succeeded,
+                service);
     }
 
     @Override
@@ -85,7 +84,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         if (status) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Communication lost with " + thing.getLabel());
         }
     }
 
@@ -94,9 +94,14 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         return getThing().getProperties().get("udn");
     }
 
+    protected Map<String, String> invokeAction(String serviceId, String actionId, Map<String, String> inputs) {
+        logger.debug("Upnp device {} invoke upnp action {} on service {} with inputs {}", thing.getLabel(), actionId,
+                serviceId, inputs);
+        return service.invokeAction(this, serviceId, actionId, inputs);
+    }
+
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
-        logger.debug("Received variable {} with value {} from service {}", variable, value, service);
         if (variable == null) {
             return;
         }
@@ -111,9 +116,12 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         }
     }
 
-    public String getProtocolInfo() {
-        return "";
+    protected void addSubscription(String serviceId, int duration) {
+        logger.debug("Upnp device {} add upnp subscription on {}", thing.getLabel(), serviceId);
+        service.addSubscription(this, serviceId, duration);
     }
+
+    protected abstract String getProtocolInfo();
 
     public Set<AudioFormat> getSupportedAudioFormats() {
         return supportedFormats;

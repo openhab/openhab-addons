@@ -56,25 +56,27 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     private UpnpAudioSinkReg audioSinkReg;
 
-    private String channel = "Master";
-    private PercentType soundVolume = new PercentType();
+    private static String UPNP_CHANNEL = "Master";
+
     private OnOffType soundMute = OnOffType.OFF;
+    private PercentType soundVolume = new PercentType();
     private String sink = "";
 
     private @Nullable Queue<UpnpEntry> currentQueue;
 
     public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpAudioSinkReg audioSinkReg) {
         super(thing, upnpIOService);
-        service.addSubscription(this, "AVTransport", 3600);
 
         this.audioSinkReg = audioSinkReg;
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initializing handler for media renderer device");
+        logger.debug("Initializing handler for media renderer device {}", thing.getLabel());
 
+        addSubscription("AVTransport", 3600);
         getProtocolInfo();
+
         registerAudioSink();
         super.initialize();
     }
@@ -106,7 +108,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", Integer.toString(instanceId));
 
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "Stop", inputs);
+        Map<String, String> result = invokeAction("AVTransport", "Stop", inputs);
 
         for (String variable : result.keySet()) {
             onValueReceived(variable, result.get(variable), "AVTransport");
@@ -118,7 +120,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         inputs.put("InstanceID", Integer.toString(instanceId));
         inputs.put("Speed", "1");
 
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "Play", inputs);
+        Map<String, String> result = invokeAction("AVTransport", "Play", inputs);
 
         for (String variable : result.keySet()) {
             onValueReceived(variable, result.get(variable), "AVTransport");
@@ -129,7 +131,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", Integer.toString(instanceId));
 
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "Pause", inputs);
+        Map<String, String> result = invokeAction("AVTransport", "Pause", inputs);
 
         for (String variable : result.keySet()) {
             onValueReceived(variable, result.get(variable), "AVTransport");
@@ -140,7 +142,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", Integer.toString(instanceId));
 
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "Next", inputs);
+        Map<String, String> result = invokeAction("AVTransport", "Next", inputs);
 
         for (String variable : result.keySet()) {
             onValueReceived(variable, result.get(variable), "AVTransport");
@@ -151,7 +153,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", Integer.toString(instanceId));
 
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "Previous", inputs);
+        Map<String, String> result = invokeAction("AVTransport", "Previous", inputs);
 
         for (String variable : result.keySet()) {
             onValueReceived(variable, result.get(variable), "AVTransport");
@@ -168,7 +170,7 @@ public class UpnpRendererHandler extends UpnpHandler {
             logger.error("Action Invalid Value Format Exception {}", ex.getMessage());
         }
 
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "SetAVTransportURI", inputs);
+        Map<String, String> result = invokeAction("AVTransport", "SetAVTransportURI", inputs);
 
         for (String variable : result.keySet()) {
             onValueReceived(variable, result.get(variable), "AVTransport");
@@ -178,9 +180,9 @@ public class UpnpRendererHandler extends UpnpHandler {
     public PercentType getVolume() throws IOException {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", Integer.toString(instanceId));
-        inputs.put("Channel", channel);
+        inputs.put("Channel", UPNP_CHANNEL);
 
-        Map<String, String> result = service.invokeAction(this, "RenderingControl", "GetVolume", inputs);
+        Map<String, String> result = invokeAction("RenderingControl", "GetVolume", inputs);
 
         for (String variable : result.keySet()) {
             onValueReceived(variable, result.get(variable), "RenderingControl");
@@ -191,10 +193,10 @@ public class UpnpRendererHandler extends UpnpHandler {
     public void setVolume(PercentType volume) throws IOException {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", Integer.toString(instanceId));
-        inputs.put("Channel", channel);
+        inputs.put("Channel", UPNP_CHANNEL);
         inputs.put("DesiredVolume", String.valueOf(volume.intValue()));
 
-        Map<String, String> result = service.invokeAction(this, "RenderingControl", "SetVolume", inputs);
+        Map<String, String> result = invokeAction("RenderingControl", "SetVolume", inputs);
 
         for (String variable : result.keySet()) {
             onValueReceived(variable, result.get(variable), "RenderingControl");
@@ -204,9 +206,9 @@ public class UpnpRendererHandler extends UpnpHandler {
     protected OnOffType getMute() throws IOException {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", Integer.toString(instanceId));
-        inputs.put("Channel", channel);
+        inputs.put("Channel", UPNP_CHANNEL);
 
-        Map<String, String> result = service.invokeAction(this, "RenderingControl", "GetMute", inputs);
+        Map<String, String> result = invokeAction("RenderingControl", "GetMute", inputs);
 
         for (String variable : result.keySet()) {
             onValueReceived(variable, result.get(variable), "RenderingControl");
@@ -217,10 +219,10 @@ public class UpnpRendererHandler extends UpnpHandler {
     protected void setMute(OnOffType mute) throws IOException {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", Integer.toString(instanceId));
-        inputs.put("Channel", channel);
+        inputs.put("Channel", UPNP_CHANNEL);
         inputs.put("DesiredMute", mute == OnOffType.ON ? "1" : "0");
 
-        Map<String, String> result = service.invokeAction(this, "RenderingControl", "SetMute", inputs);
+        Map<String, String> result = invokeAction("RenderingControl", "SetMute", inputs);
 
         for (String variable : result.keySet()) {
             onValueReceived(variable, result.get(variable), "RenderingControl");
@@ -229,6 +231,8 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Handle command {} for channel {} on renderer {}", command, channelUID, thing.getLabel());
+
         try {
             String transportState;
             if (command instanceof RefreshType) {
@@ -287,17 +291,20 @@ public class UpnpRendererHandler extends UpnpHandler {
                 }
 
                 return;
-
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not communicate with " + getThing().getLabel());
+                    "Could not communicate with " + thing.getLabel());
         }
     }
 
     @Override
     public void onStatusChanged(boolean status) {
+        logger.debug("Renderer status changed to {}", status);
         if (status) {
+            addSubscription("AVTransport", 3600);
+            getProtocolInfo();
+
             registerAudioSink();
         }
         super.onStatusChanged(status);
@@ -364,13 +371,16 @@ public class UpnpRendererHandler extends UpnpHandler {
     public String getProtocolInfo() {
         Map<String, String> inputs = new HashMap<>();
 
-        Map<String, String> result = service.invokeAction(this, "ConnectionManager", "GetProtocolInfo", inputs);
+        Map<String, String> result = invokeAction("ConnectionManager", "GetProtocolInfo", inputs);
 
         for (String variable : result.keySet()) {
             onValueReceived(variable, result.get(variable), "ConnectionManager");
         }
 
         audioSupport = Boolean.valueOf(Pattern.matches(".*audio.*", sink));
+        if (audioSupport) {
+            logger.debug("Renderer {} supports audio", thing.getLabel());
+        }
 
         Pattern pattern = Pattern.compile("(?:.*):(?:.*):(.*):(?:.*)");
         for (String protocol : sink.split(",")) {
@@ -394,7 +404,11 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     private void registerAudioSink() {
-        if (audioSinkRegistered || !service.isRegistered(this)) {
+        if (audioSinkRegistered) {
+            logger.debug("Audio Sink already registered for renderer {}", thing.getLabel());
+            return;
+        } else if (!service.isRegistered(this)) {
+            logger.debug("Audio Sink registration for renderer {} failed, no service", thing.getLabel());
             return;
         }
         if (audioSupport()) {
@@ -415,11 +429,13 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     public void registerQueue(Queue<UpnpEntry> queue) {
+        logger.debug("Registering queue on renderer {}", thing.getLabel());
         currentQueue = queue;
         serveNext();
     }
 
     public void serveNext() {
+        logger.debug("Serve next media from queue on renderer {}", thing.getLabel());
         if (currentQueue != null) {
             UpnpEntry nextMedia = currentQueue.poll();
             if (nextMedia != null) {

@@ -54,7 +54,7 @@ public class UpnpXMLParser {
             // This should never happen - we're not performing I/O!
             LOGGER.error("Could not parse AV Transport from string '{}'", xml);
         } catch (SAXException s) {
-            LOGGER.error("Could not parse AV Transport from string '{}'", xml);
+            LOGGER.debug("Could not parse AV Transport from string '{}'", xml);
         }
         return handler.getChanges();
     }
@@ -74,7 +74,7 @@ public class UpnpXMLParser {
         } catch (IOException e) {
             LOGGER.error("Could not parse Entries from string '{}'", xml);
         } catch (SAXException s) {
-            LOGGER.error("Could not parse Entries from string '{}'", xml);
+            LOGGER.debug("Could not parse Entries from string '{}'", xml);
         }
 
         return handler.getEntries();

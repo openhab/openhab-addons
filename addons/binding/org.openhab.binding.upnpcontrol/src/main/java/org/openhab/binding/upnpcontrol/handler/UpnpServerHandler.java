@@ -50,7 +50,6 @@ public class UpnpServerHandler extends UpnpHandler {
     private @Nullable UpnpRendererHandler currentRendererHandler;
     private List<StateOption> rendererStateOptionList = new ArrayList<>();
 
-    @NonNullByDefault(value = {})
     private ChannelUID rendererChannelUID;
 
     private static final String DIRECTORY_ROOT = "0";
@@ -76,13 +75,13 @@ public class UpnpServerHandler extends UpnpHandler {
         this.upnpRenderers = upnpRenderers;
         this.upnpStateDescriptionProvider = upnpStateDescriptionProvider;
         this.parentMap.put(DIRECTORY_ROOT, DIRECTORY_ROOT);
+        this.rendererChannelUID = new ChannelUID(thing.getUID(), UPNPRENDERER);
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initializing handler for media server device");
+        logger.debug("Initializing handler for media server device {}", thing.getLabel());
 
-        rendererChannelUID = new ChannelUID(getThing().getUID(), UPNPRENDERER);
         upnpRenderers.forEach((key, value) -> {
             StateOption stateOption = new StateOption(key, value.getThing().getLabel());
             rendererStateOptionList.add(stateOption);
@@ -93,7 +92,7 @@ public class UpnpServerHandler extends UpnpHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Handle command {} for channel {}", command, channelUID);
+        logger.debug("Handle command {} for channel {} on server {}", command, channelUID, thing.getLabel());
 
         @SuppressWarnings("null")
         ChannelUID currentTitleChannelUID = thing.getChannel(CURRENTTITLE).getUID();
@@ -138,10 +137,10 @@ public class UpnpServerHandler extends UpnpHandler {
         }
     }
 
-    public void addRendererOption(String key, UpnpRendererHandler handler) {
+    public void addRendererOption(String key) {
         rendererStateOptionList.add(new StateOption(key, upnpRenderers.get(key).getThing().getLabel()));
         updateStateDescription(rendererChannelUID, rendererStateOptionList);
-        logger.debug("Renderer option {} added to {}", key, this.getThing().getLabel());
+        logger.debug("Renderer option {} added to {}", key, thing.getLabel());
     }
 
     public void removeRendererOption(String key) {
@@ -151,13 +150,13 @@ public class UpnpServerHandler extends UpnpHandler {
         }
         rendererStateOptionList.removeIf(stateOption -> (stateOption.getValue().equals(key)));
         updateStateDescription(rendererChannelUID, rendererStateOptionList);
-        logger.debug("Renderer option {} removed from {}", key, this.getThing().getLabel());
+        logger.debug("Renderer option {} removed from {}", key, thing.getLabel());
     }
 
     private void updateTitleSelection(String browseTarget, ChannelUID currentTitleChannelUID) {
         browse(browseTarget, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
         currentId = browseTarget;
-        logger.debug("Navigating to node {}", currentId);
+        logger.debug("Navigating to node {} on server {}", currentId, thing.getLabel());
 
         List<StateOption> stateOptionList = new ArrayList<>();
         if ((resultList != null) && !(resultList.get(0).getParentId().equals(DIRECTORY_ROOT))) {
@@ -201,7 +200,7 @@ public class UpnpServerHandler extends UpnpHandler {
         inputs.put("RequestedCount", requestedCount);
         inputs.put("SortCriteria", sortCriteria);
 
-        Map<String, String> result = service.invokeAction(this, "ContentDirectory", "Browse", inputs);
+        Map<String, String> result = invokeAction("ContentDirectory", "Browse", inputs);
 
         for (String variable : result.keySet()) {
             onValueReceived(variable, result.get(variable), "ContentDirectory");
@@ -245,14 +244,14 @@ public class UpnpServerHandler extends UpnpHandler {
     }
 
     public String getURI() {
-        return getThing().getProperties().get("descriptorURL");
+        return thing.getProperties().get("descriptorURL");
     }
 
     @Override
     public String getProtocolInfo() {
         Map<String, String> inputs = new HashMap<>();
 
-        Map<String, String> result = service.invokeAction(this, "ConnectionManager", "GetProtocolInfo", inputs);
+        Map<String, String> result = invokeAction("ConnectionManager", "GetProtocolInfo", inputs);
 
         for (String variable : result.keySet()) {
             onValueReceived(variable, result.get(variable), "ConnectionManager");
@@ -271,6 +270,10 @@ public class UpnpServerHandler extends UpnpHandler {
                     mediaQueue.add(entry);
                 });
             }
+            logger.debug("Serving media queue from server {} to renderer {}.", thing.getLabel(),
+                    handler.getThing().getLabel());
+        } else {
+            logger.debug("Cannot serve media from server {}, no renderer selected.", thing.getLabel());
         }
     }
 }
