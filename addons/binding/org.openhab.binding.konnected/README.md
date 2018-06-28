@@ -1,47 +1,33 @@
-# <bindingName> Binding
+# Konnected Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding is for interacting with the Konnected Module. A module which intefaces with existing home security sensors. 
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+https://konnected.io/_
+
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+This binding supports one type of thing:  a konnected module.
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+The binding will auto disocver konnected modules which are attached to the same network as the server running openhab via UPnP.  The binding will then create things for each module discovered which can be added.
 
 ## Binding Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters 
-# This may be changed by the user for security reasons.
-secret=EclipseSmartHome
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+There is no configuration required for the binding.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+The autodiscovery service of the binding will detect the ipAddress and port of the konnected module.  But once it is added you will need to provide an Authority Token to secure communication between the module and OpenHAB.  
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+For channels 1-5 the default setting is that these channels are connected to sensors.  If you have them connected to actuators you will need to change the appropriate setting in the thing via the paper ui.
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+There are seven channels.  Zones 1-6 and the out channel which represent the respective pins on the konnected module.  You should only link the channels to items that you actually have sensors/actuators connected to.
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+Zones 1-6 will only accept a string item type with values of 0 or 1. While the out Channel  (Zone 7) will only accept a switch type item.
 
 ## Full Example
 
