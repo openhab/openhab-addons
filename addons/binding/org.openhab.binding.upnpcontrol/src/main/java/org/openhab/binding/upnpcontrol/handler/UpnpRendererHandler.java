@@ -56,7 +56,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     private UpnpAudioSinkReg audioSinkReg;
 
-    private static String UPNP_CHANNEL = "Master";
+    private static final String UPNP_CHANNEL = "Master";
 
     private OnOffType soundMute = OnOffType.OFF;
     private PercentType soundVolume = new PercentType();

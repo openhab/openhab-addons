@@ -37,7 +37,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected UpnpIOService service;
-    protected Set<AudioFormat> supportedFormats = new HashSet<AudioFormat>();;
+    protected Set<AudioFormat> supportedFormats = new HashSet<AudioFormat>();
     private String transportState = "";
     protected int instanceId = 0;
 
