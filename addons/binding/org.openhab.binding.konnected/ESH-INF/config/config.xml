@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:konnected:module">
+		<parameter name="Auth_Token" type="text" required="true">
+			<label>Auth_Token</label>
+			<description>This is the Authority Token used to communicate with the Konnected Module.</description>
+        </parameter>
+		<parameter name="isAct1" type="boolean" required="false" groupName="Actuators">
+			<label>Pin 1</label>
+			<description>Is Pin 1 an Actuator?</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="isAct2" type="boolean" required="false" groupName="Actuators">
+			<label>Pin 3</label>
+			<description>Is Pin 3 an Actuator?</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="isAct3" type="boolean" required="false" groupName="Actuators">
+			<label>Pin 3</label>
+			<description>Is Pin 3 an Actuator?</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="isAct4" type="boolean" required="false" groupName="Actuators">
+			<label>Pin 4</label>
+			<description>Is Pin 4 an Actuator?</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="isAct5" type="boolean" required="false" groupName="Actuators">
+			<label>Pin 5</label>
+			<description>Is Pin 5 an Actuator?</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
+ 
