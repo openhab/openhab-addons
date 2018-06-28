@@ -206,7 +206,7 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
 
         ThingStatus newStatus = thermostat.isOnline() == null ? ThingStatus.UNKNOWN
                 : thermostat.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE;
-        if (!newStatus.equals(thing.getStatus())) {
+        if (newStatus != thing.getStatus()) {
             updateStatus(newStatus);
         }
 

@@ -84,7 +84,7 @@ public class NestSmokeDetectorHandler extends NestBaseHandler<SmokeDetector> {
 
         ThingStatus newStatus = smokeDetector.isOnline() == null ? ThingStatus.UNKNOWN
                 : smokeDetector.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE;
-        if (!newStatus.equals(thing.getStatus())) {
+        if (newStatus != thing.getStatus()) {
             updateStatus(newStatus);
         }
     }

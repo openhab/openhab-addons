@@ -142,7 +142,7 @@ public class NestCameraHandler extends NestBaseHandler<Camera> {
 
         ThingStatus newStatus = camera.isOnline() == null ? ThingStatus.UNKNOWN
                 : camera.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE;
-        if (!newStatus.equals(thing.getStatus())) {
+        if (newStatus != thing.getStatus()) {
             updateStatus(newStatus);
         }
     }

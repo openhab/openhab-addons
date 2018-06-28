@@ -117,7 +117,7 @@ public class NestStructureHandler extends NestBaseHandler<Structure> {
 
         updateLinkedChannels(oldStructure, structure);
 
-        if (!ThingStatus.ONLINE.equals(thing.getStatus())) {
+        if (ThingStatus.ONLINE != thing.getStatus()) {
             updateStatus(ThingStatus.ONLINE);
         }
     }
