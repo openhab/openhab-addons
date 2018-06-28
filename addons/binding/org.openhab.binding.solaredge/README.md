@@ -5,7 +5,7 @@ Only read access is supported.
 
 ## Supported Things
 
-This binding provides only one thing type: The inverter itself. Create one inverter thing per physical inverter installation available in your home(s). Additional stuff like batteries is automatically supported.
+This binding provides only one thing type: "generic" which is the inverter itself. As the name suggests it is generic which means it applies to all available inverters. Create one inverter thing per physical inverter installation available in your home(s). Additional stuff like batteries is automatically supported.
 
 ## Discovery
 
@@ -13,17 +13,7 @@ Auto-Discovery is not supported, as access requires authentication.
 
 ## Thing Configuration
 
-The syntax for a inverter thing is:
-
-```
-solaredge:generic:<NAME>
-```
-
-- **solaredge** the binding id, fixed
-- **generic** fixed value
-- **name** the name of the inverter (choose any name)
-
-There are a few settings this thing:
+The following configuration parameters are available for this thing:
 
 - **tokenOrApiKey** (required)
 Either the official API Key for using the public API or when using the inofficial private API: a token which can be retrieved from browser's cookie store when logged into the solaredge website. It is called 'SPRING_SECURITY_REMEMBER_ME_COOKIE'
@@ -66,7 +56,7 @@ solaredge:generic:home2  [ tokenOrApiKey="...", solarId="..."]
 
 ## Channels
 
-Available channels depend on the specific heatpump model. Following models/channels are currently available
+Available channels depend on the specific setup e.g. if a meter and/or a battery is present. Following models/channels are currently available
 
 | Channel Type ID                               | Item Type    | Description                                      | Remark                                          |
 |-----------------------------------------------|--------------|--------------------------------------------------|-------------------------------------------------|

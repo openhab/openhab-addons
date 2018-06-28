@@ -28,67 +28,67 @@ public class SolarEdgeConfiguration {
     private Integer liveDataPollingInterval;
     private Integer aggregateDataPollingInterval;
 
-    public final String getTokenOrApiKey() {
+    public String getTokenOrApiKey() {
         return tokenOrApiKey;
     }
 
-    public final void setTokenOrApiKey(String tokenOrApiKey) {
+    public void setTokenOrApiKey(String tokenOrApiKey) {
         this.tokenOrApiKey = tokenOrApiKey;
     }
 
-    public final String getSolarId() {
+    public String getSolarId() {
         return solarId;
     }
 
-    public final void setSolarId(String solarId) {
+    public void setSolarId(String solarId) {
         this.solarId = solarId;
     }
 
-    public final Integer getAsyncTimeout() {
+    public Integer getAsyncTimeout() {
         return asyncTimeout;
     }
 
-    public final void setAsyncTimeout(Integer asyncTimeout) {
+    public void setAsyncTimeout(Integer asyncTimeout) {
         this.asyncTimeout = asyncTimeout;
     }
 
-    public final Integer getSyncTimeout() {
+    public Integer getSyncTimeout() {
         return syncTimeout;
     }
 
-    public final void setSyncTimeout(Integer syncTimeout) {
+    public void setSyncTimeout(Integer syncTimeout) {
         this.syncTimeout = syncTimeout;
     }
 
-    public final Integer getLiveDataPollingInterval() {
+    public Integer getLiveDataPollingInterval() {
         return liveDataPollingInterval;
     }
 
-    public final void setLiveDataPollingInterval(Integer liveDataPollingInterval) {
+    public void setLiveDataPollingInterval(Integer liveDataPollingInterval) {
         this.liveDataPollingInterval = liveDataPollingInterval;
     }
 
-    public final Integer getAggregateDataPollingInterval() {
+    public Integer getAggregateDataPollingInterval() {
         return aggregateDataPollingInterval;
     }
 
-    public final void setAggregateDataPollingInterval(Integer aggregateDataPollingInterval) {
+    public void setAggregateDataPollingInterval(Integer aggregateDataPollingInterval) {
         this.aggregateDataPollingInterval = aggregateDataPollingInterval;
     }
 
-    public final boolean isMeterInstalled() {
+    public boolean isMeterInstalled() {
         return meterInstalled;
     }
 
-    public final void setMeterInstalled(boolean meterInstalled) {
+    public void setMeterInstalled(boolean meterInstalled) {
         this.meterInstalled = meterInstalled;
     }
 
-    public final boolean isUsePrivateApi() {
+    public boolean isUsePrivateApi() {
         return usePrivateApi;
     }
 
-    public final void setUsePrivateApi(boolean usePrivateApi) {
+    public void setUsePrivateApi(boolean usePrivateApi) {
         this.usePrivateApi = usePrivateApi;
     }
 

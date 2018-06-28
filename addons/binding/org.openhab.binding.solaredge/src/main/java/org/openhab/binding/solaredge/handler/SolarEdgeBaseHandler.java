@@ -20,7 +20,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -83,7 +82,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
 
     @Override
     public void initialize() {
-        logger.info("About to initialize SolarEdge");
+        logger.debug("About to initialize SolarEdge");
         Thing thing = this.getThing();
         SolarEdgeConfiguration config = getConfiguration();
 
@@ -92,10 +91,9 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
         this.webInterface = new WebInterface(config, this);
 
         if (config.getTokenOrApiKey() != null) {
-            this.startPolling();
+            startPolling();
         } else {
-            thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "no username/password set"));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no username/password set");
         }
     }
 
@@ -190,6 +188,12 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
         return new DecimalType(number.replaceAll(",", ".").replaceAll("[^0-9.-]", ""));
     }
 
+    /**
+     * return the channel with the specific id. Will return null if no channel is found.
+     *
+     * @param id identifier of the channel
+     * @return
+     */
     @Nullable
     protected abstract Channel getThingSpecificChannel(String id);
 

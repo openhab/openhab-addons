@@ -18,7 +18,8 @@
 
 		<parameter name="tokenOrApiKey" type="text" required="true" groupName="authentication">
 			<label>Token or API Key</label>
-			<description>API Key to access the official solaredge API. If using Private API this must be filles with Spring Security Token (Check Browser Cookies when logged into website)</description>
+			<description>API Key to access the official solaredge API. If using Private API this must be fills with Spring Security Token (Check Browser Cookies when logged into website)</description>
+			<context>password</context>
 		</parameter>
 		<parameter name="solarId" type="text" required="true" groupName="general">
 			<label>Solar ID</label>
@@ -31,7 +32,7 @@
 		</parameter>
 		<parameter name="usePrivateApi" type="boolean" required="false" groupName="general">
 			<label>Private API</label>
-			<description>Private API allows to avoid the limit of 300 API calls per day but is lessdocumented and therefore less stable. If no meter is available you cannot use the private API, it does not provide live data for this kind of setup.</description>
+			<description>Private API allows to avoid the limit of 300 API calls per day but is less documented and therefore less stable. If no meter is available you cannot use the private API, it does not provide live data for this kind of setup.</description>
 			<default>false</default>
 		</parameter>
 		<parameter name="liveDataPollingInterval" type="integer" required="false" min="1" max="60" unit="m"
