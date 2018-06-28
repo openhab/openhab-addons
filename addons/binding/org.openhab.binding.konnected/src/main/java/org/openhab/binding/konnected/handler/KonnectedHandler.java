@@ -19,8 +19,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -42,12 +40,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Zachary Christiansen - Initial contribution
  */
-@NonNullByDefault
+
 public class KonnectedHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(KonnectedHandler.class);
 
-    @Nullable
     private KonnectedConfiguration config;
     private KonnectedHTTPServelet webHookServlet;
     private KonnectedPutSettingsTimer putSettingsTimer;
@@ -130,15 +127,22 @@ public class KonnectedHandler extends BaseThingHandler {
 
     }
 
-    public void handleWebHookEvent(String pin, String State) {
+    public void handleWebHookEvent(String pin, String State, String sentAuth) {
         // convert pin to zone based on array
 
         // get the zone number based off of the index location of the pin value
         String channelid = "Zone_" + Integer.toString(Arrays.asList(PIN_TO_ZONE).indexOf(Integer.parseInt(pin)));
-        logger.debug("The channelid of the event is: {}", channelid);
+        logger.debug("The channelid of the event is: {}, the Auth Token is: {}", channelid, sentAuth);
         StringType channelstate = new StringType(State);
-        updateState(channelid, channelstate);
+        if (sentAuth.endsWith(config.Auth_Token)) {
 
+            updateState(channelid, channelstate);
+        }
+
+        else {
+
+            logger.debug("The auth token sent did not match what was expected so the state was not accepted.");
+        }
     }
 
     @Override
@@ -328,10 +332,10 @@ public class KonnectedHandler extends BaseThingHandler {
      * string. A previous description, if existed, will be replaced.
      *
      * @param channelUID
-     *                       channel UID
+     *            channel UID
      *
      * @param readOnly
-     *                       true if this control does not accept commands
+     *            true if this control does not accept commands
      *
      */
     private void setStateDescription(ChannelUID channelUID, boolean readOnly) {

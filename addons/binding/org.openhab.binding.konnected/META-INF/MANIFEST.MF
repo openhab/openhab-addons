@@ -12,7 +12,7 @@ Import-Package:
  com.google.gson.annotations,
  javax.servlet,
  javax.servlet.http,
- org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.jdt.annotation,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.config.discovery.upnp,
@@ -23,8 +23,7 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
  org.jupnp.model.meta,
- org.osgi.framework,
- org.osgi.service.component.annotations,
+ org.osgi.framework;version="1.8.0",
  org.osgi.service.http,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

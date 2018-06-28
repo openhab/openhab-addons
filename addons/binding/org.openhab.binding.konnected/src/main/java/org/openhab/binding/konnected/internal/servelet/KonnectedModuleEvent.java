@@ -11,10 +11,10 @@ package org.openhab.binding.konnected.internal.servelet;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link NAWebhookCameraEvent} is responsible to hold
- * data given back by the Netatmo API when calling the webhook
+ * The {@link KonnectedModuleEvent} is responsible to hold
+ * data given back by the Konnected API when calling the webhook
  *
- * @author Gaël L'hopital - Initial contribution
+ * @author Zachary Christiansen - Initial contribution
  *
  */
 public class KonnectedModuleEvent {
@@ -31,6 +31,13 @@ public class KonnectedModuleEvent {
 
     public String getState() {
         return state;
+    }
+
+    @SerializedName("Auth_Token")
+    String Auth_Token;
+
+    public String getAuthToken() {
+        return Auth_Token;
     }
 
 }

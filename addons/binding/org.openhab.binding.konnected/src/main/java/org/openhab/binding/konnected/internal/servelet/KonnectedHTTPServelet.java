@@ -78,9 +78,8 @@ public class KonnectedHTTPServelet extends HttpServlet {
         String data = inputStreamToString(req);
         if (data != null && bridgeHandler != null) {
             KonnectedModuleEvent event = gson.fromJson(data, KonnectedModuleEvent.class);
-            // bridgeHandler.webHookEvent(event);
-            logger.debug("The pin from this event is: {}, the state is: {}", event.getPin(), event.getState());
-            this.bridgeHandler.handleWebHookEvent(event.getPin(), event.getState());
+            String auth = req.getHeader("Authorization");
+            this.bridgeHandler.handleWebHookEvent(event.getPin(), event.getState(), auth);
         }
 
         setHeaders(resp);
