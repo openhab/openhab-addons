@@ -144,7 +144,8 @@ public class UpnpServerHandler extends UpnpHandler {
     }
 
     public void removeRendererOption(String key) {
-        if ((currentRendererHandler != null) && (currentRendererHandler.getThing().getUID().toString().equals(key))) {
+        UpnpRendererHandler handler = currentRendererHandler;
+        if ((handler != null) && (handler.getThing().getUID().toString().equals(key))) {
             currentRendererHandler = null;
             updateState(rendererChannelUID, UnDefType.UNDEF);
         }
@@ -159,20 +160,21 @@ public class UpnpServerHandler extends UpnpHandler {
         logger.debug("Navigating to node {} on server {}", currentId, thing.getLabel());
 
         List<StateOption> stateOptionList = new ArrayList<>();
-        if ((resultList != null) && !(resultList.get(0).getParentId().equals(DIRECTORY_ROOT))) {
+        List<UpnpEntry> list = resultList;
+        if ((list != null) && !(list.get(0).getParentId().equals(DIRECTORY_ROOT))) {
             StateOption stateOption = new StateOption(UP, UP);
             stateOptionList.add(stateOption);
         }
-        if (resultList != null) {
-            resultList.forEach((value) -> {
+        if (list != null) {
+            list.forEach((value) -> {
                 StateOption stateOption = new StateOption(value.getId(), value.getTitle());
                 stateOptionList.add(stateOption);
             });
         }
         updateStateDescription(currentTitleChannelUID, stateOptionList);
 
-        if (resultList != null) {
-            UpnpEntry firstEntry = resultList.get(0);
+        if (list != null) {
+            UpnpEntry firstEntry = list.get(0);
             String newSelection = firstEntry.getId();
             parentMap.put(newSelection, firstEntry.getParentId());
             logger.debug("{} with parent {} added to parent map", newSelection, firstEntry.getParentId());
@@ -261,12 +263,14 @@ public class UpnpServerHandler extends UpnpHandler {
     }
 
     private void serveMedia() {
-        if (currentRendererHandler != null) {
-            UpnpRendererHandler handler = currentRendererHandler;
+        UpnpRendererHandler handler = currentRendererHandler;
+        if (handler != null) {
             Queue<UpnpEntry> mediaQueue = new LinkedList<>();
             handler.registerQueue(mediaQueue);
-            if (resultList != null) {
-                resultList.forEach((entry) -> {
+
+            List<UpnpEntry> list = resultList;
+            if (list != null) {
+                list.forEach((entry) -> {
                     mediaQueue.add(entry);
                 });
             }

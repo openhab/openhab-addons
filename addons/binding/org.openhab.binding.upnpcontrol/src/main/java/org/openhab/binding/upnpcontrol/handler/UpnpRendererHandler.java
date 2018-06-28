@@ -377,8 +377,9 @@ public class UpnpRendererHandler extends UpnpHandler {
             onValueReceived(variable, result.get(variable), "ConnectionManager");
         }
 
-        audioSupport = Boolean.valueOf(Pattern.matches(".*audio.*", sink));
-        if (audioSupport) {
+        audioSupport = Pattern.matches(".*audio.*", sink);
+        Boolean audio = audioSupport;
+        if ((audio == null) ? false : audio) {
             logger.debug("Renderer {} supports audio", thing.getLabel());
         }
 
@@ -422,10 +423,8 @@ public class UpnpRendererHandler extends UpnpHandler {
         if (audioSupport == null) {
             getProtocolInfo();
         }
-        if (audioSupport != null) {
-            return audioSupport;
-        }
-        return false;
+        Boolean audio = audioSupport;
+        return (audio == null) ? false : audio;
     }
 
     public void registerQueue(Queue<UpnpEntry> queue) {
@@ -436,8 +435,9 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     public void serveNext() {
         logger.debug("Serve next media from queue on renderer {}", thing.getLabel());
-        if (currentQueue != null) {
-            UpnpEntry nextMedia = currentQueue.poll();
+        Queue<UpnpEntry> queue = currentQueue;
+        if (queue != null) {
+            UpnpEntry nextMedia = queue.poll();
             if (nextMedia != null) {
                 setCurrentURI(nextMedia.getRes(), "");
             }
