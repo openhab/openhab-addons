@@ -377,9 +377,14 @@ public class UpnpRendererHandler extends UpnpHandler {
             onValueReceived(variable, result.get(variable), "ConnectionManager");
         }
 
-        audioSupport = Pattern.matches(".*audio.*", sink);
-        Boolean audio = audioSupport;
-        if ((audio == null) ? false : audio) {
+        if (sink.equals("")) {
+            logger.debug("No sink value in response from renderer {}", thing.getLabel());
+            return sink;
+        }
+
+        boolean audio = Pattern.matches(".*audio.*", sink);
+        audioSupport = audio;
+        if (audio) {
             logger.debug("Renderer {} supports audio", thing.getLabel());
         }
 
