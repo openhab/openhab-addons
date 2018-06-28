@@ -33,27 +33,6 @@ interval (minutes) in which live data values are retrieved from Solaredge. Setti
 - **"aggregateDataPollingInterval"** (optional)  
 interval (minutes) in which aggregate data values are retrieved from Solaredge. Setting less than 60 is only allowed when using private API. (default = 60). 
 
-### Examples
-
-- minimum configuration
-
-```
-solaredge:generic:se2200 [ tokenOrApiKey="...", solarId="..."]
-```
-
-- with pollingIntervals
-
-```
-solaredge:generic:se2200[ tokenOrApiKey="...", solarId="...", liveDataPollingInterval=..., aggregateDataPollingInterval=... ]
-```
-
-- multiple inverters
-
-```
-solaredge:generic:home1 [ tokenOrApiKey="...", solarId="..."]
-solaredge:generic:home2  [ tokenOrApiKey="...", solarId="..."]
-```
-
 ## Channels
 
 Available channels depend on the specific setup e.g. if a meter and/or a battery is present. Following models/channels are currently available
@@ -107,13 +86,34 @@ Available channels depend on the specific setup e.g. if a meter and/or a battery
 
 ### Thing
 
+- minimum configuration
+
 ```
-solaredge:generic:se2200     [ tokenOrApiKey="secret", solarId="4711", meterInstalled=true, liveDataPollingInterval=15 ]
+solaredge:generic:se2200 [ tokenOrApiKey="...", solarId="..."]
+```
+
+- with pollingIntervals
+
+```
+solaredge:generic:se2200[ tokenOrApiKey="...", solarId="...", liveDataPollingInterval=..., aggregateDataPollingInterval=... ]
+```
+
+- maximum version
+
+```
+solaredge:generic:se2200     [ tokenOrApiKey="secret", solarId="4711", meterInstalled=true, usePrivateApi=true, liveDataPollingInterval=15, aggregateDataPollingInterval=60 ]
+```
+
+- multiple inverters
+
+```
+solaredge:generic:home1 [ tokenOrApiKey="...", solarId="..."]
+solaredge:generic:home2  [ tokenOrApiKey="...", solarId="..."]
 ```
 
 ### Items
 
 ```
-Number      SE2200_Live_Production   "PV Produktion [%.2f KW]"                {channel="solaredge:generic:se2200:live#production"}
+Number      SE2200_Live_Production   "PV Produktion [%.2f kW]"                {channel="solaredge:generic:se2200:live#production"}
 Number      SE2200_Live_Level        "Batterieladung [%d %%]"                 {channel="solaredge:generic:se2200:live#battery_level"}
 ```

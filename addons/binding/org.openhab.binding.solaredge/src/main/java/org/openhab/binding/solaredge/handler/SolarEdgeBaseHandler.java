@@ -159,7 +159,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
                         try {
                             updateState(channel.getFQName(), convertToDecimal(value));
                         } catch (NumberFormatException ex) {
-                            logger.warn("Could not update channel {} - invalid number: '{}'", channel.getFQName(),
+                            logger.debug("Could not update channel {} - invalid number: '{}'", channel.getFQName(),
                                     value);
                             updateState(channel.getFQName(), UnDefType.UNDEF);
                         }

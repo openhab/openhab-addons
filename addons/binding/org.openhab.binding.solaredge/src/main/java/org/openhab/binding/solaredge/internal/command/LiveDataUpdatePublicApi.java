@@ -51,7 +51,6 @@ public class LiveDataUpdatePublicApi extends AbstractCommandCallback implements 
     @Override
     public void onComplete(Result result) {
         logger.debug("onComplete()");
-
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
             if (getListener() != null) {
                 getListener().update(getCommunicationStatus());
@@ -59,9 +58,7 @@ public class LiveDataUpdatePublicApi extends AbstractCommandCallback implements 
             if (retries++ < MAX_RETRIES) {
                 handler.getWebInterface().executeCommand(this);
             }
-
         } else {
-
             String json = getContentAsString(StandardCharsets.UTF_8);
             if (json != null) {
                 logger.debug("JSON String: {}", json);
@@ -72,5 +69,4 @@ public class LiveDataUpdatePublicApi extends AbstractCommandCallback implements 
             }
         }
     }
-
 }
