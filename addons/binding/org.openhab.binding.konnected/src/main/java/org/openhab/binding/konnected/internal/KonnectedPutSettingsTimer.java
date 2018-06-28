@@ -31,14 +31,24 @@ public class KonnectedPutSettingsTimer {
     private final Logger logger = LoggerFactory.getLogger(KonnectedHandler.class);
 
     public KonnectedPutSettingsTimer() {
-
         this.timer = new Timer();
     }
 
-    public KonnectedPutSettingsTimer startTimer(String urlAddress, String payload, KonnectedHandler Handler) {
+    /**
+     * Creates a {@link TimerTask} that will wait 30 seconds before executing a
+     * {@link doPut} Calling this method with cancel the previously created
+     * timer which created but not yet executed by this method.
+     *
+     * @param urlAddress the address to send the request
+     *
+     * @param payload the json payload to include with the request
+     *
+     */
+
+    public KonnectedPutSettingsTimer startTimer(String urlAddress, String payload) {
         this.timer.cancel();
         this.timer = new Timer();
-        KonnectedTimerdoPut timerTask = new KonnectedTimerdoPut(urlAddress, payload, Handler);
+        KonnectedTimerdoPut timerTask = new KonnectedTimerdoPut(urlAddress, payload);
         // set a new timer to run in 30 seconds
         try {
             logger.debug("setting a timeer with url: {} and payload: {}", urlAddress, payload);
@@ -63,11 +73,20 @@ public class KonnectedPutSettingsTimer {
         private KonnectedHandler handler;
         private final Logger logger = LoggerFactory.getLogger(KonnectedHandler.class);
 
-        public KonnectedTimerdoPut(String urlAddress, String payload, KonnectedHandler konnectedhandler) {
+        /**
+         * Holds the {@link doPut} request with a sleep timer of one mintue to allow the konnected module to reset after
+         * receiveing the request
+         *
+         * @param urlAddress the address to send the request
+         *
+         * @param payload the json payload to include with the request
+         *
+         */
+
+        public KonnectedTimerdoPut(String urlAddress, String payload) {
             this.payload = payload;
             this.urlAddress = urlAddress;
             this.http = new KonnectedHTTPUtils();
-            this.handler = konnectedhandler;
         }
 
         @Override
@@ -87,7 +106,6 @@ public class KonnectedPutSettingsTimer {
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
-
         }
     }
 }

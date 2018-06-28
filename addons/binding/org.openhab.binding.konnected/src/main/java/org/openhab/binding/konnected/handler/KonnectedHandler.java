@@ -65,12 +65,10 @@ public class KonnectedHandler extends BaseThingHandler {
         this.isAct = new LinkedList<Boolean>();
 
         dynamicStateDescriptionProvider = provider;
-
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         // get the zone number in integer form
         Integer zone = Integer.parseInt(channelUID.getId().substring((channelUID.getId().length() - 1)));
 
@@ -78,14 +76,10 @@ public class KonnectedHandler extends BaseThingHandler {
         Integer pin = Arrays.asList(PIN_TO_ZONE).get(zone);
         String scommand = command.toString();
 
-        if (scommand.endsWith("N")) {
+        if (scommand.endsWith("N") || scommand.endsWith("1")) {
             scommand = "1";
-        } else if (scommand.endsWith("F")) {
+        } else if (scommand.endsWith("F") || scommand.endsWith("0")) {
             scommand = "0";
-        } else if (scommand.endsWith("0")) {
-
-        } else if (scommand.endsWith("1")) {
-
         } else {
             logger.debug("The command string was not proper setting to off fix your item");
             scommand = "0";
@@ -97,35 +91,34 @@ public class KonnectedHandler extends BaseThingHandler {
         if (isAct.get(zone)) {
 
             Map<String, String> properties = this.thing.getProperties();
-            String Host = properties.get("ipAddress");
+            String host = properties.get("ipAddress");
             KonnectedHTTPUtils http = new KonnectedHTTPUtils();
             try {
-
                 String payload = "{\"pin\":" + pin + ",\"state\":" + scommand + "}";
                 logger.debug("The command payload  is: {}", payload);
-                String data = http.doPut(Host + "/device", payload);
-
+                String data = http.doPut(host + "/device", payload);
             }
 
             catch (IOException e) {
                 logger.debug("Getting the state of the pin failed: {}", e);
-
             }
-
         }
         // if it is is a sensor pin do nothing
         else {
             logger.debug("The command was for a sensor pin so we are ignoring the command");
         }
-
-        // TODO: handle command
-
-        // Note: if communication with thing fails for some reason,
-        // indicate that by setting the status with detail information
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // "Could not control device at IP address x.x.x.x");
-
     }
+
+    /**
+     * Process a {@link WebHookEvent that has been received by the servelet from a konnected module
+     *
+     * @param pin the pin number which which was activated
+     *
+     * @param state the state of the pin
+     *
+     * @param setAuth the token sent with the response
+     *
+     */
 
     public void handleWebHookEvent(String pin, String State, String sentAuth) {
         // convert pin to zone based on array
@@ -135,19 +128,16 @@ public class KonnectedHandler extends BaseThingHandler {
         logger.debug("The channelid of the event is: {}, the Auth Token is: {}", channelid, sentAuth);
         StringType channelstate = new StringType(State);
         if (sentAuth.endsWith(config.Auth_Token)) {
-
             updateState(channelid, channelstate);
         }
 
         else {
-
             logger.debug("The auth token sent did not match what was expected so the state was not accepted.");
         }
     }
 
     @Override
     public void initialize() {
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
         // Long running initialization should be done asynchronously in background.
         config = getConfigAs(KonnectedConfiguration.class);
 
@@ -207,7 +197,6 @@ public class KonnectedHandler extends BaseThingHandler {
         logger.debug(sensors.toString());
         // launch the update so the new channel settings can be sent
         updateKonnectedModule();
-
     }
 
     @Override
@@ -225,7 +214,6 @@ public class KonnectedHandler extends BaseThingHandler {
 
         logger.debug(sensors.toString());
         updateKonnectedModule();
-
     }
 
     /*
@@ -246,7 +234,6 @@ public class KonnectedHandler extends BaseThingHandler {
         catch (UnknownHostException e) {
             logger.debug("Unable to obtain hostname: {}", e);
             return "none";
-
         }
 
         String authToken = config.Auth_Token;
@@ -276,12 +263,11 @@ public class KonnectedHandler extends BaseThingHandler {
      */
     private void updateKonnectedModule() {
         Map<String, String> properties = this.thing.getProperties();
-        String Host = properties.get("ipAddress");
+        String host = properties.get("ipAddress");
         String payload = contructSettingsPayload();
         // setting it up to wait 30 seconds before sending the put request
         logger.debug("creating new timer");
-        putSettingsTimer = putSettingsTimer.startTimer(Host + "/settings", payload, this);
-
+        putSettingsTimer = putSettingsTimer.startTimer(host + "/settings", payload);
     }
 
     // this method sets the list of boolean variables of which pins are actuators
@@ -298,7 +284,6 @@ public class KonnectedHandler extends BaseThingHandler {
         // so we set them accordingly for all things
         isAct.add(6, false);
         isAct.add(7, true);
-
     }
 
     /*
@@ -324,23 +309,19 @@ public class KonnectedHandler extends BaseThingHandler {
                 actuators.remove("{\"pin\":" + Integer.toString(pin) + "}");
             }
         }
-
     }
 
     /**
      * Sets a new {@link StateDescription} for a channel that has multiple options to select from or a custom format
      * string. A previous description, if existed, will be replaced.
      *
-     * @param channelUID
-     *            channel UID
+     * @param channelUID channel UID
      *
-     * @param readOnly
-     *            true if this control does not accept commands
+     * @param readOnly true if this control does not accept commands
      *
      */
     private void setStateDescription(ChannelUID channelUID, boolean readOnly) {
         if (channelUID != null) {
-
             dynamicStateDescriptionProvider.setDescription(channelUID,
                     new StateDescription(BigDecimal.ZERO, BigDecimal.ONE, BigDecimal.ONE, null, readOnly, null));
         }

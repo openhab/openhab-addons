@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * HTTP Get and Put reqeust class.
  *
- * @author Zachary Christiansen
+ * @author Zachary Christiansen - Initial contribution
  */
 public class KonnectedHTTPUtils {
     private final Logger logger = LoggerFactory.getLogger(KonnectedHandler.class);
@@ -31,6 +31,15 @@ public class KonnectedHTTPUtils {
     public KonnectedHTTPUtils() {
         this.REQUEST_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(30);
     }
+
+    /**
+     * Sends a {@link doPut} request with a timeout of 30 seconds
+     *
+     * @param urlAddress the address to send the request
+     *
+     * @param payload the json payload to include with the request
+     *
+     */
 
     public String doPut(String urlAddress, String payload) throws IOException {
 
@@ -49,6 +58,14 @@ public class KonnectedHTTPUtils {
         httpHeaders.put("Content-Type", "application/json");
         return httpHeaders;
     }
+
+    /**
+     * Sends a {@link doGet} request with a timeout of 30 seconds
+     *
+     * @param urlAddress the address to send the request
+     *
+     *
+     */
 
     public synchronized String doGet(String urlAddress) throws IOException {
         logger.debug("The String url we want to get is : {}", urlAddress);

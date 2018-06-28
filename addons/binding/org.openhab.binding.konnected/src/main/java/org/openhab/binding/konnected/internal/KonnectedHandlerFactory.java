@@ -97,5 +97,4 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
     protected void unsetDynamicStateDescriptionProvider(KonnectedDynamicStateDescriptionProvider provider) {
         this.dynamicStateDescriptionProvider = null;
     }
-
 }

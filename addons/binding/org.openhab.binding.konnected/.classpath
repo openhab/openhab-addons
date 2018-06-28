@@ -6,4 +6,3 @@
 	<classpathentry kind="src" output="output" path="src/main/java" />
 	<classpathentry kind="output" path="target/classes" />
 </classpath>
-
