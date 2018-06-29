@@ -162,7 +162,8 @@ With low baud rates and/or long read requests (that is, many items polled), ther
 | `cacheMillis` | integer |          | `50`               | Duration for data cache to be valid, in milliseconds. This cache is used only to serve `REFRESH`  commands. Use zero to disable the caching.                                           |
 
 Note: Polling can be manually triggered by sending `REFRESH` command to item bound to channel of `data` thing.
-When manually triggering polling, a new poll is executed as soon as possible, and sibling `data` things (i.e. things that share the same `poller` bridge) are updated. In case the `poller` had just received data response or error, cached response is used instead.
+When manually triggering polling, a new poll is executed as soon as possible, and sibling `data` things (i.e. things that share the same `poller` bridge) are updated.
+In case the `poller` had just received a data response or an error occurred, a cached response is used instead.
 See [Refresh command](#refresh-command) section for more details.
 
 ### `data` thing
