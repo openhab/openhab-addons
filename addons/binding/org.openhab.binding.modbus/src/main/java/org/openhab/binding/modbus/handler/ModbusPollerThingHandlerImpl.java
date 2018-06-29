@@ -244,6 +244,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
 
     @NonNullByDefault({})
     private ModbusPollerConfiguration config;
+    private long cacheMillis;
     private volatile @Nullable PollTask pollTask;
     private Supplier<ModbusManager> managerRef;
     private volatile boolean disposed;
@@ -294,6 +295,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         logger.trace("Initializing {} from status {}", this.getThing().getUID(), this.getThing().getStatus());
         try {
             config = getConfigAs(ModbusPollerConfiguration.class);
+            cacheMillis = this.config.getCacheMillis();
             registerPollTask();
         } catch (EndpointNotInitializedException e) {
             logger.debug("Exception during initialization", e);
@@ -426,7 +428,6 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
             return;
         }
 
-        long cacheMillis = this.config.getCacheMillis();
         long oldDataThreshold = System.currentTimeMillis() - cacheMillis;
         boolean cacheWasRecentEnoughForUpdate = cacheMillis >= 0
                 && this.callbackDelegator.updateChildrenWithOldData(oldDataThreshold);
