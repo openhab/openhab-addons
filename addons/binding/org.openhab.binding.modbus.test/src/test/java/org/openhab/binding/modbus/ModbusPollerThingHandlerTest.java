@@ -641,6 +641,64 @@ public class ModbusPollerThingHandlerTest {
     }
 
     /**
+     * When there's no recently received data, refresh() will re-use that instead
+     *
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws NoSuchFieldException
+     * @throws SecurityException
+     */
+    @Test
+    public void testRefreshWithPreviousDataCacheDisabled()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 0L);
+        pollerConfig.put("start", 5);
+        pollerConfig.put("length", 13);
+        pollerConfig.put("type", "coil");
+        pollerConfig.put("cacheMillis", 0L);
+        poller = createPollerThingBuilder("poller").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
+                .build();
+        registerThingToMockRegistry(poller);
+
+        hookStatusUpdates(poller);
+
+        ModbusPollerThingHandlerImpl thingHandler = new ModbusPollerThingHandlerImpl(poller, () -> modbusManager);
+        thingHandler.setCallback(thingCallback);
+        poller.setHandler(thingHandler);
+        hookItemRegistry(thingHandler);
+
+        thingHandler.initialize();
+
+        ModbusDataThingHandler child1 = Mockito.mock(ModbusDataThingHandler.class);
+        thingHandler.childHandlerInitialized(child1, Mockito.mock(Thing.class));
+
+        assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+
+        verify(modbusManager, never()).submitOneTimePoll(any());
+
+        // data is received
+        ModbusReadCallback pollerReadCallback = getPollerCallback(thingHandler);
+        ModbusReadRequestBlueprint request = Mockito.mock(ModbusReadRequestBlueprint.class);
+        ModbusRegisterArray registers = Mockito.mock(ModbusRegisterArray.class);
+        pollerReadCallback.onRegisters(request, registers);
+
+        // data child receives the data
+        verify(child1).onRegisters(request, registers);
+        verifyNoMoreInteractions(child1);
+        reset(child1);
+
+        // call refresh
+        // caching disabled, should poll from manager
+        thingHandler.refresh();
+        verify(modbusManager).submitOneTimePoll(any());
+        verifyNoMoreInteractions(modbusManager);
+
+        // data child receives the cached data
+        verifyNoMoreInteractions(child1);
+    }
+
+    /**
      * Testing again caching, such that most recently received data is propagated to children
      *
      * @throws IllegalArgumentException

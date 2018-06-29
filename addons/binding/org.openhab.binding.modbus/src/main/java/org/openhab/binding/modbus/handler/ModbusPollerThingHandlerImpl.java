@@ -429,7 +429,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         }
 
         long oldDataThreshold = System.currentTimeMillis() - cacheMillis;
-        boolean cacheWasRecentEnoughForUpdate = cacheMillis >= 0
+        boolean cacheWasRecentEnoughForUpdate = cacheMillis > 0
                 && this.callbackDelegator.updateChildrenWithOldData(oldDataThreshold);
         if (cacheWasRecentEnoughForUpdate) {
             logger.debug(
