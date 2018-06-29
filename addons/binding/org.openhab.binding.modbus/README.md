@@ -159,7 +159,7 @@ With low baud rates and/or long read requests (that is, many items polled), ther
 | `type`        | text    | ✓        | (-)                | Type of modbus items to poll. This matches directly to Modbus request type or function code (FC). Valid values are: `coil` (FC01), `discrete` (FC02), `holding`(FC03), `input` (FC04). |
 | `refresh`     | integer |          | `500`              | Poll interval in milliseconds. Use zero to disable automatic polling.                                                                                                                  |
 | `maxTries`    | integer |          | `3`                | Maximum tries when reading. <br /><br />Number of tries when reading data, if some of the reading fail. For single try, enter 1.                                                       |
-| `cacheMillis` | integer |          | `10`               | Duration for data cache to be valid, in milliseconds. This cache is used only to serve `REFRESH`  commands. Use non-positive integer to disable the caching.                           |
+| `cacheMillis` | integer |          | `50`               | Duration for data cache to be valid, in milliseconds. This cache is used only to serve `REFRESH`  commands. Use zero to disable the caching.                                           |
 
 Note: Polling can be manually triggered by sending `REFRESH` command to item bound to channel of `data` thing.
 When manually triggering polling, a new poll is executed as soon as possible, and sibling `data` things (i.e. things that share the same `poller` bridge) are updated. In case the `poller` had just received data response or error, cached response is used instead.
@@ -316,7 +316,8 @@ All data channels of children `data` things are refreshed per the normal logic.
 
 `REFRESH` can be useful tool if you like to refresh only on demand (`poller` has refresh disabled, i.e. `refresh=0`), or have custom logic of refreshing only in some special cases.
 
-Note that poller has `cacheMillis` parameter to re-use previously received data, and thus avoid polling the Modbus slave too much. This parameter is specifically limiting the flood of requests that come when openHAB itself is calling `REFRESH` for new things.
+Note that poller has `cacheMillis` parameter to re-use previously received data, and thus avoid polling the Modbus slave too much.
+This parameter is specifically limiting the flood of requests that come when openHAB itself is calling `REFRESH` for new things.
 
 ### Read steps
 
