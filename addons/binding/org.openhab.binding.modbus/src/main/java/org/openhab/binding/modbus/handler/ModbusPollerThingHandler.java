@@ -40,4 +40,9 @@ public interface ModbusPollerThingHandler {
      */
     public Supplier<ModbusManager> getManagerRef();
 
+    /**
+     * Refresh data
+     */
+    public void refresh();
+
 }

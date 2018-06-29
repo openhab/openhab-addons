@@ -25,6 +25,7 @@ public class ModbusPollerConfiguration {
     @Nullable
     private String type;
     private int maxTries = 3;// backwards compatibility and tests
+    private long cacheMillis = 50L;
 
     /**
      * Gets refresh period in milliseconds
@@ -93,6 +94,23 @@ public class ModbusPollerConfiguration {
 
     public void setMaxTries(int maxTries) {
         this.maxTries = maxTries;
+    }
+
+    /**
+     * Gets time to cache data.
+     *
+     * This is used for reusing cached data with explicit refresh calls.
+     */
+    public long getCacheMillis() {
+        return cacheMillis;
+    }
+
+    /**
+     * Sets time to cache data, in milliseconds
+     *
+     */
+    public void setCacheMillis(long cacheMillis) {
+        this.cacheMillis = cacheMillis;
     }
 
 }

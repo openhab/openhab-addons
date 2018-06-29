@@ -136,6 +136,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     private volatile boolean isReadEnabled;
     private volatile boolean transformationOnlyInWrite;
     private volatile boolean childOfEndpoint;
+    private volatile @Nullable ModbusPollerThingHandler pollerHandler;
 
     public ModbusDataThingHandler(Thing thing) {
         super(thing);
@@ -152,16 +153,11 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
 
         if (RefreshType.REFRESH == command) {
-            PollTask pollTask = this.pollTask;
-            if (pollTask == null || manager == null) {
-                logger.debug(
-                        "Thing {} '{}' received REFRESH but no poll task and/or modbus manager is available. Aborting processing of command '{}' to channel '{}'. Not properly initialized or child of endpoint? ",
-                        getThing().getUID(), getThing().getLabel(), command, channelUID);
+            ModbusPollerThingHandler poller = pollerHandler;
+            if (poller == null) {
                 return;
             }
-            logger.debug("Thing {} '{}' received REFRESH. Submitting the poll task {}", getThing().getUID(),
-                    getThing().getLabel(), pollTask);
-            manager.submitOneTimePoll(pollTask);
+            poller.refresh();
             return;
         } else if (hasConfigurationError()) {
             logger.warn(
@@ -344,7 +340,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 childOfEndpoint = true;
                 pollTask = null;
             } else {
-                ModbusPollerThingHandler pollerHandler = (ModbusPollerThingHandler) bridgeHandler;
+                pollerHandler = (ModbusPollerThingHandler) bridgeHandler;
                 PollTask pollTask = pollerHandler.getPollTask();
                 this.pollTask = pollTask;
                 if (pollTask == null) {
@@ -393,6 +389,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         isReadEnabled = false;
         transformationOnlyInWrite = false;
         childOfEndpoint = false;
+        pollerHandler = null;
     }
 
     @Override

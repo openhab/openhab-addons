@@ -83,6 +83,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.openhab.binding.modbus.handler.ModbusDataThingHandler;
+import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
 import org.openhab.binding.modbus.handler.ModbusPollerThingHandlerImpl;
 import org.openhab.binding.modbus.handler.ModbusTcpThingHandler;
 import org.openhab.io.transport.modbus.BitArray;
@@ -1063,7 +1064,7 @@ public class ModbusDataHandlerTest {
 
         verify(manager, never()).submitOneTimePoll(task);
         dataHandler.handleCommand(Mockito.mock(ChannelUID.class), RefreshType.REFRESH);
-        verify(manager).submitOneTimePoll(task);
+        verify((ModbusPollerThingHandler) poller.getHandler()).refresh();
     }
 
     /**

@@ -42,6 +42,14 @@
 				<default>3</default>
 				<description>Number of tries when reading data, if some of the reading fail. For single try, enter 1.</description>
 			</parameter>
+			<parameter name="cacheMillis" type="integer" min="0">
+				<label>Cache duration</label>
+				<default>50</default>
+				<description><![CDATA[Duration for data cache to be valid, in milliseconds. This cache is used only to serve REFRESH commands. 
+					<br />
+					<br />Use zero to disable the caching.]]></description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>

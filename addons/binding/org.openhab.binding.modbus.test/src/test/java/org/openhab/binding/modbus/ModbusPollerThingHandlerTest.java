@@ -10,6 +10,7 @@ package org.openhab.binding.modbus;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
@@ -45,6 +46,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.openhab.binding.modbus.handler.ModbusDataThingHandler;
+import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
 import org.openhab.binding.modbus.handler.ModbusPollerThingHandlerImpl;
 import org.openhab.binding.modbus.handler.ModbusTcpThingHandler;
 import org.openhab.io.transport.modbus.BitArray;
@@ -148,6 +150,13 @@ public class ModbusPollerThingHandlerTest {
             thing.setStatusInfo((ThingStatusInfo) invocation.getArgument(1));
             return null;
         }).when(thingCallback).statusUpdated(ArgumentMatchers.same(thing), ArgumentMatchers.any());
+    }
+
+    public ModbusReadCallback getPollerCallback(ModbusPollerThingHandler handler)
+            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        Field callbackField = ModbusPollerThingHandlerImpl.class.getDeclaredField("callbackDelegator");
+        callbackField.setAccessible(true);
+        return (ModbusReadCallback) callbackField.get(handler);
     }
 
     @SuppressWarnings("null")
@@ -546,4 +555,212 @@ public class ModbusPollerThingHandlerTest {
         verifyNoMoreInteractions(child2);
     }
 
+    @Test
+    public void testRefresh()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 0L);
+        pollerConfig.put("start", 5);
+        pollerConfig.put("length", 13);
+        pollerConfig.put("type", "coil");
+        poller = createPollerThingBuilder("poller").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
+                .build();
+        registerThingToMockRegistry(poller);
+
+        hookStatusUpdates(poller);
+
+        ModbusPollerThingHandlerImpl thingHandler = new ModbusPollerThingHandlerImpl(poller, () -> modbusManager);
+        thingHandler.setCallback(thingCallback);
+        poller.setHandler(thingHandler);
+        hookItemRegistry(thingHandler);
+
+        thingHandler.initialize();
+        assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+
+        verify(modbusManager, never()).submitOneTimePoll(any());
+        thingHandler.refresh();
+        verify(modbusManager).submitOneTimePoll(any());
+    }
+
+    /**
+     * When there's no recently received data, refresh() will re-use that instead
+     *
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws NoSuchFieldException
+     * @throws SecurityException
+     */
+    @Test
+    public void testRefreshWithPreviousData()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 0L);
+        pollerConfig.put("start", 5);
+        pollerConfig.put("length", 13);
+        pollerConfig.put("type", "coil");
+        pollerConfig.put("cacheMillis", 10000L);
+        poller = createPollerThingBuilder("poller").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
+                .build();
+        registerThingToMockRegistry(poller);
+
+        hookStatusUpdates(poller);
+
+        ModbusPollerThingHandlerImpl thingHandler = new ModbusPollerThingHandlerImpl(poller, () -> modbusManager);
+        thingHandler.setCallback(thingCallback);
+        poller.setHandler(thingHandler);
+        hookItemRegistry(thingHandler);
+
+        thingHandler.initialize();
+
+        ModbusDataThingHandler child1 = Mockito.mock(ModbusDataThingHandler.class);
+        thingHandler.childHandlerInitialized(child1, Mockito.mock(Thing.class));
+
+        assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+
+        verify(modbusManager, never()).submitOneTimePoll(any());
+
+        // data is received
+        ModbusReadCallback pollerReadCallback = getPollerCallback(thingHandler);
+        ModbusReadRequestBlueprint request = Mockito.mock(ModbusReadRequestBlueprint.class);
+        ModbusRegisterArray registers = Mockito.mock(ModbusRegisterArray.class);
+        pollerReadCallback.onRegisters(request, registers);
+
+        // data child receives the data
+        verify(child1).onRegisters(request, registers);
+        verifyNoMoreInteractions(child1);
+        reset(child1);
+
+        // call refresh
+        // cache is still valid, we should not have real data poll this time
+        thingHandler.refresh();
+        verify(modbusManager, never()).submitOneTimePoll(any());
+
+        // data child receives the cached data
+        verify(child1).onRegisters(request, registers);
+        verifyNoMoreInteractions(child1);
+    }
+
+    /**
+     * Testing again caching, such that most recently received data is propagated to children
+     *
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws NoSuchFieldException
+     * @throws SecurityException
+     * @throws InterruptedException
+     */
+    @Test
+    public void testRefreshWithPreviousData2() throws IllegalArgumentException, IllegalAccessException,
+            NoSuchFieldException, SecurityException, InterruptedException {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 0L);
+        pollerConfig.put("start", 5);
+        pollerConfig.put("length", 13);
+        pollerConfig.put("type", "coil");
+        pollerConfig.put("cacheMillis", 10000L);
+        poller = createPollerThingBuilder("poller").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
+                .build();
+        registerThingToMockRegistry(poller);
+
+        hookStatusUpdates(poller);
+
+        ModbusPollerThingHandlerImpl thingHandler = new ModbusPollerThingHandlerImpl(poller, () -> modbusManager);
+        thingHandler.setCallback(thingCallback);
+        poller.setHandler(thingHandler);
+        hookItemRegistry(thingHandler);
+
+        thingHandler.initialize();
+
+        ModbusDataThingHandler child1 = Mockito.mock(ModbusDataThingHandler.class);
+        thingHandler.childHandlerInitialized(child1, Mockito.mock(Thing.class));
+
+        assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+
+        verify(modbusManager, never()).submitOneTimePoll(any());
+
+        // data is received
+        ModbusReadCallback pollerReadCallback = getPollerCallback(thingHandler);
+        ModbusReadRequestBlueprint request = Mockito.mock(ModbusReadRequestBlueprint.class);
+        ModbusReadRequestBlueprint request2 = Mockito.mock(ModbusReadRequestBlueprint.class);
+        ModbusRegisterArray registers = Mockito.mock(ModbusRegisterArray.class);
+        Exception error = Mockito.mock(Exception.class);
+
+        pollerReadCallback.onRegisters(request, registers);
+
+        // data child should receive the data
+        verify(child1).onRegisters(request, registers);
+        verifyNoMoreInteractions(child1);
+        reset(child1);
+
+        // Sleep to have time between the data
+        Thread.sleep(5L);
+
+        // error is received
+        pollerReadCallback.onError(request2, error);
+
+        // data child should receive the error
+        verify(child1).onError(request2, error);
+        verifyNoMoreInteractions(child1);
+        reset(child1);
+
+        // call refresh, should return latest data (that is, error)
+        // cache is still valid, we should not have real data poll this time
+        thingHandler.refresh();
+        verify(modbusManager, never()).submitOneTimePoll(any());
+
+        // data child receives the cached error
+        verify(child1).onError(request2, error);
+        verifyNoMoreInteractions(child1);
+    }
+
+    @Test
+    public void testRefreshWithOldPreviousData() throws IllegalArgumentException, IllegalAccessException,
+            NoSuchFieldException, SecurityException, InterruptedException {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 0L);
+        pollerConfig.put("start", 5);
+        pollerConfig.put("length", 13);
+        pollerConfig.put("type", "coil");
+        pollerConfig.put("cacheMillis", 10L);
+        poller = createPollerThingBuilder("poller").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
+                .build();
+        registerThingToMockRegistry(poller);
+
+        hookStatusUpdates(poller);
+
+        ModbusPollerThingHandlerImpl thingHandler = new ModbusPollerThingHandlerImpl(poller, () -> modbusManager);
+        thingHandler.setCallback(thingCallback);
+        poller.setHandler(thingHandler);
+        hookItemRegistry(thingHandler);
+
+        thingHandler.initialize();
+
+        ModbusDataThingHandler child1 = Mockito.mock(ModbusDataThingHandler.class);
+        thingHandler.childHandlerInitialized(child1, Mockito.mock(Thing.class));
+
+        assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+
+        verify(modbusManager, never()).submitOneTimePoll(any());
+
+        // data is received
+        ModbusReadCallback pollerReadCallback = getPollerCallback(thingHandler);
+        ModbusReadRequestBlueprint request = Mockito.mock(ModbusReadRequestBlueprint.class);
+        ModbusRegisterArray registers = Mockito.mock(ModbusRegisterArray.class);
+
+        pollerReadCallback.onRegisters(request, registers);
+
+        // data child should receive the data
+        verify(child1).onRegisters(request, registers);
+        verifyNoMoreInteractions(child1);
+        reset(child1);
+
+        // Sleep to ensure cache expiry
+        Thread.sleep(15L);
+
+        // call refresh. Since cache expired, will poll for more
+        verify(modbusManager, never()).submitOneTimePoll(any());
+        thingHandler.refresh();
+        verify(modbusManager).submitOneTimePoll(any());
+
+    }
 }

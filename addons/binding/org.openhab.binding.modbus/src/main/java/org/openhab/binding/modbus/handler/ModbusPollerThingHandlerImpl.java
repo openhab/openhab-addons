@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
@@ -29,6 +30,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.modbus.ModbusBindingConstants;
+import org.openhab.binding.modbus.internal.AtomicStampedKeyValue;
 import org.openhab.binding.modbus.internal.config.ModbusPollerConfiguration;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusManager;
@@ -64,11 +66,23 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
      */
     private class ReadCallbackDelegator implements ModbusReadCallback {
 
+        private volatile @Nullable AtomicStampedKeyValue<ModbusReadRequestBlueprint, ModbusRegisterArray> lastRegisters;
+        private volatile @Nullable AtomicStampedKeyValue<ModbusReadRequestBlueprint, BitArray> lastCoils;
+        private volatile @Nullable AtomicStampedKeyValue<ModbusReadRequestBlueprint, Exception> lastError;
+
         @Override
         public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
             // Ignore all incoming data and errors if configuration is not correct
             if (hasConfigurationError() || disposed) {
                 return;
+            }
+            if (config.getCacheMillis() >= 0) {
+                AtomicStampedKeyValue<ModbusReadRequestBlueprint, ModbusRegisterArray> lastRegisters = this.lastRegisters;
+                if (lastRegisters == null) {
+                    this.lastRegisters = new AtomicStampedKeyValue<>(System.currentTimeMillis(), request, registers);
+                } else {
+                    lastRegisters.update(System.currentTimeMillis(), request, registers);
+                }
             }
             logger.debug("Thing {} received registers {} for request {}", thing.getUID(), registers, request);
             resetCommunicationError();
@@ -81,6 +95,14 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
             if (hasConfigurationError() || disposed) {
                 return;
             }
+            if (config.getCacheMillis() >= 0) {
+                AtomicStampedKeyValue<ModbusReadRequestBlueprint, BitArray> lastCoils = this.lastCoils;
+                if (lastCoils == null) {
+                    this.lastCoils = new AtomicStampedKeyValue<>(System.currentTimeMillis(), request, coils);
+                } else {
+                    lastCoils.update(System.currentTimeMillis(), request, coils);
+                }
+            }
             logger.debug("Thing {} received coils {} for request {}", thing.getUID(), coils, request);
             resetCommunicationError();
             childCallbacks.forEach(handler -> handler.onBits(request, coils));
@@ -91,6 +113,14 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
             // Ignore all incoming data and errors if configuration is not correct
             if (hasConfigurationError() || disposed) {
                 return;
+            }
+            if (config.getCacheMillis() >= 0) {
+                AtomicStampedKeyValue<ModbusReadRequestBlueprint, Exception> lastError = this.lastError;
+                if (lastError == null) {
+                    this.lastError = new AtomicStampedKeyValue<>(System.currentTimeMillis(), request, error);
+                } else {
+                    lastError.update(System.currentTimeMillis(), request, error);
+                }
             }
             logger.debug("Thing {} received error {} for request {}", thing.getUID(), error, request);
             childCallbacks.forEach(handler -> handler.onError(request, error));
@@ -128,6 +158,58 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         @Override
         public int hashCode() {
             return getThingUID().hashCode();
+        }
+
+        @SuppressWarnings("unchecked")
+        private @Nullable AtomicStampedKeyValue<ModbusReadRequestBlueprint, Object> getLastData() {
+            try {
+                return (AtomicStampedKeyValue<ModbusReadRequestBlueprint, Object>) Stream
+                        .of(lastRegisters, lastCoils, lastError).max(AtomicStampedKeyValue::compare).get();
+            } catch (NullPointerException e) {
+                // max (latest) element is null -> all data are null
+                return null;
+            }
+        }
+
+        /**
+         * Update children data if data is fresh enough
+         *
+         * @param oldestStamp oldest data that is still passed to children
+         * @return whether data was updated. Data is not updated when it's too old or there's no data at all.
+         */
+        public boolean updateChildrenWithOldData(long oldestStamp) {
+            AtomicStampedKeyValue<ModbusReadRequestBlueprint, Object> lastData = getLastData();
+            if (lastData == null) {
+                return false;
+            }
+            AtomicStampedKeyValue<ModbusReadRequestBlueprint, Object> atomicData = lastData
+                    .copyIfStampAfter(oldestStamp);
+            if (atomicData == null) {
+                return false;
+            }
+            ModbusReadRequestBlueprint request = atomicData.getKey();
+            logger.debug("Thing {} received data {} for request {}. Reusing cached data.", thing.getUID(),
+                    atomicData.getValue(), request);
+            if (atomicData.getValue() instanceof ModbusRegisterArray) {
+                ModbusRegisterArray registers = (ModbusRegisterArray) atomicData.getValue();
+                childCallbacks.forEach(handler -> handler.onRegisters(atomicData.getKey(), registers));
+            } else if (atomicData.getValue() instanceof BitArray) {
+                BitArray coils = (BitArray) atomicData.getValue();
+                childCallbacks.forEach(handler -> handler.onBits(request, coils));
+            } else {
+                Exception error = (Exception) atomicData.getValue();
+                childCallbacks.forEach(handler -> handler.onError(request, error));
+            }
+            return true;
+        }
+
+        /**
+         * Rest data caches
+         */
+        public void resetCache() {
+            lastRegisters = null;
+            lastCoils = null;
+            lastError = null;
         }
     }
 
@@ -167,7 +249,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
     private volatile boolean disposed;
     private volatile List<ModbusReadCallback> childCallbacks = new CopyOnWriteArrayList<>();
 
-    private ModbusReadCallback callbackDelegator = new ReadCallbackDelegator();
+    private ReadCallbackDelegator callbackDelegator = new ReadCallbackDelegator();
 
     public ModbusPollerThingHandlerImpl(Bridge bridge, Supplier<ModbusManager> managerRef) {
         super(bridge);
@@ -207,6 +289,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
 
     @Override
     public synchronized void initialize() {
+        this.callbackDelegator.resetCache();
         disposed = false;
         logger.trace("Initializing {} from status {}", this.getThing().getUID(), this.getThing().getStatus());
         try {
@@ -227,6 +310,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         // Mark handler as disposed as soon as possible to halt processing of callbacks
         disposed = true;
         unregisterPollTask();
+        this.callbackDelegator.resetCache();
     }
 
     /**
@@ -328,6 +412,34 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
     @Override
     public @Nullable PollTask getPollTask() {
         return pollTask;
+    }
+
+    /**
+     * Refresh the data
+     *
+     * If data or error was just recently received, return the cached response
+     */
+    @Override
+    public void refresh() {
+        PollTask pollTask = this.pollTask;
+        if (pollTask == null) {
+            return;
+        }
+
+        long cacheMillis = this.config.getCacheMillis();
+        long oldDataThreshold = System.currentTimeMillis() - cacheMillis;
+        boolean cacheWasRecentEnoughForUpdate = cacheMillis >= 0
+                && this.callbackDelegator.updateChildrenWithOldData(oldDataThreshold);
+        if (cacheWasRecentEnoughForUpdate) {
+            logger.debug(
+                    "Poller {} received refresh() and cache was recent enough (age at most {} ms). Reusing old response",
+                    getThing().getUID(), cacheMillis);
+        } else {
+            // cache expired, poll new data
+            logger.debug("Poller {} received refresh() but the cache is not applicable. Polling new data",
+                    getThing().getUID());
+            managerRef.get().submitOneTimePoll(pollTask);
+        }
     }
 
 }
