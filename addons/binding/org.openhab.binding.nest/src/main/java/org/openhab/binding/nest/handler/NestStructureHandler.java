@@ -12,6 +12,7 @@ import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.nest.NestBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -28,15 +29,17 @@ import org.slf4j.LoggerFactory;
 /**
  * Deals with the structures on the Nest API, turning them into a thing in openHAB.
  *
- * @author David Bennett - initial contribution
+ * @author David Bennett - Initial contribution
  * @author Wouter Born - Handle channel refresh command
  */
 @NonNullByDefault
 public class NestStructureHandler extends NestBaseHandler<Structure> {
     private final Logger logger = LoggerFactory.getLogger(NestStructureHandler.class);
 
+    private @Nullable String structureId;
+
     public NestStructureHandler(Thing thing) {
-        super(thing);
+        super(thing, Structure.class);
     }
 
     @Override
@@ -76,7 +79,12 @@ public class NestStructureHandler extends NestBaseHandler<Structure> {
     }
 
     private String getStructureId() {
-        return getConfigAs(NestStructureConfiguration.class).structureId;
+        String localStructureId = structureId;
+        if (localStructureId == null) {
+            localStructureId = getConfigAs(NestStructureConfiguration.class).structureId;
+            structureId = localStructureId;
+        }
+        return localStructureId;
     }
 
     /**
@@ -104,17 +112,14 @@ public class NestStructureHandler extends NestBaseHandler<Structure> {
     }
 
     @Override
-    public void onNewNestStructureData(Structure structure) {
-        if (isNotHandling(structure)) {
-            logger.debug("Structure {} is not handling update for {}", getStructureId(), structure.getStructureId());
-            return;
+    protected void update(Structure oldStructure, Structure structure) {
+        logger.debug("Updating {}", getThing().getUID());
+
+        updateLinkedChannels(oldStructure, structure);
+
+        if (ThingStatus.ONLINE != thing.getStatus()) {
+            updateStatus(ThingStatus.ONLINE);
         }
-
-        logger.debug("Updating structure {}", structure.getStructureId());
-
-        setLastUpdate(structure);
-        updateChannels(structure);
-        updateStatus(ThingStatus.ONLINE);
     }
 
 }

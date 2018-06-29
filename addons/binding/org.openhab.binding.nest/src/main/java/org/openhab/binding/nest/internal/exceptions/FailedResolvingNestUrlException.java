@@ -11,6 +11,7 @@ package org.openhab.binding.nest.internal.exceptions;
 /**
  * Will be thrown when the bridge was unable to resolve the Nest redirect URL.
  *
+ * @author Wouter Born - Initial contribution
  * @author Wouter Born - Improve exception handling while sending data
  */
 public class FailedResolvingNestUrlException extends Exception {

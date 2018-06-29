@@ -52,7 +52,7 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
     private final UnitProvider unitProvider;
 
     public NestThermostatHandler(Thing thing, UnitProvider unitProvider) {
-        super(thing);
+        super(thing, Thermostat.class);
         this.unitProvider = unitProvider;
     }
 
@@ -122,7 +122,6 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
      * value of a channel by sending the request to Nest.
      */
     @Override
-    @SuppressWarnings("unchecked")
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (REFRESH.equals(command)) {
             Thermostat lastUpdate = getLastUpdate();
@@ -199,19 +198,18 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
     }
 
     @Override
-    public void onNewNestThermostatData(Thermostat thermostat) {
-        if (isNotHandling(thermostat)) {
-            logger.debug("Thermostat {} is not handling update for {}", getDeviceId(), thermostat.getDeviceId());
-            return;
+    protected void update(Thermostat oldThermostat, Thermostat thermostat) {
+        logger.debug("Updating {}", getThing().getUID());
+
+        updateLinkedChannels(oldThermostat, thermostat);
+        updateProperty(PROPERTY_FIRMWARE_VERSION, thermostat.getSoftwareVersion());
+
+        ThingStatus newStatus = thermostat.isOnline() == null ? ThingStatus.UNKNOWN
+                : thermostat.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE;
+        if (newStatus != thing.getStatus()) {
+            updateStatus(newStatus);
         }
 
-        logger.debug("Updating thermostat {}", thermostat.getDeviceId());
-
-        setLastUpdate(thermostat);
-        updateChannels(thermostat);
-        updateStatus(thermostat.isOnline() == null ? ThingStatus.UNKNOWN
-                : thermostat.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
-        updateProperty(PROPERTY_FIRMWARE_VERSION, thermostat.getSoftwareVersion());
     }
 
 }

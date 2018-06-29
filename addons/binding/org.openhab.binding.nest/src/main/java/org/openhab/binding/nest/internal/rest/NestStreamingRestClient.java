@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A client that generates events based on Nest streaming REST API Server-Sent Events (SSE).
  *
+ * @author Wouter Born - Initial contribution
  * @author Wouter Born - Replace polling with REST streaming
  */
 @NonNullByDefault

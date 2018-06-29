@@ -11,6 +11,7 @@ package org.openhab.binding.nest.internal.config;
 /**
  * The configuration for structures.
  *
+ * @author Wouter Born - Initial contribution
  * @author Wouter Born - Add device configuration to allow file based configuration
  */
 public class NestStructureConfiguration {
