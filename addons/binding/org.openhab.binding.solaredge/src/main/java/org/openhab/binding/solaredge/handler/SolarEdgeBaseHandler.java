@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -23,9 +24,11 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.solaredge.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.connector.WebInterface;
 import org.openhab.binding.solaredge.internal.model.Channel;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +46,6 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     /**
      * Interface object for querying the Solaredge web interface
      */
-    @Nullable
     private WebInterface webInterface;
 
     /**
@@ -58,8 +60,9 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     @Nullable
     private ScheduledFuture<?> aggregateDataPollingJob;
 
-    public SolarEdgeBaseHandler(Thing thing) {
+    public SolarEdgeBaseHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.webInterface = new WebInterface(getConfiguration(), scheduler, this, httpClient);
     }
 
     @Override
@@ -72,10 +75,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     public void initialize() {
         logger.debug("About to initialize SolarEdge");
         SolarEdgeConfiguration config = getConfiguration();
-
         logger.debug("Solaredge initialized with configuration: {}", config);
-
-        this.webInterface = new WebInterface(config, scheduler, this);
 
         if (config.getTokenOrApiKey() != null) {
             startPolling();

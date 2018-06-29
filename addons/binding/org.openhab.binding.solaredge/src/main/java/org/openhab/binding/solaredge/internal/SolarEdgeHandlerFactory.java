@@ -10,13 +10,16 @@ package org.openhab.binding.solaredge.internal;
 
 import static org.openhab.binding.solaredge.SolarEdgeBindingConstants.*;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.solaredge.handler.GenericSolarEdgeHandler;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +34,11 @@ public class SolarEdgeHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SolarEdgeHandlerFactory.class);
 
+    /**
+     * the shared http client
+     */
+    private HttpClient httpClient;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -41,11 +49,23 @@ public class SolarEdgeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_GENERIC)) {
-            return new GenericSolarEdgeHandler(thing);
+            return new GenericSolarEdgeHandler(thing, httpClient);
         } else {
             logger.warn("Unsupported Thing-Type: {}", thingTypeUID.getAsString());
         }
 
         return null;
     }
+
+    @Reference
+    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        logger.debug("setHttpClientFactory");
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
+    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        logger.debug("unsetHttpClientFactory");
+        this.httpClient = null;
+    }
+
 }

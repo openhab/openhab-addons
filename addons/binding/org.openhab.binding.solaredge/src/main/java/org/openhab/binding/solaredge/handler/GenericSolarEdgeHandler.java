@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.solaredge.internal.model.AggregateDataChannels;
 import org.openhab.binding.solaredge.internal.model.Channel;
@@ -27,8 +28,8 @@ import org.openhab.binding.solaredge.internal.model.LiveDataChannels;
 @NonNullByDefault
 public class GenericSolarEdgeHandler extends SolarEdgeBaseHandler {
 
-    public GenericSolarEdgeHandler(Thing thing) {
-        super(thing);
+    public GenericSolarEdgeHandler(Thing thing, HttpClient httpClient) {
+        super(thing, httpClient);
     }
 
     @Override

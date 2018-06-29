@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus.Code;
 import org.eclipse.jetty.util.BlockingArrayQueue;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.solaredge.config.SolarEdgeConfiguration;
@@ -62,11 +61,7 @@ public class WebInterface {
     /**
      * HTTP client for asynchronous calls
      */
-    private HttpClient asyncclient;
-    /**
-     * Maximum number of simultaneous asynchronous connections
-     */
-    private int asyncmaxconns = 20;
+    private final HttpClient httpClient;
 
     /**
      * the scheduler which periodically sends web requests to the solaredge API. Should be initiated with the thing's
@@ -142,7 +137,7 @@ public class WebInterface {
 
                 SolarEdgeCommand command = commandQueue.poll();
                 command.setListener(statusUpdater);
-                command.performAction(asyncclient);
+                command.performAction(httpClient);
             }
         }
 
@@ -153,18 +148,13 @@ public class WebInterface {
      *
      * @param config Bridge configuration
      */
-    public WebInterface(SolarEdgeConfiguration config, ScheduledExecutorService scheduler, SolarEdgeHandler handler) {
+    public WebInterface(SolarEdgeConfiguration config, ScheduledExecutorService scheduler, SolarEdgeHandler handler,
+            HttpClient httpClient) {
         this.config = config;
         this.handler = handler;
         this.scheduler = scheduler;
+        this.httpClient = httpClient;
         this.requestExecutor = new WebRequestExecutor();
-        asyncclient = new HttpClient(new SslContextFactory(true));
-        asyncclient.setMaxConnectionsPerDestination(asyncmaxconns);
-        try {
-            asyncclient.start();
-        } catch (Exception e) {
-            logger.warn("Could not start HTTP Client");
-        }
     }
 
     public synchronized void start() {
@@ -173,7 +163,7 @@ public class WebInterface {
             requestExecutorJob = scheduler.scheduleWithFixedDelay(requestExecutor, REQUEST_INITIAL_DELAY,
                     REQUEST_INTERVAL, TimeUnit.MILLISECONDS);
         } else {
-            logger.debug("live data pollingJob already active");
+            logger.debug("request executor job already active");
         }
     }
 
@@ -232,7 +222,7 @@ public class WebInterface {
             } else {
                 tokenCheckCommand = new PublicApiKeyCheck(handler, tokenCheckListener);
             }
-            tokenCheckCommand.performAction(asyncclient);
+            tokenCheckCommand.performAction(httpClient);
         }
     }
 
