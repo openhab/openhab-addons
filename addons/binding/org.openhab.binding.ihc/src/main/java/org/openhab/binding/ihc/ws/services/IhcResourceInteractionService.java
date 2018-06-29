@@ -27,7 +27,6 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.ihc.ws.datatypes.WSBaseDataType;
 import org.openhab.binding.ihc.ws.exeptions.IhcExecption;
-import org.openhab.binding.ihc.ws.http.IhcHttpsClient;
 import org.openhab.binding.ihc.ws.resourcevalues.WSBooleanValue;
 import org.openhab.binding.ihc.ws.resourcevalues.WSDateValue;
 import org.openhab.binding.ihc.ws.resourcevalues.WSEnumValue;
@@ -48,24 +47,12 @@ import org.xml.sax.InputSource;
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class IhcResourceInteractionService extends IhcHttpsClient {
-
-    private String url;
-    private int timeout;
+public class IhcResourceInteractionService extends IhcBaseService {
 
     public IhcResourceInteractionService(String host, int timeout) {
         url = "https://" + host + "/ws/ResourceInteractionService";
         this.timeout = timeout;
         super.setConnectTimeout(timeout);
-    }
-
-    private String sendSoapQuery(String query, int timeout) throws IhcExecption {
-        openConnection(url);
-        try {
-            return sendQuery(query, timeout);
-        } finally {
-            closeConnection();
-        }
     }
 
     /**
@@ -87,8 +74,7 @@ public class IhcResourceInteractionService extends IhcHttpsClient {
         // @formatter:on
 
         String query = String.format(soapQuery, String.valueOf(resoureId));
-        String response = sendSoapQuery(query, timeout);
-
+        String response = sendSoapQuery(null, query, timeout);
         NodeList nodeList;
         try {
             nodeList = parseList(response, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getRuntimeValue2");
@@ -538,7 +524,7 @@ public class IhcResourceInteractionService extends IhcHttpsClient {
     }
 
     private boolean doResourceUpdate(String query) throws IhcExecption {
-        String response = sendSoapQuery(query, timeout);
+        String response = sendSoapQuery(null, query, timeout);
         return Boolean.parseBoolean(
                 WSBaseDataType.parseXMLValue(response, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:setResourceValue2"));
     }
@@ -570,7 +556,7 @@ public class IhcResourceInteractionService extends IhcHttpsClient {
             query += "   <xsd:arrayItem>" + i + "</xsd:arrayItem>\n";
         }
         query += soapQuerySuffix;
-        sendSoapQuery(query, timeout);
+        sendSoapQuery(null, query, timeout);
     }
 
     /**
@@ -598,7 +584,7 @@ public class IhcResourceInteractionService extends IhcHttpsClient {
         // @formatter:on
 
         String query = String.format(soapQuery, timeoutInSeconds);
-        String response = sendSoapQuery(query, timeout + timeoutInSeconds * 1000);
+        String response = sendSoapQuery(null, query, timeout + timeoutInSeconds * 1000);
         List<WSResourceValue> resourceValueList = new ArrayList<WSResourceValue>();
 
         try {

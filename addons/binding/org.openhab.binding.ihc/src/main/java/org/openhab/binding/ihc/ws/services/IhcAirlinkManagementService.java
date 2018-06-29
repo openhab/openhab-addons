@@ -25,7 +25,6 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.ihc.ws.datatypes.WSRFDevice;
 import org.openhab.binding.ihc.ws.exeptions.IhcExecption;
-import org.openhab.binding.ihc.ws.http.IhcHttpsClient;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -38,35 +37,12 @@ import org.xml.sax.InputSource;
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class IhcAirlinkManagementService extends IhcHttpsClient {
-
-    // @formatter:off
-    private static String emptyQuery =
-              "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            + "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-            + " <soapenv:Body>\n"
-            + " </soapenv:Body>\n"
-            + "</soapenv:Envelope>\n";
-    // @formatter:on
-
-    private String url;
-    private int timeout;
+public class IhcAirlinkManagementService extends IhcBaseService {
 
     public IhcAirlinkManagementService(String host, int timeout) {
         url = "https://" + host + "/ws/AirlinkManagementService";
         this.timeout = timeout;
-        super.setConnectTimeout(timeout);
-    }
-
-    private String sendSoapQuery(String SoapAction, String query, int timeout)
-            throws org.openhab.binding.ihc.ws.exeptions.IhcExecption {
-        openConnection(url);
-        try {
-            setRequestProperty("SOAPAction", SoapAction);
-            return sendQuery(query, timeout);
-        } finally {
-            closeConnection();
-        }
+        setConnectTimeout(timeout);
     }
 
     /**
@@ -76,7 +52,7 @@ public class IhcAirlinkManagementService extends IhcHttpsClient {
      * @throws IhcExecption
      */
     public synchronized List<WSRFDevice> getDetectedDeviceList() throws IhcExecption {
-        String response = sendSoapQuery("getDetectedDeviceList", emptyQuery, timeout);
+        String response = sendSoapQuery("getDetectedDeviceList", EMPTY_QUERY, timeout);
 
         List<WSRFDevice> resourceValueList = new ArrayList<WSRFDevice>();
 

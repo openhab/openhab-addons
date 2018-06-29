@@ -306,7 +306,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     logger.warn("Read only channel, skip the update to {}", channelUID);
                     return;
                 }
-                updateChannel(channelUID, channel.getAcceptedItemType(), params, command);
+                updateChannel(channelUID, params, command);
             }
         } catch (IhcExecption e) {
             logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage());
@@ -315,7 +315,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         }
     }
 
-    private void updateChannel(ChannelUID channelUID, String AcceptedItemType, ChannelParams params, Command command)
+    private void updateChannel(ChannelUID channelUID, ChannelParams params, Command command)
             throws IllegalArgumentException, IhcExecption {
 
         if (params.getCommandToReact() != null) {
@@ -331,22 +331,21 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         WSResourceValue value = ihc.getResourceValueInformation(params.getResourceId());
         if (value != null) {
             if (params.getPulseWidth() != null) {
-                sendPulseCommand(channelUID, AcceptedItemType, params, value,
-                        Math.min(params.getPulseWidth(), MAX_PULSE_WIDTH_IN_MS));
+                sendPulseCommand(channelUID, params, value, Math.min(params.getPulseWidth(), MAX_PULSE_WIDTH_IN_MS));
             } else {
-                sendNormalCommand(channelUID, AcceptedItemType, params, command, value);
+                sendNormalCommand(channelUID, params, command, value);
             }
         }
     }
 
-    private void sendNormalCommand(ChannelUID channelUID, String AcceptedItemType, ChannelParams params,
-            Command command, WSResourceValue value) throws IhcExecption {
+    private void sendNormalCommand(ChannelUID channelUID, ChannelParams params, Command command, WSResourceValue value)
+            throws IhcExecption {
 
         logger.debug("Send command '{}' to resource '{}'", command, value.getResourceID());
         ConverterAdditionalInfo converterAdditionalInfo = new ConverterAdditionalInfo(getEnumValues(value),
                 params.isInverted());
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(value.getClass(),
-                AcceptedItemType);
+                command.getClass());
         WSResourceValue val = converter.convertFromOHType(command, value, converterAdditionalInfo);
         logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), val);
         if (!updateResource(val)) {
@@ -361,13 +360,13 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         return null;
     }
 
-    private void sendPulseCommand(ChannelUID channelUID, String AcceptedItemType, ChannelParams params,
-            WSResourceValue value, Integer pulseWidth) throws IhcExecption {
+    private void sendPulseCommand(ChannelUID channelUID, ChannelParams params, WSResourceValue value,
+            Integer pulseWidth) throws IhcExecption {
 
         logger.debug("Send {}ms pulse to resource: {}", pulseWidth, value.getResourceID());
         logger.debug("Channel params: {}", params);
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(value.getClass(),
-                AcceptedItemType);
+                OnOffType.class);
         ConverterAdditionalInfo converterAdditionalInfo = new ConverterAdditionalInfo(null, params.isInverted());
 
         // set resource to ON
@@ -508,11 +507,13 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
         if (loadProject == true) {
             logger.debug("Loading IHC /ELKO LS project file from controller...");
-            byte[] data = ihc.LoadProjectFileFromControllerAsByteArray();
+            byte[] data = ihc.loadProjectFileFromControllerAsByteArray();
             logger.debug("Saving project file to local file '{}'", filePath);
             ProjectFileUtils.saveProjectFile(filePath, data);
             projectFile = ProjectFileUtils.converteBytesToDocument(data);
         }
+
+        enumDictionary = new EnumDictionary(ProjectFileUtils.parseEnums(projectFile));
     }
 
     private void createChannels() {

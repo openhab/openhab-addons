@@ -11,6 +11,8 @@ package org.openhab.binding.ihc.ws.projectfile;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -100,5 +102,36 @@ public class ProjectFileUtils {
             }
         }
         return false;
+    }
+
+    public static HashMap<Integer, ArrayList<IhcEnumValue>> parseEnums(Document doc) {
+        HashMap<Integer, ArrayList<IhcEnumValue>> enumDictionary = new HashMap<Integer, ArrayList<IhcEnumValue>>();
+        NodeList nodes = doc.getElementsByTagName("enum_definition");
+
+        // iterate enum definitions from project
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Element element = (Element) nodes.item(i);
+
+            // String enumName = element.getAttribute("name");
+            int typedefId = Integer.parseInt(element.getAttribute("id").replace("_0x", ""), 16);
+            String enum_name = element.getAttribute("name");
+
+            ArrayList<IhcEnumValue> enumValues = new ArrayList<IhcEnumValue>();
+
+            NodeList name = element.getElementsByTagName("enum_value");
+
+            for (int j = 0; j < name.getLength(); j++) {
+                Element val = (Element) name.item(j);
+                int id = Integer.parseInt(val.getAttribute("id").replace("_0x", ""), 16);
+                String n = val.getAttribute("name");
+                IhcEnumValue enumVal = new IhcEnumValue(id, n);
+                enumValues.add(enumVal);
+            }
+
+            LOGGER.debug("Enum values found: typedefId={}, name={}: {}", typedefId, enum_name, enumValues);
+            enumDictionary.put(typedefId, enumValues);
+        }
+
+        return enumDictionary;
     }
 }

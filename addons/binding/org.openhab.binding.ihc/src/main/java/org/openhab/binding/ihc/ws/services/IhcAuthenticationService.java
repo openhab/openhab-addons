@@ -10,7 +10,6 @@ package org.openhab.binding.ihc.ws.services;
 
 import org.openhab.binding.ihc.ws.datatypes.WSLoginResult;
 import org.openhab.binding.ihc.ws.exeptions.IhcExecption;
-import org.openhab.binding.ihc.ws.http.IhcHttpsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,11 +22,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class IhcAuthenticationService extends IhcHttpsClient {
+public class IhcAuthenticationService extends IhcBaseService {
     private static final Logger logger = LoggerFactory.getLogger(IhcAuthenticationService.class);
-
-    private String url;
-    private int timeout;
 
     IhcAuthenticationService(String host) {
         url = "https://" + host + "/ws/AuthenticationService";
@@ -57,7 +53,6 @@ public class IhcAuthenticationService extends IhcHttpsClient {
         // @formatter:on
 
         String query = String.format(soapQuery, password, username, application);
-
         openConnection(url);
         String response = sendQuery(query, timeout);
         return new WSLoginResult().parseXMLData(response);

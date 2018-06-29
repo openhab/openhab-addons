@@ -26,11 +26,11 @@ public class WSFloatingPointValue extends WSResourceValue {
         super(resourceID);
     }
 
-    public WSFloatingPointValue(int resourceID, double value, double maximumValue, double minimumValue) {
+    public WSFloatingPointValue(int resourceID, double value, double minimumValue, double maximumValue) {
         super(resourceID);
         this.floatingPointValue = value;
-        this.maximumValue = maximumValue;
         this.minimumValue = minimumValue;
+        this.maximumValue = maximumValue;
     }
 
     /**

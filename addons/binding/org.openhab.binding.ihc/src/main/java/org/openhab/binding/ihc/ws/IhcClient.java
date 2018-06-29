@@ -246,16 +246,43 @@ public class IhcClient {
     }
 
     /**
+     * Query project number of segments.
+     *
+     * @return number of segments.
+     */
+    public int getProjectNumberOfSegments() throws IhcExecption {
+        return controllerService.getProjectNumberOfSegments();
+    }
+
+    /**
+     * Query project segmentation size.
+     *
+     * @return segmentation size in bytes.
+     */
+    public int getProjectSegmentationSize() throws IhcExecption {
+        return controllerService.getProjectSegmentationSize();
+    }
+
+    /**
+     * Query project segments data.
+     *
+     * @return segments data.
+     */
+    public WSFile getProjectSegment(int index, int major, int minor) throws IhcExecption {
+        return controllerService.getProjectSegment(index, major, minor);
+    }
+
+    /**
      * Fetch project file from controller.
      *
      * @return project file.
      */
-    public byte[] LoadProjectFileFromControllerAsByteArray() throws IhcExecption {
+    public byte[] loadProjectFileFromControllerAsByteArray() throws IhcExecption {
         try {
 
             WSProjectInfo projectInfo = getProjectInfo();
-            int numberOfSegments = controllerService.getProjectNumberOfSegments();
-            int segmentationSize = controllerService.getProjectSegmentationSize();
+            int numberOfSegments = getProjectNumberOfSegments();
+            int segmentationSize = getProjectSegmentationSize();
 
             logger.debug("Number of segments: {}", numberOfSegments);
             logger.debug("Segmentation size: {}", segmentationSize);
@@ -265,7 +292,7 @@ public class IhcClient {
             for (int i = 0; i < numberOfSegments; i++) {
                 logger.debug("Downloading segment {}", i);
 
-                WSFile data = controllerService.getProjectSegment(i, projectInfo.getProjectMajorRevision(),
+                WSFile data = getProjectSegment(i, projectInfo.getProjectMajorRevision(),
                         projectInfo.getProjectMinorRevision());
                 byteStream.write(data.getData());
             }

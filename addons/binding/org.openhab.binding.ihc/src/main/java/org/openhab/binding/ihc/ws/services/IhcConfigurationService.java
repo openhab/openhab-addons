@@ -10,7 +10,6 @@ package org.openhab.binding.ihc.ws.services;
 
 import org.openhab.binding.ihc.ws.datatypes.WSSystemInfo;
 import org.openhab.binding.ihc.ws.exeptions.IhcExecption;
-import org.openhab.binding.ihc.ws.http.IhcHttpsClient;
 
 /**
  * Class to handle IHC / ELKO LS Controller's controller service.
@@ -20,35 +19,12 @@ import org.openhab.binding.ihc.ws.http.IhcHttpsClient;
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class IhcConfigurationService extends IhcHttpsClient {
-
-    // @formatter:off
-    private static String emptyQuery =
-              "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            + "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-            + " <soapenv:Body>\n"
-            + " </soapenv:Body>\n"
-            + "</soapenv:Envelope>";
-    // @formatter:on
-
-    private String url;
-    private int timeout;
+public class IhcConfigurationService extends IhcBaseService {
 
     public IhcConfigurationService(String host, int timeout) {
         url = "https://" + host + "/ws/ConfigurationService";
         this.timeout = timeout;
-        super.setConnectTimeout(timeout);
-    }
-
-    private String sendSoapQuery(String SoapAction, String query, int timeout)
-            throws org.openhab.binding.ihc.ws.exeptions.IhcExecption {
-        openConnection(url);
-        try {
-            setRequestProperty("SOAPAction", SoapAction);
-            return sendQuery(query, timeout);
-        } finally {
-            closeConnection();
-        }
+        setConnectTimeout(timeout);
     }
 
     /**
@@ -58,7 +34,7 @@ public class IhcConfigurationService extends IhcHttpsClient {
      * @throws IhcExecption
      */
     public synchronized WSSystemInfo getSystemInfo() throws IhcExecption {
-        String response = sendSoapQuery("getSystemInfo", emptyQuery, timeout);
+        String response = sendSoapQuery("getSystemInfo", EMPTY_QUERY, timeout);
         return new WSSystemInfo().parseXMLData(response);
     }
 }

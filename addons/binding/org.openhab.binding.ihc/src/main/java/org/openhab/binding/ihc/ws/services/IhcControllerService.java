@@ -14,7 +14,6 @@ import org.openhab.binding.ihc.ws.datatypes.WSNumberOfSegments;
 import org.openhab.binding.ihc.ws.datatypes.WSProjectInfo;
 import org.openhab.binding.ihc.ws.datatypes.WSSegmentationSize;
 import org.openhab.binding.ihc.ws.exeptions.IhcExecption;
-import org.openhab.binding.ihc.ws.http.IhcHttpsClient;
 
 /**
  * Class to handle IHC / ELKO LS Controller's controller service.
@@ -24,34 +23,12 @@ import org.openhab.binding.ihc.ws.http.IhcHttpsClient;
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class IhcControllerService extends IhcHttpsClient {
-
-    // @formatter:off
-    private static String emptyQuery =
-              "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            + "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-            + " <soapenv:Body>\n"
-            + " </soapenv:Body>\n"
-            + "</soapenv:Envelope>";
-    // @formatter:on
-
-    private String url;
-    private int timeout;
+public class IhcControllerService extends IhcBaseService {
 
     public IhcControllerService(String host, int timeout) {
         url = "https://" + host + "/ws/ControllerService";
         this.timeout = timeout;
-        super.setConnectTimeout(timeout);
-    }
-
-    private String sendSoapQuery(String SoapAction, String query, int timeout) throws IhcExecption {
-        openConnection(url);
-        try {
-            setRequestProperty("SOAPAction", SoapAction);
-            return sendQuery(query, timeout);
-        } finally {
-            closeConnection();
-        }
+        setConnectTimeout(timeout);
     }
 
     /**
@@ -61,7 +38,7 @@ public class IhcControllerService extends IhcHttpsClient {
      * @throws IhcExecption
      */
     public synchronized WSProjectInfo getProjectInfo() throws IhcExecption {
-        String response = sendSoapQuery("getProjectInfo", emptyQuery, timeout);
+        String response = sendSoapQuery("getProjectInfo", EMPTY_QUERY, timeout);
         return new WSProjectInfo().parseXMLData(response);
     }
 
@@ -72,7 +49,7 @@ public class IhcControllerService extends IhcHttpsClient {
      * @throws IhcExecption
      */
     public synchronized int getProjectNumberOfSegments() throws IhcExecption {
-        String response = sendSoapQuery("getIHCProjectNumberOfSegments", emptyQuery, timeout);
+        String response = sendSoapQuery("getIHCProjectNumberOfSegments", EMPTY_QUERY, timeout);
         return new WSNumberOfSegments().parseXMLData(response).getNumberOfSegments();
     }
 
@@ -83,7 +60,7 @@ public class IhcControllerService extends IhcHttpsClient {
      * @throws IhcExecption
      */
     public synchronized int getProjectSegmentationSize() throws IhcExecption {
-        String response = sendSoapQuery("getIHCProjectSegmentationSize", emptyQuery, timeout);
+        String response = sendSoapQuery("getIHCProjectSegmentationSize", EMPTY_QUERY, timeout);
         return new WSSegmentationSize().parseXMLData(response).getSegmentationSize();
     }
 
@@ -123,7 +100,7 @@ public class IhcControllerService extends IhcHttpsClient {
      */
     public synchronized WSControllerState getControllerState() throws IhcExecption {
 
-        String response = sendSoapQuery("getState", emptyQuery, timeout);
+        String response = sendSoapQuery("getState", EMPTY_QUERY, timeout);
         return new WSControllerState().parseXMLData(response);
     }
 

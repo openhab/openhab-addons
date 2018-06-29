@@ -32,9 +32,9 @@ public class StringTypeWSEnumValueConverter implements Converter<WSEnumValue, St
         if (convertData.getEnumValues() != null) {
             boolean found = false;
             for (IhcEnumValue item : convertData.getEnumValues()) {
-                if (item.name.equals(value.toString())) {
-                    value.setEnumValueID(item.id);
-                    value.setEnumName(value.toString());
+                if (item.getName().equals(from.toString())) {
+                    value.setEnumValueID(item.getId());
+                    value.setEnumName(item.getName());
                     found = true;
                     break;
                 }

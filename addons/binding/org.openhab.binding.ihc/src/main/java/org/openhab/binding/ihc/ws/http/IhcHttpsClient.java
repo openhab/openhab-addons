@@ -66,8 +66,8 @@ public abstract class IhcHttpsClient {
      * @param url
      *            Url to connect.
      */
-    protected void openConnection(String url) throws IhcExecption {
-
+    public void openConnection(String url) throws IhcExecption {
+        logger.debug("Open connection to '{}'", url);
         if (client == null) {
             client = IhcConnectionPool.getInstance().getHttpClient();
         }
@@ -75,7 +75,7 @@ public abstract class IhcHttpsClient {
         postReq = new HttpPost(url);
     }
 
-    protected void closeConnection() {
+    public void closeConnection() {
     }
 
     /**
@@ -87,7 +87,7 @@ public abstract class IhcHttpsClient {
      *            the timeout to set in milliseconds
      * @return Response from server.
      */
-    protected String sendQuery(String query, int timeout) throws IhcExecption {
+    public String sendQuery(String query, int timeout) throws IhcExecption {
         try {
             return sendQ(query, timeout);
         } catch (NoHttpResponseException e) {

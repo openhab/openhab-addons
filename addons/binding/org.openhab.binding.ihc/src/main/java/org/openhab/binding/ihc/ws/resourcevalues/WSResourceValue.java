@@ -17,10 +17,10 @@ public class WSResourceValue {
 
     protected int resourceID;
 
-    WSResourceValue() {
+    public WSResourceValue() {
     }
 
-    WSResourceValue(int resourceID) {
+    public WSResourceValue(int resourceID) {
         this.resourceID = resourceID;
     }
 

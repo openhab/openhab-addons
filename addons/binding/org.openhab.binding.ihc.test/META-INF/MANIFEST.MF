@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: openHAB IHC / ELKO Binding Tests
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.ihc.test;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Fragment-Host: org.openhab.binding.ihc
+Import-Package: 
+ org.apache.commons.collections;version="3.2.0",
+ org.apache.commons.lang.reflect,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.test,
+ org.eclipse.smarthome.test.storage,
+ org.hamcrest;core=split,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners,
+ org.mockito,
+ org.mockito.invocation,
+ org.mockito.stubbing,
+ org.openhab.binding.ihc.ws.resourcevalues,
+ org.osgi.service.device,
+ org.slf4j
+Export-Package: org.openhab.binding.ihc;uses:="org.eclipse.smarthome.test"
