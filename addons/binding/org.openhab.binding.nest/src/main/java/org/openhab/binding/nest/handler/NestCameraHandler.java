@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nest.internal.data.Camera;
-import org.openhab.binding.nest.internal.data.Camera.Event;
+import org.openhab.binding.nest.internal.data.CameraEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * Handles all the updates to the camera as well as handling the commands that send
  * updates to Nest.
  *
- * @author David Bennett - initial contribution
+ * @author David Bennett - Initial contribution
  * @author Wouter Born - Handle channel refresh command
  */
 @NonNullByDefault
@@ -37,7 +37,7 @@ public class NestCameraHandler extends NestBaseHandler<Camera> {
     private final Logger logger = LoggerFactory.getLogger(NestCameraHandler.class);
 
     public NestCameraHandler(Thing thing) {
-        super(thing);
+        super(thing, Camera.class);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class NestCameraHandler extends NestBaseHandler<Camera> {
     }
 
     protected State getLastEventChannelState(ChannelUID channelUID, Camera camera) {
-        Event lastEvent = camera.getLastEvent();
+        CameraEvent lastEvent = camera.getLastEvent();
         if (lastEvent == null) {
             return UnDefType.NULL;
         }
@@ -129,23 +129,21 @@ public class NestCameraHandler extends NestBaseHandler<Camera> {
         }
     }
 
-    @Override
-    public void onNewNestCameraData(Camera camera) {
-        if (isNotHandling(camera)) {
-            logger.debug("Camera {} is not handling update for {}", getDeviceId(), camera.getDeviceId());
-            return;
-        }
-
-        logger.debug("Updating camera {}", camera.getDeviceId());
-
-        setLastUpdate(camera);
-        updateChannels(camera);
-        updateStatus(camera.isOnline() == null ? ThingStatus.UNKNOWN
-                : camera.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
-        updateProperty(PROPERTY_FIRMWARE_VERSION, camera.getSoftwareVersion());
-    }
-
     private void addUpdateRequest(String field, Object value) {
         addUpdateRequest(NEST_CAMERA_UPDATE_PATH, field, value);
+    }
+
+    @Override
+    protected void update(Camera oldCamera, Camera camera) {
+        logger.debug("Updating {}", getThing().getUID());
+
+        updateLinkedChannels(oldCamera, camera);
+        updateProperty(PROPERTY_FIRMWARE_VERSION, camera.getSoftwareVersion());
+
+        ThingStatus newStatus = camera.isOnline() == null ? ThingStatus.UNKNOWN
+                : camera.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE;
+        if (newStatus != thing.getStatus()) {
+            updateStatus(newStatus);
+        }
     }
 }

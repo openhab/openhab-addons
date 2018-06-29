@@ -11,7 +11,8 @@ package org.openhab.binding.nest.internal.data;
 /**
  * Deals with the access token data that comes back from Nest when it is requested.
  *
- * @author David Bennett - Initial Contribution
+ * @author David Bennett - Initial contribution
+ * @author Wouter Born - Add equals and hashCode methods
  */
 public class AccessTokenData {
 
@@ -24,6 +25,44 @@ public class AccessTokenData {
 
     public Long getExpiresIn() {
         return expiresIn;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AccessTokenData other = (AccessTokenData) obj;
+        if (accessToken == null) {
+            if (other.accessToken != null) {
+                return false;
+            }
+        } else if (!accessToken.equals(other.accessToken)) {
+            return false;
+        }
+        if (expiresIn == null) {
+            if (other.expiresIn != null) {
+                return false;
+            }
+        } else if (!expiresIn.equals(other.expiresIn)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((accessToken == null) ? 0 : accessToken.hashCode());
+        result = prime * result + ((expiresIn == null) ? 0 : expiresIn.hashCode());
+        return result;
     }
 
     @Override

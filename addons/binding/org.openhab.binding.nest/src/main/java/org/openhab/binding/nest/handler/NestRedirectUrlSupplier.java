@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
  * Supplies resolved redirect URLs of {@link NestBindingConstants#NEST_URL} so they can be used with HTTP clients that
  * do not pass Authorization headers after redirects like the Jetty client used by {@link HttpUtil}.
  *
+ * @author Wouter Born - Initial contribution
  * @author Wouter Born - Extract resolving redirect URL from NestBridgeHandler into NestRedirectUrlSupplier
  */
 @NonNullByDefault

@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Inserts Authorization and Cache-Control headers for requests on the streaming REST API.
  *
+ * @author Wouter Born - Initial contribution
  * @author Wouter Born - Replace polling with REST streaming
  */
 @NonNullByDefault

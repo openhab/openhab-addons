@@ -9,22 +9,20 @@
 package org.openhab.binding.nest.internal.data;
 
 /**
- * The meta data in the data downloads from Nest.
- *
  * @author David Bennett - Initial contribution
- * @author Wouter Born - Add equals and hashCode methods
+ * @author Wouter Born - Extract Where object from Structure
+ * @author Wouter Born - Add equals, hashCode, toString methods
  */
-public class NestMetadata {
+public class Where {
+    private String whereId;
+    private String name;
 
-    private String accessToken;
-    private String clientVersion;
-
-    public String getAccessToken() {
-        return accessToken;
+    public String getWhereId() {
+        return whereId;
     }
 
-    public String getClientVersion() {
-        return clientVersion;
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -38,19 +36,19 @@ public class NestMetadata {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        NestMetadata other = (NestMetadata) obj;
-        if (accessToken == null) {
-            if (other.accessToken != null) {
+        Where other = (Where) obj;
+        if (name == null) {
+            if (other.name != null) {
                 return false;
             }
-        } else if (!accessToken.equals(other.accessToken)) {
+        } else if (!name.equals(other.name)) {
             return false;
         }
-        if (clientVersion == null) {
-            if (other.clientVersion != null) {
+        if (whereId == null) {
+            if (other.whereId != null) {
                 return false;
             }
-        } else if (!clientVersion.equals(other.clientVersion)) {
+        } else if (!whereId.equals(other.whereId)) {
             return false;
         }
         return true;
@@ -60,17 +58,15 @@ public class NestMetadata {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((accessToken == null) ? 0 : accessToken.hashCode());
-        result = prime * result + ((clientVersion == null) ? 0 : clientVersion.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((whereId == null) ? 0 : whereId.hashCode());
         return result;
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("NestMetadata [accessToken=").append(accessToken).append(", clientVersion=")
-                .append(clientVersion).append("]");
+        builder.append("Where [whereId=").append(whereId).append(", name=").append(name).append("]");
         return builder.toString();
     }
-
 }

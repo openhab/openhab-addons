@@ -11,7 +11,9 @@ package org.openhab.binding.nest.internal.data;
 /**
  * The top level data that is sent by Nest to a streaming REST client using SSE.
  *
+ * @author Wouter Born - Initial contribution
  * @author Wouter Born - Replace polling with REST streaming
+ * @author Wouter Born - Add equals and hashCode methods
  */
 public class TopLevelStreamingData {
 
@@ -24,6 +26,44 @@ public class TopLevelStreamingData {
 
     public TopLevelData getData() {
         return data;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((data == null) ? 0 : data.hashCode());
+        result = prime * result + ((path == null) ? 0 : path.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        TopLevelStreamingData other = (TopLevelStreamingData) obj;
+        if (data == null) {
+            if (other.data != null) {
+                return false;
+            }
+        } else if (!data.equals(other.data)) {
+            return false;
+        }
+        if (path == null) {
+            if (other.path != null) {
+                return false;
+            }
+        } else if (!path.equals(other.path)) {
+            return false;
+        }
+        return true;
     }
 
     @Override

@@ -9,22 +9,22 @@
 package org.openhab.binding.nest.internal.data;
 
 /**
- * The meta data in the data downloads from Nest.
+ * The data for a camera activity zone.
  *
  * @author David Bennett - Initial contribution
- * @author Wouter Born - Add equals and hashCode methods
+ * @author Wouter Born - Extract ActivityZone object from Camera
  */
-public class NestMetadata {
+public class ActivityZone {
 
-    private String accessToken;
-    private String clientVersion;
+    private String name;
+    private int id;
 
-    public String getAccessToken() {
-        return accessToken;
+    public String getName() {
+        return name;
     }
 
-    public String getClientVersion() {
-        return clientVersion;
+    public int getId() {
+        return id;
     }
 
     @Override
@@ -38,19 +38,15 @@ public class NestMetadata {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        NestMetadata other = (NestMetadata) obj;
-        if (accessToken == null) {
-            if (other.accessToken != null) {
-                return false;
-            }
-        } else if (!accessToken.equals(other.accessToken)) {
+        ActivityZone other = (ActivityZone) obj;
+        if (id != other.id) {
             return false;
         }
-        if (clientVersion == null) {
-            if (other.clientVersion != null) {
+        if (name == null) {
+            if (other.name != null) {
                 return false;
             }
-        } else if (!clientVersion.equals(other.clientVersion)) {
+        } else if (!name.equals(other.name)) {
             return false;
         }
         return true;
@@ -60,16 +56,15 @@ public class NestMetadata {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((accessToken == null) ? 0 : accessToken.hashCode());
-        result = prime * result + ((clientVersion == null) ? 0 : clientVersion.hashCode());
+        result = prime * result + id;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("NestMetadata [accessToken=").append(accessToken).append(", clientVersion=")
-                .append(clientVersion).append("]");
+        builder.append("CameraActivityZone [name=").append(name).append(", id=").append(id).append("]");
         return builder.toString();
     }
 

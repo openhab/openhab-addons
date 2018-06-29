@@ -19,7 +19,8 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The structure details from Nest.
  *
- * @author David Bennett - Initial Contribution
+ * @author David Bennett - Initial contribution
+ * @author Wouter Born - Add equals and hashCode methods
  */
 public class Structure implements NestIdentifiable {
 
@@ -123,53 +124,6 @@ public class Structure implements NestIdentifiable {
         return wwnSecurityState;
     }
 
-    /**
-     * Used to set and update the eta values for Nest.
-     */
-    public class ETA {
-
-        private String tripId;
-        private Date estimatedArrivalWindowBegin;
-        private Date estimatedArrivalWindowEnd;
-
-        public String getTripId() {
-            return tripId;
-        }
-
-        public void setTripId(String tripId) {
-            this.tripId = tripId;
-        }
-
-        public Date getEstimatedArrivalWindowBegin() {
-            return estimatedArrivalWindowBegin;
-        }
-
-        public void setEstimatedArrivalWindowBegin(Date estimatedArrivalWindowBegin) {
-            this.estimatedArrivalWindowBegin = estimatedArrivalWindowBegin;
-        }
-
-        public Date getEstimatedArrivalWindowEnd() {
-            return estimatedArrivalWindowEnd;
-        }
-
-        public void setEstimatedArrivalWindowEnd(Date estimatedArrivalWindowEnd) {
-            this.estimatedArrivalWindowEnd = estimatedArrivalWindowEnd;
-        }
-    }
-
-    public class Where {
-        private String whereId;
-        private String name;
-
-        public String getWhereId() {
-            return whereId;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
-
     public enum HomeAwayState {
         @SerializedName("home")
         HOME,
@@ -184,6 +138,156 @@ public class Structure implements NestIdentifiable {
         OK,
         @SerializedName("deter")
         DETER
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Structure other = (Structure) obj;
+        if (away != other.away) {
+            return false;
+        }
+        if (cameras == null) {
+            if (other.cameras != null) {
+                return false;
+            }
+        } else if (!cameras.equals(other.cameras)) {
+            return false;
+        }
+        if (coAlarmState != other.coAlarmState) {
+            return false;
+        }
+        if (countryCode == null) {
+            if (other.countryCode != null) {
+                return false;
+            }
+        } else if (!countryCode.equals(other.countryCode)) {
+            return false;
+        }
+        if (eta == null) {
+            if (other.eta != null) {
+                return false;
+            }
+        } else if (!eta.equals(other.eta)) {
+            return false;
+        }
+        if (etaBegin == null) {
+            if (other.etaBegin != null) {
+                return false;
+            }
+        } else if (!etaBegin.equals(other.etaBegin)) {
+            return false;
+        }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        if (peakPeriodEndTime == null) {
+            if (other.peakPeriodEndTime != null) {
+                return false;
+            }
+        } else if (!peakPeriodEndTime.equals(other.peakPeriodEndTime)) {
+            return false;
+        }
+        if (peakPeriodStartTime == null) {
+            if (other.peakPeriodStartTime != null) {
+                return false;
+            }
+        } else if (!peakPeriodStartTime.equals(other.peakPeriodStartTime)) {
+            return false;
+        }
+        if (postalCode == null) {
+            if (other.postalCode != null) {
+                return false;
+            }
+        } else if (!postalCode.equals(other.postalCode)) {
+            return false;
+        }
+        if (rhrEnrollment == null) {
+            if (other.rhrEnrollment != null) {
+                return false;
+            }
+        } else if (!rhrEnrollment.equals(other.rhrEnrollment)) {
+            return false;
+        }
+        if (smokeAlarmState != other.smokeAlarmState) {
+            return false;
+        }
+        if (smokeCoAlarms == null) {
+            if (other.smokeCoAlarms != null) {
+                return false;
+            }
+        } else if (!smokeCoAlarms.equals(other.smokeCoAlarms)) {
+            return false;
+        }
+        if (structureId == null) {
+            if (other.structureId != null) {
+                return false;
+            }
+        } else if (!structureId.equals(other.structureId)) {
+            return false;
+        }
+        if (thermostats == null) {
+            if (other.thermostats != null) {
+                return false;
+            }
+        } else if (!thermostats.equals(other.thermostats)) {
+            return false;
+        }
+        if (timeZone == null) {
+            if (other.timeZone != null) {
+                return false;
+            }
+        } else if (!timeZone.equals(other.timeZone)) {
+            return false;
+        }
+        if (wheres == null) {
+            if (other.wheres != null) {
+                return false;
+            }
+        } else if (!wheres.equals(other.wheres)) {
+            return false;
+        }
+        if (wwnSecurityState != other.wwnSecurityState) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((away == null) ? 0 : away.hashCode());
+        result = prime * result + ((cameras == null) ? 0 : cameras.hashCode());
+        result = prime * result + ((coAlarmState == null) ? 0 : coAlarmState.hashCode());
+        result = prime * result + ((countryCode == null) ? 0 : countryCode.hashCode());
+        result = prime * result + ((eta == null) ? 0 : eta.hashCode());
+        result = prime * result + ((etaBegin == null) ? 0 : etaBegin.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((peakPeriodEndTime == null) ? 0 : peakPeriodEndTime.hashCode());
+        result = prime * result + ((peakPeriodStartTime == null) ? 0 : peakPeriodStartTime.hashCode());
+        result = prime * result + ((postalCode == null) ? 0 : postalCode.hashCode());
+        result = prime * result + ((rhrEnrollment == null) ? 0 : rhrEnrollment.hashCode());
+        result = prime * result + ((smokeAlarmState == null) ? 0 : smokeAlarmState.hashCode());
+        result = prime * result + ((smokeCoAlarms == null) ? 0 : smokeCoAlarms.hashCode());
+        result = prime * result + ((structureId == null) ? 0 : structureId.hashCode());
+        result = prime * result + ((thermostats == null) ? 0 : thermostats.hashCode());
+        result = prime * result + ((timeZone == null) ? 0 : timeZone.hashCode());
+        result = prime * result + ((wheres == null) ? 0 : wheres.hashCode());
+        result = prime * result + ((wwnSecurityState == null) ? 0 : wwnSecurityState.hashCode());
+        return result;
     }
 
     @Override
