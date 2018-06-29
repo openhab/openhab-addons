@@ -47,31 +47,19 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     private WebInterface webInterface;
 
     /**
-     * Job which will do the Solaredge polling
-     */
-    private final SolarEdgeLiveDataPolling liveDataPollingRunnable;
-
-    /**
-     * Job which will do the Solaredge polling
-     */
-    private final SolarEdgeAggregateDataPolling aggregateDataPollingRunnable;
-
-    /**
-     * Schedule for polling
+     * Schedule for polling live data
      */
     @Nullable
     private ScheduledFuture<?> liveDataPollingJob;
 
     /**
-     * Schedule for polling
+     * Schedule for polling aggregate data
      */
     @Nullable
     private ScheduledFuture<?> aggregateDataPollingJob;
 
     public SolarEdgeBaseHandler(Thing thing) {
         super(thing);
-        this.liveDataPollingRunnable = new SolarEdgeLiveDataPolling(this);
-        this.aggregateDataPollingRunnable = new SolarEdgeAggregateDataPolling(this);
     }
 
     @Override
@@ -83,15 +71,15 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     @Override
     public void initialize() {
         logger.debug("About to initialize SolarEdge");
-        Thing thing = this.getThing();
         SolarEdgeConfiguration config = getConfiguration();
 
         logger.debug("Solaredge initialized with configuration: {}", config);
 
-        this.webInterface = new WebInterface(config, this);
+        this.webInterface = new WebInterface(config, scheduler, this);
 
         if (config.getTokenOrApiKey() != null) {
             startPolling();
+            webInterface.start();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no username/password set");
         }
@@ -104,7 +92,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
         if (liveDataPollingJob == null || liveDataPollingJob.isCancelled()) {
             logger.debug("start live data polling job at intervall {}",
                     getConfiguration().getLiveDataPollingInterval());
-            liveDataPollingJob = scheduler.scheduleWithFixedDelay(liveDataPollingRunnable, 1,
+            liveDataPollingJob = scheduler.scheduleWithFixedDelay(new SolarEdgeLiveDataPolling(this), 1,
                     getConfiguration().getLiveDataPollingInterval(), TimeUnit.MINUTES);
         } else {
             logger.debug("live data pollingJob already active");
@@ -112,7 +100,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
         if (aggregateDataPollingJob == null || aggregateDataPollingJob.isCancelled()) {
             logger.debug("start aggregate data polling job at intervall {}",
                     getConfiguration().getAggregateDataPollingInterval());
-            liveDataPollingJob = scheduler.scheduleWithFixedDelay(aggregateDataPollingRunnable, 1,
+            liveDataPollingJob = scheduler.scheduleWithFixedDelay(new SolarEdgeAggregateDataPolling(this), 2,
                     getConfiguration().getAggregateDataPollingInterval(), TimeUnit.MINUTES);
         } else {
             logger.debug("aggregate data pollingJob already active");
@@ -134,6 +122,11 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
             logger.debug("stop aggregate data polling job");
             aggregateDataPollingJob.cancel(true);
             aggregateDataPollingJob = null;
+        }
+
+        // the webinterface also makes use of the scheduler and must stop it's jobs
+        if (webInterface != null) {
+            webInterface.dispose();
         }
     }
 

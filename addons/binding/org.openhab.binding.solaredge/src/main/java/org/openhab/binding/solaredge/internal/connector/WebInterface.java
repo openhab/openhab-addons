@@ -9,9 +9,15 @@
 package org.openhab.binding.solaredge.internal.connector;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Queue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus.Code;
+import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -32,7 +38,8 @@ public class WebInterface {
 
     private static final long PUBLIC_API_DAY_LIMIT = 300;
     private static final long MINUTES_PER_DAY = 1440;
-    private static final long LOGIN_WAIT_TIME = 1000;
+    private static final long REQUEST_INITIAL_DELAY = 30000;
+    private static final long REQUEST_INTERVAL = 5000;
 
     private final Logger logger = LoggerFactory.getLogger(WebInterface.class);
 
@@ -62,13 +69,95 @@ public class WebInterface {
     private int asyncmaxconns = 20;
 
     /**
+     * the scheduler which periodically sends web requests to the solaredge API. Should be initiated with the thing's
+     * existing scheduler instance.
+     */
+    private final ScheduledExecutorService scheduler;
+
+    /**
+     * request executor
+     */
+    private final WebRequestExecutor requestExecutor;
+
+    /**
+     * periodic request executor job
+     */
+    private ScheduledFuture<?> requestExecutorJob;
+
+    /**
+     * this class is responsible for executing periodic web requests. This ensures that only one request is executed at
+     * the same time and there will be a guaranteed minimum delay between subsequent requests.
+     *
+     * @author afriese - initial contribution
+     */
+    @NonNullByDefault
+    private class WebRequestExecutor implements Runnable {
+
+        /**
+         * queue which holds the commands to execute
+         */
+        private final Queue<SolarEdgeCommand> commandQueue;
+
+        /**
+         * constructor
+         */
+        WebRequestExecutor() {
+            this.commandQueue = new BlockingArrayQueue<>(20);
+        }
+
+        /**
+         * puts a command into the queue
+         *
+         * @param command
+         */
+        void enqueue(SolarEdgeCommand command) {
+            commandQueue.add(command);
+        }
+
+        /**
+         * executes the web request
+         */
+        @Override
+        public void run() {
+            if (!isAuthenticated()) {
+                authenticate();
+            }
+
+            else if (isAuthenticated() && !commandQueue.isEmpty()) {
+                StatusUpdateListener statusUpdater = new StatusUpdateListener() {
+                    @Override
+                    public void update(CommunicationStatus status) {
+                        if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
+                            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                                    status.getMessage());
+                            setAuthenticated(false);
+                        } else if (!status.getHttpCode().equals(Code.OK)) {
+                            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    status.getMessage());
+                            setAuthenticated(false);
+                        }
+
+                    }
+                };
+
+                SolarEdgeCommand command = commandQueue.poll();
+                command.setListener(statusUpdater);
+                command.performAction(asyncclient);
+            }
+        }
+
+    }
+
+    /**
      * Constructor to set up interface
      *
      * @param config Bridge configuration
      */
-    public WebInterface(SolarEdgeConfiguration config, SolarEdgeHandler handler) {
+    public WebInterface(SolarEdgeConfiguration config, ScheduledExecutorService scheduler, SolarEdgeHandler handler) {
         this.config = config;
         this.handler = handler;
+        this.scheduler = scheduler;
+        this.requestExecutor = new WebRequestExecutor();
         asyncclient = new HttpClient(new SslContextFactory(true));
         asyncclient.setMaxConnectionsPerDestination(asyncmaxconns);
         try {
@@ -76,45 +165,25 @@ public class WebInterface {
         } catch (Exception e) {
             logger.warn("Could not start HTTP Client");
         }
-        authenticate();
+    }
+
+    public synchronized void start() {
+        if (requestExecutorJob == null || requestExecutorJob.isCancelled()) {
+            logger.debug("start request executor job at intervall {} ms", REQUEST_INTERVAL);
+            requestExecutorJob = scheduler.scheduleWithFixedDelay(requestExecutor, REQUEST_INITIAL_DELAY,
+                    REQUEST_INTERVAL, TimeUnit.MILLISECONDS);
+        } else {
+            logger.debug("live data pollingJob already active");
+        }
     }
 
     /**
-     * executes any command provided by parameter
+     * queues any command for execution
      *
      * @param command
      */
-    public void executeCommand(SolarEdgeCommand command) {
-        if (!isAuthenticated()) {
-            authenticate();
-            try {
-                Thread.sleep(LOGIN_WAIT_TIME);
-            } catch (InterruptedException e) {
-            }
-        }
-
-        if (isAuthenticated()) {
-            StatusUpdateListener statusUpdater = new StatusUpdateListener() {
-
-                @Override
-                public void update(CommunicationStatus status) {
-                    if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
-                        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                                status.getMessage());
-                        setAuthenticated(false);
-                    } else if (!status.getHttpCode().equals(Code.OK)) {
-                        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                status.getMessage());
-                        setAuthenticated(false);
-                    }
-
-                }
-            };
-
-            command.setListener(statusUpdater);
-            command.performAction(asyncclient);
-        }
-
+    public void enqueueCommand(SolarEdgeCommand command) {
+        requestExecutor.enqueue(command);
     }
 
     /**
@@ -122,7 +191,7 @@ public class WebInterface {
      *
      * @throws UnsupportedEncodingException
      */
-    public synchronized void authenticate() {
+    private synchronized void authenticate() {
         setAuthenticated(false);
 
         if (preCheck()) {
@@ -192,9 +261,26 @@ public class WebInterface {
 
     }
 
+    /**
+     * calculates requests per day. just an internal helper
+     *
+     * @return
+     */
     private long calcRequestsPerDay() {
         return MINUTES_PER_DAY / this.config.getLiveDataPollingInterval()
                 + 4 * MINUTES_PER_DAY / this.config.getAggregateDataPollingInterval();
+    }
+
+    /**
+     * will be called by the ThingHandler to abort periodic jobs.
+     */
+    public void dispose() {
+        logger.debug("Webinterface disposed.");
+        if (requestExecutorJob != null && !requestExecutorJob.isCancelled()) {
+            logger.debug("stop request executor job");
+            requestExecutorJob.cancel(true);
+            requestExecutorJob = null;
+        }
     }
 
     /**

@@ -67,20 +67,8 @@ public class SolarEdgeAggregateDataPolling implements Runnable {
                     commands.add(new AggregateDataUpdatePublicApi(handler, AggregatePeriod.YEAR));
                 }
 
-                try {
-                    for (SolarEdgeCommand command : commands) {
-                        handler.getWebInterface().executeCommand(command);
-                        // we must not flood the API with requests, otherwise we will get an exception
-                        Thread.sleep(5000);
-                    }
-                } catch (RuntimeException e) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Caught Exception: {}", e.getMessage(), e);
-                    } else {
-                        logger.warn("Caught Exception: {}", e.getMessage());
-                    }
-                } catch (InterruptedException e) {
-                    // no need to handle this
+                for (SolarEdgeCommand command : commands) {
+                    handler.getWebInterface().enqueueCommand(command);
                 }
             }
         }

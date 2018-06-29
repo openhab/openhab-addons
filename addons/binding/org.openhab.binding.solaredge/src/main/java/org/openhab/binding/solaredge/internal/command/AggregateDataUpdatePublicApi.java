@@ -88,7 +88,7 @@ public class AggregateDataUpdatePublicApi extends AbstractCommandCallback implem
                 getListener().update(getCommunicationStatus());
             }
             if (retries++ < MAX_RETRIES) {
-                handler.getWebInterface().executeCommand(this);
+                handler.getWebInterface().enqueueCommand(this);
             }
 
         } else {

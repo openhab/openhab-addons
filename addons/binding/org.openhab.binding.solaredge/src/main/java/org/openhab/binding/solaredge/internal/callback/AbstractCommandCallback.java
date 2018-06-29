@@ -59,7 +59,7 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     /**
      * status code of fulfilled request
      */
-    private CommunicationStatus communicationStatus;
+    private final CommunicationStatus communicationStatus;
 
     /**
      * listener to provide updates to the WebInterface class

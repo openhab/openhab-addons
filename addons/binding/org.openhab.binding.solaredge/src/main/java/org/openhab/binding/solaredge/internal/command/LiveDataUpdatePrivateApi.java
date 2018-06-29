@@ -57,7 +57,7 @@ public class LiveDataUpdatePrivateApi extends AbstractCommandCallback implements
                 getListener().update(getCommunicationStatus());
             }
             if (retries++ < MAX_RETRIES) {
-                handler.getWebInterface().executeCommand(this);
+                handler.getWebInterface().enqueueCommand(this);
             }
 
         } else {

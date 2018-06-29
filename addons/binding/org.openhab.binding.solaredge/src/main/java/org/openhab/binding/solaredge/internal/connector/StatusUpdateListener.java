@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.solaredge.internal.connector;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * callback interface to update the status of the {@link WebInterface}
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public interface StatusUpdateListener {
 
     void update(CommunicationStatus status);
