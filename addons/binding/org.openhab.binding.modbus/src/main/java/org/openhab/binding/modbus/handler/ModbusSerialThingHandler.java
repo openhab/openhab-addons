@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.modbus.handler;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -34,19 +33,19 @@ public class ModbusSerialThingHandler
     }
 
     @Override
-    protected void configure() {
+    protected void configure() throws ModbusConfigurationException {
         ModbusSerialConfiguration config = getConfigAs(ModbusSerialConfiguration.class);
-        String port = Objects.requireNonNull(config.getPort(), "port must not be null");
-        Integer baud = Objects.requireNonNull(config.getBaud(), "baud must not be null");
-        String flowControlIn = Objects.requireNonNull(config.getFlowControlIn(), "flowControlIn must not be null");
-        String flowControlOut = Objects.requireNonNull(config.getFlowControlOut(), "flowControlOut must not be null");
-        String stopBits = Objects.requireNonNull(config.getStopBits(), "stopBits must not be null");
-        String parity = Objects.requireNonNull(config.getParity(), "parity must not be null");
-        String encoding = Objects.requireNonNull(config.getEncoding(), "encoding must not be null");
-        if (port == null || baud == null || flowControlIn == null || flowControlOut == null || stopBits == null
-                || parity == null || encoding == null) {
-            // Just to make compiler happy (null checks), NullPointerException has been raised above already
-            throw new IllegalArgumentException();
+        String port = config.getPort();
+        int baud = config.getBaud();
+        String flowControlIn = config.getFlowControlIn();
+        String flowControlOut = config.getFlowControlOut();
+        String stopBits = config.getStopBits();
+        String parity = config.getParity();
+        String encoding = config.getEncoding();
+        if (port == null || flowControlIn == null || flowControlOut == null || stopBits == null || parity == null
+                || encoding == null) {
+            throw new ModbusConfigurationException(
+                    "port, baud, flowControlIn, flowControlOut, stopBits, parity, encoding all must be non-null!");
         }
 
         this.config = config;

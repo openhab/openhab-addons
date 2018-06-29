@@ -12,7 +12,6 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.transform.TransformationException;
 import org.eclipse.smarthome.core.transform.TransformationHelper;
 import org.eclipse.smarthome.core.transform.TransformationService;
 import org.eclipse.smarthome.core.types.Command;
@@ -124,10 +124,15 @@ public class Transformation {
 
     public String transform(BundleContext context, String value) {
         String transformedResponse;
+        String transformationServiceName = this.transformationServiceName;
+        String transformationServiceParam = this.transformationServiceParam;
 
-        if (hasTransformationService()) {
+        if (transformationServiceName != null) {
             try {
-                Objects.requireNonNull(transformationServiceName);
+                if (transformationServiceParam == null) {
+                    throw new TransformationException(
+                            "transformation service parameter is missing! Invalid transform?");
+                }
                 @Nullable
                 TransformationService transformationService = TransformationHelper.getTransformationService(context,
                         transformationServiceName);
@@ -138,7 +143,7 @@ public class Transformation {
                     logger.warn("couldn't transform response because transformationService of type '{}' is unavailable",
                             transformationServiceName);
                 }
-            } catch (Exception te) {
+            } catch (TransformationException te) {
                 logger.error("transformation throws exception [transformation={}, response={}]", transformation, value,
                         te);
 

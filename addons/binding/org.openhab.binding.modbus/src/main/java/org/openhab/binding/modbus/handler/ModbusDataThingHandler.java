@@ -302,7 +302,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         Collection<ModbusWriteRequestBlueprint> requests;
         try {
             requests = WriteRequestJsonUtilities.fromJson(slaveId, transformOutput);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             logger.warn(
                     "Thing {} '{}' could handle transformation result '{}'. Original command {}. Error details follow",
                     getThing().getUID(), getThing().getLabel(), transformOutput, command, e);
@@ -365,14 +365,10 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             validateMustReadOrWrite();
 
             updateStatus(ThingStatus.ONLINE);
-        } catch (ModbusConfigurationException e) {
-            logger.error("Thing {} '{}' configuration error: {}", getThing().getUID(), getThing().getLabel(),
+        } catch (ModbusConfigurationException | EndpointNotInitializedException e) {
+            logger.error("Thing {} '{}' initialization error: {}", getThing().getUID(), getThing().getLabel(),
                     e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        } catch (Exception e) {
-            logger.error("Exception during initialization", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
-                    .format("Exception during initialization: %s (%s)", e.getMessage(), e.getClass().getSimpleName()));
         } finally {
             logger.trace("initialize() of thing {} '{}' finished", thing.getUID(), thing.getLabel());
         }

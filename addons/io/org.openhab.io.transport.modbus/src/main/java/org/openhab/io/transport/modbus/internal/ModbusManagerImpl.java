@@ -22,6 +22,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.imageio.IIOException;
+
 import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.SwallowedExceptionListener;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
@@ -39,7 +41,6 @@ import org.openhab.io.transport.modbus.ModbusManagerListener;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusTransportException;
 import org.openhab.io.transport.modbus.ModbusUnexpectedTransactionIdException;
 import org.openhab.io.transport.modbus.ModbusWriteCallback;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
@@ -102,7 +103,8 @@ public class ModbusManagerImpl implements ModbusManager {
          * @throws Exception on IO errors, slave exception responses, and when transaction IDs of the request and
          *             response do not match
          */
-        public void accept(String operationId, T task, ModbusSlaveConnection connection) throws Exception;
+        public void accept(String operationId, T task, ModbusSlaveConnection connection)
+                throws ModbusException, IIOException, ModbusUnexpectedTransactionIdException;
 
     }
 
@@ -139,7 +141,7 @@ public class ModbusManagerImpl implements ModbusManager {
     private class PollOperation implements ModbusOperation<PollTask> {
         @Override
         public void accept(String operationId, PollTask task, ModbusSlaveConnection connection)
-                throws ModbusException, ModbusTransportException {
+                throws ModbusException, ModbusUnexpectedTransactionIdException {
             ModbusSlaveEndpoint endpoint = task.getEndpoint();
             ModbusReadRequestBlueprint request = task.getRequest();
             ModbusReadCallback callback = task.getCallback();
@@ -176,7 +178,7 @@ public class ModbusManagerImpl implements ModbusManager {
     private class WriteOperation implements ModbusOperation<WriteTask> {
         @Override
         public void accept(String operationId, WriteTask task, ModbusSlaveConnection connection)
-                throws ModbusException, ModbusTransportException {
+                throws ModbusException, ModbusUnexpectedTransactionIdException {
             ModbusSlaveEndpoint endpoint = task.getEndpoint();
             ModbusWriteRequestBlueprint request = task.getRequest();
             ModbusWriteCallback callback = task.getCallback();
@@ -449,9 +451,6 @@ public class ModbusManagerImpl implements ModbusManager {
                 throw new IllegalStateException(String.format("Request %s or callback %s is of wrong type.",
                         request.getClass().getName(), callback.getClass().getName()));
             }
-        } catch (Exception e) {
-            logger.error("Unhandled exception in callback: {} {} with request {}", e.getClass().getName(),
-                    e.getMessage(), request, e);
         } finally {
             logger.trace("Called write response callback {} for request {}. Error was {} {}", callback, request,
                     error.getClass().getName(), error.getMessage());
@@ -464,8 +463,6 @@ public class ModbusManagerImpl implements ModbusManager {
             logger.trace("Calling write response callback {} for request {}. Response was {}", callback, request,
                     response);
             callback.onWriteResponse(request, response);
-        } catch (Exception e) {
-            logger.error("Unhandled exception in callback: {} {}", e.getClass().getName(), e.getMessage(), e);
         } finally {
             logger.trace("Called write response callback {} for request {}. Response was {}", callback, request,
                     response);
@@ -640,7 +637,7 @@ public class ModbusManagerImpl implements ModbusManager {
                     invalidate(endpoint, connection);
                     connection = Optional.empty();
                     continue;
-                } catch (Exception e) {
+                } catch (ModbusException e) {
                     lastError.set(e);
                     // Some other (unexpected) exception occurred
                     if (willRetry) {
@@ -700,11 +697,7 @@ public class ModbusManagerImpl implements ModbusManager {
             long millisInThreadPoolWaiting = System.currentTimeMillis() - scheduleTime;
             logger.debug("Will now execute one-off poll task {}, waited in thread pool for {}", task,
                     millisInThreadPoolWaiting);
-            try {
-                executeOperation(task, true, pollOperation);
-            } catch (Exception e) {
-                logger.error("Unexpected crash when executing task {}", task, e);
-            }
+            executeOperation(task, true, pollOperation);
         }, 0L, TimeUnit.MILLISECONDS);
         return future;
     }
@@ -724,11 +717,7 @@ public class ModbusManagerImpl implements ModbusManager {
                 long started = System.currentTimeMillis();
                 logger.debug("Executing scheduled ({}ms) poll task {}. Current millis: {}", pollPeriodMillis, task,
                         started);
-                try {
-                    executeOperation(task, false, pollOperation);
-                } catch (Exception e) {
-                    logger.error("Unexpected crash when executing task {}", task, e);
-                }
+                executeOperation(task, false, pollOperation);
                 long finished = System.currentTimeMillis();
                 logger.debug(
                         "Execution of scheduled ({}ms) poll task {} finished at {}. Was started at millis: {} (=duration of {} millis)",

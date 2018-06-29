@@ -37,6 +37,16 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEndpoint, C> extends BaseBridgeHandler
         implements ModbusManagerListener, ModbusEndpointThingHandler {
 
+    protected static class ModbusConfigurationException extends Exception {
+
+        private static final long serialVersionUID = -8071965935046300723L;
+
+        public ModbusConfigurationException(String errmsg) {
+            super(errmsg);
+        }
+
+    }
+
     @Nullable
     protected volatile C config;
     @Nullable
@@ -69,7 +79,7 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
                 managerRef.get().addListener(this);
                 managerRef.get().setEndpointPoolConfiguration(endpoint, poolConfiguration);
                 updateStatus(ThingStatus.ONLINE);
-            } catch (Exception e) {
+            } catch (ModbusConfigurationException e) {
                 logger.error("Exception during initialization", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                         "Exception during initialization: %s (%s)", e.getMessage(), e.getClass().getSimpleName()));
@@ -117,7 +127,7 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     /**
      * Must be overriden by subclasses to initialize config, endpoint, and poolConfiguration
      */
-    protected abstract void configure();
+    protected abstract void configure() throws ModbusConfigurationException;
 
     /**
      * Format error message in case some other endpoint has been configured with different

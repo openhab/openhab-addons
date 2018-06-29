@@ -210,14 +210,9 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
         disposed = false;
         logger.trace("Initializing {} from status {}", this.getThing().getUID(), this.getThing().getStatus());
         try {
-            try {
-                config = getConfigAs(ModbusPollerConfiguration.class);
-                registerPollTask();
-            } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
-                        "Exception during initialization: %s (%s)", e.getMessage(), e.getClass().getSimpleName()));
-            }
-        } catch (Exception e) {
+            config = getConfigAs(ModbusPollerConfiguration.class);
+            registerPollTask();
+        } catch (EndpointNotInitializedException e) {
             logger.debug("Exception during initialization", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
                     .format("Exception during initialization: %s (%s)", e.getMessage(), e.getClass().getSimpleName()));

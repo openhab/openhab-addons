@@ -8,11 +8,9 @@
  */
 package org.openhab.binding.modbus.handler;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -35,12 +33,13 @@ public class ModbusTcpThingHandler
     }
 
     @Override
-    protected void configure() {
+    protected void configure() throws ModbusConfigurationException {
         ModbusTcpConfiguration config = getConfigAs(ModbusTcpConfiguration.class);
 
-        Objects.requireNonNull(config.getHost(), "host must not be null");
-        Objects.requireNonNull(config.getPort(), "port must not be null");
-        String host = (@NonNull String) config.getHost();
+        String host = config.getHost();
+        if (host == null) {
+            throw new ModbusConfigurationException("host must be non-null!");
+        }
 
         this.config = config;
         endpoint = new ModbusTCPSlaveEndpoint(host, config.getPort());
