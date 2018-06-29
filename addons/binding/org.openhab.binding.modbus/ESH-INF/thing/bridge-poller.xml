@@ -12,7 +12,7 @@
 		<description>Regular poll of data from Modbus slaves</description>
 		<config-description>
 			<parameter name="refresh" type="integer" min="0">
-				<label>interval</label>
+				<label>Poll interval (ms)</label>
 				<description>Poll interval in milliseconds. Use zero to disable automatic polling.</description>
 				<default>500</default>
 			</parameter>
@@ -43,7 +43,7 @@
 				<description>Number of tries when reading data, if some of the reading fail. For single try, enter 1.</description>
 			</parameter>
 			<parameter name="cacheMillis" type="integer" min="0">
-				<label>Cache duration</label>
+				<label>Cache duration (ms)</label>
 				<default>50</default>
 				<description><![CDATA[Duration for data cache to be valid, in milliseconds. This cache is used only to serve REFRESH commands. 
 					<br />

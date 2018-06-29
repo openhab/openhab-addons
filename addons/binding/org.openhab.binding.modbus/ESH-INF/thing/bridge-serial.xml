@@ -130,8 +130,8 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="connectTimeoutMillis" type="integer" min="0">
-				<label>Timeout for establishing the connection</label>
-				<description>The maximum time that is waited when establishing the connection. Value of zero means thatsystem/OS
+				<label>Timeout for establishing the connection (ms)</label>
+				<description>The maximum time that is waited when establishing the connection. Value of zero means that system/OS
 					default is respected. In milliseconds.</description>
 				<default>10000</default>
 				<advanced>true</advanced>
