@@ -46,6 +46,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.modbus.ModbusBindingConstants;
+import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.binding.modbus.internal.Transformation;
 import org.openhab.binding.modbus.internal.config.ModbusDataConfiguration;
 import org.openhab.io.transport.modbus.BitArray;
@@ -84,16 +85,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ModbusDataThingHandler extends BaseThingHandler implements ModbusReadCallback, ModbusWriteCallback {
-
-    private static class ModbusConfigurationException extends Exception {
-
-        public ModbusConfigurationException(String errmsg) {
-            super(errmsg);
-        }
-
-        private static final long serialVersionUID = -466597103876477780L;
-
-    }
 
     private final Logger logger = LoggerFactory.getLogger(ModbusDataThingHandler.class);
 

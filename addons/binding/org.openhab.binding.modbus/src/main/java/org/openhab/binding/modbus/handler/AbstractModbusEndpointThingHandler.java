@@ -18,6 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusManagerListener;
 import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
@@ -36,16 +37,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEndpoint, C> extends BaseBridgeHandler
         implements ModbusManagerListener, ModbusEndpointThingHandler {
-
-    protected static class ModbusConfigurationException extends Exception {
-
-        private static final long serialVersionUID = -8071965935046300723L;
-
-        public ModbusConfigurationException(String errmsg) {
-            super(errmsg);
-        }
-
-    }
 
     @Nullable
     protected volatile C config;

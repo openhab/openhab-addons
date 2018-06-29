@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.binding.modbus.internal.config.ModbusTcpConfiguration;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
