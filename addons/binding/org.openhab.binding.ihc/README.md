@@ -12,7 +12,6 @@ Binding will also listen to controller state changes, and when the controller st
 
 IHC / ELKO LS controller communication interface is SOAP (Simple Object Access Protocol) based, limited to HTTPS transport protocol.
 
-#
 ## Supported Things
 
 This binding supports one ThingType: `controller`.
@@ -76,8 +75,8 @@ Channel parameters:
 | longPressMaxTime      | Integer      | yes      | 2000          | Long press max time in milliseconds.                                                                     |
 | extraLongPressMaxTime | Integer      | yes      | 4000          | Extra long press max time in milliseconds.                                                               |
 
-
 There are several ways to find the correct resource id's:
+
 1. Find directly from your IHC / ELKO LS project file (.vis file).
 2. Via IHC / ELKO Visual application. Hold ctrl button from keyboard while mouse over the select item in Visual.
 3. Enable debug level from binding. Binding will then print basic resource ID from the project file, if `loadProjectFile` configuration variable is enabled. 
@@ -131,12 +130,6 @@ Number test_number  "Test Number"    { channel="ihc:controller:elko:my_test_numb
 Switch low_battery  "Low Battery"    { channel="ihc:controller:elko:my_low_battery" }
 
 Number multi_resource_test  "Multi resource test"  { channel="ihc:controller:elko:readonly_resource", channel="ihc:controller:elko:write1_resource", channel="ihc:controller:elko:write2_resource", channel="ihc:controller:elko:write3_resource" }
-```
-
-### example.sitemap
-
-```xtend
-
 ```
 
 ### example.rules
