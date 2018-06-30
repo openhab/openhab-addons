@@ -31,7 +31,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Pauli Anttila - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.ihc")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.ihc")
 @NonNullByDefault
 public class IhcHandlerFactory extends BaseThingHandlerFactory {
 
