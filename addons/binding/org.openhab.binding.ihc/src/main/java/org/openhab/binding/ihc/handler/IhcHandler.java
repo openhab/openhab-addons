@@ -75,30 +75,26 @@ import org.w3c.dom.Document;
 public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     private final Logger logger = LoggerFactory.getLogger(IhcHandler.class);
 
+    /** Maximum pulse width in milliseconds. */
     private static final int MAX_PULSE_WIDTH_IN_MS = 4000;
 
+    /** Name of the local IHC / ELKO project file */
     private static final String LOCAL_IHC_PROJECT_FILE_NAME_TEMPLATE = "ihc-project-file-%s.xml";
 
     /** Holds runtime notification reorder timeout in milliseconds */
-    private final int NOTIFICATIONS_REORDER_WAIT_TIME = 2000;
+    private static final int NOTIFICATIONS_REORDER_WAIT_TIME = 2000;
 
     /** IHC / ELKO LS Controller client */
-    private static IhcClient ihc;
+    private IhcClient ihc;
 
     /**
      * Reminder to slow down resource value notification ordering from
      * controller.
      */
     private NotificationsRequestReminder reminder = null;
-    private boolean reconnectRequest = false;
-    private boolean valueNotificationRequest = false;
 
-    private ScheduledFuture<?> controlJob;
-    private ScheduledFuture<?> pollingJobRf;
-
+    /** Holds local IHC / ELKO project file */
     Document projectFile;
-
-    private boolean connecting = false;
 
     /**
      * Store current state of the controller, use to recognize when controller
@@ -107,12 +103,16 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     private String controllerState = "";
 
     private IhcConfiguration conf;
-
     private final Set<Integer> linkedResourceIds = Collections.synchronizedSet(new HashSet<>());
-
     private Map<Integer, LocalDateTime> lastUpdate = new HashMap<>();
-
     private EnumDictionary enumDictionary;
+
+    private boolean connecting = false;
+    private boolean reconnectRequest = false;
+    private boolean valueNotificationRequest = false;
+
+    private ScheduledFuture<?> controlJob;
+    private ScheduledFuture<?> pollingJobRf;
 
     private final Runnable pollingRunnableRF = new Runnable() {
         @Override
