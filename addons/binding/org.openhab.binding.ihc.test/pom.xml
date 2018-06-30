@@ -6,12 +6,55 @@
   <parent>
     <artifactId>pom</artifactId>
     <groupId>org.openhab.binding</groupId>
-    <version>2.3.0-SNAPSHOT</version>
+    <version>2.4.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.ihc.test</artifactId>
   <packaging>eclipse-test-plugin</packaging>
 
   <name>IHC / ELKO Binding Tests</name>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-surefire-plugin</artifactId>
+        <version>${tycho-version}</version>
+        <configuration>
+          <dependencies>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.equinox.event</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.equinox.ds</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.smarthome.config.xml</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.smarthome.core.thing.xml</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.smarthome.core.binding.xml</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+          </dependencies>
+          <defaultStartLevel>
+            <level>4</level>
+            <autoStart>true</autoStart>
+          </defaultStartLevel>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
