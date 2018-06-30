@@ -137,8 +137,8 @@ Bridge avmfritz:fritzbox:1 "FRITZ!Box" [ ipAddress="192.168.x.x", password="xxx"
     Thing FRITZ_DECT_200 xxxxxxxxxxxx "FRITZ!DECT 200 #1" [ ain="xxxxxxxxxxxx" ]
     Thing FRITZ_Powerline_546E yy_yy_yy_yy_yy_yy "FRITZ!Powerline 546E #2" [ ain="yy:yy:yy:yy:yy:yy" ]
     Thing Comet_DECT aaaaaabbbbbb "Comet DECT #3" [ ain="aaaaaabbbbbb" ]
-    Thing HANFUNContact zzzzzzzzzzzz_1 "HAN-FUN Contact #4" [ ain="zzzzzzzzzzzz-1" ]
-    Thing HANFUNSwitch zzzzzzzzzzzz_2 "HAN-FUN Switch #5" [ ain=zzzzzzzzzzzz-2" ]
+    Thing HAN_FUN_CONTACT zzzzzzzzzzzz_1 "HAN-FUN Contact #4" [ ain="zzzzzzzzzzzz-1" ]
+    Thing HAN_FUN_SWITCH zzzzzzzzzzzz_2 "HAN-FUN Switch #5" [ ain=zzzzzzzzzzzz-2" ]
     Thing FRITZ_GROUP_HEATING AA_AA_AA_900 "Heating group" [ ain="AA:AA:AA-900" ]
     Thing FRITZ_GROUP_SWITCH BB_BB_BB_900 "Switch group" [ ain="BB:BB:BB-900" ]
 }
