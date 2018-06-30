@@ -11,6 +11,7 @@ package org.openhab.binding.avmfritz.internal.handler;
 import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel.Etsiunitinfo.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -336,7 +337,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     /**
      * Triggers thing channels.
      *
-     * @param thing     Thing which channels should be triggered.
+     * @param thing Thing which channels should be triggered.
      * @param channelId ID of the channel to be triggered.
      */
     private void triggerThingChannel(Thing thing, String channelId) {
@@ -417,7 +418,10 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         if (device instanceof DeviceModel && ((DeviceModel) device).getEtsiunitinfo() != null) {
             String unittype = ((DeviceModel) device).getEtsiunitinfo().getUnittype();
             switch (unittype) {
-                case Etsiunitinfo.HAN_FUN_SWITCH_UNITTYPE:
+                case HAN_FUN_CONTACT_UNITTYPE:
+                case HAN_FUN_MOTION_SENSOR_UNITTYPE:
+                    return DEVICE_HAN_FUN_CONTACT;
+                case HAN_FUN_SWITCH_UNITTYPE:
                     return DEVICE_HAN_FUN_SWITCH;
                 case Etsiunitinfo.HAN_FUN_CONTACT_UNITTYPE:
                     return DEVICE_HAN_FUN_CONTACT;

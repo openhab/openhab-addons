@@ -67,6 +67,7 @@ public class DeviceModel extends AVMFritzBaseModel {
     @XmlType(propOrder = { "etsideviceid", "unittype", "interfaces" })
     public static class Etsiunitinfo {
         public static final String HAN_FUN_CONTACT_UNITTYPE = "514";
+        public static final String HAN_FUN_MOTION_SENSOR_UNITTYPE = "515";
         public static final String HAN_FUN_SWITCH_UNITTYPE = "273";
 
         private String etsideviceid;
