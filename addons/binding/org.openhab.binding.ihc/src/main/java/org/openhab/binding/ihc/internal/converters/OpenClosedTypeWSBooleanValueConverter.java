@@ -12,7 +12,7 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.openhab.binding.ihc.ws.resourcevalues.WSBooleanValue;
 
 /**
- *
+ * OpenClosedType <-> WSBooleanValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

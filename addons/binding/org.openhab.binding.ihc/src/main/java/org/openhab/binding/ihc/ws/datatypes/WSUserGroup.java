@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.ws.datatypes;
 
 /**
- * Java class for WSUserGroup complex type.
+ * Class for WSUserGroup complex type.
  *
  * @author Pauli Anttila - Initial contribution
  */

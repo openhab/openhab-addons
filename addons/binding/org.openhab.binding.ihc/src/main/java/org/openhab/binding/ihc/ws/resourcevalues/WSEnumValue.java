@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.ws.resourcevalues;
 
 /**
- * Java class for WSEnumValue complex type.
+ * Class for WSEnumValue complex type.
  *
  * @author Pauli Anttila - Initial contribution
  */

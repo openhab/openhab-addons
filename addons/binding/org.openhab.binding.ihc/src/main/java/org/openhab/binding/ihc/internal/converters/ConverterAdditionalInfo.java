@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import org.openhab.binding.ihc.ws.projectfile.IhcEnumValue;
 
 /**
- *
+ * Class to hold additional information which is needed for data conversion.
  *
  * @author Pauli Anttila - Initial contribution
  */

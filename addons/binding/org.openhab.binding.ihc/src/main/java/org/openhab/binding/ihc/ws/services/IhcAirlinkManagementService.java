@@ -30,10 +30,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 /**
- * Class to handle IHC / ELKO LS Controller's controller service.
+ * Class to handle IHC / ELKO LS Controller's airlink management service.
  *
- * Controller service is used to fetch information from the controller.
- * E.g. Project file or controller status.
  *
  * @author Pauli Anttila - Initial contribution
  */

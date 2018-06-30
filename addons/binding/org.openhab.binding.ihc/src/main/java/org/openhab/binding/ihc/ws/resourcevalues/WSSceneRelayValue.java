@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.ws.resourcevalues;
 
 /**
- * Java class for WSSceneRelayValue complex type.
+ * Class for WSSceneRelayValue complex type.
  *
  * @author Pauli Anttila - Initial contribution
  */

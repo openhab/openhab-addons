@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.ws.resourcevalues;
 
 /**
- * Java class for WSTimeValue complex type.
+ * Class for WSTimeValue complex type.
  *
  * @author Pauli Anttila - Initial contribution
  */

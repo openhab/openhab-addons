@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.ws.resourcevalues;
 
 /**
- * Java class for WSFloatingPointValue complex type.
+ * Class for WSFloatingPointValue complex type.
  *
  * @author Pauli Anttila - Initial contribution
  */

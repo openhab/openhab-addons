@@ -15,7 +15,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.openhab.binding.ihc.ws.resourcevalues.WSFloatingPointValue;
 
 /**
- *
+ * DecimalType <-> WSFloatingPointValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

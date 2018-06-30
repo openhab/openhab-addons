@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.internal;
 
 /**
- *
+ * Class to convert IHC RF signal level value to openHAB signal level.
  *
  * @author Pauli Anttila - Initial contribution
  */

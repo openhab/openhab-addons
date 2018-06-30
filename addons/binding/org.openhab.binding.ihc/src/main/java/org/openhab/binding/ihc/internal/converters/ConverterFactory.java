@@ -30,7 +30,7 @@ import org.openhab.binding.ihc.ws.resourcevalues.WSTimerValue;
 import org.openhab.binding.ihc.ws.resourcevalues.WSWeekdayValue;
 
 /**
- *
+ * IHC / ELKO <-> openHAB data type converter factory.
  *
  * @author Pauli Anttila - Initial contribution
  */

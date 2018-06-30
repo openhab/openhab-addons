@@ -12,7 +12,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.binding.ihc.ws.resourcevalues.WSIntegerValue;
 
 /**
- *
+ * OnOffType <-> WSIntegerValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

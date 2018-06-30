@@ -11,7 +11,7 @@ package org.openhab.binding.ihc.ws.datatypes;
 import org.openhab.binding.ihc.ws.exeptions.IhcExecption;
 
 /**
- * Java class for WSFile complex type.
+ * Class for WSFile complex type.
  *
  * @author Pauli Anttila - Initial contribution
  */

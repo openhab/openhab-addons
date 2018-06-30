@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.ws.datatypes;
 
 /**
- * Java class for WSRFDevice complex type.
+ * Class for WSRFDevice complex type.
  *
  * @author Pauli Anttila - Initial contribution
  */

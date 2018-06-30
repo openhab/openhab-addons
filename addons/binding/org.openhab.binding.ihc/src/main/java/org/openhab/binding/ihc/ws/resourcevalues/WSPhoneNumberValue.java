@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.ws.resourcevalues;
 
 /**
- * Java class for WSPhoneNumberValue complex type.
+ * Class for WSPhoneNumberValue complex type.
  *
  * @author Pauli Anttila - Initial contribution
  */

@@ -11,7 +11,7 @@ package org.openhab.binding.ihc.ws.datatypes;
 import org.openhab.binding.ihc.ws.exeptions.IhcExecption;
 
 /**
- * Java class for WSNumberOfSegments complex type.
+ * Class for WSNumberOfSegments complex type.
  *
  * @author Pauli Anttila - Initial contribution
  */

@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.ws.resourcevalues;
 
 /**
- * Java class for WSTimerValue complex type.
+ * Class for WSTimerValue complex type.
  *
  * @author Pauli Anttila - Initial contribution
  */

@@ -12,7 +12,7 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.openhab.binding.ihc.ws.resourcevalues.WSIntegerValue;
 
 /**
- *
+ * OpenClosedType <-> WSIntegerValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

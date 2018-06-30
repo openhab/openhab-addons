@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.ws.resourcevalues;
 
 /**
- * Java class for WSResourceValue complex type.
+ * Class for WSResourceValue complex type.
  *
  * @author Pauli Anttila - Initial contribution
  */

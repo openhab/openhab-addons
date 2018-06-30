@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.internal.converters;
 
 /**
- *
+ * IHC / ELKO <-> openHAB data type converter interface.
  *
  * @author Pauli Anttila - Initial contribution
  */

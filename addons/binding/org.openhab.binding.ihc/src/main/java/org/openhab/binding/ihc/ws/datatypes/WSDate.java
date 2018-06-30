@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.ws.datatypes;
 
 /**
- * Java class for WSDate complex type.
+ * Class for WSDate complex type.
  *
  * @author Pauli Anttila - Initial contribution
  */

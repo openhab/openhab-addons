@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.ws.resourcevalues;
 
 /**
- * Java class for WSSceneShutterSimpleValue complex type.
+ * Class for WSSceneShutterSimpleValue complex type.
  *
  * @author Pauli Anttila - Initial contribution
  */

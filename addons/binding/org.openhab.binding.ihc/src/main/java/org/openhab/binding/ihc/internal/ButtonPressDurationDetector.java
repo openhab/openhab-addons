@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Class to handle button press durations
  *
  * @author Pauli Anttila - Initial contribution
  */

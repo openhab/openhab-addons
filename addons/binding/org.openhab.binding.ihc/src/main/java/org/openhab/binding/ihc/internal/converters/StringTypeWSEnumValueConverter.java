@@ -13,7 +13,7 @@ import org.openhab.binding.ihc.ws.projectfile.IhcEnumValue;
 import org.openhab.binding.ihc.ws.resourcevalues.WSEnumValue;
 
 /**
- *
+ * StringType <-> WSEnumValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

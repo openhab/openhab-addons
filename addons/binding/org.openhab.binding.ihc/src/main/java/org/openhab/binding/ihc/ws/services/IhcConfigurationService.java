@@ -12,10 +12,9 @@ import org.openhab.binding.ihc.ws.datatypes.WSSystemInfo;
 import org.openhab.binding.ihc.ws.exeptions.IhcExecption;
 
 /**
- * Class to handle IHC / ELKO LS Controller's controller service.
+ * Class to handle IHC / ELKO LS Controller's configuration service.
  *
- * Controller service is used to fetch information from the controller.
- * E.g. Project file or controller status.
+ * Controller service is used to fetch system information from the controller.
  *
  * @author Pauli Anttila - Initial contribution
  */

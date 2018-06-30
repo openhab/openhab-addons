@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.ws.resourcevalues;
 
 /**
- * Java class for WSWeekdayValue complex type.
+ * Class for WSWeekdayValue complex type.
  *
  * @author Pauli Anttila - Initial contribution
  */

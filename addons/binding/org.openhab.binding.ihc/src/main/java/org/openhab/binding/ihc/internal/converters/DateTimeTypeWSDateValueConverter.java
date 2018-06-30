@@ -18,7 +18,7 @@ import org.openhab.binding.ihc.ws.resourcevalues.WSDateValue;
 import org.openhab.binding.ihc.ws.resourcevalues.WSTimeValue;
 
 /**
- *
+ * DateTimeType <-> WSDateValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

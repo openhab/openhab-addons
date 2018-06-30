@@ -28,7 +28,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- *
+ * Generic methods related to IHC / ELKO project file handling.
  *
  * @author Pauli Anttila - Initial contribution
  */

@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.ws.resourcevalues;
 
 /**
- * Java class for WSBooleanValue complex type.
+ * Class for WSBooleanValue complex type.
  *
  * @author Pauli Anttila - Initial contribution
  */

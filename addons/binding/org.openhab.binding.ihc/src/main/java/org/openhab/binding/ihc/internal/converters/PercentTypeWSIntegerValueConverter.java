@@ -12,7 +12,7 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.openhab.binding.ihc.ws.resourcevalues.WSIntegerValue;
 
 /**
- *
+ * PercentType <-> WSIntegerValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

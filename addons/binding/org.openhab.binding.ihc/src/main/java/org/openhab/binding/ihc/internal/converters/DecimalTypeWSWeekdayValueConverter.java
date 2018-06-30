@@ -12,7 +12,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.openhab.binding.ihc.ws.resourcevalues.WSWeekdayValue;
 
 /**
- *
+ * DecimalType <-> WSWeekdayValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

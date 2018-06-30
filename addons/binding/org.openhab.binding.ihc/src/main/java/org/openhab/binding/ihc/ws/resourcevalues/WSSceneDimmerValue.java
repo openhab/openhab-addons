@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.ws.resourcevalues;
 
 /**
- * Java class for WSSceneDimmerValue complex type.
+ * Class for WSSceneDimmerValue complex type.
  *
  * @author Pauli Anttila - Initial contribution
  */

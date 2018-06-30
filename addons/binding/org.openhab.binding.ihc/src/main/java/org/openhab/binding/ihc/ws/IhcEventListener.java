@@ -22,24 +22,21 @@ public interface IhcEventListener {
     /**
      * Event for receive status update from IHC controller.
      *
-     * @param status
-     *            Received status update from controller.
+     * @param status Received status update from controller.
      */
     void statusUpdateReceived(WSControllerState status);
 
     /**
      * Event for receive resource value updates from IHC controller.
      *
-     * @param value
-     *            Received value update from controller.
+     * @param value Received value update from controller.
      */
     void resourceValueUpdateReceived(WSResourceValue value);
 
     /**
      * Event for fatal error on communication to IHC controller.
      *
-     * @param e
-     *            IhcException occurred.
+     * @param e IhcException occurred.
      */
     void errorOccured(IhcExecption e);
 }

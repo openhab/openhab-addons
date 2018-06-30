@@ -12,7 +12,7 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.openhab.binding.ihc.ws.resourcevalues.WSIntegerValue;
 
 /**
- *
+ * UpDownType <-> WSIntegerValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */

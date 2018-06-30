@@ -15,7 +15,7 @@ import org.junit.Test;
 /**
  * Test for IHC / ELKO binding
  *
- * @author Pauli Anttila
+ * @author Pauli Anttila - Initial contribution
  */
 public class SignalLevelConverterTest {
 

@@ -14,7 +14,7 @@ import java.util.HashMap;
 import org.openhab.binding.ihc.ws.projectfile.IhcEnumValue;
 
 /**
- *
+ * Class for holding enumerations from IHC / ELKO project file.
  *
  * @author Pauli Anttila - Initial contribution
  */
@@ -29,8 +29,7 @@ public class EnumDictionary {
     /**
      * Returns all possible enumerated values for corresponding enum type.
      *
-     * @param typedefId
-     *            Enum type definition identifier.
+     * @param typedefId Enum type definition identifier.
      * @return list of enum values.
      */
     public ArrayList<IhcEnumValue> getEnumValues(int typedefId) {

@@ -6,7 +6,6 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.openhab.binding.ihc.internal;
 
 import static org.junit.Assert.assertEquals;
@@ -18,7 +17,7 @@ import org.junit.Test;
 /**
  * Test for IHC / ELKO binding
  *
- * @author Pauli Anttila
+ * @author Pauli Anttila - Initial contribution
  */
 public class ButtonPressDurationDetectorTest {
 
