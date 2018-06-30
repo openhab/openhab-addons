@@ -50,10 +50,9 @@ User can manually add other channels or disable channel auto generation and add 
 List of supported channel types.
 
 | Channel Type ID                   | Item Type     | Description                                                                                     | Supported channel parameters                                           |
-| --------------------------------- | ------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | 
+| --------------------------------- | ------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | switch-channel                    | Switch        | Generic switch channel.                                                                         | resourceId, direction, commandToReact, pulseWidth, inverted            |
-| contact-channel                   | Contact       | Generic contact channel.                                                                        | resourceId, inverted 
-                                                |    
+| contact-channel                   | Contact       | Generic contact channel.                                                                        | resourceId, inverted                                                   |
 | number-channel                    | Number        | Generic number channel.                                                                         | resourceId, direction, commandToReact, pulseWidth                      |
 | dimmer-channel                    | Dimmer        | Generic dimmer channel.                                                                         | resourceId, direction, commandToReact, pulseWidth                      |
 | datetime-channel                  | DateTime      | Generic datetime channel.                                                                       | resourceId, direction, commandToReact, pulseWidth                      |
@@ -68,7 +67,7 @@ Channel parameters:
 | Channel parameter     | Param Type   | Required | Default value | Description                                                                                              |
 | --------------------- | ------------ | -------- | ------------- | -------------------------------------------------------------------------------------------------------- |
 | resourceId            | Integer      | yes      |               | Resource Id in decimal format from project file.                                                         |
-| direction             | Text         | no       | ReadWrite     | Direction of the channel (ReadWrite, WriteOnly, ReadOnly).                                               |                                 
+| direction             | Text         | no       | ReadWrite     | Direction of the channel (ReadWrite, WriteOnly, ReadOnly).                                               |
 | commandToReact        | String       | no       |               | Command to react. If not defined, channel react to all commands.                                         |
 | pulseWidth            | Integer      | no       |               | Pulse width in milliseconds. If defined, binding send pulse rather than command value to IHC controller. |
 | inverted              | Boolean      | no       | false         | OpenHAB state is inverted compared to IHC output/input signal.                                           |
@@ -76,6 +75,31 @@ Channel parameters:
 | shortPressMaxTime     | Integer      | yes      | 1000          | Short press max time in milliseconds.                                                                    |
 | longPressMaxTime      | Integer      | yes      | 2000          | Long press max time in milliseconds.                                                                     |
 | extraLongPressMaxTime | Integer      | yes      | 4000          | Extra long press max time in milliseconds.                                                               |
+
+
+There are several ways to find the correct resource id's:
+1. Find directly from your IHC / ELKO LS project file (.vis file).
+2. Via IHC / ELKO Visual application. Hold ctrl button from keyboard while mouse over the select item in Visual.
+3. Enable debug level from binding. Binding will then print basic resource ID from the project file, if `loadProjectFile` configuration variable is enabled. 
+
+The binding supports resource id's ***only*** in decimal format.
+Hexadecimal values (start with 0x prefix) need to be converted to decimal format.
+Conversion can be done e.g. via Calculator in Windows or Mac.
+
+Resource id _0x3f4d14 is 0x3f4d14 in hexadecimal format, which is 4148500 in decimal format.
+
+Mapping table between data types:
+
+| IHC / ELKO data type    | openHAB item type | Channel type                     | Resource id from project file                                                                                                              |
+|-------------------------|-------------------|----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| WSFloatingPointValue    | Number            | number-channel                   | <resource_temperature id="_0x3f4d14" …>                                                                                                    |
+| WSIntegerValue          | Number, Dimmer    | number-channel, dimmer-channel   | <airlink_dimming id="_0x3ec5d" …>, <resource_integer id="_0x97e20b" …>, <resource_counter id="_0x97df0c" …>                                |
+| WSBooleanValue          | Switch, Contact   | switch-channel, contact-channel  | <dataline_input id="_0x3f295a" …>, <dataline_output id="_0x3ce35b" …>, <airlink_input id="_0x5b555c" …>, <resource_flag id="_0x97e00a" …>  |
+| WSTimerValue            | Number            | number-channel                   | <resource_timer id="_0x97de10" …>                                                                                                          |
+| WSWeekdayValue          | Number            | number-channel                   | <resource_weekday id="_0x97e109" …>                                                                                                        |
+| WSEnumValue             | String, Number    | string-channel, number-channel   | <resource_enum id="_0x98050f" …>                                                                                                           |
+| WSDateValue             | DateTime          | datetime-channel                 | <resource_date id="_0x97dd0e" …>                                                                                                           |
+| WSTimeValue             | DateTime          | datetime-channel                 | <resource_time id="_0x97db0d" …>                                                                                                           |
 
 
 ## Examples
