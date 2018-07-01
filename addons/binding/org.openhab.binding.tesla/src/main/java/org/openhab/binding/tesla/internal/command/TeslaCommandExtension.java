@@ -53,8 +53,8 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
 
     private StorageService storageService;
     private final Client teslaClient = ClientBuilder.newClient();
-    private final WebTarget teslaTarget = teslaClient.target(TESLA_OWNERS_URI);
-    private final WebTarget tokenTarget = teslaTarget.path(TESLA_ACCESS_TOKEN_URI);
+    private final WebTarget teslaTarget = teslaClient.target(URI_OWNERS);
+    private final WebTarget tokenTarget = teslaTarget.path(URI_ACCESS_TOKEN);
 
     public TeslaCommandExtension() {
         super("tesla", "Interact with the Tesla integration.");
