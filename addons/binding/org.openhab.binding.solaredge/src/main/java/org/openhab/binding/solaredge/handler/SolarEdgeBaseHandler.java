@@ -15,20 +15,17 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.solaredge.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.connector.WebInterface;
 import org.openhab.binding.solaredge.internal.model.Channel;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,56 +136,25 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
      * will update all channels provided in the map
      */
     @Override
-    public void updateChannelStatus(Map<String, @Nullable String> values) {
+    public void updateChannelStatus(Map<Channel, @Nullable State> values) {
         logger.debug("Handling channel update.");
 
-        for (String key : values.keySet()) {
-            Channel channel = getThingSpecificChannel(key);
-            if (channel != null) {
-                String value = values.get(key);
+        for (Channel channel : values.keySet()) {
+            if (getChannels().contains(channel)) {
+                State value = values.get(channel);
                 logger.debug("Channel is to be updated: {}: {}", channel.getFQName(), value);
                 if (value != null) {
-                    if (channel.getJavaType().equals(Double.class)) {
-                        try {
-                            updateState(channel.getFQName(), convertToDecimal(value));
-                        } catch (NumberFormatException ex) {
-                            logger.debug("Could not update channel {} - invalid number: '{}'", channel.getFQName(),
-                                    value);
-                            updateState(channel.getFQName(), UnDefType.UNDEF);
-                        }
-                    } else {
-                        updateState(channel.getFQName(), new StringType(value));
-                    }
+                    updateState(channel.getFQName(), value);
                 } else {
                     logger.debug("Value is null or not provided by solaredge (channel: {})", channel.getFQName());
                     updateState(channel.getFQName(), UnDefType.UNDEF);
                 }
             } else {
-                logger.debug("Could not identify channel: {} for model {}", key,
+                logger.debug("Could not identify channel: {} for model {}", channel.getFQName(),
                         getThing().getThingTypeUID().getAsString());
             }
         }
     }
-
-    /**
-     * internal method for conversion to a valid decimal value.
-     *
-     * @throws NumberFormatException
-     * @param number as String
-     * @return converted value to DecimalType
-     */
-    private DecimalType convertToDecimal(String number) {
-        return new DecimalType(number.replaceAll(",", ".").replaceAll("[^0-9.-]", ""));
-    }
-
-    /**
-     * return the channel with the specific id. Will return null if no channel is found.
-     *
-     * @param id identifier of the channel
-     * @return
-     */
-    @Nullable
-    protected abstract Channel getThingSpecificChannel(String id);
 
     @Override
     public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description) {

@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.solaredge.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.connector.WebInterface;
 import org.openhab.binding.solaredge.internal.model.Channel;
@@ -31,9 +32,9 @@ public interface SolarEdgeHandler extends ThingHandler {
      * Called from {@link WebInterface#authenticate()} to update
      * the thing status because updateStatus is protected.
      *
-     * @param status Bridge status
+     * @param status       Bridge status
      * @param statusDetail Bridge status detail
-     * @param description Bridge status description
+     * @param description  Bridge status description
      */
     void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description);
 
@@ -48,9 +49,9 @@ public interface SolarEdgeHandler extends ThingHandler {
     /**
      * method which updates the channels.
      *
-     * @param values key-value list where key is the channel id
+     * @param values key-value list where key is the channel
      */
-    void updateChannelStatus(Map<String, String> values);
+    void updateChannelStatus(Map<Channel, State> values);
 
     /**
      * return the binding's configuration

@@ -15,23 +15,23 @@ package org.openhab.binding.solaredge.internal.model;
  */
 public enum LiveDataChannels implements Channel {
 
-    PRODUCTION("production", "production", ChannelType.LIVE, ChannelGroup.LIVE, Double.class),
-    PV_STATUS("pv_status", "PV status", ChannelType.LIVE, ChannelGroup.LIVE, String.class),
+    PRODUCTION("production", "production", ChannelType.LIVE, ChannelGroup.LIVE),
+    PV_STATUS("pv_status", "PV status", ChannelType.LIVE, ChannelGroup.LIVE),
 
-    CONSUMPTION("consumption", "consumption", ChannelType.LIVE, ChannelGroup.LIVE, Double.class),
-    LOAD_STATUS("load_status", "load status", ChannelType.LIVE, ChannelGroup.LIVE, String.class),
+    CONSUMPTION("consumption", "consumption", ChannelType.LIVE, ChannelGroup.LIVE),
+    LOAD_STATUS("load_status", "load status", ChannelType.LIVE, ChannelGroup.LIVE),
 
-    BATTERY_CHARGE("battery_charge", "battery charge rate", ChannelType.LIVE, ChannelGroup.LIVE, Double.class),
-    BATTERY_DISCHARGE("battery_discharge", "battery discharge rate", ChannelType.LIVE, ChannelGroup.LIVE, Double.class),
+    BATTERY_CHARGE("battery_charge", "battery charge rate", ChannelType.LIVE, ChannelGroup.LIVE),
+    BATTERY_DISCHARGE("battery_discharge", "battery discharge rate", ChannelType.LIVE, ChannelGroup.LIVE),
     BATTERY_CHARGE_DISCHARGE("battery_charge_discharge", "battery charge/discharge rate", ChannelType.LIVE,
-            ChannelGroup.LIVE, Double.class),
-    BATTERY_LEVEL("battery_level", "battery level", ChannelType.LIVE, ChannelGroup.LIVE, Double.class),
-    BATTERY_STATUS("battery_status", "battery status", ChannelType.LIVE, ChannelGroup.LIVE, String.class),
-    BATTERY_CRITICAL("battery_critical", "battery critical", ChannelType.LIVE, ChannelGroup.LIVE, String.class),
+            ChannelGroup.LIVE),
+    BATTERY_LEVEL("battery_level", "battery level", ChannelType.LIVE, ChannelGroup.LIVE),
+    BATTERY_STATUS("battery_status", "battery status", ChannelType.LIVE, ChannelGroup.LIVE),
+    BATTERY_CRITICAL("battery_critical", "battery critical", ChannelType.LIVE, ChannelGroup.LIVE),
 
-    IMPORT("import", "import", ChannelType.LIVE, ChannelGroup.LIVE, Double.class),
-    EXPORT("export", "export", ChannelType.LIVE, ChannelGroup.LIVE, Double.class),
-    GRID_STATUS("grid_status", "grid status", ChannelType.LIVE, ChannelGroup.LIVE, String.class),
+    IMPORT("import", "import", ChannelType.LIVE, ChannelGroup.LIVE),
+    EXPORT("export", "export", ChannelType.LIVE, ChannelGroup.LIVE),
+    GRID_STATUS("grid_status", "grid status", ChannelType.LIVE, ChannelGroup.LIVE),
 
     /* END */
     ;
@@ -40,7 +40,6 @@ public enum LiveDataChannels implements Channel {
     private final String name;
     private final ChannelType channelType;
     private final ChannelGroup channelGroup;
-    private final Class<?> javaType;
 
     /**
      * Constructor
@@ -49,12 +48,11 @@ public enum LiveDataChannels implements Channel {
      * @param name
      * @param type
      */
-    LiveDataChannels(String id, String name, ChannelType channelType, ChannelGroup channelGroup, Class<?> javaType) {
+    LiveDataChannels(String id, String name, ChannelType channelType, ChannelGroup channelGroup) {
         this.id = id;
         this.name = name;
         this.channelType = channelType;
         this.channelGroup = channelGroup;
-        this.javaType = javaType;
     }
 
     public static LiveDataChannels fromFQName(String fqName) {
@@ -84,11 +82,6 @@ public enum LiveDataChannels implements Channel {
     @Override
     public ChannelGroup getChannelGroup() {
         return channelGroup;
-    }
-
-    @Override
-    public final Class<?> getJavaType() {
-        return javaType;
     }
 
     @Override

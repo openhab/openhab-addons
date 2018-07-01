@@ -26,7 +26,5 @@ public interface Channel {
 
     ChannelGroup getChannelGroup();
 
-    Class<?> getJavaType();
-
     String getFQName();
 }

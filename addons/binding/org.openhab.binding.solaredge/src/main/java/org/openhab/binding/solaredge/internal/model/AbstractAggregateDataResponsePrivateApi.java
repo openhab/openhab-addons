@@ -8,8 +8,18 @@
  */
 package org.openhab.binding.solaredge.internal.model;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
+import java.util.Map;
+
+import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Energy;
+
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -20,9 +30,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public abstract class AbstractAggregateDataResponsePrivateApi implements DataResponse {
 
-    private static final String UNIT_WH = "Wh";
-    private static final String UNIT_KWH = "KWh";
-    private static final String UNIT_MWH = "MWh";
+    private final Logger logger = LoggerFactory.getLogger(AbstractAggregateDataResponsePrivateApi.class);
 
     public static class Value {
         public Double value;
@@ -45,37 +53,53 @@ public abstract class AbstractAggregateDataResponsePrivateApi implements DataRes
 
     private UtilizationMeasures utilizationMeasures;
 
-    protected final String getValueAsKWh(Value value) {
-        Double convertedValue = value.value;
-
-        if (value.unit != null && value.unit.equals(UNIT_WH)) {
-            convertedValue = convertedValue / 1000;
-        } else if (value.unit != null && value.unit.equals(UNIT_MWH)) {
-            convertedValue = convertedValue * 1000;
-        }
-
-        DecimalFormat df = new DecimalFormat("#.##");
-        df.setRoundingMode(RoundingMode.HALF_UP);
-        return df.format(convertedValue);
-    }
-
-    protected final String getValueAsPercent(ValueAndPercent value) {
-        if (value.percentage != null) {
-            Double convertedValue = value.percentage * 100;
-
-            DecimalFormat df = new DecimalFormat("#.##");
-            df.setRoundingMode(RoundingMode.HALF_UP);
-            return df.format(convertedValue);
-        }
-        return null;
-    }
-
     public final UtilizationMeasures getUtilizationMeasures() {
         return utilizationMeasures;
     }
 
     public final void setUtilizationMeasures(UtilizationMeasures utilizationMeasures) {
         this.utilizationMeasures = utilizationMeasures;
+    }
+
+    /**
+     * converts the value to QuantityType. If no unit can be determined UnDefType.UNDEF will be used
+     *
+     * @param targetMap result will be put into this map
+     * @param channel   channel to assign the value
+     * @param value     the value to convert
+     */
+    protected final void assignValue(Map<Channel, State> targetMap, Channel channel, Value value) {
+        State result = UnDefType.UNDEF;
+
+        if (value != null && value.value != null && value.unit != null) {
+            Unit<Energy> unit = determineEnergyUnit(value.unit);
+            if (unit != null) {
+                result = new QuantityType<Energy>(value.value, unit);
+            } else {
+                logger.debug("Channel {}: Could not determine unit: '{}'", channel.getFQName(), value.unit);
+            }
+        } else {
+            logger.debug("Channel {}: no value provided or value has no unit.", channel.getFQName());
+        }
+        targetMap.put(channel, result);
+    }
+
+    /**
+     * converts the value to QuantityType
+     *
+     * @param targetMap result will be put into this map
+     * @param channel   channel to assign the value
+     * @param value     the value to convert
+     */
+    protected final void assignPercentage(Map<Channel, State> targetMap, Channel channel, ValueAndPercent value) {
+        State result = UnDefType.UNDEF;
+
+        if (value != null && value.percentage != null) {
+            result = new QuantityType<Dimensionless>(value.percentage, SmartHomeUnits.PERCENT);
+        } else {
+            logger.debug("Channel {}: no value provided.", channel.getFQName());
+        }
+        targetMap.put(channel, result);
     }
 
 }

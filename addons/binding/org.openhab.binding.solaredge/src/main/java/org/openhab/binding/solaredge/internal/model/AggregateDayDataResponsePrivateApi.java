@@ -11,6 +11,8 @@ package org.openhab.binding.solaredge.internal.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.smarthome.core.types.State;
+
 /**
  * this class is used to map the daily aggregate data json response
  *
@@ -19,44 +21,39 @@ import java.util.Map;
 public class AggregateDayDataResponsePrivateApi extends AbstractAggregateDataResponsePrivateApi {
 
     @Override
-    public Map<String, String> getValues() {
-        Map<String, String> valueMap = new HashMap<>();
+    public Map<Channel, State> getValues() {
+        Map<Channel, State> valueMap = new HashMap<>();
 
         if (getUtilizationMeasures() != null) {
             if (getUtilizationMeasures().production != null) {
-                valueMap.put(AggregateDataChannels.DAY_PRODUCTION.getFQName(),
-                        getValueAsKWh(getUtilizationMeasures().production));
+                assignValue(valueMap, AggregateDataChannels.DAY_PRODUCTION, getUtilizationMeasures().production);
             }
 
             if (getUtilizationMeasures().consumption != null) {
-                valueMap.put(AggregateDataChannels.DAY_CONSUMPTION.getFQName(),
-                        getValueAsKWh(getUtilizationMeasures().consumption));
+                assignValue(valueMap, AggregateDataChannels.DAY_CONSUMPTION, getUtilizationMeasures().consumption);
             }
 
             if (getUtilizationMeasures().selfConsumptionForConsumption != null) {
-                valueMap.put(AggregateDataChannels.DAY_SELFCONSUMPTIONFORCONSUMPTION.getFQName(),
-                        getValueAsKWh(getUtilizationMeasures().selfConsumptionForConsumption));
-                valueMap.put(AggregateDataChannels.DAY_SELFCONSUMPTIONCOVERAGE.getFQName(),
-                        getValueAsPercent(getUtilizationMeasures().selfConsumptionForConsumption));
+                assignValue(valueMap, AggregateDataChannels.DAY_SELFCONSUMPTIONFORCONSUMPTION,
+                        getUtilizationMeasures().selfConsumptionForConsumption);
+                assignPercentage(valueMap, AggregateDataChannels.DAY_SELFCONSUMPTIONCOVERAGE,
+                        getUtilizationMeasures().selfConsumptionForConsumption);
             }
 
             if (getUtilizationMeasures().batterySelfConsumption != null) {
-                valueMap.put(AggregateDataChannels.DAY_BATTERYSELFCONSUMPTION.getFQName(),
-                        getValueAsKWh(getUtilizationMeasures().batterySelfConsumption));
+                assignValue(valueMap, AggregateDataChannels.DAY_BATTERYSELFCONSUMPTION,
+                        getUtilizationMeasures().batterySelfConsumption);
             }
 
             if (getUtilizationMeasures().imported != null) {
-                valueMap.put(AggregateDataChannels.DAY_IMPORT.getFQName(),
-                        getValueAsKWh(getUtilizationMeasures().imported));
+                assignValue(valueMap, AggregateDataChannels.DAY_IMPORT, getUtilizationMeasures().imported);
             }
 
             if (getUtilizationMeasures().export != null) {
-                valueMap.put(AggregateDataChannels.DAY_EXPORT.getFQName(),
-                        getValueAsKWh(getUtilizationMeasures().export));
+                assignValue(valueMap, AggregateDataChannels.DAY_EXPORT, getUtilizationMeasures().export);
             }
         }
 
         return valueMap;
     }
-
 }

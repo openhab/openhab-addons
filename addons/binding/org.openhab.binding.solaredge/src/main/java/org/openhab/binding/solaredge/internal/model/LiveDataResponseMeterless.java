@@ -8,10 +8,18 @@
  */
 package org.openhab.binding.solaredge.internal.model;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.measure.Quantity;
+import javax.measure.Unit;
+
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * this class is used to map the live data json response
@@ -19,14 +27,15 @@ import java.util.Map;
  * @author Alexander Friese - initial contribution
  */
 public class LiveDataResponseMeterless implements DataResponse {
-    private static final String ZERO_POWER = "0.0";
+    private static final Logger logger = LoggerFactory.getLogger(LiveDataResponseMeterless.class);
+    private static final Double ZERO_POWER = 0.0;
 
     public static class Power {
-        public String power;
+        public Double power;
     }
 
     public static class Energy {
-        public String energy;
+        public Double energy;
     }
 
     public static class Overview {
@@ -39,54 +48,62 @@ public class LiveDataResponseMeterless implements DataResponse {
     private Overview overview;
 
     @Override
-    public Map<String, String> getValues() {
-        Map<String, String> valueMap = new HashMap<>();
+    public Map<Channel, State> getValues() {
+        Map<Channel, State> valueMap = new HashMap<>();
 
         if (overview != null) {
 
-            // init fields with zero
-            valueMap.put(LiveDataChannels.PRODUCTION.getFQName(), ZERO_POWER);
-            valueMap.put(AggregateDataChannels.DAY_PRODUCTION.getFQName(), ZERO_POWER);
-            valueMap.put(AggregateDataChannels.WEEK_PRODUCTION.getFQName(), ZERO_POWER);
-            valueMap.put(AggregateDataChannels.MONTH_PRODUCTION.getFQName(), ZERO_POWER);
-            valueMap.put(AggregateDataChannels.YEAR_PRODUCTION.getFQName(), ZERO_POWER);
-
             if (overview.currentPower != null) {
-                valueMap.put(LiveDataChannels.PRODUCTION.getFQName(), getValueAsKW(overview.currentPower.power));
+                assignValue(valueMap, LiveDataChannels.PRODUCTION, overview.currentPower.power, SmartHomeUnits.WATT);
+            } else {
+                assignValue(valueMap, LiveDataChannels.PRODUCTION, null, null);
             }
 
             if (overview.lastDayData != null) {
-                valueMap.put(AggregateDataChannels.DAY_PRODUCTION.getFQName(),
-                        getValueAsKW(overview.lastDayData.energy));
+                assignValue(valueMap, AggregateDataChannels.DAY_PRODUCTION, overview.lastDayData.energy,
+                        SmartHomeUnits.WATT_HOUR);
+            } else {
+                assignValue(valueMap, AggregateDataChannels.DAY_PRODUCTION, null, null);
             }
 
             if (overview.lastMonthData != null) {
-                valueMap.put(AggregateDataChannels.MONTH_PRODUCTION.getFQName(),
-                        getValueAsKW(overview.lastMonthData.energy));
+                assignValue(valueMap, AggregateDataChannels.MONTH_PRODUCTION, overview.lastMonthData.energy,
+                        SmartHomeUnits.WATT_HOUR);
+            } else {
+                assignValue(valueMap, AggregateDataChannels.MONTH_PRODUCTION, null, null);
             }
 
             if (overview.lastYearData != null) {
-                valueMap.put(AggregateDataChannels.YEAR_PRODUCTION.getFQName(),
-                        getValueAsKW(overview.lastYearData.energy));
+                assignValue(valueMap, AggregateDataChannels.YEAR_PRODUCTION, overview.lastYearData.energy,
+                        SmartHomeUnits.WATT_HOUR);
+            } else {
+                assignValue(valueMap, AggregateDataChannels.YEAR_PRODUCTION, null, null);
             }
+
+            // week production is not available
+            assignValue(valueMap, AggregateDataChannels.WEEK_PRODUCTION, null, null);
 
         }
         return valueMap;
     }
 
     /**
-     * converts the value to kW / kWh
+     * converts the value to QuantityType. If no value provided UnDefType.UNDEF will be used
      *
-     * @param value value retrievd from Solaredge
-     * @return converted value
+     * @param targetMap result will be put into this map
+     * @param channel   channel to assign the value
+     * @param value     the value to convert
      */
-    private String getValueAsKW(String value) {
-        Double convertedValue = Double.valueOf(value);
-        convertedValue = convertedValue / 1000;
+    protected final <T extends Quantity<T>> void assignValue(Map<Channel, State> targetMap, Channel channel,
+            Double value, Unit<T> unit) {
+        State result = UnDefType.UNDEF;
 
-        DecimalFormat df = new DecimalFormat("#.##");
-        df.setRoundingMode(RoundingMode.HALF_UP);
-        return df.format(convertedValue);
+        if (value != null && unit != null) {
+            result = new QuantityType<T>(value, unit);
+        } else {
+            logger.debug("Channel {}: no value/unit provided", channel);
+        }
+        targetMap.put(channel, result);
     }
 
     public final Overview getOverview() {

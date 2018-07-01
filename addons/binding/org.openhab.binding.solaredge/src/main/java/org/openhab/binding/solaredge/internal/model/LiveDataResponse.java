@@ -12,6 +12,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Power;
+
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +36,7 @@ public class LiveDataResponse implements DataResponse {
     private static final String LOAD = "LOAD";
     private static final String PV = "PV";
     private static final String STORAGE = "STORAGE";
-    private static final String ZERO_POWER = "0.0";
+    private static final Double ZERO_POWER = 0.0;
 
     /**
      * logger
@@ -36,13 +45,13 @@ public class LiveDataResponse implements DataResponse {
 
     public static class Value {
         public String status;
-        public String currentPower;
+        public Double currentPower;
     }
 
     public static class BatteryValue {
         public String status;
-        public String currentPower;
-        public String chargeLevel;
+        public Double currentPower;
+        public Double chargeLevel;
         public String critical;
     }
 
@@ -52,6 +61,8 @@ public class LiveDataResponse implements DataResponse {
     }
 
     public static class SiteCurrentPowerFlow {
+        public String unit;
+
         @SerializedName(GRID)
         public Value grid;
 
@@ -71,57 +82,61 @@ public class LiveDataResponse implements DataResponse {
     private SiteCurrentPowerFlow siteCurrentPowerFlow;
 
     @Override
-    public Map<String, String> getValues() {
-        Map<String, String> valueMap = new HashMap<>();
+    public Map<Channel, State> getValues() {
+        Map<Channel, State> valueMap = new HashMap<>();
 
         if (siteCurrentPowerFlow != null) {
 
             if (siteCurrentPowerFlow.pv != null) {
-                valueMap.put(LiveDataChannels.PRODUCTION.getFQName(), siteCurrentPowerFlow.pv.currentPower);
-                valueMap.put(LiveDataChannels.PV_STATUS.getFQName(), siteCurrentPowerFlow.pv.status);
+                assignValue(valueMap, LiveDataChannels.PRODUCTION, siteCurrentPowerFlow.pv.currentPower,
+                        siteCurrentPowerFlow.unit);
+                assignValue(valueMap, LiveDataChannels.PV_STATUS, siteCurrentPowerFlow.pv.status);
             }
 
             if (siteCurrentPowerFlow.load != null) {
-                valueMap.put(LiveDataChannels.CONSUMPTION.getFQName(), siteCurrentPowerFlow.load.currentPower);
-                valueMap.put(LiveDataChannels.LOAD_STATUS.getFQName(), siteCurrentPowerFlow.load.status);
+                assignValue(valueMap, LiveDataChannels.CONSUMPTION, siteCurrentPowerFlow.load.currentPower,
+                        siteCurrentPowerFlow.unit);
+                assignValue(valueMap, LiveDataChannels.LOAD_STATUS, siteCurrentPowerFlow.load.status);
             }
 
             if (siteCurrentPowerFlow.storage != null) {
-                valueMap.put(LiveDataChannels.BATTERY_STATUS.getFQName(), siteCurrentPowerFlow.storage.status);
-                valueMap.put(LiveDataChannels.BATTERY_CRITICAL.getFQName(), siteCurrentPowerFlow.storage.critical);
-                valueMap.put(LiveDataChannels.BATTERY_LEVEL.getFQName(), siteCurrentPowerFlow.storage.chargeLevel);
+                assignValue(valueMap, LiveDataChannels.BATTERY_STATUS, siteCurrentPowerFlow.storage.status);
+                assignValue(valueMap, LiveDataChannels.BATTERY_CRITICAL, siteCurrentPowerFlow.storage.critical);
+                assignPercentage(valueMap, LiveDataChannels.BATTERY_LEVEL, siteCurrentPowerFlow.storage.chargeLevel);
             }
 
             if (siteCurrentPowerFlow.grid != null) {
-                valueMap.put(LiveDataChannels.GRID_STATUS.getFQName(), siteCurrentPowerFlow.grid.status);
+                assignValue(valueMap, LiveDataChannels.GRID_STATUS, siteCurrentPowerFlow.grid.status);
             }
 
             // init fields with zero
-            valueMap.put(LiveDataChannels.IMPORT.getFQName(), ZERO_POWER);
-            valueMap.put(LiveDataChannels.EXPORT.getFQName(), ZERO_POWER);
-            valueMap.put(LiveDataChannels.BATTERY_CHARGE.getFQName(), ZERO_POWER);
-            valueMap.put(LiveDataChannels.BATTERY_DISCHARGE.getFQName(), ZERO_POWER);
-            valueMap.put(LiveDataChannels.BATTERY_CHARGE_DISCHARGE.getFQName(), ZERO_POWER);
+            assignValue(valueMap, LiveDataChannels.IMPORT, ZERO_POWER, siteCurrentPowerFlow.unit);
+            assignValue(valueMap, LiveDataChannels.EXPORT, ZERO_POWER, siteCurrentPowerFlow.unit);
+            assignValue(valueMap, LiveDataChannels.BATTERY_CHARGE, ZERO_POWER, siteCurrentPowerFlow.unit);
+            assignValue(valueMap, LiveDataChannels.BATTERY_DISCHARGE, ZERO_POWER, siteCurrentPowerFlow.unit);
+            assignValue(valueMap, LiveDataChannels.BATTERY_CHARGE_DISCHARGE, ZERO_POWER, siteCurrentPowerFlow.unit);
 
             // determine power flow from connection list
             if (siteCurrentPowerFlow.connections != null) {
                 for (Connection con : siteCurrentPowerFlow.connections) {
                     if (con.from.equalsIgnoreCase(GRID)) {
-                        valueMap.put(LiveDataChannels.IMPORT.getFQName(), siteCurrentPowerFlow.grid.currentPower);
+                        assignValue(valueMap, LiveDataChannels.IMPORT, siteCurrentPowerFlow.grid.currentPower,
+                                siteCurrentPowerFlow.unit);
                     } else if (con.to.equalsIgnoreCase(GRID)) {
-                        valueMap.put(LiveDataChannels.EXPORT.getFQName(), siteCurrentPowerFlow.grid.currentPower);
+                        assignValue(valueMap, LiveDataChannels.EXPORT, siteCurrentPowerFlow.grid.currentPower,
+                                siteCurrentPowerFlow.unit);
 
                     }
                     if (con.from.equalsIgnoreCase(STORAGE)) {
-                        valueMap.put(LiveDataChannels.BATTERY_DISCHARGE.getFQName(),
-                                siteCurrentPowerFlow.storage.currentPower);
-                        valueMap.put(LiveDataChannels.BATTERY_CHARGE_DISCHARGE.getFQName(),
-                                "-" + siteCurrentPowerFlow.storage.currentPower);
+                        assignValue(valueMap, LiveDataChannels.BATTERY_DISCHARGE,
+                                siteCurrentPowerFlow.storage.currentPower, siteCurrentPowerFlow.unit);
+                        assignValue(valueMap, LiveDataChannels.BATTERY_CHARGE_DISCHARGE,
+                                -1 * siteCurrentPowerFlow.storage.currentPower, siteCurrentPowerFlow.unit);
                     } else if (con.to.equalsIgnoreCase(STORAGE)) {
-                        valueMap.put(LiveDataChannels.BATTERY_CHARGE.getFQName(),
-                                siteCurrentPowerFlow.storage.currentPower);
-                        valueMap.put(LiveDataChannels.BATTERY_CHARGE_DISCHARGE.getFQName(),
-                                siteCurrentPowerFlow.storage.currentPower);
+                        assignValue(valueMap, LiveDataChannels.BATTERY_CHARGE,
+                                siteCurrentPowerFlow.storage.currentPower, siteCurrentPowerFlow.unit);
+                        assignValue(valueMap, LiveDataChannels.BATTERY_CHARGE_DISCHARGE,
+                                siteCurrentPowerFlow.storage.currentPower, siteCurrentPowerFlow.unit);
                     }
                 }
             }
@@ -137,4 +152,63 @@ public class LiveDataResponse implements DataResponse {
         this.siteCurrentPowerFlow = siteCurrentPowerFlow;
     }
 
+    /**
+     * converts the value to QuantityType. If no unit can be determined UnDefType.UNDEF will be used
+     *
+     * @param targetMap result will be put into this map
+     * @param channel   channel to assign the value
+     * @param value     the value to convert
+     */
+    protected final void assignValue(Map<Channel, State> targetMap, Channel channel, Double value,
+            String unitAsString) {
+        State result = UnDefType.UNDEF;
+
+        if (value != null && unitAsString != null) {
+            Unit<Power> unit = determinePowerUnit(unitAsString);
+            if (unit != null) {
+                result = new QuantityType<Power>(value, unit);
+            } else {
+                logger.debug("Channel {}: Could not determine unit: '{}'", channel, unit);
+            }
+        } else {
+            logger.debug("Channel {}: no value provided or value has no unit.", channel);
+        }
+        targetMap.put(channel, result);
+    }
+
+    /**
+     * assign simple String values
+     *
+     * @param targetMap result will be put into this map
+     * @param channel   channel to assign the value
+     * @param value     the value
+     */
+    protected final void assignValue(Map<Channel, State> targetMap, Channel channel, String value) {
+        State result = UnDefType.UNDEF;
+
+        if (value != null) {
+            result = new StringType(value);
+        } else {
+            logger.debug("Channel {}: no value provided.", channel);
+        }
+        targetMap.put(channel, result);
+    }
+
+    /**
+     * converts the value to QuantityType
+     *
+     * @param targetMap result will be put into this map
+     * @param channel   channel to assign the value
+     * @param value     the value to convert
+     */
+    protected final void assignPercentage(Map<Channel, State> targetMap, Channel channel, Double value) {
+        State result = UnDefType.UNDEF;
+
+        if (value != null) {
+            result = new QuantityType<Dimensionless>(value, SmartHomeUnits.PERCENT);
+        } else {
+            logger.debug("Channel {}: no value provided.", channel.getFQName());
+        }
+        targetMap.put(channel, result);
+    }
 }

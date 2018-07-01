@@ -8,12 +8,19 @@
  */
 package org.openhab.binding.solaredge.internal.model;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Energy;
+
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,9 +32,6 @@ import org.slf4j.LoggerFactory;
 public class AggregateDataResponsePublicApi implements DataResponse {
 
     private final Logger logger = LoggerFactory.getLogger(AggregateDataResponsePublicApi.class);
-
-    private static final String UNIT_WH = "Wh";
-    private static final String UNIT_MWH = "MWh";
 
     private static final String METER_TYPE_PRODUCTION = "Production";
     private static final String METER_TYPE_CONSUMPTION = "Consumption";
@@ -62,8 +66,8 @@ public class AggregateDataResponsePublicApi implements DataResponse {
     }
 
     @Override
-    public Map<String, String> getValues() {
-        Map<String, String> valueMap = new HashMap<>();
+    public Map<Channel, State> getValues() {
+        Map<Channel, State> valueMap = new HashMap<>();
 
         if (getEnergyDetails() != null && getEnergyDetails().timeUnit != null) {
             for (MeterTelemetries meter : getEnergyDetails().meters) {
@@ -90,28 +94,30 @@ public class AggregateDataResponsePublicApi implements DataResponse {
     /**
      * copies production data to the result map
      *
-     * @param meter - meter raw data
+     * @param meter    - meter raw data
      * @param valueMap - target structure
      */
-    private final void fillProductionData(MeterTelemetries meter, Map<String, String> valueMap) {
+    private final void fillProductionData(MeterTelemetries meter, Map<Channel, State> valueMap) {
         switch (getEnergyDetails().timeUnit) {
             case DAY:
-                valueMap.put(AggregateDataChannels.DAY_PRODUCTION.getFQName(), getValueAsKWh(meter.values.get(0)));
+                assignValue(valueMap, AggregateDataChannels.DAY_PRODUCTION, meter.values.get(0));
                 break;
             case WEEK:
-                if (meter.values.size() == 2) {
-                    valueMap.put(AggregateDataChannels.WEEK_PRODUCTION.getFQName(),
-                            getValueAsKWh(meter.values.get(0), meter.values.get(1)));
+                if (meter.values.size() == 1) {
+                    assignValue(valueMap, AggregateDataChannels.WEEK_PRODUCTION, meter.values.get(0));
+                } else if (meter.values.size() == 2) {
+                    assignValue(valueMap, AggregateDataChannels.WEEK_PRODUCTION, meter.values.get(0),
+                            meter.values.get(1));
                 } else {
                     logger.warn("Response for weekly data has unexpected format, expected 2 entries got {}",
                             meter.values.size());
                 }
                 break;
             case MONTH:
-                valueMap.put(AggregateDataChannels.MONTH_PRODUCTION.getFQName(), getValueAsKWh(meter.values.get(0)));
+                assignValue(valueMap, AggregateDataChannels.MONTH_PRODUCTION, meter.values.get(0));
                 break;
             case YEAR:
-                valueMap.put(AggregateDataChannels.YEAR_PRODUCTION.getFQName(), getValueAsKWh(meter.values.get(0)));
+                assignValue(valueMap, AggregateDataChannels.YEAR_PRODUCTION, meter.values.get(0));
                 break;
         }
     }
@@ -119,28 +125,30 @@ public class AggregateDataResponsePublicApi implements DataResponse {
     /**
      * copies consumption data to the result map
      *
-     * @param meter - meter raw data
+     * @param meter    - meter raw data
      * @param valueMap - target structure
      */
-    private final void fillConsumptionData(MeterTelemetries meter, Map<String, String> valueMap) {
+    private final void fillConsumptionData(MeterTelemetries meter, Map<Channel, State> valueMap) {
         switch (getEnergyDetails().timeUnit) {
             case DAY:
-                valueMap.put(AggregateDataChannels.DAY_CONSUMPTION.getFQName(), getValueAsKWh(meter.values.get(0)));
+                assignValue(valueMap, AggregateDataChannels.DAY_CONSUMPTION, meter.values.get(0));
                 break;
             case WEEK:
-                if (meter.values.size() == 2) {
-                    valueMap.put(AggregateDataChannels.WEEK_CONSUMPTION.getFQName(),
-                            getValueAsKWh(meter.values.get(0), meter.values.get(1)));
+                if (meter.values.size() == 1) {
+                    assignValue(valueMap, AggregateDataChannels.WEEK_CONSUMPTION, meter.values.get(0));
+                } else if (meter.values.size() == 2) {
+                    assignValue(valueMap, AggregateDataChannels.WEEK_CONSUMPTION, meter.values.get(0),
+                            meter.values.get(1));
                 } else {
                     logger.warn("Response for weekly data has unexpected format, expected 2 entries got {}",
                             meter.values.size());
                 }
                 break;
             case MONTH:
-                valueMap.put(AggregateDataChannels.MONTH_CONSUMPTION.getFQName(), getValueAsKWh(meter.values.get(0)));
+                assignValue(valueMap, AggregateDataChannels.MONTH_CONSUMPTION, meter.values.get(0));
                 break;
             case YEAR:
-                valueMap.put(AggregateDataChannels.YEAR_CONSUMPTION.getFQName(), getValueAsKWh(meter.values.get(0)));
+                assignValue(valueMap, AggregateDataChannels.YEAR_CONSUMPTION, meter.values.get(0));
                 break;
         }
     }
@@ -148,19 +156,21 @@ public class AggregateDataResponsePublicApi implements DataResponse {
     /**
      * copies self-consumption data to the result map
      *
-     * @param meter - meter raw data
+     * @param meter    - meter raw data
      * @param valueMap - target structure
      */
-    private final void fillSelfConsumptionData(MeterTelemetries meter, Map<String, String> valueMap) {
+    private final void fillSelfConsumptionData(MeterTelemetries meter, Map<Channel, State> valueMap) {
         switch (getEnergyDetails().timeUnit) {
             case DAY:
-                valueMap.put(AggregateDataChannels.DAY_SELFCONSUMPTIONFORCONSUMPTION.getFQName(),
-                        getValueAsKWh(meter.values.get(0)));
+                assignValue(valueMap, AggregateDataChannels.DAY_SELFCONSUMPTIONFORCONSUMPTION, meter.values.get(0));
                 break;
             case WEEK:
-                if (meter.values.size() == 2) {
-                    valueMap.put(AggregateDataChannels.WEEK_SELFCONSUMPTIONFORCONSUMPTION.getFQName(),
-                            getValueAsKWh(meter.values.get(0), meter.values.get(1)));
+                if (meter.values.size() == 1) {
+                    assignValue(valueMap, AggregateDataChannels.WEEK_SELFCONSUMPTIONFORCONSUMPTION,
+                            meter.values.get(0));
+                } else if (meter.values.size() == 2) {
+                    assignValue(valueMap, AggregateDataChannels.WEEK_SELFCONSUMPTIONFORCONSUMPTION, meter.values.get(0),
+                            meter.values.get(1));
                 } else {
                     logger.warn("Response for weekly data has unexpected format, expected 2 entries got {}",
                             meter.values.size());
@@ -168,12 +178,10 @@ public class AggregateDataResponsePublicApi implements DataResponse {
 
                 break;
             case MONTH:
-                valueMap.put(AggregateDataChannels.MONTH_SELFCONSUMPTIONFORCONSUMPTION.getFQName(),
-                        getValueAsKWh(meter.values.get(0)));
+                assignValue(valueMap, AggregateDataChannels.MONTH_SELFCONSUMPTIONFORCONSUMPTION, meter.values.get(0));
                 break;
             case YEAR:
-                valueMap.put(AggregateDataChannels.YEAR_SELFCONSUMPTIONFORCONSUMPTION.getFQName(),
-                        getValueAsKWh(meter.values.get(0)));
+                assignValue(valueMap, AggregateDataChannels.YEAR_SELFCONSUMPTIONFORCONSUMPTION, meter.values.get(0));
                 break;
         }
     }
@@ -181,18 +189,19 @@ public class AggregateDataResponsePublicApi implements DataResponse {
     /**
      * copies import data to the result map
      *
-     * @param meter - meter raw data
+     * @param meter    - meter raw data
      * @param valueMap - target structure
      */
-    private final void fillImportData(MeterTelemetries meter, Map<String, String> valueMap) {
+    private final void fillImportData(MeterTelemetries meter, Map<Channel, State> valueMap) {
         switch (getEnergyDetails().timeUnit) {
             case DAY:
-                valueMap.put(AggregateDataChannels.DAY_IMPORT.getFQName(), getValueAsKWh(meter.values.get(0)));
+                assignValue(valueMap, AggregateDataChannels.DAY_IMPORT, meter.values.get(0));
                 break;
             case WEEK:
-                if (meter.values.size() == 2) {
-                    valueMap.put(AggregateDataChannels.WEEK_IMPORT.getFQName(),
-                            getValueAsKWh(meter.values.get(0), meter.values.get(1)));
+                if (meter.values.size() == 1) {
+                    assignValue(valueMap, AggregateDataChannels.WEEK_IMPORT, meter.values.get(0));
+                } else if (meter.values.size() == 2) {
+                    assignValue(valueMap, AggregateDataChannels.WEEK_IMPORT, meter.values.get(0), meter.values.get(1));
                 } else {
                     logger.warn("Response for weekly data has unexpected format, expected 2 entries got {}",
                             meter.values.size());
@@ -200,10 +209,10 @@ public class AggregateDataResponsePublicApi implements DataResponse {
 
                 break;
             case MONTH:
-                valueMap.put(AggregateDataChannels.MONTH_IMPORT.getFQName(), getValueAsKWh(meter.values.get(0)));
+                assignValue(valueMap, AggregateDataChannels.MONTH_IMPORT, meter.values.get(0));
                 break;
             case YEAR:
-                valueMap.put(AggregateDataChannels.YEAR_IMPORT.getFQName(), getValueAsKWh(meter.values.get(0)));
+                assignValue(valueMap, AggregateDataChannels.YEAR_IMPORT, meter.values.get(0));
                 break;
         }
     }
@@ -211,18 +220,19 @@ public class AggregateDataResponsePublicApi implements DataResponse {
     /**
      * copies export data to the result map
      *
-     * @param meter - meter raw data
+     * @param meter    - meter raw data
      * @param valueMap - target structure
      */
-    private final void fillExportData(MeterTelemetries meter, Map<String, String> valueMap) {
+    private final void fillExportData(MeterTelemetries meter, Map<Channel, State> valueMap) {
         switch (getEnergyDetails().timeUnit) {
             case DAY:
-                valueMap.put(AggregateDataChannels.DAY_EXPORT.getFQName(), getValueAsKWh(meter.values.get(0)));
+                assignValue(valueMap, AggregateDataChannels.DAY_EXPORT, meter.values.get(0));
                 break;
             case WEEK:
-                if (meter.values.size() == 2) {
-                    valueMap.put(AggregateDataChannels.WEEK_EXPORT.getFQName(),
-                            getValueAsKWh(meter.values.get(0), meter.values.get(1)));
+                if (meter.values.size() == 1) {
+                    assignValue(valueMap, AggregateDataChannels.WEEK_EXPORT, meter.values.get(0));
+                } else if (meter.values.size() == 2) {
+                    assignValue(valueMap, AggregateDataChannels.WEEK_EXPORT, meter.values.get(0), meter.values.get(1));
                 } else {
                     logger.warn("Response for weekly data has unexpected format, expected 2 entries got {}",
                             meter.values.size());
@@ -230,10 +240,10 @@ public class AggregateDataResponsePublicApi implements DataResponse {
 
                 break;
             case MONTH:
-                valueMap.put(AggregateDataChannels.MONTH_EXPORT.getFQName(), getValueAsKWh(meter.values.get(0)));
+                assignValue(valueMap, AggregateDataChannels.MONTH_EXPORT, meter.values.get(0));
                 break;
             case YEAR:
-                valueMap.put(AggregateDataChannels.YEAR_EXPORT.getFQName(), getValueAsKWh(meter.values.get(0)));
+                assignValue(valueMap, AggregateDataChannels.YEAR_EXPORT, meter.values.get(0));
                 break;
         }
     }
@@ -243,79 +253,103 @@ public class AggregateDataResponsePublicApi implements DataResponse {
      *
      * @param valueMap - target structure
      */
-    private final void fillSelfConsumptionCoverage(Map<String, String> valueMap) {
-        String selfConsumption = null;
-        String consumption = null;
+    private final void fillSelfConsumptionCoverage(Map<Channel, State> valueMap) {
+        State selfConsumption = null;
+        State consumption = null;
         switch (getEnergyDetails().timeUnit) {
             case DAY:
-                selfConsumption = valueMap.get(AggregateDataChannels.DAY_SELFCONSUMPTIONFORCONSUMPTION.getFQName());
-                consumption = valueMap.get(AggregateDataChannels.DAY_CONSUMPTION.getFQName());
-                valueMap.put(AggregateDataChannels.DAY_SELFCONSUMPTIONCOVERAGE.getFQName(),
-                        calculatePercent(selfConsumption, consumption));
+                selfConsumption = valueMap.get(AggregateDataChannels.DAY_SELFCONSUMPTIONFORCONSUMPTION);
+                consumption = valueMap.get(AggregateDataChannels.DAY_CONSUMPTION);
+                assignPercentage(valueMap, AggregateDataChannels.DAY_SELFCONSUMPTIONCOVERAGE, selfConsumption,
+                        consumption);
                 break;
             case WEEK:
-                selfConsumption = valueMap.get(AggregateDataChannels.WEEK_SELFCONSUMPTIONFORCONSUMPTION.getFQName());
-                consumption = valueMap.get(AggregateDataChannels.WEEK_CONSUMPTION.getFQName());
-                valueMap.put(AggregateDataChannels.WEEK_SELFCONSUMPTIONCOVERAGE.getFQName(),
-                        calculatePercent(selfConsumption, consumption));
+                selfConsumption = valueMap.get(AggregateDataChannels.WEEK_SELFCONSUMPTIONFORCONSUMPTION);
+                consumption = valueMap.get(AggregateDataChannels.WEEK_CONSUMPTION);
+                assignPercentage(valueMap, AggregateDataChannels.WEEK_SELFCONSUMPTIONCOVERAGE, selfConsumption,
+                        consumption);
                 break;
             case MONTH:
-                selfConsumption = valueMap.get(AggregateDataChannels.MONTH_SELFCONSUMPTIONFORCONSUMPTION.getFQName());
-                consumption = valueMap.get(AggregateDataChannels.MONTH_CONSUMPTION.getFQName());
-                valueMap.put(AggregateDataChannels.MONTH_SELFCONSUMPTIONCOVERAGE.getFQName(),
-                        calculatePercent(selfConsumption, consumption));
+                selfConsumption = valueMap.get(AggregateDataChannels.MONTH_SELFCONSUMPTIONFORCONSUMPTION);
+                consumption = valueMap.get(AggregateDataChannels.MONTH_CONSUMPTION);
+                assignPercentage(valueMap, AggregateDataChannels.MONTH_SELFCONSUMPTIONCOVERAGE, selfConsumption,
+                        consumption);
                 break;
             case YEAR:
-                selfConsumption = valueMap.get(AggregateDataChannels.YEAR_SELFCONSUMPTIONFORCONSUMPTION.getFQName());
-                consumption = valueMap.get(AggregateDataChannels.YEAR_CONSUMPTION.getFQName());
-                valueMap.put(AggregateDataChannels.YEAR_SELFCONSUMPTIONCOVERAGE.getFQName(),
-                        calculatePercent(selfConsumption, consumption));
+                selfConsumption = valueMap.get(AggregateDataChannels.YEAR_SELFCONSUMPTIONFORCONSUMPTION);
+                consumption = valueMap.get(AggregateDataChannels.YEAR_CONSUMPTION);
+                assignPercentage(valueMap, AggregateDataChannels.YEAR_SELFCONSUMPTIONCOVERAGE, selfConsumption,
+                        consumption);
                 break;
         }
     }
 
     /**
-     * converts the meter value to kWh. If multiple meter value are provided a sum will be calculated.
+     * converts the meter value to QuantityType. If multiple meter value are provided a sum will be calculated. If no
+     * unit can be determined UnDefType.UNDEF will be used
      *
-     * @param values one or more meter values
-     * @return
+     * @param targetMap result will be put into this map
+     * @param channel   channel to assign the value
+     * @param values    one or more meter values
      */
-    protected final String getValueAsKWh(MeterTelemetry... values) {
+    protected final void assignValue(Map<Channel, State> targetMap, Channel channel, MeterTelemetry... values) {
         double sum = 0.0;
+        State result = UnDefType.UNDEF;
 
         for (MeterTelemetry value : values) {
-            sum += value.value;
+            if (value.value != null) {
+                sum += value.value;
+            }
         }
 
-        if (energyDetails != null && energyDetails.unit != null && energyDetails.unit.equals(UNIT_WH)) {
-            sum = sum / 1000;
-        } else if (energyDetails != null && energyDetails.unit != null && energyDetails.unit.equals(UNIT_MWH)) {
-            sum = sum * 1000;
+        if (energyDetails != null && energyDetails.unit != null) {
+            Unit<Energy> unit = determineEnergyUnit(energyDetails.unit);
+            if (unit != null) {
+                result = new QuantityType<Energy>(sum, unit);
+            } else {
+                logger.debug("Channel {}: Could not determine unit: '{}'", channel.getFQName(), energyDetails.unit);
+            }
+        } else {
+            logger.debug("Channel {}: Value has no unit.", channel.getFQName());
         }
 
-        DecimalFormat df = new DecimalFormat("#.##");
-        df.setRoundingMode(RoundingMode.HALF_UP);
-        return df.format(sum);
+        targetMap.put(channel, result);
     }
 
     /**
-     * calculates percentage
+     * calculates percentage and assigns it to the corresponding channel and puts it into the targetmap
      *
-     * @param value
-     * @return
+     * @param targetMap      result will be put into this map
+     * @param channel        channel to assign the value
+     * @param dividendString
+     * @param divisorString
      */
-    protected final String calculatePercent(String dividendString, String divisorString) {
-        if (dividendString != null && divisorString != null) {
-            double dividend = Double.valueOf(dividendString);
-            double divisor = Double.valueOf(divisorString);
+    protected final void assignPercentage(Map<Channel, State> targetMap, Channel channel, State dividendAsState,
+            State divisorAsState) {
+        double percent = -1;
+        State result = UnDefType.UNDEF;
 
-            if (dividend >= 0.0 && divisor > 0) {
-                DecimalFormat df = new DecimalFormat("#.##");
-                df.setRoundingMode(RoundingMode.HALF_UP);
-                return df.format(dividend / divisor * 100);
+        if (dividendAsState != null && divisorAsState != null) {
+            DecimalType dividendAsDecimalType = dividendAsState.as(DecimalType.class);
+            DecimalType divisorAsDecimalType = divisorAsState.as(DecimalType.class);
+
+            // null check is necessary although eclipse states it is not!
+            if (dividendAsDecimalType != null && divisorAsDecimalType != null) {
+                double dividend = dividendAsDecimalType.doubleValue();
+                double divisor = divisorAsDecimalType.doubleValue();
+                if (dividend >= 0.0 && divisor > 0.0) {
+                    percent = dividend / divisor * 100;
+                }
             }
         }
-        return null;
+
+        if (percent >= 0.0) {
+            result = new QuantityType<Dimensionless>(percent, SmartHomeUnits.PERCENT);
+        } else {
+            logger.debug("Channel {}: Could not calculate percent.", channel.getFQName());
+        }
+
+        targetMap.put(channel, result);
     }
 
 }

@@ -18,6 +18,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.solaredge.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
+import org.openhab.binding.solaredge.internal.model.DataResponse;
 import org.openhab.binding.solaredge.internal.model.LiveDataResponse;
 
 /**
@@ -65,7 +66,7 @@ public class LiveDataUpdatePrivateApi extends AbstractCommandCallback implements
             String json = getContentAsString(StandardCharsets.UTF_8);
             if (json != null) {
                 logger.debug("JSON String: {}", json);
-                LiveDataResponse jsonObject = gson.fromJson(json, LiveDataResponse.class);
+                DataResponse jsonObject = gson.fromJson(json, LiveDataResponse.class);
                 if (jsonObject != null) {
                     handler.updateChannelStatus(jsonObject.getValues());
                 }
