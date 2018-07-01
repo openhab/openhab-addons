@@ -114,10 +114,13 @@ ihc:controller:elko [ ip="192.168.1.2", username="openhab", password="secret", t
         Type rf-device-low-battery-channel : my_low_battery  "My Low Battery Warning"  [ serialNumber=123456789 ]
         Type push-button-trigger           : my_test_trigger                           [ resourceId=3988827, shortPressMaxTime=1000, longPressMaxTime=2000, extraLongPressMaxTime=4000 ]
         
-        Type number-channel                : readonly_resource   "Read only resource"   [ resourceId=1212121, direction="ReadOnly" ]
-        Type number-channel                : write1_resource     "Write 1 resource"     [ resourceId=1111111, direction="WriteOnly", commandToReact="1", pulseWidth=300 ]
-        Type number-channel                : write2_resource     "Write 2 resource"     [ resourceId=2222222, direction="WriteOnly", commandToReact="2", pulseWidth=300 ]
-        Type number-channel                : write3_resource     "Write 3 resource"     [ resourceId=3333333, direction="WriteOnly", commandToReact="3", pulseWidth=300 ]
+        Type dimmer-channel                : inc_resource        "Increase resource"   [ resourceId=9000001, direction="WriteOnly", commandToReact="INCREASE", pulseWidth=300 ]
+        Type dimmer-channel                : dec_resource        "Decrease resource"   [ resourceId=9000002, direction="WriteOnly", commandToReact="DECREASE", pulseWidth=300 ]
+
+        Type number-channel                : readonly_resource   "Read only resource"  [ resourceId=1212121, direction="ReadOnly" ]
+        Type number-channel                : write1_resource     "Write 1 resource"    [ resourceId=1111111, direction="WriteOnly", commandToReact="1", pulseWidth=300 ]
+        Type number-channel                : write2_resource     "Write 2 resource"    [ resourceId=2222222, direction="WriteOnly", commandToReact="2", pulseWidth=300 ]
+        Type number-channel                : write3_resource     "Write 3 resource"    [ resourceId=3333333, direction="WriteOnly", commandToReact="3", pulseWidth=300 ]
 }
 ```
 
@@ -128,6 +131,7 @@ Switch test_switch  "Test Switch"    { channel="ihc:controller:elko:my_test_swit
 Switch test_contact "Test Contact"   { channel="ihc:controller:elko:my_test_contact" }
 Number test_number  "Test Number"    { channel="ihc:controller:elko:my_test_number" }
 Switch low_battery  "Low Battery"    { channel="ihc:controller:elko:my_low_battery" }
+Dimmer test_dimmer  "Test Dimmer"    { channel="ihc:controller:elko:inc_resource", channel="ihc:controller:elko:dec_resource" }
 
 Number multi_resource_test  "Multi resource test"  { channel="ihc:controller:elko:readonly_resource", channel="ihc:controller:elko:write1_resource", channel="ihc:controller:elko:write2_resource", channel="ihc:controller:elko:write3_resource" }
 ```
