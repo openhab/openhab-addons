@@ -19,15 +19,15 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.ihc.ws.resourcevalues.WSBooleanValue;
-import org.openhab.binding.ihc.ws.resourcevalues.WSDateValue;
-import org.openhab.binding.ihc.ws.resourcevalues.WSEnumValue;
-import org.openhab.binding.ihc.ws.resourcevalues.WSFloatingPointValue;
-import org.openhab.binding.ihc.ws.resourcevalues.WSIntegerValue;
-import org.openhab.binding.ihc.ws.resourcevalues.WSResourceValue;
-import org.openhab.binding.ihc.ws.resourcevalues.WSTimeValue;
-import org.openhab.binding.ihc.ws.resourcevalues.WSTimerValue;
-import org.openhab.binding.ihc.ws.resourcevalues.WSWeekdayValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSDateValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSEnumValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSFloatingPointValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSIntegerValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSTimeValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSTimerValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSWeekdayValue;
 
 /**
  * IHC / ELKO <-> openHAB data type converter factory.

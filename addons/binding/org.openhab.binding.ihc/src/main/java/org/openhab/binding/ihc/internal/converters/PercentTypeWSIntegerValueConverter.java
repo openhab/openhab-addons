@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.internal.converters;
 
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.openhab.binding.ihc.ws.resourcevalues.WSIntegerValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSIntegerValue;
 
 /**
  * PercentType <-> WSIntegerValue converter.

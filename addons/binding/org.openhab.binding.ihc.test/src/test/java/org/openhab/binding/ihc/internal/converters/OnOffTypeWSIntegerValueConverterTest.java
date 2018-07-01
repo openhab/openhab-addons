@@ -13,8 +13,8 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.Type;
 import org.junit.Test;
-import org.openhab.binding.ihc.ws.resourcevalues.WSIntegerValue;
-import org.openhab.binding.ihc.ws.resourcevalues.WSResourceValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSIntegerValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 
 /**
  * Test for IHC / ELKO binding

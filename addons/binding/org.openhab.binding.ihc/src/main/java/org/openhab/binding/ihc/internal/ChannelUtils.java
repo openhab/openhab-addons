@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.ihc.handler.IhcHandler;
 import org.openhab.binding.ihc.internal.config.ChannelParams;
-import org.openhab.binding.ihc.ws.datatypes.WSRFDevice;
+import org.openhab.binding.ihc.internal.ws.datatypes.WSRFDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;

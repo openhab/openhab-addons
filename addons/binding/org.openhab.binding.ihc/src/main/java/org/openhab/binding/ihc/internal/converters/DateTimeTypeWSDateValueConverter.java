@@ -14,8 +14,8 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.openhab.binding.ihc.ws.resourcevalues.WSDateValue;
-import org.openhab.binding.ihc.ws.resourcevalues.WSTimeValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSDateValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSTimeValue;
 
 /**
  * DateTimeType <-> WSDateValue converter.

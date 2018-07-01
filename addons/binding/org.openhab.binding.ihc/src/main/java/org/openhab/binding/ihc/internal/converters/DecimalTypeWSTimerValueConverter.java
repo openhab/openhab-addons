@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.internal.converters;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.openhab.binding.ihc.ws.resourcevalues.WSTimerValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSTimerValue;
 
 /**
  * DecimalType <-> WSTimerValue converter.

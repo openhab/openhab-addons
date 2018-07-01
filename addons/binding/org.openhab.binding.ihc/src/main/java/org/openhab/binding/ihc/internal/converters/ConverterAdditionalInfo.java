@@ -10,7 +10,7 @@ package org.openhab.binding.ihc.internal.converters;
 
 import java.util.ArrayList;
 
-import org.openhab.binding.ihc.ws.projectfile.IhcEnumValue;
+import org.openhab.binding.ihc.internal.ws.projectfile.IhcEnumValue;
 
 /**
  * Class to hold additional information which is needed for data conversion.

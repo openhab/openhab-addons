@@ -15,9 +15,9 @@ import java.util.ArrayList;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Type;
 import org.junit.Test;
-import org.openhab.binding.ihc.ws.projectfile.IhcEnumValue;
-import org.openhab.binding.ihc.ws.resourcevalues.WSEnumValue;
-import org.openhab.binding.ihc.ws.resourcevalues.WSResourceValue;
+import org.openhab.binding.ihc.internal.ws.projectfile.IhcEnumValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSEnumValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 
 /**
  * Test for IHC / ELKO binding

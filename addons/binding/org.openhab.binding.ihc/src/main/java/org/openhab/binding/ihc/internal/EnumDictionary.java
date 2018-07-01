@@ -11,7 +11,7 @@ package org.openhab.binding.ihc.internal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openhab.binding.ihc.ws.projectfile.IhcEnumValue;
+import org.openhab.binding.ihc.internal.ws.projectfile.IhcEnumValue;
 
 /**
  * Class for holding enumerations from IHC / ELKO project file.

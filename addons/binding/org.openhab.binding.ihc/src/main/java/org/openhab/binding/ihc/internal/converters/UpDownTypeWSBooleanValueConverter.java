@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.internal.converters;
 
 import org.eclipse.smarthome.core.library.types.UpDownType;
-import org.openhab.binding.ihc.ws.resourcevalues.WSBooleanValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 
 /**
  * UpDownType <-> WSBooleanValue converter.

@@ -1,20 +1,17 @@
 Manifest-Version: 1.0
-Bundle-ActivationPolicy: lazy
+Bundle-ManifestVersion: 2
+Bundle-Name: IHC / ELKO Binding
+Bundle-SymbolicName: org.openhab.binding.ihc;singleton:=true
+Bundle-Vendor: openHAB
 Bundle-ClassPath: .,
  lib/commons-logging-1.2.jar,
  lib/org.apache.httpcomponents.httpclient_4.4.1.jar,
  lib/org.apache.httpcomponents.httpcore_4.4.1.jar
-Bundle-ManifestVersion: 2
-Bundle-Name: IHC / ELKO Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-SymbolicName: org.openhab.binding.ihc;singleton:=true
-Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.ihc,
+Export-Package: org.openhab.binding.ihc,
  org.openhab.binding.ihc.handler
-Import-Package: 
- org.apache.commons.io,
+Import-Package: org.apache.commons.io,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
@@ -24,7 +21,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.joda.time,
- org.joda.time.format,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
+Bundle-ActivationPolicy: lazy

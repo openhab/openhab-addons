@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.openhab.binding.ihc.ws.resourcevalues.WSFloatingPointValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSFloatingPointValue;
 
 /**
  * DecimalType <-> WSFloatingPointValue converter.

@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.internal.converters;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.openhab.binding.ihc.ws.resourcevalues.WSEnumValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSEnumValue;
 
 /**
  * DecimalType <-> WSEnumValue converter.

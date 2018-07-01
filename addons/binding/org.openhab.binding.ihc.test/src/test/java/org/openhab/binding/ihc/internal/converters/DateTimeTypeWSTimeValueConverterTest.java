@@ -13,8 +13,8 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.types.Type;
 import org.junit.Test;
-import org.openhab.binding.ihc.ws.resourcevalues.WSResourceValue;
-import org.openhab.binding.ihc.ws.resourcevalues.WSTimeValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSTimeValue;
 
 /**
  * Test for IHC / ELKO binding

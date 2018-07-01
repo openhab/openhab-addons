@@ -9,8 +9,8 @@
 package org.openhab.binding.ihc.internal.converters;
 
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.openhab.binding.ihc.ws.projectfile.IhcEnumValue;
-import org.openhab.binding.ihc.ws.resourcevalues.WSEnumValue;
+import org.openhab.binding.ihc.internal.ws.projectfile.IhcEnumValue;
+import org.openhab.binding.ihc.internal.ws.resourcevalues.WSEnumValue;
 
 /**
  * StringType <-> WSEnumValue converter.
