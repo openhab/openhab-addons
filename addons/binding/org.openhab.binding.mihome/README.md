@@ -43,8 +43,8 @@ from the [Google Play](https://play.google.com/store/apps/details?id=com.xiaomi.
         1.  Select your Gateway in the MiHome app
         2.  Go to the "..." menu on the top right corner and click "About"
         3.  Tap the version number "Version : 2.XX" at the bottom of the screen repeatedly until you enable developer mode
-        4.  You should now have 2 extra options listed: `local area network communication protocol` and `gateway information`
-        5.  Choose `local area network communication protocol`
+        4.  You should now have 1 extra option listed: `Wireless communication protocol`, or 2 extra options listed: `local area network communication protocol` and `gateway information`
+        5.  Choose `local area network communication protocol` or `Wireless communication protocol` depending on your firmware
         6.  Tap the toggle switch to enable LAN functions. Note down the developer key (something like: 91bg8zfkf9vd6uw7)
         7.  Make sure you hit the OK button (to the right of the cancel button) to save your changes
 
