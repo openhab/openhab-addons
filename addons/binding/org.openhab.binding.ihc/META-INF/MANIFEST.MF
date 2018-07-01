@@ -12,10 +12,7 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Export-Package: 
  org.openhab.binding.ihc,
- org.openhab.binding.ihc.handler,
- org.openhab.binding.ihc.internal,
- org.openhab.binding.ihc.ws.resourcevalues,
- org.openhab.binding.ihc.ws.services
+ org.openhab.binding.ihc.handler
 Import-Package: 
  org.apache.commons.io,
  org.apache.commons.lang,
