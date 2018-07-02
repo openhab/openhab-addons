@@ -91,6 +91,7 @@ All devices support some of the following channels:
 | sync                    | String    | Add another player to your device for synchronized playback (other player mac address) |
 | playListIndex           | Number    | Playlist Index                                                                         |
 | currentPlayingTime      | Number    | Current Playing Time                                                                   |
+| duration                | Number    | Duration of currently playing track (in seconds)                                       |
 | currentPlaylistShuffle  | Number    | Current playlist shuffle mode (0 No Shuffle, 1 Shuffle Songs, 2 Shuffle Albums)        |
 | currentPlaylistRepeat   | Number    | Current playlist repeat Mode (0 No Repeat, 1 Repeat Song, 2 Repeat Playlist)           |
 | title                   | String    | Title of the current song                                                              |
@@ -142,7 +143,11 @@ Selecting a favorite from the list will play it.
 
 #### For Sitemap
 
--   Currently, the Selection widget in Basic UI doesn’t use the state options.
+-   To use state options on the playFavorite channel, simply omit the *mappings* from the Selection widget.
+
+```
+Selection item=YourPlayer_PlayFavorite label="Play Favorite"
+```
 
 ## Notifications
 
@@ -163,7 +168,7 @@ when
     Item GarageDoorOpenNotification received command ON
 then
     // Play the notification on the default sink at a specified volume level
-    say("The garage door is open!", "voicerss:enUS", 35)
+    say("The garage door is open!", "voicerss:enUS", new PercentType(35))
     // Play the notification on a specific sink
     say("The garage door is open!", "voicerss:enUS", "squeezebox:squeezeboxplayer:5919BEA2-764B-4590-BC70-D74DCC15491B:20cfbf221510")
 end
@@ -179,7 +184,7 @@ then
     // Play the sound on the default sink
     playSound("doorbell.mp3")
     // Play the sound on a specific sink at a specified volume level
-    playSound("squeezebox:squeezeboxplayer:5919BEA2-764B-4590-BC70-D74DCC15491B:20cfbf221510", "doorbell.mp3", 45)
+    playSound("squeezebox:squeezeboxplayer:5919BEA2-764B-4590-BC70-D74DCC15491B:20cfbf221510", "doorbell.mp3", new PercentType(45))
 end
 ```
 
