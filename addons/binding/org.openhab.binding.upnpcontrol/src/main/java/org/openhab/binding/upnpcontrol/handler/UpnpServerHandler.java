@@ -9,14 +9,17 @@
 package org.openhab.binding.upnpcontrol.handler;
 
 import static org.openhab.binding.upnpcontrol.UpnpControlBindingConstants.*;
+import static org.openhab.binding.upnpcontrol.internal.UpnpProtocolMatcher.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,7 +59,7 @@ public class UpnpServerHandler extends UpnpHandler {
     private static final String UP = "..";
 
     private String uriMetaData = "";
-    private @Nullable List<UpnpEntry> resultList;
+    private List<UpnpEntry> resultList = new ArrayList<UpnpEntry>();
     private int numberReturned;
     private int totalMatches;
 
@@ -64,7 +67,8 @@ public class UpnpServerHandler extends UpnpHandler {
     private @Nullable String currentSelection;
     private Map<String, String> parentMap = new HashMap<>();
 
-    private String source = "";
+    private List<String> source = new ArrayList<>();
+    private List<String> sink = new ArrayList<>();
 
     UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
 
@@ -101,6 +105,7 @@ public class UpnpServerHandler extends UpnpHandler {
             case UPNPRENDERER:
                 if (command instanceof StringType) {
                     currentRendererHandler = (upnpRenderers.get(((StringType) command).toString()));
+                    updateTitleSelection(currentId, currentTitleChannelUID);
                 }
                 break;
             case CURRENTTITLE:
@@ -160,7 +165,9 @@ public class UpnpServerHandler extends UpnpHandler {
         logger.debug("Navigating to node {} on server {}", currentId, thing.getLabel());
 
         List<StateOption> stateOptionList = new ArrayList<>();
-        List<UpnpEntry> list = resultList;
+        List<UpnpEntry> list = resultList.stream().filter(
+                entry -> (entry.isContainer() || testProtocolList(getProtocols(entry.getProtocolList(), source), sink)))
+                .collect(Collectors.toList());
         if ((list != null) && !(list.get(0).getParentId().equals(DIRECTORY_ROOT))) {
             StateOption stateOption = new StateOption(UP, UP);
             stateOptionList.add(stateOption);
@@ -232,7 +239,7 @@ public class UpnpServerHandler extends UpnpHandler {
                 break;
             case "Source":
                 if (!((value == null) || (value.isEmpty()))) {
-                    source = value;
+                    source = Arrays.asList(value.split(","));
                 }
                 break;
             default:
@@ -249,19 +256,6 @@ public class UpnpServerHandler extends UpnpHandler {
         return thing.getProperties().get("descriptorURL");
     }
 
-    @Override
-    public String getProtocolInfo() {
-        Map<String, String> inputs = new HashMap<>();
-
-        Map<String, String> result = invokeAction("ConnectionManager", "GetProtocolInfo", inputs);
-
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), "ConnectionManager");
-        }
-
-        return source;
-    }
-
     private void serveMedia() {
         UpnpRendererHandler handler = currentRendererHandler;
         if (handler != null) {
@@ -269,11 +263,9 @@ public class UpnpServerHandler extends UpnpHandler {
             handler.registerQueue(mediaQueue);
 
             List<UpnpEntry> list = resultList;
-            if (list != null) {
-                list.forEach((entry) -> {
-                    mediaQueue.add(entry);
-                });
-            }
+            list.forEach((entry) -> {
+                mediaQueue.add(entry);
+            });
             logger.debug("Serving media queue from server {} to renderer {}.", thing.getLabel(),
                     handler.getThing().getLabel());
         } else {

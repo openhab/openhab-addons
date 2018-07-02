@@ -8,15 +8,11 @@
  */
 package org.openhab.binding.upnpcontrol.handler;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -37,9 +33,10 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected UpnpIOService service;
-    protected Set<AudioFormat> supportedFormats = new HashSet<AudioFormat>();
     private String transportState = "";
-    protected int instanceId = 0;
+    protected int connectionId;
+    protected int avTransportId;
+    protected int rcsId;
 
     public UpnpHandler(Thing thing, UpnpIOService upnpIOService) {
         super(thing);
@@ -63,9 +60,33 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         service.unregisterParticipant(this);
     }
 
-    protected String getTransportState() throws IOException {
+    protected void prepareForConnection(String remoteProtocolInfo, String peerConnectionManager, int peerConnectionId,
+            String direction) {
         HashMap<String, String> inputs = new HashMap<String, String>();
-        inputs.put("InstanceID", Integer.toString(instanceId));
+        inputs.put("RemoteProtocolInfo", remoteProtocolInfo);
+        inputs.put("PeerConnectionManager", peerConnectionManager);
+        inputs.put("PeerConnectionID", Integer.toString(peerConnectionId));
+        inputs.put("Direction", direction);
+        Map<String, String> result = service.invokeAction(this, "ConnectionManager", "PrepareForConnection", inputs);
+        for (String variable : result.keySet()) {
+            onValueReceived(variable, result.get(variable), "ConnectionManager");
+        }
+        return;
+    }
+
+    protected void connectionComplete(int connectionId) {
+        HashMap<String, String> inputs = new HashMap<String, String>();
+        inputs.put("ConnectionID", String.valueOf(connectionId));
+        Map<String, String> result = service.invokeAction(this, "ConnectionManager", "connectionComplete", inputs);
+        for (String variable : result.keySet()) {
+            onValueReceived(variable, result.get(variable), "ConnectionManager");
+        }
+        return;
+    }
+
+    protected String getTransportState() {
+        HashMap<String, String> inputs = new HashMap<String, String>();
+        inputs.put("InstanceID", Integer.toString(avTransportId));
         Map<String, String> result = service.invokeAction(this, "AVTransport", "GetTransportInfo", inputs);
         for (String variable : result.keySet()) {
             onValueReceived(variable, result.get(variable), "AVTransport");
@@ -111,6 +132,15 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
                     transportState = value;
                 }
                 break;
+            case "ConnectionID":
+                connectionId = Integer.parseInt(value);
+                break;
+            case "AVTransportID":
+                avTransportId = Integer.parseInt(value);
+                break;
+            case "RcsID":
+                rcsId = Integer.parseInt(value);
+                break;
             default:
                 break;
         }
@@ -121,9 +151,13 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         service.addSubscription(this, serviceId, duration);
     }
 
-    protected abstract String getProtocolInfo();
+    public void getProtocolInfo() {
+        Map<String, String> inputs = new HashMap<>();
 
-    public Set<AudioFormat> getSupportedAudioFormats() {
-        return supportedFormats;
+        Map<String, String> result = invokeAction("ConnectionManager", "GetProtocolInfo", inputs);
+
+        for (String variable : result.keySet()) {
+            onValueReceived(variable, result.get(variable), "ConnectionManager");
+        }
     }
 }

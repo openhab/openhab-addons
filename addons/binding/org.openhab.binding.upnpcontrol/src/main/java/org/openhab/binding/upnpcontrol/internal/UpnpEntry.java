@@ -8,6 +8,11 @@
  */
 package org.openhab.binding.upnpcontrol.internal;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.StringEscapeUtils;
 
 /**
@@ -20,7 +25,7 @@ public class UpnpEntry {
     private final String title;
     private final String parentId;
     private final String upnpClass;
-    private final String res;
+    private final List<UpnpEntryRes> resList;
     private final String album;
     private final String albumArtUri;
     private final String creator;
@@ -28,12 +33,12 @@ public class UpnpEntry {
     private String desc;
 
     public UpnpEntry(String id, String title, String parentId, String album, String albumArtUri, String creator,
-            String upnpClass, String res) {
-        this(id, title, parentId, album, albumArtUri, creator, upnpClass, res, -1);
+            String upnpClass, List<UpnpEntryRes> resList) {
+        this(id, title, parentId, album, albumArtUri, creator, upnpClass, resList, -1);
     }
 
     public UpnpEntry(String id, String title, String parentId, String album, String albumArtUri, String creator,
-            String upnpClass, String res, int originalTrackNumber) {
+            String upnpClass, List<UpnpEntryRes> resList, int originalTrackNumber) {
         this.id = id;
         this.title = title;
         this.parentId = parentId;
@@ -41,7 +46,7 @@ public class UpnpEntry {
         this.albumArtUri = albumArtUri;
         this.creator = creator;
         this.upnpClass = upnpClass;
-        this.res = res;
+        this.resList = resList;
         this.originalTrackNumber = originalTrackNumber;
         this.desc = null;
     }
@@ -79,7 +84,15 @@ public class UpnpEntry {
      * @return a URI of this entry.
      */
     public String getRes() {
-        return res;
+        return resList.get(0).getRes();
+    }
+
+    public List<String> getProtocolList() {
+        List<String> protocolList = new ArrayList<>();
+        for (UpnpEntryRes entryRes : resList) {
+            protocolList.add(entryRes.getProtocolInfo());
+        }
+        return protocolList;
     }
 
     /**
@@ -87,6 +100,12 @@ public class UpnpEntry {
      */
     public String getUpnpClass() {
         return upnpClass;
+    }
+
+    public boolean isContainer() {
+        Pattern pattern = Pattern.compile("object.container");
+        Matcher matcher = pattern.matcher(getUpnpClass());
+        return (matcher.find());
     }
 
     /**

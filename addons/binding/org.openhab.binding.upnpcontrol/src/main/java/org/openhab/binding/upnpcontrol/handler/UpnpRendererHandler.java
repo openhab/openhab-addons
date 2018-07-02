@@ -10,10 +10,14 @@ package org.openhab.binding.upnpcontrol.handler;
 
 import static org.openhab.binding.upnpcontrol.UpnpControlBindingConstants.*;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,8 +32,6 @@ import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -51,7 +53,8 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private @Nullable Boolean audioSupport;
+    private boolean audioSupport;
+    protected Set<AudioFormat> supportedFormats = new HashSet<AudioFormat>();
     private boolean audioSinkRegistered;
 
     private UpnpAudioSinkReg audioSinkReg;
@@ -60,7 +63,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     private OnOffType soundMute = OnOffType.OFF;
     private PercentType soundVolume = new PercentType();
-    private String sink = "";
+    private List<String> sink = new ArrayList<>();
 
     private @Nullable Queue<UpnpEntry> currentQueue;
 
@@ -74,11 +77,20 @@ public class UpnpRendererHandler extends UpnpHandler {
     public void initialize() {
         logger.debug("Initializing handler for media renderer device {}", thing.getLabel());
 
+        if (service.isRegistered(this)) {
+            initRenderer();
+        }
+        super.initialize();
+    }
+
+    private void initRenderer() {
         addSubscription("AVTransport", 3600);
         getProtocolInfo();
+        getTransportState();
 
-        registerAudioSink();
-        super.initialize();
+        if (audioSupport) {
+            registerAudioSink();
+        }
     }
 
     protected void handlePlayUri(Command command) {
@@ -106,7 +118,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     public void stop() {
         Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(instanceId));
+        inputs.put("InstanceID", Integer.toString(avTransportId));
 
         Map<String, String> result = invokeAction("AVTransport", "Stop", inputs);
 
@@ -117,7 +129,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     public void play() {
         Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(instanceId));
+        inputs.put("InstanceID", Integer.toString(avTransportId));
         inputs.put("Speed", "1");
 
         Map<String, String> result = invokeAction("AVTransport", "Play", inputs);
@@ -129,7 +141,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     public void pause() {
         Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(instanceId));
+        inputs.put("InstanceID", Integer.toString(avTransportId));
 
         Map<String, String> result = invokeAction("AVTransport", "Pause", inputs);
 
@@ -140,7 +152,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     protected void next() {
         Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(instanceId));
+        inputs.put("InstanceID", Integer.toString(avTransportId));
 
         Map<String, String> result = invokeAction("AVTransport", "Next", inputs);
 
@@ -151,7 +163,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     protected void previous() {
         Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(instanceId));
+        inputs.put("InstanceID", Integer.toString(avTransportId));
 
         Map<String, String> result = invokeAction("AVTransport", "Previous", inputs);
 
@@ -163,7 +175,7 @@ public class UpnpRendererHandler extends UpnpHandler {
     public void setCurrentURI(String URI, String URIMetaData) {
         Map<String, String> inputs = new HashMap<>();
         try {
-            inputs.put("InstanceID", Integer.toString(instanceId));
+            inputs.put("InstanceID", Integer.toString(avTransportId));
             inputs.put("CurrentURI", URI);
             inputs.put("CurrentURIMetaData", URIMetaData);
         } catch (NumberFormatException ex) {
@@ -177,9 +189,9 @@ public class UpnpRendererHandler extends UpnpHandler {
         }
     }
 
-    public PercentType getVolume() throws IOException {
+    public PercentType getVolume() {
         Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(instanceId));
+        inputs.put("InstanceID", Integer.toString(rcsId));
         inputs.put("Channel", UPNP_CHANNEL);
 
         Map<String, String> result = invokeAction("RenderingControl", "GetVolume", inputs);
@@ -190,9 +202,9 @@ public class UpnpRendererHandler extends UpnpHandler {
         return soundVolume;
     }
 
-    public void setVolume(PercentType volume) throws IOException {
+    public void setVolume(PercentType volume) {
         Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(instanceId));
+        inputs.put("InstanceID", Integer.toString(rcsId));
         inputs.put("Channel", UPNP_CHANNEL);
         inputs.put("DesiredVolume", String.valueOf(volume.intValue()));
 
@@ -203,9 +215,9 @@ public class UpnpRendererHandler extends UpnpHandler {
         }
     }
 
-    protected OnOffType getMute() throws IOException {
+    protected OnOffType getMute() {
         Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(instanceId));
+        inputs.put("InstanceID", Integer.toString(rcsId));
         inputs.put("Channel", UPNP_CHANNEL);
 
         Map<String, String> result = invokeAction("RenderingControl", "GetMute", inputs);
@@ -216,9 +228,9 @@ public class UpnpRendererHandler extends UpnpHandler {
         return soundMute;
     }
 
-    protected void setMute(OnOffType mute) throws IOException {
+    protected void setMute(OnOffType mute) {
         Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(instanceId));
+        inputs.put("InstanceID", Integer.toString(rcsId));
         inputs.put("Channel", UPNP_CHANNEL);
         inputs.put("DesiredMute", mute == OnOffType.ON ? "1" : "0");
 
@@ -233,68 +245,63 @@ public class UpnpRendererHandler extends UpnpHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handle command {} for channel {} on renderer {}", command, channelUID, thing.getLabel());
 
-        try {
-            String transportState;
-            if (command instanceof RefreshType) {
-                switch (channelUID.getId()) {
-                    case VOLUME:
-                        updateState(channelUID, getVolume());
-                        break;
-                    case MUTE:
-                        updateState(channelUID, getMute());
-                        break;
-                    case CONTROL:
-                        transportState = getTransportState();
-                        State newState = UnDefType.UNDEF;
-                        if (transportState.equals("PLAYING")) {
-                            newState = PlayPauseType.PLAY;
-                        } else if (transportState.equals("STOPPED")) {
-                            newState = PlayPauseType.PLAY;
-                        } else if (transportState.equals("PAUSED_PLAYBACK")) {
-                            newState = PlayPauseType.PAUSE;
-                        }
-                        updateState(channelUID, newState);
-                        break;
-                }
-                return;
-            } else {
-                switch (channelUID.getId()) {
-                    case VOLUME:
-                        setVolume((PercentType) command);
-                        break;
-                    case MUTE:
-                        setMute((OnOffType) command);
-                        break;
-                    case STOP:
-                        if (command == OnOffType.ON) {
-                            updateState(CONTROL, PlayPauseType.PLAY);
-                            stop();
-                        }
-                        break;
-                    case CONTROL:
-                        updateState(STOP, OnOffType.OFF);
-                        if (command instanceof PlayPauseType) {
-                            if (command == PlayPauseType.PLAY) {
-                                play();
-                            } else if (command == PlayPauseType.PAUSE) {
-                                pause();
-                            }
-                        } else if (command instanceof NextPreviousType) {
-                            if (command == NextPreviousType.NEXT) {
-                                next();
-                            } else if (command == NextPreviousType.PREVIOUS) {
-                                previous();
-                            }
-                        } else if (command instanceof RewindFastforwardType) {
-                        }
-                        break;
-                }
-
-                return;
+        String transportState;
+        if (command instanceof RefreshType) {
+            switch (channelUID.getId()) {
+                case VOLUME:
+                    updateState(channelUID, getVolume());
+                    break;
+                case MUTE:
+                    updateState(channelUID, getMute());
+                    break;
+                case CONTROL:
+                    transportState = getTransportState();
+                    State newState = UnDefType.UNDEF;
+                    if (transportState.equals("PLAYING")) {
+                        newState = PlayPauseType.PLAY;
+                    } else if (transportState.equals("STOPPED")) {
+                        newState = PlayPauseType.PLAY;
+                    } else if (transportState.equals("PAUSED_PLAYBACK")) {
+                        newState = PlayPauseType.PAUSE;
+                    }
+                    updateState(channelUID, newState);
+                    break;
             }
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not communicate with " + thing.getLabel());
+            return;
+        } else {
+            switch (channelUID.getId()) {
+                case VOLUME:
+                    setVolume((PercentType) command);
+                    break;
+                case MUTE:
+                    setMute((OnOffType) command);
+                    break;
+                case STOP:
+                    if (command == OnOffType.ON) {
+                        updateState(CONTROL, PlayPauseType.PAUSE);
+                        stop();
+                    }
+                    break;
+                case CONTROL:
+                    updateState(STOP, OnOffType.OFF);
+                    if (command instanceof PlayPauseType) {
+                        if (command == PlayPauseType.PLAY) {
+                            play();
+                        } else if (command == PlayPauseType.PAUSE) {
+                            pause();
+                        }
+                    } else if (command instanceof NextPreviousType) {
+                        if (command == NextPreviousType.NEXT) {
+                            serveNext();
+                        } else if (command == NextPreviousType.PREVIOUS) {
+                            previous();
+                        }
+                    } else if (command instanceof RewindFastforwardType) {
+                    }
+                    break;
+            }
+
+            return;
         }
     }
 
@@ -302,10 +309,7 @@ public class UpnpRendererHandler extends UpnpHandler {
     public void onStatusChanged(boolean status) {
         logger.debug("Renderer status changed to {}", status);
         if (status) {
-            addSubscription("AVTransport", 3600);
-            getProtocolInfo();
-
-            registerAudioSink();
+            initRenderer();
         }
         super.onStatusChanged(status);
     }
@@ -321,16 +325,18 @@ public class UpnpRendererHandler extends UpnpHandler {
             case "CurrentMute":
                 if (!((value == null) || (value.isEmpty()))) {
                     soundMute = (Boolean.valueOf(value) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(MUTE, soundMute);
                 }
                 break;
             case "CurrentVolume":
                 if (!((value == null) || (value.isEmpty()))) {
                     soundVolume = PercentType.valueOf(value);
+                    updateState(VOLUME, soundVolume);
                 }
                 break;
             case "Sink":
                 if (!((value == null) || (value.isEmpty()))) {
-                    sink = value;
+                    sink = Arrays.asList(value.split(","));
                 }
                 break;
             case "LastChange":
@@ -359,6 +365,9 @@ public class UpnpRendererHandler extends UpnpHandler {
             case "TransportState":
                 if ("STOPPED".equals(value)) {
                     serveNext();
+                } else if ("PLAYING".equals(value)) {
+                    updateState(STOP, OnOffType.OFF);
+                    updateState(CONTROL, PlayPauseType.PLAY);
                 }
                 break;
             default:
@@ -368,28 +377,11 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     @Override
-    public String getProtocolInfo() {
-        Map<String, String> inputs = new HashMap<>();
-
-        Map<String, String> result = invokeAction("ConnectionManager", "GetProtocolInfo", inputs);
-
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), "ConnectionManager");
-        }
-
-        if (sink.equals("")) {
-            logger.debug("No sink value in response from renderer {}", thing.getLabel());
-            return sink;
-        }
-
-        boolean audio = Pattern.matches(".*audio.*", sink);
-        audioSupport = audio;
-        if (audio) {
-            logger.debug("Renderer {} supports audio", thing.getLabel());
-        }
+    public void getProtocolInfo() {
+        super.getProtocolInfo();
 
         Pattern pattern = Pattern.compile("(?:.*):(?:.*):(.*):(?:.*)");
-        for (String protocol : sink.split(",")) {
+        for (String protocol : sink) {
             Matcher matcher = pattern.matcher(protocol);
             if (matcher.find()) {
                 String format = matcher.group(1);
@@ -404,9 +396,13 @@ public class UpnpRendererHandler extends UpnpHandler {
                         supportedFormats.add(AudioFormat.WAV);
                         break;
                 }
+                audioSupport = Pattern.matches("audio.*", format);
             }
         }
-        return sink;
+
+        if (audioSupport) {
+            logger.debug("Device {} supports audio", thing.getLabel());
+        }
     }
 
     private void registerAudioSink() {
@@ -417,19 +413,9 @@ public class UpnpRendererHandler extends UpnpHandler {
             logger.debug("Audio Sink registration for renderer {} failed, no service", thing.getLabel());
             return;
         }
-        if (audioSupport()) {
-            logger.debug("Registering Audio Sink for renderer {}", thing.getLabel());
-            audioSinkReg.registerAudioSink(this);
-            audioSinkRegistered = true;
-        }
-    }
-
-    public boolean audioSupport() {
-        if (audioSupport == null) {
-            getProtocolInfo();
-        }
-        Boolean audio = audioSupport;
-        return (audio == null) ? false : audio;
+        logger.debug("Registering Audio Sink for renderer {}", thing.getLabel());
+        audioSinkReg.registerAudioSink(this);
+        audioSinkRegistered = true;
     }
 
     public void registerQueue(Queue<UpnpEntry> queue) {
@@ -443,9 +429,15 @@ public class UpnpRendererHandler extends UpnpHandler {
         Queue<UpnpEntry> queue = currentQueue;
         if (queue != null) {
             UpnpEntry nextMedia = queue.poll();
-            if (nextMedia != null) {
-                setCurrentURI(nextMedia.getRes(), "");
-            }
+            setCurrentURI(nextMedia.getRes(), "");
         }
+    }
+
+    public Set<AudioFormat> getSupportedAudioFormats() {
+        return supportedFormats;
+    }
+
+    protected List<String> getSink() {
+        return sink;
     }
 }

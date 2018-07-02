@@ -162,7 +162,7 @@ public class UpnpXMLParser {
         private String id;
         private String parentId;
         private StringBuilder upnpClass = new StringBuilder();
-        private StringBuilder res = new StringBuilder();
+        private List<UpnpEntryRes> resList = new ArrayList<>();
         private StringBuilder title = new StringBuilder();
         private StringBuilder album = new StringBuilder();
         private StringBuilder albumArtUri = new StringBuilder();
@@ -184,6 +184,10 @@ public class UpnpXMLParser {
                 id = attributes.getValue("id");
                 parentId = attributes.getValue("parentID");
             } else if (qName.equals("res")) {
+                String protocolInfo = attributes.getValue("protocolInfo");
+                Integer size = Integer.parseInt(attributes.getValue("size"));
+                String importUri = attributes.getValue("importUri");
+                resList.add(0, new UpnpEntryRes(protocolInfo, size, importUri));
                 element = Element.RES;
             } else if (qName.equals("dc:title")) {
                 element = Element.TITLE;
@@ -206,6 +210,8 @@ public class UpnpXMLParser {
                     ignore.add("type");
                     ignore.add("ordinal");
                     ignore.add("description");
+                    ignore.add("writeStatus");
+                    ignore.add("storageUsed");
                 }
 
                 if (!ignore.contains(localName)) {
@@ -228,7 +234,7 @@ public class UpnpXMLParser {
                     upnpClass.append(ch, start, length);
                     break;
                 case RES:
-                    res.append(ch, start, length);
+                    resList.get(0).setRes(new String(ch, start, length));
                     break;
                 case ALBUM:
                     album.append(ch, start, length);
@@ -243,9 +249,9 @@ public class UpnpXMLParser {
                     trackNumber.append(ch, start, length);
                     break;
                 case RESMD:
-                    desc.append(ch, start, length);
                     break;
                 case DESC:
+                    desc.append(ch, start, length);
                     break;
             }
         }
@@ -262,10 +268,10 @@ public class UpnpXMLParser {
                 }
 
                 entries.add(new UpnpEntry(id, title.toString(), parentId, album.toString(), albumArtUri.toString(),
-                        creator.toString(), upnpClass.toString(), res.toString(), trackNumberVal));
+                        creator.toString(), upnpClass.toString(), resList, trackNumberVal));
                 title = new StringBuilder();
                 upnpClass = new StringBuilder();
-                res = new StringBuilder();
+                resList = new ArrayList<>();
                 album = new StringBuilder();
                 albumArtUri = new StringBuilder();
                 creator = new StringBuilder();
