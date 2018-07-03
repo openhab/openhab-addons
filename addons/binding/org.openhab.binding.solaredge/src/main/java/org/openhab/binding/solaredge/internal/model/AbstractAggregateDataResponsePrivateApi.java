@@ -95,7 +95,7 @@ public abstract class AbstractAggregateDataResponsePrivateApi implements DataRes
         State result = UnDefType.UNDEF;
 
         if (value != null && value.percentage != null) {
-            result = new QuantityType<Dimensionless>(value.percentage, SmartHomeUnits.PERCENT);
+            result = new QuantityType<Dimensionless>(value.percentage * 100, SmartHomeUnits.PERCENT);
         } else {
             logger.debug("Channel {}: no value provided.", channel.getFQName());
         }
