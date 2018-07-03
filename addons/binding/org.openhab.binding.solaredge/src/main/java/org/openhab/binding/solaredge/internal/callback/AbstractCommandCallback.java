@@ -104,7 +104,7 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     @Override
     public final void onFailure(Response response, Throwable failure) {
         super.onFailure(response, failure);
-        logger.warn("Request failed: {}", failure.toString());
+        logger.debug("Request failed: {}", failure.toString());
         communicationStatus.setError((Exception) failure);
 
         if (failure instanceof SocketTimeoutException || failure instanceof TimeoutException) {
