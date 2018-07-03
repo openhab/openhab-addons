@@ -481,12 +481,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     }
                 }
 
-                String artist = "";
-                if ("movie".equals(mediaType)) {
-                    artist = convertFromArrayToString(item.get("director").getAsJsonArray());
+                List<String> artistList = null;
+                if ("movie".equals(mediaType) && item.has("director")) {
+                    artistList = convertFromArrayToList(item.get("director").getAsJsonArray());
                 } else {
                     if (item.has("artist")) {
-                        artist = convertFromArrayToString(item.get("artist").getAsJsonArray());
+                        artistList = convertFromArrayToList(item.get("artist").getAsJsonArray());
                     }
                 }
 
@@ -524,7 +524,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 listener.updateAlbum(album);
                 listener.updateTitle(title);
                 listener.updateShowTitle(showTitle);
-                listener.updateArtist(artist);
+                listener.updateArtistList(artistList);
                 listener.updateMediaType(mediaType);
                 listener.updateGenreList(genreList);
                 listener.updatePVRChannel(channel);
@@ -575,24 +575,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
         return result;
     }
 
-    private String convertFromArrayToString(JsonArray data) {
-        StringBuilder result = new StringBuilder();
-        for (JsonElement element : data) {
-            result.append(element.getAsString()).append(", ");
-        }
-        if (result.length() > 0) {
-            // drop last comma
-            result.setLength(result.length() - 1);
-        }
-        return result.toString();
-    }
-
     private List<String> convertFromArrayToList(JsonArray data) {
-        List<String> result = new ArrayList<>();
+        List<String> list = new ArrayList<>();
         for (JsonElement element : data) {
-            result.add(element.getAsString());
+            list.add(element.getAsString());
         }
-        return result;
+        return list;
     }
 
     private String convertToImageUrl(JsonElement element) {
@@ -647,7 +635,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
             listener.updateAlbum("");
             listener.updateTitle("");
             listener.updateShowTitle("");
-            listener.updateArtist("");
+            listener.updateArtistList(null);
             listener.updateMediaType("");
             listener.updateGenreList(null);
             listener.updatePVRChannel("");

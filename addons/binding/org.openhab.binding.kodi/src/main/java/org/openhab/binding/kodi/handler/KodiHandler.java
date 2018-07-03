@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
@@ -642,8 +643,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     @Override
-    public void updateArtist(String artist) {
-        updateState(CHANNEL_ARTIST, createStringState(artist));
+    public void updateArtistList(List<String> artistList) {
+        updateState(CHANNEL_ARTIST, createStringListState(artistList));
     }
 
     @Override
@@ -708,15 +709,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         if (list == null || list.isEmpty()) {
             return UnDefType.UNDEF;
         } else {
-            StringBuilder sb = new StringBuilder();
-            for (String genre : list) {
-                sb.append(genre).append(",");
-            }
-            if (sb.length() > 0) {
-                // drop last comma
-                sb.setLength(sb.length() - 1);
-            }
-            return createStringState(sb.toString());
+            return createStringState(list.stream().collect(Collectors.joining(", ")));
         }
     }
 
