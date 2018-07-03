@@ -34,7 +34,7 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
 
     private final NibeUplinkHandler handler;
     private final Channel channel;
-    private final String value;
+    private String value;
     private int retries = 0;
 
     public UpdateSetting(NibeUplinkHandler handler, Channel channel, String value) {
@@ -51,6 +51,12 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
             logger.warn("channel '{}' does not support write access - value to set '{}'", channel.getFQName(), value);
             throw new UnsupportedOperationException(
                     "channel (" + channel.getFQName() + ") does not support write access");
+        }
+
+        // although we have integers openhab often transfers decimals which will then cause a validation error. So we
+        // will shorten here.
+        if (value.endsWith(".0")) {
+            value = value.substring(0, value.length() - 2);
         }
 
         if (value.matches(channel.getValidationExpression())) {
