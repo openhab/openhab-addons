@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,13 +28,13 @@ import org.eclipse.smarthome.config.core.ConfigDescriptionParameterBuilder;
 import org.eclipse.smarthome.config.core.ParameterOption;
 import org.eclipse.smarthome.core.common.registry.ProviderChangeListener;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
-import org.openhab.binding.lgwebos.LGWebOS;
-import org.openhab.binding.lgwebos.LGWebOSBindingConstants;
 import org.openhab.action.lgwebos.handler.AppActionHandler;
 import org.openhab.action.lgwebos.handler.BrowserActionHandler;
 import org.openhab.action.lgwebos.handler.ButtonActionHandler;
 import org.openhab.action.lgwebos.handler.TextActionHandler;
 import org.openhab.action.lgwebos.handler.ToastActionHandler;
+import org.openhab.binding.lgwebos.LGWebOS;
+import org.openhab.binding.lgwebos.LGWebOSBindingConstants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
