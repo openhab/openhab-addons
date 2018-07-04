@@ -146,6 +146,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         if (RefreshType.REFRESH == command) {
             ModbusPollerThingHandler poller = pollerHandler;
             if (poller == null) {
+                // Data thing must be child of endpoint, and thus write-only.
+                // There is no data to update
                 return;
             }
             poller.refresh();
