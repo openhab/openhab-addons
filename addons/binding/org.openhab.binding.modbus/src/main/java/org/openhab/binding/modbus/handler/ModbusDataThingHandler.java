@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
@@ -150,7 +151,10 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 // There is no data to update
                 return;
             }
-            poller.refresh();
+            // We schedule the REFRESH to avoid dead-lock situation where poller is trying update this
+            // data thing with cached data (resulting in deadlock in two synchronized methods: this (handleCommand) and
+            // onRegisters.
+            scheduler.schedule(() -> poller.refresh(), 0, TimeUnit.SECONDS);
             return;
         } else if (hasConfigurationError()) {
             logger.warn(
