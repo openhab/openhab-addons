@@ -1033,7 +1033,7 @@ public class ModbusDataHandlerTest {
     }
 
     @Test
-    public void testRefreshOnData() {
+    public void testRefreshOnData() throws InterruptedException {
         ModbusReadFunctionCode functionCode = ModbusReadFunctionCode.READ_COILS;
 
         ModbusSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint("thisishost", 502);
@@ -1064,7 +1064,25 @@ public class ModbusDataHandlerTest {
 
         verify(manager, never()).submitOneTimePoll(task);
         dataHandler.handleCommand(Mockito.mock(ChannelUID.class), RefreshType.REFRESH);
-        verify((ModbusPollerThingHandler) poller.getHandler()).refresh();
+
+        // data handler asynchronously calls the poller.refresh() -- it might take some time
+        // We check that refresh is finally called
+        int retries = 50;
+        for (int i = 0; i < retries; i++) {
+            try {
+                verify((ModbusPollerThingHandler) poller.getHandler()).refresh();
+
+                // assertion successful, exit the retry-loop
+                break;
+            } catch (AssertionError e) {
+                if (i == retries - 1) {
+                    throw e;
+                } else {
+                    Thread.sleep(50);
+                    continue;
+                }
+            }
+        }
     }
 
     /**

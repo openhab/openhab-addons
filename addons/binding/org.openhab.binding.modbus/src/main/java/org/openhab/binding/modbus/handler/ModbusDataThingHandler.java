@@ -151,7 +151,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 // There is no data to update
                 return;
             }
-            // We schedule the REFRESH to avoid dead-lock situation where poller is trying update this
+            // We *schedule* the REFRESH to avoid dead-lock situation where poller is trying update this
             // data thing with cached data (resulting in deadlock in two synchronized methods: this (handleCommand) and
             // onRegisters.
             scheduler.schedule(() -> poller.refresh(), 0, TimeUnit.SECONDS);

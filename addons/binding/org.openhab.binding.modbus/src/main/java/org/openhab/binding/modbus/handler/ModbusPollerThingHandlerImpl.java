@@ -419,7 +419,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
     /**
      * Refresh the data
      *
-     * If data or error was just recently received, return the cached response
+     * If data or error was just recently received (i.e. cache is fresh), return the cached response.
      */
     @Override
     public void refresh() {
