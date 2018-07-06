@@ -73,6 +73,7 @@ import org.eclipse.smarthome.core.transform.TransformationService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.test.java.JavaTest;
 import org.eclipse.smarthome.test.storage.VolatileStorageService;
 import org.hamcrest.Matcher;
 import org.junit.Before;
@@ -111,7 +112,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import com.google.common.collect.ImmutableMap;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ModbusDataHandlerTest {
+public class ModbusDataHandlerTest extends JavaTest {
 
     private class ItemChannelLinkRegistryTestImpl extends ItemChannelLinkRegistry {
         private final class ManagedItemChannelLinkProviderExtension extends ManagedItemChannelLinkProvider {
@@ -1067,22 +1068,7 @@ public class ModbusDataHandlerTest {
 
         // data handler asynchronously calls the poller.refresh() -- it might take some time
         // We check that refresh is finally called
-        int retries = 50;
-        for (int i = 0; i < retries; i++) {
-            try {
-                verify((ModbusPollerThingHandler) poller.getHandler()).refresh();
-
-                // assertion successful, exit the retry-loop
-                break;
-            } catch (AssertionError e) {
-                if (i == retries - 1) {
-                    throw e;
-                } else {
-                    Thread.sleep(50);
-                    continue;
-                }
-            }
-        }
+        waitForAssert(() -> verify((ModbusPollerThingHandler) poller.getHandler()).refresh(), 2500, 50);
     }
 
     /**

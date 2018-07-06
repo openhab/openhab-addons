@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.function.LongSupplier;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -59,7 +60,7 @@ import net.wimpi.modbus.util.SerialParameters;
  * @author Sami Salonen
  *
  */
-public class IntegrationTestSupport {
+public class IntegrationTestSupport extends JavaTest {
 
     public enum ServerType {
         TCP,
@@ -165,61 +166,25 @@ public class IntegrationTestSupport {
     }
 
     protected void waitForRequests(int expectedRequestCount) {
-        int sleepMillis = 10;
-        int waited = 0;
-        AssertionError lastError = new AssertionError("Connections not established in time!");
-        while (waited < MAX_WAIT_REQUESTS_MILLIS) {
-            try {
-                assertThat(modbustRequestCaptor.getAllReturnValues().size(), is(equalTo(expectedRequestCount)));
-            } catch (AssertionError e) {
-                lastError = e;
-                try {
-                    Thread.sleep(sleepMillis);
-                    waited += sleepMillis;
-                } catch (InterruptedException e1) {
-                    throw new AssertionError("test interrupted");
-                }
-                continue;
-            }
-            // OK!
-            return;
-        }
-        // Requests not established in time
-        throw lastError;
+        waitForAssert(
+                () -> assertThat(modbustRequestCaptor.getAllReturnValues().size(), is(equalTo(expectedRequestCount))),
+                MAX_WAIT_REQUESTS_MILLIS, 10);
     }
 
     protected void waitForConnectionsReceived(int expectedConnections) {
-        int sleepMillis = 10;
-        int waited = 0;
-        AssertionError lastError = new AssertionError("Connections not established in time!");
-        while (waited < MAX_WAIT_REQUESTS_MILLIS) {
-            try {
-                if (ServerType.TCP.equals(serverType)) {
-                    verify(tcpConnectionFactory, times(expectedConnections)).create(any(Socket.class));
-                } else if (ServerType.UDP.equals(serverType)) {
-                    // No-op
-                    // verify(udpTerminalFactory, times(expectedConnections)).create(any(InetAddress.class),
-                    // any(Integer.class));
-                } else if (ServerType.SERIAL.equals(serverType)) {
-                    // No-op
-                } else {
-                    throw new NotImplementedException();
-                }
-            } catch (AssertionError e) {
-                lastError = e;
-                try {
-                    Thread.sleep(sleepMillis);
-                    waited += sleepMillis;
-                } catch (InterruptedException e1) {
-                    throw new AssertionError("test interrupted");
-                }
-                continue;
+        waitForAssert(() -> {
+            if (ServerType.TCP.equals(serverType)) {
+                verify(tcpConnectionFactory, times(expectedConnections)).create(any(Socket.class));
+            } else if (ServerType.UDP.equals(serverType)) {
+                // No-op
+                // verify(udpTerminalFactory, times(expectedConnections)).create(any(InetAddress.class),
+                // any(Integer.class));
+            } else if (ServerType.SERIAL.equals(serverType)) {
+                // No-op
+            } else {
+                throw new NotImplementedException();
             }
-            // OK!
-            return;
-        }
-        System.err.println("Connections not established in time!");
-        throw lastError;
+        }, MAX_WAIT_REQUESTS_MILLIS, 10);
     }
 
     private void startServer() throws UnknownHostException, InterruptedException {
@@ -278,15 +243,8 @@ public class IntegrationTestSupport {
 
     private void waitForUDPServerStartup() throws InterruptedException {
         // Query server port. It seems to take time (probably due to thread starting)
-        int sleep_millis = 5;
-        int total_try_millis = 10000; // 10sec
-        for (int tries = 0; tries < Math.max(1, total_try_millis / sleep_millis); tries++) {
-            udpModbusPort = udpListener.getLocalPort();
-            if (udpModbusPort != -1) {
-                break;
-            }
-            Thread.sleep(sleep_millis);
-        }
+        waitFor(() -> udpListener.getLocalPort() > 0, 5, 10_000);
+        udpModbusPort = udpListener.getLocalPort();
     }
 
     private void startTCPServer() throws UnknownHostException, InterruptedException {
@@ -302,15 +260,8 @@ public class IntegrationTestSupport {
     }
 
     private void waitForTCPServerStartup() throws InterruptedException {
-        int sleep_millis = 5;
-        int total_try_millis = 10000; // 10sec
-        for (int tries = 0; tries < Math.max(1, total_try_millis / sleep_millis); tries++) {
-            tcpModbusPort = tcpListener.getLocalPort();
-            if (tcpModbusPort != -1) {
-                break;
-            }
-            Thread.sleep(sleep_millis);
-        }
+        waitFor(() -> tcpListener.getLocalPort() > 0, 10_000, 5);
+        tcpModbusPort = tcpListener.getLocalPort();
     }
 
     private void startSerialServer() throws UnknownHostException, InterruptedException {

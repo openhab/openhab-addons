@@ -416,7 +416,6 @@ public class SmokeTest extends IntegrationTestSupport {
         ModbusSlaveEndpoint endpoint = getEndpoint();
 
         AtomicInteger unexpectedCount = new AtomicInteger();
-        CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Object> lastData = new AtomicReference<>();
 
         BitArray bits = new BitArrayImpl(true, true, false, false, true, true);
@@ -426,30 +425,29 @@ public class SmokeTest extends IntegrationTestSupport {
                     @Override
                     public void onWriteResponse(ModbusWriteRequestBlueprint request, ModbusResponse response) {
                         lastData.set(response);
-                        callbackCalled.countDown();
                     }
 
                     @Override
                     public void onError(ModbusWriteRequestBlueprint request, Exception error) {
                         unexpectedCount.incrementAndGet();
-                        callbackCalled.countDown();
                     }
                 });
         modbusManager.submitOneTimeWrite(task);
-        callbackCalled.await(5, TimeUnit.SECONDS);
-        Thread.sleep(500);
+        waitForAssert(() -> {
+            assertThat(unexpectedCount.get(), is(equalTo(0)));
+            assertThat(lastData.get(), is(notNullValue()));
 
-        assertThat(unexpectedCount.get(), is(equalTo(0)));
-        ModbusResponse response = (ModbusResponse) lastData.get();
-        assertThat(response.getFunctionCode(), is(equalTo(15)));
+            ModbusResponse response = (ModbusResponse) lastData.get();
+            assertThat(response.getFunctionCode(), is(equalTo(15)));
 
-        assertThat(modbustRequestCaptor.getAllReturnValues().size(), is(equalTo(1)));
-        ModbusRequest request = modbustRequestCaptor.getAllReturnValues().get(0);
-        assertThat(request.getFunctionCode(), is(equalTo(15)));
-        assertThat(((WriteMultipleCoilsRequest) request).getReference(), is(equalTo(3)));
-        assertThat(((WriteMultipleCoilsRequest) request).getBitCount(), is(equalTo(bits.size())));
-        assertThat(new BitArrayWrappingBitVector(((WriteMultipleCoilsRequest) request).getCoils(), bits.size()),
-                is(equalTo(bits)));
+            assertThat(modbustRequestCaptor.getAllReturnValues().size(), is(equalTo(1)));
+            ModbusRequest request = modbustRequestCaptor.getAllReturnValues().get(0);
+            assertThat(request.getFunctionCode(), is(equalTo(15)));
+            assertThat(((WriteMultipleCoilsRequest) request).getReference(), is(equalTo(3)));
+            assertThat(((WriteMultipleCoilsRequest) request).getBitCount(), is(equalTo(bits.size())));
+            assertThat(new BitArrayWrappingBitVector(((WriteMultipleCoilsRequest) request).getCoils(), bits.size()),
+                    is(equalTo(bits)));
+        }, 6000, 10);
         LoggerFactory.getLogger(this.getClass()).error("ENDINGMULTIPLE");
     }
 
