@@ -42,11 +42,11 @@ daikin.items:
 
 ```
 Switch DaikinACUnit_Power { channel="opendaikin:ac_unit:living_room_ac:power" }
-Text DaikinACUnit_SetPointF { channel="opendaikin:ac_unit:living_room_ac:setpointf" }
-Text DaikinACUnit_Mode { channel="opendaikin:ac_unit:living_room_ac:mode" }
-Text DaikinACUnit_Fan { channel="opendaikin:ac_unit:living_room_ac:fanspeed" }
-Text DaikinACUnit_IndoorTemperatureF { channel="opendaikin:ac_unit:living_room_ac:indoortempf" }
-Text DaikinACUnit_OutdoorTemperatureF { channel="opendaikin:ac_unit:living_room_ac:outdoortempf" }
+Number DaikinACUnit_SetPointF { channel="opendaikin:ac_unit:living_room_ac:setpoint,useFahrenheit=true" }
+String DaikinACUnit_Mode { channel="opendaikin:ac_unit:living_room_ac:mode" }
+String DaikinACUnit_Fan { channel="opendaikin:ac_unit:living_room_ac:fanspeed" }
+Number DaikinACUnit_IndoorTemperatureF { channel="opendaikin:ac_unit:living_room_ac:indoortemp,useFahrenheit=true" }
+Number DaikinACUnit_OutdoorTemperatureF { channel="opendaikin:ac_unit:living_room_ac:outdoortemp,useFahrenheit=true" }
 ```
 
 daikin.sitemap:
