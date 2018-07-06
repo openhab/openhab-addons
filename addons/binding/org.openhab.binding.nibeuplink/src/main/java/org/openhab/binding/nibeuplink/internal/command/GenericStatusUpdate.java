@@ -87,7 +87,8 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
 
             String json = getContentAsString(StandardCharsets.UTF_8);
             if (json != null) {
-                GenericDataResponse jsonObject = convertJson(json, GenericDataResponse.class);
+                logger.debug("JSON String: {}", json);
+                GenericDataResponse jsonObject = gson.fromJson(json, GenericDataResponse.class);
                 if (jsonObject != null) {
                     handler.updateChannelStatus(jsonObject.getValues());
                 }

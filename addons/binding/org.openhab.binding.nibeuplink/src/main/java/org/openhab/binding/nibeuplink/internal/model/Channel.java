@@ -8,7 +8,8 @@
  */
 package org.openhab.binding.nibeuplink.internal.model;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * interface to be implemented by all Channel Enumerations
@@ -16,6 +17,7 @@ import org.eclipse.jdt.annotation.NonNull;
  * @author Alexander Friese - initial contribution
  *
  */
+@NonNullByDefault
 public interface Channel {
 
     String getName();
@@ -24,7 +26,7 @@ public interface Channel {
 
     ChannelGroup getChannelGroup();
 
-    default String getWriteApiUrlSuffix() {
+    default @Nullable String getWriteApiUrlSuffix() {
         return null;
     }
 
@@ -32,13 +34,12 @@ public interface Channel {
         return true;
     }
 
-    default String getValidationExpression() {
+    default @Nullable String getValidationExpression() {
         return null;
     }
 
+    // TODO: should be obsolete
     ValueType getValueType();
 
-    @NonNull
     String getFQName();
-
 }

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -21,21 +21,22 @@ import org.openhab.binding.nibeuplink.internal.connector.UplinkWebInterface;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
 
 /**
- * public interface of the {@link GenericUplinkHandler}
+ * public interface of the {@link UplinkBaseHandler}
  *
  * @author Alexander Friese - initial contribution
  *
  */
+@NonNullByDefault
 public interface NibeUplinkHandler extends ThingHandler {
     /**
      * Called from {@link NibeUplinkWebInterface#authenticate()} to update
      * the thing status because updateStatus is protected.
      *
-     * @param status Bridge status
+     * @param status       Bridge status
      * @param statusDetail Bridge status detail
-     * @param description Bridge status description
+     * @param description  Bridge status description
      */
-    void setStatusInfo(@NonNull ThingStatus status, @NonNull ThingStatusDetail statusDetail, String description);
+    void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description);
 
     /**
      * Provides the web interface object.

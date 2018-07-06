@@ -10,7 +10,7 @@ package org.openhab.binding.nibeuplink;
 
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.ImmutableSet;
@@ -22,17 +22,18 @@ import com.google.common.collect.ImmutableSet;
  * @author Alexander Friese - initial contribution
  *
  */
+@NonNullByDefault
 public final class NibeUplinkBindingConstants {
 
-    private static final @NonNull String BINDING_ID = "nibeuplink";
+    private static final String BINDING_ID = "nibeuplink";
 
     // List of main device types
-    public static final @NonNull String DEVICE_VVM320 = "vvm320";
-    public static final @NonNull String DEVICE_VVM310 = "vvm310";
-    public static final @NonNull String DEVICE_F730 = "f730";
-    public static final @NonNull String DEVICE_F750 = "f750";
-    public static final @NonNull String DEVICE_F1145 = "f1145";
-    public static final @NonNull String DEVICE_F1155 = "f1155";
+    public static final String DEVICE_VVM320 = "vvm320";
+    public static final String DEVICE_VVM310 = "vvm310";
+    public static final String DEVICE_F730 = "f730";
+    public static final String DEVICE_F750 = "f750";
+    public static final String DEVICE_F1145 = "f1145";
+    public static final String DEVICE_F1155 = "f1155";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_VVM320 = new ThingTypeUID(BINDING_ID, DEVICE_VVM320);

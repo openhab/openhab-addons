@@ -12,7 +12,6 @@ import java.io.UnsupportedEncodingException;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus.Code;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
@@ -53,28 +52,17 @@ public class UplinkWebInterface {
     /**
      * HTTP client for asynchronous calls
      */
-    private HttpClient asyncclient;
-    /**
-     * Maximum number of simultaneous asynchronous connections
-     */
-    private int asyncmaxconns = 20;
+    private final HttpClient httpClient;
 
     /**
      * Constructor to set up interface
      *
      * @param config Bridge configuration
      */
-    public UplinkWebInterface(NibeUplinkConfiguration config, NibeUplinkHandler handler) {
+    public UplinkWebInterface(NibeUplinkConfiguration config, NibeUplinkHandler handler, HttpClient httpClient) {
         this.config = config;
         this.uplinkHandler = handler;
-        asyncclient = new HttpClient(new SslContextFactory(true));
-        asyncclient.setMaxConnectionsPerDestination(asyncmaxconns);
-        try {
-            asyncclient.start();
-        } catch (Exception e) {
-            logger.warn("Could not start HTTP Client");
-        }
-        authenticate();
+        this.httpClient = httpClient;
     }
 
     /**
@@ -111,7 +99,7 @@ public class UplinkWebInterface {
             };
 
             command.setListener(statusUpdater);
-            command.performAction(asyncclient);
+            command.performAction(httpClient);
         }
 
     }
@@ -150,7 +138,7 @@ public class UplinkWebInterface {
                 }
             };
 
-            new Login(uplinkHandler, statusUpdater).performAction(asyncclient);
+            new Login(uplinkHandler, statusUpdater).performAction(httpClient);
         }
     }
 

@@ -11,8 +11,9 @@ package org.openhab.binding.nibeuplink.handler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
 import org.openhab.binding.nibeuplink.internal.model.CustomChannels;
@@ -24,14 +25,15 @@ import org.openhab.binding.nibeuplink.internal.model.VVM310Channels;
  * @author Alexander Friese - initial contribution
  *
  */
-public class VVM310Handler extends GenericUplinkHandler {
+@NonNullByDefault
+public class VVM310Handler extends UplinkBaseHandler {
 
-    public VVM310Handler(@NonNull Thing thing) {
-        super(thing);
+    public VVM310Handler(Thing thing, HttpClient httpClient) {
+        super(thing, httpClient);
     }
 
     @Override
-    protected @NonNull List<Channel> getAllSpecificChannels(String id) {
+    protected List<Channel> getAllSpecificChannels(String id) {
         List<Channel> channels = new ArrayList<>(2);
 
         Channel channel = VVM310Channels.fromId(id);

@@ -16,8 +16,9 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -37,17 +38,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link GenericUplinkHandler} is responsible for handling commands, which are
+ * The {@link UplinkBaseHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Alexander Friese - initial contribution
  *
  */
-public abstract class GenericUplinkHandler extends BaseThingHandler implements NibeUplinkHandler {
+@NonNullByDefault
+public abstract class UplinkBaseHandler extends BaseThingHandler implements NibeUplinkHandler {
 
     private final String NO_VALUE = "--";
 
-    private final Logger logger = LoggerFactory.getLogger(GenericUplinkHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(UplinkBaseHandler.class);
 
     private Set<Channel> deadChannels = new HashSet<>(1000);
 
@@ -74,16 +76,19 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
     /**
      * Schedule for polling
      */
+    @Nullable
     private ScheduledFuture<?> pollingJob;
 
     /**
      * Schedule for periodic cleaning dead channel list
      */
+    @Nullable
     private ScheduledFuture<?> deadChannelHouseKeeping;
 
-    public GenericUplinkHandler(@NonNull Thing thing) {
+    public UplinkBaseHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.pollingRunnable = new UplinkPolling(this);
+        this.webInterface = new UplinkWebInterface(getConfiguration(), this, httpClient);
     }
 
     @Override
@@ -99,7 +104,7 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
 
     @Override
     public void initialize() {
-        logger.info("About to initialize NibeUplink");
+        logger.debug("About to initialize NibeUplink");
         NibeUplinkConfiguration config = getConfiguration();
 
         logger.debug("NibeUplink initialized with configuration: {}", config);
@@ -107,7 +112,6 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
         setupCustomChannels(config);
         this.refreshInterval = config.getPollingInterval();
         this.houseKeepingInterval = config.getHouseKeepingInterval();
-        this.webInterface = new UplinkWebInterface(config, this);
 
         this.startPolling();
     }
@@ -179,32 +183,33 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
         logger.debug("Handling channel update. ({} Channels)", values.size());
 
         try {
-        for (String key : values.keySet()) {
-            List<Channel> channels = getAllSpecificChannels(key);
-            if (channels.size() == 0) {
-                logger.info("Could not identify channel: {} for model {}", key,
-                        getThing().getThingTypeUID().getAsString());
-            }
-            for (Channel channel : channels) {
-                String value = values.get(key);
-                logger.debug("Channel is to be updated: {}: {}", channel.getFQName(), value);
-                if (value != null && !value.equals(NO_VALUE)) {
-                    try {
-                        updateState(channel.getFQName(), convertToDecimal(value, channel.getValueType()));
-                    } catch (NumberFormatException ex) {
-                        logger.warn("Could not update channel {} - invalid number: '{}'", channel.getFQName(), value);
+            for (String key : values.keySet()) {
+                List<Channel> channels = getAllSpecificChannels(key);
+                if (channels.size() == 0) {
+                    logger.info("Could not identify channel: {} for model {}", key,
+                            getThing().getThingTypeUID().getAsString());
+                }
+                for (Channel channel : channels) {
+                    String value = values.get(key);
+                    logger.debug("Channel is to be updated: {}: {}", channel.getFQName(), value);
+                    if (value != null && !value.equals(NO_VALUE)) {
+                        try {
+                            updateState(channel.getFQName(), convertToDecimal(value, channel.getValueType()));
+                        } catch (NumberFormatException ex) {
+                            logger.warn("Could not update channel {} - invalid number: '{}'", channel.getFQName(),
+                                    value);
+                            updateState(channel.getFQName(), UnDefType.UNDEF);
+                        }
+                    } else {
+                        logger.debug("Value is null or not provided by heatpump (channel: {})", channel.getFQName());
                         updateState(channel.getFQName(), UnDefType.UNDEF);
+                        deadChannels.add(channel);
                     }
-                } else {
-                    logger.debug("Value is null or not provided by heatpump (channel: {})", channel.getFQName());
-                    updateState(channel.getFQName(), UnDefType.UNDEF);
-                    deadChannels.add(channel);
                 }
             }
-        }
         } catch (RuntimeException ex) {
             logger.warn("Updating channels failed due to '{}'\n", ex.getMessage(), ex);
-    }
+        }
     }
 
     /**
@@ -234,7 +239,7 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
      * @param number as String
      * @return converted value to DecimalType
      */
-    private @NonNull DecimalType convertToDecimal(String number, ValueType type) {
+    private DecimalType convertToDecimal(String number, ValueType type) {
         double value = new DecimalType(number).doubleValue();
         switch (type) {
             case NUMBER_10:
@@ -249,7 +254,7 @@ public abstract class GenericUplinkHandler extends BaseThingHandler implements N
         return new DecimalType(value);
     }
 
-    protected abstract @NonNull List<Channel> getAllSpecificChannels(String id);
+    protected abstract List<Channel> getAllSpecificChannels(String id);
 
     protected abstract @Nullable Channel getSpecificChannel(String id);
 

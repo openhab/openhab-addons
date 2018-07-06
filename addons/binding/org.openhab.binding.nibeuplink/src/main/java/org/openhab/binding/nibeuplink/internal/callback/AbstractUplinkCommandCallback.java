@@ -14,8 +14,6 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
@@ -26,7 +24,6 @@ import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.internal.command.NibeUplinkCommand;
 import org.openhab.binding.nibeuplink.internal.connector.CommunicationStatus;
 import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
-import org.openhab.binding.nibeuplink.internal.model.DataResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +58,11 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
     private StatusUpdateListener listener;
 
     /**
+     * JSON deserializer
+     */
+    protected final Gson gson;
+
+    /**
      * the constructor
      *
      * @param config
@@ -68,6 +70,7 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
     public AbstractUplinkCommandCallback(NibeUplinkConfiguration config) {
         this.communicationStatus = new CommunicationStatus();
         this.config = config;
+        this.gson = new Gson();
     }
 
     /**
@@ -76,9 +79,8 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
      * @param config
      */
     public AbstractUplinkCommandCallback(NibeUplinkConfiguration config, StatusUpdateListener listener) {
-        this.communicationStatus = new CommunicationStatus();
+        this(config);
         this.listener = listener;
-        this.config = config;
     }
 
     /**
@@ -136,23 +138,6 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
             communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
         }
         return communicationStatus;
-    }
-
-    /**
-     * converts the json response into an object structure
-     *
-     * @param jsonInString
-     * @param clazz
-     * @return
-     */
-    protected final <T extends DataResponse> @Nullable T convertJson(@NonNull String jsonInString, Class<T> clazz) {
-        Gson gson = new Gson();
-
-        @Nullable
-        T obj = null;
-        logger.debug("JSON String: {}", jsonInString);
-        obj = gson.fromJson(jsonInString, clazz);
-        return obj;
     }
 
     /**
