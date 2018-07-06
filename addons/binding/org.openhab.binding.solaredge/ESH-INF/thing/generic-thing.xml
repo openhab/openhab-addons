@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solaredge" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="generic">
+		<label>SolarEdge</label>
+		<description>data retrieved from SolarEdge web interface</description>
+
+		<channel-groups>
+			<channel-group typeId="genericweb-live" id="live" />
+			<channel-group typeId="genericweb-aggregate-day" id="aggregate_day" />
+			<channel-group typeId="genericweb-aggregate-week" id="aggregate_week" />
+			<channel-group typeId="genericweb-aggregate-month" id="aggregate_month" />
+			<channel-group typeId="genericweb-aggregate-year" id="aggregate_year" />
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:solaredge:web" />
+	</thing-type>
+</thing:thing-descriptions>

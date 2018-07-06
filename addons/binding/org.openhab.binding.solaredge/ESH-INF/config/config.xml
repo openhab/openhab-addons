@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	<config-description uri="thing-type:solaredge:web">
+		<parameter-group name="authentication">
+			<label>Authentication</label>
+			<description>Authentication settings.</description>
+		</parameter-group>
+		<parameter-group name="connection">
+			<label>Connection</label>
+			<description>Connection settings.</description>
+		</parameter-group>
+		<parameter-group name="general">
+			<label>General</label>
+			<description>General settings.</description>
+		</parameter-group>
+
+		<parameter name="tokenOrApiKey" type="text" required="true" groupName="authentication">
+			<label>Token or API Key</label>
+			<description>API Key to access the official solaredge API. If using Private API this must be fills with Spring Security Token (Check Browser Cookies when logged into website)</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="solarId" type="text" required="true" groupName="general">
+			<label>Solar ID</label>
+			<description>The ID to identify the solarplant at SolarEdge.</description>
+		</parameter>
+		<parameter name="meterInstalled" type="boolean" required="false" groupName="general">
+			<label>Legacy Mode</label>
+			<description>Should only be activated for old installations where live data could otherwise not retrieved.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="usePrivateApi" type="boolean" required="false" groupName="general">
+			<label>Private API</label>
+			<description>Private API allows to avoid the limit of 300 API calls per day but is less documented and therefore less stable. If no meter is available you cannot use the private API, it does not provide live data for this kind of setup.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="liveDataPollingInterval" type="integer" required="false" min="1" max="60" unit="m"
+			groupName="connection">
+			<label>Polling Interval</label>
+			<description>Interval in which live data is polled from SolarEdge (in minutes). If not using private API this should not be less than 10 minutes.</description>
+			<default>10</default>
+		</parameter>
+		<parameter name="aggregateDataPollingInterval" type="integer" required="false" min="5" max="1440" unit="m"
+			groupName="connection">
+			<label>Polling Interval</label>
+			<description>Interval in which aggregate data is polled from SolarEdge (in minutes). If not using private API this must not be less than 60 minutes.</description>
+			<default>60</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

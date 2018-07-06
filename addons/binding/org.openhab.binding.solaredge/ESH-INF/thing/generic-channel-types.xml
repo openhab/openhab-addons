@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solaredge" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="live-type-production">
+		<item-type>Number:Power</item-type>
+		<label>Production</label>
+		<description>Current Production</description>
+		<state pattern="%.2f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="live-type-pv_status">
+		<item-type>String</item-type>
+		<label>PV Status</label>
+		<description>Current PV Status</description>
+		<state pattern="%s" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="live-type-consumption">
+		<item-type>Number:Power</item-type>
+		<label>Consumption</label>
+		<description>Current Consumption</description>
+		<state pattern="%.2f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="live-type-load_status">
+		<item-type>String</item-type>
+		<label>Load Status</label>
+		<description>Current Load Status</description>
+		<state pattern="%s" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="live-type-battery_charge">
+		<item-type>Number:Power</item-type>
+		<label>Battery Charge</label>
+		<description>Current Charge Rate</description>
+		<state pattern="%.2f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="live-type-battery_discharge">
+		<item-type>Number:Power</item-type>
+		<label>Battery Discharge</label>
+		<description>Current Discharge Rate</description>
+		<state pattern="%.2f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="live-type-battery_charge_discharge">
+		<item-type>Number:Power</item-type>
+		<label>Battery Charge/Discharge</label>
+		<description>Current Charge/Discharge Rate</description>
+		<state pattern="%.2f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="live-type-battery_level">
+		<item-type>Number:Percent</item-type>
+		<label>Battery Level</label>
+		<description>Current Charge Level</description>
+		<state pattern="%.0f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="live-type-battery_status">
+		<item-type>String</item-type>
+		<label>Battery Status</label>
+		<description>Current Battery Status</description>
+		<state pattern="%s" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="live-type-battery_critical">
+		<item-type>String</item-type>
+		<label>Battery Critical</label>
+		<description>Battery Critical</description>
+		<state pattern="%s" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="live-type-import">
+		<item-type>Number:Power</item-type>
+		<label>Import</label>
+		<description>Current Import from Grid</description>
+		<state pattern="%.2f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="live-type-export">
+		<item-type>Number:Power</item-type>
+		<label>Export</label>
+		<description>Current Export to Grid</description>
+		<state pattern="%.2f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="live-type-grid_status">
+		<item-type>String</item-type>
+		<label>Grid Status</label>
+		<description>Current Grid Status</description>
+		<state pattern="%s" readOnly="true">
+		</state>
+	</channel-type>
+
+	<!-- aggregate channels -->
+	<channel-type id="aggregate-type-production">
+		<item-type>Number:Energy</item-type>
+		<label>Production</label>
+		<description>Aggregate Production</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="aggregate-type-consumption">
+		<item-type>Number:Energy</item-type>
+		<label>Consumption</label>
+		<description>Aggregate Consumption</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="aggregate-type-selfConsumptionForConsumption">
+		<item-type>Number:Energy</item-type>
+		<label>Self Consumption</label>
+		<description>Aggregate Self Consumption</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="aggregate-type-selfConsumptionCoverage">
+		<item-type>Number:Percent</item-type>
+		<label>Self Consumption Coverage</label>
+		<description>Self Consumption Coverage</description>
+		<state pattern="%.0f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="aggregate-type-batterySelfConsumption">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Self Consumption</label>
+		<description>Aggregate Battery Self Consumption</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="aggregate-type-import">
+		<item-type>Number:Energy</item-type>
+		<label>Import</label>
+		<description>Aggregate Import</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="aggregate-type-export">
+		<item-type>Number:Energy</item-type>
+		<label>Export</label>
+		<description>Aggregate Export</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+</thing:thing-descriptions>
