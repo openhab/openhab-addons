@@ -33,7 +33,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.QueueingThreadPoolExecutor;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
-import org.eclipse.smarthome.core.scheduler.ExpressionThreadPoolManager.ExpressionThreadPoolExecutor;
 import org.openhab.io.transport.modbus.ModbusCallback;
 import org.openhab.io.transport.modbus.ModbusConnectionException;
 import org.openhab.io.transport.modbus.ModbusManager;
@@ -734,7 +733,6 @@ public class ModbusManagerImpl implements ModbusManager {
     @Override
     public boolean unregisterRegularPoll(PollTask task) {
         synchronized (this) {
-            new ExpressionThreadPoolExecutor("", 2).purge();
             ScheduledExecutorService executor = this.scheduledThreadPoolExecutor;
             ModbusSlaveConnectionFactoryImpl factory = this.connectionFactory;
             Objects.requireNonNull(executor, "Not activated!");
