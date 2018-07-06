@@ -12,8 +12,8 @@ import java.io.IOException;
 
 /**
  * Exception for when an unexpected response is received from the Daikin controller.
- * 
- * @author Tim Waterhouse <tim@timwaterhouse.com>
+ *
+ * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
  *
  */
 public class OpenDaikinCommunicationException extends IOException {
