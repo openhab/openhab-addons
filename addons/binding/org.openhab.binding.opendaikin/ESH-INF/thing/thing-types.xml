@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="opendaikin"
+						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ac_unit">
+		<label>Daikin AC Unit</label>
+		<description>Daikin AC Unit</description>
+
+		<channels>
+			<channel id="power" typeId="acunit-power"/>
+			<channel id="settempc" typeId="acunit-settempc"/>
+			<channel id="settempf" typeId="acunit-settempf"/>
+			<channel id="indoortempc" typeId="acunit-indoortempc"/>
+            <channel id="indoortempf" typeId="acunit-indoortempf"/>
+            <channel id="outdoortempc" typeId="acunit-outdoortempc"/>
+            <channel id="outdoortempf" typeId="acunit-outdoortempf"/>
+            <channel id="humidity" typeId="acunit-humidity"/>
+            <channel id="mode" typeId="acunit-mode"/>
+            <channel id="fanspeed" typeId="acunit-fan"/>
+		</channels>
+		
+		<config-description>
+            <parameter name="host" type="text" required="true">
+                <label>Host</label>
+                <description>The Host address of the Daikin AC unit.</description>
+                <context>network_address</context>
+            </parameter>
+            <parameter name="refresh" type="integer" required="false">
+                <label>Refresh Interval</label>
+                <description>The number of milliseconds between fetches of the AC unit state.</description>
+                <default>60000</default>
+            </parameter>
+        </config-description>
+	</thing-type>
+
+	<channel-type id="acunit-power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power for the AC unit</description>
+	</channel-type>
+	
+	<channel-type id="acunit-settempc">
+        <item-type>Number</item-type>
+        <label>Set Point C</label>
+        <description>The set point in degrees Celsius</description>
+        <category>Temperature</category>
+        <state pattern="%.1f °C" step="0.5" />
+    </channel-type>
+    
+    <channel-type id="acunit-settempf">
+        <item-type>Number</item-type>
+        <label>Set Point F</label>
+        <description>The set point in degrees Fahrenheit</description>
+        <category>Temperature</category>
+        <state pattern="%.0f °F" step="1.0" />
+    </channel-type>
+    
+    <channel-type id="acunit-indoortempc">
+        <item-type>Number</item-type>
+        <label>Indoor Temperature C</label>
+        <description>The indoor temperature in degrees Celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C" step="0.5" />
+    </channel-type>
+    
+    <channel-type id="acunit-indoortempf">
+        <item-type>Number</item-type>
+        <label>Indoor Temperature F</label>
+        <description>The indoor temperature in degrees Fahrenheit</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.0f °F" step="1.0" />
+    </channel-type>
+    
+    <channel-type id="acunit-outdoortempc">
+        <item-type>Number</item-type>
+        <label>Outdoor Temperature C</label>
+        <description>The outdoor temperature in degrees Celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C" step="0.5" />
+    </channel-type>
+    
+    <channel-type id="acunit-outdoortempf">
+        <item-type>Number</item-type>
+        <label>Outdoor Temperature F</label>
+        <description>The outdoor temperature in degrees Fahrenheit</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.0f °F" step="1.0" />
+    </channel-type>
+    
+    <channel-type id="acunit-humidity">
+        <item-type>Number</item-type>
+        <label>Indoor Humidity</label>
+        <description>The indoor humidity as measured by the A/C unit</description>
+        <state readOnly="true" pattern="%.0f%%" />
+    </channel-type>
+    
+    <channel-type id="acunit-mode">
+        <item-type>String</item-type>
+        <label>Mode</label>
+        <description>Current mode of the AC unit</description>
+        <state>
+            <options>
+                <option value="AUTO">auto</option>
+                <option value="DEHUMIDIFIER">dehumidifier</option>
+                <option value="COLD">cooling</option>
+                <option value="HEAT">heating</option>
+                <option value="FAN">fan</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="acunit-fan">
+        <item-type>String</item-type>
+        <label>Fan</label>
+        <description>Current fan speed setting of the AC unit</description>
+        <state>
+            <options>
+                <option value="AUTO">auto</option>
+                <option value="SILENCE">silence</option>
+                <option value="LEVEL_1">level 1</option>
+                <option value="LEVEL_2">level 2</option>
+                <option value="LEVEL_3">level 3</option>
+                <option value="LEVEL_4">level 4</option>
+                <option value="LEVEL_5">level 5</option>
+            </options>
+        </state>
+    </channel-type>
+
+</thing:thing-descriptions>

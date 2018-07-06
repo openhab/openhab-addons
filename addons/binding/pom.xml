@@ -129,6 +129,7 @@
     <module>org.openhab.binding.onewire.test</module>
     <module>org.openhab.binding.onewiregpio</module>
     <module>org.openhab.binding.onkyo</module>
+    <module>org.openhab.binding.opendaikin</module>
     <module>org.openhab.binding.opensprinkler</module>
     <module>org.openhab.binding.openweathermap</module>
     <module>org.openhab.binding.openuv</module>
