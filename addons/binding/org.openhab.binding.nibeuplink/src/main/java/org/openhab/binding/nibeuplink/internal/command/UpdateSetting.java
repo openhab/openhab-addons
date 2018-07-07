@@ -48,7 +48,7 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
     protected Request prepareRequest(Request requestToPrepare) {
 
         if (channel.isReadOnly()) {
-            logger.warn("channel '{}' does not support write access - value to set '{}'", channel.getFQName(), value);
+            logger.info("channel '{}' does not support write access - value to set '{}'", channel.getFQName(), value);
             throw new UnsupportedOperationException(
                     "channel (" + channel.getFQName() + ") does not support write access");
         }
@@ -72,7 +72,7 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
 
             return requestToPrepare;
         } else {
-            logger.warn("channel '{}' does not allow value '{}' - validation rule '{}'", channel.getFQName(), value,
+            logger.info("channel '{}' does not allow value '{}' - validation rule '{}'", channel.getFQName(), value,
                     channel.getValidationExpression());
             throw new ValidationException(
                     "channel (" + channel.getFQName() + ") could not be updated due to a validation error");
@@ -89,7 +89,7 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
         logger.debug("onComplete()");
 
         if (!HttpStatus.Code.FOUND.equals(getCommunicationStatus().getHttpCode()) && retries++ < MAX_RETRIES) {
-            logger.warn("Could not set value '{}' for channel '{}' ({})", value, channel.getId(), channel.getName());
+            logger.debug("Could not set value '{}' for channel '{}' ({})", value, channel.getId(), channel.getName());
             handler.getWebInterface().enqueueCommand(this);
         }
     }

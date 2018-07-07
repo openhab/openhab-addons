@@ -183,33 +183,28 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     public void updateChannelStatus(Map<String, String> values) {
         logger.debug("Handling channel update. ({} Channels)", values.size());
 
-        try {
-            for (String key : values.keySet()) {
-                List<Channel> channels = getAllSpecificChannels(key);
-                if (channels.size() == 0) {
-                    logger.info("Could not identify channel: {} for model {}", key,
-                            getThing().getThingTypeUID().getAsString());
-                }
-                for (Channel channel : channels) {
-                    String value = values.get(key);
-                    logger.debug("Channel is to be updated: {}: {}", channel.getFQName(), value);
-                    if (value != null && !value.equals(NO_VALUE)) {
-                        try {
-                            updateState(channel.getFQName(), convertToDecimal(value, channel.getValueType()));
-                        } catch (NumberFormatException ex) {
-                            logger.warn("Could not update channel {} - invalid number: '{}'", channel.getFQName(),
-                                    value);
-                            updateState(channel.getFQName(), UnDefType.UNDEF);
-                        }
-                    } else {
-                        logger.debug("Value is null or not provided by heatpump (channel: {})", channel.getFQName());
+        for (String key : values.keySet()) {
+            List<Channel> channels = getAllSpecificChannels(key);
+            if (channels.size() == 0) {
+                logger.info("Could not identify channel: {} for model {}", key,
+                        getThing().getThingTypeUID().getAsString());
+            }
+            for (Channel channel : channels) {
+                String value = values.get(key);
+                logger.debug("Channel is to be updated: {}: {}", channel.getFQName(), value);
+                if (value != null && !value.equals(NO_VALUE)) {
+                    try {
+                        updateState(channel.getFQName(), convertToDecimal(value, channel.getValueType()));
+                    } catch (NumberFormatException ex) {
+                        logger.warn("Could not update channel {} - invalid number: '{}'", channel.getFQName(), value);
                         updateState(channel.getFQName(), UnDefType.UNDEF);
-                        deadChannels.add(channel);
                     }
+                } else {
+                    logger.debug("Value is null or not provided by heatpump (channel: {})", channel.getFQName());
+                    updateState(channel.getFQName(), UnDefType.UNDEF);
+                    deadChannels.add(channel);
                 }
             }
-        } catch (RuntimeException ex) {
-            logger.warn("Updating channels failed due to '{}'\n", ex.getMessage(), ex);
         }
     }
 

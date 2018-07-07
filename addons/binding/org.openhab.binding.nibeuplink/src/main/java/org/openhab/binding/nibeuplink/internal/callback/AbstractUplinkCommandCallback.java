@@ -99,20 +99,14 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
     @Override
     public final void onFailure(Response response, Throwable failure) {
         super.onFailure(response, failure);
-        try {
-            logger.warn("Request failed: {}", failure.toString());
-            communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
+        logger.debug("Request failed: {}", failure.toString());
+        communicationStatus.setError((Exception) failure);
 
-            // as we are not allowed to catch Throwables we must only throw Exceptions!
-            if (failure instanceof Exception) {
-                communicationStatus.setError((Exception) failure);
-                throw (Exception) failure;
-            }
-        } catch (SocketTimeoutException | TimeoutException e) {
+        if (failure instanceof SocketTimeoutException || failure instanceof TimeoutException) {
             communicationStatus.setHttpCode(Code.REQUEST_TIMEOUT);
-        } catch (UnknownHostException e) {
+        } else if (failure instanceof UnknownHostException) {
             communicationStatus.setHttpCode(Code.BAD_GATEWAY);
-        } catch (Exception e) {
+        } else {
             communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
         }
 
