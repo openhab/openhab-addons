@@ -8,12 +8,15 @@
  */
 package org.openhab.binding.nibeuplink.internal.connector;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * callback interface to update the status of the {@link UplinkWebInterface}
  *
  * @author Alexander Friese - initial contribution
  *
  */
+@NonNullByDefault
 public interface StatusUpdateListener {
 
     void update(CommunicationStatus status);

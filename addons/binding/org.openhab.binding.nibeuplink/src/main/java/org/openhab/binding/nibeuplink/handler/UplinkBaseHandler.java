@@ -69,11 +69,6 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     private UplinkWebInterface webInterface;
 
     /**
-     * Job which will do the FRITZ!Box polling
-     */
-    private final UplinkPolling pollingRunnable;
-
-    /**
      * Schedule for polling
      */
     @Nullable
@@ -87,7 +82,6 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
 
     public UplinkBaseHandler(Thing thing, HttpClient httpClient) {
         super(thing);
-        this.pollingRunnable = new UplinkPolling(this);
         this.webInterface = new UplinkWebInterface(getConfiguration(), this, httpClient);
     }
 
@@ -138,7 +132,8 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     private synchronized void startPolling() {
         if (pollingJob == null || pollingJob.isCancelled()) {
             logger.debug("start polling job at intervall {}", refreshInterval);
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, refreshInterval, TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(new UplinkPolling(this), 1, refreshInterval,
+                    TimeUnit.SECONDS);
         } else {
             logger.debug("pollingJob already active");
         }
