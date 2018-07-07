@@ -90,7 +90,7 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
 
         if (!HttpStatus.Code.FOUND.equals(getCommunicationStatus().getHttpCode()) && retries++ < MAX_RETRIES) {
             logger.warn("Could not set value '{}' for channel '{}' ({})", value, channel.getId(), channel.getName());
-            handler.getWebInterface().executeCommand(this);
+            handler.getWebInterface().enqueueCommand(this);
         }
     }
 

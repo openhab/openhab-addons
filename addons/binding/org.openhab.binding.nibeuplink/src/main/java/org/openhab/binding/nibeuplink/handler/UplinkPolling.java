@@ -49,16 +49,7 @@ public class UplinkPolling implements Runnable {
             logger.debug("polling NibeUplink {}", handler.getConfiguration());
 
             NibeUplinkCommand command = new GenericStatusUpdate(handler);
-            try {
-                handler.getWebInterface().executeCommand(command);
-            } catch (RuntimeException e) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Caught Exception: {}", e.getMessage(), e);
-                } else {
-                    logger.warn("Caught Exception: {}", e.getMessage());
-                }
-            }
-
+            handler.getWebInterface().enqueueCommand(command);
         }
     }
 }

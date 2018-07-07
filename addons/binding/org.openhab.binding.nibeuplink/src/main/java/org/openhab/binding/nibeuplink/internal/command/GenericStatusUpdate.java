@@ -81,7 +81,7 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
             if (getListener() != null) {
                 getListener().update(getCommunicationStatus());
             }
-            handler.getWebInterface().executeCommand(this);
+            handler.getWebInterface().enqueueCommand(this);
 
         } else {
 

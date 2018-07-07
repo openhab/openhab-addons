@@ -9,9 +9,15 @@
 package org.openhab.binding.nibeuplink.internal.connector;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Queue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus.Code;
+import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
@@ -29,7 +35,8 @@ import org.slf4j.LoggerFactory;
  */
 public class UplinkWebInterface {
 
-    private static final long LOGIN_WAIT_TIME = 1000;
+    private static final long REQUEST_INITIAL_DELAY = 30000;
+    private static final long REQUEST_INTERVAL = 5000;
 
     private final Logger logger = LoggerFactory.getLogger(UplinkWebInterface.class);
 
@@ -55,53 +62,119 @@ public class UplinkWebInterface {
     private final HttpClient httpClient;
 
     /**
+     * the scheduler which periodically sends web requests to the solaredge API. Should be initiated with the thing's
+     * existing scheduler instance.
+     */
+    private final ScheduledExecutorService scheduler;
+
+    /**
+     * request executor
+     */
+    private final WebRequestExecutor requestExecutor;
+
+    /**
+     * periodic request executor job
+     */
+    private ScheduledFuture<?> requestExecutorJob;
+
+    /**
+     * this class is responsible for executing periodic web requests. This ensures that only one request is executed at
+     * the same time and there will be a guaranteed minimum delay between subsequent requests.
+     *
+     * @author afriese - initial contribution
+     */
+    @NonNullByDefault
+    private class WebRequestExecutor implements Runnable {
+
+        /**
+         * queue which holds the commands to execute
+         */
+        private final Queue<NibeUplinkCommand> commandQueue;
+
+        /**
+         * constructor
+         */
+        WebRequestExecutor() {
+            this.commandQueue = new BlockingArrayQueue<>(20);
+        }
+
+        /**
+         * puts a command into the queue
+         *
+         * @param command
+         */
+        void enqueue(NibeUplinkCommand command) {
+            commandQueue.add(command);
+        }
+
+        /**
+         * executes the web request
+         */
+        @Override
+        public void run() {
+            if (!isAuthenticated()) {
+                authenticate();
+            }
+
+            else if (isAuthenticated() && !commandQueue.isEmpty()) {
+                StatusUpdateListener statusUpdater = new StatusUpdateListener() {
+                    @Override
+                    public void update(CommunicationStatus status) {
+                        if (Code.SERVICE_UNAVAILABLE.equals(status.getHttpCode())) {
+                            uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                                    status.getMessage());
+                            setAuthenticated(false);
+                        } else if (!Code.OK.equals(status.getHttpCode())) {
+                            uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    status.getMessage());
+                            setAuthenticated(false);
+                        }
+
+                    }
+                };
+
+                NibeUplinkCommand command = commandQueue.poll();
+                command.setListener(statusUpdater);
+                command.performAction(httpClient);
+            }
+        }
+
+    }
+
+    /**
      * Constructor to set up interface
      *
      * @param config Bridge configuration
      */
-    public UplinkWebInterface(NibeUplinkConfiguration config, NibeUplinkHandler handler, HttpClient httpClient) {
+    public UplinkWebInterface(NibeUplinkConfiguration config, ScheduledExecutorService scheduler,
+            NibeUplinkHandler handler, HttpClient httpClient) {
         this.config = config;
         this.uplinkHandler = handler;
+        this.scheduler = scheduler;
+        this.requestExecutor = new WebRequestExecutor();
         this.httpClient = httpClient;
     }
 
     /**
-     * executes any command provided by parameter
+     * starts the periodic request executor job which handles all web requests
+     */
+    public synchronized void start() {
+        if (requestExecutorJob == null || requestExecutorJob.isCancelled()) {
+            logger.debug("start request executor job at intervall {} ms", REQUEST_INTERVAL);
+            requestExecutorJob = scheduler.scheduleWithFixedDelay(requestExecutor, REQUEST_INITIAL_DELAY,
+                    REQUEST_INTERVAL, TimeUnit.MILLISECONDS);
+        } else {
+            logger.debug("request executor job already active");
+        }
+    }
+
+    /**
+     * queues any command for execution
      *
      * @param command
      */
-    public void executeCommand(NibeUplinkCommand command) {
-        if (!isAuthenticated()) {
-            authenticate();
-            try {
-                Thread.sleep(LOGIN_WAIT_TIME);
-            } catch (InterruptedException e) {
-            }
-        }
-
-        if (isAuthenticated()) {
-
-            StatusUpdateListener statusUpdater = new StatusUpdateListener() {
-
-                @Override
-                public void update(CommunicationStatus status) {
-                    if (Code.SERVICE_UNAVAILABLE.equals(status.getHttpCode())) {
-                        uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                                status.getMessage());
-                        setAuthenticated(false);
-                    } else if (!Code.OK.equals(status.getHttpCode())) {
-                        uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                status.getMessage());
-                        setAuthenticated(false);
-                    }
-
-                }
-            };
-
-            command.setListener(statusUpdater);
-            command.performAction(httpClient);
-        }
-
+    public void enqueueCommand(NibeUplinkCommand command) {
+        requestExecutor.enqueue(command);
     }
 
     /**
@@ -109,7 +182,7 @@ public class UplinkWebInterface {
      *
      * @throws UnsupportedEncodingException
      */
-    public synchronized void authenticate() {
+    private synchronized void authenticate() {
         setAuthenticated(false);
 
         if (preCheck()) {
@@ -163,6 +236,18 @@ public class UplinkWebInterface {
                 preCheckStatusMessage);
         return false;
 
+    }
+
+    /**
+     * will be called by the ThingHandler to abort periodic jobs.
+     */
+    public void dispose() {
+        logger.debug("Webinterface disposed.");
+        if (requestExecutorJob != null && !requestExecutorJob.isCancelled()) {
+            logger.debug("stop request executor job");
+            requestExecutorJob.cancel(true);
+            requestExecutorJob = null;
+        }
     }
 
     private synchronized boolean isAuthenticated() {

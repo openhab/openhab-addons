@@ -82,7 +82,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
 
     public UplinkBaseHandler(Thing thing, HttpClient httpClient) {
         super(thing);
-        this.webInterface = new UplinkWebInterface(getConfiguration(), this, httpClient);
+        this.webInterface = new UplinkWebInterface(getConfiguration(), scheduler, this, httpClient);
     }
 
     @Override
@@ -91,7 +91,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
             logger.debug("command for {}: {}", channelUID.getIdWithoutGroup(), command.toString());
             Channel channel = getSpecificChannel(channelUID.getIdWithoutGroup());
             if (channel != null && !channel.isReadOnly()) {
-                webInterface.executeCommand(new UpdateSetting(this, channel, command.toString()));
+                webInterface.enqueueCommand(new UpdateSetting(this, channel, command.toString()));
             }
         }
     }
@@ -107,7 +107,8 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
         this.refreshInterval = config.getPollingInterval();
         this.houseKeepingInterval = config.getHouseKeepingInterval();
 
-        this.startPolling();
+        startPolling();
+        webInterface.start();
     }
 
     /**
@@ -162,6 +163,11 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
             logger.debug("stop polling job");
             deadChannelHouseKeeping.cancel(true);
             deadChannelHouseKeeping = null;
+        }
+
+        // the webinterface also makes use of the scheduler and must stop it's jobs
+        if (webInterface != null) {
+            webInterface.dispose();
         }
     }
 
