@@ -129,6 +129,14 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
     // // 47372 1 Kühlung
     // // 47570 1 auto=0, man=1
 
+    //
+    // // Automodus Einstellungen
+    // // /System/xxxxx/Manage/4.9.2
+    // // 47374 "20" Kühlstart
+    // // 47375 "12" Heizstop
+    // // 47376 "-4" ZH Stop
+    // // 47377 "24" Filterzeit
+
     // TODO:DONE
     // // Heizkurve S1
     // // /System/xxxxx/Manage/1.9.1.1-S1
