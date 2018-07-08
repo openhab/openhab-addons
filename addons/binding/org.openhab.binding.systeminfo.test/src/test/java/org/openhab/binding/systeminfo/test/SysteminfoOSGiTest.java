@@ -919,7 +919,9 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
             assertThat(discoveryService, is(notNullValue()));
         });
         SysteminfoDiscoveryServiceMock discoveryServiceMock = new SysteminfoDiscoveryServiceMock(hostname);
-        unregisterService(discoveryService);
+        if (discoveryService != null) {
+            unregisterService(DiscoveryService.class);
+        }
         registerService(discoveryServiceMock, DiscoveryService.class.getName(), new Hashtable<>());
 
         ThingTypeUID computerType = SysteminfoBindingConstants.THING_TYPE_COMPUTER;
