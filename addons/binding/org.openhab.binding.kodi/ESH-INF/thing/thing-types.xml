@@ -28,6 +28,7 @@
 			<channel id="album" typeId="album" />
 			<channel id="artist" typeId="artist" />
 			<channel id="mediatype" typeId="mediatype" />
+			<channel id="genreList" typeId="genreList" />
 			<channel id="thumbnail" typeId="thumbnail" />
 			<channel id="fanart" typeId="fanart" />
 			<channel id="playfavorite" typeId="playfavorite" />
@@ -388,6 +389,12 @@
 		<label>Media Type</label>
 		<description>Media type of the current file</description>
 		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="genreList">
+		<item-type>String</item-type>
+		<label>Genres</label>
+		<description>Comma-separated list of genres of the current file</description>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="thumbnail">
 		<item-type>Image</item-type>
