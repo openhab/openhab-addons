@@ -16,17 +16,18 @@ import java.io.IOException;
 import java.text.MessageFormat;
 
 import org.apache.commons.codec.binary.Hex;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.meterreader.connectors.ConnectorBase;
 import org.openhab.binding.meterreader.internal.helper.Baudrate;
 import org.openhab.binding.meterreader.internal.helper.SerialParameter;
 import org.openmuc.jsml.structures.SmlFile;
 import org.openmuc.jsml.transport.Transport;
-
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.UnsupportedCommOperationException;
-import gnu.io.factory.DefaultSerialPortFactory;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 
 /**
  * Represents a serial SML device connector.
@@ -36,6 +37,7 @@ import gnu.io.factory.DefaultSerialPortFactory;
  */
 public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
 
+    private SerialPortManager serialManager;
     private SerialPort serialPort;
     private DataInputStream is;
 
@@ -43,16 +45,20 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
     private int baudrate;
 
     /**
-     * Contructor to create a serial connector instance.
+     * Constructor to create a serial connector instance.
      *
      * @param portName the port where the device is connected as defined in openHAB configuration.
      */
     public SmlSerialConnector(String portName) {
         super(portName);
+        BundleContext bundleContext = FrameworkUtil.getBundle(getClass()).getBundleContext();
+        ServiceReference<@NonNull SerialPortManager> serialPortManagerService = bundleContext
+                .getServiceReference(SerialPortManager.class);
+        this.serialManager = bundleContext.getService(serialPortManagerService);
     }
 
     /**
-     * Contructor to create a serial connector instance with a specific serial parameter.
+     * Constructor to create a serial connector instance with a specific serial parameter.
      *
      * @param portName the port where the device is connected as defined in openHAB configuration.
      * @param baudrate
@@ -79,33 +85,27 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
      */
     @Override
     public void openConnection() throws IOException {
-        DefaultSerialPortFactory serialPortFactory = new DefaultSerialPortFactory();
         try {
             closeConnection();
-            serialPort = serialPortFactory.createSerialPort(getPortName());
-            SerialParameter serialParameter = SerialParameter._8N1;
-            int baudrateToUse = this.baudrate == Baudrate.AUTO.getBaudrate() ? Baudrate._9600.getBaudrate()
-                    : this.baudrate;
-            serialPort.setSerialPortParams(baudrateToUse, serialParameter.getDatabits(), serialParameter.getStopbits(),
-                    serialParameter.getParity());
-            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
-            serialPort.notifyOnDataAvailable(true);
-            is = new DataInputStream(new BufferedInputStream(serialPort.getInputStream()));
-            os = new DataOutputStream(new BufferedOutputStream(serialPort.getOutputStream()));
-        } catch (PortInUseException e) {
-            throw new IOException(MessageFormat
-                    .format("Error at SerialConnector.openConnection: port {0} is already in use.", getPortName()), e);
-        } catch (UnsupportedCommOperationException e) {
-            throw new IOException(MessageFormat.format(
-                    "Error at SerialConnector.openConnection: params for port {0} are not supported.", getPortName()),
-                    e);
-        } catch (IOException e) {
+            SerialPortIdentifier id = serialManager.getIdentifier(getPortName());
+            if (id != null) {
+                serialPort = id.open("meterreaderbinding", 0);
+                SerialParameter serialParameter = SerialParameter._8N1;
+                int baudrateToUse = this.baudrate == Baudrate.AUTO.getBaudrate() ? Baudrate._9600.getBaudrate()
+                        : this.baudrate;
+                serialPort.setSerialPortParams(baudrateToUse, serialParameter.getDatabits(),
+                        serialParameter.getStopbits(), serialParameter.getParity());
+                // serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
+                serialPort.notifyOnDataAvailable(true);
+                is = new DataInputStream(new BufferedInputStream(serialPort.getInputStream()));
+                os = new DataOutputStream(new BufferedOutputStream(serialPort.getOutputStream()));
+            }
+            throw new IllegalStateException(MessageFormat.format("Cannot open connection to {0}", getPortName()));
+
+        } catch (Exception e) {
             throw new IOException(MessageFormat.format(
                     "Error at SerialConnector.openConnection: unable to get inputstream for port {0}.", getPortName()),
                     e);
-        } catch (NoSuchPortException e) {
-            throw new IOException(MessageFormat
-                    .format("Error at SerialConnector.openConnection: serial port not found {0}.", getPortName()), e);
         }
     }
 

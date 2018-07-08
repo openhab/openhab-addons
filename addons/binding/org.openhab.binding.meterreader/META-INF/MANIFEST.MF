@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: MeterReader Binding
 Bundle-SymbolicName: org.openhab.binding.meterreader;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/jsml.jar,
@@ -12,7 +12,6 @@ Bundle-ClassPath: .,
  lib/reactive-streams-1.0.2.jar
 Import-Package: 
  com.google.common.base;version="15.0.0",
- gnu.io,
  javax.measure,
  javax.measure.format,
  javax.measure.quantity,
@@ -33,12 +32,12 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.core.types.util,
+ org.eclipse.smarthome.io.transport.serial,
  org.openhab.binding.meterreader,
+ org.osgi.framework,
  org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: gnu.io.factory;x-internal:=true,
- gnu.io.rfc2217;x-internal:=true,
- org.openhab.binding.meterreader;x-internal:=true,
+Export-Package: org.openhab.binding.meterreader;x-internal:=true,
  org.openhab.binding.meterreader.connectors
 Bundle-ActivationPolicy: lazy

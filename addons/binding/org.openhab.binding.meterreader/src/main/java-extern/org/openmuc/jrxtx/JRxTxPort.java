@@ -7,19 +7,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.UnsupportedCommOperationException;
-import gnu.io.factory.DefaultSerialPortFactory;
-import gnu.io.factory.SerialPortFactory;
-import gnu.io.factory.SerialPortUtil;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 
 @SuppressWarnings("deprecation")
 class JRxTxPort implements SerialPort {
 
     private volatile boolean closed;
 
-    private gnu.io.SerialPort rxtxPort;
+    private org.eclipse.smarthome.io.transport.serial.SerialPort rxtxPort;
 
     private SerialInputStream serialIs;
     private SerialOutputStream serial0s;
@@ -41,10 +44,17 @@ class JRxTxPort implements SerialPort {
     public static JRxTxPort openSerialPort(String portName, int baudRate, Parity parity, DataBits dataBits,
             StopBits stopBits, FlowControl flowControl) throws IOException {
         try {
-            SerialPortUtil.appendSerialPortProperty(portName);
-            SerialPortFactory serialFactory = new DefaultSerialPortFactory();
-            gnu.io.SerialPort comPort = serialFactory.createSerialPort(portName);
+            BundleContext bundleContext = FrameworkUtil.getBundle(JRxTxPort.class).getBundleContext();
+            ServiceReference<@NonNull SerialPortManager> serialPortManagerService = bundleContext
+                    .getServiceReference(SerialPortManager.class);
+            SerialPortManager serialPortManager = bundleContext.getService(serialPortManagerService);
 
+            SerialPortIdentifier serialPortIdentifier = serialPortManager.getIdentifier(portName);
+            if (serialPortIdentifier == null) {
+                String errMessage = format("Serial port {0} not found or port is busy.", portName);
+                throw new PortNotFoundException(errMessage);
+            }
+            SerialPort comPort = serialPortIdentifier.open("meterreader", 0);
             // if (!(comPort instanceof RXTXPort)) {
             // throw new SerialPortException("Unable to open the serial port. Port is not RXTX.");
             // }
@@ -60,9 +70,9 @@ class JRxTxPort implements SerialPort {
             }
 
             return new JRxTxPort(comPort, portName, baudRate, parity, dataBits, stopBits, flowControl);
-        } catch (NoSuchPortException e) {
-            String errMessage = format("Serial port {0} not found or port is busy.", portName);
-            throw new PortNotFoundException(errMessage);
+            // } catch (NoSuchPortException e) {
+            // String errMessage = format("Serial port {0} not found or port is busy.", portName);
+            // throw new PortNotFoundException(errMessage);
         } catch (PortInUseException e) {
             String errMessage = format("Serial port {0} is already in use.", portName);
             throw new PortNotFoundException(errMessage);
@@ -80,15 +90,15 @@ class JRxTxPort implements SerialPort {
                     break;
                 case XON_XOFF:
                     rxtxPort.setFlowControlMode(FLOWCONTROL_XONXOFF_IN | FLOWCONTROL_XONXOFF_OUT);
-                    
+
                     break;
-                    
+
                 case NONE:
                 default:
                     rxtxPort.setFlowControlMode(FLOWCONTROL_NONE);
                     break;
             }
-        } catch(UnsupportedCommOperationException e) {
+        } catch (UnsupportedCommOperationException e) {
             throw new IOException("Failed to set FlowControl mode", e);
         }
     }

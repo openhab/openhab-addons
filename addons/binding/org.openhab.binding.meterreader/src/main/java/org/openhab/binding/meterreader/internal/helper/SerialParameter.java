@@ -9,8 +9,7 @@
 package org.openhab.binding.meterreader.internal.helper;
 
 import org.apache.commons.lang.StringUtils;
-
-import gnu.io.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
 
 /**
  *
