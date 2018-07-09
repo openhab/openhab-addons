@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-ManifestVersion: 2
+Bundle-Name: Foobot Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.foobot;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.3.0.qualifier
+Export-Package: 
+ org.openhab.binding.foobot,
+ org.openhab.binding.foobot.handler
+Import-Package: 
+ com.google.gson;version="2.7.0",
+ com.google.gson.reflect;version="2.7.0",
+ org.apache.commons.io;version="2.2.0",
+ org.apache.commons.lang;version="2.6.0",
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.openhab.binding.foobot,
+ org.openhab.binding.foobot.handler,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
