@@ -22,6 +22,4 @@ public class FoobotConfiguration {
     public String mac;
 
     public Integer refresh;
-
-    public String uuid;
 }

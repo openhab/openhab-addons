@@ -11,12 +11,16 @@ Export-Package:
  org.openhab.binding.foobot,
  org.openhab.binding.foobot.handler
 Import-Package: 
- com.google.gson;version="2.7.0",
- com.google.gson.reflect;version="2.7.0",
- org.apache.commons.io;version="2.2.0",
- org.apache.commons.lang;version="2.6.0",
+ com.google.gson,
+ com.google.gson.reflect,
+ org.apache.commons.io,
+ org.apache.commons.lang,
+ org.apache.http;version="4.2.5",
+ org.apache.http.client.methods;version="4.2.6",
+ org.apache.http.impl.client;version="4.2.6",
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.cache,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
@@ -27,3 +31,4 @@ Import-Package:
  org.openhab.binding.foobot.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
+Require-Bundle: org.apache.httpcomponents.httpcore

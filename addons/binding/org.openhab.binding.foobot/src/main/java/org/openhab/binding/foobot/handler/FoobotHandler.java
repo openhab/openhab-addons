@@ -11,19 +11,19 @@ package org.openhab.binding.foobot.handler;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -59,15 +59,15 @@ public class FoobotHandler extends BaseThingHandler {
 
     private static final String URL1 = "https://api.foobot.io/v2/owner/%username%/device/";
 
-    private static final String URL2 = "https://api.foobot.io/v2/device/%uuid%/datapoint/%period%/last/0/?sensorList=%sensors%";
+    private static final String URL2 = "https://api.foobot.io/v2/device/%uuid%/datapoint/0/last/0/?sensorList=%sensors%";
 
-    FoobotJsonData foobotData;
+    private FoobotJsonData foobotData;
 
     private Gson gson;
 
     private String uuid;
 
-    FoobotConfiguration config;
+    private FoobotConfiguration config;
 
     private ScheduledFuture<?> refreshJob;
 
@@ -82,13 +82,13 @@ public class FoobotHandler extends BaseThingHandler {
         config = getConfigAs(FoobotConfiguration.class);
 
         logger.debug("config apikey = {}", config.apikey);
-        logger.debug("config apikey = {}", config.username);
-        logger.debug("config apikey = {}", config.mac);
+        logger.debug("config username = {}", config.username);
+        logger.debug("config mac = {}", config.mac);
         logger.debug("config refresh = {}", config.refresh);
 
         boolean validConfig = true;
-        boolean resultOk = false;
-        String errorMsg = null;
+        boolean deviceFound = false;
+        String errorMsg = "";
 
         if (StringUtils.trimToNull(config.apikey) == null) {
             errorMsg = "Parameter 'apikey' is mandatory and must be configured";
@@ -107,102 +107,83 @@ public class FoobotHandler extends BaseThingHandler {
             validConfig = false;
         }
 
-        if (validConfig) {
+        if (!validConfig) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
 
-            try {
-                String urlStr = URL1.replace("%username%", StringUtils.trimToEmpty(config.username));
-                logger.debug("URL = {}", urlStr);
+            return;
+        }
+        try {
+            String urlStr = URL1.replace("%username%", StringUtils.trimToEmpty(config.username));
+            logger.debug("URL = {}", urlStr);
 
-                // Run the HTTP request and get the list of all foobot devices belonging to the user from foobot.io
+            // Run the HTTP request and get the list of all foobot devices belonging to the user from foobot.io
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpGet getRequest = new HttpGet(urlStr);
+            getRequest.addHeader("accept", "application/json");
+            getRequest.addHeader("X-API-KEY-TOKEN", config.apikey);
+            HttpResponse response = httpClient.execute(getRequest);
+            logger.debug("foobotResponse = {}", response);
 
-                URL url = new URL(urlStr);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestProperty("X-API-KEY-TOKEN", config.apikey);
-
-                try {
-                    String response = IOUtils.toString(connection.getInputStream());
-                    logger.debug("foobotResponse = {}", response);
-
-                    // Map the JSON response to list of objects
-
-                    Type listType = new TypeToken<ArrayList<FoobotJsonResponse>>() {
-                    }.getType();
-
-                    List<FoobotJsonResponse> readFromJson = gson.fromJson(response, listType);
-
-                    for (FoobotJsonResponse ob : readFromJson) {
-
-                        // Compare the mac address to each record in order to fetch the UUID of the current device.
-
-                        if (ob.getMac().equals(config.mac)) {
-                            uuid = ob.getUuid();
-                            resultOk = true;
-                            break;
-                        }
-                    }
-                } finally {
-                    IOUtils.closeQuietly(connection.getInputStream());
-                }
-
-                if (!resultOk) {
-                    logger.warn("Error in foobot.io response: {}", errorMsg);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
-                }
-
-            } catch (MalformedURLException e) {
-                errorMsg = e.getMessage();
-                logger.warn("Constructed url is not valid: {}", errorMsg);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
-            } catch (JsonSyntaxException e) {
+            if (response.getStatusLine().getStatusCode() == 404) {
                 errorMsg = "Configuration is incorrect";
                 logger.warn("Error running foobot.io request: {}", errorMsg);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
-            } catch (IOException | IllegalStateException e) {
-                errorMsg = e.getMessage();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
+
+                return;
             }
+            // Map the JSON response to list of objects
+            Type listType = new TypeToken<ArrayList<FoobotJsonResponse>>() {
+            }.getType();
+            String userDevices = EntityUtils.toString(response.getEntity());
+            List<FoobotJsonResponse> readFromJson = gson.fromJson(userDevices, listType);
+            for (FoobotJsonResponse ob : readFromJson) {
+                // Compare the mac address to each record in order to fetch the UUID of the current device.
+                if (ob.getMac().equals(config.mac)) {
+                    uuid = ob.getUuid();
+                    deviceFound = true;
+                    break;
+                }
+            }
+            if (!deviceFound) {
+                errorMsg = "No device found for this MAC address.";
+                logger.warn("Error in foobot.io response: {}", errorMsg);
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
 
-            updateStatus(ThingStatus.ONLINE);
-            startAutomaticRefresh();
-        } else
-
-        {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
+                return;
+            }
+        } catch (MalformedURLException e) {
+            logger.warn("Constructed url is not valid: {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        } catch (JsonSyntaxException e) {
+            logger.warn("Error running foobot.io request: {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        } catch (IOException | IllegalStateException e) {
+            logger.warn("Error running foobot.io request: {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
+        updateStatus(ThingStatus.ONLINE);
+        startAutomaticRefresh();
     }
 
     /**
      * Start the job refreshing the Sensor data from Foobot device
      */
     private void startAutomaticRefresh() {
-        if (refreshJob == null || refreshJob.isCancelled()) {
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        // Request new sensor data from foobot.io service
-                        foobotData = updateFoobotData();
+        int delay = (config.refresh != null) ? config.refresh.intValue() : DEFAULT_REFRESH_PERIOD;
+        refreshJob = scheduler.scheduleWithFixedDelay(() -> {
+            // Request new sensor data from foobot.io service
+            foobotData = updateFoobotData();
 
-                        // Update all channels from the updated Sensor data
-                        for (Channel channel : getThing().getChannels()) {
-                            updateChannel(channel.getUID().getId(), foobotData);
-                        }
-                    } catch (Exception e) {
-                        logger.error("Exception occurred during execution: {}", e.getMessage(), e);
-                    }
-                }
-            };
-
-            config = getConfigAs(FoobotConfiguration.class);
-            int delay = (config.refresh != null) ? config.refresh.intValue() : DEFAULT_REFRESH_PERIOD;
-            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, delay, TimeUnit.MINUTES);
-        }
+            // Update all channels from the updated Sensor data
+            for (Channel channel : getThing().getChannels()) {
+                updateChannel(channel.getUID().getId(), foobotData);
+            }
+        }, 0, delay, TimeUnit.MINUTES);
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing the Foobot handler.");
-
         if (refreshJob != null && !refreshJob.isCancelled()) {
             refreshJob.cancel(true);
             refreshJob = null;
@@ -212,127 +193,91 @@ public class FoobotHandler extends BaseThingHandler {
     @Override
     public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
         if (command instanceof RefreshType) {
-            updateChannel(channelUID.getId(), foobotData);
+            foobotData = updateFoobotData();
+
+            // Update all channels from the updated Sensor data
+            for (Channel channel : getThing().getChannels()) {
+                updateChannel(channel.getUID().getId(), foobotData);
+            }
         } else {
             logger.debug("The Foobot binding is read-only and can not handle command {}", command);
         }
-
     }
 
     private void updateChannel(String channelId, FoobotJsonData foobotResponse) {
-        if (isLinked(channelId)) {
-            Object value;
-            try {
-                value = getValue(channelId, foobotResponse);
-            } catch (Exception e) {
-                logger.debug("Foobot device doesn't provide sensor data for channel id = {}", channelId.toUpperCase());
-                return;
-            }
+        Object value = null;
+        try {
+            value = getValue(channelId, foobotResponse);
+        } catch (Exception e) {
+            logger.debug("Foobot device doesn't provide sensor data for channel id = {}", channelId.toUpperCase());
+        }
 
-            State state = null;
-            if (value == null) {
-                state = UnDefType.UNDEF;
-            } else if (value instanceof BigDecimal) {
-                state = new DecimalType((BigDecimal) value);
-            } else if (value instanceof String) {
-                state = new StringType(value.toString());
-            } else {
-                logger.warn("Update channel {}: Unsupported value type {}", channelId,
-                        value.getClass().getSimpleName());
-            }
-            logger.debug("Update channel {} with state {} ({})", channelId, (state == null) ? "null" : state.toString(),
-                    (value == null) ? "null" : value.getClass().getSimpleName());
-
-            // Update the channel
-            if (state != null) {
-                updateState(channelId, state);
-            }
+        if (value == null) {
+            updateState(channelId, UnDefType.NULL);
+            logger.debug("Update channel {}: null value for the channel", channelId);
+        } else if (value instanceof BigDecimal) {
+            State state = new DecimalType((BigDecimal) value);
+            updateState(channelId, state);
+            logger.debug("Update channel {} with state {} ({})", channelId, state, value.getClass().getSimpleName());
+        } else {
+            updateState(channelId, UnDefType.UNDEF);
+            logger.debug("Update channel {}: Unsupported value type {}", channelId, value.getClass().getSimpleName());
         }
     }
 
     private FoobotJsonData updateFoobotData() {
         FoobotJsonData result = null;
-        boolean resultOk = false;
-        String errorMsg = null;
-
         try {
-            config = getConfigAs(FoobotConfiguration.class);
-
+            // Run the HTTP request and get the list of all foobot devices belonging to the user from foobot.io
             String urlStr = URL2.replace("%uuid%", StringUtils.trimToEmpty(uuid));
-            urlStr = urlStr.replace("%period%", Integer.toString(config.refresh * 60));
             urlStr = urlStr.replace("%sensors%", StringUtils.trimToEmpty(""));
-
             logger.debug("URL = {}", urlStr);
 
             // Run the HTTP request and get the JSON response from foobot.io
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpGet getRequest = new HttpGet(urlStr);
+            getRequest.addHeader("accept", "application/json");
+            getRequest.addHeader("X-API-KEY-TOKEN", config.apikey);
+            HttpResponse response = httpClient.execute(getRequest);
 
-            URL url = new URL(urlStr);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestProperty("X-API-KEY-TOKEN", config.apikey);
+            String responseData = EntityUtils.toString(response.getEntity());
+            logger.debug(responseData);
 
-            try {
-                String response = IOUtils.toString(connection.getInputStream());
-                logger.debug("FoobotResponse = {}", response);
-
+            if (StringUtils.trimToNull(responseData) == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "no data returned");
+            } else {
                 // Map the JSON response to an object
-                if (StringUtils.trimToNull(response) == null) {
-                    errorMsg = "no data returned";
-                }
-
-                result = gson.fromJson(response, FoobotJsonData.class);
-                resultOk = true;
-
-            } finally {
-                IOUtils.closeQuietly(connection.getInputStream());
+                result = gson.fromJson(responseData, FoobotJsonData.class);
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
-
-            if (!resultOk) {
-                logger.warn("Error in foobot.io response: {}", errorMsg);
-            }
-
         } catch (MalformedURLException e) {
-            errorMsg = e.getMessage();
-            logger.warn("Constructed url is not valid: {}", errorMsg);
+            logger.debug("Constructed url is not valid: {}", e.getMessage());
         } catch (JsonSyntaxException e) {
-            errorMsg = "Configuration is incorrect";
-            logger.warn("Error running foobot.io request: {}", errorMsg);
+            logger.debug("Error running foobot.io request: {}", e.getMessage());
         } catch (IOException | IllegalStateException e) {
-            errorMsg = e.getMessage();
+            logger.debug(e.getMessage());
         }
 
-        // Update the thing status
-        if (resultOk) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errorMsg);
-        }
-
-        return resultOk ? result : null;
+        return result;
     }
 
-    public static Object getValue(String channelId, FoobotJsonData data) throws Exception {
-        String[] fields = StringUtils.split(channelId, "#");
-
+    public static BigDecimal getValue(String channelId, FoobotJsonData data) {
         if (data == null) {
             return null;
         }
-
-        String fieldName = fields[0];
-
-        switch (fieldName) {
+        switch (channelId) {
             case FoobotBindingConstants.TMP:
-                return new BigDecimal(data.getDatapointsListToArray()[data.getSensors().indexOf("tmp")]);
+                return new BigDecimal(data.getDatapointsList().get(data.getSensors().indexOf("tmp")));
             case FoobotBindingConstants.CO2:
-                return new BigDecimal(data.getDatapointsListToArray()[data.getSensors().indexOf("co2")]);
+                return new BigDecimal(data.getDatapointsList().get(data.getSensors().indexOf("co2")));
             case FoobotBindingConstants.GPI:
-                return new BigDecimal(data.getDatapointsListToArray()[data.getSensors().indexOf("allpollu")]);
+                return new BigDecimal(data.getDatapointsList().get(data.getSensors().indexOf("allpollu")));
             case FoobotBindingConstants.PM:
-                return new BigDecimal(data.getDatapointsListToArray()[data.getSensors().indexOf("pm")]);
+                return new BigDecimal(data.getDatapointsList().get(data.getSensors().indexOf("pm")));
             case FoobotBindingConstants.HUM:
-                return new BigDecimal(data.getDatapointsListToArray()[data.getSensors().indexOf("hum")]);
+                return new BigDecimal(data.getDatapointsList().get(data.getSensors().indexOf("hum")));
             case FoobotBindingConstants.VOC:
-                return new BigDecimal(data.getDatapointsListToArray()[data.getSensors().indexOf("voc")]);
-
+                return new BigDecimal(data.getDatapointsList().get(data.getSensors().indexOf("voc")));
         }
 
         return null;

@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="airboxlab" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="foobotbinding" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="foobot">
 		<label>Foobot</label>
-		<description>
-        Provides a list of all foobots in your home.
-        In order to retrieve the list you must register have an account on foobot.io and you must get your API token from https://api.foobot.io/apidoc/index.html
-        </description>
+		<description>Shows the air quality data from the Foobot cloud API.</description>
 
 		<channels>
 			<channel id="temperature" typeId="temperature" />
@@ -28,8 +25,8 @@
 			</parameter>
 
 			<parameter name="username" type="text" required="true">
-				<label>User Id</label>
-				<description>UserId of foobot account. Its the user Id that you use to login to the Foobot account.</description>
+				<label>Username</label>
+				<description>The Username that you use to login to the Foobot account.</description>
 			</parameter>
 
 			<parameter name="mac" type="text" required="true">
@@ -47,10 +44,10 @@
 	</thing-type>
 
 	<channel-type id="temperature">
-		<item-type>Number</item-type>
-		<label>Temperature (°C)</label>
-		<description>Temperature in degree Celsius</description>
-		<category>Temperature (°C)</category>
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature</description>
+		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f °C"></state>
 	</channel-type>
 
@@ -58,35 +55,35 @@
 		<item-type>Number</item-type>
 		<label>Humidity</label>
 		<description>Humidity Level</description>
-		<category>humidity</category>
-		<state readOnly="true" pattern="%.1f pc"></state>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%d %%"></state>
 	</channel-type>
 	<channel-type id="voc">
 		<item-type>Number</item-type>
 		<label>VOC</label>
 		<description>Volatile Organic Compounds Level</description>
-		<category>Temperature</category>
+		<category>Sensor</category>
 		<state readOnly="true" pattern="%.1f ppb"></state>
 	</channel-type>
 	<channel-type id="co2">
 		<item-type>Number</item-type>
 		<label>CO2</label>
 		<description>Carbon dioxide Level</description>
-		<category>Temperature</category>
+		<category>CarbonDioxide</category>
 		<state readOnly="true" pattern="%.1f ppm"></state>
 	</channel-type>
 	<channel-type id="pm">
 		<item-type>Number</item-type>
 		<label>PM</label>
 		<description>Particulate Matter Level</description>
-		<category>Temperature</category>
+		<category>Sensor</category>
 		<state readOnly="true" pattern="%.1f μg/m&#179;"></state>
 	</channel-type>
 	<channel-type id="gpi">
 		<item-type>Number</item-type>
 		<label>GPI</label>
 		<description>Global Pollution Index Level</description>
-		<category>Temperature</category>
+		<category>Global Pollution Index</category>
 		<state readOnly="true" />
 	</channel-type>
 

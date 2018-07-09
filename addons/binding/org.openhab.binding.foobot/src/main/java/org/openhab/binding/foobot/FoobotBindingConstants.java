@@ -20,7 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class FoobotBindingConstants {
 
-    private static final String BINDING_ID = "airboxlab";
+    private static final String BINDING_ID = "foobotbinding";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_FOOBOT = new ThingTypeUID(BINDING_ID, "foobot");
@@ -32,5 +32,4 @@ public class FoobotBindingConstants {
     public static final String VOC = "voc";
     public static final String CO2 = "co2";
     public static final String GPI = "gpi";
-
 }

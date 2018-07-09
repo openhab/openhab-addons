@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.foobot.internal.json;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,12 +22,11 @@ public class FoobotJsonData {
     private String uuid;
     private long start;
     private long end;
-    private List<String> sensors;
-    private List<String> units;
-    private List<List<String>> datapoints;
+    private ArrayList<String> sensors;
+    private ArrayList<String> units;
+    private ArrayList<ArrayList<String>> datapoints;
 
-    private String[] sensorListToArray;
-    private String[] datapointsListToArray;
+    private ArrayList<String> datapointsList;
 
     public String getUuid() {
         return uuid;
@@ -56,7 +56,7 @@ public class FoobotJsonData {
         return sensors;
     }
 
-    public void setSensors(List<String> sensors) {
+    public void setSensors(ArrayList<String> sensors) {
         this.sensors = sensors;
     }
 
@@ -64,34 +64,21 @@ public class FoobotJsonData {
         return units;
     }
 
-    public void setUnits(List<String> units) {
+    public void setUnits(ArrayList<String> units) {
         this.units = units;
     }
 
-    public List<List<String>> getDatapoints() {
+    public ArrayList<ArrayList<String>> getDatapoints() {
         return datapoints;
     }
 
-    public void setDatapoints(List<List<String>> datapoints) {
+    public void setDatapoints(ArrayList<ArrayList<String>> datapoints) {
         this.datapoints = datapoints;
     }
 
-    public String[] getSensorListToArray() {
-        sensorListToArray = sensors.toArray(new String[sensors.size()]);
-        return sensorListToArray;
-    }
-
-    public void setSensorListToArray(String[] sensorListToArray) {
-        this.sensorListToArray = sensorListToArray;
-    }
-
-    public String[] getDatapointsListToArray() {
-        datapointsListToArray = datapoints.get(0).toArray(new String[datapoints.size()]);
-        return datapointsListToArray;
-    }
-
-    public void setDatapointsListToArray(String[] datapointsListToArray) {
-        this.datapointsListToArray = datapointsListToArray;
+    public List<String> getDatapointsList() {
+        this.datapointsList = datapoints.get(0);
+        return datapointsList;
     }
 
 }

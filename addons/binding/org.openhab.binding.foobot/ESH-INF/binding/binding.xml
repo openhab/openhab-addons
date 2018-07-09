@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<binding:binding id="airboxlab"
+<binding:binding id="foobotbinding"
 				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 				 xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
 				 xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>Foobot Binding</name>
-	<description>The Foobot binding lets the user to connect to the foobots in his home or office and get
+	<description>The Foobot binding lets the users to connect to the foobots in his home or office and get
 	 realtime updates on the Air Quality.</description>
 	<author>Divya Chauhan</author>
 
