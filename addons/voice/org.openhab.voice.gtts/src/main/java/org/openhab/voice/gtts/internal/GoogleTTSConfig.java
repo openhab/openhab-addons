@@ -34,35 +34,45 @@ class GoogleTTSConfig {
      */
     private Double volumeGainDb = 0d;
 
-    public String getServiceKeyFileName() {
+    String getServiceKeyFileName() {
         return serviceKeyFileName;
     }
 
-    public void setServiceKeyFileName(String serviceKeyFileName) {
+    void setServiceKeyFileName(String serviceKeyFileName) {
         this.serviceKeyFileName = serviceKeyFileName;
     }
 
-    public Double getPitch() {
+    Double getPitch() {
         return pitch;
     }
 
-    public void setPitch(Double pitch) {
+    void setPitch(Double pitch) {
         this.pitch = pitch;
     }
 
-    public Double getSpeakingRate() {
+    Double getSpeakingRate() {
         return speakingRate;
     }
 
-    public void setSpeakingRate(Double speakingRate) {
+    void setSpeakingRate(Double speakingRate) {
         this.speakingRate = speakingRate;
     }
 
-    public Double getVolumeGainDb() {
+    Double getVolumeGainDb() {
         return volumeGainDb;
     }
 
-    public void setVolumeGainDb(Double volumeGainDb) {
+    void setVolumeGainDb(Double volumeGainDb) {
         this.volumeGainDb = volumeGainDb;
+    }
+
+    @Override
+    public String toString() {
+        return "GoogleTTSConfig{" +
+                "serviceKeyFileName='" + serviceKeyFileName + '\'' +
+                ", pitch=" + pitch +
+                ", speakingRate=" + speakingRate +
+                ", volumeGainDb=" + volumeGainDb +
+                '}';
     }
 }

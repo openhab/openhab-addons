@@ -22,7 +22,7 @@
 		</parameter>
 		<parameter name="speakingRate" type="decimal" min="0.25" max="4">
 			<label>Speaking Rate</label>
-			<description>Customize your speaking rate to be 4x faster or slower than the normal rate</description>
+			<description>Speaking rate can be 4x faster or slower than the normal rate</description>
 			<default>1</default>
 		</parameter>
 	</config-description>

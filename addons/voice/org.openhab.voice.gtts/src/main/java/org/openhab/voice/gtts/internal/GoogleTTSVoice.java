@@ -35,13 +35,13 @@ public class GoogleTTSVoice implements Voice {
     private final Integer ssmlGender;
 
     /**
-     * Constructs a GTTS Voice for the passed data
+     * Constructs a Google Cloud TTS Voice for the passed data
      *
      * @param locale The Locale of the voice
      * @param label The label of the voice
      * @param ssmlGender Voice gender
      */
-    public GoogleTTSVoice(Locale locale, String label, Integer ssmlGender) {
+    GoogleTTSVoice(Locale locale, String label, Integer ssmlGender) {
         this.locale = locale;
         this.ssmlGender = ssmlGender;
         this.label = label;
@@ -52,7 +52,7 @@ public class GoogleTTSVoice implements Voice {
      *
      * @param voice Voice instance
      */
-    public GoogleTTSVoice(Voice voice) {
+    GoogleTTSVoice(Voice voice) {
         this.locale = voice.getLocale();
         this.label = voice.getLabel();
         if (voice instanceof GoogleTTSVoice) {

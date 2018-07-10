@@ -8,6 +8,7 @@
  */
 package org.openhab.voice.gtts.internal;
 
+import com.google.cloud.texttospeech.v1beta1.AudioEncoding;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.config.core.ConfigOptionProvider;
 import org.eclipse.smarthome.config.core.ParameterOption;
@@ -34,7 +35,7 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
     /**
      * Home folder
      */
-    static final String HOME_FOLDER = "gtts";
+    private final String HOME_FOLDER = "gtts";
 
     /**
      * Configuration parameters
@@ -76,11 +77,12 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
         try {
             //create home folder
             File userData = new File(ConfigConstants.getUserDataFolder());
-            File homeFolder = new File(userData, GoogleTTSService.HOME_FOLDER);
+            File homeFolder = new File(userData, HOME_FOLDER);
             if (!homeFolder.exists()) {
                 //noinspection ResultOfMethodCallIgnored
                 homeFolder.mkdirs();
             }
+            logger.info("Home folder created: {}", homeFolder.getAbsolutePath());
             apiImpl = new GoogleCloudAPI(homeFolder);
             updateConfig(config);
         } catch (Throwable t) {
@@ -90,22 +92,27 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
 
     /**
      * Initializing audio formats. Google supports 3 formats:
-     *  LINEAR16
-     *      Uncompressed 16-bit signed little-endian samples (Linear PCM). Audio content returned as LINEAR16
-     *      also contains a WAV header.
-     *  MP3
-     *      MP3 audio.
-     *  OGG_OPUS
-     *      Opus encoded audio wrapped in an ogg container. This is not supported by OpenHAB.
-     * @return  Set of supported AudioFormats
+     * LINEAR16
+     * Uncompressed 16-bit signed little-endian samples (Linear PCM). Audio content returned as LINEAR16
+     * also contains a WAV header.
+     * MP3
+     * MP3 audio.
+     * OGG_OPUS
+     * Opus encoded audio wrapped in an ogg container. This is not supported by OpenHAB.
+     *
+     * @return Set of supported AudioFormats
      */
     private Set<AudioFormat> initAudioFormats() {
+        logger.trace("Initializing audio formats");
         Set<AudioFormat> ret = new HashSet<>();
         Set<String> formats = apiImpl.getSupportedAudioFormats();
         for (String format : formats) {
             AudioFormat audioFormat = getAudioFormat(format);
             if (audioFormat != null) {
                 ret.add(audioFormat);
+                logger.trace("Audio format supported: {}", format);
+            } else {
+                logger.trace("Audio format not supported: {}", format);
             }
         }
         return ret;
@@ -117,9 +124,15 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
      * @return Set of available voices.
      */
     private Set<Voice> initVoices() {
+        logger.trace("Initializing voices");
         Set<Voice> ret = new HashSet<>();
         for (Locale l : apiImpl.getSupportedLocales()) {
             ret.addAll(apiImpl.getVoicesForLocale(l));
+        }
+        if (logger.isTraceEnabled()) {
+            for (Voice v : ret) {
+                logger.trace("Google Cloud TTS voice: {}", v.getLabel());
+            }
         }
         return ret;
     }
@@ -129,7 +142,8 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
      *
      * @param newConfig Updated configuration
      */
-    protected void updateConfig(Map<String, Object> newConfig) {
+    private void updateConfig(Map<String, Object> newConfig) {
+        logger.debug("Updating configuration");
         if (newConfig != null) {
             //account key
             String param = newConfig.containsKey(PARAM_SERVICE_KEY_FILE_NAME) ? newConfig.get(PARAM_SERVICE_KEY_FILE_NAME).toString() : null;
@@ -162,6 +176,7 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
             if (param != null) {
                 config.setVolumeGainDb(Double.parseDouble(param));
             }
+            logger.debug("New configuration: {}", config.toString());
         } else {
             logger.error("Missing Google Cloud TTS configuration.");
         }
@@ -191,36 +206,36 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
      * Helper to create AudioFormat objects from Google names.
      *
      * @param format Google audio format.
-     *
      * @return Audio format object.
      */
     private AudioFormat getAudioFormat(String format) {
         Integer bitDepth = 16;
         Long frequency = 44100L;
 
-        if ("MP3".equals(format)) {
-            // we use by default: MP3, 44khz_16bit_mono with bitrate 64 kbps
-            return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, null, bitDepth,
-                    64000, frequency);
-        } else if ("LINEAR16".equals(format)) {
-            // we use by default: wav, 44khz_16bit_mono
-            return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, null, bitDepth,
-                    null, frequency);
-        } else {
-            logger.warn("Audio format " + format + " is not yet supported.");
-            return null;
+        AudioEncoding encoding = AudioEncoding.valueOf(format);
+
+        switch (encoding) {
+            case MP3:
+                // we use by default: MP3, 44khz_16bit_mono with bitrate 64 kbps
+                return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, null, bitDepth,
+                        64000, frequency);
+            case LINEAR16:
+                // we use by default: wav, 44khz_16bit_mono
+                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, null, bitDepth,
+                        null, frequency);
+            default:
+                logger.warn("Audio format {} is not yet supported.", format);
+                return null;
         }
     }
 
     /**
      * Checks parameters and calls the API to synthesize voice.
      *
-     * @param text Input text.
-     * @param voice Selected voice.
+     * @param text            Input text.
+     * @param voice           Selected voice.
      * @param requestedFormat Format that is supported by the target sink as well.
-     *
      * @return Output audio stream
-     *
      * @throws TTSException in case the service is unavailable or a parameter is invalid.
      */
     @Override
@@ -268,6 +283,16 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
         return getParameterOptions(uri, s, null, locale);
     }
 
+    /**
+     * Implementing ConfigOptionProvider to help the configuration by listing all JSON files under service home.
+     *
+     * @param uri Configuration URI
+     * @param param Param name.
+     * @param context Context.
+     * @param locale Locale
+     *
+     * @return Collection of options.
+     */
     @Override
     public Collection<ParameterOption> getParameterOptions(URI uri, String param, String context, Locale locale) {
         if (uri.toString().equals("voice:gtts")) {
@@ -275,11 +300,16 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
                 List<ParameterOption> options = new ArrayList<>();
                 String userDataFolder = ConfigConstants.getUserDataFolder();
                 File homeFolder = new File(userDataFolder, HOME_FOLDER);
+
                 String[] jsonFiles = homeFolder.list((dir, name) -> name.endsWith(".json"));
 
-                for(String keyFile: jsonFiles) {
-                    ParameterOption option = new ParameterOption(keyFile, keyFile);
-                    options.add(option);
+                options.add(new ParameterOption("", "Select the service account key"));
+
+                if (jsonFiles != null) {
+                    for (String keyFile : jsonFiles) {
+                        ParameterOption option = new ParameterOption(keyFile, keyFile);
+                        options.add(option);
+                    }
                 }
 
                 return options;

@@ -58,16 +58,25 @@ class GoogleCloudAPI {
      * Home folder.
      */
     private File homeFolder;
+
+    /**
+     * Status flag
+     */
     private boolean initialized;
 
     /**
      * Constructor.
      * @param homeFolder Serrvice home folder.
      */
-    public GoogleCloudAPI(File homeFolder) {
+    GoogleCloudAPI(File homeFolder) {
         this.homeFolder = homeFolder;
     }
 
+    /**
+     * Configuration update.
+     *
+     * @param config New configuration.
+     */
     void setConfig(GoogleTTSConfig config) {
         this.config = config;
         if (config.getServiceKeyFileName() != null) {
@@ -93,7 +102,6 @@ class GoogleCloudAPI {
             }
 
             //create cache folder
-            // Lazy create the cache folder
             cacheFolder = new File(keyFile.getParentFile(), "cache");
             if (!cacheFolder.exists()) {
                 //noinspection ResultOfMethodCallIgnored
@@ -116,11 +124,12 @@ class GoogleCloudAPI {
         AudioEncoding[] values = AudioEncoding.values();
         for (AudioEncoding c : values) {
             try {
-                if (c.getNumber() > 0) {
+                if (c.getNumber() > AudioEncoding.AUDIO_ENCODING_UNSPECIFIED_VALUE) {
                     formats.add(c.toString());
                 }
             } catch (Exception e) {
-                //UNRECOGNIZED enumeration value throws an exception - don't care
+                logger.error("Unknown enumeration value", e);
+                //UNRECOGNIZED enumeration value throws an exception - should not happen
             }
         }
         return formats;
@@ -152,7 +161,7 @@ class GoogleCloudAPI {
     private void initVoices() {
         if (googleClient != null) {
             voices.clear();
-            ListVoicesResponse resp = googleClient.listVoices("");
+            ListVoicesResponse resp = googleClient.listVoices(""); //without language code to get all the voices
             for (Voice v : resp.getVoicesList()) {
                 for (int i = 0; i < v.getLanguageCodesCount(); i++) {
                     String languageCode = v.getLanguageCodes(i);
@@ -168,7 +177,7 @@ class GoogleCloudAPI {
                 }
             }
         } else {
-            logger.error("Google client is uninitialized!");
+            logger.error("Google client is not initialized!");
         }
     }
 
@@ -182,9 +191,9 @@ class GoogleCloudAPI {
     private String[] getFormatForCodec(String codec) {
         switch (codec) {
             case AudioFormat.CODEC_MP3:
-                return new String[]{"MP3", "mp3"};
+                return new String[]{AudioEncoding.MP3.toString(), "mp3"};
             case AudioFormat.CODEC_PCM_SIGNED:
-                return new String[]{"LINEAR16", "wav"};
+                return new String[]{AudioEncoding.LINEAR16.toString(), "wav"};
             default:
                 throw new IllegalArgumentException("Audio format " + codec + " is not yet supported");
         }
@@ -301,7 +310,7 @@ class GoogleCloudAPI {
         }
     }
 
-    public boolean isInitialized() {
+    boolean isInitialized() {
         return initialized;
     }
 }
