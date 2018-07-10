@@ -8,6 +8,8 @@ Bundle-SymbolicName: org.openhab.binding.valloxmv;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Import-Package: 
+ javax.measure,
+ javax.measure.quantity;version="1.0.0",
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.client,
  org.eclipse.jetty.http,
@@ -28,6 +30,5 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.osgi.framework,
  org.osgi.service.component.annotations;resolution:=optional,
- javax.measure,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

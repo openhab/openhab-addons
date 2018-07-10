@@ -12,7 +12,15 @@ import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Quantity;
+import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -49,6 +57,7 @@ public class ValloxMVHandler extends BaseThingHandler {
         super(thing);
     }
 
+    @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -78,8 +87,31 @@ public class ValloxMVHandler extends BaseThingHandler {
                 } else if (command.toString() == "OFF") {
                     vows_send.request(channelUID, "5");
                 }
+            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE)) {
+                QuantityType<Dimensionless> quantity = commandToQuantityType(command, SmartHomeUnits.PERCENT);
+                vows_send.request(channelUID, Integer.toString(quantity.intValue()));
+            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE)) {
+                QuantityType<Dimensionless> quantity = commandToQuantityType(command, SmartHomeUnits.PERCENT);
+                vows_send.request(channelUID, Integer.toString(quantity.intValue()));
+            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING)) {
+                QuantityType<Dimensionless> quantity = commandToQuantityType(command, SmartHomeUnits.PERCENT);
+                vows_send.request(channelUID, Integer.toString(quantity.intValue()));
+            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET)) {
+                // Convert temperatur to milli degree Kelvin
+                QuantityType<Temperature> quantity = commandToQuantityType(command, SIUnits.CELSIUS)
+                        .toUnit(SmartHomeUnits.KELVIN);
+                int milliKelvin = quantity.multiply(new BigDecimal(100)).intValue();
+                vows_send.request(channelUID, Integer.toString(milliKelvin));
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <U extends Quantity<U>> QuantityType<U> commandToQuantityType(Command command, Unit<U> defaultUnit) {
+        if (command instanceof QuantityType) {
+            return (QuantityType<U>) command;
+        }
+        return new QuantityType<U>(new BigDecimal(command.toString()), defaultUnit);
     }
 
     @Override

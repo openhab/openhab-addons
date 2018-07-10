@@ -108,6 +108,26 @@ public class ValloxMVBindingConstants {
      */
     public static final String CHANNEL_UPTIME_HOURS_CURRENT = "uptimehourscurrent";
 
+    /**
+     * Extract fan base speed in % (0-100).
+     */
+    public static final String CHANNEL_EXTR_FAN_BALANCE_BASE = "extrfanbalancebase";
+
+    /**
+     * Supply fan base speed in % (0-100).
+     */
+    public static final String CHANNEL_SUPP_FAN_BALANCE_BASE = "suppfanbalancebase";
+
+    /**
+     * Home fan speed in % (0-100).
+     */
+    public static final String CHANNEL_HOME_SPEED_SETTING = "homespeedsetting";
+
+    /**
+     * arget temperature in home state.
+     */
+    public static final String CHANNEL_HOME_AIR_TEMP_TARGET = "homeairtemptarget";
+
     // Thing configuration
     /**
      * Name of the configuration parameters

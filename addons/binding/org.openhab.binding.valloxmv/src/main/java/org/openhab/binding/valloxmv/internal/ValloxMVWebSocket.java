@@ -206,6 +206,22 @@ public class ValloxMVWebSocket {
                 HashMap<Integer, Integer> request = new HashMap<Integer, Integer>();
                 request.put(4610, Integer.parseInt(updateState));
                 return generateCustomRequest(249, request);
+            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE)) {
+                HashMap<Integer, Integer> request = new HashMap<Integer, Integer>();
+                request.put(20485, Integer.parseInt(updateState));
+                return generateCustomRequest(249, request);
+            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE)) {
+                HashMap<Integer, Integer> request = new HashMap<Integer, Integer>();
+                request.put(20486, Integer.parseInt(updateState));
+                return generateCustomRequest(249, request);
+            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING)) {
+                HashMap<Integer, Integer> request = new HashMap<Integer, Integer>();
+                request.put(20507, Integer.parseInt(updateState));
+                return generateCustomRequest(249, request);
+            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET)) {
+                HashMap<Integer, Integer> request = new HashMap<Integer, Integer>();
+                request.put(20508, Integer.parseInt(updateState));
+                return generateCustomRequest(249, request);
             }
             return null;
         }
@@ -272,6 +288,12 @@ public class ValloxMVWebSocket {
                 BigDecimal bdUptimeHours = getNumber(bytes, 232);
                 BigDecimal bdUptimeHoursCurrent = getNumber(bytes, 234);
 
+                BigDecimal bdExtrFanBalanceBase = getNumber(bytes, 374);
+                BigDecimal bdSuppFanBalanceBase = getNumber(bytes, 376);
+
+                BigDecimal bdHomeSpeedSetting = getNumber(bytes, 418);
+                BigDecimal bdHomeAirTempTarget = getTemperature(bytes, 420);
+
                 BigDecimal bdState;
                 if (bdFireplaceTimer.compareTo(new BigDecimal(0)) == 1) {
                     bdState = new BigDecimal(ValloxMVBindingConstants.STATE_FIREPLACE);
@@ -313,6 +335,14 @@ public class ValloxMVWebSocket {
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_HOURS, new DecimalType(bdUptimeHours));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_HOURS_CURRENT,
                         new DecimalType(bdUptimeHoursCurrent));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE,
+                        new QuantityType<>(bdExtrFanBalanceBase, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE,
+                        new QuantityType<>(bdSuppFanBalanceBase, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING,
+                        new QuantityType<>(bdHomeSpeedSetting, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET,
+                        new QuantityType<>(bdHomeAirTempTarget, SIUnits.CELSIUS));
 
                 voHandler.updateStatus(ThingStatus.ONLINE);
                 voHandler.dataUpdated();
