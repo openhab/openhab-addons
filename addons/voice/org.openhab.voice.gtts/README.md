@@ -1,10 +1,10 @@
 # Google Cloud Text-to-Speech
 
-The Google Cloud Text-to-Speech API converts text or Speech Synthesis Markup Language (SSML) input into audio data 
-of natural human speech. It provides 30 voices, available in multiple languages and variants and applies DeepMind’s 
-groundbreaking research in WaveNet and Google’s powerful neural networks to deliver the highest fidelity possible. 
-This addon uses this API for implementation of TTSService. The implementation caches the converted texts under $userdata/
-gtts/cache folder to reduce the load on the API and make the conversion faster. 
+Google Cloud TTS Service uses Google's Cloud Text-to-Speech API to convert text or Speech Synthesis Markup Language 
+(SSML) input into audio data of natural human speech. It provides 30 voices, available in multiple languages and 
+variants and applies DeepMind’s groundbreaking research in WaveNet and Google’s powerful neural networks. 
+The implementation caches the converted texts under $userdata/ gtts/cache folder to reduce the load on the API and 
+make the conversion faster.
 
 ## Table of Contents
 
