@@ -28,10 +28,10 @@ Before you can integrate this service with your Google Cloud Text-to-Speech, you
 After the Google TTS addon is installed it creates a **$USERDATA/gtts** folder. Place the downloaded key JSON file in this 
 folder. Using your favourite configuration UI (e.g. PaperUI) edit **services/voice/Google Cloud TTS Service** settings and set 
 
-* **Service Account Key Name** - Key file name (e.g. MyKey.json) located in service home folder.
+* **Service Account Key Name** - Key file name located in service home folder.
 * **Pitch** - The pitch of selected voice, up to 20 semitones
 * **Volume Gain** - The volume of the output between 16dB and -96dB
-* **Speaking Rate** - The speaking rate to be 4x faster or slower than the normal rate 
+* **Speaking Rate** - The speaking rate can be 4x faster or slower than the normal rate 
 
 ## Voice Configuration
 
