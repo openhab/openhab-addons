@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2010-2018 by the respective copyright holders.
- *
+ * <p>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -123,13 +123,9 @@ class GoogleCloudAPI {
         Set<String> formats = new HashSet<>();
         AudioEncoding[] values = AudioEncoding.values();
         for (AudioEncoding c : values) {
-            try {
-                if (c.getNumber() > AudioEncoding.AUDIO_ENCODING_UNSPECIFIED_VALUE) {
-                    formats.add(c.toString());
-                }
-            } catch (Exception e) {
-                logger.error("Unknown enumeration value", e);
-                //UNRECOGNIZED enumeration value throws an exception - should not happen
+            if (c != AudioEncoding.AUDIO_ENCODING_UNSPECIFIED &&
+                    c != AudioEncoding.UNRECOGNIZED) {
+                formats.add(c.toString());
             }
         }
         return formats;
