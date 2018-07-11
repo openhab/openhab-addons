@@ -11,6 +11,7 @@ package org.openhab.voice.gtts.internal;
 import com.google.cloud.texttospeech.v1beta1.AudioEncoding;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.config.core.ConfigOptionProvider;
+import org.eclipse.smarthome.config.core.ConfigurableService;
 import org.eclipse.smarthome.config.core.ParameterOption;
 import org.eclipse.smarthome.core.audio.AudioException;
 import org.eclipse.smarthome.core.audio.AudioFormat;
@@ -19,6 +20,9 @@ import org.eclipse.smarthome.core.audio.FileAudioStream;
 import org.eclipse.smarthome.core.voice.TTSException;
 import org.eclipse.smarthome.core.voice.TTSService;
 import org.eclipse.smarthome.core.voice.Voice;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,16 +30,38 @@ import java.io.File;
 import java.net.URI;
 import java.util.*;
 
+import static org.openhab.voice.gtts.internal.GoogleTTSService.*;
+
 /**
  * Voice service implementation.
  *
  * @author Gabor Bicskei - Initial contribution
  */
+@Component(configurationPid = SERVICE_PID, property = {
+        Constants.SERVICE_PID + "=" + SERVICE_PID,
+        ConfigurableService.SERVICE_PROPERTY_LABEL + "=" + SERVICE_NAME,
+        ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=" + SERVICE_CATEGORY + ":" + SERVICE_ID,
+        ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=" + SERVICE_CATEGORY })
 public class GoogleTTSService implements TTSService, ConfigOptionProvider {
     /**
-     * Home folder
+     * Service name
      */
-    private final String HOME_FOLDER = "gtts";
+    static final String SERVICE_NAME = "Google Cloud TTS Service";
+
+    /**
+     * Service id
+     */
+    static final String SERVICE_ID = "gtts";
+
+    /**
+     * Service category
+     */
+    static final String SERVICE_CATEGORY = "voice";
+
+    /**
+     * Service pid
+     */
+    static final String SERVICE_PID = "org.openhab." + SERVICE_CATEGORY + "." + SERVICE_ID;
 
     /**
      * Configuration parameters
@@ -77,7 +103,7 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
         try {
             //create home folder
             File userData = new File(ConfigConstants.getUserDataFolder());
-            File homeFolder = new File(userData, HOME_FOLDER);
+            File homeFolder = new File(userData, SERVICE_ID);
             if (!homeFolder.exists()) {
                 //noinspection ResultOfMethodCallIgnored
                 homeFolder.mkdirs();
@@ -98,7 +124,7 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
      * MP3
      * MP3 audio.
      * OGG_OPUS
-     * Opus encoded audio wrapped in an ogg container. This is not supported by OpenHAB.
+     * Opus encoded audio wrapped in an ogg container. This is not supported by openHAB.
      *
      * @return Set of supported AudioFormats
      */
@@ -142,6 +168,7 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
      *
      * @param newConfig Updated configuration
      */
+    @Modified
     private void updateConfig(Map<String, Object> newConfig) {
         logger.debug("Updating configuration");
         if (newConfig != null) {
@@ -184,12 +211,12 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
 
     @Override
     public String getId() {
-        return "gtts";
+        return SERVICE_ID;
     }
 
     @Override
     public String getLabel(Locale locale) {
-        return "Google Cloud TTS Service";
+        return SERVICE_NAME;
     }
 
     @Override
@@ -299,7 +326,7 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
             if (PARAM_SERVICE_KEY_FILE_NAME.equals(param)) {
                 List<ParameterOption> options = new ArrayList<>();
                 String userDataFolder = ConfigConstants.getUserDataFolder();
-                File homeFolder = new File(userDataFolder, HOME_FOLDER);
+                File homeFolder = new File(userDataFolder, SERVICE_ID);
 
                 String[] jsonFiles = homeFolder.list((dir, name) -> name.endsWith(".json"));
 
