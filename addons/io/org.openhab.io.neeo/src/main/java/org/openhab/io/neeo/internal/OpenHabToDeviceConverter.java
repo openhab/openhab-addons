@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The class will handle the conversion between a {@link Thing} and a {@link NeeoDevice}
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 class OpenHabToDeviceConverter {
 

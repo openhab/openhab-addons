@@ -19,7 +19,7 @@ import org.openhab.io.neeo.internal.models.NeeoSystemInfo;
  * This abstract implementation of {@link BrainDiscovery} will provide the listener functionality to discovery
  * implementations.
  *
- * @author Tim Roberts - initial contribution
+ * @author Tim Roberts - Initial Contribution
  */
 abstract class AbstractBrainDiscovery implements BrainDiscovery {
 

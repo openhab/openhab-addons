@@ -14,7 +14,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * The brain information class. This class will be used to communicate the brain ID or IP address between the transport
  * page and the servlet
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class BrainInfo {
     /** The possibly null, possibly empty brain identifier (used when removing a brain) */

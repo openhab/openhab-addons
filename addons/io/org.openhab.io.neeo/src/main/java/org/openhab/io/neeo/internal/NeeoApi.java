@@ -47,7 +47,7 @@ import com.google.gson.JsonParser;
 /**
  * The class provides the API for communicating with a NEEO brain
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoApi implements AutoCloseable {
 
@@ -74,6 +74,9 @@ public class NeeoApi implements AutoCloseable {
 
     /** The known device keys on the brain. */
     private final NeeoDeviceKeys deviceKeys;
+
+    /** The brain's system information */
+    private final NeeoSystemInfo systemInfo;
 
     /** The property change support */
     private final PropertyChangeSupport propertySupport = new PropertyChangeSupport(this);
@@ -123,6 +126,8 @@ public class NeeoApi implements AutoCloseable {
                 + NeeoConstants.DEFAULT_BRAIN_PORT;
         deviceKeys = new NeeoDeviceKeys(brainUrl);
 
+        this.systemInfo = getSystemInfo(ipAddress);
+
         String name = brainId;
         try (HttpRequest request = new HttpRequest()) {
             logger.debug("Getting existing device mappings from {}{}", brainUrl, NeeoConstants.PROJECTS_HOME);
@@ -169,6 +174,15 @@ public class NeeoApi implements AutoCloseable {
         callbackUrl = new URL("http://" + primeAddress + ":" + (port == -1 ? NeeoConstants.DEFAULT_OPENHAB_PORT : port)
                 + NeeoUtil.getServletUrl(brainId));
 
+    }
+
+    /**
+     * Returns the brain's system information
+     * 
+     * @return a non-null system information
+     */
+    public NeeoSystemInfo getSystemInfo() {
+        return this.systemInfo;
     }
 
     /**
@@ -221,7 +235,7 @@ public class NeeoApi implements AutoCloseable {
 
     /**
      * Helper method to get the log file from the brain, convert the ANSI escaped result to HTML and return it
-     * 
+     *
      * @return a non-empty string containing the log file from the brain
      *
      * @throws IOException Signals that an I/O exception has occurred or the URL is not a brain
@@ -372,9 +386,6 @@ public class NeeoApi implements AutoCloseable {
             scheduleConnect();
         } catch (InterruptedException e) {
             logger.debug("Connect was interrupted", e);
-        } catch (Throwable t) {
-            logger.error("Connect had an exception", t);
-            scheduleConnect();
         }
     }
 

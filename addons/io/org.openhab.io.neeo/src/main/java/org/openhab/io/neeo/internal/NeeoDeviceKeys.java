@@ -35,7 +35,7 @@ import com.google.gson.JsonParser;
 /**
  * Stores the mapping of {@link ThingUID} to all brain keys
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoDeviceKeys {
 

@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * The model represents a token score result given to the NEEO brain (serialize/deserialize json use only)
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  * @param <T> the type that will be scored
  */
 public class TokenScoreResult<T> {
@@ -25,7 +25,7 @@ public class TokenScoreResult<T> {
     private final int id;
 
     /** The score result */
-    private final int score;
+    private final double score;
 
     /** The maximum score found */
     private final int maxScore;
@@ -38,7 +38,7 @@ public class TokenScoreResult<T> {
      * @param score the score
      * @param maxScore the maximum score
      */
-    public TokenScoreResult(T item, int id, int score, int maxScore) {
+    public TokenScoreResult(T item, int id, double score, int maxScore) {
         Objects.requireNonNull(item, "item cannot be null");
 
         this.item = item;
@@ -70,7 +70,7 @@ public class TokenScoreResult<T> {
      *
      * @return the score
      */
-    public int getScore() {
+    public double getScore() {
         return score;
     }
 

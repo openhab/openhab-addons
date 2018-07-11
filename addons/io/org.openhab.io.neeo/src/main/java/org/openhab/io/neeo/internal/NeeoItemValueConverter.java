@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.eclipse.smarthome.core.transform.TransformationException;
 import org.eclipse.smarthome.core.transform.TransformationHelper;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -37,10 +38,9 @@ import org.slf4j.LoggerFactory;
  * The class is responsible for formatting a {@link State} to a string value. A lot of the code was 'borrowed' from
  * ItemUIRegistryImpl.java
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoItemValueConverter {
-
     /** The logger */
     private final Logger logger = LoggerFactory.getLogger(NeeoItemValueConverter.class);
 
@@ -100,15 +100,22 @@ public class NeeoItemValueConverter {
             case EXCLUDE:
                 convertedState = UnDefType.UNDEF;
                 break;
+            case SLIDER:
+                if (state instanceof PercentType) {
+                    convertedState = new DecimalType(((PercentType) state).toBigDecimal());
+                } else {
+                    convertedState = state.as(DecimalType.class);
+                }
+                break;
             case SENSOR:
             case SENSOR_RANGE:
             case SENSOR_CUSTOM:
-            case SLIDER:
-                convertedState = state.as(DecimalType.class);
+                convertedState = state;
                 break;
             case TEXTLABEL:
             case IMAGEURL:
-                convertedState = state.as(StringType.class);
+            case DIRECTORY:
+                convertedState = new StringType(state.toString());
                 break;
         }
 
@@ -134,33 +141,37 @@ public class NeeoItemValueConverter {
             return new NeeoItemValue(convertedState.toString());
         }
 
+        // Formatting must use the actual state (not converted state) to avoid
+        // issues where a decimal converted to string or otherwise
         String itemValue;
         if (format != null && StringUtils.isNotEmpty(format)) {
-            if (convertedState instanceof UnDefType) {
+            if (state instanceof UnDefType) {
                 itemValue = formatUndefined(format);
-            } else if (convertedState instanceof Type) {
+            } else if (state instanceof Type) {
                 if (TransformationHelper.isTransform(format)) {
                     try {
-                        final String transformed = TransformationHelper.transform(
-                                context.getComponentContext().getBundleContext(), format, convertedState.toString());
-                        return new NeeoItemValue(transformed);
-                    } catch (NoClassDefFoundError ex) {
+                        final String transformed = TransformationHelper
+                                .transform(context.getComponentContext().getBundleContext(), format, state.toString());
+                        if (transformed != null) {
+                            return new NeeoItemValue(transformed);
+                        }
+                    } catch (NoClassDefFoundError | TransformationException ex) {
                         // TransformationHelper is optional dependency, so ignore if class not found
                     }
                 }
 
                 try {
-                    itemValue = ((Type) convertedState).format(format);
+                    itemValue = ((Type) state).format(format);
                 } catch (IllegalArgumentException e) {
-                    logger.warn("Exception while formatting value '{}' of item {} with format '{}': {}", convertedState,
-                            channel.getItemName(), format, e.getMessage());
+                    logger.warn("Exception while formatting value '{}' of item {} with format '{}': {}", state,
+                            channel == null ? "null" : channel.getItemName(), format, e.getMessage());
                     itemValue = "(Error)";
                 }
             } else {
-                itemValue = convertedState.toString();
+                itemValue = state.toString();
             }
         } else {
-            itemValue = convertedState.toString();
+            itemValue = state.toString();
         }
 
         return new NeeoItemValue(itemValue);
@@ -196,10 +207,23 @@ public class NeeoItemValueConverter {
      */
     @Nullable
     public static Command convert(Item item, PathInfo eventType) {
+        return convert(item, eventType, eventType.getActionValue());
+    }
+
+    /**
+     * Convert the {@link Item} and {@link PathInfo} to a {@link Command}. Buttons and switches have special handling,
+     * all others are handled by {@link TypeParser#parseCommand(java.util.List, String)}
+     *
+     * @param item the non-null item
+     * @param eventType the non-null event type
+     * @param actionValue the possibly null, possibly empty action value
+     * @return the command
+     */
+    @Nullable
+    public static Command convert(Item item, PathInfo eventType, @Nullable String actionValue) {
         Objects.requireNonNull(item, "item cannot be null");
         Objects.requireNonNull(eventType, "eventType cannot be null");
 
-        final String actionValue = eventType.getActionValue();
         if (actionValue == null || StringUtils.isEmpty(actionValue)) {
             return null;
         }

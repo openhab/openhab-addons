@@ -16,7 +16,7 @@ import org.openhab.io.neeo.internal.servletservices.ThingDashboardService;
 /**
  * This is the main dashboard servlet that will handle requests for dashboard services.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  *
  */
 public class NeeoDashboardServlet extends AbstractServlet {
@@ -27,7 +27,7 @@ public class NeeoDashboardServlet extends AbstractServlet {
      * related services are handled by {@link BrainDashboardService} and any thing related services are handled by
      * {@link ThingDashboardService}
      *
-     * @author Tim Roberts
+     * @author Tim Roberts - Initial Contribution
      * @param service the non-null service
      * @param servletUrl the non-empty servletUrl
      * @param context the non-null context

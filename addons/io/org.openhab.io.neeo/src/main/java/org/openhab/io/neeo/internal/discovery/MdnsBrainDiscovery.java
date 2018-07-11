@@ -50,7 +50,7 @@ import com.google.gson.JsonParseException;
  * An implementations of {@link BrainDiscovery} that will discovery brains from the MDNS/Zeroconf/Bonjour service
  * announcements
  *
- * @author Tim Roberts - initial contribution
+ * @author Tim Roberts - Initial Contribution
  */
 public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
 

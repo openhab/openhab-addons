@@ -73,12 +73,60 @@
             
             <script type="text/ng-template" id="showlog.html">
                 <div class="showLog-header modal-header">
-                    <h3 class="showLog-title modal-title" id="advProp-title">Log File</h3>
+                    <h3 class="showLog-title modal-title" id="showLog-title">Log File</h3>
                 </div>
                 <div class='logfile' ng-bind-html='$ctrl.log'>
                 </div>
                 <div class="showLog-footer modal-footer">
                     <button class="btn btn-primary" type="button" ng-click="$ctrl.ok()">OK</button>
+                </div>
+            </script>
+
+            <script type="text/ng-template" id="listItems.html">
+                <div class="listItems-header modal-header">
+                    <h3 class="listItems-title modal-title" id="listItems-title">List Items</h3>
+                </div>
+                <div ng-form name="overallForm">
+                <div class="listItems-body modal-body" id="listItems-body">
+                            <button class="btn btn-xs" uib-tooltip="Add a new Virtual Thing" ng-click="$ctrl.addItem()">
+                                <span class="far fa-plus-square"></span>
+                                <span class="buttonText">Add Item</span>
+                            </button>
+                        <table>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Value</th>
+                                <th>Label</th>
+                                <th>Thumbnail URI</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="items-item" ng-repeat="item in $ctrl.items track by $index" ng-form name="myForm">
+                            <td class="actions">
+                            <button class="btn btn-xs" uib-tooltip="Delete Item" ng-click="$ctrl.deleteItem($index)">
+                                <span class="fas fa-minus"></span>
+                            </button>
+                            </td>
+                            <td class="itemValue">
+                                <input name="value" ng-model='item.itemValue' required>
+                                <span class="error" ng-show="myForm.value.$invalid">An item value is required.</span>
+                            </td>                       
+                            <td class="title">
+                                <input name="title" ng-model='item.title' required>
+                                <span class="error" ng-show="myForm.title.$invalid">A title is required</span>
+                            </td>                       
+                            <td class="thumbNail">
+                                <input name="thumbnail" ng-model='item.thumbNailUri'>
+                            </td>                       
+                        </tr>
+                        </tbody>
+                        </table>
+                </div>
+                <div class="listItems-footer modal-footer">
+                    <button class="btn btn-primary" type="button" ng-click="$ctrl.ok()" ng-disabled="!overallForm.$valid">OK</button>
+                    <button class="btn btn-warning" type="button" ng-click="$ctrl.cancel()">Cancel</button>
+                </div>
                 </div>
             </script>
 
@@ -91,18 +139,18 @@
                         <legend>Properties</legend>
                         <div class="props">
                             <label for="specificname">Specific Name</label>
-                            <input id="specificname" ng-model='$ctrl.device.specificName' placeholder='{{$ctrl.device.name}}'>
+                            <input id="specificname" ng-model='$ctrl.props.specificName' placeholder='{{$ctrl.props.name}}'>
                         </div>
                         <div class="props">
                             <label for="iconname">Icon Name</label>
-                            <input id="iconname" ng-model='$ctrl.device.iconName'>
+                            <input id="iconname" ng-model='$ctrl.props.iconName'>
                                                 <span uib-dropdown>
                                                     <button class="btn btn-xs" uib-dropdown-toggle>
                                                         <i class="fas fa-caret-down" aria-hidden="true"></i>
                                                     </button>
                                                     <ul class="dropdown-menu dropdown-menu-right scrollable-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
                                                         <li ng-repeat="x in $ctrl.imageNames track by $index ">
-                                                            <a href="#" ng-click="$ctrl.device.iconname = x.value" ng-bind="x.value"></a>
+                                                            <a href="#" ng-click="$ctrl.props.iconName = x.value" ng-bind="x.value"></a>
                                                         </li>
                                                     </ul>
                                                 </span>
@@ -171,7 +219,7 @@
                                 <ui-select-match placeholder="Select a device...">{{$select.selected.name}}</ui-select-match>
                                 <ui-select-choices repeat="device in $ctrl.devices | filter: $select.search">
                                     <div ng-bind-html="device.name | highlight: $select.search"></div>
-                                    <small> {{ device.uid }}</small>
+                                    <small>{{ device.uid }}</small>
                                 </ui-select-choices>
                             </ui-select>
                             <button class="btn btn-xs" uib-tooltip="Import Thing Items" ng-disabled="$ctrl.selectedDevice === undefined" ng-click="$ctrl.addThingItems()">
@@ -256,6 +304,7 @@
                                             <th>Brain Name</th>
                                             <th>Brain URL</th>
                                             <th>Callback URL</th>
+                                            <th>Firmware</th>
                                             <th>Connected?</th>
                                             <th>Actions</th>
                                         </tr>
@@ -266,6 +315,7 @@
                                             <td>{{status.brainName}}</td>
                                             <td>{{status.brainUrl}}</td>
                                             <td>{{status.callbackUrl}}</td>
+                                            <td>{{status.firmwareVersion}}</td>
                                             <td class="connected" ng-class="{ 'success': status.connected, 'danger': !status.connected }">{{ status.connected ? "OK" : "OFFLINE" }}</td>
                                             <td class="brainActions2">
                                                 <button class="btn btn-xs" uib-tooltip="Show EUI" ng-disabled="!status.connected" ng-click="ctrl.showEui(status.brainUrl)">
@@ -470,19 +520,27 @@
                                                         <option value="power" ng-if='ctrl.isPower(channel)'>Power</option>
                                                         <option value="slider" ng-if='ctrl.isSlider(channel)'>Slider</option>
                                                         <option value="imageurl" ng-if='ctrl.isImageUrl(channel)'>Image URL</option>
-                                                        <option value="sensor" ng-if='ctrl.isRangeSensor(channel) || ctrl.isBinarySensor(channel)'>Sensor</option>
+                                                        <option value="directory" ng-if='ctrl.isList(channel)'>List</option>
+                                                        <option value="sensor" ng-if='ctrl.isSensor(channel)'>Sensor</option>
                                                     </select>
                                                 </div>
 
 
                                                 <div class="channelLabel">
-                                                    <div class="channelLabelButton" ng-if="channel.type=='slider'">
+                                                    <div class="channelLabelButton" ng-if="channel.type=='sensor' || channel.type=='slider'">
                                                         <input ng-model="channel.label" placeholder="Label" />
                                                     </div>
                                                     
                                                     <div class="channelLabelButton" ng-if="channel.type ==='textlabel'">
                                                         <input ng-model="channel.label" placeholder="Label" ng-disabled='!channel.labelVisible'/>
                                                         <input ng-model="channel.labelVisible" type="checkbox" name="checkbox"/>
+                                                    </div>
+                                                    
+                                                    <div class="channelLabelList" ng-if="channel.type ==='directory'">
+                                                        <input ng-model="channel.label" placeholder="Label"/>
+                                                        <button class="btn btn-xs" ng-click="ctrl.showListItems(channel)">
+                                                            <i class="fas fa-list-ol" aria-hidden="true"></i>
+                                                        </button>
                                                     </div>
                                                     
                                                     <div class="channelLabelButton" ng-if="channel.type ==='button'">

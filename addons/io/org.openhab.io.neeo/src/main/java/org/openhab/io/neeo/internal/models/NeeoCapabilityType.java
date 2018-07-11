@@ -17,7 +17,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelType;
 /**
  * Defines the various NEEO capability types
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public enum NeeoCapabilityType {
     /** Represents the NEEO BUTTON capability */
@@ -32,6 +32,8 @@ public enum NeeoCapabilityType {
     TEXTLABEL("textlabel"),
     /** Represents the NEEO IMAGE URL capability */
     IMAGEURL("imageurl"),
+    /** Represents the NEEO directory capability */
+    DIRECTORY("directory"),
 
     /** Represents the NEEO CUSTOM SENSOR capability */
     SENSOR_CUSTOM("custom"),

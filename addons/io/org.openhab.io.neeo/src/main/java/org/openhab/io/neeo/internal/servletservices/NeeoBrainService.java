@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.events.Event;
 import org.eclipse.smarthome.core.events.EventFilter;
-import org.eclipse.smarthome.core.events.EventPublisher;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.items.events.ItemCommandEvent;
@@ -45,11 +44,17 @@ import org.openhab.io.neeo.internal.NeeoUtil;
 import org.openhab.io.neeo.internal.ServiceContext;
 import org.openhab.io.neeo.internal.models.ButtonInfo;
 import org.openhab.io.neeo.internal.models.NeeoButtonGroup;
+import org.openhab.io.neeo.internal.models.NeeoCapabilityType;
 import org.openhab.io.neeo.internal.models.NeeoDevice;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannel;
+import org.openhab.io.neeo.internal.models.NeeoDeviceChannelDirectory;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannelKind;
+import org.openhab.io.neeo.internal.models.NeeoDirectoryRequest;
+import org.openhab.io.neeo.internal.models.NeeoDirectoryRequestAction;
+import org.openhab.io.neeo.internal.models.NeeoDirectoryResult;
 import org.openhab.io.neeo.internal.models.NeeoItemValue;
 import org.openhab.io.neeo.internal.models.NeeoNotification;
+import org.openhab.io.neeo.internal.models.NeeoSensorNotification;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
 import org.openhab.io.neeo.internal.net.HttpRequest;
 import org.openhab.io.neeo.internal.servletservices.models.PathInfo;
@@ -62,7 +67,7 @@ import com.google.gson.Gson;
 /**
  * The implementation of {@link ServletService} that will handle device callbacks from the Neeo Brain
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoBrainService extends DefaultServletService {
 
@@ -72,7 +77,7 @@ public class NeeoBrainService extends DefaultServletService {
     /** The gson used for communications */
     private final Gson gson = NeeoUtil.createGson();
 
-    /** The NEEO API to sue */
+    /** The NEEO API to use */
     private final NeeoApi api;
 
     /** The service context */
@@ -138,11 +143,31 @@ public class NeeoBrainService extends DefaultServletService {
                 || StringUtils.equalsIgnoreCase(lastPath, "unsubscribe");
     }
 
-    /**
-     * Handles the get. This servlet will handle get/set values via the "/device/xxx" path and subscribe/unsubscribe
-     *
-     * @see DefaultServletService#handleGet(HttpServletRequest, String[], HttpServletResponse)
-     */
+    @Override
+    public void handlePost(HttpServletRequest req, String[] paths, HttpServletResponse resp) throws IOException {
+        Objects.requireNonNull(req, "req cannot be null");
+        Objects.requireNonNull(paths, "paths cannot be null");
+        Objects.requireNonNull(resp, "resp cannot be null");
+        if (paths.length == 0) {
+            throw new IllegalArgumentException("paths cannot be empty");
+        }
+
+        final boolean hasDeviceStart = StringUtils.equalsIgnoreCase(paths[0], "device");
+
+        if (hasDeviceStart) {
+            final PathInfo pathInfo = new PathInfo(paths);
+
+            if (StringUtils.equalsIgnoreCase("directory", pathInfo.getComponentType())) {
+                handleDirectory(req, resp, pathInfo);
+            } else {
+                logger.debug("Unknown/unhandled brain service device route (POST): {}", StringUtils.join(paths, '/'));
+
+            }
+        } else {
+            logger.debug("Unknown/unhandled brain service route (POST): {}", StringUtils.join(paths, '/'));
+        }
+    }
+
     @Override
     public void handleGet(HttpServletRequest req, String[] paths, HttpServletResponse resp) throws IOException {
         Objects.requireNonNull(req, "req cannot be null");
@@ -152,7 +177,16 @@ public class NeeoBrainService extends DefaultServletService {
             throw new IllegalArgumentException("paths cannot be empty");
         }
 
-        if (StringUtils.equalsIgnoreCase(paths[0], "device")) {
+        // Paths handled specially
+        // 1. See PATHINFO for various /device/* keys (except for the next)
+        // 2. New subscribe path: /device/{thingUID}/subscribe/default/{devicekey}
+        // 3. New unsubscribe path: /device/{thingUID}/unsubscribe/default
+        // 4. Old subscribe path: /{thingUID}/subscribe or unsubscribe/{deviceid}/{devicekey}
+        // 4. Old unsubscribe path: /{thingUID}/subscribe or unsubscribe/{deviceid}
+
+        final boolean hasDeviceStart = StringUtils.equalsIgnoreCase(paths[0], "device");
+        if (hasDeviceStart && (paths.length >= 3 && !StringUtils.equalsIgnoreCase(paths[2], "subscribe")
+                && !StringUtils.equalsIgnoreCase(paths[2], "unsubscribe"))) {
             try {
                 final PathInfo pathInfo = new PathInfo(paths);
 
@@ -165,29 +199,34 @@ public class NeeoBrainService extends DefaultServletService {
                 logger.debug("Bad path: {} - {}", StringUtils.join(paths), e.getMessage(), e);
             }
         } else {
-            if (paths.length >= 3) {
-                final String adapterName = paths[0];
-                final String action = StringUtils.lowerCase(paths[1]);
-                final String deviceId = paths[2];
+            int idx = hasDeviceStart ? 1 : 0;
+
+            if (idx + 2 < paths.length) {
+                final String adapterName = paths[idx++];
+                final String action = StringUtils.lowerCase(paths[idx++]);
+                idx++; // deviceId/default - not used
 
                 switch (action) {
                     case "subscribe":
-                        if (paths.length >= 4) {
-                            handleSubscribe(resp, adapterName, deviceId, StringUtils.lowerCase(paths[3]));
+                        if (idx < paths.length) {
+                            final String deviceKey = paths[idx++];
+                            handleSubscribe(resp, adapterName, deviceKey);
                         } else {
-                            logger.debug("Subscribe to {} was missing the event prefix", deviceId);
+                            logger.debug("No device key set for a subscribe action: {}", StringUtils.join(paths, '/'));
                         }
                         break;
                     case "unsubscribe":
-                        handleUnsubscribe(resp, adapterName, deviceId);
+                        handleUnsubscribe(resp, adapterName);
                         break;
                     default:
                         logger.debug("Unknown action: {}", action);
                 }
+
             } else {
-                logger.debug("Unknown/unhandled database route: {}", StringUtils.join(paths, '/'));
+                logger.debug("Unknown/unhandled brain service route (GET): {}", StringUtils.join(paths, '/'));
             }
         }
+
     }
 
     /**
@@ -201,7 +240,6 @@ public class NeeoBrainService extends DefaultServletService {
         Objects.requireNonNull(pathInfo, "pathInfo cannot be null");
 
         logger.debug("handleSetValue {}", pathInfo);
-        final EventPublisher publisher = context.getEventPublisher();
         final NeeoDevice device = context.getDefinitions().getDevice(pathInfo.getThingUid());
         if (device != null) {
             final NeeoDeviceChannel channel = device.getChannel(pathInfo.getItemName(), pathInfo.getSubType(),
@@ -210,7 +248,7 @@ public class NeeoBrainService extends DefaultServletService {
                 final ChannelTriggeredEvent event = ThingEventFactory.createTriggerEvent(channel.getValue(),
                         new ChannelUID(device.getUid(), channel.getItemName()));
                 logger.debug("Posting triggered event: {}", event);
-                publisher.post(event);
+                context.getEventPublisher().post(event);
             } else {
                 try {
                     final Item item = context.getItemRegistry().getItem(pathInfo.getItemName());
@@ -218,7 +256,7 @@ public class NeeoBrainService extends DefaultServletService {
                     if (cmd != null) {
                         final ItemCommandEvent event = ItemEventFactory.createCommandEvent(item.getName(), cmd);
                         logger.debug("Posting item event: {}", event);
-                        publisher.post(event);
+                        context.getEventPublisher().post(event);
                     } else {
                         logger.debug("Cannot set value - no command for path: {}", pathInfo);
                     }
@@ -276,15 +314,13 @@ public class NeeoBrainService extends DefaultServletService {
      *
      * @param resp the non-null response to write to
      * @param adapterName the non-empty adapter name
-     * @param deviceId the non-empty device id
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    private void handleUnsubscribe(HttpServletResponse resp, String adapterName, String deviceId) throws IOException {
+    private void handleUnsubscribe(HttpServletResponse resp, String adapterName) throws IOException {
         Objects.requireNonNull(resp, "resp cannot be null");
         NeeoUtil.requireNotEmpty(adapterName, "adapterName cannot be empty");
-        NeeoUtil.requireNotEmpty(deviceId, "deviceId cannot be empty");
 
-        logger.debug("handleUnsubscribe {}/{}", adapterName, deviceId);
+        logger.debug("handleUnsubscribe {}", adapterName);
 
         try {
             final NeeoThingUID uid = new NeeoThingUID(adapterName);
@@ -301,18 +337,15 @@ public class NeeoBrainService extends DefaultServletService {
      *
      * @param resp the non-null response to write to
      * @param adapterName the non-empty adapter name
-     * @param deviceId the non-empty device id
      * @param deviceKey the non-empty device key
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    private void handleSubscribe(HttpServletResponse resp, String adapterName, String deviceId, String deviceKey)
-            throws IOException {
+    private void handleSubscribe(HttpServletResponse resp, String adapterName, String deviceKey) throws IOException {
         Objects.requireNonNull(resp, "resp cannot be null");
         NeeoUtil.requireNotEmpty(adapterName, "adapterName cannot be empty");
-        NeeoUtil.requireNotEmpty(deviceId, "deviceId cannot be empty");
         NeeoUtil.requireNotEmpty(deviceKey, "deviceKey cannot be empty");
 
-        logger.debug("handleSubscribe {}/{}/{}", adapterName, deviceId, deviceKey);
+        logger.debug("handleSubscribe {}/{}", adapterName, deviceKey);
 
         try {
             final NeeoThingUID uid = new NeeoThingUID(adapterName);
@@ -321,6 +354,63 @@ public class NeeoBrainService extends DefaultServletService {
         } catch (IllegalArgumentException e) {
             logger.debug("AdapterName {} is not a valid thinguid - ignoring");
             NeeoUtil.write(resp, gson.toJson(new ReturnStatus("AdapterName not a valid ThingUID: " + adapterName)));
+        }
+    }
+
+    /**
+     * Handle a directory request
+     *
+     * @param req the non-null request to use
+     * @param resp the non-null response to write to
+     * @param pathInfo the non-null path information
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    private void handleDirectory(HttpServletRequest req, HttpServletResponse resp, PathInfo pathInfo)
+            throws IOException {
+        Objects.requireNonNull(req, "req cannot be null");
+        Objects.requireNonNull(resp, "resp cannot be null");
+        Objects.requireNonNull(pathInfo, "pathInfo cannot be null");
+
+        logger.debug("handleDirectory{}: {}", pathInfo);
+
+        final NeeoDevice device = context.getDefinitions().getDevice(pathInfo.getThingUid());
+        if (device != null) {
+            final NeeoDeviceChannel channel = device.getChannel(pathInfo.getItemName(), pathInfo.getSubType(),
+                    pathInfo.getChannelNbr());
+            if (StringUtils.equalsIgnoreCase("action", pathInfo.getActionValue())) {
+                final NeeoDirectoryRequestAction discoveryAction = gson.fromJson(req.getReader(),
+                        NeeoDirectoryRequestAction.class);
+
+                try {
+                    final Item item = context.getItemRegistry().getItem(pathInfo.getItemName());
+                    final Command cmd = NeeoItemValueConverter.convert(item, pathInfo,
+                            discoveryAction.getActionIdentifier());
+                    if (cmd != null) {
+                        final ItemCommandEvent event = ItemEventFactory.createCommandEvent(item.getName(), cmd);
+                        logger.debug("Posting item event: {}", event);
+                        context.getEventPublisher().post(event);
+                    } else {
+                        logger.debug("Cannot set value (directory) - no command for path: {}", pathInfo);
+                    }
+                } catch (ItemNotFoundException e) {
+                    logger.debug("Cannot set value(directory)  - no linked items: {}", pathInfo);
+                }
+
+            } else {
+                if (channel instanceof NeeoDeviceChannelDirectory) {
+                    final NeeoDirectoryRequest discoveryRequest = gson.fromJson(req.getReader(),
+                            NeeoDirectoryRequest.class);
+                    final NeeoDeviceChannelDirectory directoryChannel = (NeeoDeviceChannelDirectory) channel;
+                    NeeoUtil.write(resp, gson.toJson(new NeeoDirectoryResult(discoveryRequest, directoryChannel)));
+                } else {
+                    logger.debug("Channel definition for '{}' not found to directory set value ({})",
+                            pathInfo.getItemName(), pathInfo);
+                }
+            }
+        } else {
+            logger.debug("Device definition for '{}' not found to directory set value ({})", pathInfo.getItemName(),
+                    pathInfo);
+
         }
     }
 
@@ -386,17 +476,7 @@ public class NeeoBrainService extends DefaultServletService {
                 final State state = context.getItemRegistry().getItem(channel.getItemName()).getState();
 
                 for (String deviceKey : api.getDeviceKeys().get(device.getUid())) {
-                    scheduler.execute(() -> {
-                        final String uin = channel.getUniqueItemName();
-
-                        final NeeoItemValue niv = itemConverter.convert(channel, state);
-                        final NeeoNotification notify = new NeeoNotification(deviceKey, uin, niv.getValue());
-                        try {
-                            api.notify(gson.toJson(notify));
-                        } catch (IOException e) {
-                            logger.debug("Exception occurred while handling event: {}", e.getMessage(), e);
-                        }
-                    });
+                    sendNotification(channel, deviceKey, state);
                 }
             } catch (ItemNotFoundException e) {
                 logger.debug("Item not found {}", channel.getItemName());
@@ -453,19 +533,46 @@ public class NeeoBrainService extends DefaultServletService {
                     }
                 }
 
-                scheduler.execute(() -> {
-                    final String uin = channel.getUniqueItemName();
-
-                    final NeeoItemValue niv = itemConverter.convert(channel, state);
-                    final NeeoNotification notify = new NeeoNotification(deviceKey, uin, niv.getValue());
-                    try {
-                        api.notify(gson.toJson(notify));
-                    } catch (IOException e) {
-                        logger.debug("Exception occurred while handling event: {}", e.getMessage(), e);
-                    }
-                });
+                sendNotification(channel, deviceKey, state);
             }
         }
+    }
+
+    /**
+     * Helper method to send a notification
+     *
+     * @param channel a non-null channel
+     * @param deviceKey a non-null, non-empty device id
+     * @param state a non-null state
+     */
+    private void sendNotification(NeeoDeviceChannel channel, String deviceKey, State state) {
+        Objects.requireNonNull(channel, "channel cannot be null");
+        NeeoUtil.requireNotEmpty(deviceKey, "deviceKey cannot be empty");
+        Objects.requireNonNull(state, "state cannot be null");
+
+        scheduler.execute(() -> {
+            final String uin = channel.getUniqueItemName();
+
+            final NeeoItemValue niv = itemConverter.convert(channel, state);
+
+            // Use sensor notification if we have a >= 0.50 firmware AND it's not a power sensor
+            if (api.getSystemInfo().isFirmwareGreaterOrEqual(NeeoConstants.NEEO_FIRMWARE_0_51_1)
+                    && channel.getType() != NeeoCapabilityType.SENSOR_POWER) {
+                final NeeoSensorNotification notify = new NeeoSensorNotification(deviceKey, uin, niv.getValue());
+                try {
+                    api.notify(gson.toJson(notify));
+                } catch (IOException e) {
+                    logger.debug("Exception occurred while handling event: {}", e.getMessage(), e);
+                }
+            } else {
+                final NeeoNotification notify = new NeeoNotification(deviceKey, uin, niv.getValue());
+                try {
+                    api.notify(gson.toJson(notify));
+                } catch (IOException e) {
+                    logger.debug("Exception occurred while handling event: {}", e.getMessage(), e);
+                }
+            }
+        });
     }
 
     /**

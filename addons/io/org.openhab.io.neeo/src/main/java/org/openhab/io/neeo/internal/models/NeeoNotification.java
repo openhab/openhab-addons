@@ -15,7 +15,7 @@ import org.openhab.io.neeo.internal.NeeoUtil;
 /**
  * The model representing an NEEO notification (serialize/deserialize json use only).
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoNotification {
 
@@ -35,6 +35,7 @@ public class NeeoNotification {
     public NeeoNotification(String deviceKey, String itemName, @Nullable Object data) {
         NeeoUtil.requireNotEmpty(deviceKey, "deviceKey cannot be empty");
         NeeoUtil.requireNotEmpty(itemName, "itemName cannot be empty");
+
         this.type = deviceKey + ":" + itemName;
         this.data = data == null || (data instanceof String && StringUtils.isEmpty(data.toString())) ? "-" : data;
     }

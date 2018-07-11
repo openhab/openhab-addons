@@ -60,6 +60,7 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
         { value:"SKIP FORWARD", text: "Skip Forward"},
         { value:"FORWARD", text: "Forward"},
         { value:"PREVIOUS", text: "Previous"},
+        { value:"MUTE TOGGLE", text: "Mute Toggle"},
         { value:"NEXT", text: "Next"},
         { value:"REVERSE", text: "Reverse"},
         { value:"PLAY PAUSE TOGGLE", text: "Play/Pause Toggle"},
@@ -108,6 +109,16 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
         }) !== undefined;
     }
 
+    ctrl.isList = function(channel) {
+        if (channel.isReadOnly === true) {
+            return false;
+        }
+
+        return _.find(channel.acceptedCommandTypes, function(type) {            
+            return type === "stringtype" || type === "decimaltype";
+        }) !== undefined;
+    }
+
     ctrl.isSwitch = function(channel) {
         if (channel.isReadOnly === true) {
             return false;
@@ -119,7 +130,7 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
     }
 
     ctrl.isSlider = function(channel) {
-        return channel.isReadOnly === true ? false : (channel.acceptedCommandTypes.includes("decimaltype") || channel.acceptedCommandTypes.includes("percenttype"));
+        return channel.isReadOnly === true ? false : (channel.acceptedCommandTypes.includes("decimaltype") || channel.acceptedCommandTypes.includes("percenttype")|| channel.acceptedCommandTypes.includes("hsbtype")|| channel.acceptedCommandTypes.includes("quantitytype"));
     }
 
     ctrl.isHsb = function(channel) {
@@ -130,8 +141,12 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
         return channel.acceptedCommandTypes.includes("onofftype");
     }
 
+    ctrl.isSensor = function(channel) {
+        return true; // anything can be a sensor
+    }
+
     ctrl.isRangeSensor = function(channel) {
-        return (channel.acceptedCommandTypes.includes("decimaltype") || channel.acceptedCommandTypes.includes("percenttype"));
+        return (channel.acceptedCommandTypes.includes("decimaltype") || channel.acceptedCommandTypes.includes("percenttype")|| channel.acceptedCommandTypes.includes("hsbtype")|| channel.acceptedCommandTypes.includes("quantitytype"));
     }
     
     ctrl.isBinarySensor = function(channel) {
@@ -637,16 +652,39 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
           });
         
         modalInstance.result.then(function (props) {
+            device.specificName = props.specificName;
+            device.iconName = props.iconName;
             device.timing.standbyCommandDelay = props.timing.standbyCommandDelay;
             device.timing.sourceSwitchDelay = props.timing.sourceSwitchDelay;
             device.timing.shutdownDelay = props.timing.shutdownDelay;
             device.deviceCapabilities = props.deviceCapabilities.slice();
+          }, function() {
+              
+          });
+    }
+    
+    ctrl.showListItems = function(channel) {
+        var modalInstance = $uibModal.open({
+            ariaLabelledBy: 'listItems-title',
+            ariaDescribedBy: 'listItems-body',
+            templateUrl: 'listItems.html',
+            controller: 'ListItems',
+            controllerAs: '$ctrl',
+            resolve: {
+              channel: function () {
+                return channel;
+              }
+            }
+          });
+        modalInstance.result.then(function (items) {
+            channel.listItems = _.cloneDeep(items);
             
           }, function () {
 
           });
     }
-    
+
+
     $timeout(function() { ctrl.getBrainStatuses(); }, 1000);
     $timeout(function() { ctrl.getDevices(); }, 1000);
 };
@@ -1009,9 +1047,10 @@ angular.module('ui.bootstrap').controller('AdvanceProperties', function ($scope,
         { value : "zwave" }
         ];
     
-    $ctrl.device = device;
-    
     $ctrl.props = {
+        name: device.name,
+        specificName: device.specificName,
+        iconName: device.iconName,
         timing: {
             standbyCommandDelay : device.timing.standbyCommandDelay,
             sourceSwitchDelay : device.timing.sourceSwitchDelay,
@@ -1049,4 +1088,26 @@ angular.module('ui.bootstrap').controller('ShowLog', function ($scope, $sce, $ui
     $ctrl.ok = function () {
       $uibModalInstance.close();
     };
+  });
+
+angular.module('ui.bootstrap').controller('ListItems', function ($scope, $uibModalInstance, channel) {
+    var $ctrl = this;
+    
+    $ctrl.items = channel.listItems == undefined ? [] : _.cloneDeep(channel.listItems);
+    
+    $ctrl.addItem = function() {
+        $ctrl.items.push({});
+    }
+    
+    $ctrl.deleteItem = function(idx) {
+        $ctrl.items.splice(idx, 1);
+    }
+    
+    $ctrl.ok = function () {
+      $uibModalInstance.close($ctrl.items);
+    };
+    
+    $ctrl.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+      };
   });

@@ -22,6 +22,7 @@ The openHAB NEEO Transport will provide the following
 ## Troubleshooting
 
 If searching for openHAB devices on the NEEO Brain is always returning nothing, here are a few tips to solve the issue:
+
 1.  Make sure the openHAB primary address is set to an address that is reachable from the NEEO Brain (see openHAB Primary Address section below).
 2.  Make sure your firewall is not blocking access to the openHAB server
 3.  Your search criteria has included too many openHAB devices (especially if "Expose ALL" setting has been turned on).   The NEEO brain has an (unknown) size limit to the amount of items that can be returned for a search and you may be going beyond that limit.  Narrow your search to a specific item to see if you were hitting that search limit. 
@@ -86,7 +87,17 @@ Please see this screen shot for reference to the next two sections.  This screen
 
 ##### NEEO Text Label
 
-The NEEO text label type will allow you to specify showing the label and text or just the text.  To show both a label and the text on the NEEO remote, uncheck the check mark next the the associated label field and enter in the label you wish to assign to the text.w
+The NEEO text label type will allow you to specify showing the label and text or just the text.  To show both a label and the text on the NEEO remote, uncheck the check mark next the the associated label field and enter in the label you wish to assign to the text.  By turning off the label and specifying the format of the text field, you'll be able to create your own custom label then. 
+
+##### NEEO List
+
+You can now specify a LIST type for items.  A list is simply a list of labels and associated values that the user can choose from on the remote (similar, in concept, to a drop down).  Simply choose the LIST type and press the icon that appears next to the label.  You can then build the list by specifying:
+
+1.  The value to send to openHAB if the item is chosen
+2.  The label shown on the remote for that value
+3.  An optional URI to an image to show for the line.  The image will be scaled down by the remote.  Best practice: although you can specify any URI, to avoid issues where the internet is not available (or the source of the image is offline) - put the image in your conf/images directory and specify the URI to that.  That way the image will always be available if openHAB is running.
+
+Please note that any changes to the LIST will become active IMMEDIATELY upon saving changes.  There is no need to drop and readd the device if you make changes.     
 
 #### Thing to Device
 
@@ -171,6 +182,7 @@ At the time of this writing, the following NEEO capability types are supported:
 5.  ImageURL - this will create an image on the remote from the toString() of the item value (assuming it's a URL to an image).
 6.  Sensor - this will create a sensor (non-visual) that can be used in recipes on the brain
 7.  Power - this will create a powerstate sensor on the brain that can be used to stop/start the device.  NOTE: you MUST also assign a POWER OFF/POWER ON for this to work.
+8.  List - this will create a directory on the brain that can be used to show a list.  The label assigned will show up on the remote to start the list processing.  When a user selects a list item on the remote, the command that will be sent will be the value associated with the list item selected.
 
 Please note the value for each of the hard buttons is specified in the NEEO SDK documentation.
  
@@ -181,10 +193,10 @@ The following chart shows what openHAB command types are supported for each NEEO
 | Text Label           | Any                                                                                                                          |
 | Button               | Any non-readonly item                                                                                                        |
 | Switch               | onofftype, increasedecreasetype, nextprevioustype,openclosedtype,playpausetype,rewindfastforwardtype,stopmovetype,updowntype |
-| Slider               | percenttype, decimaltype                                                                                                     |
+| Slider               | percenttype, decimaltype, hsbtype, quantitytype                                                                              |
 | ImageURL             | stringtype                                                                                                                   |
-| Slider               | percenttype, decimaltype                                                                                                     |
 | Power                | onofftype                                                                                                                    |
+| List                 | stringtype, decimaltype                                                                                                      |
 
 ##### HSBType
 
@@ -196,6 +208,7 @@ HSBType has three attributes - Hue, Brightness and Saturation.  This type is spe
 4.  The forth capability will allow you to control the saturation and will be named "item (Sat)"
 
 If you are trying to bind a LIFX or HUE bulb, here are the following channels you need to create to enable the NEEO Light capability:
+
 1.  Set the device type to "LIGHT"
 2.  Set the overall (HSBType) item to a NEEO type of "Power"
 3.  Duplicate the overall item and on the duplicate, set the NEEO Type to "Switch" with the label "POWERONOFF"
@@ -249,6 +262,16 @@ There are two files being stored:
 The following are notes on some of the NEEO Firmwares
 
 
+### 51.1
+
+The following changes have occurred:
+
+1. Added support for the LIST type
+2. Changed internals to reflect new naming standards enforced by NEEO
+3. Updated search to provide better results (matches NEEO search perfectly now)
+
+As of this firmware, NEEO is enforcing some internal naming standards (sdk name, device name and sensor names).  *I STRONGLY recommend that you delete and readd all the devices you have after upgrading to this version.*  The old devices will still work but there is one danger to leaving them.  As part of this firmware, there is a new "SDK Integeration" found on the NEEO Brain.  Within this screen, there is a button the "Cleanup unused adapters" that will remove SDK's that have no references to them.  Unfortunately this functionality depends on the new naming standards and existing devices will be 'stranded' (and rendered non-working) since the openHAB SDK name did not match that naming standard.  According to NEEO, there is a chance that future firmware changes will continue looking for these naming standards and there may be additional issues with these devices.  
+ 
 ### 50.x
 
 The following changes have occurred:

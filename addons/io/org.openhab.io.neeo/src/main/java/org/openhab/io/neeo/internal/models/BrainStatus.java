@@ -13,7 +13,7 @@ import org.openhab.io.neeo.internal.NeeoUtil;
 /**
  * This class represents the status of the brain.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class BrainStatus {
 
@@ -29,6 +29,9 @@ public class BrainStatus {
     /** The callback url */
     private final String callbackUrl;
 
+    /** The firmware version */
+    private final String firmwareVersion;
+
     /** Whether the brain is connected (true) or not */
     private final boolean connected;
 
@@ -39,18 +42,22 @@ public class BrainStatus {
      * @param brainName the non-empty brain name
      * @param brainUrl the non-empty brain url
      * @param callbackUrl the non-empty callback url
+     * @param firmwareVersion the non-empty firmware version of the brain
      * @param connected true if connected, false otherwise
      */
-    public BrainStatus(String brainId, String brainName, String brainUrl, String callbackUrl, boolean connected) {
+    public BrainStatus(String brainId, String brainName, String brainUrl, String callbackUrl, String firmwareVersion,
+            boolean connected) {
         NeeoUtil.requireNotEmpty(brainId, "brainId cannot be empty");
         NeeoUtil.requireNotEmpty(brainName, "brainName cannot be empty");
         NeeoUtil.requireNotEmpty(brainUrl, "brainUrl cannot be empty");
         NeeoUtil.requireNotEmpty(callbackUrl, "callbackUrl cannot be empty");
+        NeeoUtil.requireNotEmpty(firmwareVersion, "firmwareVersion cannot be empty");
 
         this.brainId = brainId;
         this.brainName = brainName;
         this.brainUrl = brainUrl;
         this.callbackUrl = callbackUrl;
+        this.firmwareVersion = firmwareVersion;
         this.connected = connected;
     }
 
@@ -88,6 +95,15 @@ public class BrainStatus {
      */
     public String getCallbackUrl() {
         return callbackUrl;
+    }
+
+    /**
+     * Gets the firmware version of the brain
+     *
+     * @return the firmware version
+     */
+    public String getFirmwareVersion() {
+        return firmwareVersion;
     }
 
     /**

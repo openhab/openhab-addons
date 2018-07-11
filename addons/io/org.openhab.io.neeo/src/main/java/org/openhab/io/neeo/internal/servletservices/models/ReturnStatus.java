@@ -19,7 +19,7 @@ import org.openhab.io.neeo.internal.models.NeeoDeviceChannel;
  * The class that encapsulates a result of a NEEO Brain call. THe result can be successful or not, include a message and
  * a device
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class ReturnStatus {
 

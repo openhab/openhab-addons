@@ -15,9 +15,25 @@ import org.eclipse.smarthome.config.core.ConfigConstants;
 /**
  * The constants class for the NEEO Transport
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoConstants {
+
+    /**
+     * The following are required by NEEO brain (as of 51.1+)
+     * No backward compatibility issues however - just going
+     * forward since the brain checks for these prefixes/suffixes
+     * to identify things
+     */
+    private static final String NEEO_SDKNAME_PREFIX = "src-";
+    public static final String NEEO_ADAPTER_PREFIX = "apt-";
+    public static final String NEEO_SENSOR_SUFFIX = "_SENSOR";
+
+    /** Type used for sensor notification updates */
+    public static final String NEEO_SENSOR_NOTIFICATION_TYPE = "DEVICE_SENSOR_UPDATE";
+
+    /** As of version .51.1 - new sensor notification API - old one doesn't work */
+    public static final String NEEO_FIRMWARE_0_51_1 = "0.51.1";
 
     /** Binding ID/Thing Types for transport created things - must match app.js */
     public static final String NEEOBINDING_BINDING_ID = "neeo";
@@ -43,7 +59,7 @@ public class NeeoConstants {
     public static final String CFG_SEARCHLIMIT = "searchLimit";
 
     /** The name of the adapter */
-    public static final String ADAPTER_NAME = "openHAB";
+    public static final String ADAPTER_NAME = NEEO_SDKNAME_PREFIX + "openHAB";
 
     /** The default port the brain listens on. */
     public static final int DEFAULT_BRAIN_PORT = 3000;

@@ -18,7 +18,7 @@ import org.openhab.io.neeo.internal.models.NeeoThingUID;
 /**
  * The route path information class. This class will evaluate the route path into it's logical components.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class PathInfo {
 

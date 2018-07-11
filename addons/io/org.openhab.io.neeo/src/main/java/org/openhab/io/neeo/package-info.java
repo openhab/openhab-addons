@@ -10,5 +10,5 @@
 package org.openhab.io.neeo;
 
 /**
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */

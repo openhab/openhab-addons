@@ -450,3 +450,42 @@
 .brainActions2 button {
 	width: 2em;
 }
+
+.listItems-body {
+    margin-top: .5em;
+    overflow: auto;
+    height: 20em;
+    max-height: 20em;
+}
+.listItems-body table {
+	margin: 10px;
+	width: 100%;
+}
+
+.listItems-body table .error {
+    font-weight: bold;
+    color: red;
+}
+
+.listItems-body table tr td {
+    padding-bottom: 5px;
+}
+
+.listItems-body table tr td, .listItems-body table tr th {
+    padding-right: 5px;
+}
+
+.listItems-body table .actions button {
+}
+
+.listItems-body table .itemValue input {
+    min-width: 50px;
+}
+
+.listItems-body table .title input {
+    min-width: 150px;
+}
+
+
+.listItems-body table .thumbNail input {
+}

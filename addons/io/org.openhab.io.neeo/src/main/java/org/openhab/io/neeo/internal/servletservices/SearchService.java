@@ -10,6 +10,7 @@ package org.openhab.io.neeo.internal.servletservices;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,7 @@ import com.google.gson.JsonObject;
 /**
  * The implementation of {@link ServletService} that will handle device search requests from the NEEO Brain
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class SearchService extends DefaultServletService {
 
@@ -123,15 +124,16 @@ public class SearchService extends DefaultServletService {
             final String search = NeeoUtil.decodeURIComponent(queryString.substring(idx + 1));
 
             final List<JsonObject> ja = new ArrayList<>();
-            for (TokenScoreResult<NeeoDevice> item : search(search)) {
-                final JsonObject jo = (JsonObject) gson.toJsonTree(item);
+            search(search).stream().sorted(Comparator.comparing(TokenScoreResult<NeeoDevice>::getScore).reversed())
+                    .forEach(item -> {
+                        final JsonObject jo = (JsonObject) gson.toJsonTree(item);
 
-                // transfer id from tokenscoreresult to neeodevice (as per NEEO API)
-                final int id = jo.getAsJsonPrimitive("id").getAsInt();
-                jo.remove("id");
-                jo.getAsJsonObject("item").addProperty("id", id);
-                ja.add(jo);
-            }
+                        // transfer id from tokenscoreresult to neeodevice (as per NEEO API)
+                        final int id = jo.getAsJsonPrimitive("id").getAsInt();
+                        jo.remove("id");
+                        jo.getAsJsonObject("item").addProperty("id", id);
+                        ja.add(jo);
+                    });
 
             final String itemStr = gson.toJson(ja);
             logger.debug("Search '{}', response: {}", search, itemStr);
@@ -191,14 +193,14 @@ public class SearchService extends DefaultServletService {
     private List<TokenScoreResult<NeeoDevice>> search(String queryString) {
         Objects.requireNonNull(queryString, "queryString cannot be null");
         final TokenSearch tokenSearch = new TokenSearch(context, NeeoConstants.SEARCH_MATCHFACTOR);
-        final List<TokenScore<NeeoDevice>> filtered = tokenSearch.search(queryString);
+        final TokenSearch.Result searchResult = tokenSearch.search(queryString);
 
         final List<TokenScoreResult<NeeoDevice>> searchItems = new ArrayList<>();
 
-        for (TokenScore<NeeoDevice> ts : filtered) {
+        for (TokenScore<NeeoDevice> ts : searchResult.getDevices()) {
             final NeeoDevice device = ts.getItem();
             final TokenScoreResult<NeeoDevice> result = new TokenScoreResult<>(device, searchItems.size(),
-                    ts.getScore(), -1);
+                    ts.getScore(), searchResult.getMaxScore());
 
             searchItems.add(result);
         }

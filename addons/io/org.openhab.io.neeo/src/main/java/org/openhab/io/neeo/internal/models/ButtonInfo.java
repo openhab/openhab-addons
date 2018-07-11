@@ -15,7 +15,7 @@ import org.openhab.io.neeo.internal.NeeoUtil;
  * identify the name and the label used by NEEO Brain. The suffix is what is appended to the button action URL to
  * identify the action required when the button is pressed.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class ButtonInfo {
     private final String label;

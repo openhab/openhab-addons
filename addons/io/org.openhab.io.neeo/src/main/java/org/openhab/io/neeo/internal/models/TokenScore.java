@@ -15,13 +15,13 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * The model represents a token score for a given item (as defined by tokensearch.js)
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  * @param <T> the type that will be scored
  */
 public class TokenScore<T> implements Comparable<TokenScore<T>> {
 
     /** The score */
-    private final int score;
+    private final double score;
 
     /** The item being scored */
     private final T item;
@@ -32,7 +32,7 @@ public class TokenScore<T> implements Comparable<TokenScore<T>> {
      * @param score the score
      * @param item the non-null item
      */
-    public TokenScore(int score, T item) {
+    public TokenScore(double score, T item) {
         Objects.requireNonNull(item, "item cannot be null");
 
         this.score = score;
@@ -44,7 +44,7 @@ public class TokenScore<T> implements Comparable<TokenScore<T>> {
      *
      * @return the score
      */
-    public int getScore() {
+    public double getScore() {
         return score;
     }
 
@@ -63,7 +63,7 @@ public class TokenScore<T> implements Comparable<TokenScore<T>> {
             return 1;
         }
 
-        int i = Integer.compare(o.score, score);
+        int i = Double.compare(o.score, score);
 
         if (i == 0) {
             if (o.item == null) {

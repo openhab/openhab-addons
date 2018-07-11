@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The model representing a NEEO device
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoDevice {
 

@@ -9,6 +9,7 @@
 package org.openhab.io.neeo.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * The class emulates the same search pattern that the NEEO brain uses (https://github.com/neophob/tokensearch.js) on
  * all the exposed things in the registry.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class TokenSearch {
 
@@ -43,6 +44,9 @@ public class TokenSearch {
 
     /** The search limit */
     private final int searchLimit;
+
+    /** The delimiter used to split search terms */
+    private static final char DELIMITER = ' ';
 
     /**
      * Instantiates a new token search based on the {@link ServiceContext} and threshold
@@ -60,7 +64,7 @@ public class TokenSearch {
         this.context = context;
 
         final Object searchLimitText = context.getComponentContext().getProperties().get(NeeoConstants.CFG_SEARCHLIMIT);
-        int searchLimit = 12;
+        int searchLimit = 10;
         if (searchLimitText != null) {
             try {
                 searchLimit = Integer.parseInt(searchLimitText.toString());
@@ -76,42 +80,42 @@ public class TokenSearch {
      * Searches the registry for all {@link NeeoDevice} matching the query
      *
      * @param query the non-empty query
-     * @return the non-null, possibly empty list of matching things (and their score)
+     * @return a non-null result
      */
-    public List<TokenScore<NeeoDevice>> search(String query) {
+    public Result search(String query) {
         NeeoUtil.requireNotEmpty(query, "query cannot be empty");
 
         final List<TokenScore<NeeoDevice>> results = new ArrayList<>();
 
-        final String[] needles = StringUtils.split(query, ' ');
+        final String[] needles = StringUtils.split(query, DELIMITER);
         int maxScore = -1;
 
         for (NeeoDevice device : context.getDefinitions().getExposed()) {
-            int score = searchAlgorithm(device.getName(), needles);
-            score += searchAlgorithm("openhab", needles);
+            int score = search(device.getName(), needles);
+            score += search("openhab", needles);
             // score += searchAlgorithm(thing.getLocation(), needles);
-            score += searchAlgorithm(device.getUid().getBindingId(), needles);
+            score += search(device.getUid().getBindingId(), needles);
 
             final Thing thing = context.getThingRegistry().get(device.getUid().asThingUID());
             if (thing != null) {
                 final String location = thing.getLocation();
                 if (location != null && StringUtils.isNotEmpty(location)) {
-                    score += searchAlgorithm(location, needles);
+                    score += search(location, needles);
                 }
 
                 final Map<@NonNull String, String> properties = thing.getProperties();
                 final String vendor = properties.get(Thing.PROPERTY_VENDOR);
                 if (StringUtils.isNotEmpty(vendor)) {
-                    score += searchAlgorithm(vendor, needles);
+                    score += search(vendor, needles);
                 }
 
                 final ThingType tt = context.getThingTypeRegistry().getThingType(thing.getThingTypeUID());
                 if (tt != null) {
-                    score += searchAlgorithm(tt.getLabel(), needles);
+                    score += search(tt.getLabel(), needles);
 
                     final BindingInfo bi = context.getBindingInfoRegistry().getBindingInfo(tt.getBindingId());
                     if (bi != null) {
-                        score += searchAlgorithm(bi.getName(), needles);
+                        score += search(bi.getName(), needles);
                     }
                 }
             }
@@ -121,7 +125,19 @@ public class TokenSearch {
             results.add(new TokenScore<>(score, device));
         }
 
-        return applyThreshold(results, maxScore, threshold);
+        return new Result(applyThreshold(results, maxScore, threshold), maxScore);
+    }
+
+    /**
+     * Search the 'haystack' for the needles. The 'haystack' will be broken up by delimiter and each part will be
+     * compared to the needles array and the resulting score summation returned.
+     *
+     * @param haystack the search term
+     * @param needles the items to search
+     * @return the score of the match
+     */
+    private int search(String haystack, String[] needles) {
+        return Arrays.stream(StringUtils.split(haystack, DELIMITER)).mapToInt(hs -> searchAlgorithm(hs, needles)).sum();
     }
 
     /**
@@ -135,6 +151,7 @@ public class TokenSearch {
         Objects.requireNonNull(needles, "needles cannot be null");
 
         int score = 0;
+
         int arrayLength = needles.length;
         for (int i = 0; i < arrayLength; i++) {
             String needle = needles[i];
@@ -176,11 +193,56 @@ public class TokenSearch {
         for (TokenScore<NeeoDevice> ts : collection) {
             double score = 1 - ts.getScore() * normalizedScore;
             if (score <= threshold) {
-                results.add(ts);
+                results.add(new TokenScore<>(score, ts.getItem()));
             }
         }
 
         // Sort and then limit by search limit
         return results.stream().sorted().limit(searchLimit).collect(Collectors.toList());
+    }
+
+    /**
+     * The results of a token search. The return list of devices will be filtered by those below the threshold and
+     * limited to certain size (10 by default)
+     *
+     * @author Tim Roberts - initial contribution
+     */
+    public class Result {
+        /** Maximum score found */
+        private final int maxScore;
+
+        /** Filtered list of devices */
+        private final List<TokenScore<NeeoDevice>> devices;
+
+        /**
+         * Constructs the result from the devices and max score
+         *
+         * @param devices a non-null, potentially empty filtered list of devices
+         * @param maxScore the maximum score (negative if there are no matching devices)
+         */
+        private Result(List<TokenScore<NeeoDevice>> devices, int maxScore) {
+            Objects.requireNonNull(devices, "devices must not be null");
+            this.devices = devices;
+            this.maxScore = maxScore;
+        }
+
+        /**
+         * The maximum score over all devices. Will be negative if there were no matches
+         *
+         * @return the maximum score
+         */
+        public int getMaxScore() {
+            return maxScore;
+        }
+
+        /**
+         * The list of devices that are below the threshold. The size of the arry will be limited to a certain size (10
+         * by default)
+         *
+         * @return a non-null, possibly empty list of devices
+         */
+        public List<TokenScore<NeeoDevice>> getDevices() {
+            return devices;
+        }
     }
 }

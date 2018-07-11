@@ -46,7 +46,7 @@ import com.google.gson.JsonSerializer;
  * {@link NeeoDevice}. This implementation should NOT be used in communications with the NEEO brain (use
  * {@link NeeoBrainDeviceSerializer} instead)
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoDeviceSerializer implements JsonSerializer<NeeoDevice>, JsonDeserializer<NeeoDevice> {
 

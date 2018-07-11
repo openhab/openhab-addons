@@ -25,7 +25,7 @@ import com.google.gson.JsonSerializer;
 /**
  * Implementation of {@link JsonSerializer} and {@link JsonDeserializer} to serialize/deserial {@link ChannelUID}
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class ChannelUIDSerializer implements JsonSerializer<ChannelUID>, JsonDeserializer<ChannelUID> {
 

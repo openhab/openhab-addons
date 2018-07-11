@@ -25,7 +25,7 @@ import org.openhab.io.neeo.internal.servletservices.SearchService;
  * any search results (performed by {@link SearchService}) and requests state values, set
  * state values (performed by {@Link NeeoBrainService})
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoBrainServlet extends AbstractServlet {
 
@@ -82,7 +82,7 @@ public class NeeoBrainServlet extends AbstractServlet {
      */
     public BrainStatus getBrainStatus() {
         return new BrainStatus(api.getBrainId(), api.getBrainName(), api.getBrainUrl(),
-                NeeoUtil.getServletUrl(api.getBrainId()), api.isConnected());
+                NeeoUtil.getServletUrl(api.getBrainId()), api.getSystemInfo().getFirmwareVersion(), api.isConnected());
     }
 
     /**

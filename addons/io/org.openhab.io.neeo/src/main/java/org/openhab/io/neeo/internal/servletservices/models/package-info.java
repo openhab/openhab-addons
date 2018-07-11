@@ -10,5 +10,5 @@
 package org.openhab.io.neeo.internal.servletservices.models;
 
 /**
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */

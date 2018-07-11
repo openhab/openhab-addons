@@ -15,7 +15,7 @@ import org.osgi.service.component.annotations.Component;
 /**
  * Implementation of the {@link DashboardTile} for the NEEO Transport
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 @Component(service = org.openhab.ui.dashboard.DashboardTile.class, immediate = true)
 public class NeeoDashboardTile implements DashboardTile {

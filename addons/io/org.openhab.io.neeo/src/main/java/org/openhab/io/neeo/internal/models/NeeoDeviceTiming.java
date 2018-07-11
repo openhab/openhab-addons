@@ -13,7 +13,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * This model specifies the various timings associated with the {@link NeeoDevice}
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  *
  */
 public class NeeoDeviceTiming {

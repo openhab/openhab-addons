@@ -29,7 +29,7 @@ import org.openhab.binding.neeo.internal.models.NeeoScenario;
 /**
  * Utility class for generating some UIDs.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class UidUtils {
 

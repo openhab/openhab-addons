@@ -16,7 +16,7 @@ import org.apache.commons.lang.StringUtils;
  * Describes the 'subtypes' for an item. A subtype is basically a property on the type that we will create a channel
  * for. Example: HSBType has hue, brightnes and saturation
  *
- * @author Tim
+ * @author Tim Roberts - Initial Contribution
  *
  */
 public enum ItemSubType {

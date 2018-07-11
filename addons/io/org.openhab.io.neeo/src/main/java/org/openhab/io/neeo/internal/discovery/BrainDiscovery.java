@@ -11,7 +11,7 @@ package org.openhab.io.neeo.internal.discovery;
 /**
  * This interface defines the contract for brain discovery implementations
  *
- * @author Tim Roberts - initial contribution
+ * @author Tim Roberts - Initial Contribution
  */
 public interface BrainDiscovery extends AutoCloseable {
 

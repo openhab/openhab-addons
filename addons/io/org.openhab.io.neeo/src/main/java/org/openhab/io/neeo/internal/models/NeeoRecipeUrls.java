@@ -13,7 +13,7 @@ import org.openhab.io.neeo.internal.NeeoUtil;
 /**
  * The model representing an NEEO recipe urls (serialize/deserialize json use only).
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoRecipeUrls {
 

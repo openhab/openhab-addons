@@ -8,17 +8,18 @@
  */
 package org.openhab.io.neeo.internal.models;
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The model representing a Neeo text Channel (serialize/deserialize json use only).
+ * The model representing a Neeo Directory (list) Channel (serialize/deserialize json use only).
  *
  * @author Tim Roberts - Initial Contribution
  */
-public class NeeoDeviceChannelText extends NeeoDeviceChannel {
+public class NeeoDeviceChannelDirectory extends NeeoDeviceChannel {
 
-    /** Whether the text label is visible or not */
-    private final boolean labelVisible;
+    private final NeeoDeviceChannelDirectoryListItem[] listItems;
 
     /**
      * Create a new channel based on the parms
@@ -31,29 +32,29 @@ public class NeeoDeviceChannelText extends NeeoDeviceChannel {
      * @param label the non-empty label
      * @param value the possibly null, possibly empty value
      * @param range the possibly null range
-     * @param labelVisible true if the text has a visible label
+     * @param listItems the non-null, possibly empty array of {@link NeeoDeviceChannelDirectoryListItem}
      */
-    public NeeoDeviceChannelText(NeeoDeviceChannelKind kind, String itemName, int channelNbr, NeeoCapabilityType type,
-            ItemSubType subType, String label, @Nullable String value, @Nullable NeeoDeviceChannelRange range,
-            boolean labelVisible) {
+    public NeeoDeviceChannelDirectory(NeeoDeviceChannelKind kind, String itemName, int channelNbr,
+            NeeoCapabilityType type, ItemSubType subType, String label, @Nullable String value,
+            @Nullable NeeoDeviceChannelRange range, NeeoDeviceChannelDirectoryListItem[] listItems) {
         super(kind, itemName, channelNbr, type, subType, label, value, range);
 
-        this.labelVisible = labelVisible;
+        this.listItems = listItems;
     }
 
     /**
-     * Whether the text label is visible or not
+     * A non-null, possibly empty array of {@link NeeoDeviceChannelDirectoryListItem}
      *
-     * @return true if visible, false otherwise
+     * @return a non-null, possibly empty array of {@link NeeoDeviceChannelDirectoryListItem}
      */
-    public boolean isLabelVisible() {
-        return labelVisible;
+    public NeeoDeviceChannelDirectoryListItem[] getListItems() {
+        return listItems;
     }
 
     @Override
     public String toString() {
-        return "NeeoDeviceChannelText [kind=" + getKind() + ", itemName=" + getItemName() + ", channelNbr="
+        return "NeeoDeviceChannelDirectory [kind=" + getKind() + ", itemName=" + getItemName() + ", channelNbr="
                 + getChannelNbr() + ", type=" + getType() + ", subType=" + getSubType() + ", label=" + getLabel()
-                + ", value=" + getValue() + ", range=" + getRange() + ", labelVisible=" + labelVisible + "]";
+                + ", value=" + getValue() + ", range=" + getRange() + ", listItems=" + Arrays.toString(listItems) + "]";
     }
 }

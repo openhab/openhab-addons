@@ -26,7 +26,7 @@ import com.google.gson.JsonSerializer;
  * Implementation of {@link JsonSerializer} and {@link JsonDeserializer} to serialize/deserialize
  * {@link ItemSubType}
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class ItemSubTypeSerializer implements JsonSerializer<ItemSubType>, JsonDeserializer<ItemSubType> {
     @Override

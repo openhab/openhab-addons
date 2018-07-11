@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.events.EventFilter;
  * The default implementation of {@link ServletService} that simply does nothing (allowing subclasses to override
  * whatever functionality they need).
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 class DefaultServletService implements ServletService {
 

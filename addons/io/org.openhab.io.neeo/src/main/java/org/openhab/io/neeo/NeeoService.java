@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * The main entry point for the transport service. The transport service will listen for brain broadcasts and create a
  * transport for that brain (in addition to starting up the dashboard tile)
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 @Component(service = org.eclipse.smarthome.core.events.EventSubscriber.class, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true, property = {
         "service.pid=org.openhab.io.neeo.NeeoService", "service.config.description.uri=io:neeo",

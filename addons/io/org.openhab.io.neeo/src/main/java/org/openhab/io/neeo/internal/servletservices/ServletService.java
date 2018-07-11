@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.events.EventFilter;
  * to be a service for a servlet - which includes determining whether a route is valid for it, handling get/post and
  * handling events.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public interface ServletService extends AutoCloseable {
 

@@ -15,7 +15,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The model representing an NEEO recipe (serialize/deserialize json use only).
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoRecipe {
 

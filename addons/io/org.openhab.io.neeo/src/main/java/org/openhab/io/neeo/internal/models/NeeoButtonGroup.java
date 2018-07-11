@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * to an up/down button pair). The button group will be used by the system to determine what buttons (and URL suffixes
  * to identify those button) will be created when a button group is chosen by the user.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoButtonGroup {
     /**

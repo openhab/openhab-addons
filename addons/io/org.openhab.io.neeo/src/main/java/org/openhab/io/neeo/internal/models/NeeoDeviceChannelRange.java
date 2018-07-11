@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.types.StateDescription;
  *
  * Note that the unit is just a label that is put on the slider itself for the user
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoDeviceChannelRange {
     /** The range unit representing a number */

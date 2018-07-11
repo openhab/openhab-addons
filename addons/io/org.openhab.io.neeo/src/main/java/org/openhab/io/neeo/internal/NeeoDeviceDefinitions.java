@@ -39,7 +39,7 @@ import com.google.gson.JsonParseException;
  * This class manages device definitions. Device definitions map openHAB things/channels to NEEO device/capabilities.
  * All device definition changes are saved to a JSON file in the user data folder.
  *
- * @author Tim Roberts - initial contribution
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoDeviceDefinitions {
 

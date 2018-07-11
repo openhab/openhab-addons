@@ -29,7 +29,7 @@ import org.osgi.service.http.HttpService;
 /**
  * Provides the services for a given context
  *
- * @author Tim Roberts - initial contribution
+ * @author Tim Roberts - Initial Contribution
  */
 public class ServiceContext {
 

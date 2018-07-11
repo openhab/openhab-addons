@@ -32,7 +32,7 @@ import com.google.gson.JsonParseException;
 /**
  * A subclass of {@link DefaultServletService} that handles brain status update for the web pages
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class BrainDashboardService extends DefaultServletService {
 

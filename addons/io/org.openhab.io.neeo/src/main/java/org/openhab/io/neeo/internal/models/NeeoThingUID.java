@@ -8,6 +8,7 @@
  */
 package org.openhab.io.neeo.internal.models;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.io.neeo.NeeoConstants;
 
@@ -15,13 +16,13 @@ import org.openhab.io.neeo.NeeoConstants;
  * Wrapper around a {@link ThingUID} to provide common initialization and to provide a non deprecated way to get the
  * thing type (which is the second element)
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  *
  */
 public class NeeoThingUID extends ThingUID {
     /**
      * Constructs the {@link NeeoThingUID} from a {@link ThingUID}
-     * 
+     *
      * @param uid the thingUID
      */
     public NeeoThingUID(ThingUID uid) {
@@ -29,12 +30,15 @@ public class NeeoThingUID extends ThingUID {
     }
 
     /**
-     * Construct the {@link NeeoThingUID} from the string representation of a UID
-     * 
+     * Construct the {@link NeeoThingUID} from the string representation of a UID. If the string representation includes
+     * {@link NeeoConstants#NEEO_ADAPTER_PREFIX}, that prefix will be removed.
+     *
      * @param thingId the thing ID
      */
     public NeeoThingUID(String thingId) {
-        super(thingId);
+        super(StringUtils.startsWith(thingId, NeeoConstants.NEEO_ADAPTER_PREFIX)
+                ? StringUtils.substring(thingId, NeeoConstants.NEEO_ADAPTER_PREFIX.length())
+                : thingId);
     }
 
     /**
@@ -50,7 +54,7 @@ public class NeeoThingUID extends ThingUID {
 
     /**
      * Returns the thing type for this UID
-     * 
+     *
      * @return a possibly null, possibly empty thing type
      */
     public String getThingType() {
@@ -59,10 +63,19 @@ public class NeeoThingUID extends ThingUID {
 
     /**
      * Converts the {@link NeeoThingUID} to a {@link ThingUID}
-     * 
+     *
      * @return a non-null {@link ThingUID}
      */
     public ThingUID asThingUID() {
         return new ThingUID(getAsString());
+    }
+
+    /**
+     * Returns the UID required by the NEEO brain
+     *
+     * @return a non-null, non-empty UID
+     */
+    public String getNeeoUID() {
+        return NeeoConstants.NEEO_ADAPTER_PREFIX + getAsString();
     }
 }

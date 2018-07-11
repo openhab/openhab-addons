@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * This class represents an {@link HttpRequest} response
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class HttpResponse {
 

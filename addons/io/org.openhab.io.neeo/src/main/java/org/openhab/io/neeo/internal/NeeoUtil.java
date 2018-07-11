@@ -60,7 +60,7 @@ import com.google.gson.JsonPrimitive;
 /**
  * Various utility functions used by the NEEO Transport
  *
- * @author Tim Roberts - initial contribution
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoUtil {
 
@@ -113,7 +113,7 @@ public class NeeoUtil {
         gsonBuilder.registerTypeAdapter(NeeoDeviceChannelKind.class, new NeeoDeviceChannelKindSerializer());
         gsonBuilder.registerTypeAdapter(NeeoCapabilityType.class, new NeeoCapabilityTypeSerializer());
         gsonBuilder.registerTypeAdapter(ItemSubType.class, new ItemSubTypeSerializer());
-        gsonBuilder.registerTypeAdapter(NeeoDeviceChannel.class, new NeeoDeviceChannelSerializer(context));
+        gsonBuilder.registerTypeHierarchyAdapter(NeeoDeviceChannel.class, new NeeoDeviceChannelSerializer(context));
         gsonBuilder.registerTypeAdapter(NeeoDeviceType.class, new NeeoDeviceTypeSerializer());
         gsonBuilder.registerTypeAdapter(NeeoDevice.class, new NeeoDeviceSerializer(service, context));
         return gsonBuilder;

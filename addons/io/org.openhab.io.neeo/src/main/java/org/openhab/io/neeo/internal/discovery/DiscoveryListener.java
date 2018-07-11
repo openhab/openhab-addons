@@ -15,7 +15,7 @@ import org.openhab.io.neeo.internal.models.NeeoSystemInfo;
 /**
  * The interface defines the contract for discovery notifications
  *
- * @author Tim Roberts - initial contribution
+ * @author Tim Roberts - Initial Contribution
  */
 public interface DiscoveryListener {
 

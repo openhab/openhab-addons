@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * Note: this class will also be used for backward compatibility at some point (when they change ACCESSOIRE to
  * ACCESSORY) and any other transformations that may come up.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoDeviceType {
     /** Represents an device that should be excluded */

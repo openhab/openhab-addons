@@ -13,7 +13,7 @@ import org.openhab.io.neeo.internal.NeeoUtil;
 /**
  * The model representing an adapter registration (serialize/deserialize json use only).
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoAdapterRegistration {
 

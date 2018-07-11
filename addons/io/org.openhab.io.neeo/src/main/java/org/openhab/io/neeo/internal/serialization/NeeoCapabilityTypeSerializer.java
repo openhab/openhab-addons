@@ -26,7 +26,7 @@ import com.google.gson.JsonSerializer;
  * Implementation of {@link JsonSerializer} and {@link JsonDeserializer} to serialize/deserial
  * {@link NeeoCapabilityType}
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoCapabilityTypeSerializer
         implements JsonSerializer<NeeoCapabilityType>, JsonDeserializer<NeeoCapabilityType> {

@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This class represents an HTTP session with a client
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class HttpRequest implements AutoCloseable {
 

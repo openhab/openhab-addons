@@ -40,7 +40,7 @@ import com.google.gson.JsonSerializer;
  * Implementation of {@link JsonSerializer} that will serialize a {@link NeeoDevice} for communications going to the
  * NEEO Brain
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
 
@@ -56,8 +56,8 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
 
         final JsonObject jsonObject = new JsonObject();
 
-        final String adapterName = device.getUid().getAsString();
-        jsonObject.addProperty("apiversion", "1.0");
+        final String adapterName = device.getUid().getNeeoUID();
+        // jsonObject.addProperty("apiversion", "1.0"); // haven't decided if needed
         jsonObject.addProperty("adapterName", adapterName);
 
         jsonObject.addProperty("type", device.getType().toString());
@@ -111,6 +111,9 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
                     + channel.getItemName() + "/" + channel.getSubType() + "/" + channel.getChannelNbr();
 
             final String uniqueItemName = channel.getUniqueItemName();
+            final String sensorItemName = uniqueItemName
+                    + (StringUtils.endsWithIgnoreCase(uniqueItemName, NeeoConstants.NEEO_SENSOR_SUFFIX) ? ""
+                            : NeeoConstants.NEEO_SENSOR_SUFFIX);
 
             if (capabilityType == NeeoCapabilityType.BUTTON) {
                 final String name = StringUtils.isEmpty(channel.getLabel()) ? uniqueItemName : channel.getLabel();
@@ -128,6 +131,7 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
                 final JsonObject sensorTypeObj = new JsonObject();
                 sensorTypeObj.addProperty("type", NeeoCapabilityType.SENSOR_POWER.toString());
 
+                // power should NOT use the sensor suffix
                 capabilities.add(createBase(uniqueItemName, channel.getLabel(), NeeoCapabilityType.SENSOR.toString(),
                         compPath + "/switch/power", sensorTypeObj));
             } else if (capabilityType == NeeoCapabilityType.SENSOR) {
@@ -139,17 +143,12 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
                 sensor.add("range", jsonContext.serialize(range));
                 sensor.addProperty("unit", channelRange.getUnit());
 
-                capabilities.add(createBase(uniqueItemName, channel.getLabel(), capabilityType.toString(),
-                        compPath + "/sensor/sensor", sensor));
-            } else if (capabilityType == NeeoCapabilityType.SENSOR_BINARY) {
-                final JsonObject sensor = new JsonObject();
-                sensor.addProperty("type", NeeoCapabilityType.SENSOR_BINARY.toString());
-                capabilities.add(createBase(uniqueItemName, channel.getLabel(), capabilityType.toString(),
+                capabilities.add(createBase(sensorItemName, channel.getLabel(), capabilityType.toString(),
                         compPath + "/sensor/sensor", sensor));
             } else if (capabilityType == NeeoCapabilityType.SLIDER) {
                 final JsonObject sliderSensor = new JsonObject();
                 sliderSensor.addProperty("type", NeeoCapabilityType.SENSOR_RANGE.toString());
-                sliderSensor.addProperty("sensor", uniqueItemName);
+                sliderSensor.addProperty("sensor", sensorItemName);
 
                 final NeeoDeviceChannelRange channelRange = channel.getRange();
                 final int[] range = new int[] { channelRange.getMinValue(), channelRange.getMaxValue() };
@@ -163,7 +162,7 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
                 sensorTypeObj.add("range", jsonContext.serialize(range));
                 sensorTypeObj.addProperty("unit", channelRange.getUnit());
 
-                capabilities.add(createBase(uniqueItemName, channel.getLabel(), NeeoCapabilityType.SENSOR.toString(),
+                capabilities.add(createBase(sensorItemName, channel.getLabel(), NeeoCapabilityType.SENSOR.toString(),
                         compPath + "/slider/sensor", sensorTypeObj));
             } else if (capabilityType == NeeoCapabilityType.SWITCH) {
                 final String label = channel.getLabel();
@@ -171,12 +170,12 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
                 final NeeoButtonGroup buttons = NeeoButtonGroup.parse(label);
                 if (buttons == null) {
                     capabilities.add(createBase(uniqueItemName, channel.getLabel(), capabilityType.toString(),
-                            compPath + "/switch/actor", new JsonPrimitive(uniqueItemName)));
+                            compPath + "/switch/actor", new JsonPrimitive(sensorItemName)));
 
                     final JsonObject sensorTypeObj = new JsonObject();
                     sensorTypeObj.addProperty("type", NeeoCapabilityType.SENSOR_BINARY.toString());
 
-                    capabilities.add(createBase(uniqueItemName, channel.getLabel(),
+                    capabilities.add(createBase(sensorItemName, channel.getLabel(),
                             NeeoCapabilityType.SENSOR.toString(), compPath + "/switch/sensor", sensorTypeObj));
                 } else {
                     for (final ButtonInfo bi : buttons.getButtonInfos()) {
@@ -191,18 +190,18 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
                         .toLowerCase();
 
                 final JsonObject jo = createBase(uniqueItemName, channel.getLabel(), capabilityType.toString(),
-                        compPath + "/image/actor", "sensor", new JsonPrimitive(uniqueItemName));
+                        compPath + "/image/actor", "sensor", new JsonPrimitive(sensorItemName));
                 jo.addProperty("size", size);
                 capabilities.add(jo);
 
                 final JsonObject sensorTypeObj = new JsonObject();
                 sensorTypeObj.addProperty("type", NeeoCapabilityType.IMAGEURL.toString());
 
-                capabilities.add(createBase(uniqueItemName, channel.getLabel(), NeeoCapabilityType.SENSOR.toString(),
+                capabilities.add(createBase(sensorItemName, channel.getLabel(), NeeoCapabilityType.SENSOR.toString(),
                         compPath + "/image/sensor", sensorTypeObj));
             } else if (capabilityType == NeeoCapabilityType.TEXTLABEL) {
                 final JsonObject capObj = createBase(uniqueItemName, channel.getLabel(), capabilityType.toString(),
-                        compPath + "/textlabel/actor", new JsonPrimitive(uniqueItemName));
+                        compPath + "/textlabel/actor", new JsonPrimitive(sensorItemName));
 
                 capObj.addProperty("isLabelVisible",
                         channel instanceof NeeoDeviceChannelText ? ((NeeoDeviceChannelText) channel).isLabelVisible()
@@ -213,8 +212,13 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
                 final JsonObject sensorTypeObj = new JsonObject();
                 sensorTypeObj.addProperty("type", NeeoCapabilityType.SENSOR_CUSTOM.toString());
 
-                capabilities.add(createBase(uniqueItemName, channel.getLabel(), NeeoCapabilityType.SENSOR.toString(),
+                capabilities.add(createBase(sensorItemName, channel.getLabel(), NeeoCapabilityType.SENSOR.toString(),
                         compPath + "/textlabel/sensor", sensorTypeObj));
+            } else if (capabilityType == NeeoCapabilityType.DIRECTORY) {
+                final JsonObject capObj = createBase(uniqueItemName, channel.getLabel(), capabilityType.toString(),
+                        compPath + "/directory/actor");
+
+                capabilities.add(capObj);
             } else {
                 logger.debug("Unknown capability type: {} for channel {}", capabilityType, channel);
                 continue;
@@ -267,7 +271,7 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
     private JsonObject createBase(String name, String label, String type, String path, @Nullable String sensorName,
             @Nullable JsonElement sensor) {
         final JsonObject compObj = new JsonObject();
-        compObj.addProperty("name", name);
+        compObj.addProperty("name", NeeoUtil.encodeURIComponent(name));
         compObj.addProperty("label", label);
         compObj.addProperty("type", type);
 

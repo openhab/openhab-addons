@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * This implementation of {@link HttpServlet} handles all the routing for the servlet. {@link ServletService}'s are
  * added in the constructor and then delegated to by this class.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public abstract class AbstractServlet extends HttpServlet implements AutoCloseable {
 

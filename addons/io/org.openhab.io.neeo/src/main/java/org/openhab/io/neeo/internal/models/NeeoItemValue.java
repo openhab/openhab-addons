@@ -11,7 +11,7 @@ package org.openhab.io.neeo.internal.models;
 /**
  * The model representing an item value (serialize/deserialize json use only).
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoItemValue {
 

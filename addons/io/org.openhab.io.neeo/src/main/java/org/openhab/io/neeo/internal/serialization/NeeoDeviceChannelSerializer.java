@@ -26,6 +26,8 @@ import org.openhab.io.neeo.internal.ServiceContext;
 import org.openhab.io.neeo.internal.models.ItemSubType;
 import org.openhab.io.neeo.internal.models.NeeoCapabilityType;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannel;
+import org.openhab.io.neeo.internal.models.NeeoDeviceChannelDirectory;
+import org.openhab.io.neeo.internal.models.NeeoDeviceChannelDirectoryListItem;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannelKind;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannelRange;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannelText;
@@ -42,7 +44,7 @@ import com.google.gson.JsonSerializer;
  * Implementation of {@link JsonSerializer} and {@link JsonDeserializer} to serialize/deserial
  * {@link NeeoDeviceChannel}
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial Contribution
  */
 public class NeeoDeviceChannelSerializer
         implements JsonSerializer<NeeoDeviceChannel>, JsonDeserializer<NeeoDeviceChannel> {
@@ -149,9 +151,12 @@ public class NeeoDeviceChannelSerializer
             jo.add("acceptedCommandTypes", jsonContext.serialize(commandTypes));
             jo.addProperty("isReadOnly", isReadOnly);
 
-            if (chnl instanceof NeeoDeviceChannelText) {
-                jo.addProperty("labelVisible", ((NeeoDeviceChannelText) chnl).isLabelVisible());
-            }
+        }
+
+        if (chnl instanceof NeeoDeviceChannelText) {
+            jo.addProperty("labelVisible", ((NeeoDeviceChannelText) chnl).isLabelVisible());
+        } else if (chnl instanceof NeeoDeviceChannelDirectory) {
+            jo.add("listItems", jsonContext.serialize(((NeeoDeviceChannelDirectory) chnl).getListItems()));
         }
 
         return jo;
@@ -195,13 +200,21 @@ public class NeeoDeviceChannelSerializer
                 ? context.deserialize(jo.get("kind"), NeeoDeviceChannelKind.class)
                 : NeeoDeviceChannelKind.ITEM;
 
-        final boolean labelVisible = jo.has("labelVisible") ? jo.get("labelVisible").getAsBoolean() : true;
-
         try {
             if (capType == NeeoCapabilityType.TEXTLABEL) {
+                final boolean labelVisible = jo.has("labelVisible") ? jo.get("labelVisible").getAsBoolean() : true;
+
                 return new NeeoDeviceChannelText(kind, itemName, channelNbr, capType, itemSubType,
                         label == null || StringUtils.isEmpty(label) ? NeeoUtil.NOTAVAILABLE : label, value, range,
                         labelVisible);
+            } else if (capType == NeeoCapabilityType.DIRECTORY) {
+                final NeeoDeviceChannelDirectoryListItem[] listItems = jo.has("listItems")
+                        ? context.deserialize(jo.get("listItems"), NeeoDeviceChannelDirectoryListItem[].class)
+                        : new NeeoDeviceChannelDirectoryListItem[0];
+
+                return new NeeoDeviceChannelDirectory(kind, itemName, channelNbr, capType, itemSubType,
+                        label == null || StringUtils.isEmpty(label) ? NeeoUtil.NOTAVAILABLE : label, value, range,
+                        listItems);
             } else {
                 return new NeeoDeviceChannel(kind, itemName, channelNbr, capType, itemSubType,
                         label == null || StringUtils.isEmpty(label) ? NeeoUtil.NOTAVAILABLE : label, value, range);
