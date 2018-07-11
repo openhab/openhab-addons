@@ -201,12 +201,14 @@ class GoogleCloudAPI {
         // check if in cache
         File audioFileInCache = new File(cacheFolder, fileNameInCache + "." + format[1]);
         if (audioFileInCache.exists()) {
+            logger.debug("Audio file {} was found in cache.", audioFileInCache.getName());
             return audioFileInCache;
         }
 
         // if not in cache, get audio data and put to cache
         try (InputStream is = synthesizeSpeechByGoogle(text, voice, format[0]);
              FileOutputStream fos = new FileOutputStream(audioFileInCache)) {
+            logger.debug("Caching audio file {}", audioFileInCache.getName());
             copyStream(is, fos);
             // write text to file for transparency too
             // this allows to know which contents is in which audio file
