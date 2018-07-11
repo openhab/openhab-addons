@@ -178,7 +178,7 @@ class GoogleCloudAPI {
     }
 
     /**
-     * Converts OpenHAB audio format to google parameters.
+     * Converts openHAB audio format to Google parameters.
      *
      * @param codec Requested codec
      *
