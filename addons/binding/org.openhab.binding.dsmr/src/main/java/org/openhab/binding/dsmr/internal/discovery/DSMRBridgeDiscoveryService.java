@@ -104,7 +104,7 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
                     logger.trace("Possible port to check:{}, owned:{} by:{}", currentScannedPortName,
                             portIdentifier.isCurrentlyOwned(), portIdentifier.getCurrentOwner());
                     if (DSMRBindingConstants.DSMR_PORT_NAME.equals(portIdentifier.getCurrentOwner())) {
-                        logger.info("The port {} is owned by this binding. If no DSMR meters will be found it "
+                        logger.debug("The port {} is owned by this binding. If no DSMR meters will be found it "
                                 + "might indicate the port is locked by an older instance of this binding. "
                                 + "Restart the system to unlock the port.", currentScannedPortName);
                     }
@@ -125,14 +125,14 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
         scanning = false;
         stopSerialPortScan();
         super.stopScan();
-        logger.info("Stop DSMR discovery scan");
+        logger.debug("Stop DSMR discovery scan");
     }
 
     /**
      * Stops the serial port device.
      */
     private void stopSerialPortScan() {
-        logger.info("Stop discovery scan on port [{}].", currentScannedPortName);
+        logger.debug("Stop discovery scan on port [{}].", currentScannedPortName);
         if (currentScannedDevice != null) {
             currentScannedDevice.stop();
         }
@@ -176,7 +176,7 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                 .withThingType(DSMRBindingConstants.THING_TYPE_DSMR_BRIDGE).withProperties(properties)
-                .withLabel("DSMR bridge on " + currentScannedPortName).build();
+                .withLabel("Dutch Smart Meter").build();
 
         logger.debug("[{}] discovery result:{}", currentScannedPortName, discoveryResult);
 

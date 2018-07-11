@@ -26,10 +26,11 @@ import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 
 /**
+ * {@link CosemQuantity} represents a value with a unit.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  *
- * @param <Q>
+ * @param <Q> The {@link Quantity} type of the unit of this class
  */
 class CosemQuantity<Q extends Quantity<Q>> extends CosemValueDescriptor<QuantityType<Q>> {
 
@@ -56,7 +57,7 @@ class CosemQuantity<Q extends Quantity<Q>> extends CosemValueDescriptor<Quantity
             Pattern.CASE_INSENSITIVE);
 
     /**
-     * unit of this CosemValue
+     * Unit of this CosemValue
      */
     private final Unit<Q> unit;
 
@@ -70,8 +71,9 @@ class CosemQuantity<Q extends Quantity<Q>> extends CosemValueDescriptor<Quantity
     }
 
     /**
+     * Constructor.
      *
-     * @param unit
+     * @param unit      Unit of this CosemQuantity instance
      * @param channelId the channel for this CosemValueDescriptor
      */
     public CosemQuantity(Unit<Q> unit, String channelId) {
@@ -80,24 +82,23 @@ class CosemQuantity<Q extends Quantity<Q>> extends CosemValueDescriptor<Quantity
     }
 
     /**
-     * Parses a String value (that represents a double) to a Double object
+     * Parses a String value (that represents a value with a unit) to a {@link QuantityType} object.
      *
      * @param cosemValue the value to parse
-     * @return {@link Double} on success
-     * @throws ParseException if parsing failed
+     * @return {@link QuanitytType} on success
+     * @throws ParseException in case unit doesn't match.
      */
     @Override
     protected QuantityType<Q> getStateValue(String cosemValue) throws ParseException {
         try {
             QuantityType<Q> qt = new QuantityType<Q>(prepare(cosemValue));
+
             if (!unit.equals(qt.getUnit())) {
-                return null;// throw new ParseException("Failed to parse value '" + cosemValue + "' as unit " + unit,
-                            // 0);
+                throw new ParseException("Failed to parse value '" + cosemValue + "' as unit " + unit, 0);
             }
             return qt;
         } catch (IllegalArgumentException nfe) {
-            return null;
-            // throw new ParseException("Failed to parse value '" + cosemValue + "' as double", 0);
+            throw new ParseException("Failed to parse value '" + cosemValue + "' as unit " + unit, 0);
         }
     }
 
@@ -113,7 +114,7 @@ class CosemQuantity<Q extends Quantity<Q>> extends CosemValueDescriptor<Quantity
      * We also support unit that do not follow the exact case.
      */
     private String prepare(String cosemValue) {
-        Matcher matcher = COSEM_VALUE_WITH_UNIT_PATTERN.matcher(cosemValue);
+        Matcher matcher = COSEM_VALUE_WITH_UNIT_PATTERN.matcher(cosemValue.replace("m3", "m³"));
 
         return matcher.find() ? matcher.group(1) + ' ' + matcher.group(2) : cosemValue;
     }

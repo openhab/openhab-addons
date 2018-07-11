@@ -42,14 +42,14 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
 
     @Override
     protected void startScan() {
-        logger.info("Start discovery on existing DSMR bridge.");
+        logger.debug("Start discovery on existing DSMR bridge.");
         dsmrBridgeHandler.setLenientMode(true);
         dsmrBridgeHandler.registerDSMRMeterListener(this);
     }
 
     @Override
     protected synchronized void stopScan() {
-        logger.info("Stop discovery on existing DSMR bridge.");
+        logger.debug("Stop discovery on existing DSMR bridge.");
         dsmrBridgeHandler.setLenientMode(false);
         super.stopScan();
         dsmrBridgeHandler.unregisterDSMRMeterListener(this);

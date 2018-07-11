@@ -33,12 +33,12 @@ public class P1TelegramParserTest {
     @Parameters(name = "{0}")
     public static final List<Object[]> data() {
         return Arrays.asList(new Object[][] {
-            { "dsmr_40", 38, },
-            { "dsmr_42", 38, },
-            { "dsmr_50", 40, },
-            { "Iskra_AM550", 40, },
+            { "dsmr_40", 39, },
+            { "dsmr_42", 39, },
+            { "dsmr_50", 41, },
+            { "Iskra_AM550", 41, },
             { "Landis_Gyr_E350", 10, },
-            { "Landis_Gyr_ZCF110", 24, },
+            { "Landis_Gyr_ZCF110", 25, },
             { "Sagemcom_XS210", 41, },
 
         });

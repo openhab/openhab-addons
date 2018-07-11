@@ -30,7 +30,9 @@ class CosemHexString extends CosemValueDescriptor<StringType> {
      * @throws ParseException if parsing failed
      */
     @Override
-    protected StringType getStateValue(String cosemHexValue) throws ParseException {
+    protected StringType getStateValue(String cosemValue) throws ParseException {
+        String cosemHexValue = cosemValue.replaceAll("\\r\\n", "");
+
         if (cosemHexValue.length() % 2 != 0) {
             throw new ParseException(cosemHexValue + " is not a valid hexadecimal string", 0);
         } else {

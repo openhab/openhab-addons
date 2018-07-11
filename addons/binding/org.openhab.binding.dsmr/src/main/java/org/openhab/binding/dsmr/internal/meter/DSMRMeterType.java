@@ -315,9 +315,9 @@ public enum DSMRMeterType {
     DSMRMeterType(DSMRMeterKind meterKind, CosemObjectType cosemObjectTypeMeterId,
             CosemObjectType[] requiredCosemObjects, CosemObjectType[] optionalCosemObjects) {
         this.meterKind = meterKind;
+        this.cosemObjectTypeMeterId = cosemObjectTypeMeterId;
         this.requiredCosemObjects = requiredCosemObjects;
         this.optionalCosemObjects = optionalCosemObjects;
-        this.cosemObjectTypeMeterId = cosemObjectTypeMeterId;
 
         supportedCosemObjects = new CosemObjectType[requiredCosemObjects.length + optionalCosemObjects.length];
         System.arraycopy(requiredCosemObjects, 0, supportedCosemObjects, 0, requiredCosemObjects.length);
@@ -329,9 +329,9 @@ public enum DSMRMeterType {
      * Returns if this DSMRMeterType is compatible for the Cosem Objects.
      *
      * If successful the real OBIS identification message (including the actual channel and identification value)
-     * is returned
+     * is returned.
      * If the meter is compatible but the meter type has no identification message, a message is created using the
-     * UNKNOWN OBISMsgType and no value
+     * UNKNOWN OBISMsgType and no value.
      * If the meter is not compatible, null is returned
      *
      *
@@ -354,12 +354,12 @@ public enum DSMRMeterType {
             }
         }
         // Meter type is compatible, check if an identification exists
-        if (meterDescriptor == null) {
-            logger.trace("Meter type {} has no identification", this.toString());
+        if (meterDescriptor == null && cosemObjectTypeMeterId == CosemObjectType.UNKNOWN) {
+            logger.trace("Meter type {} has no identification, but is compatible", this);
             meterDescriptor = new DSMRMeterDescriptor(this, DSMRMeterConstants.UNKNOWN_CHANNEL);
+        } else if (meterDescriptor != null) {
+            logger.trace("Meter type is compatible and has the following meter type:{}", this);
         }
-        logger.trace("Meter type is compatible and has the following descriptor {}", meterDescriptor);
-
         return meterDescriptor;
     }
 

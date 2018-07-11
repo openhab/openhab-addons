@@ -9,10 +9,13 @@
 package org.openhab.binding.dsmr.internal.discovery;
 
 import static org.junit.Assert.assertEquals;
+import static org.openhab.binding.dsmr.internal.meter.DSMRMeterType.*;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +26,7 @@ import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterDescriptor;
+import org.openhab.binding.dsmr.internal.meter.DSMRMeterType;
 
 /**
  * Test class for {@link DSMRMeterDetector}.
@@ -36,13 +40,13 @@ public class DSMRMeterDetectorTest {
     @Parameters(name = "{0}")
     public static final List<Object[]> data() {
         return Arrays.asList(new Object[][] {
-            { "dsmr_40", 3, },
-            { "dsmr_42", 3, },
-            { "dsmr_50", 3, },
-            { "Iskra_AM550", 3, },
-            { "Landis_Gyr_E350", 2, },
-            { "Landis_Gyr_ZCF110", 3, },
-            { "Sagemcom_XS210", 2, },
+            { "dsmr_40", EnumSet.of( DEVICE_V4, ELECTRICITY_V4_2, M3_V5_0)},
+            { "dsmr_42", EnumSet.of( DEVICE_V4, ELECTRICITY_V4_2, M3_V5_0)},
+            { "dsmr_50", EnumSet.of( DEVICE_V5, ELECTRICITY_V5_0, M3_V5_0)},
+            { "Iskra_AM550", EnumSet.of( DEVICE_V5, ELECTRICITY_V5_0, M3_V5_0)},
+            { "Landis_Gyr_E350", EnumSet.of( DEVICE_V2_V3, ELECTRICITY_V3_0)},
+            { "Landis_Gyr_ZCF110", EnumSet.of( DEVICE_V4, ELECTRICITY_V4_2, M3_V5_0)},
+            { "Sagemcom_XS210", EnumSet.of( DEVICE_V4, ELECTRICITY_V4_2)},
         });
     }
     // @formatter:on
@@ -51,7 +55,7 @@ public class DSMRMeterDetectorTest {
     public String telegramName;
 
     @Parameter(1)
-    public int numberOfMeters;
+    public Set<DSMRMeterType> expectedMeters;
 
     @Test
     public void testDetectMeters() {
@@ -59,7 +63,13 @@ public class DSMRMeterDetectorTest {
 
         DSMRMeterDetector detector = new DSMRMeterDetector();
         Collection<DSMRMeterDescriptor> detectMeters = detector.detectMeters(telegram);
-        assertEquals("Should detect correct number of meters", numberOfMeters, detectMeters.size());
+        assertEquals("Should detect correct number of meters", expectedMeters.size(), detectMeters.size());
+        for (DSMRMeterType meter : expectedMeters) {
+            assertEquals(
+                    "Meter '" + meter + " not found: "
+                            + Arrays.toString(detectMeters.toArray(new DSMRMeterDescriptor[0])),
+                    1, detectMeters.stream().filter(e -> e.getMeterType() == meter).count());
+        }
     }
 
 }

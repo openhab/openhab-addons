@@ -47,7 +47,7 @@
 								<id>org.eclipse.smarthome.config.xml</id>
 								<versionRange>0.0.0</versionRange>
 							</dependency>
-						dsmr	<dependency>
+							<dependency>
 								<type>eclipse-plugin</type>
 								<id>org.eclipse.smarthome.core.thing.xml</id>
 								<versionRange>0.0.0</versionRange>

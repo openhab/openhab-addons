@@ -11,7 +11,7 @@ package org.openhab.binding.dsmr.internal.device.cosem;
 import org.eclipse.smarthome.core.library.types.StringType;
 
 /**
- * CosemString represents a string value
+ * {@link CosemString} represents a string value.
  *
  * @author M. Volaart - Initial contribution
  * @author Hilbrand Bouwkamp - Class now a factory instead of data containing class
