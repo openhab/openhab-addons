@@ -490,13 +490,56 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
     }
 
     @Test
-    public void validHANFUNContactDiscoveryResult() throws JAXBException {
+    public void validHANFUNMagneticContactDiscoveryResult() throws JAXBException {
         //@formatter:off
         String xml =
                 "<devicelist version=\"1\">" +
                     "<device identifier=\"11934 0059578-1\" id=\"2000\" functionbitmask=\"8208\" fwversion=\"0.0\" manufacturer=\"0x0feb\" productname=\"HAN-FUN\">" +
                         "<present>0</present>" +
                         "<name>HAN-FUN #2: Unit #2</name>" +
+                        "<etsiunitinfo>" +
+                        "<etsideviceid>406</etsideviceid>" +
+                        "<unittype>513</unittype>" +
+                        "<interfaces>256</interfaces>" +
+                        "</etsiunitinfo>" +
+                        "<alert>" +
+                            "<state/>" +
+                        "</alert>" +
+                    "</device>" +
+                "</devicelist>";
+        //@formatter:on
+
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
+        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        assertNotNull(devices);
+        assertEquals(1, devices.getDevicelist().size());
+
+        AVMFritzBaseModel device = devices.getDevicelist().get(0);
+        assertNotNull(device);
+
+        discovery.onDeviceAddedInternal(device);
+        assertNotNull(discoveryResult);
+
+        assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
+        assertEquals(new ThingUID("avmfritz:HAN_FUN_CONTACT:1:119340059578_1"), discoveryResult.getThingUID());
+        assertEquals(HAN_FUN_CONTACT_THING_TYPE, discoveryResult.getThingTypeUID());
+        assertEquals(BRIGE_THING_ID, discoveryResult.getBridgeUID());
+        assertEquals("119340059578-1", discoveryResult.getProperties().get(CONFIG_AIN));
+        assertEquals("0x0feb", discoveryResult.getProperties().get(PROPERTY_VENDOR));
+        assertEquals("2000", discoveryResult.getProperties().get(PROPERTY_MODEL_ID));
+        assertEquals("119340059578-1", discoveryResult.getProperties().get(PROPERTY_SERIAL_NUMBER));
+        assertEquals("0.0", discoveryResult.getProperties().get(PROPERTY_FIRMWARE_VERSION));
+        assertEquals(CONFIG_AIN, discoveryResult.getRepresentationProperty());
+    }
+
+    @Test
+    public void validHANFUNOpticalContactDiscoveryResult() throws JAXBException {
+        //@formatter:off
+        String xml =
+                "<devicelist version=\"1\">" +
+                    "<device identifier=\"11934 0059578-1\" id=\"2001\" functionbitmask=\"8208\" fwversion=\"0.0\" manufacturer=\"0x0feb\" productname=\"HAN-FUN\">" +
+                        "<present>0</present>" +
+                        "<name>HAN-FUN #3: Unit #3</name>" +
                         "<etsiunitinfo>" +
                         "<etsideviceid>406</etsideviceid>" +
                         "<unittype>514</unittype>" +
@@ -526,7 +569,7 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
         assertEquals(BRIGE_THING_ID, discoveryResult.getBridgeUID());
         assertEquals("119340059578-1", discoveryResult.getProperties().get(CONFIG_AIN));
         assertEquals("0x0feb", discoveryResult.getProperties().get(PROPERTY_VENDOR));
-        assertEquals("2000", discoveryResult.getProperties().get(PROPERTY_MODEL_ID));
+        assertEquals("2001", discoveryResult.getProperties().get(PROPERTY_MODEL_ID));
         assertEquals("119340059578-1", discoveryResult.getProperties().get(PROPERTY_SERIAL_NUMBER));
         assertEquals("0.0", discoveryResult.getProperties().get(PROPERTY_FIRMWARE_VERSION));
         assertEquals(CONFIG_AIN, discoveryResult.getRepresentationProperty());
