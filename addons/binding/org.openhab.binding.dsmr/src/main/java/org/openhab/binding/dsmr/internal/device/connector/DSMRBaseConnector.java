@@ -56,8 +56,7 @@ class DSMRBaseConnector {
     /**
      * Input stream reading the Serial port.
      */
-    @Nullable
-    private BufferedInputStream inputStream;
+    private @Nullable BufferedInputStream inputStream;
 
     /**
      * Opens the connector with the given stream to read data from.

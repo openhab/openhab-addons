@@ -99,14 +99,12 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
     /**
      * Timer for handling discovery of a single setting.
      */
-    @Nullable
-    private ScheduledFuture<?> halfTimeTimer;
+    private @Nullable ScheduledFuture<?> halfTimeTimer;
 
     /**
      * Timer for handling end of discovery.
      */
-    @Nullable
-    private ScheduledFuture<?> endTimeTimer;
+    private @Nullable ScheduledFuture<?> endTimeTimer;
 
     /**
      * The listener of the class handling the connector events

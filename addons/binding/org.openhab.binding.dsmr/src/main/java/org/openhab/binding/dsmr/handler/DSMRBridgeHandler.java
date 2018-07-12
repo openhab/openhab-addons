@@ -67,25 +67,21 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
     /**
      * The dsmrDevice managing the connection and handling telegrams.
      */
-    @Nullable
-    private DSMRDevice dsmrDevice;
+    private @Nullable DSMRDevice dsmrDevice;
 
     /**
      * Long running process that controls the DSMR device connection.
      */
-    @Nullable
-    private DSMRDeviceRunnable dsmrDeviceRunnable;
+    private @Nullable DSMRDeviceRunnable dsmrDeviceRunnable;
     /**
      * Thread for {@link DSMRDeviceRunnable}. A thread is used because the {@link DSMRDeviceRunnable} is a blocking
      * process that runs as long as the thing is not disposed.
      */
-    @Nullable
-    private Thread dsmrDeviceThread;
+    private @Nullable Thread dsmrDeviceThread;
     /**
      * Watchdog to check if messages received and restart if necessary.
      */
-    @Nullable
-    private ScheduledFuture<?> watchdog;
+    private @Nullable ScheduledFuture<?> watchdog;
     /**
      * Number of nanoseconds after which a timeout is triggered when no messages received.
      */
@@ -256,8 +252,10 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
                 logger.trace("Update child:{} with {} objects", child.getThingTypeUID().getId(),
                         telegram.getCosemObjects().size());
             }
-            if (child.getHandler() instanceof DSMRMeterHandler) {
-                ((DSMRMeterHandler) child.getHandler()).telegramReceived(telegram);
+            DSMRMeterHandler dsmrMeterHandler = (DSMRMeterHandler) child.getHandler();
+
+            if (dsmrMeterHandler instanceof DSMRMeterHandler) {
+                dsmrMeterHandler.telegramReceived(telegram);
             }
         });
         meterListeners.forEach(m -> m.telegramReceived(telegram));

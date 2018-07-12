@@ -62,8 +62,7 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
     /**
      * Serial port instance.
      */
-    @Nullable
-    private SerialPort serialPort;
+    private @Nullable SerialPort serialPort;
 
     /**
      * DSMR Connector listener.
@@ -84,7 +83,6 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
      * @param portManager           Serial Port Manager
      * @param serialPortName        Device identifier of the port (e.g. /dev/ttyUSB0)
      * @param dsmrConnectorListener The listener to send error or received data from the port
-     *
      */
     public DSMRSerialConnector(SerialPortManager portManager, String serialPortName,
             DSMRConnectorListener dsmrConnectorListener) {

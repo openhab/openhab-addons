@@ -49,8 +49,7 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     /**
      * The DSMRMeter instance
      */
-    @Nullable
-    private DSMRMeter meter;
+    private @Nullable DSMRMeter meter;
 
     /**
      * Last received cosem objects.
@@ -60,8 +59,7 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     /**
      * Reference to the meter watchdog
      */
-    @Nullable
-    private ScheduledFuture<?> meterWatchdog;
+    private @Nullable ScheduledFuture<?> meterWatchdog;
 
     /**
      * Creates a new MeterHandler for the given Thing

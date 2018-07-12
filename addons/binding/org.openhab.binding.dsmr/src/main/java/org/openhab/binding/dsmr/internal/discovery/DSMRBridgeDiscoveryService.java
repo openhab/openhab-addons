@@ -70,8 +70,7 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
     /**
      * DSMR Device that is scanned when discovery process in progress.
      */
-    @Nullable
-    private DSMRDeviceRunnable currentScannedDevice;
+    private @Nullable DSMRDeviceRunnable currentScannedDevice;
 
     /**
      * Name of the serial port that is scanned when discovery process in progress.
