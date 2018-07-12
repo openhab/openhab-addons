@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.openhab.voice.pico2wave.internal.Pico2WaveService">
+   <service>
+      <provide interface="org.eclipse.smarthome.core.voice.TTSService"/>
+   </service>
+   <implementation class="org.openhab.voice.pico2wave.internal.Pico2WaveService"/>
+</scr:component>

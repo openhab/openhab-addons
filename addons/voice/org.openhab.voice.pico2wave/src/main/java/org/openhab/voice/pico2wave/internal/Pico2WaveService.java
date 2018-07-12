@@ -20,10 +20,12 @@ import org.eclipse.smarthome.core.audio.AudioStream;
 import org.eclipse.smarthome.core.voice.TTSException;
 import org.eclipse.smarthome.core.voice.TTSService;
 import org.eclipse.smarthome.core.voice.Voice;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Florian Schmidt
  */
+@Component
 public class Pico2WaveService implements TTSService {
     private final Set<Voice> voices = Arrays
             .asList(new Pico2WaveVoice("de-DE"), new Pico2WaveVoice("en-US"), new Pico2WaveVoice("en-GB"),
