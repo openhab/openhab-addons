@@ -94,7 +94,7 @@ public class NetworkUtils {
             // For each interface ...
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
                 NetworkInterface networkInterface = en.nextElement();
-                if (!networkInterface.isLoopback()) {
+                if ((!networkInterface.isLoopback()) && (!networkInterface.isPointToPoint())) {
                     result.add(networkInterface.getName());
                 }
             }
