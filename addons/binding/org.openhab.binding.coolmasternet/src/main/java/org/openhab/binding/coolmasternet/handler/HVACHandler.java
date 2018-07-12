@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -38,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * HVAC unit (a single UID on a CoolMasterNet controller.)
  *
  * @author Angus Gratton - Initial contribution
+ * @author Wouter Born - Fix null pointer exceptions
  */
 @NonNullByDefault
 public class HVACHandler extends BaseThingHandler {
@@ -49,7 +51,8 @@ public class HVACHandler extends BaseThingHandler {
     }
 
     private @Nullable ControllerHandler getControllerHandler() {
-        return (ControllerHandler) getBridge().getHandler();
+        Bridge bridge = getBridge();
+        return bridge != null ? (ControllerHandler) bridge.getHandler() : null;
     }
 
     @Override
@@ -59,8 +62,12 @@ public class HVACHandler extends BaseThingHandler {
         ControllerHandler controller = getControllerHandler();
 
         try {
-            if (controller == null || !controller.isConnected()) {
-                ControllerConfiguration config = getBridge().getConfiguration().as(ControllerConfiguration.class);
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "CoolMasterNet Controller bridge not set");
+            } else if (controller == null || !controller.isConnected()) {
+                ControllerConfiguration config = bridge.getConfiguration().as(ControllerConfiguration.class);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         String.format("Could not connect to CoolMasterNet unit %s:%d", config.host, config.port));
             } else {
@@ -88,7 +95,7 @@ public class HVACHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initialising CoolMasterNet HVAC handler...");
+        logger.debug("Initializing CoolMasterNet HVAC handler...");
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -124,7 +131,7 @@ public class HVACHandler extends BaseThingHandler {
             try {
                 return controller.sendCommand(command);
             } catch (CoolMasterClientError e) {
-                logger.error("Query {} failed: {}", command, e.getMessage());
+                logger.error("Query '{}' failed: {}", command, e.getMessage());
             }
         }
         return null; /* passing back null sets an invalid value on the channel */
