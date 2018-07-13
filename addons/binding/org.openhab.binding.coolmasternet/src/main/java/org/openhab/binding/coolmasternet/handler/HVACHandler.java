@@ -23,7 +23,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -101,25 +100,34 @@ public class HVACHandler extends BaseThingHandler {
 
     /* Update this HVAC unit's properties from the controller */
     public void refresh() {
-        ThingUID thingUID = getThing().getUID();
-
         String on = query("o");
         if (on != null) {
-            updateState(new ChannelUID(thingUID, ON), "1".equals(on) ? OnOffType.ON : OnOffType.OFF);
+            updateState(ON, "1".equals(on) ? OnOffType.ON : OnOffType.OFF);
         }
-        updateState(new ChannelUID(thingUID, CURRENT_TEMP), new DecimalType(query("a")));
-        updateState(new ChannelUID(thingUID, SET_TEMP), new DecimalType(query("t")));
+
+        String currentTemp = query("a");
+        if (currentTemp != null) {
+            updateState(CURRENT_TEMP, new DecimalType(currentTemp));
+        }
+
+        String setTemp = query("t");
+        if (setTemp != null) {
+            updateState(SET_TEMP, new DecimalType(setTemp));
+        }
+
         String mode = MODE_NUM_TO_STR.get(query("m"));
         if (mode != null) {
-            updateState(new ChannelUID(thingUID, MODE), new StringType(mode));
+            updateState(MODE, new StringType(mode));
         }
+
         String louvre = query("s");
         if (louvre != null) {
-            updateState(new ChannelUID(thingUID, LOUVRE), new StringType(louvre));
+            updateState(LOUVRE, new StringType(louvre));
         }
+
         String fan = FAN_NUM_TO_STR.get(query("f"));
         if (fan != null) {
-            updateState(new ChannelUID(thingUID, FAN_SPEED), new StringType(fan));
+            updateState(FAN_SPEED, new StringType(fan));
         }
     }
 
