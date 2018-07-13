@@ -76,10 +76,8 @@ public class CosemObjectFactory {
      * Return Cosem Object from specified string or null if string couldn't be
      * parsed correctly or no corresponding Cosem Object was found
      *
-     * @param obisIdString
-     *                              String containing the OBIS message identifier
-     * @param cosemStringValues
-     *                              String containing Cosem values
+     * @param obisIdString String containing the OBIS message identifier
+     * @param cosemStringValues String containing Cosem values
      * @return CosemObject or null if parsing failed
      */
     public CosemObject getCosemObject(String obisIdString, String cosemStringValues) {
@@ -128,8 +126,8 @@ public class CosemObjectFactory {
     /**
      * Constructs a CosemObject from the given type, OBISIdentifier and the values
      *
-     * @param cosemObjectType   the type of the CosemObject
-     * @param obisIdentifier    the actual OBISIdentifier how this cosemObjectType is identified
+     * @param cosemObjectType the type of the CosemObject
+     * @param obisIdentifier the actual OBISIdentifier how this cosemObjectType is identified
      * @param cosemStringValues the values of the CosemObject
      *
      * @return a CosemObject or null if parsing failed

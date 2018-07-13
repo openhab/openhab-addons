@@ -17,7 +17,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.dsmr.internal.meter.DSMRMeterConstants;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterDescriptor;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterType;
 import org.slf4j.Logger;
@@ -61,15 +60,13 @@ public abstract class DSMRDiscoveryService extends AbstractDiscoveryService {
      * Therefore this callback will always return true.
      *
      * @param meterDescriptor the descriptor of the new detected meter
-     * @param dsmrBridgeUID   ThingUID for the DSMR Bridges
+     * @param dsmrBridgeUID ThingUID for the DSMR Bridges
      * @return true (meter is always accepted)
      */
     public boolean meterDiscovered(DSMRMeterDescriptor meterDescriptor, ThingUID dsmrBridgeUID) {
         DSMRMeterType meterType = meterDescriptor.getMeterType();
         ThingTypeUID thingTypeUID = meterType.getThingTypeUID();
-        String thingId = meterDescriptor.getChannel() == DSMRMeterConstants.UNKNOWN_CHANNEL ? "default"
-                : meterDescriptor.getChannel().toString();
-        ThingUID thingUID = new ThingUID(thingTypeUID, thingId);
+        ThingUID thingUID = new ThingUID(thingTypeUID, meterDescriptor.getChannelId());
 
         // Construct the configuration for this meter
         Map<String, Object> properties = new HashMap<>();

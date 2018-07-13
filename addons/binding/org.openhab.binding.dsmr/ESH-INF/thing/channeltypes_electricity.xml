@@ -138,7 +138,6 @@ Each entry has it's own channel (emeter_power_failure_log_timestamp*x*, *x* = 0 
 Each entry has it's own channel (emeter_power_failure_log_duration*x*, *x* = 0 - 9)</description>
 		<state pattern="%.0f %unit%" readOnly="true"></state>
 	</channel-type>
-
 	<channel-type id="voltageSagsL1Type" advanced="true">
 		<item-type>Number</item-type>
 		<label>Number of voltage sags L1</label>

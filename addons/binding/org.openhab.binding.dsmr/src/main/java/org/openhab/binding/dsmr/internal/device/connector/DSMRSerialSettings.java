@@ -65,9 +65,9 @@ public class DSMRSerialSettings {
      *
      * @param baudrate baudrate of the port
      * @param databits no data bits to use (use SerialPort.DATABITS_* constant)
-     * @param parity   parity to use (use SerialPort.PARITY_* constant)
+     * @param parity parity to use (use SerialPort.PARITY_* constant)
      * @param stopbits
-     *                     no stopbits to use (use SerialPort.STOPBITS_* constant)
+     *            no stopbits to use (use SerialPort.STOPBITS_* constant)
      */
     private DSMRSerialSettings(int baudrate, int databits, int parity, int stopbits) {
         this.baudrate = baudrate;

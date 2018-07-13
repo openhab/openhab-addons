@@ -105,7 +105,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
      * The {@link DSMRBridgeHandler} does not support handling commands.
      *
      * @param channelUID the {@link ChannelUID} of the channel to which the command was sent
-     * @param command    the {@link Command}
+     * @param command the {@link Command}
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -288,7 +288,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
     /**
      * Convenience method to set device off line.
      *
-     * @param status  off line status
+     * @param status off line status
      * @param details off line detailed message
      */
     private void deviceOffline(ThingStatusDetail status, String details) {

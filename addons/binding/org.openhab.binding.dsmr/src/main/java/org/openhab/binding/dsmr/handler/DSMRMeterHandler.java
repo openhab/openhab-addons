@@ -183,7 +183,7 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     /**
      * Convenience method to set the meter off line.
      *
-     * @param status  off line status
+     * @param status off line status
      * @param details off line detailed message
      */
     private void setDeviceOffline(ThingStatusDetail status, @Nullable String details) {

@@ -52,7 +52,7 @@ public class CosemObject {
      * Construct a new CosemObject with the specified OBIS Message Type
      *
      * @param msgType
-     *                    {@link CosemObjectType}
+     *            {@link CosemObjectType}
      */
     public CosemObject(CosemObjectType msgType, OBISIdentifier obisIdentifier) {
         this.type = msgType;

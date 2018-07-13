@@ -38,7 +38,7 @@ public class DSMRDeviceRunnable implements Runnable {
     /**
      * Constructor
      *
-     * @param device        the device to control
+     * @param device the device to control
      * @param eventListener listener to used ot report errors.
      */
     public DSMRDeviceRunnable(DSMRDevice device, DSMREventListener eventListener) {

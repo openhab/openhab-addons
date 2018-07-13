@@ -73,7 +73,7 @@ class CosemQuantity<Q extends Quantity<Q>> extends CosemValueDescriptor<Quantity
     /**
      * Constructor.
      *
-     * @param unit      Unit of this CosemQuantity instance
+     * @param unit Unit of this CosemQuantity instance
      * @param channelId the channel for this CosemValueDescriptor
      */
     public CosemQuantity(Unit<Q> unit, String channelId) {

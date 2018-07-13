@@ -29,7 +29,7 @@
 	</channel-type>
 	<channel-type id="p1VersionType">
 		<item-type>String</item-type>
-		<label>P1 Version</label>
+		<label>Version</label>
 		<description>Version information for the device output (This mostly refers to the DSMR specification level).</description>
 		<state readOnly="true"></state>
 	</channel-type>

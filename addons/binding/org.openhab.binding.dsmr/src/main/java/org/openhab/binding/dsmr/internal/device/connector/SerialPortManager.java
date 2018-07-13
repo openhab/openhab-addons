@@ -11,7 +11,6 @@ package org.openhab.binding.dsmr.internal.device.connector;
 import java.util.Enumeration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
@@ -33,7 +32,7 @@ public interface SerialPortManager {
      * @param name the name
      * @return a serial port identifier or throws NoSuchPortException
      */
-    default @Nullable CommPortIdentifier getIdentifier(final String name) throws NoSuchPortException {
+    default CommPortIdentifier getIdentifier(final String name) throws NoSuchPortException {
         return CommPortIdentifier.getPortIdentifier(name);
     }
 

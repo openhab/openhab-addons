@@ -30,7 +30,7 @@ public interface DSMRConnectorListener {
      *
      * @param buffer byte buffer with the data
      * @param length length of the data in the buffer. Buffer may be larger than data in buffer, therefore always use
-     *                   length
+     *            length
      */
     void handleData(byte[] buffer, int length);
 }

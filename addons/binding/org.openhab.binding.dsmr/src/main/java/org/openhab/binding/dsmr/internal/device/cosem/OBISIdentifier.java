@@ -31,11 +31,11 @@ public class OBISIdentifier {
     private static final Pattern OBIS_ID_PATTERN = Pattern.compile(OBISID_REGEX);
 
     /* the six individual group values of the OBIS ID */
-    private Integer groupA;
+    private int groupA;
     private Integer groupB;
-    private Integer groupC;
-    private Integer groupD;
-    private Integer groupE;
+    private int groupC;
+    private int groupD;
+    private int groupE;
     private Integer groupF;
 
     /**
@@ -48,8 +48,7 @@ public class OBISIdentifier {
      * @param groupE E value
      * @param groupF F value
      */
-    public OBISIdentifier(Integer groupA, Integer groupB, Integer groupC, Integer groupD, Integer groupE,
-            Integer groupF) {
+    public OBISIdentifier(int groupA, Integer groupB, int groupC, int groupD, int groupE, Integer groupF) {
         this.groupA = groupA;
         this.groupB = groupB;
         this.groupC = groupC;
@@ -99,7 +98,7 @@ public class OBISIdentifier {
     /**
      * @return the groupA
      */
-    public Integer getGroupA() {
+    public int getGroupA() {
         return groupA;
     }
 
@@ -113,21 +112,21 @@ public class OBISIdentifier {
     /**
      * @return the groupC
      */
-    public Integer getGroupC() {
+    public int getGroupC() {
         return groupC;
     }
 
     /**
      * @return the groupD
      */
-    public Integer getGroupD() {
+    public int getGroupD() {
         return groupD;
     }
 
     /**
      * @return the groupE
      */
-    public Integer getGroupE() {
+    public int getGroupE() {
         return groupE;
     }
 
@@ -140,8 +139,8 @@ public class OBISIdentifier {
 
     @Override
     public String toString() {
-        return (groupA != null ? (groupA + "-") : "") + (groupB != null ? (groupB + ":") : "") + groupC + "." + groupD
-                + (groupE != null ? ("." + groupE) : "") + (groupF != null ? ("*" + groupF) : "");
+        return groupA + "-" + (groupB != null ? (groupB + ":") : "") + groupC + "." + groupD + "." + groupE
+                + (groupF != null ? ("*" + groupF) : "");
     }
 
     /**
@@ -162,23 +161,15 @@ public class OBISIdentifier {
         }
         boolean result = true;
 
-        if (groupA != null && o.groupA != null) {
-            result &= (groupA.equals(o.groupA));
-        } else if (!(groupA == null && o.groupA == null)) {
-            result = false;
-        }
+        result &= groupA == o.groupA;
         if (groupB != null && o.groupB != null) {
             result &= (groupB.equals(o.groupB));
         } else if (!(groupB == null && o.groupB == null)) {
             result = false;
         }
-        result &= (groupC.equals(o.groupC));
-        result &= (groupD.equals(o.groupD));
-        if (groupE != null && o.groupE != null) {
-            result &= (groupE.equals(o.groupE));
-        } else if (!(groupE == null && o.groupE == null)) {
-            result = false;
-        }
+        result &= groupC == o.groupC;
+        result &= groupD == o.groupD;
+        result &= groupE == o.groupE;
         if (groupF != null && o.groupF != null) {
             result &= (groupF.equals(o.groupF));
         } else if (!(groupF == null && o.groupF == null)) {
@@ -198,17 +189,13 @@ public class OBISIdentifier {
     public boolean equalsWildCard(OBISIdentifier o) {
         boolean result = true;
 
-        if (groupA != null && o.groupA != null) {
-            result &= (groupA.equals(o.groupA));
-        }
+        result &= groupA == o.groupA;
         if (groupB != null && o.groupB != null) {
             result &= (groupB.equals(o.groupB));
         }
-        result &= (groupC.equals(o.groupC));
-        result &= (groupD.equals(o.groupD));
-        if (groupE != null && o.groupE != null) {
-            result &= (groupE.equals(o.groupE));
-        }
+        result &= groupC == o.groupC;
+        result &= groupD == o.groupD;
+        result &= groupE == o.groupE;
         if (groupF != null && o.groupF != null) {
             result &= (groupF.equals(o.groupF));
         }
@@ -219,8 +206,8 @@ public class OBISIdentifier {
 
     @Override
     public int hashCode() {
-        return Objects.hash(((groupA != null) ? groupA : 0), ((groupB != null) ? groupB : 0), groupC, groupD,
-                ((groupE != null) ? groupE : 0), ((groupF != null) ? groupF : 0));
+        return Objects.hash(groupA, ((groupB == null) ? 0 : groupB), groupC, groupD, groupE,
+                ((groupF == null) ? 0 : groupF));
     }
 
     /**
@@ -242,6 +229,6 @@ public class OBISIdentifier {
      * @return true if the reducedOBISIdentifier is a wildcard identifier, false otherwise.
      */
     public boolean reducedOBISIdentifierIsWildCard() {
-        return (groupA == null) || (groupB == null) || (groupC == null);
+        return groupB == null;
     }
 }

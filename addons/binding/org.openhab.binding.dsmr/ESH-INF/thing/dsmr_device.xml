@@ -6,6 +6,7 @@
 	<bridge-type id="dsmrBridge" listed="true">
 		<label>Dutch Smart Meter</label>
 		<description>The Dutch Smart Meter device</description>
+
 		<config-description-ref uri="binding:dsmr:bridgesettings" />
 	</bridge-type>
 

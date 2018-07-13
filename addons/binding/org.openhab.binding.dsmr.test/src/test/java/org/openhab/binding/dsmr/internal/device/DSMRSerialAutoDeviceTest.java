@@ -21,7 +21,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -58,7 +57,7 @@ public class DSMRSerialAutoDeviceTest {
 
     private SerialPortManager serialPortManager = new SerialPortManager() {
         @Override
-        public @Nullable CommPortIdentifier getIdentifier(String name) throws NoSuchPortException {
+        public CommPortIdentifier getIdentifier(String name) throws NoSuchPortException {
             assertEquals("Expect the passed serial port name", DUMMY_PORTNAME, name);
             return mockIdentifier;
         }

@@ -62,9 +62,9 @@ class DSMRMeterDetector {
                 DSMRMeterDescriptor prevDetectedMeter = detectedMeters.get(meterType.meterKind);
 
                 if (prevDetectedMeter == null // First meter of this kind, add it
-                        || (prevDetectedMeter.getChannel().equals(meterDescriptor.getChannel())
+                        || (prevDetectedMeter.getChannel() == meterDescriptor.getChannel())
                                 && meterType.requiredCosemObjects.length > prevDetectedMeter
-                                        .getMeterType().requiredCosemObjects.length)) {
+                                        .getMeterType().requiredCosemObjects.length) {
                     logger.debug("New compatible meter: {}", meterDescriptor);
                     detectedMeters.put(meterType.meterKind, meterDescriptor);
                     for (CosemObjectType cot : meterDescriptor.getMeterType().supportedCosemObjects) {

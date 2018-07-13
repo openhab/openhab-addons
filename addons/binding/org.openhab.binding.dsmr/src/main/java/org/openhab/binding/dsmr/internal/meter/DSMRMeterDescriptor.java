@@ -38,8 +38,8 @@ public class DSMRMeterDescriptor {
     /**
      * Constructor for new DSMRMeterDescriptor
      *
-     * @param meterType
-     * @param channel
+     * @param meterType The meter type
+     * @param channel The M-Bus channel this meter is connected to
      * @throws IllegalArgumentException if one of the parameters is null
      */
     public DSMRMeterDescriptor(DSMRMeterType meterType, int channel) {
@@ -57,8 +57,15 @@ public class DSMRMeterDescriptor {
     /**
      * @return the channel
      */
-    public Integer getChannel() {
+    public int getChannel() {
         return channel;
+    }
+
+    /**
+     * @return the id to identify of channel as String or as "default" is it's the unknown channel.
+     */
+    public String getChannelId() {
+        return channel == DSMRMeterConstants.UNKNOWN_CHANNEL ? "default" : String.valueOf(channel);
     }
 
     /**

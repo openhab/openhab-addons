@@ -120,12 +120,12 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
     /**
      * Creates a new {@link DSMRSerialAutoDevice}
      *
-     * @param serialPortManager            the manager to get a new serial port connecting from
-     * @param serialPortName               the port name (e.g. /dev/ttyUSB0 or COM1)
-     * @param listener                     the parent {@link DSMREventListener}
-     * @param scheduler                    the scheduler to use with the baudrate switching timers
+     * @param serialPortManager the manager to get a new serial port connecting from
+     * @param serialPortName the port name (e.g. /dev/ttyUSB0 or COM1)
+     * @param listener the parent {@link DSMREventListener}
+     * @param scheduler the scheduler to use with the baudrate switching timers
      * @param baudrateSwitchTimeoutSeconds timeout period for when to try other baudrate settings and end the discovery
-     *                                         of the baudrate
+     *            of the baudrate
      */
     public DSMRSerialAutoDevice(SerialPortManager serialPortManager, String serialPortName, DSMREventListener listener,
             ScheduledExecutorService scheduler, int baudrateSwitchTimeoutSeconds) {

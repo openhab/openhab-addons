@@ -36,7 +36,7 @@ import org.openhab.binding.dsmr.internal.meter.DSMRMeterConstants;
  * @author Hilbrand Bouwkamp - Cosem subclasses made into factory classes and introduced {@link QuantityType}
  */
 public enum CosemObjectType {
-    UNKNOWN(new OBISIdentifier(null, DSMRMeterConstants.UNKNOWN_CHANNEL, -1, -1, null, null), CosemString.INSTANCE),
+    UNKNOWN(new OBISIdentifier(-1, DSMRMeterConstants.UNKNOWN_CHANNEL, -1, -1, -1, null), CosemString.INSTANCE),
 
     /* General messages */
     P1_VERSION_OUTPUT(new OBISIdentifier(1, 3, 0, 2, 8, null), CosemString.INSTANCE),
@@ -144,7 +144,7 @@ public enum CosemObjectType {
     /**
      * Constructs a new CosemObjectType
      *
-     * @param obisId      {@link OBISIdentifier} containing the obisIdentifier for CosemObjectType
+     * @param obisId {@link OBISIdentifier} containing the obisIdentifier for CosemObjectType
      * @param descriptors variable parameter list of {@link CosemValueDescriptor}
      */
     CosemObjectType(OBISIdentifier obisId, CosemValueDescriptor<?>... descriptors) {
@@ -154,10 +154,10 @@ public enum CosemObjectType {
     /**
      * Constructs a new CosemObjectType
      *
-     * @param obisId                   {@link OBISIdentifier} containing the obisIdentifier for CosemObjectType
+     * @param obisId {@link OBISIdentifier} containing the obisIdentifier for CosemObjectType
      * @param nrOfRepeatingDescriptors nr of repeating descriptors (this are the last n descriptors in the variable list
-     *                                     descriptors)
-     * @param descriptors              variable parameter list of {@link CosemValueDescriptor}
+     *            descriptors)
+     * @param descriptors variable parameter list of {@link CosemValueDescriptor}
      */
     CosemObjectType(OBISIdentifier obisId, int nrOfRepeatingDescriptors, CosemValueDescriptor<?>... descriptors) {
         this.obisId = obisId;
@@ -198,7 +198,7 @@ public enum CosemObjectType {
             /* The repeating descriptor must have a specific channel */
             int repeatCount = (idx - descriptors.size()) / repeatingDescriptors.size();
 
-            return new SimpleEntry<>(descriptor.getChannelId() + "_" + repeatCount, descriptor);
+            return new SimpleEntry<>(descriptor.getChannelId() + repeatCount, descriptor);
         } else if (idx < descriptors.size()) {
             CosemValueDescriptor<?> descriptor = descriptors.get(idx);
 

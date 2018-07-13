@@ -299,7 +299,7 @@ public enum DSMRMeterType {
      * Creates a new enum
      *
      * @param channelKey
-     *                       String containing the channel configuration for this meter
+     *            String containing the channel configuration for this meter
      */
     DSMRMeterType(DSMRMeterKind meterKind, CosemObjectType cosemObjectTypeMeterId,
             CosemObjectType... requiredCosemObjects) {
@@ -310,7 +310,7 @@ public enum DSMRMeterType {
      * Creates a new enum
      *
      * @param channelKey
-     *                       String containing the channel configuration for this meter
+     *            String containing the channel configuration for this meter
      */
     DSMRMeterType(DSMRMeterKind meterKind, CosemObjectType cosemObjectTypeMeterId,
             CosemObjectType[] requiredCosemObjects, CosemObjectType[] optionalCosemObjects) {

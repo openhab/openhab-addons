@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.TooManyListenersException;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dsmr.DSMRBindingConstants;
@@ -80,8 +81,8 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
      * Creates a new DSMR serial connector. This is only a reference to a port. The port will
      * not be opened nor it is checked if the DSMR Port can successfully be opened.
      *
-     * @param portManager           Serial Port Manager
-     * @param serialPortName        Device identifier of the port (e.g. /dev/ttyUSB0)
+     * @param portManager Serial Port Manager
+     * @param serialPortName Device identifier of the port (e.g. /dev/ttyUSB0)
      * @param dsmrConnectorListener The listener to send error or received data from the port
      */
     public DSMRSerialConnector(SerialPortManager portManager, String serialPortName,
@@ -108,6 +109,7 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
             try {
                 logger.trace("Opening port {}", serialPortName);
                 // Opening Operating System Serial Port
+                @NonNull
                 CommPortIdentifier portIdentifier = portManager.getIdentifier(serialPortName);
                 serialPort = portIdentifier.open(DSMRBindingConstants.DSMR_PORT_NAME,
                         SERIAL_PORT_READ_TIMEOUT_MILLISECONDS);
@@ -258,7 +260,7 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
     /**
      * Handles an error event. If open and it's a new value it's should be handled by the listener.
      *
-     * @param typeName  type of the event, used in logging only
+     * @param typeName type of the event, used in logging only
      * @param portEvent Serial port event that triggered the error.
      */
     private void handleErrorEvent(String typeName, SerialPortEvent portEvent) {

@@ -135,7 +135,7 @@ public class P1TelegramParser {
      * parsing fails completely nothing will be returned. If parsing succeeds
      * (partial) the received OBIS messages will be returned.
      *
-     * @param data   byte data
+     * @param data byte data
      * @param offset offset tot start in the data buffer
      * @param length number of bytes to parse
      */

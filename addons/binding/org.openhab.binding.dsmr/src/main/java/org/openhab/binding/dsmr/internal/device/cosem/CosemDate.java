@@ -59,8 +59,8 @@ class CosemDate extends CosemValueDescriptor<DateTimeType> {
         /**
          * Constructs a new CosemDateFormat
          *
-         * @param regex          String containing the regular expression to check the value against (the date format
-         *                           should at least contain 1 regex group
+         * @param regex String containing the regular expression to check the value against (the date format
+         *            should at least contain 1 regex group
          * @param javaDateFormat String containing the datetime format to use for parsing
          */
         private CosemDateFormat(String regex, String javaDateFormat) {
