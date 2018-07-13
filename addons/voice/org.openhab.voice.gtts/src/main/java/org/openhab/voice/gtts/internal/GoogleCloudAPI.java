@@ -12,7 +12,6 @@ import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.texttospeech.v1beta1.*;
 import com.google.protobuf.ByteString;
-import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,10 +65,14 @@ class GoogleCloudAPI {
 
     /**
      * Constructor.
-     * @param homeFolder Serrvice home folder.
+     *
+     * @param homeFolder  Service home folder.
+     * @param cacheFolder Service cache folder
      */
-    GoogleCloudAPI(File homeFolder) {
+    GoogleCloudAPI(File homeFolder, File cacheFolder) {
         this.homeFolder = homeFolder;
+        this.cacheFolder = cacheFolder;
+
     }
 
     /**
@@ -100,14 +103,6 @@ class GoogleCloudAPI {
                 logger.error("Error initializing the service using {}", keyFile.getAbsoluteFile(), e);
                 initialized = false;
             }
-
-            //create cache folder
-            cacheFolder = new File(keyFile.getParentFile(), "cache");
-            if (!cacheFolder.exists()) {
-                //noinspection ResultOfMethodCallIgnored
-                cacheFolder.mkdirs();
-            }
-            logger.info("Using cache folder {}", cacheFolder.getAbsolutePath());
         } else {
             googleClient = null;
             voices.clear();
@@ -181,7 +176,6 @@ class GoogleCloudAPI {
      * Converts openHAB audio format to Google parameters.
      *
      * @param codec Requested codec
-     *
      * @return String array of Google audio format and the file extension to use.
      */
     private String[] getFormatForCodec(String codec) {

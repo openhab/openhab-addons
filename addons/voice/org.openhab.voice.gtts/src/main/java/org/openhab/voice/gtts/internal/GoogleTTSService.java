@@ -64,6 +64,11 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
     static final String SERVICE_PID = "org.openhab." + SERVICE_CATEGORY + "." + SERVICE_ID;
 
     /**
+     * Cache folder under $userdata
+     */
+    private static final String CACHE_FOLDER_NAME = "cache";
+
+    /**
      * Configuration parameters
      */
     private static final String PARAM_SERVICE_KEY_FILE_NAME = "serviceAccountKeyName";
@@ -99,17 +104,28 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
     /**
      * DS activate, with access to ConfigAdmin
      */
+    @SuppressWarnings("unused")
     protected void activate(Map<String, Object> config) {
         try {
             //create home folder
             File userData = new File(ConfigConstants.getUserDataFolder());
             File homeFolder = new File(userData, SERVICE_ID);
+
             if (!homeFolder.exists()) {
                 //noinspection ResultOfMethodCallIgnored
                 homeFolder.mkdirs();
             }
-            logger.info("Home folder created: {}", homeFolder.getAbsolutePath());
-            apiImpl = new GoogleCloudAPI(homeFolder);
+            logger.info("Using home folder: {}", homeFolder.getAbsolutePath());
+
+            //create cache folder
+            File cacheFolder = new File(new File(userData, CACHE_FOLDER_NAME), SERVICE_PID);
+            if (!cacheFolder.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                cacheFolder.mkdirs();
+            }
+            logger.info("Using cache folder {}", cacheFolder.getAbsolutePath());
+
+            apiImpl = new GoogleCloudAPI(homeFolder, cacheFolder);
             updateConfig(config);
         } catch (Throwable t) {
             logger.error("Failed to activate Google Cloud TTS Service: {}", t.getMessage(), t);
