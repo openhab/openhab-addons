@@ -66,6 +66,12 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 			}
 		}
 	}
+	
+	@Override
+	protected boolean connectionStatus(IWinkDevice device){
+		Map<String, String> jsonData = getDevice().getCurrentStateComplexJson();
+		return jsonData.get("connection").equals("true");
+	}
 
 	private void setDesiredTemperature(float temperature) {
 		bridgeHandler.setThermostatTemperature(getDevice(), temperature);
@@ -87,11 +93,13 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 
 	@Override
 	protected WinkSupportedDevice getDeviceType() {
+		logger.error("Its a thermostat!");
 		return WinkSupportedDevice.THERMOSTAT;
 	}
 
 	@Override
 	protected void updateDeviceState(IWinkDevice device) {
+		logger.error("Updating Thermostat-=-=-=-=-=-=-");
 		Map<String, String> jsonData = device.getCurrentStateComplexJson();
 		Map<String, String> jsonDataDesired = device.getDesiredState();
 
@@ -106,6 +114,7 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 				temperature = temperature * 1.8f + 32;
 			}
 			updateState(CHANNEL_THERMOSTAT_CURRENTTEMPERATURE, new DecimalType(temperature));
+			logger.error("Updated CHANNEL_THERMOSTAT_CURRENTTEMPERATURE-=-=-=-=-=-=-");
 		}
 
 		// For the channels the user changes, I need to take into account the desired data as well.
@@ -140,6 +149,8 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 
 			updateState(CHANNEL_THERMOSTAT_CURRENTSETPOINT, new DecimalType(currentSetPoint));
 			updateState(CHANNEL_THERMOSTAT_CURRENTMODE, new StringType(currentOperationModePretty));
+			logger.error("Updated CHANNEL_THERMOSTAT_CURRENTSETPOINT-=-=-=-=-=-=-");
+			logger.error("Updated CHANNEL_THERMOSTAT_CURRENTMODE-=-=-=-=-=-=-");
 		}
 
 		if (jsonData.get("smart_temperature") != null && !jsonData.get("smart_temperature").equals("null")) {
@@ -148,6 +159,7 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 				smartTemperature = smartTemperature * 1.8f + 32;
 			}
 			updateState(CHANNEL_THERMOSTAT_SMARTTEMPERATURE, new DecimalType(smartTemperature));
+			logger.error("Updated CHANNEL_THERMOSTAT_SMARTTEMPERATURE-=-=-=-=-=-=-");
 		}
 
 		if (jsonData.get("external_temperature") != null && !jsonData.get("external_temperature").equals("null")) {
@@ -161,6 +173,7 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 		if (jsonData.get("humidity") != null && !jsonData.get("humidity").equals("null")) {
 			final Float humidity = Float.valueOf(jsonData.get("humidity"));
 			updateState(CHANNEL_THERMOSTAT_HUMIDITY, new DecimalType(humidity));
+			logger.error("Updated CHANNEL_THERMOSTAT_HUMIDITY-=-=-=-=-=-=-");
 		}
 
 		if (jsonData.get("connection") != null && !jsonData.get("connection").equals("null")) {
@@ -189,6 +202,7 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 		if (jsonData.get("fan_active") != null && !jsonData.get("fan_active").equals("null")) {
 			final boolean fanState = Boolean.valueOf(jsonData.get("fan_active"));
 			updateState(CHANNEL_THERMOSTAT_FANACTIVE, fanState ? OnOffType.ON : OnOffType.OFF);
+			logger.error("Updated CHANNEL_THERMOSTAT_FANACTIVE-=-=-=-=-=-=-");
 		}
 
 		if (jsonData.get("last_error") != null && !jsonData.get("last_error").equals("null")) {
@@ -218,5 +232,6 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 		}
 
 		updateState(CHANNEL_THERMOSTAT_RUNNINGMODE, new StringType(runningMode));
+		logger.error("All Done Updating Thermostat-=-=-=-=-=-=-");
 	}
 }

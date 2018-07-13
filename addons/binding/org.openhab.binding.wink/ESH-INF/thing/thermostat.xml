@@ -27,9 +27,10 @@
             <channel typeId="thermostat_occupied" id="thermostat_occupied"/>
         </channels>
         <config-description>
-            <parameter name="uuid" type="text" required="true" />
+            <parameter name="uuid" type="text" required="true">
                 <label>UUID</label>
                 <description>Unique Identifier assigned by Wink</description>
+            </parameter>
         </config-description>
     </thing-type>
 

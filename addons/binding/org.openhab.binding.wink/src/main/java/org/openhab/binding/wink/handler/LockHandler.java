@@ -49,6 +49,11 @@ public class LockHandler extends WinkBaseThingHandler {
             }
         }
     }
+	
+	@Override
+	protected boolean connectionStatus(IWinkDevice device){
+		return getDevice().getCurrentState().get("connection").equals("true");
+	}
 
     private void setLock(boolean lock) {
         IWinkDevice device = getDevice();

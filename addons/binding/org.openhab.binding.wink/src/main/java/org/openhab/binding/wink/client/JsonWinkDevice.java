@@ -16,7 +16,10 @@ import java.util.Set;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class parses json from the wink api and from pubnub and produces an IWinkDevice
@@ -26,6 +29,8 @@ import com.google.gson.reflect.TypeToken;
  */
 public class JsonWinkDevice implements IWinkDevice {
 	private JsonObject json;
+	
+    private final Logger logger = LoggerFactory.getLogger(JsonWinkDevice.class);
 
 	public JsonWinkDevice(JsonObject element) {
 		this.json = element;
@@ -95,33 +100,41 @@ public class JsonWinkDevice implements IWinkDevice {
 
 	@Override
 	public Map<String, String> getCurrentStateComplexJson() {
-		JsonObject data = json.get("last_reading").getAsJsonObject();
-		Map<String, String> theMap = new HashMap<String, String>();
-		Set<Entry<String, JsonElement>> entrySet = data.entrySet();
-		for (Map.Entry<String, JsonElement> entry : entrySet) {
-			if (entry.getValue().isJsonArray()) {
-				// If it is a json array, iterate thru the items and add them as comma separated strings.
-				// This is the item that does not parse correctly in the toMap() call above.
-				String theValues = "";
-				for (JsonElement element : entry.getValue().getAsJsonArray()) {
-					if (element.isJsonNull()) {
-						theValues += "null,";
-						continue;
+		try
+		{
+			JsonObject data = json.get("last_reading").getAsJsonObject();
+			Map<String, String> theMap = new HashMap<String, String>();
+			Set<Entry<String, JsonElement>> entrySet = data.entrySet();
+			for (Map.Entry<String, JsonElement> entry : entrySet) {
+				if (entry.getValue().isJsonArray()) {
+					// If it is a json array, iterate thru the items and add them as comma separated strings.
+					// This is the item that does not parse correctly in the toMap() call above.
+					String theValues = "";
+					for (JsonElement element : entry.getValue().getAsJsonArray()) {
+						if (element.isJsonNull()) {
+							theValues += "null,";
+							continue;
+						}
+						theValues += element.getAsString() + ",";
 					}
-					theValues += element.getAsString() + ",";
+					theMap.put(entry.getKey(), theValues.replaceFirst(",$", "")); // Remove trailing ','
+					logger.debug("json data: {}:{}", entry.getKey(), theValues.replaceFirst(",$", ""));
+					continue;
 				}
-				theMap.put(entry.getKey(), theValues.replaceFirst(",$", "")); // Remove trailing ','
-				continue;
-			}
 
-			if (entry.getValue().isJsonNull()) {
-				theMap.put(entry.getKey(), "null");
-				continue;
-			}
+				if (entry.getValue().isJsonNull()) {
+					theMap.put(entry.getKey(), "null");
+					continue;
+				}
 
-			theMap.put(entry.getKey(), entry.getValue().getAsString());
+				theMap.put(entry.getKey(), entry.getValue().getAsString());
+				logger.debug("json data2: {}:{}", entry.getKey(), entry.getValue().getAsString());
+			}
+			return theMap;
+		} catch (RuntimeException e) {
+			logger.error("getCurrentStateComplexJson threw: {}", e.getMessage());
+			return null;
 		}
-		return theMap;
 	}
 
 	@Override

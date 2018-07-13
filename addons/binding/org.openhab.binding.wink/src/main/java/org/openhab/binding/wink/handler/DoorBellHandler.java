@@ -50,4 +50,9 @@ public class DoorBellHandler extends WinkBaseThingHandler {
             this.triggerChannel(CHANNEL_BUTTON, "BUTTON PRESS");
         }
     }
+	
+	@Override
+	protected boolean connectionStatus(IWinkDevice device){
+		return getDevice().getCurrentState().get("connection").equals("true");
+	}
 }

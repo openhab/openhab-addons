@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.wink.handler;
 
+import java.util.Map;
 import java.util.Arrays;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -64,7 +65,7 @@ public abstract class WinkBaseThingHandler extends BaseThingHandler {
                     "UUID must be specified in Config");
         } else {
             try {
-                if (getDevice().getCurrentState().get("connection").equals("true")) {
+                if (connectionStatus(getDevice())) {
                     updateStatus(ThingStatus.ONLINE);
                     updateDeviceState(getDevice());
                     registerToPubNub();
@@ -118,6 +119,8 @@ public abstract class WinkBaseThingHandler extends BaseThingHandler {
      */
     protected abstract void handleWinkCommand(ChannelUID channelUID, Command command);
 
+	protected abstract boolean connectionStatus(IWinkDevice device);
+	
     @Override
     public void channelLinked(ChannelUID channelUID) {
         try {

@@ -92,7 +92,7 @@ public class DelegatedAuthenticationService implements IWinkAuthenticationServic
         JsonParser parser = new JsonParser();
         JsonObject resultJson = parser.parse(result).getAsJsonObject();
 
-        logger.trace("Json Result: {}", resultJson);
+        logger.debug("Json Result: {}", resultJson);
 
         return resultJson;
     }
