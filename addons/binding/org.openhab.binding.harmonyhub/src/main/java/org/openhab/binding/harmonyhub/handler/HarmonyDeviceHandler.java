@@ -191,7 +191,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
                 .withType(channelTypeUID).build();
 
         // replace existing buttonPress with updated one
-        List<Channel> newChannels = new ArrayList<Channel>();
+        List<Channel> newChannels = new ArrayList<>();
         for (Channel c : getThing().getChannels()) {
             if (!c.getUID().equals(channel.getUID())) {
                 newChannels.add(c);
@@ -207,7 +207,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
     private List<StateOption> getButtonStateOptions(HarmonyConfig harmonyConfig) {
         int id = config.id;
         String name = config.name;
-        List<StateOption> states = new LinkedList<StateOption>();
+        List<StateOption> states = new LinkedList<>();
 
         // Iterate through button function commands and add them to our state list
         for (Device device : harmonyConfig.getDevices()) {

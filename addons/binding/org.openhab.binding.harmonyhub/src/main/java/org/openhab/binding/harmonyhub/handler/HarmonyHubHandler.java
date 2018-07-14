@@ -81,7 +81,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
     private static final int RETRY_TIME = 60;
     private static final int HEARTBEAT_INTERVAL = 30;
 
-    private List<HubStatusListener> listeners = new CopyOnWriteArrayList<HubStatusListener>();
+    private List<HubStatusListener> listeners = new CopyOnWriteArrayList<>();
 
     private final ExpiringCacheAsync<@Nullable HarmonyConfig> configCache = new ExpiringCacheAsync<>(CONFIG_CACHE_TIME);
     private final HarmonyHubHandlerFactory factory;
@@ -350,7 +350,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
         Collections.sort(activities, ACTIVITY_COMPERATOR);
 
         // add our activities as channel state options
-        List<StateOption> states = new LinkedList<StateOption>();
+        List<StateOption> states = new LinkedList<>();
         for (Activity activity : activities) {
             states.add(new StateOption(activity.getLabel(), activity.getLabel()));
         }

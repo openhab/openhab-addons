@@ -61,8 +61,8 @@ public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory implements
 
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    private final List<ChannelType> channelTypes = new CopyOnWriteArrayList<ChannelType>();
-    private final List<ChannelGroupType> channelGroupTypes = new CopyOnWriteArrayList<ChannelGroupType>();
+    private final List<ChannelType> channelTypes = new CopyOnWriteArrayList<>();
+    private final List<ChannelGroupType> channelGroupTypes = new CopyOnWriteArrayList<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -104,8 +104,8 @@ public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory implements
      */
     private synchronized void registerHarmonyDeviceDiscoveryService(HarmonyHubHandler harmonyHubHandler) {
         HarmonyDeviceDiscoveryService discoveryService = new HarmonyDeviceDiscoveryService(harmonyHubHandler);
-        this.discoveryServiceRegs.put(harmonyHubHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(harmonyHubHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     @Override
@@ -148,7 +148,7 @@ public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory implements
     }
 
     public void removeChannelTypesForThing(ThingUID uid) {
-        List<ChannelType> removes = new ArrayList<ChannelType>();
+        List<ChannelType> removes = new ArrayList<>();
         for (ChannelType c : channelTypes) {
             if (c.getUID().getAsString().startsWith(uid.getAsString())) {
                 removes.add(c);
