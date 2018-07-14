@@ -8,7 +8,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="device" />
 		</supported-bridge-type-refs>
-		<label>LOGO! pulse block</label>
+		<label>Pulse Block</label>
 		<description>Siemens LOGO! pulse virtual block</description>
 		<config-description-ref uri="thing-type:plclogo:pulse" />
 	</thing-type>

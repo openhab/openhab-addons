@@ -70,7 +70,7 @@ public class PLCPulseHandler extends PLCCommonHandler {
         }
 
         Channel channel = getThing().getChannel(channelUID.getId());
-        Objects.requireNonNull(channel, "PLCPulseHandler: Invalid channel found.");
+        Objects.requireNonNull(channel, "PLCPulseHandler: Invalid channel found");
 
         PLCLogoClient client = getLogoClient();
         String name = getBlockFromChannel(channel);
@@ -84,7 +84,7 @@ public class PLCPulseHandler extends PLCCommonHandler {
                 if (result == 0) {
                     updateChannel(channel, S7.GetBitAt(buffer, 0, bit));
                 } else {
-                    logger.warn("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
+                    logger.debug("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
                 }
             } else if ((command instanceof OpenClosedType) || (command instanceof OnOffType)) {
                 String type = channel.getAcceptedItemType();
@@ -93,17 +93,17 @@ public class PLCPulseHandler extends PLCCommonHandler {
                 } else if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type)) {
                     S7.SetBitAt(buffer, 0, 0, ((OnOffType) command) == OnOffType.ON);
                 } else {
-                    logger.warn("Channel {} will not accept {} items.", channelUID, type);
+                    logger.debug("Channel {} will not accept {} items.", channelUID, type);
                 }
                 int result = client.writeDBArea(1, 8 * address + bit, buffer.length, S7Client.S7WLBit, buffer);
                 if (result != 0) {
-                    logger.warn("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
+                    logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
                 }
             } else {
-                logger.warn("Channel {} received not supported command {}.", channelUID, command);
+                logger.debug("Channel {} received not supported command {}.", channelUID, command);
             }
         } else {
-            logger.warn("Invalid channel {} or client {} found.", channelUID, client);
+            logger.info("Invalid channel {} or client {} found.", channelUID, client);
         }
     }
 
@@ -114,13 +114,13 @@ public class PLCPulseHandler extends PLCCommonHandler {
         }
 
         if (data.length != getBufferLength()) {
-            logger.warn("Received and configured data sizes does not match.");
+            logger.info("Received and configured data sizes does not match.");
             return;
         }
 
         List<Channel> channels = thing.getChannels();
         if (channels.size() != getNumberOfChannels()) {
-            logger.warn("Received and configured channel sizes does not match.");
+            logger.info("Received and configured channel sizes does not match.");
             return;
         }
 
@@ -159,16 +159,16 @@ public class PLCPulseHandler extends PLCCommonHandler {
                                 if (result == 0) {
                                     setOldValue(channelUID.getId(), null);
                                 } else {
-                                    logger.warn("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
+                                    logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
                                 }
                             }
                         }, pulse.longValue(), TimeUnit.MILLISECONDS);
                     }
                 } else {
-                    logger.warn("Invalid channel {} found.", channelUID);
+                    logger.info("Invalid channel {} found.", channelUID);
                 }
             } else {
-                logger.warn("Invalid channel {} or client {} found.", channelUID, client);
+                logger.info("Invalid channel {} or client {} found.", channelUID, client);
             }
         }
     }
@@ -183,7 +183,7 @@ public class PLCPulseHandler extends PLCCommonHandler {
         }
 
         Channel channel = thing.getChannel(channelUID.getId());
-        Objects.requireNonNull(channel, "PLCPulseHandler: Invalid channel found.");
+        Objects.requireNonNull(channel, "PLCPulseHandler: Invalid channel found");
 
         setOldValue(channelUID.getId(), value);
     }
@@ -230,7 +230,7 @@ public class PLCPulseHandler extends PLCCommonHandler {
                 address = base + (address - 1) / 8;
             }
         } else {
-            logger.warn("Wrong configurated LOGO! block {} found.", name);
+            logger.info("Wrong configurated LOGO! block {} found.", name);
         }
         return address;
     }
@@ -238,12 +238,10 @@ public class PLCPulseHandler extends PLCCommonHandler {
     @Override
     protected void doInitialization() {
         Thing thing = getThing();
-        Objects.requireNonNull(thing, "PLCPulseHandler: Thing may not be null.");
-
         Bridge bridge = getBridge();
-        Objects.requireNonNull(bridge, "PLCPulseHandler: Bridge may not be null.");
+        Objects.requireNonNull(bridge, "PLCPulseHandler: Bridge may not be null");
 
-        logger.debug("Initialize LOGO! {} pulse handler.");
+        logger.debug("Initialize LOGO! pulse handler.");
 
         config.set(getConfigAs(PLCPulseConfiguration.class));
 
@@ -310,7 +308,7 @@ public class PLCPulseHandler extends PLCCommonHandler {
                 bit = (bit - 1) % 8;
             }
         } else {
-            logger.warn("Wrong configurated LOGO! block {} found.", name);
+            logger.info("Wrong configurated LOGO! block {} found.", name);
         }
 
         return bit;
@@ -326,7 +324,7 @@ public class PLCPulseHandler extends PLCCommonHandler {
             updateState(channelUID, value ? OnOffType.ON : OnOffType.OFF);
             logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
         } else {
-            logger.warn("Channel {} will not accept {} items.", channelUID, type);
+            logger.debug("Channel {} will not accept {} items.", channelUID, type);
         }
     }
 

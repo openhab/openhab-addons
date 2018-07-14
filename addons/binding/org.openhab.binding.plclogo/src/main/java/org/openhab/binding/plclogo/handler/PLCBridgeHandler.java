@@ -14,11 +14,12 @@ import java.time.DateTimeException;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -27,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -57,8 +59,9 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DEVICE);
 
-    private static final Map<Integer, @Nullable String> logged = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(PLCBridgeHandler.class);
+
+    private Map<ChannelUID, @Nullable String> oldValues = new HashMap<>();
 
     @Nullable
     private volatile PLCLogoClient client; // S7 client used for communication with Logo!
@@ -69,14 +72,12 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     private ScheduledFuture<?> rtcJob;
     private AtomicReference<ZonedDateTime> rtc = new AtomicReference<>(ZonedDateTime.now());
     private final Runnable rtcReader = new Runnable() {
-        private final @Nullable Channel channel = getThing().getChannel(RTC_CHANNEL);
+        private final List<Channel> channels = getThing().getChannels();
 
         @Override
         public void run() {
-            if (channel != null) {
+            for (Channel channel : channels) {
                 handleCommand(channel.getUID(), RefreshType.REFRESH);
-            } else {
-                logger.warn("Can not update channel {}: {}.", channel, client);
             }
         }
     };
@@ -97,7 +98,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                         synchronized (handlers) {
                             for (PLCCommonHandler handler : handlers) {
                                 if (handler == null) {
-                                    logger.warn("Skip processing of invalid handler.");
+                                    logger.debug("Skip processing of invalid handler.");
                                     continue;
                                 }
 
@@ -106,18 +107,18 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                                 if ((length > 0) && (address != PLCCommonHandler.INVALID)) {
                                     handler.setData(Arrays.copyOfRange(buffer, address, address + length));
                                 } else {
-                                    logger.warn("Invalid handler {} found.", handler.getClass().getSimpleName());
+                                    logger.debug("Invalid handler {} found.", handler.getClass().getSimpleName());
                                 }
                             }
                         }
                     } else {
-                        logger.warn("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
+                        logger.debug("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
                     }
                 } catch (Exception exception) {
                     logger.error("Reader thread got exception: {}.", exception.getMessage());
                 }
             } else {
-                logger.warn("Either memory block {} or LOGO! client {} is invalid.", memory, client);
+                logger.debug("Either memory block {} or LOGO! client {} is invalid.", memory, client);
             }
         }
     };
@@ -134,62 +135,74 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         logger.debug("Handle command {} on channel {}", command, channelUID);
 
         Thing thing = getThing();
-        Objects.requireNonNull(thing, "PLCBridgeHandler: Thing may not be null.");
         if (ThingStatus.ONLINE != thing.getStatus()) {
             return;
         }
 
-        String channelId = channelUID.getId();
-        if (!RTC_CHANNEL.equals(channelId) || (client == null)) {
-            logger.warn("Can not update channel {}: {}.", channelUID, client);
+        if (!(command instanceof RefreshType)) {
+            logger.debug("Not supported command {} received.", command);
             return;
         }
 
-        if (command instanceof RefreshType) {
-            byte[] buffer = { 0, 0, 0, 0, 0, 0, 0 };
-            int result = client.readDBArea(1, LOGO_STATE.intValue(), buffer.length, S7Client.S7WLByte, buffer);
+        String channelId = channelUID.getId();
+        Channel channel = thing.getChannel(channelId);
+        Layout layout = LOGO_CHANNELS.get(channelId);
+        if ((client != null) && (channel != null) && (layout != null)) {
+            byte[] buffer = new byte[layout.length];
+            Arrays.fill(buffer, (byte) 0);
+            int result = client.readDBArea(1, layout.address, buffer.length, S7Client.S7WLByte, buffer);
             if (result == 0) {
-                ZonedDateTime clock = ZonedDateTime.now();
-                if (!LOGO_0BA7.equalsIgnoreCase(getLogoFamily())) {
-                    try {
-                        int year = clock.getYear() / 100;
-                        clock = clock.withYear(100 * year + buffer[1]);
-                        clock = clock.withMonth(buffer[2]);
-                        clock = clock.withDayOfMonth(buffer[3]);
-                        clock = clock.withHour(buffer[4]);
-                        clock = clock.withMinute(buffer[5]);
-                        clock = clock.withSecond(buffer[6]);
-                    } catch (DateTimeException exception) {
-                        clock = ZonedDateTime.now();
-                        logger.warn("Return local server time: {}.", exception.getMessage());
-                    }
-                }
-                rtc.set(clock);
-                updateState(channelUID, new DateTimeType(clock));
-
-                Map<Integer, @Nullable String> states = LOGO_STATES.get(getLogoFamily());
-                for (Integer key : states.keySet()) {
-                    int code = buffer[0] & key.intValue();
-                    if ((code == key.intValue()) && !logged.containsKey(key)) {
-                        String message = states.get(key);
-                        if (message != null) {
-                            logged.put(code, message);
-                            logger.info("LOGO! diagnostics returned: {}.", message);
+                if (RTC_CHANNEL.equals(channelId)) {
+                    ZonedDateTime clock = ZonedDateTime.now();
+                    if (!LOGO_0BA7.equalsIgnoreCase(getLogoFamily())) {
+                        try {
+                            int year = clock.getYear() / 100;
+                            clock = clock.withYear(100 * year + buffer[0]);
+                            clock = clock.withMonth(buffer[1]);
+                            clock = clock.withDayOfMonth(buffer[2]);
+                            clock = clock.withHour(buffer[3]);
+                            clock = clock.withMinute(buffer[4]);
+                            clock = clock.withSecond(buffer[5]);
+                        } catch (DateTimeException exception) {
+                            clock = ZonedDateTime.now();
+                            logger.info("Return local server time: {}.", exception.getMessage());
                         }
                     }
+                    rtc.set(clock);
+                    updateState(channelUID, new DateTimeType(clock));
+                } else if (DAIGNOSTICS_CHANNEL.equals(channelId)) {
+                    Map<Integer, @Nullable String> states = LOGO_STATES.get(getLogoFamily());
+                    for (Integer key : states.keySet()) {
+                        String message = states.get(buffer[0] & key.intValue());
+                        synchronized (oldValues) {
+                            if ((message != null) && (oldValues.get(channelUID) != message)) {
+                                updateState(channelUID, new StringType(message));
+                                oldValues.put(channelUID, message);
+                            }
+                        }
+                    }
+                } else if (DAY_OF_WEEK_CHANNEL.equals(channelId)) {
+                    String value = DAY_OF_WEEK.get(Integer.valueOf(buffer[0]));
+                    synchronized (oldValues) {
+                        if ((value != null) && (oldValues.get(channelUID) != value)) {
+                            updateState(channelUID, new StringType(value));
+                            oldValues.put(channelUID, value);
+                        }
+                    }
+                } else {
+                    logger.info("Invalid channel {} or client {} found.", channelUID, client);
                 }
 
-                Channel channel = thing.getChannel(channelId);
-                if (logger.isTraceEnabled() && (channel != null)) {
+                if (logger.isTraceEnabled()) {
                     String raw = Arrays.toString(buffer);
                     String type = channel.getAcceptedItemType();
                     logger.trace("Channel {} accepting {} received {}.", channelUID, type, raw);
                 }
             } else {
-                logger.warn("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
+                logger.debug("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
             }
         } else {
-            logger.debug("Not supported command {} received.", command);
+            logger.info("Invalid channel {} or client {} found.", channelUID, client);
         }
     }
 
@@ -197,8 +210,12 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initialize LOGO! bridge handler.");
 
+        synchronized (oldValues) {
+            oldValues.clear();
+        }
+
         Thing thing = getThing();
-        Objects.requireNonNull(thing, "PLCBridgeHandler: Thing may not be null.");
+        Objects.requireNonNull(thing, "PLCBridgeHandler: Thing may not be null");
 
         config.set(getConfigAs(PLCLogoBridgeConfiguration.class));
 
@@ -264,6 +281,10 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
 
         if (disconnect()) {
             client = null;
+        }
+
+        synchronized (oldValues) {
+            oldValues.clear();
         }
     }
 

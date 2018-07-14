@@ -8,7 +8,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="device" />
 		</supported-bridge-type-refs>
-		<label>LOGO! memory address</label>
+		<label>Memory Address</label>
 		<description>Siemens LOGO! memory address</description>
 		<config-description-ref uri="thing-type:plclogo:memory" />
 	</thing-type>

@@ -157,16 +157,20 @@ Follow observed block names are allowed for pulse things:
 
 ### Bridge
 
-Each device have currently one channel `rtc`:
+Each device have currently three channels `diagnostic`, `rtc` and `weekday`:
 
 ```
+channel="plclogo:device:<DeviceId>:diagnostic"
 channel="plclogo:device:<DeviceId>:rtc"
+channel="plclogo:device:<DeviceId>:weekday"
 ```
 
-This channel supports `DateTime` items only. Since Siemens `0BA7` (LOGO! 7) devices will not transfer
-any useful data for this channel, local time of openHAB host will be used. Rather for Siemens `0BA8`
-(LOGO! 8) devices, the data will be read from PLC. Since the smallest resolution provided by LOGO! is
-one second, `rtc` channel will be tried to update with the same rate.
+Channels `diagnostic` and `weekday` supports `String` items. Channel `diagnostic` contains the last
+diagnostic message reported by LOGO!. Channel `weekday` contains current day of the week. The value
+is provided by LOGO!.  Channel `rtc` supports `DateTime` items only. Since Siemens `0BA7` (LOGO! 7)
+devices will not transfer any useful data for this channel, local time of openHAB host will be used.
+Rather for Siemens `0BA8` (LOGO! 8) devices, the data will be read from PLC. Since the smallest
+resolution provided by LOGO! is one second, `rtc` channel will be tried to update with the same rate.
 
 ### Digital
 
@@ -253,6 +257,7 @@ channel="plclogo:pulse:<DeviceId>:<ThingId>:state"
 ```
 
 Additionally the state of observed block data is provided via `observed` channel
+
 ```
 channel="plclogo:pulse:<DeviceId>:<ThingId>:observed"
 ```
@@ -302,7 +307,9 @@ DateTime LogoDate { channel="plclogo:datetime:Logo:VW150:date" }
 Switch  LogoVB1_S { channel="plclogo:pulse:Logo:VB0_1:state"}
 Switch  LogoVB1_O { channel="plclogo:pulse:Logo:VB0_1:observed"}
 
-DateTime RTC      { channel="plclogo:device:Logo:rtc }
+String   Diagnostic { channel="plclogo:device:Logo:diagnostic }
+DateTime RTC        { channel="plclogo:device:Logo:rtc }
+String   DayOfWeek  { channel="plclogo:device:Logo:weekday }
 ```
 
 Configuration of two Siemens LOGO!

@@ -98,7 +98,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
         }
 
         Channel channel = getThing().getChannel(channelUID.getId());
-        Objects.requireNonNull(channel, "PLCAnalogHandler: Invalid channel found.");
+        Objects.requireNonNull(channel, "PLCAnalogHandler: Invalid channel found");
 
         PLCLogoClient client = getLogoClient();
         String name = getBlockFromChannel(channel);
@@ -112,7 +112,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
                 if (result == 0) {
                     updateChannel(channel, S7.GetShortAt(buffer, address - base));
                 } else {
-                    logger.warn("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
+                    logger.debug("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
                 }
             } else if (command instanceof DecimalType) {
                 byte[] buffer = new byte[2];
@@ -120,17 +120,17 @@ public class PLCAnalogHandler extends PLCCommonHandler {
                 if (ANALOG_ITEM.equalsIgnoreCase(type)) {
                     S7.SetShortAt(buffer, 0, ((DecimalType) command).intValue());
                 } else {
-                    logger.warn("Channel {} will not accept {} items.", channelUID, type);
+                    logger.debug("Channel {} will not accept {} items.", channelUID, type);
                 }
                 int result = client.writeDBArea(1, address, buffer.length, S7Client.S7WLByte, buffer);
                 if (result != 0) {
-                    logger.warn("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
+                    logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
                 }
             } else {
-                logger.warn("Channel {} received not supported command {}.", channelUID, command);
+                logger.debug("Channel {} received not supported command {}.", channelUID, command);
             }
         } else {
-            logger.warn("Invalid channel {} or client {} found.", channelUID, client);
+            logger.info("Invalid channel {} or client {} found.", channelUID, client);
         }
     }
 
@@ -141,13 +141,13 @@ public class PLCAnalogHandler extends PLCCommonHandler {
         }
 
         if (data.length != getBufferLength()) {
-            logger.warn("Received and configured data sizes does not match.");
+            logger.info("Received and configured data sizes does not match.");
             return;
         }
 
         List<Channel> channels = thing.getChannels();
         if (channels.size() != getNumberOfChannels()) {
-            logger.warn("Received and configured channel sizes does not match.");
+            logger.info("Received and configured channel sizes does not match.");
             return;
         }
 
@@ -169,7 +169,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
                     logger.trace("Channel {} received [{}, {}].", channelUID, data[index], data[index + 1]);
                 }
             } else {
-                logger.warn("Invalid channel {} found.", channelUID);
+                logger.info("Invalid channel {} found.", channelUID);
             }
         }
     }
@@ -179,7 +179,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
         super.updateState(channelUID, state);
 
         Channel channel = thing.getChannel(channelUID.getId());
-        Objects.requireNonNull(channel, "PLCAnalogHandler: Invalid channel found.");
+        Objects.requireNonNull(channel, "PLCAnalogHandler: Invalid channel found");
 
         setOldValue(getBlockFromChannel(channel), state);
     }
@@ -224,7 +224,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
         if (address != INVALID) {
             address = getBase(name) + (address - 1) * 2;
         } else {
-            logger.warn("Wrong configurated LOGO! block {} found.", name);
+            logger.info("Wrong configurated LOGO! block {} found.", name);
         }
         return address;
     }
@@ -232,10 +232,8 @@ public class PLCAnalogHandler extends PLCCommonHandler {
     @Override
     protected void doInitialization() {
         Thing thing = getThing();
-        Objects.requireNonNull(thing, "PLCAnalogHandler: Thing may not be null.");
-
         Bridge bridge = getBridge();
-        Objects.requireNonNull(bridge, "PLCAnalogHandler: Bridge may not be null.");
+        Objects.requireNonNull(bridge, "PLCAnalogHandler: Bridge may not be null");
 
         logger.debug("Initialize LOGO! analog input blocks handler.");
 
@@ -280,7 +278,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
             updateState(channelUID, new DecimalType(value));
             logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
         } else {
-            logger.warn("Channel {} will not accept {} items.", channelUID, type);
+            logger.debug("Channel {} will not accept {} items.", channelUID, type);
         }
     }
 

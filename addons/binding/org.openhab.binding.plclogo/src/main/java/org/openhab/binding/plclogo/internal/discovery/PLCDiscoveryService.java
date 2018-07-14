@@ -19,7 +19,6 @@ import java.net.SocketException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
@@ -30,7 +29,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -53,25 +51,19 @@ import org.slf4j.LoggerFactory;
 public class PLCDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(PLCDiscoveryService.class);
+    private static final Set<ThingTypeUID> THING_TYPES_UIDS = Collections.singleton(THING_TYPE_DEVICE);
 
-    // Bridge config properties
     private static final String LOGO_HOST = "address";
     private static final int LOGO_PORT = 102;
 
-    private static final int DISCOVERY_TIMEOUT = 30;
-    private static final Set<ThingTypeUID> THING_TYPES_UIDS = Collections.singleton(THING_TYPE_DEVICE);
-
     private static final int CONNECTION_TIMEOUT = 500;
-    private Set<String> addresses = new TreeSet<>();
-
-    private @Nullable ExecutorService executor;
+    private static final int DISCOVERY_TIMEOUT = 30;
 
     private class Runner implements Runnable {
         private final ReentrantLock lock = new ReentrantLock();
         private String host;
 
         public Runner(final String address) {
-            Objects.requireNonNull(address, "IP may not be null");
             this.host = address;
         }
 
@@ -79,7 +71,7 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
         public void run() {
             try {
                 if (Ping.checkVitality(host, LOGO_PORT, CONNECTION_TIMEOUT)) {
-                    logger.info("LOGO! device found at: {}.", host);
+                    logger.debug("LOGO! device found at: {}.", host);
 
                     ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, host.replace('.', '_'));
                     DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID);
@@ -110,30 +102,36 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         stopScan();
 
+        logger.debug("Start scan for LOGO! bridge");
+
+        Enumeration<NetworkInterface> devices = null;
         try {
-            Enumeration<NetworkInterface> devices = NetworkInterface.getNetworkInterfaces();
-            while (devices.hasMoreElements()) {
-                NetworkInterface device = devices.nextElement();
-                if (device.isLoopback()) {
-                    continue;
-                }
-                for (InterfaceAddress iface : device.getInterfaceAddresses()) {
-                    InetAddress address = iface.getAddress();
-                    if (address instanceof Inet4Address) {
-                        String prefix = String.valueOf(iface.getNetworkPrefixLength());
-                        SubnetUtils utilities = new SubnetUtils(address.getHostAddress() + "/" + prefix);
-                        addresses.addAll(Arrays.asList(utilities.getInfo().getAllAddresses()));
-                    }
-                }
-            }
+            devices = NetworkInterface.getNetworkInterfaces();
         } catch (SocketException exception) {
-            addresses.clear();
             logger.warn("LOGO! bridge discovering: {}.", exception.toString());
         }
 
-        if (executor == null) {
-            executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        Set<String> addresses = new TreeSet<>();
+        while ((devices != null) && devices.hasMoreElements()) {
+            NetworkInterface device = devices.nextElement();
+            try {
+                if (!device.isUp() || device.isLoopback()) {
+                    continue;
+                }
+            } catch (SocketException exception) {
+                logger.warn("LOGO! bridge discovering: {}.", exception.toString());
+            }
+            for (InterfaceAddress iface : device.getInterfaceAddresses()) {
+                InetAddress address = iface.getAddress();
+                if (address instanceof Inet4Address) {
+                    String prefix = String.valueOf(iface.getNetworkPrefixLength());
+                    SubnetUtils utilities = new SubnetUtils(address.getHostAddress() + "/" + prefix);
+                    addresses.addAll(Arrays.asList(utilities.getInfo().getAllAddresses()));
+                }
+            }
         }
+
+        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         for (String address : addresses) {
             try {
                 executor.execute(new Runner(address));
@@ -141,6 +139,14 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
                 logger.warn("LOGO! bridge discovering: {}.", exception.toString());
             }
         }
+
+        try {
+            executor.awaitTermination(CONNECTION_TIMEOUT * addresses.size(), TimeUnit.MILLISECONDS);
+        } catch (InterruptedException exception) {
+            logger.warn("LOGO! bridge discovering: {}.", exception.toString());
+        }
+        executor.shutdown();
+
         stopScan();
     }
 
@@ -148,17 +154,6 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
     protected synchronized void stopScan() {
         logger.debug("Stop scan for LOGO! bridge");
         super.stopScan();
-
-        if (executor != null) {
-            try {
-                executor.awaitTermination(CONNECTION_TIMEOUT * addresses.size(), TimeUnit.MILLISECONDS);
-            } catch (InterruptedException exception) {
-                logger.warn("LOGO! bridge discovering: {}.", exception.toString());
-            }
-            executor.shutdown();
-            executor = null;
-        }
-        addresses.clear();
     }
 
 }

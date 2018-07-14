@@ -72,7 +72,7 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
         String name = config.get().getBlockName();
         Channel channel = getThing().getChannel(channelUID.getId());
         if (!isValid(name) || (channel == null)) {
-            logger.warn("Can not update channel {}: {}.", channelUID, client);
+            logger.debug("Can not update channel {}: {}.", channelUID, client);
             return;
         }
 
@@ -84,7 +84,7 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
                 if (result == 0) {
                     updateChannel(channel, S7.GetShortAt(buffer, address));
                 } else {
-                    logger.warn("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
+                    logger.debug("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
                 }
             } else if (command instanceof DateTimeType) {
                 byte[] buffer = new byte[2];
@@ -99,17 +99,17 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
                         buffer[1] = S7.ByteToBCD(datetime.getDayOfMonth());
                     }
                 } else {
-                    logger.warn("Channel {} will not accept {} items.", channelUID, type);
+                    logger.debug("Channel {} will not accept {} items.", channelUID, type);
                 }
                 int result = client.writeDBArea(1, address, buffer.length, S7Client.S7WLByte, buffer);
                 if (result != 0) {
-                    logger.warn("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
+                    logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
                 }
             } else {
-                logger.warn("Channel {} received not supported command {}.", channelUID, command);
+                logger.debug("Channel {} received not supported command {}.", channelUID, command);
             }
         } else {
-            logger.warn("Invalid channel {} or client {} found.", channelUID, client);
+            logger.info("Invalid channel {} or client {} found.", channelUID, client);
         }
     }
 
@@ -120,13 +120,13 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
         }
 
         if (data.length != getBufferLength()) {
-            logger.warn("Received and configured data sizes does not match.");
+            logger.info("Received and configured data sizes does not match.");
             return;
         }
 
         List<Channel> channels = getThing().getChannels();
         if (channels.size() != getNumberOfChannels()) {
-            logger.warn("Received and configured channel sizes does not match.");
+            logger.info("Received and configured channel sizes does not match.");
             return;
         }
 
@@ -134,7 +134,7 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
         Boolean force = config.get().isUpdateForced();
         for (Channel channel : channels) {
             ChannelUID channelUID = channel.getUID();
-            Objects.requireNonNull(channelUID, "PLCDateTimeHandler: Invalid channel uid found.");
+            Objects.requireNonNull(channelUID, "PLCDateTimeHandler: Invalid channel uid found");
 
             int address = getAddress(name);
             if (address != INVALID) {
@@ -147,7 +147,7 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
                     logger.trace("Channel {} received [{}, {}].", channelUID, data[address], data[address + 1]);
                 }
             } else {
-                logger.warn("Invalid channel {} found.", channelUID);
+                logger.info("Invalid channel {} found.", channelUID);
             }
         }
     }
@@ -190,10 +190,8 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
     @Override
     protected void doInitialization() {
         Thing thing = getThing();
-        Objects.requireNonNull(thing, "PLCDateTimeHandler: Thing may not be null.");
-
         Bridge bridge = getBridge();
-        Objects.requireNonNull(bridge, "PLCDateTimeHandler: Bridge may not be null.");
+        Objects.requireNonNull(bridge, "PLCDateTimeHandler: Bridge may not be null");
 
         logger.debug("Initialize LOGO! {} date/time handler.");
 
@@ -241,26 +239,26 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
         String type = channel.getAcceptedItemType();
         if (DATE_TIME_ITEM.equalsIgnoreCase(type)) {
             String channelId = channelUID.getId();
-            Objects.requireNonNull(channelId, "PLCDateTimeHandler: Invalid channel id found.");
+            Objects.requireNonNull(channelId, "PLCDateTimeHandler: Invalid channel id found");
 
             Bridge bridge = getBridge();
-            Objects.requireNonNull(bridge, "PLCDateTimeHandler: Bridge may not be null.");
+            Objects.requireNonNull(bridge, "PLCDateTimeHandler: Bridge may not be null");
 
             PLCBridgeHandler handler = (PLCBridgeHandler) bridge.getHandler();
-            Objects.requireNonNull(handler, "PLCDateTimeHandler: Invalid handler found.");
+            Objects.requireNonNull(handler, "PLCDateTimeHandler: Invalid handler found");
             ZonedDateTime datetime = ZonedDateTime.from(handler.getLogoRTC());
 
             byte[] data = new byte[2];
             S7.SetShortAt(data, 0, value);
             if ("Time".equalsIgnoreCase(channelId)) {
                 if ((value < 0) || (value > 0x2359)) {
-                    logger.warn("Channel {} got garbage time {}.", channelUID, Long.toHexString(value));
+                    logger.debug("Channel {} got garbage time {}.", channelUID, Long.toHexString(value));
                 }
                 datetime = datetime.withHour(S7.BCDtoByte(data[0]));
                 datetime = datetime.withMinute(S7.BCDtoByte(data[1]));
             } else if ("Date".equalsIgnoreCase(channelId)) {
                 if ((value < 0x0101) || (value > 0x1231)) {
-                    logger.warn("Channel {} got garbage date {}.", channelUID, Long.toHexString(value));
+                    logger.debug("Channel {} got garbage date {}.", channelUID, Long.toHexString(value));
                 }
                 datetime = datetime.withMonth(S7.BCDtoByte(data[0]));
                 datetime = datetime.withDayOfMonth(S7.BCDtoByte(data[1]));
@@ -271,7 +269,7 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
             updateState(channelUID, new DecimalType(value));
             logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
         } else {
-            logger.warn("Channel {} will not accept {} items.", channelUID, type);
+            logger.debug("Channel {} will not accept {} items.", channelUID, type);
         }
     }
 

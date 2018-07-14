@@ -40,6 +40,8 @@ public class PLCLogoBindingConstants {
     public static final String OBSERVE_CHANNEL = "observed";
     public static final String VALUE_CHANNEL = "value";
     public static final String RTC_CHANNEL = "rtc";
+    public static final String DAIGNOSTICS_CHANNEL = "diagnostic";
+    public static final String DAY_OF_WEEK_CHANNEL = "weekday";
 
     // List of all channel properties
     public static final String BLOCK_PROPERTY = "block";
@@ -49,20 +51,18 @@ public class PLCLogoBindingConstants {
     public static final String DATE_TIME_ITEM = "DateTime";
     public static final String DIGITAL_INPUT_ITEM = "Contact";
     public static final String DIGITAL_OUTPUT_ITEM = "Switch";
+    public static final String INFORMATION_ITEM = "String";
 
     // LOGO! family definitions
     public static final String LOGO_0BA7 = "0BA7";
     public static final String LOGO_0BA8 = "0BA8";
 
-    // LOGO! diagnostics memory
-    public static final Integer LOGO_STATE = 984; // Diagnostics
-
     private static final Map<Integer, @Nullable String> LOGO_STATES_0BA7;
     static {
         Map<Integer, String> buffer = new HashMap<>();
-        // buffer.put(???, "Network access errors"); // Netzwerkzugriffsfehler
-        // buffer.put(???, "Expansion module bus errors"); // Erweiterungsmodul-Busfehler
-        // buffer.put(???, "SD card read/write errors"); // Fehler beim Lesen oder Schreiben der SD-Karte
+        // buffer.put(???, "Network access error"); // Netzwerkzugriffsfehler
+        // buffer.put(???, "Expansion module bus error"); // Erweiterungsmodul-Busfehler
+        // buffer.put(???, "SD card read/write error"); // Fehler beim Lesen oder Schreiben der SD-Karte
         // buffer.put(???, "SD card write protection"); // Schreibschutz der SD-Karte
         LOGO_STATES_0BA7 = Collections.unmodifiableMap(buffer);
     }
@@ -70,11 +70,12 @@ public class PLCLogoBindingConstants {
     private static final Map<Integer, @Nullable String> LOGO_STATES_0BA8;
     static {
         Map<Integer, String> buffer = new HashMap<>();
-        // buffer.put(???, "Ethernet link errors"); // Netzwerk Verbindungsfehler
-        // buffer.put(???, "Expansion module changed"); // Ausgetauschtes Erweiterungsmodul
-        // buffer.put(???, "SD card read/write errors"); // Fehler beim Lesen oder Schreiben der SD-Karte
-        buffer.put(8, "SD card does not exist"); // "SD-Karte nicht vorhanden"
-        // buffer.put(???, "SD card is full"); // SD-Karte voll
+        buffer.put(1, "Ethernet link error"); // Netzwerk Verbindungsfehler
+        buffer.put(2, "Expansion module changed"); // Ausgetauschtes Erweiterungsmodul
+        buffer.put(4, "SD card read/write error"); // Fehler beim Lesen oder Schreiben der SD-Karte
+        buffer.put(8, "SD Card does not exist"); // "SD-Karte nicht vorhanden"
+        buffer.put(16, "SD Card is full"); // SD-Karte voll
+        // buffer.put(???, "Network S7 Tcp Error"); //
         LOGO_STATES_0BA8 = Collections.unmodifiableMap(buffer);
     }
 
@@ -86,10 +87,6 @@ public class PLCLogoBindingConstants {
         LOGO_STATES = Collections.unmodifiableMap(buffer);
     }
 
-    // LOGO! RTC memory
-    public static final Integer LOGO_DATE = 985; // RTC date for 3 bytes: year month day
-    public static final Integer LOGO_TIME = 988; // RTC time for 3 bytes: hour minute second
-
     public static final class Layout {
         public final int address;
         public final int length;
@@ -98,6 +95,28 @@ public class PLCLogoBindingConstants {
             this.address = address;
             this.length = length;
         }
+    }
+
+    public static final Map<String, @Nullable Layout> LOGO_CHANNELS;
+    static {
+        Map<String, @Nullable Layout> buffer = new HashMap<>();
+        buffer.put(DAIGNOSTICS_CHANNEL, new Layout(984, 1)); // Diagnostics starts at 984 for 1 byte
+        buffer.put(RTC_CHANNEL, new Layout(985, 6)); // RTC starts at 985 for 6 bytes: year month day hour minute second
+        buffer.put(DAY_OF_WEEK_CHANNEL, new Layout(998, 1)); // Diagnostics starts at 998 for 1 byte
+        LOGO_CHANNELS = Collections.unmodifiableMap(buffer);
+    }
+
+    public static final Map<Integer, @Nullable String> DAY_OF_WEEK;
+    static {
+        Map<Integer, @Nullable String> buffer = new HashMap<>();
+        buffer.put(1, "SUNDAY");
+        buffer.put(2, "MONDAY");
+        buffer.put(3, "TUEsDAY");
+        buffer.put(4, "WEDNESDAY");
+        buffer.put(5, "THURSDAY");
+        buffer.put(6, "FRIDAY");
+        buffer.put(7, "SATURDAY");
+        DAY_OF_WEEK = Collections.unmodifiableMap(buffer);
     }
 
     private static final Map<String, @Nullable Layout> LOGO_MEMORY_0BA7;

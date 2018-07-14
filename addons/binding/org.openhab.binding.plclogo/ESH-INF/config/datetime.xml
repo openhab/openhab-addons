@@ -5,12 +5,12 @@
 
 	<config-description uri="thing-type:plclogo:datetime">
 		<parameter name="block" type="text" pattern="VW(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d)">
-			<label>LOGO! memory address</label>
+			<label>LOGO! Memory Address</label>
 			<description>LOGO! memory address</description>
 			<required>true</required>
 		</parameter>
 		<parameter name="type" type="text">
-			<label>Send value as</label>
+			<label>Send Value as</label>
 			<description>Interpret received channel value as date or time</description>
 			<options>
 				<option value="date">date</option>
@@ -20,7 +20,7 @@
 			<required>true</required>
 		</parameter>
 		<parameter name="force" type="boolean">
-			<label>Force channels update</label>
+			<label>Force Channels Update</label>
 			<description>Propagate channels update to openHAB whether value changed or not</description>
 			<default>false</default>
 			<required>false</required>

@@ -60,6 +60,9 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        synchronized (oldValues) {
+            oldValues.clear();
+        }
         scheduler.execute(this::doInitialization);
     }
 
@@ -161,7 +164,7 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
                 address = Integer.parseInt(block.substring(3));
             }
         } else {
-            logger.warn("Wrong configurated LOGO! block {} found.", name);
+            logger.info("Wrong configurated LOGO! block {} found.", name);
         }
 
         return address;
@@ -237,7 +240,7 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
      * @return Configured LOGO! family
      */
     protected String getLogoFamily() {
-        Objects.requireNonNull(family, "PLCCommonHandler: Family may not be null.");
+        Objects.requireNonNull(family, "PLCCommonHandler: Family may not be null");
         return family;
     }
 
@@ -246,21 +249,17 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
      */
     protected void doInitialization() {
         Bridge bridge = getBridge();
-        Objects.requireNonNull(bridge, "PLCCommonHandler: Bridge may not be null.");
+        Objects.requireNonNull(bridge, "PLCCommonHandler: Bridge may not be null");
 
         PLCBridgeHandler handler = (PLCBridgeHandler) bridge.getHandler();
-        Objects.requireNonNull(handler, "PLCCommonHandler: Bridge handler may not be null.");
-
-        synchronized (oldValues) {
-            oldValues.clear();
-        }
+        Objects.requireNonNull(handler, "PLCCommonHandler: Bridge handler may not be null");
 
         family = handler.getLogoFamily();
         client = handler.getLogoClient();
         if ((client == null) || (family == null)) {
             String message = "Can not initialize LOGO! block handler.";
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
-            logger.error("Can not initialize thing {} for LOGO! {}.", thing.getUID(), bridge.getUID());
+            logger.warn("Can not initialize thing {} for LOGO! {}.", thing.getUID(), bridge.getUID());
         }
     }
 

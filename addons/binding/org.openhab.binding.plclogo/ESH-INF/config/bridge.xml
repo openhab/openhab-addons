@@ -6,12 +6,12 @@
 	<config-description uri="thing-type:plclogo:bridge">
 		<parameter name="address" type="text">
 			<context>network-address</context>
-			<label>Network address</label>
+			<label>Network Address</label>
 			<description>Network address of the PLC.</description>
 			<required>true</required>
 		</parameter>
 		<parameter name="family" type="text">
-			<label>LOGO! family</label>
+			<label>LOGO! Family</label>
 			<description>LOGO! PLC hardware family version</description>
 			<options>
 				<option value="0BA7">0BA7</option>
@@ -32,7 +32,7 @@
 			<default>0x2000</default>
 		</parameter>
 		<parameter name="refresh" type="integer" min="100" step="50">
-			<label>Refresh interval</label>
+			<label>Refresh Interval</label>
 			<description>Milliseconds between reread data from PLC.</description>
 			<required>true</required>
 			<default>100</default>

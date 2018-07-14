@@ -5,12 +5,12 @@
 
 	<config-description uri="thing-type:plclogo:digital">
 		<parameter name="kind" type="text" pattern="I|M|Q|NI|NQ">
-			<label>LOGO! digital block kind</label>
+			<label>LOGO! Digital Block Kind</label>
 			<description>LOGO! digital block kind</description>
 			<required>true</required>
 		</parameter>
 		<parameter name="force" type="boolean">
-			<label>Force channels update</label>
+			<label>Force Channels Update</label>
 			<description>Propagate channels update to openHAB whether value changed or not</description>
 			<default>false</default>
 			<required>false</required>
