@@ -113,10 +113,11 @@ public class NestStreamingRestClient {
                 logger.debug("Reopening EventSource");
                 openingEventSource = true;
 
-                if (eventSource != null) {
-                    if (!eventSource.isOpen()) {
+                EventSource localEventSource = eventSource;
+                if (localEventSource != null) {
+                    if (!localEventSource.isOpen()) {
                         logger.debug("Existing EventSource is already closed");
-                    } else if (eventSource.close(10, TimeUnit.SECONDS)) {
+                    } else if (localEventSource.close(10, TimeUnit.SECONDS)) {
                         logger.debug("Succesfully closed existing EventSource");
                     } else {
                         logger.debug("Failed to close existing EventSource");
@@ -125,8 +126,10 @@ public class NestStreamingRestClient {
                 }
 
                 logger.debug("Opening new EventSource");
-                eventSource = createEventSource();
-                eventSource.open();
+                localEventSource = createEventSource();
+                localEventSource.open();
+
+                eventSource = localEventSource;
             } catch (FailedResolvingNestUrlException e) {
                 logger.debug("Failed to resolve Nest redirect URL while opening new EventSource");
             } finally {
@@ -140,10 +143,12 @@ public class NestStreamingRestClient {
             logger.debug("Opening EventSource and starting checkConnection job");
             reopenEventSource();
 
-            if (checkConnectionJob == null || checkConnectionJob.isCancelled()) {
+            ScheduledFuture<?> localCheckConnectionJob = checkConnectionJob;
+            if (localCheckConnectionJob == null || localCheckConnectionJob.isCancelled()) {
                 checkConnectionJob = scheduler.scheduleWithFixedDelay(this::checkConnection, KEEP_ALIVE_MILLIS,
                         KEEP_ALIVE_MILLIS, TimeUnit.MILLISECONDS);
             }
+
             logger.debug("Started");
         }
     }
@@ -151,13 +156,19 @@ public class NestStreamingRestClient {
     public void stop() {
         synchronized (this) {
             logger.debug("Closing EventSource and stopping checkConnection job");
-            if (eventSource != null) {
-                eventSource.close(0, TimeUnit.SECONDS);
+
+            EventSource localEventSource = eventSource;
+            if (localEventSource != null) {
+                localEventSource.close(0, TimeUnit.SECONDS);
+                eventSource = null;
             }
-            if (checkConnectionJob != null && !checkConnectionJob.isCancelled()) {
-                checkConnectionJob.cancel(true);
+
+            ScheduledFuture<?> localCheckConnectionJob = checkConnectionJob;
+            if (localCheckConnectionJob != null && !localCheckConnectionJob.isCancelled()) {
+                localCheckConnectionJob.cancel(true);
                 checkConnectionJob = null;
             }
+
             logger.debug("Stopped");
         }
     }
