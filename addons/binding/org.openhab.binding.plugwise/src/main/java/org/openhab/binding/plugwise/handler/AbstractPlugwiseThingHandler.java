@@ -9,7 +9,6 @@
 package org.openhab.binding.plugwise.handler;
 
 import static org.eclipse.smarthome.core.thing.ThingStatus.*;
-import static org.eclipse.smarthome.core.thing.ThingStatusDetail.BRIDGE_OFFLINE;
 import static org.openhab.binding.plugwise.PlugwiseBindingConstants.CHANNEL_LAST_SEEN;
 
 import java.math.BigDecimal;
@@ -18,7 +17,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -45,6 +47,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler implements PlugwiseMessageListener {
 
     private static final Duration DEFAULT_UPDATE_INTERVAL = Duration.ofMinutes(1);
@@ -76,9 +79,9 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
 
     private final Logger logger = LoggerFactory.getLogger(AbstractPlugwiseThingHandler.class);
 
-    private PlugwiseStickHandler stickHandler;
     private LocalDateTime lastSeen = LocalDateTime.MIN;
-    private LocalDateTime lastConfigurationUpdateSend;
+    private @Nullable PlugwiseStickHandler stickHandler;
+    private @Nullable LocalDateTime lastConfigurationUpdateSend;
     private int unansweredPings;
 
     public AbstractPlugwiseThingHandler(Thing thing) {
@@ -93,7 +96,7 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        updateBridgeStatus(bridgeStatusInfo.getStatus());
+        updateBridgeStatus();
     }
 
     @Override
@@ -107,8 +110,12 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
     }
 
     protected Duration getChannelUpdateInterval(String channelId) {
-        Configuration configuration = thing.getChannel(channelId).getConfiguration();
-        BigDecimal interval = (BigDecimal) configuration.get(PlugwiseBindingConstants.CONFIG_PROPERTY_UPDATE_INTERVAL);
+        Channel channel = thing.getChannel(channelId);
+        if (channel == null) {
+            return DEFAULT_UPDATE_INTERVAL;
+        }
+        BigDecimal interval = (BigDecimal) channel.getConfiguration()
+                .get(PlugwiseBindingConstants.CONFIG_PROPERTY_UPDATE_INTERVAL);
         return interval != null ? Duration.ofSeconds(interval.intValue()) : DEFAULT_UPDATE_INTERVAL;
     }
 
@@ -130,7 +137,7 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
 
     @Override
     public void initialize() {
-        updateBridgeStatus(getBridge() != null ? getBridge().getStatus() : OFFLINE);
+        updateBridgeStatus();
         updateTask(onlineStateUpdateTask);
 
         // Add the message listener after dispose/initialize due to configuration update
@@ -199,14 +206,19 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
     /**
      * Updates the thing state based on that of the Stick
      */
-    protected void updateBridgeStatus(ThingStatus bridgeStatus) {
-        if (bridgeStatus == ONLINE && thing.getStatus() != ONLINE) {
-            stickHandler = (PlugwiseStickHandler) getBridge().getHandler();
+    protected void updateBridgeStatus() {
+        Bridge bridge = getBridge();
+        ThingStatus bridgeStatus = bridge != null ? bridge.getStatus() : null;
+        if (bridge == null) {
+            removeMessageListener();
+            updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+        } else if (bridgeStatus == ONLINE && thing.getStatus() != ONLINE) {
+            stickHandler = (PlugwiseStickHandler) bridge.getHandler();
             addMessageListener();
             updateStatus(OFFLINE, getThingStatusDetail());
         } else if (bridgeStatus == OFFLINE) {
             removeMessageListener();
-            updateStatus(OFFLINE, BRIDGE_OFFLINE);
+            updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         } else if (bridgeStatus == UNKNOWN) {
             removeMessageListener();
             updateStatus(UNKNOWN);
@@ -252,7 +264,7 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, String description) {
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         ThingStatus oldStatus = thing.getStatus();
         super.updateStatus(status, statusDetail, description);
 

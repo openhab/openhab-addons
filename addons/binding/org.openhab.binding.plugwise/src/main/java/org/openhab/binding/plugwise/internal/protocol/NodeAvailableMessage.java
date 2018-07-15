@@ -19,8 +19,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
  * Node available messages are broadcasted by nodes that are not yet part of a network. They are currently unused
  * because typically the network is configured using the Plugwise Source software, and never changed after.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class NodeAvailableMessage extends Message {
 
