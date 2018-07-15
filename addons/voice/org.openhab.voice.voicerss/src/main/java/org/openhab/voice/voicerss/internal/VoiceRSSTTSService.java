@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.smarthome.config.core.ConfigConstants;
+import org.eclipse.smarthome.config.core.ConfigurableService;
 import org.eclipse.smarthome.core.audio.AudioException;
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioStream;
@@ -23,6 +24,7 @@ import org.eclipse.smarthome.core.voice.TTSException;
 import org.eclipse.smarthome.core.voice.TTSService;
 import org.eclipse.smarthome.core.voice.Voice;
 import org.openhab.voice.voicerss.internal.cloudapi.CachedVoiceRSSCloudImplementation;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
@@ -34,7 +36,10 @@ import org.slf4j.LoggerFactory;
  * @author Jochen Hiller - Initial contribution and API
  * @author Laurent Garnier - add support for OGG and AAC audio formats
  */
-@Component
+@Component(property = { Constants.SERVICE_PID + "=org.openhab.voicerss",
+        ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=voice:voicerss",
+        ConfigurableService.SERVICE_PROPERTY_LABEL + "=VoiceRSS",
+        ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=voice" })
 public class VoiceRSSTTSService implements TTSService {
 
     /** Cache folder name is below userdata/voicerss/cache. */
