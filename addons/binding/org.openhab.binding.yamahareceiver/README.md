@@ -23,6 +23,26 @@ Bridge yamahareceiver:yamahaAV:ReceiverID "Yamaha Receiver Bridge Name" [host="a
 If your receiver is using menu-based net radio navigation, you can use this binding to
 select radio stations from a configured menu.
 
+Configuration parameters for Bridge type `yamahareceiver`:
+
+Parameter | Required | Default | Description
+--------|------|------|------
+`host` | yes | / | The IP address of the AVR to control
+`port` | no | 80 | The API port of the AVR to control
+`refreshInterval` | no | 60 | Refresh interval in seconds
+`albumUrl` | no | / | When the album image is not provided by the Yamaha input source, you can specify the default image URL to apply
+`inputMapping` | no | / | Some Yamaha models return different input values on status update than required in the change input commands. See [below](#input-values) for details
+
+Configruation parameters for Thing type `zone`:
+
+Parameter | Required | Default | Description
+--------|------|------|------
+`zone` | yes | / | The zone can be Main_Zone, ZONE_2, ZONE_3, ZONE_4 depending on your device
+`volumeRelativeChangeFactor` | no | 2 | Relative volume change in percent
+`volumeDbMin` | no | -80 | Lowest volume in dB
+`volumeDbMax` | no | 12 | Highest volume in dB
+
+
 ## Features
 
 The implemented channels for the AVR thing are:
