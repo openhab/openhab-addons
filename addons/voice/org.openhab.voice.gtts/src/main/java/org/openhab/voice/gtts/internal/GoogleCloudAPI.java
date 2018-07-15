@@ -82,30 +82,72 @@ class GoogleCloudAPI {
      */
     void setConfig(GoogleTTSConfig config) {
         this.config = config;
-        if (config.getServiceKeyFileName() != null) {
-            File keyFile;
-            if (config.getServiceKeyFileName().contains(File.separator)) {
-                keyFile = new File(config.getServiceKeyFileName());
-            } else {
+        if (checkArch()) {
+            if (config.getServiceKeyFileName() != null) {
+                File keyFile;
+                if (config.getServiceKeyFileName().contains(File.separator)) {
+                    keyFile = new File(config.getServiceKeyFileName());
+                } else {
 
-                keyFile = new File(homeFolder, config.getServiceKeyFileName());
+                    keyFile = new File(homeFolder, config.getServiceKeyFileName());
+                }
+                logger.debug("Loading service key file from {}", keyFile.getAbsoluteFile());
+                try {
+                    GoogleCredentials credential = GoogleCredentials.fromStream(new FileInputStream(keyFile));
+                    FixedCredentialsProvider credentialProvider = FixedCredentialsProvider.create(credential);
+                    TextToSpeechSettings settings = TextToSpeechSettings.newBuilder().setCredentialsProvider(credentialProvider)
+                            .build();
+                    googleClient = TextToSpeechClient.create(settings);
+                    initialized = true;
+                    initVoices();
+                } catch (Exception e) {
+                    logger.error("Error initializing the service using {}", keyFile.getAbsoluteFile(), e);
+                    initialized = false;
+                }
+            } else {
+                googleClient = null;
+                voices.clear();
             }
-            logger.debug("Loading service key file from {}", keyFile.getAbsoluteFile());
-            try {
-                GoogleCredentials credential = GoogleCredentials.fromStream(new FileInputStream(keyFile));
-                FixedCredentialsProvider credentialProvider = FixedCredentialsProvider.create(credential);
-                TextToSpeechSettings settings = TextToSpeechSettings.newBuilder().setCredentialsProvider(credentialProvider)
-                        .build();
-                googleClient = TextToSpeechClient.create(settings);
-                initialized = true;
-                initVoices();
-            } catch (Exception e) {
-                logger.error("Error initializing the service using {}", keyFile.getAbsoluteFile(), e);
-                initialized = false;
-            }
+        }
+    }
+
+    private boolean checkArch() {
+        String arch = System.getProperty("os.arch");
+        String normalizedArch = arch.toLowerCase(Locale.US).replaceAll("[^a-z0-9]+", "");
+        String commonArch;
+        if (normalizedArch.matches("^(x8664|amd64|ia32e|em64t|x64)$")) {
+            commonArch = "x86_64";
+        } else if (normalizedArch.matches("^(x8632|x86|i[3-6]86|ia32|x32)$")) {
+            commonArch =  "x86_32";
+        } else if (normalizedArch.matches("^(ia64|itanium64)$")) {
+            commonArch =  "itanium_64";
+        } else if (normalizedArch.matches("^(sparc|sparc32)$")) {
+            commonArch =  "sparc_32";
+        } else if (normalizedArch.matches("^(sparcv9|sparc64)$")) {
+            commonArch =  "sparc_64";
+        } else if (normalizedArch.matches("^(arm|arm32)$")) {
+            commonArch =  "arm_32";
+        } else if ("aarch64".equals(normalizedArch)) {
+            commonArch =  "aarch_64";
+        } else if (normalizedArch.matches("^(ppc|ppc32)$")) {
+            commonArch =  "ppc_32";
+        } else if ("ppc64".equals(normalizedArch)) {
+            commonArch =  "ppc_64";
+        } else if ("ppc64le".equals(normalizedArch)) {
+            commonArch =  "ppcle_64";
+        } else if ("s390".equals(normalizedArch)) {
+            commonArch =  "s390_32";
         } else {
-            googleClient = null;
-            voices.clear();
+            commonArch =  "s390x".equals(normalizedArch) ? "s390_64" : "unknown";
+        }
+
+        if (!"x86_64".equals(commonArch)) {
+            logger.error("The architecture underneath the OH is not x86_64 but {}. Only x86_64 platforms are supported. " +
+                    "The os.arch value is {}.", commonArch, arch);
+            return false;
+        } else {
+            logger.info("OH is running on architecture {} - supported by Google Cloud TTS API", commonArch);
+            return true;
         }
     }
 
