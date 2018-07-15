@@ -10,11 +10,17 @@ make the conversion faster.
 
 <!-- MarkdownTOC -->
 
+- [Prerequisites](#prerequisites)
 - [Obtaining Credentials](#obtaining-credentials)
 - [Service Configuration](#service-configuration)
 - [Voice Configuration](#voice-configuration)
 
 <!-- /MarkdownTOC -->
+
+##Prerequisites
+
+Please make sure your OH installation runs on x86_64 Linux/Windows/Mac. Dependencies of Google Cloud Java support only 
+these platforms. For details please visit [Google Cloud Java](https://github.com/GoogleCloudPlatform/google-cloud-java/blob/master/README.md)/Supported platforms.
 
 ## Obtaining Credentials
 
