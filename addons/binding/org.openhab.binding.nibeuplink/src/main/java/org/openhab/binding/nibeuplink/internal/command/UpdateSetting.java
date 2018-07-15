@@ -28,7 +28,6 @@ import org.openhab.binding.nibeuplink.internal.model.ValidationException;
  * allows update of writable channels
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public class UpdateSetting extends AbstractUplinkCommandCallback implements NibeUplinkCommand {
 
@@ -61,7 +60,7 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
 
         if (value.matches(channel.getValidationExpression())) {
             Fields fields = new Fields();
-            fields.add(channel.getId(), value);
+            fields.add(channel.getChannelCode(), value);
 
             FormContentProvider cp = new FormContentProvider(fields);
 
@@ -89,7 +88,8 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
         logger.debug("onComplete()");
 
         if (!HttpStatus.Code.FOUND.equals(getCommunicationStatus().getHttpCode()) && retries++ < MAX_RETRIES) {
-            logger.debug("Could not set value '{}' for channel '{}' ({})", value, channel.getId(), channel.getName());
+            logger.debug("Could not set value '{}' for channel '{}' ({})", value, channel.getChannelCode(),
+                    channel.getName());
             handler.getWebInterface().enqueueCommand(this);
         }
     }

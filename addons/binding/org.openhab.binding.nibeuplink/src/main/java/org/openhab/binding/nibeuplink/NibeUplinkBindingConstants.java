@@ -20,7 +20,6 @@ import com.google.common.collect.ImmutableSet;
  * used across the whole binding.
  *
  * @author Alexander Friese - initial contribution
- *
  */
 @NonNullByDefault
 public final class NibeUplinkBindingConstants {

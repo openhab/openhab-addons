@@ -6,18 +6,27 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.nibeuplink.internal.connector;
+package org.openhab.binding.nibeuplink.handler;
+
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.nibeuplink.internal.model.Channel;
 
 /**
- * callback interface to update the status of the {@link UplinkWebInterface}
+ * this interface provides all methods which deal with channels
  *
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public interface StatusUpdateListener {
+public interface ChannelProvider {
 
-    void update(CommunicationStatus status);
+    Set<Channel> getChannels();
+
+    Set<Channel> getDeadChannels();
+
+    @Nullable
+    Channel getSpecificChannel(String channelCode);
 
 }

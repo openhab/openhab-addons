@@ -8,38 +8,117 @@
  */
 package org.openhab.binding.nibeuplink.internal.model;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * interface to be implemented by all Channel Enumerations
+ * the channel class
  *
  * @author Alexander Friese - initial contribution
- *
  */
 @NonNullByDefault
-public interface Channel {
+public class Channel {
 
-    String getName();
+    protected String channelCode;
+    private final String id;
+    private final String name;
+    private final ChannelGroup channelGroup;
+    private final @Nullable Unit<?> unit;
+    private final @Nullable String writeApiUrl;
+    private final @Nullable String validationExpression;
 
-    String getId();
-
-    ChannelGroup getChannelGroup();
-
-    default @Nullable String getWriteApiUrlSuffix() {
-        return null;
+    /**
+     * constructor for channels with write access enabled + unit
+     *
+     * @param id
+     * @param name
+     * @param channelGroup
+     * @param unit
+     * @param writeApiUrl
+     * @param validationExpression
+     */
+    Channel(String id, String name, ChannelGroup channelGroup, @Nullable Unit<?> unit, @Nullable String writeApiUrl,
+            @Nullable String validationExpression) {
+        this.channelCode = id;
+        this.id = id;
+        this.name = name;
+        this.channelGroup = channelGroup;
+        this.unit = unit;
+        this.writeApiUrl = writeApiUrl;
+        this.validationExpression = validationExpression;
     }
 
-    default boolean isReadOnly() {
-        return true;
+    /**
+     * constructor for channels with write access enabled wihtout a unit
+     *
+     * @param id
+     * @param name
+     * @param channelGroup
+     * @param writeApiUrl
+     * @param validationExpression
+     */
+    Channel(String id, String name, ChannelGroup channelGroup, String writeApiUrl, String validationExpression) {
+        this(id, name, channelGroup, null, writeApiUrl, validationExpression);
     }
 
-    default @Nullable String getValidationExpression() {
-        return null;
+    /**
+     * constructor for channels without write access
+     *
+     * @param id
+     * @param name
+     * @param channelGroup
+     * @param unit
+     */
+    Channel(String id, String name, ChannelGroup channelGroup, Unit<?> unit) {
+        this(id, name, channelGroup, unit, null, null);
     }
 
-    // TODO: should be obsolete
-    ValueType getValueType();
+    /**
+     * constructor for channels without write access and without unit
+     *
+     * @param id
+     * @param name
+     * @param channelGroup
+     */
+    Channel(String id, String name, ChannelGroup channelGroup) {
+        this(id, name, channelGroup, null, null, null);
+    }
 
-    String getFQName();
+    public final String getName() {
+        return name;
+    }
+
+    public final String getId() {
+        return id;
+    }
+
+    public final String getChannelCode() {
+        return channelCode;
+    }
+
+    public ChannelGroup getChannelGroup() {
+        return channelGroup;
+    }
+
+    public @Nullable Unit<?> getUnit() {
+        return unit;
+    }
+
+    public String getFQName() {
+        return channelGroup.toString().toLowerCase() + "#" + id;
+    }
+
+    public @Nullable String getWriteApiUrlSuffix() {
+        return writeApiUrl;
+    }
+
+    public boolean isReadOnly() {
+        return writeApiUrl == null || writeApiUrl.isEmpty();
+    }
+
+    public @Nullable String getValidationExpression() {
+        return validationExpression;
+    }
 }

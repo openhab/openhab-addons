@@ -14,7 +14,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * Bean holding configuration data according to bridge.xml
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public class NibeUplinkConfiguration {
 

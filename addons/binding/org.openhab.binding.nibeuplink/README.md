@@ -79,8 +79,9 @@ nibeuplink:vvm320:home2  [ user="...", password="...", nibeId="..."]
 
 Available channels depend on the specific heatpump model. Following models/channels are currently available
 
-| Model          | All Channels                                    |
+| Model          | Channels                                        |
 |----------------|-------------------------------------------------|
+| All models     | [List](nibe-doc/base/channels.md)               |
 | VVM310 / 500   | [List](nibe-doc/vvm310/channels.md)             |
 | VVM320 / 325   | [List](nibe-doc/vvm320/channels.md)             |
 | F730           | [List](nibe-doc/f730/channels.md)               |
@@ -88,7 +89,6 @@ Available channels depend on the specific heatpump model. Following models/chann
 | F1145 / 1245   | [List](nibe-doc/f1145/channels.md)              |
 | F1155 / 1255   | [List](nibe-doc/f1155/channels.md)              |
 
-The "all channels" lists have been generated automatically from Nibe Modbus Manager database. It is very likely that the list of channels is not 100% correct.
 
 ## Full Example
 
@@ -100,9 +100,38 @@ nibeuplink:vvm320:mynibe     [ user="nibe@my-domain.de", password="secret123", n
 
 ### Items
 
-```
-Number      Nibe_40013_BT7        "Brauchwasser oben [%.2f °C]"            {channel="nibeuplink:vvm320:mynibe:sensor#40013"}
-Number      Nibe_40014_BT6        "Brauchwasserbereitung [%.2f °C]"        {channel="nibeuplink:vvm320:mynibe:sensor#40014"}
+As the binding supports UoM you might define units in the item's label. An automatic conversion is applied e.g. from °C to °F then.
+Channels which epresent states (such as on/off) are internally represented as number. You need to define a map file which also gives you the opportunity to translate the state into your preferred language.
 
-Number      Nibe_Custom_01        "Custom Channel01" {channel="nibeuplink:vvm320:mynibe:custom#CH01"}
+```
+Number:Temperature      NIBE_SUPPLY            "Vorlauf"                         { channel="nibeuplink:vvm320:mynibe:base#40008" }
+Number:Temperature      NIBE_RETURN            "Rücklauf [%.2f °F]"              { channel="nibeuplink:vvm320:mynibe:base#40012" }
+Number:Temperature      NIBE_HW_TOP            "Brauchwasser oben"               { channel="nibeuplink:vvm320:mynibe:hotwater#40013" }
+Number:Energy           NIBE_HM_HEAT           "WM Heizung"                      { channel="nibeuplink:vvm320:mynibe:base#44308" }
+Number                  NIBE_COMP_DEFROST      "Enteisung [MAP(onoff.map):%s]"   { channel="nibeuplink:vvm320:mynibe:compressor#44703" }
+Number                  NIBE_HW_MODE           "Modus [MAP(hwmode.map):%s]"      { channel="nibeuplink:vvm320:mynibe:hotwater#47041" }
+
+Number                  NIBE_CUSTOM_01         "Custom 01"                       { channel="nibeuplink:vvm320:mynibe:custom#CH01" }
+```
+
+### Transformations
+
+Please define each state both as integer and decimal value. Otherwise you might run into issues.
+
+```
+0=Eco
+0.0=Eco
+1=Norm
+1.0=Norm
+2=Lux
+2.0=lux
+```
+
+
+### Sitemaps
+
+Please take care of the status channels. Although all values are integers those values should be mapped to decimals like this:
+
+```
+Switch item=NIBE_HW_MODE mappings=[0.0="Eco", 1.0="Norm"]
 ```

@@ -17,12 +17,13 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.nibeuplink.handler.F1145Handler;
-import org.openhab.binding.nibeuplink.handler.F1155Handler;
-import org.openhab.binding.nibeuplink.handler.F730Handler;
-import org.openhab.binding.nibeuplink.handler.F750Handler;
-import org.openhab.binding.nibeuplink.handler.VVM310Handler;
-import org.openhab.binding.nibeuplink.handler.VVM320Handler;
+import org.openhab.binding.nibeuplink.handler.GenericHandler;
+import org.openhab.binding.nibeuplink.internal.model.F1145Channels;
+import org.openhab.binding.nibeuplink.internal.model.F1155Channels;
+import org.openhab.binding.nibeuplink.internal.model.F730Channels;
+import org.openhab.binding.nibeuplink.internal.model.F750Channels;
+import org.openhab.binding.nibeuplink.internal.model.VVM310Channels;
+import org.openhab.binding.nibeuplink.internal.model.VVM320Channels;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -33,7 +34,6 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Alexander Friese - initial contribution
- *
  */
 @Component(service = ThingHandlerFactory.class, immediate = true)
 public class NibeUplinkHandlerFactory extends BaseThingHandlerFactory {
@@ -55,17 +55,17 @@ public class NibeUplinkHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_VVM320)) {
-            return new VVM320Handler(thing, httpClient);
+            return new GenericHandler(thing, httpClient, VVM320Channels.getInstance());
         } else if (thingTypeUID.equals(THING_TYPE_VVM310)) {
-            return new VVM310Handler(thing, httpClient);
+            return new GenericHandler(thing, httpClient, VVM310Channels.getInstance());
         } else if (thingTypeUID.equals(THING_TYPE_F750)) {
-            return new F750Handler(thing, httpClient);
+            return new GenericHandler(thing, httpClient, F750Channels.getInstance());
         } else if (thingTypeUID.equals(THING_TYPE_F730)) {
-            return new F730Handler(thing, httpClient);
+            return new GenericHandler(thing, httpClient, F730Channels.getInstance());
         } else if (thingTypeUID.equals(THING_TYPE_F1145)) {
-            return new F1145Handler(thing, httpClient);
+            return new GenericHandler(thing, httpClient, F1145Channels.getInstance());
         } else if (thingTypeUID.equals(THING_TYPE_F1155)) {
-            return new F1155Handler(thing, httpClient);
+            return new GenericHandler(thing, httpClient, F1155Channels.getInstance());
         } else {
             logger.warn("Unsupported Thing-Type: {}", thingTypeUID.getAsString());
         }

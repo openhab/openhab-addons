@@ -10,12 +10,14 @@ package org.openhab.binding.nibeuplink.internal.model;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * common interface for all data response classes
  *
  * @author Alexander Friese - initial contribution
- *
  */
+@NonNullByDefault
 public interface DataResponse {
     Map<String, String> getValues();
 }

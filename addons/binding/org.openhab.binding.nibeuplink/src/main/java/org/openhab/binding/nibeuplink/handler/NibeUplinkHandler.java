@@ -8,14 +8,13 @@
  */
 package org.openhab.binding.nibeuplink.handler;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.internal.connector.UplinkWebInterface;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
@@ -24,10 +23,9 @@ import org.openhab.binding.nibeuplink.internal.model.Channel;
  * public interface of the {@link UplinkBaseHandler}
  *
  * @author Alexander Friese - initial contribution
- *
  */
 @NonNullByDefault
-public interface NibeUplinkHandler extends ThingHandler {
+public interface NibeUplinkHandler extends ThingHandler, ChannelProvider {
     /**
      * Called from {@link NibeUplinkWebInterface#authenticate()} to update
      * the thing status because updateStatus is protected.
@@ -45,12 +43,8 @@ public interface NibeUplinkHandler extends ThingHandler {
      */
     UplinkWebInterface getWebInterface();
 
-    void updateChannelStatus(Map<String, String> values);
+    void updateChannelStatus(Map<Channel, State> values);
 
     NibeUplinkConfiguration getConfiguration();
-
-    List<Channel> getChannels();
-
-    Set<Channel> getDeadChannels();
 
 }

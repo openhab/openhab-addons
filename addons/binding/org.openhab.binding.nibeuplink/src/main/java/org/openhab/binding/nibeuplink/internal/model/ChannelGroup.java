@@ -9,14 +9,12 @@
 package org.openhab.binding.nibeuplink.internal.model;
 
 /**
- * Sensor = readonly, Setting = read/write
+ * used to determine the group a channel belongs to
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public enum ChannelGroup {
-    SENSOR,
-    SETTING,
+    BASE,
     GENERAL,
     COMPRESSOR,
     HOTWATER,

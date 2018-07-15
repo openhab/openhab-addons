@@ -1,63 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="nibeuplink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="nibeuplink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-
-
 	<channel-group-type id="vvm320-general">
-		<label>General Sensors</label>
+		<label>General Channels</label>
 		<channels>
-			<channel id="40004" typeId="vvm320-type-40004" />
-			<channel id="40067" typeId="vvm320-type-40067" />
-			<channel id="43005" typeId="vvm320-type-43005" />
-			<channel id="43009" typeId="vvm320-type-43009" />
-			<channel id="40071" typeId="vvm320-type-40071" />
-			<channel id="40033" typeId="vvm320-type-40033" />
-			<channel id="43161" typeId="vvm320-type-43161" />
-			<channel id="40008" typeId="vvm320-type-40008" />
-			<channel id="40012" typeId="vvm320-type-40012" />
-			<channel id="40072" typeId="vvm320-type-40072" />
-			<channel id="40079" typeId="vvm320-type-40079" />
-			<channel id="40081" typeId="vvm320-type-40081" />
-			<channel id="40083" typeId="vvm320-type-40083" />
-			<channel id="10033" typeId="vvm320-type-10033" />
-
 			<channel id="44270" typeId="vvm320-type-44270" />
-			<channel id="43081" typeId="vvm320-type-43081" />
-			<channel id="43084" typeId="vvm320-type-43084" />
-			<channel id="47212" typeId="vvm320-type-47212" />
-			<channel id="48914" typeId="vvm320-type-48914" />
 			<channel id="40121" typeId="vvm320-type-40121" />
 			<channel id="43437" typeId="vvm320-type-43437" />
-
-			<channel id="44308" typeId="vvm320-type-44308" />
-			<channel id="44304" typeId="vvm320-type-44304" />
 			<channel id="44302" typeId="vvm320-type-44302" />
-			<channel id="44300" typeId="vvm320-type-44300" />
-
 			<channel id="47011" typeId="vvm320-type-47011" />
 			<channel id="47394" typeId="vvm320-type-47394" />
 			<channel id="47402" typeId="vvm320-type-47402" />
 			<channel id="48793" typeId="vvm320-type-48793" />
-
-			<channel id="48043" typeId="vvm320-type-48043" />
 		</channels>
 	</channel-group-type>
-
-	<channel-group-type id="vvm320-hotwater">
-		<label>Hot water Sensors</label>
-		<channels>
-			<channel id="40013" typeId="vvm320-type-40013" />
-			<channel id="40014" typeId="vvm320-type-40014" />
-			<channel id="44306" typeId="vvm320-type-44306" />
-			<channel id="44298" typeId="vvm320-type-44298" />
-			<channel id="48132" typeId="vvm320-type-48132" />
-			<channel id="47041" typeId="vvm320-type-47041" />
-		</channels>
-	</channel-group-type>
-
 	<channel-group-type id="vvm320-compressor">
-		<label>Compressor Sensors</label>
+		<label>Compressor Channels</label>
 		<channels>
 			<channel id="44362" typeId="vvm320-type-44362" />
 			<channel id="44396" typeId="vvm320-type-44396" />
@@ -78,12 +38,10 @@
 			<channel id="44702" typeId="vvm320-type-44702" />
 			<channel id="44700" typeId="vvm320-type-44700" />
 			<channel id="44457" typeId="vvm320-type-44457" />
-			<channel id="10012" typeId="vvm320-type-10012" />
 		</channels>
 	</channel-group-type>
-
 	<channel-group-type id="vvm320-airsupply">
-		<label>Air Supply/Exhaust Sensors</label>
+		<label>Air Supply/Exhaust Channels</label>
 		<channels>
 			<channel id="40025" typeId="vvm320-type-40025" />
 			<channel id="40026" typeId="vvm320-type-40026" />
@@ -95,6 +53,4 @@
 			<channel id="47260" typeId="vvm320-type-47260" />
 		</channels>
 	</channel-group-type>
-
-
 </thing:thing-descriptions>

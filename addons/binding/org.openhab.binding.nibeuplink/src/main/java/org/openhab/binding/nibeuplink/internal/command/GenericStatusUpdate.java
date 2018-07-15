@@ -22,6 +22,8 @@ import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.nibeuplink.handler.NibeUplinkHandler;
 import org.openhab.binding.nibeuplink.internal.callback.AbstractUplinkCommandCallback;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
+import org.openhab.binding.nibeuplink.internal.model.DataResponse;
+import org.openhab.binding.nibeuplink.internal.model.DataResponseTransformer;
 import org.openhab.binding.nibeuplink.internal.model.GenericDataResponse;
 import org.openhab.binding.nibeuplink.internal.model.VVM320Channels;
 
@@ -29,16 +31,17 @@ import org.openhab.binding.nibeuplink.internal.model.VVM320Channels;
  * generic command that retrieves status values for all channels defined in {@link VVM320Channels}
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public class GenericStatusUpdate extends AbstractUplinkCommandCallback implements NibeUplinkCommand {
 
     private final NibeUplinkHandler handler;
+    private final DataResponseTransformer transformer;
     private int retries = 0;
 
     public GenericStatusUpdate(NibeUplinkHandler handler) {
         super(handler.getConfiguration());
         this.handler = handler;
+        this.transformer = new DataResponseTransformer(handler);
     }
 
     @Override
@@ -50,8 +53,8 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
 
         for (Channel channel : handler.getChannels()) {
             if (!handler.getDeadChannels().contains(channel)) {
-                if (channel.getId() != null && !channel.getId().equals("0")) {
-                    fields.add(DATA_API_FIELD_DATA, channel.getId());
+                if (channel.getChannelCode() != null && !channel.getChannelCode().equals("0")) {
+                    fields.add(DATA_API_FIELD_DATA, channel.getChannelCode());
                 }
             }
         }
@@ -88,9 +91,9 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
             String json = getContentAsString(StandardCharsets.UTF_8);
             if (json != null) {
                 logger.debug("JSON String: {}", json);
-                GenericDataResponse jsonObject = gson.fromJson(json, GenericDataResponse.class);
+                DataResponse jsonObject = gson.fromJson(json, GenericDataResponse.class);
                 if (jsonObject != null) {
-                    handler.updateChannelStatus(jsonObject.getValues());
+                    handler.updateChannelStatus(transformer.transform(jsonObject));
                 }
             }
         }

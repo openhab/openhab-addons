@@ -19,7 +19,6 @@ import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
  * public interface for all commands
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public interface NibeUplinkCommand extends SuccessListener, FailureListener, ContentListener, CompleteListener {
 

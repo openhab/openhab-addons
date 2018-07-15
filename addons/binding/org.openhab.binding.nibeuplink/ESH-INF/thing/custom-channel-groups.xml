@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="nibeuplink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="nibeuplink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-
-
 	<channel-group-type id="custom-custom">
 		<label>Custom Sensors</label>
 		<channels>
@@ -17,6 +16,4 @@
 			<channel id="CH08" typeId="custom-type-CH08" />
 		</channels>
 	</channel-group-type>
-
-
 </thing:thing-descriptions>

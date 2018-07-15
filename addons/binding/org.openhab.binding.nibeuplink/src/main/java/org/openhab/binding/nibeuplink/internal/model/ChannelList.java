@@ -8,17 +8,27 @@
  */
 package org.openhab.binding.nibeuplink.internal.model;
 
+import java.util.Set;
+
 /**
- * type of value which is returned by the nibe uplink API. Numbers can be Integers (NUMBER) or decimals which will be
- * divided by 10 or 100.
+ * interface which contains the public methods of the channellist classes
  *
  * @author Alexander Friese - initial contribution
- *
  */
-public enum ValueType {
+public interface ChannelList {
 
-    NUMBER,
-    NUMBER_10,
-    NUMBER_100
+    /**
+     * returns an unmodifiable set containing all available channels.
+     *
+     * @return
+     */
+    Set<Channel> getChannels();
 
+    /**
+     * returns the matching channel, null if no match was found
+     *
+     * @param channelCode
+     * @return
+     */
+    Channel fromCode(String channelCode);
 }

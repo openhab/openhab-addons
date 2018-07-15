@@ -33,14 +33,13 @@ import com.google.gson.Gson;
  * base class for all commands. common logic should be implemented here
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public abstract class AbstractUplinkCommandCallback extends BufferingResponseListener implements NibeUplinkCommand {
 
     /**
      * logger
      */
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(AbstractUplinkCommandCallback.class);
 
     /**
      * the configuration

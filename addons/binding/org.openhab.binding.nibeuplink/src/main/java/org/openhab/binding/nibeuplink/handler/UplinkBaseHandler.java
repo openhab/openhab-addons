@@ -8,9 +8,7 @@
  */
 package org.openhab.binding.nibeuplink.handler;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -19,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -27,13 +24,12 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.internal.command.UpdateSetting;
 import org.openhab.binding.nibeuplink.internal.connector.UplinkWebInterface;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
 import org.openhab.binding.nibeuplink.internal.model.CustomChannels;
-import org.openhab.binding.nibeuplink.internal.model.ValueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +38,6 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Alexander Friese - initial contribution
- *
  */
 @NonNullByDefault
 public abstract class UplinkBaseHandler extends BaseThingHandler implements NibeUplinkHandler {
@@ -117,14 +112,14 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
      * @param config
      */
     private void setupCustomChannels(NibeUplinkConfiguration config) {
-        CustomChannels.CH_CH01.setId(config.getCustomChannel01());
-        CustomChannels.CH_CH02.setId(config.getCustomChannel02());
-        CustomChannels.CH_CH03.setId(config.getCustomChannel03());
-        CustomChannels.CH_CH04.setId(config.getCustomChannel04());
-        CustomChannels.CH_CH05.setId(config.getCustomChannel05());
-        CustomChannels.CH_CH06.setId(config.getCustomChannel06());
-        CustomChannels.CH_CH07.setId(config.getCustomChannel07());
-        CustomChannels.CH_CH08.setId(config.getCustomChannel08());
+        CustomChannels.CH_CH01.setCode(config.getCustomChannel01());
+        CustomChannels.CH_CH02.setCode(config.getCustomChannel02());
+        CustomChannels.CH_CH03.setCode(config.getCustomChannel03());
+        CustomChannels.CH_CH04.setCode(config.getCustomChannel04());
+        CustomChannels.CH_CH05.setCode(config.getCustomChannel05());
+        CustomChannels.CH_CH06.setCode(config.getCustomChannel06());
+        CustomChannels.CH_CH07.setCode(config.getCustomChannel07());
+        CustomChannels.CH_CH08.setCode(config.getCustomChannel08());
     }
 
     /**
@@ -180,79 +175,20 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
      * will update all channels provided in the map
      */
     @Override
-    public void updateChannelStatus(Map<String, String> values) {
+    public void updateChannelStatus(Map<Channel, State> values) {
         logger.debug("Handling channel update. ({} Channels)", values.size());
 
-        for (String key : values.keySet()) {
-            List<Channel> channels = getAllSpecificChannels(key);
-            if (channels.size() == 0) {
-                logger.info("Could not identify channel: {} for model {}", key,
+        for (Channel channel : values.keySet()) {
+            if (getChannels().contains(channel)) {
+                State value = values.get(channel);
+                logger.debug("Channel is to be updated: {}: {}", channel.getFQName(), value);
+                updateState(channel.getFQName(), value);
+            } else {
+                logger.debug("Could not identify channel: {} for model {}", channel.getFQName(),
                         getThing().getThingTypeUID().getAsString());
             }
-            for (Channel channel : channels) {
-                String value = values.get(key);
-                logger.debug("Channel is to be updated: {}: {}", channel.getFQName(), value);
-                if (value != null && !value.equals(NO_VALUE)) {
-                    try {
-                        updateState(channel.getFQName(), convertToDecimal(value, channel.getValueType()));
-                    } catch (NumberFormatException ex) {
-                        logger.warn("Could not update channel {} - invalid number: '{}'", channel.getFQName(), value);
-                        updateState(channel.getFQName(), UnDefType.UNDEF);
-                    }
-                } else {
-                    logger.debug("Value is null or not provided by heatpump (channel: {})", channel.getFQName());
-                    updateState(channel.getFQName(), UnDefType.UNDEF);
-                    deadChannels.add(channel);
-                }
-            }
         }
     }
-
-    /**
-     * internal method which composes the channel list out of the specific channels and the additional custom channels.
-     * custom channel implementation is the same for all models because it has a generic approach.
-     *
-     * @param specificChannels
-     * @return
-     */
-    protected List<Channel> getChannels(Channel[] specificChannels) {
-        List<Channel> list = new ArrayList<>(specificChannels.length + CustomChannels.values().length);
-
-        for (Channel channel : specificChannels) {
-            list.add(channel);
-        }
-        for (Channel channel : CustomChannels.values()) {
-            list.add(channel);
-        }
-
-        return list;
-    }
-
-    /**
-     * internal method for conversion to a valid decimal value.
-     *
-     * @throws NumberFormatException
-     * @param number as String
-     * @return converted value to DecimalType
-     */
-    private DecimalType convertToDecimal(String number, ValueType type) {
-        double value = new DecimalType(number).doubleValue();
-        switch (type) {
-            case NUMBER_10:
-                value /= 10;
-                break;
-            case NUMBER_100:
-                value /= 100;
-                break;
-            default:
-                break;
-        }
-        return new DecimalType(value);
-    }
-
-    protected abstract List<Channel> getAllSpecificChannels(String id);
-
-    protected abstract @Nullable Channel getSpecificChannel(String id);
 
     @Override
     public Set<Channel> getDeadChannels() {

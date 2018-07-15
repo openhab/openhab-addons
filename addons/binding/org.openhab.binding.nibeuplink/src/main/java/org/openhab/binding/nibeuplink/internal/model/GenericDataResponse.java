@@ -22,7 +22,6 @@ import com.google.gson.annotations.SerializedName;
  * data class to map the json status response
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public class GenericDataResponse implements DataResponse {
     private final Logger logger = LoggerFactory.getLogger(GenericDataResponse.class);
@@ -48,15 +47,6 @@ public class GenericDataResponse implements DataResponse {
     private String fuzzyDate;
     @SerializedName("Values")
     private List<Value> values = new ArrayList<>();
-
-    public String getValue(VVM320Channels key) {
-        for (Value value : values) {
-            if (value.variableId.equals(key.getId())) {
-                return value.currentValue;
-            }
-        }
-        return null;
-    }
 
     @Override
     public Map<String, String> getValues() {

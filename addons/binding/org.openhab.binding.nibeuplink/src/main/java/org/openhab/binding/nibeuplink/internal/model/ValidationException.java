@@ -12,7 +12,6 @@ package org.openhab.binding.nibeuplink.internal.model;
  * exception whichs is used to state a validation error
  *
  * @author Alexander Friese - initial contribution
- *
  */
 public class ValidationException extends RuntimeException {
     private static final long serialVersionUID = 1L;
