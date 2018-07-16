@@ -16,6 +16,8 @@ import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial Contribution
  */
+@NonNullByDefault
 public class OpenUVDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(OpenUVDiscoveryService.class);
 
@@ -39,8 +42,8 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService {
 
     private final LocationProvider locationProvider;
     private final OpenUVBridgeHandler bridgeHandler;
-    private ScheduledFuture<?> discoveryJob;
-    private PointType previousLocation;
+    private @Nullable ScheduledFuture<?> discoveryJob;
+    private @Nullable PointType previousLocation;
 
     /**
      * Creates a OpenUVDiscoveryService with enabled autostart.
@@ -52,13 +55,13 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
-    protected void activate(Map<String, Object> configProperties) {
+    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
         super.activate(configProperties);
     }
 
     @Override
     @Modified
-    protected void modified(Map<String, Object> configProperties) {
+    protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
         super.modified(configProperties);
     }
 
@@ -78,7 +81,7 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService {
         if (discoveryJob == null) {
             discoveryJob = scheduler.scheduleWithFixedDelay(() -> {
                 PointType currentLocation = locationProvider.getLocation();
-                if (!Objects.equals(currentLocation, previousLocation)) {
+                if (currentLocation != null && !Objects.equals(currentLocation, previousLocation)) {
                     logger.debug("Location has been changed from {} to {}: Creating new discovery results",
                             previousLocation, currentLocation);
                     createResults(currentLocation);
@@ -95,7 +98,8 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService {
         Map<String, Object> properties = new HashMap<>();
         properties.put(LOCATION, location.toString());
         thingDiscovered(DiscoveryResultBuilder.create(localOpenUVThing).withLabel("Local UV Information")
-                .withProperties(properties).withBridge(bridgeUID).build());
+                .withProperties(properties).withRepresentationProperty(location.toString()).withBridge(bridgeUID)
+                .build());
     }
 
     @Override

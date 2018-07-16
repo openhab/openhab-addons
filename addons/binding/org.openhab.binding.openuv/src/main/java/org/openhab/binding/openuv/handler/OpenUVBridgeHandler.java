@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -35,6 +35,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
@@ -46,6 +47,7 @@ import com.google.gson.JsonDeserializer;
  * @author Gaël L'hopital - Initial contribution
  *
  */
+@NonNullByDefault
 public class OpenUVBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(OpenUVBridgeHandler.class);
 
@@ -53,9 +55,8 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     private @Nullable String apikey;
     private Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    String error = "";
-    @Nullable
-    String statusDescr = null;
+    private String error = "";
+    private @Nullable String statusDescr;
 
     public OpenUVBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -63,9 +64,10 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                 .registerTypeAdapter(DecimalType.class,
                         (JsonDeserializer<DecimalType>) (json, type, jsonDeserializationContext) -> DecimalType
                                 .valueOf(json.getAsJsonPrimitive().getAsString()))
-                .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type,
-                        jsonDeserializationContext) -> ZonedDateTime.parse(json.getAsJsonPrimitive().getAsString()))
-                .create();
+                .registerTypeAdapter(ZonedDateTime.class,
+                        (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
+                                .parse(json.getAsJsonPrimitive().getAsString()))
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
     }
 
     @Override
@@ -139,7 +141,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         // not needed
     }
 

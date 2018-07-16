@@ -23,12 +23,12 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 public class OpenUVJsonResult {
 
     private DecimalType uv;
-    private ZonedDateTime uv_time;
-    private DecimalType uv_max;
-    private ZonedDateTime uv_max_time;
+    private ZonedDateTime uvTime;
+    private DecimalType uvMax;
+    private ZonedDateTime uvMaxTime;
     private DecimalType ozone;
-    private ZonedDateTime ozone_time;
-    private OpenUVSafeExposureTime safe_exposure_time;
+    private ZonedDateTime ozoneTime;
+    private OpenUVSafeExposureTime safeExposureTime;
 
     public OpenUVJsonResult() {
     }
@@ -38,7 +38,7 @@ public class OpenUVJsonResult {
     }
 
     public DecimalType getUvMax() {
-        return uv_max;
+        return uvMax;
     }
 
     public DecimalType getOzone() {
@@ -46,7 +46,7 @@ public class OpenUVJsonResult {
     }
 
     public DateTimeType getUVTime() {
-        return new DateTimeType(uv_time.withZoneSameInstant(ZoneId.systemDefault()));
+        return new DateTimeType(uvTime.withZoneSameInstant(ZoneId.systemDefault()));
     }
 
     public DateTimeType getUVMaxTime() {
@@ -54,15 +54,15 @@ public class OpenUVJsonResult {
     }
 
     public ZonedDateTime getUVMaxTimeAsZDT() {
-        return uv_max_time.withZoneSameInstant(ZoneId.systemDefault());
+        return uvMaxTime.withZoneSameInstant(ZoneId.systemDefault());
     }
 
     public DateTimeType getOzoneTime() {
-        return new DateTimeType(ozone_time.withZoneSameInstant(ZoneId.systemDefault()));
+        return new DateTimeType(ozoneTime.withZoneSameInstant(ZoneId.systemDefault()));
     }
 
     public OpenUVSafeExposureTime getSafeExposureTime() {
-        return safe_exposure_time;
+        return safeExposureTime;
     }
 
 }

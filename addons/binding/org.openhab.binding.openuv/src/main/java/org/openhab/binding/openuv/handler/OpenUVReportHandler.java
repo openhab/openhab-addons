@@ -18,7 +18,8 @@ import java.util.Properties;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -43,15 +44,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class OpenUVReportHandler extends BaseThingHandler {
     private static final int DEFAULT_REFRESH_PERIOD = 30;
     private final Logger logger = LoggerFactory.getLogger(OpenUVReportHandler.class);
 
-    private OpenUVBridgeHandler bridge;
-    private OpenUVJsonResult openUVData;
+    private @Nullable OpenUVBridgeHandler bridge;
+    private @Nullable OpenUVJsonResult openUVData;
 
-    private ScheduledFuture<?> refreshJob;
-    private ScheduledFuture<?> uvMaxJob;
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> uvMaxJob;
 
     public OpenUVReportHandler(Thing thing) {
         super(thing);
@@ -69,10 +71,10 @@ public class OpenUVReportHandler extends BaseThingHandler {
             errorMsg = "Parameter 'refresh' must be higher than 3 minutes to stay in free API plan";
         }
 
-        if (this.getBridge() == null) {
+        if (getBridge() == null) {
             errorMsg = "Invalid bridge";
         } else {
-            bridge = (OpenUVBridgeHandler) this.getBridge().getHandler();
+            bridge = (OpenUVBridgeHandler) getBridge().getHandler();
         }
 
         if (errorMsg == null) {
@@ -157,7 +159,7 @@ public class OpenUVReportHandler extends BaseThingHandler {
      * @param channelUID the id identifying the channel to be updated
      *
      */
-    private void updateChannel(@NonNull ChannelUID channelUID) {
+    private void updateChannel(ChannelUID channelUID) {
         if (openUVData != null) {
             switch (channelUID.getId()) {
                 case UVINDEX:
@@ -200,7 +202,7 @@ public class OpenUVReportHandler extends BaseThingHandler {
         }
     }
 
-    private @NonNull State getAsHSB(float uv) {
+    private State getAsHSB(float uv) {
         if (uv >= 11) {
             return HSBType.fromRGB(106, 27, 154);
         } else if (uv >= 8) {
