@@ -27,6 +27,6 @@
 			<channel id="emeter_treshold_a" typeId="actualTresholdAType" />
 			<channel id="emeter_switch_position" typeId="switchPositionType" />
 		</channels>
-		<config-description-ref uri="binding:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
 	</thing-type>
 </thing:thing-descriptions>

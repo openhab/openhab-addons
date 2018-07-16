@@ -52,6 +52,6 @@
 			<channel id="emeter_voltage_swells_l2" typeId="voltageSwellsL2Type" />
 			<channel id="emeter_voltage_swells_l3" typeId="voltageSwellsL3Type" />
 		</channels>
-		<config-description-ref uri="binding:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
 	</thing-type>
 </thing:thing-descriptions>

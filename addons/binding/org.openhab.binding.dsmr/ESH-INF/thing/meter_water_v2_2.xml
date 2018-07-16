@@ -12,6 +12,6 @@
 			<channel id="wmeter_value_v2" typeId="waterValueType" />
 			<channel id="wmeter_value_v2_timestamp" typeId="p1TimestampType" />
 		</channels>
-		<config-description-ref uri="binding:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
 	</thing-type>
 </thing:thing-descriptions>

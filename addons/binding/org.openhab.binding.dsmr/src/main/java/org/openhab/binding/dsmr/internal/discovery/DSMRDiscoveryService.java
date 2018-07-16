@@ -74,7 +74,8 @@ public abstract class DSMRDiscoveryService extends AbstractDiscoveryService {
         properties.put("channel", meterDescriptor.getChannel());
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                .withBridge(dsmrBridgeUID).withProperties(properties).withLabel(meterType.meterKind.toString()).build();
+                .withBridge(dsmrBridgeUID).withProperties(properties).withLabel(meterType.meterKind.getLabelKey())
+                .build();
 
         logger.debug("{} for meterDescriptor {}", discoveryResult, meterDescriptor);
         thingDiscovered(discoveryResult);

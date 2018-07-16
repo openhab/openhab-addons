@@ -95,7 +95,7 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
                     "{} could not be initialized due to an invalid meterType {}. Delete this Thing if the problem persists.",
                     getThing(), getThing().getThingTypeUID().getId().toUpperCase());
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "This could not be initialized. Delete Thing if the problem persists.");
+                    "@text/error.configuration.invalidmetertype");
             return;
         }
         DSMRMeterConfiguration meterConfig = getConfigAs(DSMRMeterConfiguration.class);
@@ -122,7 +122,7 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
         logger.trace("Update state for device: {}", getThing().getThingTypeUID().getId());
         if (lastReceivedValues.isEmpty()) {
             if (getThing().getStatus() != ThingStatus.OFFLINE) {
-                setDeviceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "No data received from meter.");
+                setDeviceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.thing.nodata");
             }
         } else {
             for (CosemObject cosemObject : lastReceivedValues) {

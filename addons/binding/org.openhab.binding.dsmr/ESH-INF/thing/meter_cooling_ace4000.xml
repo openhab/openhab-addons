@@ -9,6 +9,6 @@
 		<channels>
 			<channel id="cmeter_value_v2" typeId="coolingValueType" />
 		</channels>
-		<config-description-ref uri="binding:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
 	</thing-type>
 </thing:thing-descriptions>

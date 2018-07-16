@@ -15,6 +15,6 @@
 			<channel id="p1_text_code" typeId="p1TextCodeType" />
 			<channel id="p1_text_string" typeId="p1TextStringType" />
 		</channels>
-		<config-description-ref uri="binding:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
 	</thing-type>
 </thing:thing-descriptions>

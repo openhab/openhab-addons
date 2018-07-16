@@ -13,6 +13,6 @@
 			<channel id="gjmeter_value" typeId="gjValueType" />
 			<channel id="gjmeter_value_timestamp" typeId="p1TimestampType" />
 		</channels>
-		<config-description-ref uri="binding:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
 	</thing-type>
 </thing:thing-descriptions>

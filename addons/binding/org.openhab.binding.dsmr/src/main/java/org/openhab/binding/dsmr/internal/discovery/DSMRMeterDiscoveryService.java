@@ -9,6 +9,8 @@
 package org.openhab.binding.dsmr.internal.discovery;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.i18n.LocaleProvider;
+import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.openhab.binding.dsmr.handler.DSMRBridgeHandler;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
@@ -61,5 +63,21 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
             logger.debug("Detect meters from #{} objects", telegram.getCosemObjects().size());
         }
         meterDetector.detectMeters(telegram).forEach(m -> meterDiscovered(m, dsmrBridgeHandler.getThing().getUID()));
+    }
+
+    public void setLocaleProvider(final LocaleProvider localeProvider) {
+        this.localeProvider = localeProvider;
+    }
+
+    public void unsetLocaleProvider() {
+        this.localeProvider = null;
+    }
+
+    public void setTranslationProvider(TranslationProvider i18nProvider) {
+        this.i18nProvider = i18nProvider;
+    }
+
+    public void unsetTranslationProvider() {
+        this.i18nProvider = null;
     }
 }

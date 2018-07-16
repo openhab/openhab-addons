@@ -13,6 +13,6 @@
 			<channel id="gjmeter_value_v3" typeId="gjValueType" />
 			<channel id="meter_valve_switch_position" typeId="gjValvePositionType" />
 		</channels>
-		<config-description-ref uri="binding:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
 	</thing-type>
 </thing:thing-descriptions>

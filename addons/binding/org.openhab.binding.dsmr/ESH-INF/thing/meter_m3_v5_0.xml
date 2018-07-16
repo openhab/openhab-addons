@@ -13,6 +13,6 @@
 			<channel id="m3meter_value" typeId="m3ValueType" />
 			<channel id="m3meter_value_timestamp" typeId="p1TimestampType" />
 		</channels>
-		<config-description-ref uri="binding:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
 	</thing-type>
 </thing:thing-descriptions>

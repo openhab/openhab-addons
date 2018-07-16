@@ -14,6 +14,6 @@
 			<channel id="m3meter_value_timestamp" typeId="p1TimestampType" />
 			<channel id="meter_valve_switch_position" typeId="m3ValvePositionType" />
 		</channels>
-		<config-description-ref uri="binding:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
 	</thing-type>
 </thing:thing-descriptions>

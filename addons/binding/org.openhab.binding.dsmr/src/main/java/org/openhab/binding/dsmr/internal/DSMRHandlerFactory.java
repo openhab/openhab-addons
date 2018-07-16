@@ -15,6 +15,8 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.i18n.LocaleProvider;
+import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -29,6 +31,7 @@ import org.openhab.binding.dsmr.internal.discovery.DSMRMeterDiscoveryService;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterType;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +48,10 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(DSMRHandlerFactory.class);
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+
+    private @NonNullByDefault({}) LocaleProvider localeProvider;
+
+    private @NonNullByDefault({}) TranslationProvider i18nProvider;
 
     /**
      * Returns if the specified ThingTypeUID is supported by this handler.
@@ -105,6 +112,8 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerDiscoveryService(DSMRBridgeHandler bridgeHandler) {
         DSMRMeterDiscoveryService discoveryService = new DSMRMeterDiscoveryService(bridgeHandler);
 
+        discoveryService.setLocaleProvider(localeProvider);
+        discoveryService.setTranslationProvider(i18nProvider);
         this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
@@ -114,10 +123,34 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
         if (thingHandler instanceof DSMRBridgeHandler) {
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
             if (serviceReg != null) {
+                DSMRMeterDiscoveryService service = (DSMRMeterDiscoveryService) getBundleContext()
+                        .getService(serviceReg.getReference());
+                if (service != null) {
+                    service.unsetLocaleProvider();
+                    service.unsetTranslationProvider();
+                }
                 // remove discovery service, if bridge handler is removed
                 serviceReg.unregister();
                 discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             }
         }
+    }
+
+    @Reference
+    protected void setLocaleProvider(final LocaleProvider localeProvider) {
+        this.localeProvider = localeProvider;
+    }
+
+    protected void unsetLocaleProvider(final LocaleProvider localeProvider) {
+        this.localeProvider = null;
+    }
+
+    @Reference
+    protected void setTranslationProvider(TranslationProvider i18nProvider) {
+        this.i18nProvider = i18nProvider;
+    }
+
+    protected void unsetTranslationProvider(TranslationProvider i18nProvider) {
+        this.i18nProvider = null;
     }
 }

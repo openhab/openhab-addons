@@ -139,7 +139,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
             logger.debug("Incomplete configuration: {}", deviceConfig);
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Incomplete configuration. Not all required configuration settings are set.");
+                    "@text/error.configuration.incomplete");
         }
     }
 
@@ -206,7 +206,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
             if (deltaLastReceived > receivedTimeoutNanos * OFFLINE_TIMEOUT_FACTOR) {
                 logger.trace("Setting device offline if not yet done, and reset last received time.");
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
-                    deviceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "Not receiving data from meter.");
+                    deviceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.bridge.nodata");
                 }
                 resetLastReceivedState();
             }

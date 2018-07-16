@@ -23,6 +23,6 @@
 			<channel id="emeter_actual_delivery" typeId="actualDeliveryType" />
 			<channel id="emeter_actual_production" typeId="actualProductionType" />
 		</channels>
-		<config-description-ref uri="binding:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
 	</thing-type>
 </thing:thing-descriptions>

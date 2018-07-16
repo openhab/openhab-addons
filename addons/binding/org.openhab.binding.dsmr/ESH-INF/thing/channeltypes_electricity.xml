@@ -72,8 +72,8 @@
 	</channel-type>
 	<channel-type id="activeImportPowerType" advanced="true">
 		<item-type>Number:Power</item-type>
-		<label>Aggegrate active import power</label>
-		<description>The aggrate active import power in W.</description>
+		<label>Aggregate active import power</label>
+		<description>The aggregate active import power in W.</description>
 		<state pattern="%.0f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="actualDeliveryType">

@@ -11,6 +11,6 @@
 			<channel id="meter_equipment_identifier" typeId="equipmentIdType" />
 			<channel id="hmeter_value_v2" typeId="heatingValueType" />
 		</channels>
-		<config-description-ref uri="binding:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
 	</thing-type>
 </thing:thing-descriptions>

@@ -4,7 +4,7 @@
 	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="binding:dsmr:bridgesettings">
+	<config-description uri="thing-type:dsmr:bridgesettings">
 		<parameter-group name="serialPortAdvanced">
 			<label>Manual Serial Port Settings</label>
 			<description>In case auto detection fails, it is possible to specify the Serial Port manually</description>
@@ -70,7 +70,7 @@ to disable auto detection and use the manual Serial port parameters.</descriptio
 		</parameter>
 	</config-description>
 
-	<config-description uri="binding:dsmr:meterdescriptor">
+	<config-description uri="thing-type:dsmr:meterdescriptor">
 		<parameter name="refresh" type="integer" required="true" min="1">
 			<default>60</default>
 			<label>Refresh</label>

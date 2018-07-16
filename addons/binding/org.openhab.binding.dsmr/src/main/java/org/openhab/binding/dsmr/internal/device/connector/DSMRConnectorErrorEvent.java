@@ -12,33 +12,19 @@ package org.openhab.binding.dsmr.internal.device.connector;
  * Error events from a connector.
  *
  * @author M. Volaart - Initial contribution
- * @author Hilbrand Bouwkamp - Reduced number of event to only (relevant) errors
+ * @author Hilbrand Bouwkamp - Reduced number of event to only errors
  */
 public enum DSMRConnectorErrorEvent {
-    DONT_EXISTS("Serial port does not exist"),
-    IN_USE("Serial port is already in use"),
-    INTERNAL_ERROR("Unexpected error, possible bug. Please report"),
-    NOT_COMPATIBLE("Serial port is not compatible"),
-    READ_ERROR("Read error");
-
-    /**
-     * Details about the event
-     */
-    private final String eventDetails;
-
-    /**
-     * Constructor
-     *
-     * @param eventDetails String containing the details about the event
-     */
-    DSMRConnectorErrorEvent(String eventDetails) {
-        this.eventDetails = eventDetails;
-    }
+    DONT_EXISTS,
+    IN_USE,
+    INTERNAL_ERROR,
+    NOT_COMPATIBLE,
+    READ_ERROR;
 
     /**
      * @return the event details
      */
     public String getEventDetails() {
-        return eventDetails;
+        return "@text/error.connector" + name().toLowerCase();
     }
 }

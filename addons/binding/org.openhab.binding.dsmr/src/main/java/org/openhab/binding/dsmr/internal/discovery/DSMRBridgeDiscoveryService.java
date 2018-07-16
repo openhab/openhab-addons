@@ -18,6 +18,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.i18n.LocaleProvider;
+import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.dsmr.DSMRBindingConstants;
 import org.openhab.binding.dsmr.internal.device.DSMRDeviceRunnable;
@@ -28,6 +30,7 @@ import org.openhab.binding.dsmr.internal.device.connector.SerialPortManager;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,7 +178,7 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                 .withThingType(DSMRBindingConstants.THING_TYPE_DSMR_BRIDGE).withProperties(properties)
-                .withLabel("Dutch Smart Meter").build();
+                .withLabel("@text/thing-type.dsmr.dsmrBridge.label").build();
 
         logger.debug("[{}] discovery result:{}", currentScannedPortName, discoveryResult);
 
@@ -188,5 +191,23 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
     public void handleErrorEvent(DSMRConnectorErrorEvent portEvent) {
         logger.debug("[{}] Error on port during discovery: {}", currentScannedPortName, portEvent);
         stopSerialPortScan();
+    }
+
+    @Reference
+    protected void setLocaleProvider(final LocaleProvider localeProvider) {
+        this.localeProvider = localeProvider;
+    }
+
+    protected void unsetLocaleProvider(final LocaleProvider localeProvider) {
+        this.localeProvider = null;
+    }
+
+    @Reference
+    protected void setTranslationProvider(TranslationProvider i18nProvider) {
+        this.i18nProvider = i18nProvider;
+    }
+
+    protected void unsetTranslationProvider(TranslationProvider i18nProvider) {
+        this.i18nProvider = null;
     }
 }

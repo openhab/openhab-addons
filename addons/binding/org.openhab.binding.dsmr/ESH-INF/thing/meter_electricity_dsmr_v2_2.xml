@@ -22,6 +22,6 @@
 			<channel id="meter_switch_position" typeId="switchPositionType" />
 			<channel id="emeter_actual_delivery" typeId="actualDeliveryType" />
 		</channels>
-		<config-description-ref uri="binding:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
 	</thing-type>
 </thing:thing-descriptions>

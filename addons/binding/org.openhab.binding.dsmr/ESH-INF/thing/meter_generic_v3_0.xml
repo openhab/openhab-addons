@@ -13,6 +13,6 @@
 			<channel id="genmeter_value_v3" typeId="genValueType" />
 			<channel id="meter_valve_switch_position" typeId="genValvePositionType" />
 		</channels>
-		<config-description-ref uri="binding:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
 	</thing-type>
 </thing:thing-descriptions>
