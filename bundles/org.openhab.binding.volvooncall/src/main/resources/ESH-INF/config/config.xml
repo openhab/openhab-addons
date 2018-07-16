@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:volvooncall:vocapi">
+		<parameter name="username" type="text">
+			<label>Username</label>
+			<description>Your VOC username (email)</description>
+			<required>true</required>
+		</parameter>
+
+		<parameter name="password" type="text">
+			<label>Password</label>
+			<description>Your VOC password</description>
+			<required>true</required>
+			<context>password</context>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
