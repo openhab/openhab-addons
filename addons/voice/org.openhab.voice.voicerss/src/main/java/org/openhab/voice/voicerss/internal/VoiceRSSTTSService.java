@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Jochen Hiller - Initial contribution and API
  * @author Laurent Garnier - add support for OGG and AAC audio formats
  */
-@Component(property = { Constants.SERVICE_PID + "=org.openhab.voicerss",
+@Component(configurationPid = "org.openhab.voicerss", property = { Constants.SERVICE_PID + "=org.openhab.voicerss",
         ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=voice:voicerss",
         ConfigurableService.SERVICE_PROPERTY_LABEL + "=VoiceRSS",
         ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=voice" })
