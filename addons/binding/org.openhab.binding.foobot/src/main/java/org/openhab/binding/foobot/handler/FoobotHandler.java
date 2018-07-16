@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpParams;
@@ -120,7 +121,7 @@ public class FoobotHandler extends BaseThingHandler {
             logger.debug("URL = {}", urlStr);
 
             // Run the HTTP request and get the list of all foobot devices belonging to the user from foobot.io
-            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpClient httpClient = new DefaultHttpClient();
             HttpGet getRequest = new HttpGet(urlStr);
             getRequest.addHeader("accept", "application/json");
             getRequest.addHeader("X-API-KEY-TOKEN", config.apikey);
@@ -232,7 +233,7 @@ public class FoobotHandler extends BaseThingHandler {
             logger.debug("URL = {}", urlStr);
 
             // Run the HTTP request and get the JSON response from foobot.io
-            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpClient httpClient = new DefaultHttpClient();
             HttpGet getRequest = new HttpGet(urlStr);
             getRequest.addHeader("accept", "application/json");
             getRequest.addHeader("X-API-KEY-TOKEN", config.apikey);
