@@ -5,7 +5,7 @@
 
 	<thing-type id="foobot">
 		<label>Foobot</label>
-		<description>Shows the air quality data from the Foobot cloud API.</description>
+		<description>Shows the air quality data from the Foobot device.</description>
 
 		<channels>
 			<channel id="temperature" typeId="temperature" />
@@ -44,7 +44,7 @@
 	</thing-type>
 
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type>Number</item-type>
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<category>Temperature</category>

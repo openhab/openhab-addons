@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -62,6 +63,8 @@ public class FoobotHandler extends BaseThingHandler {
     private static final String URL2 = "https://api.foobot.io/v2/device/%uuid%/datapoint/0/last/0/?sensorList=%sensors%";
 
     private FoobotJsonData foobotData;
+
+    private HttpParams params;
 
     private Gson gson;
 
@@ -193,12 +196,7 @@ public class FoobotHandler extends BaseThingHandler {
     @Override
     public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
         if (command instanceof RefreshType) {
-            foobotData = updateFoobotData();
-
-            // Update all channels from the updated Sensor data
-            for (Channel channel : getThing().getChannels()) {
-                updateChannel(channel.getUID().getId(), foobotData);
-            }
+            return;
         } else {
             logger.debug("The Foobot binding is read-only and can not handle command {}", command);
         }

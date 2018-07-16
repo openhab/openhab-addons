@@ -6,18 +6,27 @@ Bundle-Name: Foobot Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.foobot;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Export-Package: 
  org.openhab.binding.foobot,
  org.openhab.binding.foobot.handler
 Import-Package: 
  com.google.gson,
  com.google.gson.reflect,
+ org.apache.commons.httpclient.params,
  org.apache.commons.io,
  org.apache.commons.lang,
- org.apache.http;version="4.2.5",
- org.apache.http.client.methods;version="4.2.6",
- org.apache.http.impl.client;version="4.2.6",
+ org.apache.http,
+ org.apache.http.client,
+ org.apache.http.client.cache,
+ org.apache.http.client.methods,
+ org.apache.http.conn,
+ org.apache.http.entity,
+ org.apache.http.entity.mime,
+ org.apache.http.impl.client,
+ org.apache.http.message,
+ org.apache.http.params,
+ org.apache.http.util,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.cache,
@@ -31,4 +40,3 @@ Import-Package:
  org.openhab.binding.foobot.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Require-Bundle: org.apache.httpcomponents.httpcore
