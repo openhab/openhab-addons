@@ -68,8 +68,7 @@ Bridge icloud:account:myaccount [appleId="mail@example.com", password="secure", 
 ```
 
 The device ID can be found in the Paper UI inbox.
-The information '@ "World"' is optional.
-
+The information *@ "World"* is optional.
 
 ### icloud.items
 
