@@ -18,6 +18,7 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -41,8 +42,8 @@ import org.slf4j.LoggerFactory;
 public class ValloxMVHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ValloxMVHandler.class);
-    ScheduledFuture<?> updateTasks;
-    ValloxMVWebSocket vows_send;
+    private ScheduledFuture<?> updateTasks;
+    private ValloxMVWebSocket valloxSendSocket;
 
     /**
      * Refresh interval in seconds.
@@ -57,12 +58,11 @@ public class ValloxMVHandler extends BaseThingHandler {
         super(thing);
     }
 
-    @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             if (lastUpdate > System.currentTimeMillis() + updateInterval * 1000) {
-                vows_send.request(null, null);
+                valloxSendSocket.request(null, null);
             }
         } else {
             if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_STATE)) {
@@ -72,36 +72,37 @@ public class ValloxMVHandler extends BaseThingHandler {
                             || (cmd == ValloxMVBindingConstants.STATE_ATHOME)
                             || (cmd == ValloxMVBindingConstants.STATE_AWAY)
                             || (cmd == ValloxMVBindingConstants.STATE_BOOST)) {
-                        logger.debug("Changing state to: {}", command.toString());
+                        logger.debug("Changing state to: {}", command);
                         // Open WebSocket
-                        vows_send.request(channelUID, command.toString());
-                        vows_send.request(null, null);
+                        valloxSendSocket.request(channelUID, command.toString());
+                        valloxSendSocket.request(null, null);
                     }
                 } catch (NumberFormatException nfe) {
                     // Other commands like refresh
                     return;
                 }
-            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_ONOFF)) {
-                if (command.toString() == "ON") {
-                    vows_send.request(channelUID, "0");
-                } else if (command.toString() == "OFF") {
-                    vows_send.request(channelUID, "5");
+            } else if (ValloxMVBindingConstants.CHANNEL_ONOFF.equals(channelUID.getId())) {
+                if (OnOffType.ON.equals(command)) {
+                    valloxSendSocket.request(channelUID, "0");
+                } else if (OnOffType.OFF.equals(command)) {
+                    valloxSendSocket.request(channelUID, "5");
                 }
-            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE)) {
+            } else if (ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE.equals(channelUID.getId())) {
                 QuantityType<Dimensionless> quantity = commandToQuantityType(command, SmartHomeUnits.PERCENT);
-                vows_send.request(channelUID, Integer.toString(quantity.intValue()));
-            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE)) {
+                valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
+            } else if (ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE.equals(channelUID.getId())) {
                 QuantityType<Dimensionless> quantity = commandToQuantityType(command, SmartHomeUnits.PERCENT);
-                vows_send.request(channelUID, Integer.toString(quantity.intValue()));
-            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING)) {
+                valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
+            } else if (ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING.equals(channelUID.getId())) {
                 QuantityType<Dimensionless> quantity = commandToQuantityType(command, SmartHomeUnits.PERCENT);
-                vows_send.request(channelUID, Integer.toString(quantity.intValue()));
-            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET)) {
+                valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
+            } else if (ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET.equals(channelUID.getId())) {
                 // Convert temperatur to milli degree Kelvin
                 QuantityType<Temperature> quantity = commandToQuantityType(command, SIUnits.CELSIUS)
                         .toUnit(SmartHomeUnits.KELVIN);
+                @SuppressWarnings("null")
                 int milliKelvin = quantity.multiply(new BigDecimal(100)).intValue();
-                vows_send.request(channelUID, Integer.toString(milliKelvin));
+                valloxSendSocket.request(channelUID, Integer.toString(milliKelvin));
             }
         }
     }
@@ -119,7 +120,7 @@ public class ValloxMVHandler extends BaseThingHandler {
         logger.debug("Start initializing!");
 
         String ip = getConfigAs(ValloxMVConfig.class).getIp();
-        vows_send = new ValloxMVWebSocket(ValloxMVHandler.this, ip);
+        valloxSendSocket = new ValloxMVWebSocket(ValloxMVHandler.this, ip);
 
         BigDecimal bdUpdateInterval = getConfigAs(ValloxMVConfig.class).getUpdateinterval();
         if (bdUpdateInterval == null || bdUpdateInterval.compareTo(new BigDecimal(15)) == -1) {
@@ -128,27 +129,20 @@ public class ValloxMVHandler extends BaseThingHandler {
             updateInterval = bdUpdateInterval.intValue();
         }
 
-        try {
-            scheduleUpdates();
-        } catch (Exception e) {
-            logger.error("Error: {}", e.getMessage().toString());
-        }
+        scheduleUpdates();
     }
 
-    private void scheduleUpdates() throws Exception {
+    private void scheduleUpdates() {
         logger.debug("Schedule vallox update every {} sec", updateInterval);
 
         String ip = getConfigAs(ValloxMVConfig.class).getIp();
         logger.debug("Connecting to ip: {}", ip);
         // Open WebSocket
-        ValloxMVWebSocket vows = new ValloxMVWebSocket(ValloxMVHandler.this, ip);
+        ValloxMVWebSocket valloxSocket = new ValloxMVWebSocket(ValloxMVHandler.this, ip);
 
-        updateTasks = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                // Do a pure read request to websocket interface
-                vows.request(null, null);
-            }
+        updateTasks = scheduler.scheduleWithFixedDelay(() -> {
+            // Do a pure read request to websocket interface
+            valloxSocket.request(null, null);
         }, 0, updateInterval, TimeUnit.SECONDS);
     }
 
@@ -174,6 +168,5 @@ public class ValloxMVHandler extends BaseThingHandler {
     @Override
     protected void updateStatus(ThingStatus ts) {
         super.updateStatus(ts);
-
     }
 }

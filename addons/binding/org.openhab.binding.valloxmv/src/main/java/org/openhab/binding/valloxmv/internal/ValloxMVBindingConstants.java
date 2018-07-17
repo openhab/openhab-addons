@@ -22,7 +22,6 @@ public class ValloxMVBindingConstants {
     private static final String BINDING_ID = "valloxmv";
 
     // List of all Thing Type UIDs
-    // @SuppressWarnings("null")
     public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "valloxmv");
 
     // 4 states of ventilation unit (Fireplace = 1, Away = 2, At home = 3, Boost = 4)

@@ -1,4 +1,4 @@
-# valloxmv Binding
+# ValloxMV Binding
 
 This binding is designed to connect to the web interface of Vallox MV series of ventilation unit.
 It has been tested so far only with Vallox 350 MV and 510 MV.

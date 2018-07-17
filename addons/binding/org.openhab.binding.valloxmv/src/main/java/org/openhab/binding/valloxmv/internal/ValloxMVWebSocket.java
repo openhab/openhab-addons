@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -46,8 +48,8 @@ import org.slf4j.LoggerFactory;
  * @author Björn Brings - Initial contribution
  */
 public class ValloxMVWebSocket {
-    private String ip;
-    private ValloxMVHandler voHandler;
+    private final String ip;
+    private final ValloxMVHandler voHandler;
     private WebSocketClient client;
     private ValloxMVWebSocketListener socket;
 
@@ -72,8 +74,10 @@ public class ValloxMVWebSocket {
             socket.awaitClose(2, TimeUnit.SECONDS);
         } catch (IOException e) {
             connectionError(e);
+        } catch (URISyntaxException | InterruptedException e) {
+            logger.error("Error: {}", e);
         } catch (Exception e) {
-            logger.error("Error: {}", e.getMessage());
+            logger.error("Error: {}", e);
         }
     }
 
@@ -83,14 +87,14 @@ public class ValloxMVWebSocket {
         } catch (IOException e) {
             connectionError(e);
         } catch (Exception e) {
-            logger.error("Error: {}", e.getMessage());
+            logger.error("Error: {}", e);
         }
         client.destroy();
         client = null;
     }
 
     public void connectionError(IOException e) {
-        logger.error("Error connecting vallox unit.", e);
+        logger.debug("Error connecting vallox unit.", e);
         voHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
     }
 
@@ -98,7 +102,7 @@ public class ValloxMVWebSocket {
     public class ValloxMVWebSocketListener {
         private final CountDownLatch closeLatch = new CountDownLatch(1);
 
-        private Logger logger = LoggerFactory.getLogger(ValloxMVWebSocket.class);
+        private Logger logger = LoggerFactory.getLogger(ValloxMVWebSocketListener.class);
         private String updateState;
         private ChannelUID channelUID;
 
@@ -115,8 +119,6 @@ public class ValloxMVWebSocket {
                 session.getRemote().sendBytes(buf);
             } catch (IOException e) {
                 connectionError(e);
-            } catch (Exception e) {
-                logger.error("Error: {}", e.getMessage());
             }
         }
 
@@ -128,7 +130,7 @@ public class ValloxMVWebSocket {
          * @param hmParameters HashMap for setting data with register as key and value as value
          * @return ByteBuffer to be sent to websocket
          */
-        public ByteBuffer generateCustomRequest(Integer mode, HashMap<Integer, Integer> hmParameters) {
+        public ByteBuffer generateCustomRequest(Integer mode, Map<Integer, Integer> hmParameters) {
             // If we just want data the format is different so its just hardcoded here
             if (mode == 246) {
                 // requestData (Length 3, Command to get data 246, empty set, checksum [sum of everything before])
@@ -169,19 +171,19 @@ public class ValloxMVWebSocket {
                 // requestData (Length 3, Command to get data 246, empty set, checksum [sum of everything before])
                 return generateCustomRequest(246, new HashMap<Integer, Integer>());
             }
-            if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_STATE)) {
+            if (ValloxMVBindingConstants.CHANNEL_STATE.equals(channelUID.getId())) {
                 if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_FIREPLACE) {
                     // 15 Min fireplace (Length 6, Command to set data 249, CYC_BOOST_TIMER (4612) = 0,
                     // CYC_FIREPLACE_TIMER
                     // (4613) = 15, checksum)
-                    HashMap<Integer, Integer> request = new HashMap<Integer, Integer>();
+                    Map<Integer, Integer> request = new HashMap<Integer, Integer>();
                     request.put(4612, 0);
                     request.put(4613, 15);
                     return generateCustomRequest(249, request);
                 } else if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_ATHOME) {
                     // At Home (Length 8, Command to set data 249, CYC_STATE (4609) = 0, CYC_BOOST_TIMER (4612) = 0,
                     // CYC_FIREPLACE_TIMER (4613) = 0, checksum)
-                    HashMap<Integer, Integer> request = new HashMap<Integer, Integer>();
+                    Map<Integer, Integer> request = new HashMap<Integer, Integer>();
                     request.put(4609, 0);
                     request.put(4612, 0);
                     request.put(4613, 0);
@@ -189,7 +191,7 @@ public class ValloxMVWebSocket {
                 } else if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_AWAY) {
                     // Away (Length 8, Command to set data 249, CYC_STATE (4609) = 1, CYC_BOOST_TIMER (4612) = 0,
                     // CYC_FIREPLACE_TIMER (4613) = 0, checksum)
-                    HashMap<Integer, Integer> request = new HashMap<Integer, Integer>();
+                    Map<Integer, Integer> request = new HashMap<Integer, Integer>();
                     request.put(4609, 1);
                     request.put(4612, 0);
                     request.put(4613, 0);
@@ -197,7 +199,7 @@ public class ValloxMVWebSocket {
                 } else if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_BOOST) {
                     // 30 Min boost (Length 6, Command to set data 249, CYC_BOOST_TIMER (4612) = 30, CYC_FIREPLACE_TIMER
                     // (4613) = 0, checksum)
-                    HashMap<Integer, Integer> request = new HashMap<Integer, Integer>();
+                    Map<Integer, Integer> request = new HashMap<Integer, Integer>();
                     request.put(4612, 30);
                     request.put(4613, 0);
                     return generateCustomRequest(249, request);
@@ -234,8 +236,8 @@ public class ValloxMVWebSocket {
         @OnWebSocketError
         public void onError(Throwable cause) {
             voHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            logger.debug("Error: {}", cause.getMessage().toString());
-            ValloxMVWebSocket.this.close();
+            logger.debug("Connection failed: {}", cause.getMessage());
+            // ValloxMVWebSocket.this.close();
         }
 
         @OnWebSocketMessage
@@ -348,10 +350,8 @@ public class ValloxMVWebSocket {
                 voHandler.dataUpdated();
             } catch (IOException e) {
                 connectionError(e);
-            } catch (Exception e) {
-                logger.error("Error: {}", e.getMessage());
             }
-            logger.debug("Print final");
+            logger.debug("Data updated successfully");
         }
 
         private void updateChannel(String strChannelName, State state) {
@@ -366,17 +366,18 @@ public class ValloxMVWebSocket {
                     .add(new BigDecimal(bytes[pos + 1] & 0xff));
         }
 
+        @SuppressWarnings("null")
         private BigDecimal getTemperature(byte[] bytes, int pos) {
             // Fetch 2 byte number out of bytearray representing the temperature in milli degree kelvin
             BigDecimal bdTempMiliKelvin = getNumber(bytes, pos);
             // Return number converted to degree celsius
-            return bdTempMiliKelvin.divide(new BigDecimal(100))
-                    .subtract((new BigDecimal(27315).divide(new BigDecimal(100))));
+            return (new QuantityType<>(bdTempMiliKelvin, MetricPrefix.CENTI(SmartHomeUnits.KELVIN))
+                    .toUnit(SIUnits.CELSIUS)).toBigDecimal();
         }
 
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {
-            logger.debug("WebSocket Closed. Code: {}", statusCode);
+            logger.debug("WebSocket Closed. Code: {}; Reason: {}", statusCode, reason);
         }
 
         public boolean awaitClose(int duration, TimeUnit unit) throws InterruptedException {

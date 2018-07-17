@@ -9,7 +9,7 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Import-Package: 
  javax.measure,
- javax.measure.quantity;version="1.0.0",
+ javax.measure.quantity,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.client,
  org.eclipse.jetty.http,
