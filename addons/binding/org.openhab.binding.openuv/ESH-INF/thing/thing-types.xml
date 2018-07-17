@@ -42,6 +42,8 @@
 			<channel id="UVTime" typeId="UVTime" />
 			<channel id="SafeExposure" typeId="SafeExposure" />
 		</channels>
+		
+		<representation-property>location</representation-property>
 
 		<config-description>
 			<parameter name="refresh" type="integer" min="3">
