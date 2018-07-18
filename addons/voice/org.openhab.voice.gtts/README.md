@@ -26,8 +26,16 @@ these platforms. For details please visit [Google Cloud Java](https://github.com
 
 Before you can integrate this service with your Google Cloud Text-to-Speech, you must have a Google API Console project.
 
-* Follow the [instructions](https://cloud.google.com/text-to-speech/docs/quickstart-protocol) and set up a project 
-* Download JSON service account key file.
+* Select or create a GCP project. [link](https://console.cloud.google.com/cloud-resource-manager)
+* Make sure that billing is enabled for your project. [link](https://cloud.google.com/billing/docs/how-to/modify-project)
+* Enable the Cloud Text-to-Speech API. [link](https://console.cloud.google.com/apis/dashboard)
+* Set up authentication:
+  * Go to the Create service account key page in the GCP Console.[link](https://console.cloud.google.com/apis/credentials/serviceaccountkey)
+  * From the Service account drop-down list, select New service account.
+  * Enter a name into the Service account name field.
+  * Don't select a value from the Role drop-down list. No role is required to access this service.
+  * Click Create. A note appears, warning that this service account has no role.
+  * Click Create without role. A JSON file that contains your key downloads to your computer.
 
 ## Service Configuration
 
