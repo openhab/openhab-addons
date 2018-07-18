@@ -109,7 +109,7 @@ All Amazon devices (echo, echospot, echoshow, wha) needs the following configura
 |--------------------------|----------------------------------------------------|
 | serialNumber             | Serial number of the amazon echo in the Alexa app  |
 
-You will find the serial number in the alexa app.
+You will find the serial number in the alexa app or on the webpage YOUR_OPENHAB/amazonechocontrol/YOUR_ACCOUNT (e.g. http://openhab:8080/amazonechocontrol/account1).
 
 ### Flash Briefing Profile
 
