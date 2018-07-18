@@ -38,6 +38,7 @@ public class DenonMarantzBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_POWER = "general#power";
+    public static final String CHANNEL_SURROUND_PROGRAM = "general#surroundProgram";
     public static final String CHANNEL_COMMAND = "general#command";
     public static final String CHANNEL_NOW_PLAYING_ARTIST = "general#artist";
     public static final String CHANNEL_NOW_PLAYING_ALBUM = "general#album";
@@ -48,7 +49,6 @@ public class DenonMarantzBindingConstants {
     public static final String CHANNEL_MAIN_VOLUME_DB = "mainZone#volumeDB";
     public static final String CHANNEL_MUTE = "mainZone#mute";
     public static final String CHANNEL_INPUT = "mainZone#input";
-    public static final String CHANNEL_SURROUND_PROGRAM = "mainZone#surroundProgram";
 
     public static final String CHANNEL_ZONE2_POWER = "zone2#power";
     public static final String CHANNEL_ZONE2_VOLUME = "zone2#volume";
