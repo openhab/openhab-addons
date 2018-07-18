@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.voice.pico2wave.internal;
+package org.openhab.voice.picotts.internal;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,13 +23,13 @@ import org.eclipse.smarthome.core.voice.Voice;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * @author Florian Schmidt
+ * @author Florian Schmidt - Initial Contribution
  */
 @Component
-public class Pico2WaveService implements TTSService {
+public class PicoTTSService implements TTSService {
     private final Set<Voice> voices = Arrays
-            .asList(new Pico2WaveVoice("de-DE"), new Pico2WaveVoice("en-US"), new Pico2WaveVoice("en-GB"),
-                    new Pico2WaveVoice("es-ES"), new Pico2WaveVoice("fr-FR"), new Pico2WaveVoice("it-IT"))
+            .asList(new PicoTTSVoice("de-DE"), new PicoTTSVoice("en-US"), new PicoTTSVoice("en-GB"),
+                    new PicoTTSVoice("es-ES"), new PicoTTSVoice("fr-FR"), new PicoTTSVoice("it-IT"))
             .stream().collect(Collectors.toSet());
 
     private final Set<AudioFormat> audioFormats = Collections.singleton(
@@ -64,7 +64,7 @@ public class Pico2WaveService implements TTSService {
         }
 
         try {
-            return new Pico2WaveAudioStream(text, voice, requestedFormat);
+            return new PicoTTSAudioStream(text, voice, requestedFormat);
         } catch (AudioException e) {
             throw new TTSException(e);
         }
@@ -72,12 +72,12 @@ public class Pico2WaveService implements TTSService {
 
     @Override
     public String getId() {
-        return "pico2wave";
+        return "picotts";
     }
 
     @Override
     public String getLabel(Locale locale) {
-        return "Pico2Wave TTS";
+        return "PicoTTS";
     }
 
 }

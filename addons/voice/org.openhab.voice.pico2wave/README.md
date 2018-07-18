@@ -1,8 +1,8 @@
-# Pico2Wave Text-to-Speech
+# Pico Text-to-Speech
 
 ## Overview
 
-The Pico2Wave Text-to-Speech (TTS) service uses pico2wave from SVOX for producing spoken text.
+The Pico Text-to-Speech (TTS) service uses the TTS binary from SVOX for producing spoken text.
 
 You manually need to install the pico2wave binary in order for this service to work correctly. You can,
 e.g., install it with apt-get on an Ubuntu system:
@@ -34,4 +34,4 @@ Italian (it-IT)
 
 ## Supported Audio Formats
 
-The pico2wave service produces audio streams using WAV containers and PCM (signed) codec with 16bit depth.
+The Pico service produces audio streams using WAV containers and PCM (signed) codec with 16bit depth.

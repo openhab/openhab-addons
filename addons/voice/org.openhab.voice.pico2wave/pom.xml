@@ -10,9 +10,9 @@
   </parent>
 
   <groupId>org.openhab.voice</groupId>
-  <artifactId>org.openhab.voice.pico2wave</artifactId>
+  <artifactId>org.openhab.voice.picotts</artifactId>
 
-  <name>Pico2Wave TTS</name>
+  <name>PicoTTS</name>
   <packaging>eclipse-plugin</packaging>
 
 </project>

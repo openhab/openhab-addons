@@ -6,27 +6,27 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.voice.pico2wave.internal;
+package org.openhab.voice.picotts.internal;
 
 import java.util.Locale;
 
 import org.eclipse.smarthome.core.voice.Voice;
 
 /**
- * Implementation of the Voice interface for Pico2Wave
+ * Implementation of the Voice interface for PicoTTS
  *
- * @author Florian Schmidt
+ * @author Florian Schmidt - Initial Contribution
  */
-public class Pico2WaveVoice implements Voice {
+public class PicoTTSVoice implements Voice {
     private final String languageTag;
 
-    public Pico2WaveVoice(String languageTag) {
+    public PicoTTSVoice(String languageTag) {
         this.languageTag = languageTag;
     }
 
     @Override
     public String getUID() {
-        return "pico2wave:" + languageTag.replaceAll("[^a-zA-Z0-9_]", "");
+        return "picotts:" + languageTag.replaceAll("[^a-zA-Z0-9_]", "");
     }
 
     @Override

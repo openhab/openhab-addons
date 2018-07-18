@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.voice.pico2wave.internal;
+package org.openhab.voice.picotts.internal;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,11 +21,11 @@ import org.eclipse.smarthome.core.audio.FixedLengthAudioStream;
 import org.eclipse.smarthome.core.voice.Voice;
 
 /**
- * Implementation of {@link AudioStream} for {@link Pico2WaveService}
+ * Implementation of {@link AudioStream} for {@link PicoTTSService}
  *
- * @author Florian Schmidt
+ * @author Florian Schmidt - Initial Contribution
  */
-class Pico2WaveAudioStream extends FixedLengthAudioStream {
+class PicoTTSAudioStream extends FixedLengthAudioStream {
     private final Voice voice;
     private final String text;
     private final AudioFormat audioFormat;
@@ -34,7 +34,7 @@ class Pico2WaveAudioStream extends FixedLengthAudioStream {
     private long length;
     private File file;
 
-    public Pico2WaveAudioStream(String text, Voice voice, AudioFormat audioFormat) throws AudioException {
+    public PicoTTSAudioStream(String text, Voice voice, AudioFormat audioFormat) throws AudioException {
         this.text = text;
         this.voice = voice;
         this.audioFormat = audioFormat;
