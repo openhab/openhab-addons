@@ -41,12 +41,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class UplinkBaseHandler extends BaseThingHandler implements NibeUplinkHandler {
-
-    private final String NO_VALUE = "--";
-
     private final Logger logger = LoggerFactory.getLogger(UplinkBaseHandler.class);
 
-    private Set<Channel> deadChannels = new HashSet<>(1000);
+    private Set<Channel> deadChannels = new HashSet<>(100);
 
     /**
      * Refresh interval which is used to poll values from the NibeUplink web interface (optional, defaults to 60 s)

@@ -53,7 +53,7 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
 
         for (Channel channel : handler.getChannels()) {
             if (!handler.getDeadChannels().contains(channel)) {
-                if (channel.getChannelCode() != null && !channel.getChannelCode().equals("0")) {
+                if (!channel.getChannelCode().equals("0")) {
                     fields.add(DATA_API_FIELD_DATA, channel.getChannelCode());
                 }
             }
@@ -92,9 +92,7 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
             if (json != null) {
                 logger.debug("JSON String: {}", json);
                 DataResponse jsonObject = gson.fromJson(json, GenericDataResponse.class);
-                if (jsonObject != null) {
-                    handler.updateChannelStatus(transformer.transform(jsonObject));
-                }
+                handler.updateChannelStatus(transformer.transform(jsonObject));
             }
         }
     }
