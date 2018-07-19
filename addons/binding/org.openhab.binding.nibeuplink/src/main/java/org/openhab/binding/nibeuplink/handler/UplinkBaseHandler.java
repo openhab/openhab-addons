@@ -67,6 +67,11 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     private ScheduledFuture<?> pollingJob;
 
     /**
+     * just a lock object to avoid concurrent modifications
+     */
+    private final Object lock = new Object();
+
+    /**
      * Schedule for periodic cleaning dead channel list
      */
     @Nullable
@@ -122,22 +127,26 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     /**
      * Start the polling.
      */
-    private synchronized void startPolling() {
-        if (pollingJob == null || pollingJob.isCancelled()) {
-            logger.debug("start polling job at intervall {}", refreshInterval);
-            pollingJob = scheduler.scheduleWithFixedDelay(new UplinkPolling(this), 1, refreshInterval,
-                    TimeUnit.SECONDS);
-        } else {
-            logger.debug("pollingJob already active");
-        }
-        if (deadChannelHouseKeeping == null || deadChannelHouseKeeping.isCancelled()) {
-            logger.debug("start deadChannelHouseKeeping job at intervall {}", houseKeepingInterval);
-            deadChannelHouseKeeping = scheduler.scheduleWithFixedDelay(deadChannels::clear, 1, houseKeepingInterval,
-                    TimeUnit.SECONDS);
-        } else {
-            logger.debug("deadChannelHouseKeeping already active");
-        }
+    private void startPolling() {
+        synchronized (lock) {
+            ScheduledFuture<?> jobToCheck = pollingJob;
+            if (jobToCheck == null || jobToCheck.isCancelled()) {
+                logger.debug("start polling job at intervall {}", refreshInterval);
+                pollingJob = scheduler.scheduleWithFixedDelay(new UplinkPolling(this), 1, refreshInterval,
+                        TimeUnit.SECONDS);
+            } else {
+                logger.debug("pollingJob already active");
+            }
 
+            jobToCheck = deadChannelHouseKeeping;
+            if (jobToCheck == null || jobToCheck.isCancelled()) {
+                logger.debug("start deadChannelHouseKeeping job at intervall {}", houseKeepingInterval);
+                deadChannelHouseKeeping = scheduler.scheduleWithFixedDelay(deadChannels::clear, 1, houseKeepingInterval,
+                        TimeUnit.SECONDS);
+            } else {
+                logger.debug("deadChannelHouseKeeping already active");
+            }
+        }
     }
 
     /**
@@ -146,19 +155,22 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     @Override
     public void dispose() {
         logger.debug("Handler disposed.");
-        if (pollingJob != null && !pollingJob.isCancelled()) {
-            logger.debug("stop polling job");
-            pollingJob.cancel(true);
-            pollingJob = null;
-        }
-        if (deadChannelHouseKeeping != null && !deadChannelHouseKeeping.isCancelled()) {
-            logger.debug("stop polling job");
-            deadChannelHouseKeeping.cancel(true);
-            deadChannelHouseKeeping = null;
-        }
 
-        // the webinterface also makes use of the scheduler and must stop it's jobs
-        if (webInterface != null) {
+        synchronized (lock) {
+            ScheduledFuture<?> jobToCancel = pollingJob;
+            if (jobToCancel != null && !jobToCancel.isCancelled()) {
+                logger.debug("stop polling job");
+                jobToCancel.cancel(true);
+                pollingJob = null;
+            }
+            jobToCancel = deadChannelHouseKeeping;
+            if (jobToCancel != null && !jobToCancel.isCancelled()) {
+                logger.debug("stop polling job");
+                jobToCancel.cancel(true);
+                deadChannelHouseKeeping = null;
+            }
+
+            // the webinterface also makes use of the scheduler and must stop it's jobs
             webInterface.dispose();
         }
     }

@@ -44,11 +44,9 @@ public class UplinkPolling implements Runnable {
      */
     @Override
     public void run() {
-        if (handler.getWebInterface() != null) {
-            logger.debug("polling NibeUplink {}", handler.getConfiguration());
+        logger.debug("polling NibeUplink {}", handler.getConfiguration());
 
-            NibeUplinkCommand command = new GenericStatusUpdate(handler);
-            handler.getWebInterface().enqueueCommand(command);
-        }
+        NibeUplinkCommand command = new GenericStatusUpdate(handler);
+        handler.getWebInterface().enqueueCommand(command);
     }
 }

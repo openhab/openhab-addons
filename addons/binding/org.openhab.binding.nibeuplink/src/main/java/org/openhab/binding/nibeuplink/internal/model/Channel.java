@@ -115,7 +115,8 @@ public class Channel {
     }
 
     public boolean isReadOnly() {
-        return writeApiUrl == null || writeApiUrl.isEmpty();
+        String localCopy = writeApiUrl;
+        return localCopy == null || localCopy.isEmpty();
     }
 
     public @Nullable String getValidationExpression() {

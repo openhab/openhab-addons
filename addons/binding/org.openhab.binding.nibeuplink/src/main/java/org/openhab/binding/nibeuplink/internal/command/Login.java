@@ -26,11 +26,8 @@ import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
  */
 public class Login extends AbstractUplinkCommandCallback implements NibeUplinkCommand {
 
-    private final NibeUplinkHandler handler;
-
     public Login(NibeUplinkHandler handler, StatusUpdateListener listener) {
         super(handler.getConfiguration(), listener);
-        this.handler = handler;
     }
 
     @Override
