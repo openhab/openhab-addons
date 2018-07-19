@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -63,19 +64,14 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     /**
      * Schedule for polling
      */
-    @Nullable
-    private ScheduledFuture<?> pollingJob;
-
-    /**
-     * just a lock object to avoid concurrent modifications
-     */
-    private final Object lock = new Object();
+    private AtomicReference<@Nullable ScheduledFuture<?>> pollingJobReference = new AtomicReference<@Nullable ScheduledFuture<?>>(
+            null);
 
     /**
      * Schedule for periodic cleaning dead channel list
      */
-    @Nullable
-    private ScheduledFuture<?> deadChannelHouseKeeping;
+    private AtomicReference<@Nullable ScheduledFuture<?>> deadChannelHouseKeepingReference = new AtomicReference<@Nullable ScheduledFuture<?>>(
+            null);;
 
     public UplinkBaseHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -128,24 +124,35 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
      * Start the polling.
      */
     private void startPolling() {
-        synchronized (lock) {
-            ScheduledFuture<?> jobToCheck = pollingJob;
-            if (jobToCheck == null || jobToCheck.isCancelled()) {
-                logger.debug("start polling job at intervall {}", refreshInterval);
-                pollingJob = scheduler.scheduleWithFixedDelay(new UplinkPolling(this), 1, refreshInterval,
-                        TimeUnit.SECONDS);
+        ScheduledFuture<?> job = pollingJobReference.get();
+        if (job == null || job.isCancelled()) {
+            logger.debug("start polling job at intervall {}", refreshInterval);
+            ScheduledFuture<?> newJob = scheduler.scheduleWithFixedDelay(new UplinkPolling(this), 30, refreshInterval,
+                    TimeUnit.SECONDS);
+            if (pollingJobReference.compareAndSet(job, newJob)) {
+                logger.debug("updated 'pollingJobReference'");
             } else {
-                logger.debug("pollingJob already active");
+                logger.info("detected concurrent modification of job 'pollingJobReference'");
+                newJob.cancel(true);
+            }
+        } else {
+            logger.debug("pollingJob already active");
+        }
+
+        job = deadChannelHouseKeepingReference.get();
+        if (job == null || job.isCancelled()) {
+            logger.debug("start deadChannelHouseKeeping job at intervall {}", houseKeepingInterval);
+            ScheduledFuture<?> newJob = scheduler.scheduleWithFixedDelay(deadChannels::clear, 300, houseKeepingInterval,
+                    TimeUnit.SECONDS);
+            if (deadChannelHouseKeepingReference.compareAndSet(job, newJob)) {
+                logger.debug("updated 'pollingJobReference'");
+            } else {
+                logger.info("detected concurrent modification of job 'pollingJobReference'");
+                newJob.cancel(true);
             }
 
-            jobToCheck = deadChannelHouseKeeping;
-            if (jobToCheck == null || jobToCheck.isCancelled()) {
-                logger.debug("start deadChannelHouseKeeping job at intervall {}", houseKeepingInterval);
-                deadChannelHouseKeeping = scheduler.scheduleWithFixedDelay(deadChannels::clear, 1, houseKeepingInterval,
-                        TimeUnit.SECONDS);
-            } else {
-                logger.debug("deadChannelHouseKeeping already active");
-            }
+        } else {
+            logger.debug("deadChannelHouseKeeping already active");
         }
     }
 
@@ -156,23 +163,21 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     public void dispose() {
         logger.debug("Handler disposed.");
 
-        synchronized (lock) {
-            ScheduledFuture<?> jobToCancel = pollingJob;
-            if (jobToCancel != null && !jobToCancel.isCancelled()) {
-                logger.debug("stop polling job");
-                jobToCancel.cancel(true);
-                pollingJob = null;
-            }
-            jobToCancel = deadChannelHouseKeeping;
-            if (jobToCancel != null && !jobToCancel.isCancelled()) {
-                logger.debug("stop polling job");
-                jobToCancel.cancel(true);
-                deadChannelHouseKeeping = null;
-            }
-
-            // the webinterface also makes use of the scheduler and must stop it's jobs
-            webInterface.dispose();
+        ScheduledFuture<?> job = pollingJobReference.get();
+        if (job != null && !job.isCancelled()) {
+            logger.debug("stop polling job");
+            job.cancel(true);
+            pollingJobReference.compareAndSet(job, null);
         }
+        job = deadChannelHouseKeepingReference.get();
+        if (job != null && !job.isCancelled()) {
+            logger.debug("stop polling job");
+            job.cancel(true);
+            deadChannelHouseKeepingReference.compareAndSet(job, null);
+        }
+
+        // the webinterface also makes use of the scheduler and must stop it's jobs
+        webInterface.dispose();
     }
 
     @Override
