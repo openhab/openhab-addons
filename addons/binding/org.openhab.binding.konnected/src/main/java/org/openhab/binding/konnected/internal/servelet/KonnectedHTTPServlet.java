@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openhab.binding.konnected.handler.KonnectedHandler;
+import org.openhab.binding.konnected.internal.handler.KonnectedHandler;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -29,20 +29,20 @@ import com.google.gson.Gson;
  *
  * @author Zachary Christiansen - Initial contribution
  */
-public class KonnectedHTTPServelet extends HttpServlet {
+public class KonnectedHTTPServlet extends HttpServlet {
     private static final long serialVersionUID = 1288539782077957954L;
     private static final String PATH = "/Konnected";
     private static final String APPLICATION_JSON = "application/json";
     private static final String CHARSET = "utf-8";
     private final Gson gson = new Gson();
 
-    private final Logger logger = LoggerFactory.getLogger(KonnectedHTTPServelet.class);
+    private final Logger logger = LoggerFactory.getLogger(KonnectedHTTPServlet.class);
 
     private HttpService httpService;
     private KonnectedHandler bridgeHandler;
     private String path;
 
-    public KonnectedHTTPServelet(HttpService httpService, String id) {
+    public KonnectedHTTPServlet(HttpService httpService, String id) {
         this.httpService = httpService;
         this.path = PATH + "/" + id;
     }

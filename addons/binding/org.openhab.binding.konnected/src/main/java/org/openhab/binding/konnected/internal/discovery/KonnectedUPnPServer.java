@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.konnected.internal.discovery;
 
-import static org.openhab.binding.konnected.KonnectedBindingConstants.*;
+import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;

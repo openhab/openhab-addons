@@ -34,10 +34,10 @@ public class KonnectedModuleEvent {
     }
 
     @SerializedName("Auth_Token")
-    String Auth_Token;
+    String authToken;
 
     public String getAuthToken() {
-        return Auth_Token;
+        return authToken;
     }
 
 }

@@ -6,18 +6,17 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.konnected.handler;
+package org.openhab.binding.konnected.internal.handler;
 
-import static org.openhab.binding.konnected.KonnectedBindingConstants.PIN_TO_ZONE;
+import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -30,7 +29,7 @@ import org.openhab.binding.konnected.internal.KonnectedConfiguration;
 import org.openhab.binding.konnected.internal.KonnectedDynamicStateDescriptionProvider;
 import org.openhab.binding.konnected.internal.KonnectedHTTPUtils;
 import org.openhab.binding.konnected.internal.KonnectedPutSettingsTimer;
-import org.openhab.binding.konnected.internal.servelet.KonnectedHTTPServelet;
+import org.openhab.binding.konnected.internal.servelet.KonnectedHTTPServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,25 +45,19 @@ public class KonnectedHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(KonnectedHandler.class);
 
     private KonnectedConfiguration config;
-    private KonnectedHTTPServelet webHookServlet;
-    private KonnectedPutSettingsTimer putSettingsTimer;
-    private List<String> sensors;
-    private List<String> actuators;
-    private List<Boolean> isAct;
-    KonnectedHTTPUtils http;
+    private KonnectedHTTPServlet webHookServlet;
+    private KonnectedPutSettingsTimer putSettingsTimer = new KonnectedPutSettingsTimer();;
+    private final List<String> sensors = new LinkedList<String>();;
+    private final List<String> actuators = new LinkedList<String>();
+    private final List<Boolean> isAct = new ArrayList<>();
+    private final KonnectedHTTPUtils http = new KonnectedHTTPUtils();
     private KonnectedDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
 
-    public KonnectedHandler(Thing thing, KonnectedHTTPServelet webHookServlet,
+    public KonnectedHandler(Thing thing, KonnectedHTTPServlet webHookServlet,
             KonnectedDynamicStateDescriptionProvider provider) {
         super(thing);
         this.webHookServlet = webHookServlet;
-        this.putSettingsTimer = new KonnectedPutSettingsTimer();
-        this.sensors = new LinkedList<String>();
-        this.actuators = new LinkedList<String>();
-        http = new KonnectedHTTPUtils();
-        this.isAct = new LinkedList<Boolean>();
-
-        dynamicStateDescriptionProvider = provider;
+        this.dynamicStateDescriptionProvider = provider;
     }
 
     @Override
@@ -81,7 +74,8 @@ public class KonnectedHandler extends BaseThingHandler {
         } else if (scommand.endsWith("F") || scommand.endsWith("0")) {
             scommand = "0";
         } else {
-            logger.debug("The command string was not proper setting to off fix your item");
+            logger.debug(
+                    "The command string was not a 1 or a 0, setting to off item to off, please fix your item to correct this error");
             scommand = "0";
             StringType state = new StringType("0");
             updateState(channelUID, state);
@@ -89,17 +83,11 @@ public class KonnectedHandler extends BaseThingHandler {
 
         // if the pin is an actuator pin process the command
         if (isAct.get(zone)) {
-
-            Map<String, String> properties = this.thing.getProperties();
-            String host = properties.get("ipAddress");
-            KonnectedHTTPUtils http = new KonnectedHTTPUtils();
             try {
                 String payload = "{\"pin\":" + pin + ",\"state\":" + scommand + "}";
                 logger.debug("The command payload  is: {}", payload);
-                String data = http.doPut(host + "/device", payload);
-            }
-
-            catch (IOException e) {
+                String data = http.doPut(HOST + "/device", payload);
+            } catch (IOException e) {
                 logger.debug("Getting the state of the pin failed: {}", e);
             }
         }
@@ -110,46 +98,36 @@ public class KonnectedHandler extends BaseThingHandler {
     }
 
     /**
-     * Process a {@link WebHookEvent that has been received by the servelet from a konnected module
+     * Process a {@link WebHookEvent that has been received by the Servlet from a Konnected module
      *
      * @param pin the pin number which which was activated
      *
      * @param state the state of the pin
      *
      * @param setAuth the token sent with the response
-     *
      */
-
     public void handleWebHookEvent(String pin, String State, String sentAuth) {
-        // convert pin to zone based on array
-
         // get the zone number based off of the index location of the pin value
         String channelid = "Zone_" + Integer.toString(Arrays.asList(PIN_TO_ZONE).indexOf(Integer.parseInt(pin)));
         logger.debug("The channelid of the event is: {}, the Auth Token is: {}", channelid, sentAuth);
         StringType channelstate = new StringType(State);
-        if (sentAuth.endsWith(config.Auth_Token)) {
+        if (sentAuth.endsWith(config.authToken)) {
             updateState(channelid, channelstate);
-        }
-
-        else {
+        } else {
             logger.debug("The auth token sent did not match what was expected so the state was not accepted.");
         }
     }
 
     @Override
     public void initialize() {
-        // Long running initialization should be done asynchronously in background.
         config = getConfigAs(KonnectedConfiguration.class);
 
         // add the isActuator elements to the boolean array
         setisAct();
 
-        // Map<String, String> properties = this.thing.getProperties();
-        // String Host = properties.get("ipAddress");
         logger.debug("Setting up Konnected Module WebHook");
         webHookServlet.activate(this);
         updateKonnectedModule();
-
         updateStatus(ThingStatus.ONLINE);
 
         // Note: When initialization can NOT be done set the status with more details for further
@@ -163,10 +141,8 @@ public class KonnectedHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Running dispose()");
-        // if (getWebHookURI() != null) {
         logger.debug("Releasing Konnected WebHook");
         webHookServlet.deactivate();
-        // }
     }
 
     @Override
@@ -180,20 +156,15 @@ public class KonnectedHandler extends BaseThingHandler {
 
         // convert the zone to the pin based on value at index of zone
         Integer pin = Arrays.asList(PIN_TO_ZONE).get(zone);
-
         // if the pin is an actuator add to actuator string
         // else add to sensor string
-
         if (isAct.get(zone)) {
             actuators.add("{\"pin\":" + Integer.toString(pin) + "}");
             StringType state = new StringType("0");
             updateState(channel, state);
-        }
-
-        else {
+        } else {
             sensors.add("{\"pin\":" + Integer.toString(pin) + "}");
         }
-
         logger.debug(sensors.toString());
         // launch the update so the new channel settings can be sent
         updateKonnectedModule();
@@ -236,7 +207,7 @@ public class KonnectedHandler extends BaseThingHandler {
             return "none";
         }
 
-        String authToken = config.Auth_Token;
+        String authToken = config.authToken;
         logger.debug("The Auth_Token is: {}", authToken);
         logger.debug("The Sensor String is: {}", sensors.toString());
         logger.debug("The Actuator String is: {}", actuators.toString());
@@ -249,10 +220,21 @@ public class KonnectedHandler extends BaseThingHandler {
     }
 
     protected String getHostName() throws UnknownHostException {
-        // returns the local address of the openHAB server
-        InetAddress addr = InetAddress.getLocalHost();
-        String hostname = addr.getHostAddress() + ":8080";
-        return hostname;
+        // returns the local address of the openHAB server, or uses the configured path from the thing if the user adds
+        // it
+
+        if (config.hostAddress == null) {
+
+            String hostname = http.getHostAddresses() + ":8080";
+
+            return hostname;
+        }
+
+        else {
+            logger.debug("User has provided an Ip address on the thing for the openhab host of : {}",
+                    config.hostAddress);
+            return config.hostAddress;
+        }
     }
 
     /*
@@ -262,18 +244,14 @@ public class KonnectedHandler extends BaseThingHandler {
      * another instance requests new settings due to an update
      */
     private void updateKonnectedModule() {
-        Map<String, String> properties = this.thing.getProperties();
-        String host = properties.get("ipAddress");
         String payload = contructSettingsPayload();
         // setting it up to wait 30 seconds before sending the put request
         logger.debug("creating new timer");
-        putSettingsTimer = putSettingsTimer.startTimer(host + "/settings", payload);
+        putSettingsTimer = putSettingsTimer.startTimer(HOST + "/settings", payload);
     }
 
     // this method sets the list of boolean variables of which pins are actuators
     private void setisAct() {
-        config = getConfigAs(KonnectedConfiguration.class);
-
         isAct.add(0, false);
         isAct.add(1, config.isAct1);
         isAct.add(2, config.isAct2);
@@ -292,7 +270,7 @@ public class KonnectedHandler extends BaseThingHandler {
      * it will remove any that don't match
      */
     private void updatepinstate() {
-        for (int i = 1; i < 6; i++) {
+        for (int i = 1; i < numberPin; i++) {
             Integer pin = Arrays.asList(PIN_TO_ZONE).get(i);
             // update the read only status of the actuators/sensors
             ChannelUID channel = new ChannelUID(this.thing.getUID().toString() + ":Zone_" + i);
@@ -318,7 +296,6 @@ public class KonnectedHandler extends BaseThingHandler {
      * @param channelUID channel UID
      *
      * @param readOnly true if this control does not accept commands
-     *
      */
     private void setStateDescription(ChannelUID channelUID, boolean readOnly) {
         if (channelUID != null) {

@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.konnected;
+package org.openhab.binding.konnected.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -25,14 +25,6 @@ public class KonnectedBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_MODULE = new ThingTypeUID(BINDING_ID, "module");
 
-    // List of all Channel ids
-    public static final String Zone_1 = "zone1";
-    public static final String Zone_2 = "zone2";
-    public static final String Zone_3 = "zone3";
-    public static final String Zone_4 = "zone4";
-    public static final String Zone_5 = "zone5";
-    public static final String Zone_6 = "zone6";
-
     // Bridge config properties
     public static final String HOST = "ipAddress";
     public static final String MAC_ADDR = "macAddress";
@@ -41,7 +33,8 @@ public class KonnectedBindingConstants {
     // pin location
     public static final Integer[] PIN_TO_ZONE = { 0, 1, 2, 5, 6, 7, 9, 8 };
 
-    // public static final String Auth_Token = "authToken";
-
     public static final String WEBHOOK_APP = "app_security";
+
+    // the number of pins which can be zones on the Konnected Modules
+    public static final int numberPin = 6;
 }

@@ -27,5 +27,3 @@ Import-Package:
  org.osgi.service.http,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.konnected,
- org.openhab.binding.konnected.handler

@@ -4,28 +4,28 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
+	<!-- This is the Konnected Thing-Type -->
 	<thing-type id="module">
 		<label>Konnected Binding Thing</label>
 		<description>The Konnected Module</description>
 		<channels>
 			<channel id="Zone_1" typeId="zone">
-				<label>Pin 1</label>
+				<label>Zone 1</label>
 			</channel>
 			<channel id="Zone_2" typeId="zone">
-				<label>Pin 2</label>
+				<label>Zone 2</label>
 			</channel>
 			<channel id="Zone_3" typeId="zone">
-				<label>Pin 3</label>
+				<label>Zone 3</label>
 			</channel>
 			<channel id="Zone_4" typeId="zone">
-				<label>Pin 4</label>
+				<label>Zone 4</label>
 			</channel>
 			<channel id="Zone_5" typeId="zone">
-				<label>Pin 5</label>
+				<label>Zone 5</label>
 			</channel>
 			<channel id="Zone_6" typeId="zone">
-				<label>Pin 6</label>
+				<label>Zone 6</label>
 				<description>Zone for Sensors Only</description>
 			</channel>
 			<channel id="Zone_7" typeId="actuator" />
@@ -33,14 +33,13 @@
 
 		<config-description-ref uri="thing-type:konnected:module" />
 
-
 	</thing-type>
 
 	<!-- Zone Channel Type -->
 	<channel-type id="zone">
 		<item-type>String</item-type>
 		<label>Zones</label>
-		<description>The Zone Channel for adding Sensors or Actuator</description>
+		<description>A Zone for adding Sensors or Actuator</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="actuator">

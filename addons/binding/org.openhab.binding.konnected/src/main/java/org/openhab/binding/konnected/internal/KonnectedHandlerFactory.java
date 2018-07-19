@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.konnected.internal;
 
-import static org.openhab.binding.konnected.KonnectedBindingConstants.THING_TYPE_MODULE;
+import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.THING_TYPE_MODULE;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,8 +25,8 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.konnected.handler.KonnectedHandler;
-import org.openhab.binding.konnected.internal.servelet.KonnectedHTTPServelet;
+import org.openhab.binding.konnected.internal.handler.KonnectedHandler;
+import org.openhab.binding.konnected.internal.servelet.KonnectedHTTPServlet;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -38,7 +38,6 @@ import org.osgi.service.http.HttpService;
  *
  * @author Zachary Christiansen - Initial contribution
  */
-// @Component(configurationPid = "binding.konnected", service = ThingHandlerFactory.class)
 @Component(service = { ThingHandlerFactory.class,
         KonnectedHandlerFactory.class }, immediate = true, configurationPid = "binding.konnected")
 
@@ -56,15 +55,15 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        KonnectedHTTPServelet servlet = registerWebHookServlet(thing.getUID());
+        KonnectedHTTPServlet servlet = registerWebHookServlet(thing.getUID());
         return new KonnectedHandler(thing, servlet, dynamicStateDescriptionProvider);
 
     }
 
-    private KonnectedHTTPServelet registerWebHookServlet(ThingUID thingUID) {
-        KonnectedHTTPServelet servlet = null;
+    private KonnectedHTTPServlet registerWebHookServlet(ThingUID thingUID) {
+        KonnectedHTTPServlet servlet = null;
 
-        servlet = new KonnectedHTTPServelet(httpService, thingUID.getId());
+        servlet = new KonnectedHTTPServlet(httpService, thingUID.getId());
         if (bundleContext != null) {
             webHookServiceRegs.put(thingUID, bundleContext.registerService(HttpServlet.class.getName(), servlet,
                     new Hashtable<String, Object>()));

@@ -16,9 +16,18 @@ package org.openhab.binding.konnected.internal;
 public class KonnectedConfiguration {
 
     /**
-     * Sample configuration parameter. Replace with your own.
+     * @param authToken
+     *            Configurable token for authentication of messages from Konnected modules
+     *
+     * @param hostAddress
+     *            Allows for manual identification of the host ip address of the openHAB server the Konnected module
+     *            should send messages to
+     *
+     * @param isAct1
+     *            Boolean parameter that indicates that zone 1 is an actuator
      */
-    public String Auth_Token;
+    public String authToken;
+    public String hostAddress;
 
     public boolean isAct1;
     public boolean isAct2;
