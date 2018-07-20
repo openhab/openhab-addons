@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.harmonyhub.internal.discovery;
 
+import static org.openhab.binding.harmonyhub.HarmonyHubBindingConstants.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,20 +23,19 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.harmonyhub.HarmonyHubBindingConstants;
 import org.openhab.binding.harmonyhub.handler.HarmonyHubHandler;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -44,11 +45,13 @@ import org.slf4j.LoggerFactory;
  * The {@link HarmonyHubDiscoveryService} class discovers Harmony hubs and adds the results to the inbox.
  *
  * @author Dan Cunningham - Initial contribution
+ * @author Wouter Born - Add null annotations
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.harmonyhub")
 public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
 
-    private Logger logger = LoggerFactory.getLogger(HarmonyHubDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(HarmonyHubDiscoveryService.class);
 
     // notice the port appended to the end of the string
     private static final String DISCOVERY_STRING = "_logitech-reverse-bonjour._tcp.local.\n%d";
@@ -56,13 +59,13 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
     private static final int TIMEOUT = 15;
     private static final long REFRESH = 600;
 
-    private ScheduledFuture<?> broadcastFuture;
-    private ScheduledFuture<?> timeoutFuture;
-    private ServerSocket serverSocket;
-    private HarmonyServer server;
     private boolean running;
 
-    private ScheduledFuture<?> discoveryFuture;
+    private @Nullable HarmonyServer server;
+
+    private @Nullable ScheduledFuture<?> broadcastFuture;
+    private @Nullable ScheduledFuture<?> discoveryFuture;
+    private @Nullable ScheduledFuture<?> timeoutFuture;
 
     public HarmonyHubDiscoveryService() {
         super(HarmonyHubHandler.SUPPORTED_THING_TYPES_UIDS, TIMEOUT, true);
@@ -82,7 +85,8 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start Harmony Hub background discovery");
-        if (discoveryFuture == null || discoveryFuture.isCancelled()) {
+        ScheduledFuture<?> localDiscoveryFuture = discoveryFuture;
+        if (localDiscoveryFuture == null || localDiscoveryFuture.isCancelled()) {
             logger.debug("Start Scan");
             discoveryFuture = scheduler.scheduleWithFixedDelay(this::startScan, 0, REFRESH, TimeUnit.SECONDS);
         }
@@ -91,8 +95,9 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stop HarmonyHub background discovery");
-        if (discoveryFuture != null && !discoveryFuture.isCancelled()) {
-            discoveryFuture.cancel(true);
+        ScheduledFuture<?> localDiscoveryFuture = discoveryFuture;
+        if (localDiscoveryFuture != null && !localDiscoveryFuture.isCancelled()) {
+            localDiscoveryFuture.cancel(true);
             discoveryFuture = null;
         }
         stopDiscovery();
@@ -107,13 +112,12 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
         }
 
         try {
-            serverSocket = new ServerSocket(0);
-            logger.debug("Creating Harmony server on port {}", serverSocket.getLocalPort());
-            server = new HarmonyServer(serverSocket);
-            server.start();
+            final HarmonyServer localServer = new HarmonyServer();
+            localServer.start();
+            server = localServer;
 
             broadcastFuture = scheduler.scheduleWithFixedDelay(() -> {
-                sendDiscoveryMessage(String.format(DISCOVERY_STRING, serverSocket.getLocalPort()));
+                sendDiscoveryMessage(String.format(DISCOVERY_STRING, localServer.getPort()));
             }, 0, 2, TimeUnit.SECONDS);
 
             timeoutFuture = scheduler.schedule(this::stopDiscovery, TIMEOUT, TimeUnit.SECONDS);
@@ -128,20 +132,21 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
      * Stops discovery of Harmony Hubs
      */
     private synchronized void stopDiscovery() {
-        if (broadcastFuture != null) {
-            broadcastFuture.cancel(true);
+        ScheduledFuture<?> localBroadcastFuture = broadcastFuture;
+        if (localBroadcastFuture != null) {
+            localBroadcastFuture.cancel(true);
         }
-        if (timeoutFuture != null) {
-            broadcastFuture.cancel(true);
+
+        ScheduledFuture<?> localTimeoutFuture = timeoutFuture;
+        if (localTimeoutFuture != null) {
+            localTimeoutFuture.cancel(true);
         }
-        if (server != null) {
-            server.setRunning(false);
+
+        HarmonyServer localServer = server;
+        if (localServer != null) {
+            localServer.stop();
         }
-        try {
-            serverSocket.close();
-        } catch (Exception e) {
-            logger.error("Could not stop harmony discovery socket", e);
-        }
+
         running = false;
     }
 
@@ -152,9 +157,7 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
      *            String to be used for the discovery
      */
     private void sendDiscoveryMessage(String discoverString) {
-        DatagramSocket bcSend = null;
-        try {
-            bcSend = new DatagramSocket();
+        try (DatagramSocket bcSend = new DatagramSocket()) {
             bcSend.setBroadcast(true);
             byte[] sendData = discoverString.getBytes();
 
@@ -188,14 +191,6 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
             }
         } catch (IOException e) {
             logger.debug("IO error during HarmonyHub discovery: {}", e.getMessage());
-        } finally {
-            try {
-                if (bcSend != null) {
-                    bcSend.close();
-                }
-            } catch (Exception e) {
-                // Ignore
-            }
         }
     }
 
@@ -205,22 +200,38 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
      * @author Dan Cunningham - Initial contribution
      *
      */
-    private class HarmonyServer extends Thread {
-        private ServerSocket serverSocket;
+    private class HarmonyServer {
+        private final ServerSocket serverSocket;
+        private final List<String> responses = new ArrayList<>();
         private boolean running;
-        private List<String> responses = new ArrayList<String>();
 
-        public HarmonyServer(ServerSocket serverSocket) {
-            this.serverSocket = serverSocket;
-            running = true;
+        public HarmonyServer() throws IOException {
+            serverSocket = new ServerSocket(0);
+            logger.debug("Creating Harmony server on port {}", getPort());
         }
 
-        @Override
-        public void run() {
+        public int getPort() {
+            return serverSocket.getLocalPort();
+        }
+
+        public void start() {
+            running = true;
+            Thread localThread = new Thread(this::run, "HarmonyDiscoveryServer(tcp/" + getPort() + ")");
+            localThread.start();
+        }
+
+        public void stop() {
+            running = false;
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                logger.error("Could not stop harmony discovery socket", e);
+            }
+        }
+
+        private void run() {
             while (running) {
-                Socket socket = null;
-                try {
-                    socket = serverSocket.accept();
+                try (Socket socket = serverSocket.accept()) {
                     BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     String input;
                     while ((input = in.readLine()) != null) {
@@ -228,47 +239,46 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
                             break;
                         }
                         logger.trace("READ {}", input);
-                        String propsString = input.replaceAll(";", "\n");
-                        propsString = propsString.replaceAll(":", "=");
-                        Properties props = new Properties();
-                        props.load(new StringReader(propsString));
-                        if (!responses.contains(props.getProperty("friendlyName"))) {
-                            responses.add(props.getProperty("friendlyName"));
-                            hubDiscovered(props.getProperty("ip"),
-                                    props.getProperty("host_name").replaceAll("[^A-Za-z0-9\\-_]", ""),
-                                    props.getProperty("friendlyName"));
+                        Properties properties = readProperties(input);
+
+                        String friendlyName = properties.getProperty("friendlyName");
+                        if (!responses.contains(friendlyName)) {
+                            responses.add(friendlyName);
+                            hubDiscovered(properties);
                         }
                     }
                 } catch (IOException e) {
                     if (running) {
                         logger.debug("Error connecting with found hub", e);
                     }
-                } finally {
-                    try {
-                        if (socket != null) {
-                            socket.close();
-                        }
-                    } catch (IOException e) {
-                        logger.warn("could not close socket", e);
-                    }
                 }
             }
         }
 
-        public void setRunning(boolean running) {
-            this.running = running;
+        private Properties readProperties(String input) throws IOException {
+            String propsString = input.replaceAll(";", "\n");
+            propsString = propsString.replaceAll(":", "=");
+            Properties properties = new Properties();
+            properties.load(new StringReader(propsString));
+            return properties;
         }
+
     }
 
-    private void hubDiscovered(String host, String id, String friendlyName) {
-        logger.trace("Adding HarmonyHub {} ({}) at host {}", friendlyName, id, host);
-        Map<String, Object> properties = new HashMap<>(2);
-        properties.put("name", friendlyName);
-        properties.put("host", host);
+    private void hubDiscovered(Properties properties) {
+        String ip = properties.getProperty("ip");
+        String friendlyName = properties.getProperty("friendlyName");
+        String thingId = properties.getProperty("host_name").replaceAll("[^A-Za-z0-9\\-_]", "");
 
-        ThingUID uid = new ThingUID(HarmonyHubBindingConstants.HARMONY_HUB_THING_TYPE,
-                id.replaceAll("[^A-Za-z0-9\\-_]", ""));
-        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
-                .withLabel("HarmonyHub " + friendlyName).build());
+        logger.trace("Adding HarmonyHub {} ({}) at host {}", friendlyName, thingId, ip);
+
+        ThingUID uid = new ThingUID(HARMONY_HUB_THING_TYPE, thingId);
+        // @formatter:off
+        thingDiscovered(DiscoveryResultBuilder.create(uid)
+                .withLabel("HarmonyHub " + friendlyName)
+                .withProperty(HUB_PROPERTY_HOST, ip)
+                .withProperty(HUB_PROPERTY_NAME, friendlyName)
+                .build());
+        // @formatter:on
     }
 }
