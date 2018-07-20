@@ -84,14 +84,13 @@ class PicoTTSAudioStream extends FixedLengthAudioStream {
      * @return Unique, absolute output filename
      */
     private String generateOutputFilename() throws AudioException {
-        File tempFile;
         try {
-            tempFile = File.createTempFile(Integer.toString(text.hashCode()), ".wav");
+            File tempFile = File.createTempFile(Integer.toString(text.hashCode()), ".wav");
             tempFile.deleteOnExit();
+            return tempFile.getAbsolutePath();
         } catch (IOException e) {
             throw new AudioException("Unable to create temp file.", e);
         }
-        return tempFile.getAbsolutePath();
     }
 
     /**

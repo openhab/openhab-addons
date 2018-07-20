@@ -8,11 +8,11 @@
  */
 package org.openhab.voice.picotts.internal;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.audio.AudioException;
 import org.eclipse.smarthome.core.audio.AudioFormat;
@@ -27,10 +27,10 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component
 public class PicoTTSService implements TTSService {
-    private final Set<Voice> voices = Arrays
-            .asList(new PicoTTSVoice("de-DE"), new PicoTTSVoice("en-US"), new PicoTTSVoice("en-GB"),
+    private final Set<Voice> voices = Stream
+            .of(new PicoTTSVoice("de-DE"), new PicoTTSVoice("en-US"), new PicoTTSVoice("en-GB"),
                     new PicoTTSVoice("es-ES"), new PicoTTSVoice("fr-FR"), new PicoTTSVoice("it-IT"))
-            .stream().collect(Collectors.toSet());
+            .collect(Collectors.toSet());
 
     private final Set<AudioFormat> audioFormats = Collections.singleton(
             new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null, null));
@@ -52,7 +52,7 @@ public class PicoTTSService implements TTSService {
         }
 
         if (!this.voices.contains(voice)) {
-            throw new TTSException("The passed voice is no supported");
+            throw new TTSException("The passed voice is unsupported");
         }
 
         boolean isAudioFormatSupported = this.audioFormats.stream().anyMatch(audioFormat -> {
