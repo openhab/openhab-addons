@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.nibeuplink.internal.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Response.CompleteListener;
 import org.eclipse.jetty.client.api.Response.ContentListener;
@@ -20,6 +22,7 @@ import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public interface NibeUplinkCommand extends SuccessListener, FailureListener, ContentListener, CompleteListener {
 
     public static int MAX_RETRIES = 5;
@@ -36,6 +39,7 @@ public interface NibeUplinkCommand extends SuccessListener, FailureListener, Con
      *
      * @return
      */
+    @Nullable
     StatusUpdateListener getListener();
 
     /**

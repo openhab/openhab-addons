@@ -12,6 +12,8 @@ import static org.openhab.binding.nibeuplink.NibeUplinkBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.FormContentProvider;
@@ -21,6 +23,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.nibeuplink.handler.NibeUplinkHandler;
 import org.openhab.binding.nibeuplink.internal.callback.AbstractUplinkCommandCallback;
+import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
 import org.openhab.binding.nibeuplink.internal.model.DataResponse;
 import org.openhab.binding.nibeuplink.internal.model.DataResponseTransformer;
@@ -32,6 +35,7 @@ import org.openhab.binding.nibeuplink.internal.model.VVM320Channels;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class GenericStatusUpdate extends AbstractUplinkCommandCallback implements NibeUplinkCommand {
 
     private final NibeUplinkHandler handler;
@@ -77,12 +81,13 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
     }
 
     @Override
-    public void onComplete(Result result) {
+    public void onComplete(@Nullable Result result) {
         logger.debug("onComplete()");
 
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode()) && retries++ < MAX_RETRIES) {
-            if (getListener() != null) {
-                getListener().update(getCommunicationStatus());
+            StatusUpdateListener listener = getListener();
+            if (listener != null) {
+                listener.update(getCommunicationStatus());
             }
             handler.getWebInterface().enqueueCommand(this);
 

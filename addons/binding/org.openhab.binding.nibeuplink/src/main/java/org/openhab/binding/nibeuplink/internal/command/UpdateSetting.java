@@ -12,6 +12,8 @@ import static org.openhab.binding.nibeuplink.NibeUplinkBindingConstants.MANAGE_A
 
 import java.nio.charset.StandardCharsets;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.FormContentProvider;
@@ -19,6 +21,8 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.nibeuplink.handler.NibeUplinkHandler;
 import org.openhab.binding.nibeuplink.internal.callback.AbstractUplinkCommandCallback;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
@@ -29,6 +33,7 @@ import org.openhab.binding.nibeuplink.internal.model.ValidationException;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class UpdateSetting extends AbstractUplinkCommandCallback implements NibeUplinkCommand {
 
     private final NibeUplinkHandler handler;
@@ -36,16 +41,24 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
     private String value;
     private int retries = 0;
 
-    public UpdateSetting(NibeUplinkHandler handler, Channel channel, String value) {
+    public UpdateSetting(NibeUplinkHandler handler, Channel channel, Command command) {
         super(handler.getConfiguration());
         this.handler = handler;
         this.channel = channel;
-        this.value = value;
+        this.value = extractValue(command);
+    }
+
+    private String extractValue(Command command) {
+        // this is necessary because we must not send the unit to the nibe backend
+        if (command instanceof QuantityType<?>) {
+            return String.valueOf(((QuantityType<?>) command).doubleValue());
+        } else {
+            return command.toString();
+        }
     }
 
     @Override
     protected Request prepareRequest(Request requestToPrepare) {
-
         if (channel.isReadOnly()) {
             logger.info("channel '{}' does not support write access - value to set '{}'", channel.getFQName(), value);
             throw new UnsupportedOperationException(
@@ -84,7 +97,7 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
     }
 
     @Override
-    public void onComplete(Result result) {
+    public void onComplete(@Nullable Result result) {
         logger.debug("onComplete()");
 
         if (!HttpStatus.Code.FOUND.equals(getCommunicationStatus().getHttpCode()) && retries++ < MAX_RETRIES) {

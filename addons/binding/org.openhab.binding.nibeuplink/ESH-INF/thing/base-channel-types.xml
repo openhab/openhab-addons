@@ -196,7 +196,7 @@
 		<item-type>Number</item-type>
 		<label>Temporary Lux</label>
 		<description>0=Off, 1=3h, 2=6h, 3=12h, 4=One time increase</description>
-		<state pattern="%d" readOnly="false">
+		<state min="0" max="4" step="1" pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-48914">

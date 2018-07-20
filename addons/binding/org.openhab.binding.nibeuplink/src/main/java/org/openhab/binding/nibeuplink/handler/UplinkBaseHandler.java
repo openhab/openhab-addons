@@ -84,7 +84,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
             logger.debug("command for {}: {}", channelUID.getIdWithoutGroup(), command.toString());
             Channel channel = getSpecificChannel(channelUID.getIdWithoutGroup());
             if (channel != null && !channel.isReadOnly()) {
-                webInterface.enqueueCommand(new UpdateSetting(this, channel, command.toString()));
+                webInterface.enqueueCommand(new UpdateSetting(this, channel, command));
             }
         }
     }
