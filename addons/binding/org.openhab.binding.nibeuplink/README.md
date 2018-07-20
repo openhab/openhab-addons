@@ -249,6 +249,10 @@ Available channels depend on the specific heatpump model. Following models/chann
 | general#47394    | Switch               | ---    | ---     | Yes      | Use room sensor S1                                 | 0=off, 1=on                                          |
 | general#47402    | Number               | 0      | 60      | Yes      | Room sensor factor S1                              | Values between 0 and 6                               |
 | general#48793    | Number               | 0      | 60      | Yes      | Room sensor cool factor S1                         | Values between 0 and 6                               |
+| general#47374    | Number:Temperature   | 10     | 40      | Yes      | Start temperature cooling                          | Values between 10 and 40                             |
+| general#47375    | Number:Temperature   | 0      | 30      | Yes      | Stop temperature heating                           | Values between 0 and 30                              |
+| general#47376    | Number:Temperature   | -20    | 10      | Yes      | Stop temperature additive                          | Values between -20 and 10                            |
+| general#47377    | Number:Time          | 1      | 48      | Yes      | Outdoor Filter Time                                | Values between 1 and 48                              |
 | compressor#44362 | Number:Temperature   | -32767 | 32767   | No       | EB101-EP14-BT28 Outdoor Temp                       |                                                      |
 | compressor#44396 | Number:Dimensionless | 0      | 255     | No       | EB101 Speed charge pump                            |                                                      |
 | compressor#44703 | Number               | ---    | ---     | No       | EB101-EP14 Defrosting Outdoor Unit                 | 0=No, 1=Active, 2=Passive                            |

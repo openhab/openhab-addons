@@ -14,6 +14,10 @@
 			<channel id="47394" typeId="vvm320-type-47394" />
 			<channel id="47402" typeId="vvm320-type-47402" />
 			<channel id="48793" typeId="vvm320-type-48793" />
+			<channel id="47374" typeId="vvm320-type-47374" />
+			<channel id="47375" typeId="vvm320-type-47375" />
+			<channel id="47376" typeId="vvm320-type-47376" />
+			<channel id="47377" typeId="vvm320-type-47377" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="vvm320-compressor">
