@@ -19,8 +19,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
  * Contains the current network status as well as the MAC address of the Circle+ that coordinates the network. The Stick
  * sends this message as response of a {@link NetworkStatusRequestMessage}.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class NetworkStatusResponseMessage extends Message {
 

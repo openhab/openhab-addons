@@ -13,6 +13,7 @@ import static org.openhab.binding.plugwise.internal.protocol.field.Sensitivity.M
 
 import java.time.Duration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 import org.openhab.binding.plugwise.internal.protocol.field.Sensitivity;
 
@@ -21,9 +22,10 @@ import org.openhab.binding.plugwise.internal.protocol.field.Sensitivity;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public class PlugwiseScanConfig {
 
-    private String macAddress;
+    private String macAddress = "";
     private String sensitivity = UPPER_UNDERSCORE.to(LOWER_CAMEL, MEDIUM.name());
     private int switchOffDelay = 5; // minutes
     private boolean daylightOverride = false;

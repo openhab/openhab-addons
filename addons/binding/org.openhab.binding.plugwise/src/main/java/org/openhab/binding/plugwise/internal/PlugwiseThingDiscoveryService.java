@@ -19,6 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -49,9 +51,9 @@ import com.google.common.collect.Sets;
  * Sleeping end devices are discovered when they announce being awake with a {@link AnnounceAwakeRequestMessage}. To
  * reduce network traffic {@link InformationRequestMessage}s are only sent to undiscovered devices.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
         implements ExtendedDiscoveryService, PlugwiseMessageListener, PlugwiseStickStatusListener {
 
@@ -63,10 +65,9 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
     }
 
     private static class DiscoveredNode {
-
-        private MACAddress macAddress;
+        private final MACAddress macAddress;
+        private final Map<String, String> properties = new HashMap<>();
         private DeviceType deviceType = DeviceType.UNKNOWN;
-        private Map<String, String> properties = new HashMap<>();
         private int attempts;
         private long lastRequestMillis;
 
@@ -75,9 +76,8 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
         }
 
         public boolean isDataComplete() {
-            return macAddress != null && deviceType != DeviceType.UNKNOWN && !properties.isEmpty();
+            return deviceType != DeviceType.UNKNOWN && !properties.isEmpty();
         }
-
     }
 
     private static final Set<ThingTypeUID> DISCOVERED_THING_TYPES_UIDS = Sets.difference(SUPPORTED_THING_TYPES_UIDS,
@@ -94,14 +94,14 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseThingDiscoveryService.class);
 
-    private PlugwiseStickHandler stickHandler;
-    private DiscoveryServiceCallback discoveryServiceCallback;
+    private final PlugwiseStickHandler stickHandler;
+    private @Nullable DiscoveryServiceCallback discoveryServiceCallback;
 
-    private ScheduledFuture<?> discoveryJob;
-    private ScheduledFuture<?> watchJob;
+    private @Nullable ScheduledFuture<?> discoveryJob;
+    private @Nullable ScheduledFuture<?> watchJob;
     private CurrentRoleCall currentRoleCall = new CurrentRoleCall();
 
-    private Map<MACAddress, DiscoveredNode> discoveredNodes = new ConcurrentHashMap<>();
+    private final Map<MACAddress, @Nullable DiscoveredNode> discoveredNodes = new ConcurrentHashMap<>();
 
     public PlugwiseThingDiscoveryService(PlugwiseStickHandler stickHandler) throws IllegalArgumentException {
         super(DISCOVERED_THING_TYPES_UIDS, 1, true);
@@ -150,9 +150,10 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
     }
 
     protected void discoverNodes() {
+        MACAddress circlePlusMAC = getCirclePlusMAC();
         if (getStickStatus() != ThingStatus.ONLINE) {
             logger.debug("Discovery with role call not possible (Stick status is {})", getStickStatus());
-        } else if (getCirclePlusMAC() == null) {
+        } else if (circlePlusMAC == null) {
             logger.debug("Discovery with role call not possible (Circle+ MAC address is null)");
         } else if (currentRoleCall.isRoleCalling) {
             logger.debug("Discovery with role call not possible (already role calling)");
@@ -162,20 +163,20 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
             currentRoleCall.isRoleCalling = true;
             currentRoleCall.currentNodeID = Integer.MIN_VALUE;
 
-            discoverNewNodeDetails(getCirclePlusMAC());
+            discoverNewNodeDetails(circlePlusMAC);
 
-            logger.debug("Discovering nodes with role call on Circle+ ({})", getCirclePlusMAC());
+            logger.debug("Discovering nodes with role call on Circle+ ({})", circlePlusMAC);
             roleCall(MIN_NODE_ID);
             startDiscoveryWatchJob();
         }
     }
 
-    private MACAddress getCirclePlusMAC() {
-        return stickHandler != null ? stickHandler.getCirclePlusMAC() : null;
+    private @Nullable MACAddress getCirclePlusMAC() {
+        return stickHandler.getCirclePlusMAC();
     }
 
     private ThingStatus getStickStatus() {
-        return stickHandler != null ? stickHandler.getThing().getStatus() : ThingStatus.UNKNOWN;
+        return stickHandler.getThing().getStatus();
     }
 
     private void handleAnnounceAwakeRequest(AnnounceAwakeRequestMessage message) {
@@ -238,15 +239,16 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
     }
 
     private boolean isAlreadyDiscovered(MACAddress macAddress) {
+        DiscoveryServiceCallback callback = discoveryServiceCallback;
         for (ThingTypeUID thingTypeUID : DISCOVERED_THING_TYPES_UIDS) {
             ThingUID thingUID = new ThingUID(thingTypeUID, macAddress.toString());
-            if (discoveryServiceCallback == null) {
+            if (callback == null) {
                 logger.debug("Assuming Node ({}) has not yet been discovered (callback null)", macAddress);
                 return false;
-            } else if (discoveryServiceCallback.getExistingDiscoveryResult(thingUID) != null) {
+            } else if (callback.getExistingDiscoveryResult(thingUID) != null) {
                 logger.debug("Node ({}) has existing discovery result: {}", macAddress, thingUID);
                 return true;
-            } else if (discoveryServiceCallback.getExistingThing(thingUID) != null) {
+            } else if (callback.getExistingThing(thingUID) != null) {
                 logger.debug("Node ({}) has existing thing: {}", macAddress, thingUID);
                 return true;
             }
@@ -295,7 +297,8 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
             discoverNodes();
         };
 
-        if (discoveryJob == null || discoveryJob.isCancelled()) {
+        ScheduledFuture<?> localDiscoveryJob = discoveryJob;
+        if (localDiscoveryJob == null || localDiscoveryJob.isCancelled()) {
             discoveryJob = scheduler.scheduleWithFixedDelay(discoveryRunnable, 0, DISCOVERY_INTERVAL, TimeUnit.SECONDS);
         }
     }
@@ -317,16 +320,16 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
                 }
             }
 
-            Iterator<Entry<MACAddress, DiscoveredNode>> it = discoveredNodes.entrySet().iterator();
+            Iterator<Entry<MACAddress, @Nullable DiscoveredNode>> it = discoveredNodes.entrySet().iterator();
             while (it.hasNext()) {
-                Entry<MACAddress, DiscoveredNode> entry = it.next();
+                Entry<MACAddress, @Nullable DiscoveredNode> entry = it.next();
                 DiscoveredNode node = entry.getValue();
-                if ((System.currentTimeMillis() - node.lastRequestMillis) > (MESSAGE_TIMEOUT * 1000)
+                if (node != null && (System.currentTimeMillis() - node.lastRequestMillis) > (MESSAGE_TIMEOUT * 1000)
                         && node.attempts < MESSAGE_RETRY_ATTEMPTS) {
                     logger.debug("Resending timed out information request message to node ({})", node.macAddress);
                     updateInformation(node.macAddress);
                     node.attempts++;
-                } else if (node.attempts >= MESSAGE_RETRY_ATTEMPTS) {
+                } else if (node != null && node.attempts >= MESSAGE_RETRY_ATTEMPTS) {
                     logger.debug("Giving up on information request for node ({})", node.macAddress);
                     it.remove();
                 }
@@ -338,7 +341,8 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
             }
         };
 
-        if (watchJob == null || watchJob.isCancelled()) {
+        ScheduledFuture<?> localWatchJob = watchJob;
+        if (localWatchJob == null || localWatchJob.isCancelled()) {
             watchJob = scheduler.scheduleWithFixedDelay(watchRunnable, WATCH_INTERVAL, WATCH_INTERVAL,
                     TimeUnit.SECONDS);
         }
@@ -361,8 +365,9 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping Plugwise device background discovery");
-        if (discoveryJob != null && !discoveryJob.isCancelled()) {
-            discoveryJob.cancel(true);
+        ScheduledFuture<?> localDiscoveryJob = discoveryJob;
+        if (localDiscoveryJob != null && !localDiscoveryJob.isCancelled()) {
+            localDiscoveryJob.cancel(true);
             discoveryJob = null;
         }
         stopDiscoveryWatchJob();
@@ -370,8 +375,9 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
 
     private void stopDiscoveryWatchJob() {
         logger.debug("Stopping Plugwise discovery watch job");
-        if (watchJob != null && !watchJob.isCancelled()) {
-            watchJob.cancel(true);
+        ScheduledFuture<?> localWatchJob = watchJob;
+        if (localWatchJob != null && !localWatchJob.isCancelled()) {
+            localWatchJob.cancel(true);
             watchJob = null;
         }
     }

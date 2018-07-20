@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.plugwise.internal.protocol.field;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The motion sensitivity range of a Scan.
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public enum Sensitivity {
 
     HIGH(0x14),

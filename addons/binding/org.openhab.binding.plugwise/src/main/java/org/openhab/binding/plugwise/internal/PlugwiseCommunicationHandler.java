@@ -10,6 +10,7 @@ package org.openhab.binding.plugwise.internal;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.plugwise.internal.config.PlugwiseStickConfig;
 import org.openhab.binding.plugwise.internal.listener.PlugwiseMessageListener;
 import org.openhab.binding.plugwise.internal.protocol.Message;
@@ -18,9 +19,9 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 /**
  * The {@link PlugwiseCommunicationHandler} handles all serial communication with the Plugwise Stick.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class PlugwiseCommunicationHandler {
 
     private final PlugwiseCommunicationContext context = new PlugwiseCommunicationContext();

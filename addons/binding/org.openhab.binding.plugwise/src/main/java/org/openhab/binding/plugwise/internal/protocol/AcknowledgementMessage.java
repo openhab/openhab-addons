@@ -23,8 +23,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MessageType;
  * message sent to the Stick by the host, as well as confirmation messages from nodes in the network for various
  * purposes. Not all purposes are yet reverse-engineered.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class AcknowledgementMessage extends Message {
 

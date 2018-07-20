@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.plugwise.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * When there are multiple queued messages, the message priority and date/time determine which message is sent first.
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public enum PlugwiseMessagePriority {
 
     /**

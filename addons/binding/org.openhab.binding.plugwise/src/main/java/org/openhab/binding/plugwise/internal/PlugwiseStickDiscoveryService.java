@@ -21,6 +21,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -54,6 +56,7 @@ import gnu.io.CommPortIdentifier;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.plugwise")
 public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
         implements ExtendedDiscoveryService, PlugwiseMessageListener {
@@ -64,15 +67,13 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
     private static final int SCAN_TIMEOUT = 5;
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseStickDiscoveryService.class);
+    private final PlugwiseCommunicationHandler communicationHandler = new PlugwiseCommunicationHandler();
 
-    private DiscoveryServiceCallback discoveryServiceCallback;
-
-    private ScheduledFuture<?> discoveryJob;
-
-    private PlugwiseCommunicationHandler communicationHandler = new PlugwiseCommunicationHandler();
+    private @Nullable DiscoveryServiceCallback discoveryServiceCallback;
+    private @Nullable ScheduledFuture<?> discoveryJob;
 
     private boolean discovering;
-    private ReentrantLock discoveryLock = new ReentrantLock();
+    private final ReentrantLock discoveryLock = new ReentrantLock();
     private Condition continueDiscovery = discoveryLock.newCondition();
 
     public PlugwiseStickDiscoveryService() throws IllegalArgumentException {
@@ -180,6 +181,7 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
         MACAddress mac = message.getMACAddress();
         Map<String, String> properties = new HashMap<>();
         PlugwiseUtils.updateProperties(properties, message);
+
         thingDiscovered(createDiscoveryResult(mac, properties));
 
         try {
@@ -212,13 +214,14 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
 
     private boolean isAlreadyDiscovered(MACAddress macAddress) {
         ThingUID thingUID = new ThingUID(THING_TYPE_STICK, macAddress.toString());
-        if (discoveryServiceCallback == null) {
+        DiscoveryServiceCallback callback = discoveryServiceCallback;
+        if (callback == null) {
             logger.debug("Assuming Stick ({}) has not yet been discovered (callback null)", macAddress);
             return false;
-        } else if (discoveryServiceCallback.getExistingDiscoveryResult(thingUID) != null) {
+        } else if (callback.getExistingDiscoveryResult(thingUID) != null) {
             logger.debug("Stick ({}) has existing discovery result: {}", macAddress, thingUID);
             return true;
-        } else if (discoveryServiceCallback.getExistingThing(thingUID) != null) {
+        } else if (callback.getExistingThing(thingUID) != null) {
             logger.debug("Stick ({}) has existing thing: {}", macAddress, thingUID);
             return true;
         }
@@ -228,7 +231,7 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
 
     @Modified
     @Override
-    protected void modified(Map<String, Object> configProperties) {
+    protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
         super.modified(configProperties);
     }
 
@@ -255,14 +258,12 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
     protected void startBackgroundDiscovery() {
         logger.debug("Starting Plugwise Stick background discovery");
 
-        Runnable discoveryRunnable = () -> {
-            logger.debug("Discover Sticks (background discovery)");
-            discoverSticks();
-        };
-
-        if (discoveryJob == null || discoveryJob.isCancelled()) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(discoveryRunnable, 15, DISCOVERY_INTERVAL,
-                    TimeUnit.SECONDS);
+        ScheduledFuture<?> localDiscoveryJob = discoveryJob;
+        if (localDiscoveryJob == null || localDiscoveryJob.isCancelled()) {
+            discoveryJob = scheduler.scheduleWithFixedDelay(() -> {
+                logger.debug("Discover Sticks (background discovery)");
+                discoverSticks();
+            }, 15, DISCOVERY_INTERVAL, TimeUnit.SECONDS);
         }
     }
 
@@ -275,8 +276,10 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping Plugwise Stick background discovery");
-        if (discoveryJob != null && !discoveryJob.isCancelled()) {
-            discoveryJob.cancel(true);
+
+        ScheduledFuture<?> localDiscoveryJob = discoveryJob;
+        if (localDiscoveryJob != null && !localDiscoveryJob.isCancelled()) {
+            localDiscoveryJob.cancel(true);
             discoveryJob = null;
         }
     }

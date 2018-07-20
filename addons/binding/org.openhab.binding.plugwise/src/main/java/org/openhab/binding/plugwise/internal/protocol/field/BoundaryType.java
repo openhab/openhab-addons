@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.plugwise.internal.protocol.field;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The boundary type that a Sense uses for switching.
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public enum BoundaryType {
 
     HUMIDITY(0),

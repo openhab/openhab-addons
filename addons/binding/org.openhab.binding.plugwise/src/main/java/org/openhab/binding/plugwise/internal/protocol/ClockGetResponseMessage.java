@@ -23,8 +23,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
  * Contains the current clock value of a device. This message is the response of a {@link ClockGetRequestMessage}. Not
  * all response fields have been reverse engineered.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class ClockGetResponseMessage extends Message {
 

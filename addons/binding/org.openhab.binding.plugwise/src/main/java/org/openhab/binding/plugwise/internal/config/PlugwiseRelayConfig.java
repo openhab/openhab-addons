@@ -13,6 +13,7 @@ import static org.openhab.binding.plugwise.internal.config.PlugwiseRelayConfig.P
 
 import java.time.Duration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 
 /**
@@ -21,6 +22,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public class PlugwiseRelayConfig {
 
     public enum PowerStateChanging {
@@ -29,7 +31,7 @@ public class PlugwiseRelayConfig {
         ALWAYS_OFF;
     }
 
-    private String macAddress;
+    private String macAddress = "";
     private String powerStateChanging = UPPER_UNDERSCORE.to(LOWER_CAMEL, COMMAND_SWITCHING.name());
     private boolean suppliesPower = false;
     private int measurementInterval = 60; // minutes

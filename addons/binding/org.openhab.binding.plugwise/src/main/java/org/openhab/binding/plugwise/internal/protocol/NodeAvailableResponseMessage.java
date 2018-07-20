@@ -13,8 +13,7 @@ import static org.openhab.binding.plugwise.internal.protocol.field.MessageType.N
 /**
  * Response to a device when its {@link NodeAvailableMessage} is "accepted".
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class NodeAvailableResponseMessage extends Message {
 

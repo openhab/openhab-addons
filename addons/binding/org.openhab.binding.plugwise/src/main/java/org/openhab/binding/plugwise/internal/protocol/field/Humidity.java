@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.plugwise.internal.protocol.field;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * A relative humidity class that is used for converting from and to Plugwise protocol values.
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public class Humidity {
 
     private static final String EMPTY_VALUE = "FFFF";

@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.plugwise.internal.listener;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.plugwise.internal.protocol.Message;
 
 /**
@@ -15,6 +16,7 @@ import org.openhab.binding.plugwise.internal.protocol.Message;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public interface PlugwiseMessageListener {
 
     void handleReponseMessage(Message message);

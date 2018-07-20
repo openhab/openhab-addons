@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.plugwise.internal.listener.PlugwiseMessageListener;
 import org.openhab.binding.plugwise.internal.protocol.Message;
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public class PlugwiseFilteredMessageListenerList {
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseFilteredMessageListenerList.class);

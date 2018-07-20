@@ -30,8 +30,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
  * {@link NetworkStatusRequestMessage}.
  * </p>
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class RoleCallResponseMessage extends Message {
 

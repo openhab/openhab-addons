@@ -24,8 +24,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.PowerCalibration;
  * message is the response of a {@link PowerBufferRequestMessage}. The consumed/produced {@link Energy} (kWh) of the
  * datapoints can be calculated using {@link PowerCalibration} data.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class PowerBufferResponseMessage extends Message {
 

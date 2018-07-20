@@ -21,8 +21,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
  * Sets the clock of the Circle+. Based on what is known about the Plugwise protocol, only the clock of the Circle+ has
  * to be set. The Circle+ sets the clock of all other network nodes.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class ClockSetRequestMessage extends Message {
 

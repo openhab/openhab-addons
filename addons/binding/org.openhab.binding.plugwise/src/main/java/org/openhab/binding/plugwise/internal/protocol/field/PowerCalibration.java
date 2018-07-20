@@ -8,12 +8,15 @@
  */
 package org.openhab.binding.plugwise.internal.protocol.field;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The power calibration data of a relay device (Circle, Circle+, Stealth). It is used in {@link Energy} to calculate
  * energy (kWh) and power (W) from pulses.
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public class PowerCalibration {
 
     private final double gainA;

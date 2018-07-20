@@ -16,8 +16,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
  * Requests the historical pulse measurements at a certain log address from a device (Circle, Circle+, Stealth). This
  * message is answered by a {@link PowerBufferResponseMessage}.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class PowerBufferRequestMessage extends Message {
 

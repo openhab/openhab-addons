@@ -12,6 +12,8 @@ import static org.openhab.binding.plugwise.PlugwiseBindingConstants.*;
 
 import java.time.Duration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.plugwise.internal.config.PlugwiseScanConfig;
@@ -36,13 +38,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public class PlugwiseScanHandler extends AbstractSleepingEndDeviceHandler {
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseScanHandler.class);
+    private final DeviceType deviceType = DeviceType.SCAN;
 
-    private PlugwiseScanConfig configuration;
-    private DeviceType deviceType = DeviceType.SCAN;
-    private MACAddress macAddress;
+    private @NonNullByDefault({}) PlugwiseScanConfig configuration;
+    private @NonNullByDefault({}) MACAddress macAddress;
 
     // Flags that keep track of the pending Scan configuration updates. When the corresponding Thing configuration
     // parameters change a flag is set to true. When the Scan goes online the respective command is sent to update the
@@ -141,7 +144,8 @@ public class PlugwiseScanHandler extends AbstractSleepingEndDeviceHandler {
         super.sendConfigurationUpdateCommands();
     }
 
-    private void setUpdateCommandFlags(PlugwiseScanConfig oldConfiguration, PlugwiseScanConfig newConfiguration) {
+    private void setUpdateCommandFlags(@Nullable PlugwiseScanConfig oldConfiguration,
+            PlugwiseScanConfig newConfiguration) {
         boolean fullUpdate = newConfiguration.isUpdateConfiguration() && !isConfigurationPending();
         if (fullUpdate) {
             logger.debug("Updating all configuration properties of {} ({})", deviceType, macAddress);
