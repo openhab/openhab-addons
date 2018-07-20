@@ -13,6 +13,7 @@ import static org.openhab.binding.plugwise.PlugwiseBindingConstants.CHANNEL_TRIG
 
 import java.time.Duration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.plugwise.internal.protocol.AcknowledgementMessage;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractSleepingEndDeviceHandler extends AbstractPlugwiseThingHandler {
 
     private static final int SED_PROPERTIES_COUNT = 3;

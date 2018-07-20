@@ -8,11 +8,15 @@
  */
 package org.openhab.binding.plugwise.internal.protocol.field;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The media access control (MAC) address of a Plugwise device, e.g.: 000D6F0000A1B2C3
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public class MACAddress {
 
     private final String macAddress;
@@ -25,12 +29,12 @@ public class MACAddress {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((macAddress == null) ? 0 : macAddress.hashCode());
+        result = prime * result + macAddress.hashCode();
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
         }
@@ -41,11 +45,7 @@ public class MACAddress {
             return false;
         }
         MACAddress other = (MACAddress) obj;
-        if (macAddress == null) {
-            if (other.macAddress != null) {
-                return false;
-            }
-        } else if (!macAddress.equals(other.macAddress)) {
+        if (!macAddress.equals(other.macAddress)) {
             return false;
         }
         return true;

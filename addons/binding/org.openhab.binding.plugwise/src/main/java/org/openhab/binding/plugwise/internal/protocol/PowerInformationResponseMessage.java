@@ -23,8 +23,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
  * Contains the real-time energy consumption of a relay device (Circle, Circle+, Stealth). This
  * message is the response of a {@link PowerInformationRequestMessage}.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class PowerInformationResponseMessage extends Message {
 
