@@ -103,8 +103,10 @@ public class FeicanHandler extends BaseThingHandler {
      * @param onOff value to set: on or off
      * @throws IOException Connection to the bulb failed
      */
-    private void handleOnOff(OnOffType onOff) throws IOException {
-        connection.sendCommand(commands.switchOnOff(onOff));
+    private void handleOnOff(@Nullable OnOffType onOff) throws IOException {
+        if (onOff != null) {
+            connection.sendCommand(commands.switchOnOff(onOff));
+        }
     }
 
     /**
@@ -128,7 +130,7 @@ public class FeicanHandler extends BaseThingHandler {
             handleBrightness(command.getBrightness());
             connection.sendCommand(
                     commands.color(new HSBType(command.getHue(), command.getSaturation(), PercentType.HUNDRED)));
-            handleOnOff((OnOffType) command.as(OnOffType.class));
+            handleOnOff(command.as(OnOffType.class));
         }
     }
 
@@ -147,7 +149,7 @@ public class FeicanHandler extends BaseThingHandler {
         switch (id) {
             case CHANNEL_COLOR:
                 handleBrightness(command);
-                handleOnOff((OnOffType) command.as(OnOffType.class));
+                handleOnOff(command.as(OnOffType.class));
                 break;
             case CHANNEL_COLOR_TEMPERATURE:
                 handleColorTemperature(command);
