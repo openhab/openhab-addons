@@ -50,6 +50,7 @@ public class DraytonWiserBindingConstants {
     public static final String STATION_ENDPOINT = "data/network/Station/";
     public static final String DOMAIN_ENDPOINT = "data/domain/";
     public static final String HOTWATER_ENDPOINT = "data/domain/HotWater/";
+    public static final String SMARTPLUG_ENDPOINT = "data/domain/SmartPlug/";
 
     // bridge
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "heathub");
@@ -60,6 +61,7 @@ public class DraytonWiserBindingConstants {
     public static final ThingTypeUID THING_TYPE_ROOMSTAT = new ThingTypeUID(BINDING_ID, "roomstat");
     public static final ThingTypeUID THING_TYPE_ITRV = new ThingTypeUID(BINDING_ID, "itrv");
     public static final ThingTypeUID THING_TYPE_HOTWATER = new ThingTypeUID(BINDING_ID, "hotwater");
+    public static final ThingTypeUID THING_TYPE_SMARTPLUG = new ThingTypeUID(BINDING_ID, "smart-plug");
 
     // List of all Channel ids
     public static final String CHANNEL_CURRENT_TEMPERATURE = "currentTemperature";
@@ -96,9 +98,12 @@ public class DraytonWiserBindingConstants {
     public static final String CHANNEL_ROOM_WINDOW_STATE = "windowState";
     public static final String CHANNEL_ROOM_MASTER_SCHEDULE = "masterSchedule";
     public static final String CHANNEL_DEVICE_LOCKED = "deviceLocked";
+    public static final String CHANNEL_SMARTPLUG_OUTPUT_STATE = "plugOutputState";
+    public static final String CHANNEL_SMARTPLUG_AWAY_ACTION = "plugAwayAction";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_CONTROLLER,
-            THING_TYPE_ROOM, THING_TYPE_ROOMSTAT, THING_TYPE_BRIDGE, THING_TYPE_ITRV, THING_TYPE_HOTWATER);
+            THING_TYPE_ROOM, THING_TYPE_ROOMSTAT, THING_TYPE_BRIDGE, THING_TYPE_ITRV, THING_TYPE_HOTWATER,
+            THING_TYPE_SMARTPLUG);
 
     // Lookups from text representations to useful openhab values
     public static final Map<String, Integer> UNIFIED_SIGNAL_STRENGTH_MAP = Maps

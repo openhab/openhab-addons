@@ -116,6 +116,7 @@
         </config-description>
     </thing-type>
     
+    <!-- Room Thermostat Thing Type -->
     <thing-type id="roomstat">
         <supported-bridge-type-refs>
             <bridge-type-ref id="heathub" />
@@ -150,6 +151,7 @@
         </config-description>
     </thing-type>
     
+    <!-- TRV Thing Type -->
     <thing-type id="itrv">
         <supported-bridge-type-refs>
             <bridge-type-ref id="heathub" />
@@ -174,6 +176,43 @@
         </channels>
         
         <config-description>
+            <parameter name="serialNumber" type="text">
+                <label>Serial Number</label>
+                <description>
+                    Device Serial Number.
+                </description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <!-- Smart Plug Thing Type -->
+    <thing-type id="smart-plug">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="heathub"/>
+        </supported-bridge-type-refs>
+        
+        <label>Smart Plug</label>
+        <description>Remote controlled Plug Socket</description>
+        <channels>
+            <channel id="plugOutputState" typeId="plugOutputState-channel" />
+            <channel id="plugAwayAction" typeId="plugAwayAction-channel" />
+            <channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
+            <channel id="currentSignalLQI" typeId="signalLQI-channel" />
+            <channel id="zigbeeConnected" typeId="zigbeeConnected-channel" />
+            <channel id="deviceLocked" typeId="deviceLocked-channel" />
+            <channel id="masterSchedule" typeId="masterSchedule-channel"/>
+            <channel id="manualModeState" typeId="manualModeState-channel"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="plugName" type="text">
+                <label>Smart Plug Name</label>
+                <description>
+                    The plug name as it appears in the Wiser app.
+                </description>
+                <required>true</required>
+            </parameter>
             <parameter name="serialNumber" type="text">
                 <label>Serial Number</label>
                 <description>
@@ -424,6 +463,18 @@
         <item-type>Switch</item-type>
         <label>Device locked</label>
         <description>Has the device been locked to prevent local changes</description>
+    </channel-type>
+    
+    <channel-type id="plugOutputState-channel">
+        <item-type>Switch</item-type>
+        <label>Plug State</label>
+        <description>Is the smart plug switched on or off</description>
+    </channel-type>
+    
+    <channel-type id="plugAwayActionState-channel">
+        <item-type>Switch</item-type>
+        <label>Plug Off in Away Mode</label>
+        <description>Should the smart plug switch off when in away mode</description>
     </channel-type>
     
 </thing:thing-descriptions>

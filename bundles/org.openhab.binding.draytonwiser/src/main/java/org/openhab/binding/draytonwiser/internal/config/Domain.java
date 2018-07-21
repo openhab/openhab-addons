@@ -43,6 +43,9 @@ public class Domain {
     @SerializedName("RoomStat")
     @Expose
     private List<RoomStat> roomStat = null;
+    @SerializedName("SmartPlug")
+    @Expose
+    private List<SmartPlug> smartPlug = null;
 
     public System getSystem() {
         return system;
@@ -106,6 +109,10 @@ public class Domain {
 
     public void setRoomStat(List<RoomStat> roomStat) {
         this.roomStat = roomStat;
+    }
+
+    public List<SmartPlug> getSmartPlug() {
+        return smartPlug;
     }
 
 }

@@ -13,6 +13,7 @@ The Drayton Wiser binding supports the following things:
 * Room Thermostats - Wireless thermostats which monitor temperature and humidity, and call for heat
 * Smart TRVs - Wireless TRVs that monitor temperature, alter the radiator valve state and call for heat
 * Hot Water - Virtual thing to manage hot water states
+* Smart Plugs - Wireless plug sockets which can be remotely switched
 
 ## Discovery
 
@@ -49,6 +50,7 @@ Bridge draytonwiser:heathub:HeatHub [ ADDR="192.168.1.X", REFRESH=60, AUTHTOKEN=
 	roomstat livingroomstat [ serialNumber="ABCDEF1234" ]
 	itrv livingroomtrv [ serialNumber="ABCDEF1235" ]
 	hotwater hotwater
+    smart-plug tvplug [ serialNumber="ABCDEF1236" ]
 }
 ```
 
@@ -126,6 +128,14 @@ The `serialNumber` corresponds to the device serial number which can be found on
 | `currentUnifiedSignalStrength` | Signal strength value that maps to qualityofservice icon |
 | `zigbeeConnected`              | Is the TRV joined to network                             |
 
+#### Smart Plug
+
+| Channel             | Description                        |
+|---------------------|------------------------------------|
+| `currentSignalRSSI` | Relative Signal Strength Indicator |
+| `currentSignalLQI`  | Link Quality Indicator             |
+| `zigbeeConnected`   | Is the TRV joined to network       |
+
 ### Writeable Channels
 
 #### Controller
@@ -152,7 +162,7 @@ The `serialNumber` corresponds to the device serial number which can be found on
 | `manualModeState`      | Has manual mode been enabled                   |
 | `roomBoostDuration`    | Period in hours to boost the room temperature  |
 | `windowStateDetection` | Detect whether windows are open                |
-| `masterSchedule`       | The current schedule JSON for the room         
+| `masterSchedule`       | The current schedule JSON for the room         |
 
 #### Room Stat
 
@@ -165,6 +175,16 @@ The `serialNumber` corresponds to the device serial number which can be found on
 | Channel        | Description                 |
 |----------------|-----------------------------|
 | `deviceLocked` | Are the TRV controls locked |
+
+#### Smart Plug
+
+| Channel           | Description                                  |
+|-------------------|----------------------------------------------|
+| `plugOutputState` | The current on/off state of the smart plug   |
+| `plugAwayAction`  | Should the plug switch off when in away mode |
+| `manualModeState` | Has manual mode been enabled                 |
+| `deviceLocked`    | Are the Smart Plug controls locked           |
+| `masterSchedule`  | The current schedule JSON for the smart plug |
 
 When updating the `masterSchedule` state, only the schedule portion of the JSON that is returned when querying the state is required.
 The `id`, `Type`, `CurrentSetPoint`, `NextEventTime` and `NextEventSetpoint` should not be sent.

@@ -29,6 +29,7 @@ import org.openhab.binding.draytonwiser.handler.HeatHubHandler;
 import org.openhab.binding.draytonwiser.handler.HotWaterHandler;
 import org.openhab.binding.draytonwiser.handler.RoomHandler;
 import org.openhab.binding.draytonwiser.handler.RoomStatHandler;
+import org.openhab.binding.draytonwiser.handler.SmartPlugHandler;
 import org.openhab.binding.draytonwiser.handler.TRVHandler;
 import org.openhab.binding.draytonwiser.internal.discovery.DraytonWiserDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
@@ -71,6 +72,8 @@ public class DraytonWiserHandlerFactory extends BaseThingHandlerFactory {
             return new ControllerHandler(thing);
         } else if (thingTypeUID.equals(DraytonWiserBindingConstants.THING_TYPE_HOTWATER)) {
             return new HotWaterHandler(thing);
+        } else if (thingTypeUID.equals(DraytonWiserBindingConstants.THING_TYPE_SMARTPLUG)) {
+            return new SmartPlugHandler(thing);
         }
 
         return null;

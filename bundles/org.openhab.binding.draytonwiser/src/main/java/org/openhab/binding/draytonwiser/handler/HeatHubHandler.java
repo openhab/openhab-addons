@@ -39,6 +39,7 @@ import org.openhab.binding.draytonwiser.internal.config.HotWater;
 import org.openhab.binding.draytonwiser.internal.config.Room;
 import org.openhab.binding.draytonwiser.internal.config.RoomStat;
 import org.openhab.binding.draytonwiser.internal.config.Schedule;
+import org.openhab.binding.draytonwiser.internal.config.SmartPlug;
 import org.openhab.binding.draytonwiser.internal.config.SmartValve;
 import org.openhab.binding.draytonwiser.internal.config.Station;
 import org.slf4j.Logger;
@@ -178,6 +179,14 @@ public class HeatHubHandler extends BaseBridgeHandler {
         return domain.getSmartValve();
     }
 
+    public List<SmartPlug> getSmartPlugs() {
+        if (domain == null) {
+            return new ArrayList<SmartPlug>();
+        }
+
+        return domain.getSmartPlug();
+    }
+
     public List<Room> getRooms() {
         if (domain == null) {
             return new ArrayList<Room>();
@@ -248,6 +257,26 @@ public class HeatHubHandler extends BaseBridgeHandler {
         for (SmartValve smartValve : domain.getSmartValve()) {
             if (smartValve.getId().equals(id)) {
                 return smartValve;
+            }
+        }
+
+        return null;
+    }
+
+    public @Nullable SmartPlug getSmartPlug(String serialNumber) {
+        if (domain == null) {
+            return null;
+        }
+
+        Integer id = getIdFromSerialNumber(serialNumber);
+
+        if (id == null) {
+            return null;
+        }
+
+        for (SmartPlug smartPlug : domain.getSmartPlug()) {
+            if (smartPlug.getId().equals(id)) {
+                return smartPlug;
             }
         }
 
@@ -481,15 +510,41 @@ public class HeatHubHandler extends BaseBridgeHandler {
         refresh();
     }
 
-    private @Nullable ContentResponse sendMessageToHeatHub(String path, HttpMethod method) {
+    public void setSmartPlugSchedule(Integer id, String scheduleJSON) {
+        String payload = scheduleJSON;
+        sendMessageToHeatHub(DraytonWiserBindingConstants.SCHEDULES_ENDPOINT + id.toString(), "PATCH", payload);
+        refresh();
+    }
+
+    public void setSmartPlugManualMode(Integer id, Boolean manualMode) {
+        String payload = "{\"Mode\":\"" + (manualMode ? "Manual" : "Auto") + "\"}";
+        sendMessageToHeatHub(DraytonWiserBindingConstants.SMARTPLUG_ENDPOINT + id.toString(), "PATCH", payload);
+        refresh();
+    }
+
+    public void setSmartPlugOutputState(Integer id, Boolean outputState) {
+        String payload = "{\"RequestOutput\":\"" + (outputState ? "On" : "Off") + "\"}";
+        sendMessageToHeatHub(DraytonWiserBindingConstants.SMARTPLUG_ENDPOINT + id.toString(), "PATCH", payload);
+        // update the state after the heathub has had time to react
+        scheduler.schedule(() -> refresh(), 5, TimeUnit.SECONDS);
+    }
+
+    public void setSmartPlugAwayAction(Integer id, Boolean awayAction) {
+        String payload = "{\"AwayAction\":\"" + (awayAction ? "Off" : "NoChange") + "\"}";
+        sendMessageToHeatHub(DraytonWiserBindingConstants.SMARTPLUG_ENDPOINT + id.toString(), "PATCH", payload);
+        refresh();
+    }
+
+    synchronized private @Nullable ContentResponse sendMessageToHeatHub(String path, HttpMethod method) {
         return sendMessageToHeatHub(path, method.asString(), "");
     }
 
-    private @Nullable ContentResponse sendMessageToHeatHub(String path, HttpMethod method, String content) {
+    synchronized private @Nullable ContentResponse sendMessageToHeatHub(String path, HttpMethod method,
+            String content) {
         return sendMessageToHeatHub(path, method.asString(), content);
     }
 
-    private @Nullable ContentResponse sendMessageToHeatHub(String path, String method, String content) {
+    synchronized private @Nullable ContentResponse sendMessageToHeatHub(String path, String method, String content) {
         try {
             logger.debug("Sending message to heathub: " + path);
             String address = (String) getConfig().get(DraytonWiserBindingConstants.ADDRESS);

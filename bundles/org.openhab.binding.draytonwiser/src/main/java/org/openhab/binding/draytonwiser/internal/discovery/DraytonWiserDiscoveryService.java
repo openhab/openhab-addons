@@ -26,6 +26,7 @@ import org.openhab.binding.draytonwiser.internal.config.Device;
 import org.openhab.binding.draytonwiser.internal.config.HotWater;
 import org.openhab.binding.draytonwiser.internal.config.Room;
 import org.openhab.binding.draytonwiser.internal.config.RoomStat;
+import org.openhab.binding.draytonwiser.internal.config.SmartPlug;
 import org.openhab.binding.draytonwiser.internal.config.SmartValve;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +81,10 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
         List<HotWater> hotWater = bridgeHandler.getHotWater();
         if (hotWater != null && hotWater.size() > 0) {
             onHotWaterAdded();
+        }
+        List<SmartPlug> smartPlugs = bridgeHandler.getSmartPlugs();
+        for (SmartPlug p : smartPlugs) {
+            onSmartPlugAdded(p);
         }
 
     }
@@ -167,6 +172,29 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
                     .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_ITRV, bridgeUID,
                             device.getSerialNumber().toString()))
                     .withProperties(properties).withBridge(bridgeUID).withLabel(assignedRoomName + " - TRV")
+                    .withRepresentationProperty(device.getSerialNumber()).build();
+
+            thingDiscovered(discoveryResult);
+        }
+    }
+
+    private void onSmartPlugAdded(SmartPlug r) {
+        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        Map<String, Object> properties = new HashMap<>();
+        Device device = bridgeHandler.getExtendedDeviceProperties(r.getId());
+        if (device != null) {
+            properties.put("serialNumber", device.getSerialNumber());
+            properties.put("Device Type", device.getModelIdentifier());
+            properties.put("Firmware Version", device.getActiveFirmwareVersion());
+            properties.put("Manufacturer", device.getManufacturer());
+            properties.put("Model", device.getProductModel());
+            properties.put("Serial Number", device.getSerialNumber());
+            properties.put("plugName", r.getName());
+
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                    .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_SMARTPLUG, bridgeUID,
+                            r.getName().replaceAll("[^A-Za-z0-9]", "").toLowerCase()))
+                    .withProperties(properties).withBridge(bridgeUID).withLabel(r.getName() + " - Smart Plug")
                     .withRepresentationProperty(device.getSerialNumber()).build();
 
             thingDiscovered(discoveryResult);
