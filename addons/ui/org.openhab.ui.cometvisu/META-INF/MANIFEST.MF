@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.ui.cometvisu
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.openhab.ui.cometvisu.internal.CvActivator
 Bundle-ClassPath: 
