@@ -11,7 +11,7 @@ package org.openhab.binding.nibeuplink.handler;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
+import org.openhab.binding.nibeuplink.internal.AtomicReferenceUtils;
 import org.openhab.binding.nibeuplink.internal.command.UpdateSetting;
 import org.openhab.binding.nibeuplink.internal.connector.UplinkWebInterface;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
@@ -41,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public abstract class UplinkBaseHandler extends BaseThingHandler implements NibeUplinkHandler {
+public abstract class UplinkBaseHandler extends BaseThingHandler implements NibeUplinkHandler, AtomicReferenceUtils {
     private final Logger logger = LoggerFactory.getLogger(UplinkBaseHandler.class);
 
     private Set<Channel> deadChannels = new HashSet<>(100);
@@ -64,18 +65,18 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     /**
      * Schedule for polling
      */
-    private AtomicReference<@Nullable ScheduledFuture<?>> pollingJobReference = new AtomicReference<@Nullable ScheduledFuture<?>>(
-            null);
+    private final AtomicReference<@Nullable Future<?>> pollingJobReference;
 
     /**
      * Schedule for periodic cleaning dead channel list
      */
-    private AtomicReference<@Nullable ScheduledFuture<?>> deadChannelHouseKeepingReference = new AtomicReference<@Nullable ScheduledFuture<?>>(
-            null);;
+    private final AtomicReference<@Nullable Future<?>> deadChannelHouseKeepingReference;
 
     public UplinkBaseHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.webInterface = new UplinkWebInterface(getConfiguration(), scheduler, this, httpClient);
+        this.pollingJobReference = new AtomicReference<@Nullable Future<?>>(null);
+        this.deadChannelHouseKeepingReference = new AtomicReference<@Nullable Future<?>>(null);
     }
 
     @Override
@@ -124,36 +125,12 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
      * Start the polling.
      */
     private void startPolling() {
-        ScheduledFuture<?> job = pollingJobReference.get();
-        if (job == null || job.isCancelled()) {
-            logger.debug("start polling job at intervall {}", refreshInterval);
-            ScheduledFuture<?> newJob = scheduler.scheduleWithFixedDelay(new UplinkPolling(this), 30, refreshInterval,
-                    TimeUnit.SECONDS);
-            if (pollingJobReference.compareAndSet(job, newJob)) {
-                logger.debug("updated 'pollingJobReference'");
-            } else {
-                logger.info("detected concurrent modification of job 'pollingJobReference'");
-                newJob.cancel(true);
-            }
-        } else {
-            logger.debug("pollingJob already active");
-        }
-
-        job = deadChannelHouseKeepingReference.get();
-        if (job == null || job.isCancelled()) {
-            logger.debug("start deadChannelHouseKeeping job at intervall {}", houseKeepingInterval);
-            ScheduledFuture<?> newJob = scheduler.scheduleWithFixedDelay(deadChannels::clear, 300, houseKeepingInterval,
-                    TimeUnit.SECONDS);
-            if (deadChannelHouseKeepingReference.compareAndSet(job, newJob)) {
-                logger.debug("updated 'pollingJobReference'");
-            } else {
-                logger.info("detected concurrent modification of job 'pollingJobReference'");
-                newJob.cancel(true);
-            }
-
-        } else {
-            logger.debug("deadChannelHouseKeeping already active");
-        }
+        updateJobReference(pollingJobReference,
+                scheduler.scheduleWithFixedDelay(new UplinkPolling(this), 30, refreshInterval, TimeUnit.SECONDS),
+                "pollingJob");
+        updateJobReference(deadChannelHouseKeepingReference,
+                scheduler.scheduleWithFixedDelay(deadChannels::clear, 300, houseKeepingInterval, TimeUnit.SECONDS),
+                "deadChannelHouseKeeping");
     }
 
     /**
@@ -163,18 +140,8 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     public void dispose() {
         logger.debug("Handler disposed.");
 
-        ScheduledFuture<?> job = pollingJobReference.get();
-        if (job != null && !job.isCancelled()) {
-            logger.debug("stop polling job");
-            job.cancel(true);
-            pollingJobReference.compareAndSet(job, null);
-        }
-        job = deadChannelHouseKeepingReference.get();
-        if (job != null && !job.isCancelled()) {
-            logger.debug("stop polling job");
-            job.cancel(true);
-            deadChannelHouseKeepingReference.compareAndSet(job, null);
-        }
+        cancelJobReference(pollingJobReference, "pollingJob");
+        cancelJobReference(deadChannelHouseKeepingReference, "deadChannelHouseKeeping");
 
         // the webinterface also makes use of the scheduler and must stop it's jobs
         webInterface.dispose();

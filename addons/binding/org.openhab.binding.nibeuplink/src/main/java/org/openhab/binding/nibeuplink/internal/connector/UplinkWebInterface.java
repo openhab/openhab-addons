@@ -10,11 +10,13 @@ package org.openhab.binding.nibeuplink.internal.connector;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Queue;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus.Code;
 import org.eclipse.jetty.util.BlockingArrayQueue;
@@ -22,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.handler.NibeUplinkHandler;
+import org.openhab.binding.nibeuplink.internal.AtomicReferenceUtils;
 import org.openhab.binding.nibeuplink.internal.command.Login;
 import org.openhab.binding.nibeuplink.internal.command.NibeUplinkCommand;
 import org.slf4j.Logger;
@@ -32,7 +35,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Alexander Friese - initial contribution
  */
-public class UplinkWebInterface {
+@NonNullByDefault
+public class UplinkWebInterface implements AtomicReferenceUtils {
 
     private static final long REQUEST_INITIAL_DELAY = 30000;
     private static final long REQUEST_INTERVAL = 5000;
@@ -74,7 +78,8 @@ public class UplinkWebInterface {
     /**
      * periodic request executor job
      */
-    private ScheduledFuture<?> requestExecutorJob;
+    private AtomicReference<@Nullable Future<?>> requestExecutorJobReference = new AtomicReference<@Nullable Future<?>>(
+            null);;
 
     /**
      * this class is responsible for executing periodic web requests. This ensures that only one request is executed at
@@ -82,7 +87,6 @@ public class UplinkWebInterface {
      *
      * @author afriese - initial contribution
      */
-    @NonNullByDefault
     private class WebRequestExecutor implements Runnable {
 
         /**
@@ -157,14 +161,9 @@ public class UplinkWebInterface {
     /**
      * starts the periodic request executor job which handles all web requests
      */
-    public synchronized void start() {
-        if (requestExecutorJob == null || requestExecutorJob.isCancelled()) {
-            logger.debug("start request executor job at intervall {} ms", REQUEST_INTERVAL);
-            requestExecutorJob = scheduler.scheduleWithFixedDelay(requestExecutor, REQUEST_INITIAL_DELAY,
-                    REQUEST_INTERVAL, TimeUnit.MILLISECONDS);
-        } else {
-            logger.debug("request executor job already active");
-        }
+    public void start() {
+        updateJobReference(requestExecutorJobReference, scheduler.scheduleWithFixedDelay(requestExecutor,
+                REQUEST_INITIAL_DELAY, REQUEST_INTERVAL, TimeUnit.MILLISECONDS), "requestExecutorJob");
     }
 
     /**
@@ -242,18 +241,14 @@ public class UplinkWebInterface {
      */
     public void dispose() {
         logger.debug("Webinterface disposed.");
-        if (requestExecutorJob != null && !requestExecutorJob.isCancelled()) {
-            logger.debug("stop request executor job");
-            requestExecutorJob.cancel(true);
-            requestExecutorJob = null;
-        }
+        cancelJobReference(requestExecutorJobReference, "requestExecutorJob");
     }
 
-    private synchronized boolean isAuthenticated() {
+    private boolean isAuthenticated() {
         return authenticated;
     }
 
-    private synchronized void setAuthenticated(boolean authenticated) {
+    private void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
     }
 }
