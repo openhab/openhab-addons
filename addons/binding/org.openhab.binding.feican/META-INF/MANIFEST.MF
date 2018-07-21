@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.feican
 Bundle-ManifestVersion: 2
 Bundle-Name: Feican Binding
 Bundle-SymbolicName: org.openhab.binding.feican;singleton:=true

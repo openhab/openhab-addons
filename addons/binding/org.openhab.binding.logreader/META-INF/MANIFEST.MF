@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.logreader
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/commons-io-2.7-20180506.jar

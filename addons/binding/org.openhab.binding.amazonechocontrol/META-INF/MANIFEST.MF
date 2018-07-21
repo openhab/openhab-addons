@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.amazonechocontrol
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,lib/jsoup-1.10.1.jar
 Bundle-ManifestVersion: 2
@@ -34,5 +35,3 @@ Service-Component: OSGI-INF/*.xml
 Export-Package: 
  org.openhab.binding.amazonechocontrol,
  org.openhab.binding.amazonechocontrol.handler
-
-

@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.fronius
 Bundle-ManifestVersion: 2
 Bundle-Name: Fronius Binding
 Bundle-SymbolicName: org.openhab.binding.fronius;singleton:=true

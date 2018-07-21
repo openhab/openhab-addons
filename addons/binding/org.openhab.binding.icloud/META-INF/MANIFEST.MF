@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.icloud
 Bundle-ManifestVersion: 2
 Bundle-Name: iCloud Binding
 Bundle-SymbolicName: org.openhab.binding.icloud;singleton:=true

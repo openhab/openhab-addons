@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.knx
 Bundle-ManifestVersion: 2
 Bundle-Name: KNX Binding
 Bundle-SymbolicName: org.openhab.binding.knx;singleton:=true

@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.solaredge
 Bundle-ManifestVersion: 2
 Bundle-Name: SolarEdge Binding
 Bundle-SymbolicName: org.openhab.binding.solaredge;singleton:=true
