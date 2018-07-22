@@ -9,8 +9,9 @@
 package org.openhab.binding.solaredge.internal.handler;
 
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,6 +25,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
+import org.openhab.binding.solaredge.internal.AtomicReferenceUtils;
 import org.openhab.binding.solaredge.internal.connector.WebInterface;
 import org.openhab.binding.solaredge.internal.model.Channel;
 import org.slf4j.Logger;
@@ -36,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements SolarEdgeHandler {
+public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements SolarEdgeHandler, AtomicReferenceUtils {
 
     private final Logger logger = LoggerFactory.getLogger(SolarEdgeBaseHandler.class);
 
@@ -48,18 +50,18 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     /**
      * Schedule for polling live data
      */
-    @Nullable
-    private ScheduledFuture<?> liveDataPollingJob;
+    private final AtomicReference<@Nullable Future<?>> liveDataPollingJobReference;
 
     /**
      * Schedule for polling aggregate data
      */
-    @Nullable
-    private ScheduledFuture<?> aggregateDataPollingJob;
+    private final AtomicReference<@Nullable Future<?>> aggregateDataPollingJobReference;
 
     public SolarEdgeBaseHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.webInterface = new WebInterface(getConfiguration(), scheduler, this, httpClient);
+        this.liveDataPollingJobReference = new AtomicReference<@Nullable Future<?>>(null);
+        this.aggregateDataPollingJobReference = new AtomicReference<@Nullable Future<?>>(null);
     }
 
     @Override
@@ -85,23 +87,14 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     /**
      * Start the polling.
      */
-    private synchronized void startPolling() {
-        if (liveDataPollingJob == null || liveDataPollingJob.isCancelled()) {
-            logger.debug("start live data polling job at intervall {}",
-                    getConfiguration().getLiveDataPollingInterval());
-            liveDataPollingJob = scheduler.scheduleWithFixedDelay(new SolarEdgeLiveDataPolling(this), 1,
-                    getConfiguration().getLiveDataPollingInterval(), TimeUnit.MINUTES);
-        } else {
-            logger.debug("live data pollingJob already active");
-        }
-        if (aggregateDataPollingJob == null || aggregateDataPollingJob.isCancelled()) {
-            logger.debug("start aggregate data polling job at intervall {}",
-                    getConfiguration().getAggregateDataPollingInterval());
-            liveDataPollingJob = scheduler.scheduleWithFixedDelay(new SolarEdgeAggregateDataPolling(this), 2,
-                    getConfiguration().getAggregateDataPollingInterval(), TimeUnit.MINUTES);
-        } else {
-            logger.debug("aggregate data pollingJob already active");
-        }
+    private void startPolling() {
+        updateJobReference(liveDataPollingJobReference,
+                scheduler.scheduleWithFixedDelay(new SolarEdgeLiveDataPolling(this), 1,
+                        getConfiguration().getLiveDataPollingInterval(), TimeUnit.MINUTES));
+
+        updateJobReference(aggregateDataPollingJobReference,
+                scheduler.scheduleWithFixedDelay(new SolarEdgeAggregateDataPolling(this), 2,
+                        getConfiguration().getAggregateDataPollingInterval(), TimeUnit.MINUTES));
     }
 
     /**
@@ -110,25 +103,15 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     @Override
     public void dispose() {
         logger.debug("Handler disposed.");
-        if (liveDataPollingJob != null && !liveDataPollingJob.isCancelled()) {
-            logger.debug("stop live data polling job");
-            liveDataPollingJob.cancel(true);
-            liveDataPollingJob = null;
-        }
-        if (aggregateDataPollingJob != null && !aggregateDataPollingJob.isCancelled()) {
-            logger.debug("stop aggregate data polling job");
-            aggregateDataPollingJob.cancel(true);
-            aggregateDataPollingJob = null;
-        }
 
-        // the webinterface also makes use of the scheduler and must stop it's jobs
-        if (webInterface != null) {
-            webInterface.dispose();
-        }
+        cancelJobReference(liveDataPollingJobReference);
+        cancelJobReference(aggregateDataPollingJobReference);
+
+        webInterface.dispose();
     }
 
     @Override
-    public @Nullable WebInterface getWebInterface() {
+    public WebInterface getWebInterface() {
         return webInterface;
     }
 

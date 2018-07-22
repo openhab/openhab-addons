@@ -10,16 +10,19 @@ package org.openhab.binding.solaredge.internal.connector;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Queue;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus.Code;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.openhab.binding.solaredge.internal.AtomicReferenceUtils;
 import org.openhab.binding.solaredge.internal.command.PrivateApiTokenCheck;
 import org.openhab.binding.solaredge.internal.command.PublicApiKeyCheck;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
@@ -33,7 +36,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Alexander Friese - initial contribution
  */
-public class WebInterface {
+@NonNullByDefault
+public class WebInterface implements AtomicReferenceUtils {
 
     private static final long PUBLIC_API_DAY_LIMIT = 300;
     private static final long MINUTES_PER_DAY = 1440;
@@ -77,7 +81,7 @@ public class WebInterface {
     /**
      * periodic request executor job
      */
-    private ScheduledFuture<?> requestExecutorJob;
+    private final AtomicReference<@Nullable Future<?>> requestExecutorJobReference;
 
     /**
      * this class is responsible for executing periodic web requests. This ensures that only one request is executed at
@@ -85,7 +89,6 @@ public class WebInterface {
      *
      * @author afriese - initial contribution
      */
-    @NonNullByDefault
     private class WebRequestExecutor implements Runnable {
 
         /**
@@ -155,16 +158,12 @@ public class WebInterface {
         this.scheduler = scheduler;
         this.httpClient = httpClient;
         this.requestExecutor = new WebRequestExecutor();
+        this.requestExecutorJobReference = new AtomicReference<@Nullable Future<?>>(null);
     }
 
-    public synchronized void start() {
-        if (requestExecutorJob == null || requestExecutorJob.isCancelled()) {
-            logger.debug("start request executor job at intervall {} ms", REQUEST_INTERVAL);
-            requestExecutorJob = scheduler.scheduleWithFixedDelay(requestExecutor, REQUEST_INITIAL_DELAY,
-                    REQUEST_INTERVAL, TimeUnit.MILLISECONDS);
-        } else {
-            logger.debug("request executor job already active");
-        }
+    public void start() {
+        updateJobReference(requestExecutorJobReference, scheduler.scheduleWithFixedDelay(requestExecutor,
+                REQUEST_INITIAL_DELAY, REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
     }
 
     /**
@@ -266,11 +265,7 @@ public class WebInterface {
      */
     public void dispose() {
         logger.debug("Webinterface disposed.");
-        if (requestExecutorJob != null && !requestExecutorJob.isCancelled()) {
-            logger.debug("stop request executor job");
-            requestExecutorJob.cancel(true);
-            requestExecutorJob = null;
-        }
+        cancelJobReference(requestExecutorJobReference);
     }
 
     /**
@@ -278,11 +273,11 @@ public class WebInterface {
      *
      * @return
      */
-    private synchronized boolean isAuthenticated() {
+    private boolean isAuthenticated() {
         return authenticated;
     }
 
-    private synchronized void setAuthenticated(boolean authenticated) {
+    private void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
     }
 

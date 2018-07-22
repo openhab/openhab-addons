@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -43,7 +42,6 @@ public interface SolarEdgeHandler extends ThingHandler {
      *
      * @return The web interface object
      */
-    @Nullable
     WebInterface getWebInterface();
 
     /**
