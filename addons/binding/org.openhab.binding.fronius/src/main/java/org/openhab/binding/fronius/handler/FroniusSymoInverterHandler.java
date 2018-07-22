@@ -74,7 +74,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     protected Object getValue(String channelId) {
         String[] fields = StringUtils.split(channelId, "#");
 
-        if (inverterRealtimeResponse == null) {
+        if (inverterRealtimeResponse == null || inverterRealtimeResponse.getBody() == null
+                || inverterRealtimeResponse.getBody().getData() == null) {
             return null;
         }
 
@@ -107,7 +108,9 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 return inverterRealtimeResponse.getBody().getData().getUdc();
         }
 
-        if (powerFlowResponse == null) {
+        if (powerFlowResponse == null || powerFlowResponse.getBody() == null
+                || powerFlowResponse.getBody().getData() == null
+                || powerFlowResponse.getBody().getData().getSite() == null) {
             return null;
         }
         switch (fieldName) {
