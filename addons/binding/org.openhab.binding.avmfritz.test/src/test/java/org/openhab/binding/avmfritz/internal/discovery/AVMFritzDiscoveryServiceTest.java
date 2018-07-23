@@ -498,9 +498,9 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                         "<present>0</present>" +
                         "<name>HAN-FUN #2: Unit #2</name>" +
                         "<etsiunitinfo>" +
-                        "<etsideviceid>406</etsideviceid>" +
-                        "<unittype>513</unittype>" +
-                        "<interfaces>256</interfaces>" +
+                            "<etsideviceid>406</etsideviceid>" +
+                            "<unittype>513</unittype>" +
+                            "<interfaces>256</interfaces>" +
                         "</etsiunitinfo>" +
                         "<alert>" +
                             "<state/>" +
@@ -541,9 +541,9 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                         "<present>0</present>" +
                         "<name>HAN-FUN #3: Unit #3</name>" +
                         "<etsiunitinfo>" +
-                        "<etsideviceid>406</etsideviceid>" +
-                        "<unittype>514</unittype>" +
-                        "<interfaces>256</interfaces>" +
+                            "<etsideviceid>406</etsideviceid>" +
+                            "<unittype>514</unittype>" +
+                            "<interfaces>256</interfaces>" +
                         "</etsiunitinfo>" +
                         "<alert>" +
                             "<state/>" +
@@ -584,9 +584,9 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                         "<present>0</present>" +
                         "<name>HAN-FUN #3: Unit #3</name>" +
                         "<etsiunitinfo>" +
-                        "<etsideviceid>408</etsideviceid>" +
-                        "<unittype>515</unittype>" +
-                        "<interfaces>32513,256</interfaces>" +
+                            "<etsideviceid>408</etsideviceid>" +
+                            "<unittype>515</unittype>" +
+                            "<interfaces>32513,256</interfaces>" +
                         "</etsiunitinfo>" +
                         "<alert>" +
                             "<state>0</state>" +
@@ -614,6 +614,49 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
         assertEquals("0x0feb", discoveryResult.getProperties().get(PROPERTY_VENDOR));
         assertEquals("2002", discoveryResult.getProperties().get(PROPERTY_MODEL_ID));
         assertEquals("119340059578-1", discoveryResult.getProperties().get(PROPERTY_SERIAL_NUMBER));
+        assertEquals("0.0", discoveryResult.getProperties().get(PROPERTY_FIRMWARE_VERSION));
+        assertEquals(CONFIG_AIN, discoveryResult.getRepresentationProperty());
+    }
+
+    @Test
+    public void validHANFUNMSmokeDetectorDiscoveryResult() throws JAXBException {
+        //@formatter:off
+        String xml =
+                "<devicelist version=\"1\">" +
+                    "<device identifier=\"11324 0059952-1\" id=\"2003\" functionbitmask=\"8208\" fwversion=\"0.0\" manufacturer=\"0x2c3c\" productname=\"HAN-FUN\">" +
+                    "<present>1</present>" +
+                    "<name>HAN-FUN #4: Unit #4</name>" +
+                    "<etsiunitinfo>" +
+                        "<etsideviceid>407</etsideviceid>" +
+                        "<unittype>516</unittype>" +
+                        "<interfaces>256</interfaces>" +
+                    "</etsiunitinfo>" +
+                    "<alert>" +
+                        "<state>0</state>" +
+                    "</alert>" +
+                    "</device>" +
+                "</devicelist>";
+        //@formatter:on
+
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
+        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        assertNotNull(devices);
+        assertEquals(1, devices.getDevicelist().size());
+
+        AVMFritzBaseModel device = devices.getDevicelist().get(0);
+        assertNotNull(device);
+
+        discovery.onDeviceAddedInternal(device);
+        assertNotNull(discoveryResult);
+
+        assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
+        assertEquals(new ThingUID("avmfritz:HAN_FUN_CONTACT:1:113240059952_1"), discoveryResult.getThingUID());
+        assertEquals(HAN_FUN_CONTACT_THING_TYPE, discoveryResult.getThingTypeUID());
+        assertEquals(BRIGE_THING_ID, discoveryResult.getBridgeUID());
+        assertEquals("113240059952-1", discoveryResult.getProperties().get(CONFIG_AIN));
+        assertEquals("0x2c3c", discoveryResult.getProperties().get(PROPERTY_VENDOR));
+        assertEquals("2003", discoveryResult.getProperties().get(PROPERTY_MODEL_ID));
+        assertEquals("113240059952-1", discoveryResult.getProperties().get(PROPERTY_SERIAL_NUMBER));
         assertEquals("0.0", discoveryResult.getProperties().get(PROPERTY_FIRMWARE_VERSION));
         assertEquals(CONFIG_AIN, discoveryResult.getRepresentationProperty());
     }

@@ -69,6 +69,7 @@ public class DeviceModel extends AVMFritzBaseModel {
         public static final String HAN_FUN_MAGNETIC_CONTACT_UNITTYPE = "513";
         public static final String HAN_FUN_OPTICAL_CONTACT_UNITTYPE = "514";
         public static final String HAN_FUN_MOTION_SENSOR_UNITTYPE = "515";
+        public static final String HAN_FUN_SMOKE_DETECTOR_UNITTYPE = "516";
         public static final String HAN_FUN_SWITCH_UNITTYPE = "273";
 
         private String etsideviceid;

@@ -416,11 +416,13 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             }
         }
         if (device instanceof DeviceModel && ((DeviceModel) device).getEtsiunitinfo() != null) {
+            // TODO: change to HAN_FUN_INTERFACES ... (z.b. 256 or 772)
             String unittype = ((DeviceModel) device).getEtsiunitinfo().getUnittype();
             switch (unittype) {
                 case HAN_FUN_MAGNETIC_CONTACT_UNITTYPE:
                 case HAN_FUN_OPTICAL_CONTACT_UNITTYPE:
                 case HAN_FUN_MOTION_SENSOR_UNITTYPE:
+                case HAN_FUN_SMOKE_DETECTOR_UNITTYPE:
                     return DEVICE_HAN_FUN_CONTACT;
                 case HAN_FUN_SWITCH_UNITTYPE:
                     return DEVICE_HAN_FUN_SWITCH;
