@@ -11,8 +11,8 @@ package org.openhab.binding.dsmr.internal.device.connector;
 import java.io.IOException;
 import java.util.TooManyListenersException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dsmr.DSMRBindingConstants;
@@ -63,7 +63,7 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
     /**
      * Serial port instance.
      */
-    private @Nullable SerialPort serialPort;
+    private AtomicReference<@Nullable SerialPort> serialPortReference = new AtomicReference<>();
 
     /**
      * DSMR Connector listener.
@@ -108,10 +108,11 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
         synchronized (portLock) {
             try {
                 logger.trace("Opening port {}", serialPortName);
+                SerialPort oldSerialPort = serialPortReference.get();
+
                 // Opening Operating System Serial Port
-                @NonNull
                 CommPortIdentifier portIdentifier = portManager.getIdentifier(serialPortName);
-                serialPort = portIdentifier.open(DSMRBindingConstants.DSMR_PORT_NAME,
+                SerialPort serialPort = portIdentifier.open(DSMRBindingConstants.DSMR_PORT_NAME,
                         SERIAL_PORT_READ_TIMEOUT_MILLISECONDS);
 
                 // Configure Serial Port based on specified port speed
@@ -136,10 +137,15 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
                 serialPort.enableReceiveTimeout(SERIAL_TIMEOUT_MILLISECONDS);
                 // The binding is ready, let the meter know we want to receive values
                 serialPort.setRTS(true);
+                if (!serialPortReference.compareAndSet(oldSerialPort, serialPort)) {
+                    logger.warn("Possible bug because a new serial port value was set during opening new port.");
+                    errorEvent = DSMRConnectorErrorEvent.INTERNAL_ERROR;
+                }
             } catch (IOException ioe) {
                 logger.debug("Failed to get inputstream for serialPort", ioe);
+
                 errorEvent = DSMRConnectorErrorEvent.READ_ERROR;
-                return;
+                // return;
             } catch (TooManyListenersException tmle) {
                 logger.warn("Possible bug because a listener was added while one already set.", tmle);
 
@@ -174,6 +180,8 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
             logger.debug("Closing DSMR serial port");
 
             // Stop listening for serial port events
+            SerialPort serialPort = serialPortReference.get();
+
             if (serialPort != null) {
                 // Let meter stop sending values
                 serialPort.setRTS(false);
@@ -200,8 +208,12 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
             if (isOpen()) {
                 logger.debug("Update port {} with settings: {}", this.serialPortName, portSettings);
                 try {
-                    serialPort.setSerialPortParams(portSettings.getBaudrate(), portSettings.getDataBits(),
-                            portSettings.getStopbits(), portSettings.getParity());
+                    SerialPort serialPort = serialPortReference.get();
+
+                    if (serialPort != null) {
+                        serialPort.setSerialPortParams(portSettings.getBaudrate(), portSettings.getDataBits(),
+                                portSettings.getStopbits(), portSettings.getParity());
+                    }
                 } catch (UnsupportedCommOperationException e) {
                     logger.debug(
                             "Port does not support requested port settings (invalid dsmr:portsettings parameter?): {}",
@@ -273,7 +285,7 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
     @Override
     protected void handleDataAvailable() {
         // open port if it is not open
-        if (serialPort == null) {
+        if (serialPortReference.get() == null) {
             logger.debug("Serial port is not open, no values will be read");
             return;
         }

@@ -153,10 +153,12 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     @Override
     public void telegramReceived(P1Telegram telegram) {
         lastReceivedValues = Collections.emptyList();
-        if (meter == null) {
+        DSMRMeter localMeter = meter;
+
+        if (localMeter == null) {
             return;
         }
-        List<CosemObject> filteredValues = meter.filterMeterValues(telegram.getCosemObjects());
+        List<CosemObject> filteredValues = localMeter.filterMeterValues(telegram.getCosemObjects());
 
         if (!filteredValues.isEmpty()) {
             if (logger.isTraceEnabled()) {

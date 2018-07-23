@@ -122,6 +122,7 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof DSMRBridgeHandler) {
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
+
             if (serviceReg != null) {
                 DSMRMeterDiscoveryService service = (DSMRMeterDiscoveryService) getBundleContext()
                         .getService(serviceReg.getReference());

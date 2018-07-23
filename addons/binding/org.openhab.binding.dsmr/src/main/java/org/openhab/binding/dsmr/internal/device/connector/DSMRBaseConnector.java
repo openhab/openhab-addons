@@ -96,27 +96,27 @@ class DSMRBaseConnector {
     protected void handleDataAvailable() {
         try {
             synchronized (readLock) {
-                // Read without lock on the connection status to permit fast closure
-                // This could lead to a NPE on variable serialInputStream so we will catch the NPE
-                int bytesAvailable = inputStream.available();
-                while (bytesAvailable > 0) {
-                    int bytesAvailableRead = inputStream.read(buffer, 0, Math.min(bytesAvailable, buffer.length));
+                BufferedInputStream localInputStream = inputStream;
 
-                    if (open && bytesAvailableRead > 0) {
-                        dsmrConnectorListener.handleData(buffer, bytesAvailableRead);
-                    } else {
-                        logger.debug("Expected bytes {} to read, but {} bytes were read", bytesAvailable,
-                                bytesAvailableRead);
+                if (localInputStream != null) {
+                    int bytesAvailable = localInputStream.available();
+                    while (bytesAvailable > 0) {
+                        int bytesAvailableRead = localInputStream.read(buffer, 0,
+                                Math.min(bytesAvailable, buffer.length));
+
+                        if (open && bytesAvailableRead > 0) {
+                            dsmrConnectorListener.handleData(buffer, bytesAvailableRead);
+                        } else {
+                            logger.debug("Expected bytes {} to read, but {} bytes were read", bytesAvailable,
+                                    bytesAvailableRead);
+                        }
+                        bytesAvailable = localInputStream.available();
                     }
-                    bytesAvailable = inputStream.available();
                 }
             }
         } catch (IOException e) {
             dsmrConnectorListener.handleErrorEvent(DSMRConnectorErrorEvent.READ_ERROR);
             logger.debug("Exception on read data", e);
-        } catch (NullPointerException e) { // NOPMD AvoidCatchingNPE Catching null pointer is by design
-            // Don't call listener because error triggered while closing connection.
-            logger.trace("Connection closed during read.", e);
         }
     }
 }
