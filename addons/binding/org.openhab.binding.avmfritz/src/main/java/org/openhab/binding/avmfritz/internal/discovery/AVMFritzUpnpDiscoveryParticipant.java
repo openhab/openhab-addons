@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
@@ -41,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp - Use "discovery.avmfritz:background=false" to disable discovery service
  */
 @Component(service = UpnpDiscoveryParticipant.class, immediate = true, configurationPid = "discovery.avmfritz")
+@NonNullByDefault
 public class AVMFritzUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(AVMFritzUpnpDiscoveryParticipant.class);
@@ -59,7 +62,7 @@ public class AVMFritzUpnpDiscoveryParticipant implements UpnpDiscoveryParticipan
     }
 
     private void activateOrModifyService(ComponentContext componentContext) {
-        Dictionary<String, Object> properties = componentContext.getProperties();
+        Dictionary<String, @Nullable Object> properties = componentContext.getProperties();
         String autoDiscoveryPropertyValue = (String) properties.get("background");
         if (autoDiscoveryPropertyValue != null && autoDiscoveryPropertyValue.length() != 0) {
             isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
@@ -73,7 +76,7 @@ public class AVMFritzUpnpDiscoveryParticipant implements UpnpDiscoveryParticipan
     }
 
     @Override
-    public DiscoveryResult createResult(RemoteDevice device) {
+    public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         ThingUID uid = getThingUID(device);
         if (uid != null) {
             logger.debug("discovered: {} ({}) at {}", device.getDisplayString(), device.getDetails().getFriendlyName(),
@@ -93,7 +96,7 @@ public class AVMFritzUpnpDiscoveryParticipant implements UpnpDiscoveryParticipan
     }
 
     @Override
-    public ThingUID getThingUID(RemoteDevice device) {
+    public @Nullable ThingUID getThingUID(RemoteDevice device) {
         if (isAutoDiscoveryEnabled) {
             // newer FRITZ!OS versions return several upnp services (e.g. Mediaserver)
             if (device.getType().getType().equals(BRIDGE_FRITZBOX)) {
