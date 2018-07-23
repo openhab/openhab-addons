@@ -58,7 +58,7 @@ public class KodiUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
     }
 
     private void activateOrModifyService(ComponentContext componentContext) {
-        Dictionary<String, Object> properties = componentContext.getProperties();
+        Dictionary<String, @Nullable Object> properties = componentContext.getProperties();
         String autoDiscoveryPropertyValue = (String) properties.get("background");
         if (StringUtils.isNotEmpty(autoDiscoveryPropertyValue)) {
             isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
