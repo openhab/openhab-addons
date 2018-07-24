@@ -35,7 +35,7 @@ Auto-discovery is enabled by default.
 To disable it, you can add the following line to `<openHAB-conf>/services/runtime.cfg`:
 
 ```
-org.openhab.kodi:enableAutoDiscovery=false
+discovery.kodi:background=false
 ```
 
 ## Binding Configuration
