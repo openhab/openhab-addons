@@ -20,7 +20,7 @@ import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.
  *
  * @author Tomasz Maruszak - Initial contribution.
  */
-public interface InputWithDabBandControl extends IStateUpdatable {
+public interface InputWithTunerBandControl extends IStateUpdatable {
     /**
      * List all inputs that are compatible with this kind of control
      */

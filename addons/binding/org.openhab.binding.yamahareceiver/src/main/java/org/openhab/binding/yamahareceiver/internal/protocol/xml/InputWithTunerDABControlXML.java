@@ -8,23 +8,17 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import java.io.IOException;
-
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
-import org.openhab.binding.yamahareceiver.internal.protocol.InputWithDabBandControl;
+import org.openhab.binding.yamahareceiver.internal.protocol.InputWithTunerBandControl;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPresetControl;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
-import org.openhab.binding.yamahareceiver.internal.state.DabBandState;
-import org.openhab.binding.yamahareceiver.internal.state.DabBandStateListener;
-import org.openhab.binding.yamahareceiver.internal.state.PlayInfoState;
-import org.openhab.binding.yamahareceiver.internal.state.PlayInfoStateListener;
-import org.openhab.binding.yamahareceiver.internal.state.PresetInfoState;
-import org.openhab.binding.yamahareceiver.internal.state.PresetInfoStateListener;
+import org.openhab.binding.yamahareceiver.internal.state.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import java.io.IOException;
 
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getNode;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getNodeContentOrDefault;
@@ -42,9 +36,7 @@ import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.
  *
  * @author Tomasz Maruszak - [yamaha] Tuner band selection and preset feature for dual band models (RX-S601D)
  */
-public class InputWithDabControlXML extends AbstractInputControlXML implements InputWithDabBandControl, InputWithPresetControl {
-
-    private Logger logger = LoggerFactory.getLogger(InputWithDabControlXML.class);
+public class InputWithTunerDABControlXML extends AbstractInputControlXML implements InputWithTunerBandControl, InputWithPresetControl {
 
     private static final String BAND_FM = "FM";
     private static final String BAND_DAB = "DAB";
@@ -52,6 +44,9 @@ public class InputWithDabControlXML extends AbstractInputControlXML implements I
     private final DabBandStateListener observerForBand;
     private final PresetInfoStateListener observerForPreset;
     private final PlayInfoStateListener observerForPlayInfo;
+
+    protected CommandTemplate band = new CommandTemplate("<Play_Control><Band>%s</Band></Play_Control>", "Play_Info/Band");
+    protected CommandTemplate preset = new CommandTemplate("<Play_Control><%s><Preset><Preset_Sel>%d</Preset_Sel></Preset></%s></Play_Control>", "");
 
     /**
      * Need to remember last band state to drive the preset
@@ -63,12 +58,18 @@ public class InputWithDabControlXML extends AbstractInputControlXML implements I
      * as controlling the playback and choosing a preset item.
      *
      * @param inputID The input ID - TUNER is going to be used here.
-     * @param com The Yamaha communication object to send http requests.
+     * @param con The Yamaha communication object to send http requests.
      */
-    public InputWithDabControlXML(String inputID, AbstractConnection com, DabBandStateListener observerForBand,
-            PresetInfoStateListener observerForPreset, PlayInfoStateListener observerForPlayInfo) {
+    public InputWithTunerDABControlXML(String inputID,
+                                       AbstractConnection con,
+                                       DabBandStateListener observerForBand,
+                                       PresetInfoStateListener observerForPreset,
+                                       PlayInfoStateListener observerForPlayInfo,
+                                       DeviceInformationState deviceInformationState) {
 
-        super(inputID, com);
+        super(LoggerFactory.getLogger(InputWithTunerDABControlXML.class), inputID, con, deviceInformationState);
+
+        this.inputElement = "DAB";
 
         this.observerForBand = observerForBand;
         this.observerForPreset = observerForPreset;
@@ -80,13 +81,8 @@ public class InputWithDabControlXML extends AbstractInputControlXML implements I
     }
 
     @Override
-    protected String getInputElement() {
-        return "DAB";
-    }
-
-    @Override
     public void update() throws IOException, ReceivedMessageParseException {
-        Node responseNode = XMLProtocolService.getResponse(comReference.get(), wrInput("<Play_Info>GetParam</Play_Info>"), getInputElement());
+        Node responseNode = XMLProtocolService.getResponse(comReference.get(), wrInput("<Play_Info>GetParam</Play_Info>"), inputElement);
 
         // @formatter:off
 
@@ -193,7 +189,6 @@ public class InputWithDabControlXML extends AbstractInputControlXML implements I
 
         // DAB does not provide channel names, the channel list will be empty
         msgForPreset.presetChannelNamesChanged = true;
-        msgForPreset.presetChannelNames = new String[0];
 
         if (observerForBand != null) {
             observerForBand.dabBandUpdated(msgForBand);
@@ -209,7 +204,7 @@ public class InputWithDabControlXML extends AbstractInputControlXML implements I
     @Override
     public void selectBandByName(String band) throws IOException, ReceivedMessageParseException {
         // Example: <Play_Control><Band>FM</Band></Play_Control>
-        String cmd = String.format("<Play_Control><Band>%s</Band></Play_Control>", band);
+        String cmd = this.band.apply(band);
         comReference.get().send(wrInput(cmd));
         update();
     }
@@ -222,8 +217,7 @@ public class InputWithDabControlXML extends AbstractInputControlXML implements I
         }
 
         // Example: <Play_Control><FM><Preset><Preset_Sel>2</Preset_Sel></Preset></FM></Play_Control>
-        String cmd = String.format("<Play_Control><%s><Preset><Preset_Sel>%d</Preset_Sel></Preset></%s></Play_Control>",
-                bandState.band, presetChannel, bandState.band);
+        String cmd = this.preset.apply(bandState.band, presetChannel, bandState.band);
         comReference.get().send(wrInput(cmd));
         update();
     }

@@ -1,0 +1,7 @@
+<YAMAHA_AV rsp="GET" RC="0">
+    <Bluetooth>
+        <Play_Info>
+            <Status>Not Connected</Status>
+        </Play_Info>
+    </Bluetooth>
+</YAMAHA_AV>

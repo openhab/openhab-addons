@@ -21,12 +21,12 @@ import org.w3c.dom.Node;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.function.*;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getChildElementsWhere;
+import static java.util.stream.Collectors.toSet;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getChildElements;
 
 /**
  *
@@ -38,6 +38,7 @@ public class DeviceDescriptorXML {
 
     private final Logger logger = LoggerFactory.getLogger(DeviceDescriptorXML.class);
 
+    private String unitName;
     public SystemDescriptor system = new SystemDescriptor(null);
     public Map<Zone, ZoneDescriptor> zones = new HashMap<>();
     public Map<Feature, FeatureDescriptor> features = new HashMap<>();
@@ -49,19 +50,59 @@ public class DeviceDescriptorXML {
     public static DeviceDescriptorXML getAttached(DeviceInformationState state) {
         return (DeviceDescriptorXML) state.properties.getOrDefault("desc", null);
     }
-    
+
+    public String getUnitName() {
+        return unitName;
+    }
+
+    /**
+     * Checks if the condition is met, on false result calls the runnable.
+     * @param predicate
+     * @param falseAction
+     * @return
+     */
+    public boolean hasFeature(Predicate<DeviceDescriptorXML> predicate, Runnable falseAction) {
+        boolean result = predicate.test(this);
+        if (!result) {
+            falseAction.run();
+        }
+        return result;
+    }
+
+
     public static abstract class HasCommands {
 
-        public final Set<String> commands = new HashSet<>();
+        public final Set<String> commands;
 
         public HasCommands(Element element) {
             Element cmdList = (Element) XMLUtils.getNode(element, "Cmd_List");
             if (cmdList != null) {
-                for (int i = 0; i < cmdList.getChildNodes().getLength(); i++) {
-                    String cmd = cmdList.getChildNodes().item(i).getTextContent();
-                    commands.add(cmd);
-                }
+                commands = XMLUtils.toStream(cmdList.getElementsByTagName("Define")).map(x -> x.getTextContent()).collect(toSet());
+            } else {
+                commands = new HashSet<>();
             }
+        }
+
+        public boolean hasCommandEnding(String command) {
+            return commands.stream().anyMatch(x -> x.endsWith(command));
+        }
+
+        public boolean hasAnyCommandEnding(String... anyCommand) {
+            return Arrays.stream(anyCommand).anyMatch(x -> hasCommandEnding(x));
+        }
+
+        /**
+         * Checks if the command is available, on false result calls the runnable.
+         * @param command
+         * @param falseAction
+         * @return
+         */
+        public boolean hasCommandEnding(String command, Runnable falseAction) {
+            boolean result = hasCommandEnding(command);
+            if (!result) {
+                falseAction.run();
+            }
+            return result;
         }
 
         @Override
@@ -107,6 +148,8 @@ public class DeviceDescriptorXML {
 
         // Get and store the Yamaha Description XML. This will be used to detect proper element naming in other areas.
         Node descNode = tryGetDescriptor(con);
+
+        unitName = descNode.getAttributes().getNamedItem("Unit_Name").getTextContent();
 
         system = buildFeatureLookup(descNode, "Unit",
                 tag -> tag,
@@ -157,8 +200,8 @@ public class DeviceDescriptorXML {
         Map<T, V> groupedElements = new HashMap<>();
 
         if (descNode != null) {
-            Stream<Element> elements = getChildElementsWhere(descNode,
-                    x -> "Menu".equals(x.getTagName()) && funcValue.equals(x.getAttribute("Func")));
+            Stream<Element> elements = getChildElements(descNode)
+                    .filter(x -> "Menu".equals(x.getTagName()) && funcValue.equals(x.getAttribute("Func")));
 
             elements.forEach(e -> {
                 String tag = e.getAttribute("YNC_Tag");

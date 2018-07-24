@@ -26,6 +26,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
 import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Configs.CONFIG_ZONE;
+import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.ZONE_THING_TYPE;
 
 /**
  * After the AVR bridge thing has been added and a connection could be established,
@@ -67,7 +68,7 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
     }
 
     public static ThingUID zoneThing(ThingUID bridgeUid, String zoneName) {
-        return new ThingUID(YamahaReceiverBindingConstants.ZONE_THING_TYPE, bridgeUid, zoneName);
+        return new ThingUID(ZONE_THING_TYPE, bridgeUid, zoneName);
     }
 
     /**
@@ -81,6 +82,7 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
         // Create a copy of the list to avoid concurrent modification exceptions, because
         // the state update takes place in another thread
         List<Zone> zoneCopy = new ArrayList<>(state.zones);
+
         for (Zone zone : zoneCopy) {
             String zoneName = zone.name();
             ThingUID uid = zoneThing(bridgeUid, zoneName);
@@ -93,6 +95,7 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
                     .withLabel(state.name + " " + zoneName)
                     .withBridge(bridgeUid)
                     .build();
+            
             thingDiscovered(discoveryResult);
         }
     }

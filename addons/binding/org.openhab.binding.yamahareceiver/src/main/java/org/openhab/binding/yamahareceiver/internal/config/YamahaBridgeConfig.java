@@ -17,7 +17,7 @@ import java.util.Optional;
  *
  * @author Tomasz Maruszak - Initial contribution.
  */
-public class YamahaBridgeConfiguration {
+public class YamahaBridgeConfig {
 
     /**
      * The host name of the Yamaha AVR.

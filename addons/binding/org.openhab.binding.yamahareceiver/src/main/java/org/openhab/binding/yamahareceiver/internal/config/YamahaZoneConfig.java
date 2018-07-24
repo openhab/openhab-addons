@@ -15,7 +15,7 @@ import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
  *
  * @author Tomasz Maruszak - Initial contribution.
  */
-public class YamahaZoneConfiguration {
+public class YamahaZoneConfig {
 
     /**
      * Zone name, will be one of {@link org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone}.
