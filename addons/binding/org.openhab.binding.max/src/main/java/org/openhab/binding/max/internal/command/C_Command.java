@@ -17,8 +17,7 @@ package org.openhab.binding.max.internal.command;
  */
 
 public class C_Command extends CubeCommand {
-
-    private String rfAddress;
+    private final String rfAddress;
 
     public C_Command(String rfAddress) {
         this.rfAddress = rfAddress;

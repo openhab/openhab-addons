@@ -9,6 +9,7 @@
 package org.openhab.binding.max.internal.command;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.net.util.Base64;
@@ -27,15 +28,9 @@ public class T_Command extends CubeCommand {
     private static final int FORCE_UPDATE = 1;
     private static final int NO_FORCE_UPDATE = 0;
 
-    ArrayList<String> rfAddresses = new ArrayList<String>();
-    private boolean forceUpdate = true;
+    private final List<String> rfAddresses = new ArrayList<>();
+    private final boolean forceUpdate;
 
-    /**
-     * {@link T_CubeCommand}
-     *
-     * @param rfAddress
-     * @param forceUpdate
-     */
     public T_Command(String rfAddress, boolean forceUpdate) {
         this.rfAddresses.add(rfAddress);
         this.forceUpdate = forceUpdate;
@@ -43,8 +38,6 @@ public class T_Command extends CubeCommand {
 
     /**
      * Adds a rooms for deletion
-     *
-     * @param rfAddress
      */
     public void addRoom(String rfAddress) {
         this.rfAddresses.add(rfAddress);
@@ -52,21 +45,15 @@ public class T_Command extends CubeCommand {
 
     @Override
     public String getCommandString() {
-        int updateForced = 0;
-        if (forceUpdate) {
-            updateForced = FORCE_UPDATE;
-        } else {
-            updateForced = NO_FORCE_UPDATE;
-        }
+        final int updateForced = forceUpdate ? FORCE_UPDATE : NO_FORCE_UPDATE;
         byte[] commandArray = null;
         for (String rfAddress : rfAddresses) {
             commandArray = ArrayUtils.addAll(Utils.hexStringToByteArray(rfAddress), commandArray);
         }
         String encodedString = Base64.encodeBase64StringUnChunked(commandArray);
 
-        String cmd = "t:" + String.format("%02d", rfAddresses.size()) + "," + updateForced + "," + encodedString + '\r'
+        return "t:" + String.format("%02d", rfAddresses.size()) + "," + updateForced + "," + encodedString + '\r'
                 + '\n';
-        return cmd;
     }
 
     @Override

@@ -10,7 +10,7 @@ package org.openhab.binding.max.internal.message;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,13 +26,13 @@ import org.openhab.binding.max.internal.device.RoomInformation;
  */
 public class M_MessageTest {
 
-    public final String rawData = "M:00,01,VgIFAQhiYWRrYW1lcgsNowIMU3R1ZGVlcmthbWVyB7bnAwlXb29ua2FtZXIL6aIEDFN6b25qYSBLYW1lcgjDSQUGWm9sZGVyCMHWCAILDaNLRVEwNTQ0MjQyEUJhZGthbWVyIFJhZGlhdG9yAQEHtudLRVEwMTQ1MTcyFVJhZGlhdG9yIFN0dWRlZXJrYW1lcgIDDhXMTEVRMDAxNTM0MBlXYWxsIFRoZXJtb3N0YXQgV29vbmthbWVyAwEL6aJLRVE5MDE1NDMyG1BsdWcgQWRhcHRlciBNdXVydmVyd2FybWluZwMFBDNvSkVRMDM4MDg3OBdFY28gU3dpdGNoIFN0dWRlZXJrYW1lcgAEDnX2S0VRMTEwNDM4MBpXaW5kb3cgU2Vuc29yIFN0dWRlZXJrYW1lcgIBCMNJS0VRMDY0ODk0ORJUaGVybW9zdGFhdCBTem9uamEEAQjB1ktFUTA2NDkzMTIRU3R1ZGVlcmthbWVyIElybWEFAQ==";
+    public static final String RAW_DATA = "M:00,01,VgIFAQhiYWRrYW1lcgsNowIMU3R1ZGVlcmthbWVyB7bnAwlXb29ua2FtZXIL6aIEDFN6b25qYSBLYW1lcgjDSQUGWm9sZGVyCMHWCAILDaNLRVEwNTQ0MjQyEUJhZGthbWVyIFJhZGlhdG9yAQEHtudLRVEwMTQ1MTcyFVJhZGlhdG9yIFN0dWRlZXJrYW1lcgIDDhXMTEVRMDAxNTM0MBlXYWxsIFRoZXJtb3N0YXQgV29vbmthbWVyAwEL6aJLRVE5MDE1NDMyG1BsdWcgQWRhcHRlciBNdXVydmVyd2FybWluZwMFBDNvSkVRMDM4MDg3OBdFY28gU3dpdGNoIFN0dWRlZXJrYW1lcgAEDnX2S0VRMTEwNDM4MBpXaW5kb3cgU2Vuc29yIFN0dWRlZXJrYW1lcgIBCMNJS0VRMDY0ODk0ORJUaGVybW9zdGFhdCBTem9uamEEAQjB1ktFUTA2NDkzMTIRU3R1ZGVlcmthbWVyIElybWEFAQ==";
 
-    private M_Message message = null;
+    private M_Message message;
 
     @Before
     public void Before() {
-        message = new M_Message(rawData);
+        message = new M_Message(RAW_DATA);
     }
 
     @Test
@@ -46,7 +46,7 @@ public class M_MessageTest {
     @Test
     public void deviceInformationTest() {
 
-        ArrayList<DeviceInformation> allDevicesInformation = message.devices;
+        List<DeviceInformation> allDevicesInformation = message.devices;
 
         assertEquals(8, allDevicesInformation.size());
 
@@ -62,7 +62,7 @@ public class M_MessageTest {
     @Test
     public void deviceInformationTypeTest1() {
 
-        ArrayList<DeviceInformation> allDevicesInformation = message.devices;
+        List<DeviceInformation> allDevicesInformation = message.devices;
         DeviceInformation deviceInformation = allDevicesInformation.get(1);
         assertEquals(DeviceType.HeatingThermostat, deviceInformation.getDeviceType());
     }
@@ -70,7 +70,7 @@ public class M_MessageTest {
     @Test
     public void deviceInformationTypeTest2() {
 
-        ArrayList<DeviceInformation> allDevicesInformation = message.devices;
+        List<DeviceInformation> allDevicesInformation = message.devices;
         DeviceInformation deviceInformation = allDevicesInformation.get(2);
         assertEquals(DeviceType.WallMountedThermostat, deviceInformation.getDeviceType());
     }
@@ -78,7 +78,7 @@ public class M_MessageTest {
     @Test
     public void deviceInformationTypeTest3() {
 
-        ArrayList<DeviceInformation> allDevicesInformation = message.devices;
+        List<DeviceInformation> allDevicesInformation = message.devices;
         DeviceInformation deviceInformation = allDevicesInformation.get(4);
         assertEquals(DeviceType.EcoSwitch, deviceInformation.getDeviceType());
     }
@@ -86,7 +86,7 @@ public class M_MessageTest {
     @Test
     public void deviceInformationTypeTest4() {
 
-        ArrayList<DeviceInformation> allDevicesInformation = message.devices;
+        List<DeviceInformation> allDevicesInformation = message.devices;
         DeviceInformation deviceInformation = allDevicesInformation.get(5);
         assertEquals(DeviceType.ShutterContact, deviceInformation.getDeviceType());
     }
@@ -94,7 +94,7 @@ public class M_MessageTest {
     @Test
     public void roomInformationTest() {
 
-        ArrayList<RoomInformation> roomInformation = message.rooms;
+        List<RoomInformation> roomInformation = message.rooms;
 
         assertEquals(5, roomInformation.size());
         assertEquals("badkamer", roomInformation.get(0).getName());
