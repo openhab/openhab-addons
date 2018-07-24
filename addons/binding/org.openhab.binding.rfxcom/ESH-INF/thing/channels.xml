@@ -146,6 +146,22 @@
 		<state pattern="%.1f °C" readOnly="true"></state>
 	</channel-type>
 
+	<channel-type id="foodTemperature">
+		<item-type>Number</item-type>
+		<label>Food Temperature</label>
+		<description>Current food temperature in degrees Celsius</description>
+		<category>Temperature</category>
+		<state pattern="%.1f °C" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="bbqTemperature">
+		<item-type>Number</item-type>
+		<label>BBQ Temperature</label>
+		<description>Current BBQ temperature in degrees Celsius</description>
+		<category>Temperature</category>
+		<state pattern="%.1f °C" readOnly="true"></state>
+	</channel-type>
+
 	<channel-type id="humidity">
 		<item-type>Number</item-type>
 		<label>Humidity</label>

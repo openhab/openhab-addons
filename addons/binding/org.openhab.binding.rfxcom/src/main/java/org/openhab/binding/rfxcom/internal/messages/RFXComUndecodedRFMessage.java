@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,22 +8,19 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.openhab.binding.rfxcom.RFXComValueSelector.*;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.UNDECODED_RF_MESSAGE;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
-import javax.xml.bind.DatatypeConverter;
-
-import org.eclipse.smarthome.core.library.items.StringItem;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.rfxcom.RFXComValueSelector;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageTooLongException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for undecoded messages.
@@ -32,9 +29,9 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageTooLongExcept
  * @author James Hewitt-Thomas
  * @since 1.9.0
  */
-public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
+public class RFXComUndecodedRFMessage extends RFXComDeviceMessageImpl<RFXComUndecodedRFMessage.SubType> {
 
-    public enum SubType {
+    public enum SubType implements ByteEnumWrapper {
         AC(0x00),
         ARC(0x01),
         ATI(0x02),
@@ -67,10 +64,7 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
             this.subType = subType;
         }
 
-        SubType(byte subType) {
-            this.subType = subType;
-        }
-
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
@@ -86,16 +80,11 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
         }
     }
 
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(RAW_MESSAGE,
-            RAW_PAYLOAD);
-
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
-
-    public SubType subType = SubType.UNKNOWN;
+    public SubType subType;
     public byte[] rawPayload = new byte[0];
 
     public RFXComUndecodedRFMessage() {
-        packetType = UNDECODED_RF_MESSAGE;
+        super(UNDECODED_RF_MESSAGE);
     }
 
     public RFXComUndecodedRFMessage(byte[] message) throws RFXComException {
@@ -104,20 +93,15 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
 
     @Override
     public String toString() {
+        String str = super.toString();
 
-        String str = "";
-
-        str += super.toString();
-        str += "\n - Sub type = " + subType;
-        str += "\n - Id = " + getDeviceId();
-        str += "\n - Message = " + DatatypeConverter.printHexBinary(rawMessage);
+        str += ", Sub type = " + subType;
 
         return str;
     }
 
     @Override
     public void encodeMessage(byte[] message) throws RFXComException {
-
         super.encodeMessage(message);
 
         subType = SubType.fromByte(super.subType);
@@ -148,59 +132,36 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+        switch (channelId) {
+            case CHANNEL_RAW_MESSAGE:
+                return new StringType(HexUtils.bytesToHex(rawMessage));
 
-        if (valueSelector.getItemClass() == StringItem.class) {
-            if (valueSelector == RAW_MESSAGE) {
-                return new StringType(DatatypeConverter.printHexBinary(rawMessage));
-            } else if (valueSelector == RAW_PAYLOAD) {
-                return new StringType(DatatypeConverter.printHexBinary(rawPayload));
-            }
+            case CHANNEL_RAW_PAYLOAD:
+                return new StringType(HexUtils.bytesToHex(rawPayload));
+
+            default:
+                throw new RFXComUnsupportedChannelException("Nothing relevant for " + channelId);
         }
-
-        throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
     }
 
     @Override
-    public void setSubType(Object subType) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void setSubType(SubType subType) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setDeviceId(String deviceId) throws RFXComException {
-        throw new RFXComException("Not supported");
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Object convertSubType(String subType) throws RFXComException {
-
-        for (SubType s : SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        // try to find sub type by number
-        try {
-            return SubType.values()[Integer.parseInt(subType)];
-        } catch (Exception e) {
-            throw new RFXComException("Unknown sub type " + subType);
-        }
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
     }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
-    }
-
 }

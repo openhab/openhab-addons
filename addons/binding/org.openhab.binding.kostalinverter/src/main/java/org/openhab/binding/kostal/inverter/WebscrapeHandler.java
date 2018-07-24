@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,8 +16,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import javax.measure.Unit;
+
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -26,6 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -33,38 +37,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Christian Schneider
+ * @author Christian Schneider - Initial contribution
+ * @author Christoph Weitkamp - Incorporated new QuantityType (Units of Measurement)
  */
 public class WebscrapeHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(WebscrapeHandler.class);
     private SourceConfig config;
-    private List<ChannelConfig> channelConfigs;
+
+    private final List<ChannelConfig> channelConfigs = new ArrayList<>();
 
     public WebscrapeHandler(Thing thing) {
         super(thing);
-        channelConfigs = new ArrayList<>();
-        channelConfigs.add(new ChannelConfig("acPower", "td", 4));
-        channelConfigs.add(new ChannelConfig("totalEnergy", "td", 7));
-        channelConfigs.add(new ChannelConfig("dayEnergy", "td", 10));
-        channelConfigs.add(new ChannelConfig("status", "td", 13));
+        channelConfigs.add(new ChannelConfig("acPower", "td", 4, SmartHomeUnits.WATT));
+        channelConfigs.add(new ChannelConfig("totalEnergy", "td", 7, SmartHomeUnits.KILOWATT_HOUR));
+        channelConfigs.add(new ChannelConfig("dayEnergy", "td", 10, SmartHomeUnits.KILOWATT_HOUR));
+        channelConfigs.add(new ChannelConfig("status", "td", 13, null));
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(SourceConfig.class);
-        scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    refresh();
-                    updateStatus(ThingStatus.ONLINE);
-                } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            e.getClass().getName() + ":" + e.getMessage());
-                    logger.debug("Error refreshing source {} ", getThing().getUID(), e);
-                }
+        scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                refresh();
+                updateStatus(ThingStatus.ONLINE);
+            } catch (Exception e) {
+                logger.debug("Error refreshing source '{}'", getThing().getUID(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        e.getClass().getName() + ":" + e.getMessage());
             }
-
         }, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
 
@@ -76,10 +77,11 @@ public class WebscrapeHandler extends BaseThingHandler {
     private void refresh() throws Exception {
         Document doc = getDoc();
         for (ChannelConfig cConfig : channelConfigs) {
-            String value = getTag(doc, cConfig.tag).get(cConfig.num);
             Channel channel = getThing().getChannel(cConfig.id);
-            State state = getState(value);
-            updateState(channel.getUID(), state);
+            if (channel != null) {
+                String value = getTag(doc, cConfig.tag).get(cConfig.num);
+                updateState(channel.getUID(), getState(value, cConfig.unit));
+            }
         }
     }
 
@@ -102,11 +104,16 @@ public class WebscrapeHandler extends BaseThingHandler {
         return Jsoup.connect(config.url).header("Authorization", "Basic " + base64login).get();
     }
 
-    private State getState(String value) {
-        try {
-            return new DecimalType(new BigDecimal(value));
-        } catch (NumberFormatException e) {
+    private State getState(String value, Unit<?> unit) {
+        if (unit == null) {
             return new StringType(value);
+        } else {
+            try {
+                return new QuantityType<>(new BigDecimal(value), unit);
+            } catch (NumberFormatException e) {
+                logger.debug("Error parsing value '{}'", value, e);
+                return UnDefType.UNDEF;
+            }
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -29,5 +29,16 @@ public enum GardenaSmartCommandName {
 
     // outlet
     OUTLET_MANUAL_OVERRIDE_TIME,
-    OUTLET_VALVE;
+    OUTLET_VALVE,
+
+    // power
+    POWER_TIMER,
+
+    // irrigation control
+    WATERING_TIMER_VALVE_1,
+    WATERING_TIMER_VALVE_2,
+    WATERING_TIMER_VALVE_3,
+    WATERING_TIMER_VALVE_4,
+    WATERING_TIMER_VALVE_5,
+    WATERING_TIMER_VALVE_6;
 }

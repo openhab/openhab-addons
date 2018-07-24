@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,6 +26,8 @@ import com.google.gson.JsonObject;
 public class XiaomiSensorCubeHandler extends XiaomiSensorBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiSensorCubeHandler.class);
+    private static final String STATUS = "status";
+    private static final String ROTATE = "rotate";
 
     public XiaomiSensorCubeHandler(Thing thing) {
         super(thing);
@@ -34,20 +36,20 @@ public class XiaomiSensorCubeHandler extends XiaomiSensorBaseHandler {
     @Override
     void parseReport(JsonObject data) {
         logger.debug("Cube data: {}", data);
-        if (data.has("status")) {
-            triggerChannel(CHANNEL_CUBE_ACTION, data.get("status").getAsString().toUpperCase());
-        } else if (data.has("rotate")) {
+        if (data.has(STATUS)) {
+            triggerChannel(CHANNEL_CUBE_ACTION, data.get(STATUS).getAsString().toUpperCase());
+        } else if (data.has(ROTATE)) {
             Integer rot = 0;
             Integer time = 0;
             try {
-                rot = Integer.parseInt((data.get("rotate").getAsString().split(",")[0]));
+                rot = Integer.parseInt((data.get(ROTATE).getAsString().split(",")[0]));
                 // convert from percent to angle degrees
                 rot = (int) (rot * 3.6);
             } catch (NumberFormatException e) {
                 logger.error("Could not parse rotation angle", e);
             }
             try {
-                time = Integer.parseInt((data.get("rotate").getAsString().split(",")[1]));
+                time = Integer.parseInt((data.get(ROTATE).getAsString().split(",")[1]));
             } catch (NumberFormatException e) {
                 logger.error("Could not parse rotation time", e);
             }

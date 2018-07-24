@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,7 +12,7 @@ package org.openhab.binding.nikohomecontrol.internal.protocol;
  * The {@link NhcSystemInfo} class represents the systeminfo Niko Home Control communication object. It contains all
  * Niko Home Control system data received from the Niko Home Control controller when initializing the connection.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 public final class NhcSystemInfo {
 

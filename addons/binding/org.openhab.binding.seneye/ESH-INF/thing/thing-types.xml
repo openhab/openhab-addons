@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="seneye"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="monitor">
+		<label>Seneye Monitor</label>
+		<description>Seneye Monitor</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="ph" typeId="ph"/>
+			<channel id="nh3" typeId="nh3"/>
+			<channel id="nh4" typeId="nh4"/>
+			<channel id="O2" typeId="o2"/>
+			<channel id="lux" typeId="lux"/>
+			<channel id="par" typeId="par"/>
+			<channel id="kelvin" typeId="kelvin"/>
+			<channel id="lastreading" typeId="lastreading"/>
+			<channel id="slideexpires" typeId="slideexpires"/>
+		</channels>
+		<config-description>
+			<parameter name="aquarium_name" type="text" required="true">
+				<label>Aquarium Name</label>
+				<description>The name of your aquarium</description>
+			</parameter>
+
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>The username of My Seneye</description>
+			</parameter>
+
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>The password of My Seneye</description>
+				<context>password</context>
+			</parameter>
+
+			<parameter name="poll_time" type="integer" required="false" min="1" max="1440">
+				<label>Polling Time</label>
+				<description>How often (in minutes) does the seneye needs to be checked ?</description>
+				<default>5</default>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+
+	<!-- Channels -->
+	<channel-type id="temperature">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>The water temperature</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="ph">
+		<item-type>Number</item-type>
+		<label>PH</label>
+		<description>The PH Level</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nh3">
+		<item-type>Number</item-type>
+		<label>NH3</label>
+		<description>The NH3 Level</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nh4">
+		<item-type>Number</item-type>
+		<label>NH4</label>
+		<description>The NH4 Level</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="o2">
+		<item-type>Number</item-type>
+		<label>O2</label>
+		<description>The O2 Level</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="lux">
+		<item-type>Number</item-type>
+		<label>LUX</label>
+		<description>The LUX Light Level</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="par">
+		<item-type>Number</item-type>
+		<label>PAR</label>
+		<description>The PAR Light Level</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="kelvin">
+		<item-type>Number</item-type>
+		<label>kelvin</label>
+		<description>The Kelvin Light Level</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="lastreading">
+		<item-type>DateTime</item-type>
+		<label>Last reading</label>
+		<description>The last time your seneye is checked</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="slideexpires">
+		<item-type>DateTime</item-type>
+		<label>Slide expiration</label>
+		<description>The time your slide expires</description>
+		<state readOnly="true" />
+	</channel-type>
+</thing:thing-descriptions>

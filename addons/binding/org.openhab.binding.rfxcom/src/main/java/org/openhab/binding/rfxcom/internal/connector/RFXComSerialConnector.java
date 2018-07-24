@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,13 +9,11 @@
 package org.openhab.binding.rfxcom.internal.connector;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.TooManyListenersException;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.commons.io.IOUtils;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +35,6 @@ import gnu.io.UnsupportedCommOperationException;
 public class RFXComSerialConnector extends RFXComBaseConnector implements SerialPortEventListener {
     private final Logger logger = LoggerFactory.getLogger(RFXComSerialConnector.class);
 
-    private InputStream in;
     private OutputStream out;
     private SerialPort serialPort;
 
@@ -72,7 +69,7 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
         } catch (TooManyListenersException e) {
         }
 
-        readerThread = new RFXComStreamReader(this, in);
+        readerThread = new RFXComStreamReader(this);
         readerThread.start();
     }
 
@@ -122,7 +119,10 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
             throw new IOException("Not connected sending messages is not possible");
         }
 
-        logger.trace("Send data (len={}): {}", data.length, DatatypeConverter.printHexBinary(data));
+        if (logger.isTraceEnabled()) {
+            logger.trace("Send data (len={}): {}", data.length, HexUtils.bytesToHex(data));
+        }
+
         out.write(data);
         out.flush();
     }

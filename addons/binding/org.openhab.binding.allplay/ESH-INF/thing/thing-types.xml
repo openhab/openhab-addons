@@ -8,6 +8,7 @@
 		<label>AllPlay Speaker</label>
 
 		<channels>
+			<channel id="clearzone" typeId="clearzone" />
 			<channel id="control" typeId="control" />
 			<channel id="coverart" typeId="coverart" />
 			<channel id="coverarturl" typeId="coverarturl" />
@@ -28,6 +29,7 @@
 			<channel id="volume" typeId="volume" />
 			<channel id="volumecontrol" typeId="volumecontrol" />
 			<channel id="zoneid" typeId="zoneid" />
+			<channel id="zonemembers" typeId="zonemembers" />
 		</channels>
 
 		<config-description>
@@ -51,6 +53,11 @@
 	</thing-type>
 
 	<!-- Channel Type -->
+	<channel-type id="clearzone" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Clear Zone</label>
+		<description>Remove the current speaker from the zone</description>
+	</channel-type>
 	<channel-type id="control">
 		<item-type>Player</item-type>
 		<label>Control</label>
@@ -172,6 +179,11 @@
 		<label>Zone ID</label>
 		<description>Id of the Zone the speaker belongs to</description>
 		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="zonemembers" advanced="true">
+		<item-type>String</item-type>
+		<label>Zone Members</label>
+		<description>Comma-separated list of zone members of this (lead) speaker</description>
 	</channel-type>
 
 </thing:thing-descriptions>

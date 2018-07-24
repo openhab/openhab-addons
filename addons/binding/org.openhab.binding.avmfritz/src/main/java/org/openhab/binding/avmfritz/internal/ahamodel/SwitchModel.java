@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,7 +25,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  *
  */
 @XmlRootElement(name = "switch")
-@XmlType(propOrder = { "state", "mode", "lock" })
+@XmlType(propOrder = { "state", "mode", "lock", "devicelock" })
 public class SwitchModel {
     public static final BigDecimal ON = BigDecimal.ONE;
     public static final BigDecimal OFF = BigDecimal.ZERO;
@@ -35,6 +35,7 @@ public class SwitchModel {
     private BigDecimal state;
     private String mode;
     private BigDecimal lock;
+    private BigDecimal devicelock;
 
     public BigDecimal getState() {
         return state;
@@ -64,9 +65,17 @@ public class SwitchModel {
         this.lock = lock;
     }
 
+    public BigDecimal getDevicelock() {
+        return devicelock;
+    }
+
+    public void setDevicelock(BigDecimal devicelock) {
+        this.devicelock = devicelock;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("state", getState()).append("mode", getMode()).append("lock", getLock())
-                .toString();
+                .append("devicelock", getDevicelock()).toString();
     }
 }

@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2010-2017 by the respective copyright holders.
+	Copyright (c) 2010-2018 by the respective copyright holders.
 
-    All rights reserved. This program and the accompanying materials
-    are made available under the terms of the Eclipse Public License v1.0
-    which accompanies this distribution, and is available at
-    http://www.eclipse.org/legal/epl-v10.html
+	All rights reserved. This program and the accompanying materials
+	are made available under the terms of the Eclipse Public License v1.0
+	which accompanies this distribution, and is available at
+	http://www.eclipse.org/legal/epl-v10.html
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.io.homekit.commands">
-    <implementation class="org.openhab.io.homekit.internal.HomekitCommandExtension"/>
-    <reference bind="setStorageService" cardinality="1..1" interface="org.eclipse.smarthome.core.storage.StorageService" policy="static" name="StorageService"/>
-    <reference bind="setHomekit" cardinality="1..1" interface="org.openhab.io.homekit.Homekit" policy="static" name="HomekitService"/>
-    <service>
-        <provide interface="org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension" />
-    </service>
+	<implementation class="org.openhab.io.homekit.internal.HomekitCommandExtension"/>
+	<reference bind="setStorageService" cardinality="1..1" interface="org.eclipse.smarthome.core.storage.StorageService" policy="static" name="StorageService"/>
+	<reference bind="setHomekit" cardinality="1..1" interface="org.openhab.io.homekit.Homekit" policy="static" name="HomekitService"/>
+	<service>
+		<provide interface="org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension" />
+	</service>
 </scr:component>

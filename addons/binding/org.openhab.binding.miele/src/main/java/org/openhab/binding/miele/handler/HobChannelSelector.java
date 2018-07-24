@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -35,22 +35,55 @@ public enum HobChannelSelector implements ApplianceChannelSelector {
     STATE("state", "state", StringType.class, false),
     PLATES("plateNumbers", "plates", DecimalType.class, true),
     PLATE1_POWER("plate1PowerStep", "plate1power", DecimalType.class, false),
-    PLATE1_HEAT("plate1RemainingHeat", "plate1heat", DecimalType.class, false),
+    PLATE1_HEAT("plate1RemainingHeat", "plate1heat", DecimalType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd) {
+            // If there is remaining heat, the device metadata contains some informative string which can not be
+            // converted into a DecimalType. We therefore ignore the metadata and return the device property value as a
+            // State
+            return getState(s);
+        }
+    },
     PLATE1_TIME("plate1RemainingTime", "plate1time", StringType.class, false),
     PLATE2_POWER("plate2PowerStep", "plate2power", DecimalType.class, false),
-    PLATE2_HEAT("plate2RemainingHeat", "plate2heat", DecimalType.class, false),
+    PLATE2_HEAT("plate2RemainingHeat", "plate2heat", DecimalType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd) {
+            return getState(s);
+        }
+    },
     PLATE2_TIME("plate2RemainingTime", "plate2time", StringType.class, false),
     PLATE3_POWER("plate3PowerStep", "plate3power", DecimalType.class, false),
-    PLATE3_HEAT("plate3RemainingHeat", "plate3heat", DecimalType.class, false),
+    PLATE3_HEAT("plate3RemainingHeat", "plate3heat", DecimalType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd) {
+            return getState(s);
+        }
+    },
     PLATE3_TIME("plate3RemainingTime", "plate3time", StringType.class, false),
     PLATE4_POWER("plate4PowerStep", "plate4power", DecimalType.class, false),
-    PLATE4_HEAT("plate4RemainingHeat", "plate4heat", DecimalType.class, false),
+    PLATE4_HEAT("plate4RemainingHeat", "plate4heat", DecimalType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd) {
+            return getState(s);
+        }
+    },
     PLATE4_TIME("plate4RemainingTime", "plate4time", StringType.class, false),
     PLATE5_POWER("plate5PowerStep", "plate5power", DecimalType.class, false),
-    PLATE5_HEAT("plate5RemainingHeat", "plate5heat", DecimalType.class, false),
+    PLATE5_HEAT("plate5RemainingHeat", "plate5heat", DecimalType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd) {
+            return getState(s);
+        }
+    },
     PLATE5_TIME("plate5RemainingTime", "plate5time", StringType.class, false),
     PLATE6_POWER("plate6PowerStep", "plate6power", DecimalType.class, false),
-    PLATE6_HEAT("plate6RemainingHeat", "plate6heat", DecimalType.class, false),
+    PLATE6_HEAT("plate6RemainingHeat", "plate6heat", DecimalType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd) {
+            return getState(s);
+        }
+    },
     PLATE6_TIME("plate6RemainingTime", "plate6time", StringType.class, false);
 
     private final Logger logger = LoggerFactory.getLogger(HobChannelSelector.class);

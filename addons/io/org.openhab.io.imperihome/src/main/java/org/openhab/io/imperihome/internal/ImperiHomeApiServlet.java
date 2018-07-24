@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -62,7 +62,7 @@ public class ImperiHomeApiServlet extends HttpServlet {
     private static final Pattern URL_PATTERN_ROOMS = Pattern.compile(PATH + "/rooms$", Pattern.CASE_INSENSITIVE);
     private static final Pattern URL_PATTERN_DEVICES = Pattern.compile(PATH + "/devices$", Pattern.CASE_INSENSITIVE);
     private static final Pattern URL_PATTERN_DEVICE_ACTION = Pattern
-            .compile(PATH + "/devices/(.+?)/action/(.+?)/(.*?)$", Pattern.CASE_INSENSITIVE);
+            .compile(PATH + "/devices/(.+?)/action/(.+?)(?:/(.*?))?$", Pattern.CASE_INSENSITIVE);
     private static final Pattern URL_PATTERN_DEVICE_HISTORY = Pattern
             .compile(PATH + "/devices/(.+?)/(.+?)/histo/(.+?)/(.+?)$", Pattern.CASE_INSENSITIVE);
 

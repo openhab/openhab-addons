@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,17 +28,18 @@ import org.slf4j.LoggerFactory;
 /**
  * Parsers for the pulseaudio return strings
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  * @since 1.2.0
  */
 public class Parser {
-    private static final Logger logger = LoggerFactory.getLogger(Parser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
 
-    private static final Pattern pattern = Pattern.compile("^\\s+([a-z\\s._]+)[:=]\\s*<?\"?([^>\"]+)\"?>?$");
-    private static final Pattern volumePattern = Pattern.compile("^([\\w\\-]+):( *[\\d]+ \\/)? *([\\d]+)% *\\/? *([\\d\\-., dB]+)?$");
-    private static final Pattern fallBackPattern = Pattern
+    private static final Pattern PATTERN = Pattern.compile("^\\s+([a-z\\s._]+)[:=]\\s*<?\"?([^>\"]+)\"?>?$");
+    private static final Pattern VOLUME_PATTERN = Pattern
+            .compile("^([\\w\\-]+):( *[\\d]+ \\/)? *([\\d]+)% *\\/? *([\\d\\-., dB]+)?$");
+    private static final Pattern FALL_BACK_PATTERN = Pattern
             .compile("^([0-9]+)([a-z\\s._]+)[:=]\\s*<?\"?([^>\"]+)\"?>?$");
-    private static final Pattern numberValuePattern = Pattern.compile("^([0-9]+).*$");
+    private static final Pattern NUMBER_VALUE_PATTERN = Pattern.compile("^([0-9]+).*$");
 
     /**
      * parses the pulseaudio servers answer to the list-modules command and returns a list of
@@ -48,7 +49,7 @@ public class Parser {
      * @return list of modules
      */
     public static List<Module> parseModules(String raw) {
-        List<Module> modules = new ArrayList<Module>();
+        List<Module> modules = new ArrayList<>();
         String[] parts = raw.split("index: ");
         if (parts.length <= 1) {
             return modules;
@@ -56,20 +57,20 @@ public class Parser {
         // skip first part
         for (int i = 1; i < parts.length; i++) {
             String[] lines = parts[i].split("\n");
-            Hashtable<String, String> properties = new Hashtable<String, String>();
+            Hashtable<String, String> properties = new Hashtable<>();
             int id = 0;
             try {
                 id = Integer.valueOf(lines[0].trim());
             } catch (NumberFormatException e) {
                 // sometime the line feed is missing here
-                Matcher matcher = fallBackPattern.matcher(lines[0].trim());
+                Matcher matcher = FALL_BACK_PATTERN.matcher(lines[0].trim());
                 if (matcher.find()) {
                     id = Integer.valueOf(matcher.group(1));
                     properties.put(matcher.group(2).trim(), matcher.group(3).trim());
                 }
             }
             for (int j = 1; j < lines.length; j++) {
-                Matcher matcher = pattern.matcher(lines[j]);
+                Matcher matcher = PATTERN.matcher(lines[j]);
                 if (matcher.find()) {
                     properties.put(matcher.group(1).trim(), matcher.group(2).trim());
                 }
@@ -93,29 +94,29 @@ public class Parser {
      * @return list of sinks
      */
     public static Collection<Sink> parseSinks(String raw, PulseaudioClient client) {
-        Hashtable<String, Sink> sinks = new Hashtable<String, Sink>();
+        Hashtable<String, Sink> sinks = new Hashtable<>();
         String[] parts = raw.split("index: ");
         if (parts.length <= 1) {
             return sinks.values();
         }
         // skip first part
-        List<Sink> combinedSinks = new ArrayList<Sink>();
+        List<Sink> combinedSinks = new ArrayList<>();
         for (int i = 1; i < parts.length; i++) {
             String[] lines = parts[i].split("\n");
-            Hashtable<String, String> properties = new Hashtable<String, String>();
+            Hashtable<String, String> properties = new Hashtable<>();
             int id = 0;
             try {
                 id = Integer.valueOf(lines[0].trim());
             } catch (NumberFormatException e) {
                 // sometime the line feed is missing here
-                Matcher matcher = fallBackPattern.matcher(lines[0].trim());
+                Matcher matcher = FALL_BACK_PATTERN.matcher(lines[0].trim());
                 if (matcher.find()) {
                     id = Integer.valueOf(matcher.group(1));
                     properties.put(matcher.group(2).trim(), matcher.group(3).trim());
                 }
             }
             for (int j = 1; j < lines.length; j++) {
-                Matcher matcher = pattern.matcher(lines[j]);
+                Matcher matcher = PATTERN.matcher(lines[j]);
                 if (matcher.find()) {
                     properties.put(matcher.group(1).trim(), matcher.group(2).trim());
                 }
@@ -127,7 +128,7 @@ public class Parser {
                     try {
                         sink.setState(AbstractAudioDeviceConfig.State.valueOf(properties.get("state")));
                     } catch (IllegalArgumentException e) {
-                        logger.error("unhandled state {} in sink item #{}", properties.get("state"), id);
+                        LOGGER.error("unhandled state {} in sink item #{}", properties.get("state"), id);
                     }
                 }
                 if (properties.containsKey("muted")) {
@@ -162,27 +163,27 @@ public class Parser {
      * @return list of sink-inputs
      */
     public static List<SinkInput> parseSinkInputs(String raw, PulseaudioClient client) {
-        List<SinkInput> items = new ArrayList<SinkInput>();
+        List<SinkInput> items = new ArrayList<>();
         String[] parts = raw.split("index: ");
         if (parts.length <= 1) {
             return items;
         }
         for (int i = 1; i < parts.length; i++) {
             String[] lines = parts[i].split("\n");
-            Hashtable<String, String> properties = new Hashtable<String, String>();
+            Hashtable<String, String> properties = new Hashtable<>();
             int id = 0;
             try {
                 id = Integer.valueOf(lines[0].trim());
             } catch (NumberFormatException e) {
                 // sometime the line feed is missing here
-                Matcher matcher = fallBackPattern.matcher(lines[0].trim());
+                Matcher matcher = FALL_BACK_PATTERN.matcher(lines[0].trim());
                 if (matcher.find()) {
                     id = Integer.valueOf(matcher.group(1));
                     properties.put(matcher.group(2).trim(), matcher.group(3).trim());
                 }
             }
             for (int j = 1; j < lines.length; j++) {
-                Matcher matcher = pattern.matcher(lines[j]);
+                Matcher matcher = PATTERN.matcher(lines[j]);
                 if (matcher.find()) {
                     properties.put(matcher.group(1).trim(), matcher.group(2).trim());
                 }
@@ -195,7 +196,7 @@ public class Parser {
                     try {
                         item.setState(AbstractAudioDeviceConfig.State.valueOf(properties.get("state")));
                     } catch (IllegalArgumentException e) {
-                        logger.error("unhandled state {} in sink-input item #{}", properties.get("state"), id);
+                        LOGGER.error("unhandled state {} in sink-input item #{}", properties.get("state"), id);
                     }
                 }
                 if (properties.containsKey("muted")) {
@@ -221,7 +222,7 @@ public class Parser {
      * @return list of sources
      */
     public static List<Source> parseSources(String raw, PulseaudioClient client) {
-        List<Source> sources = new ArrayList<Source>();
+        List<Source> sources = new ArrayList<>();
         String[] parts = raw.split("index: ");
         if (parts.length <= 1) {
             return sources;
@@ -229,20 +230,20 @@ public class Parser {
         // skip first part
         for (int i = 1; i < parts.length; i++) {
             String[] lines = parts[i].split("\n");
-            Hashtable<String, String> properties = new Hashtable<String, String>();
+            Hashtable<String, String> properties = new Hashtable<>();
             int id = 0;
             try {
                 id = Integer.valueOf(lines[0].trim());
             } catch (NumberFormatException e) {
                 // sometime the line feed is missing here
-                Matcher matcher = fallBackPattern.matcher(lines[0].trim());
+                Matcher matcher = FALL_BACK_PATTERN.matcher(lines[0].trim());
                 if (matcher.find()) {
                     id = Integer.valueOf(matcher.group(1));
                     properties.put(matcher.group(2).trim(), matcher.group(3).trim());
                 }
             }
             for (int j = 1; j < lines.length; j++) {
-                Matcher matcher = pattern.matcher(lines[j]);
+                Matcher matcher = PATTERN.matcher(lines[j]);
                 if (matcher.find()) {
                     properties.put(matcher.group(1).trim(), matcher.group(2).trim());
                 }
@@ -254,7 +255,7 @@ public class Parser {
                     try {
                         source.setState(AbstractAudioDeviceConfig.State.valueOf(properties.get("state")));
                     } catch (IllegalArgumentException e) {
-                        logger.error("unhandled state {} in source item #{}", properties.get("state"), id);
+                        LOGGER.error("unhandled state {} in source item #{}", properties.get("state"), id);
                     }
                 }
                 if (properties.containsKey("muted")) {
@@ -280,7 +281,7 @@ public class Parser {
      * @return list of source-outputs
      */
     public static List<SourceOutput> parseSourceOutputs(String raw, PulseaudioClient client) {
-        List<SourceOutput> items = new ArrayList<SourceOutput>();
+        List<SourceOutput> items = new ArrayList<>();
         String[] parts = raw.split("index: ");
         if (parts.length <= 1) {
             return items;
@@ -288,20 +289,20 @@ public class Parser {
         // skip first part
         for (int i = 1; i < parts.length; i++) {
             String[] lines = parts[i].split("\n");
-            Hashtable<String, String> properties = new Hashtable<String, String>();
+            Hashtable<String, String> properties = new Hashtable<>();
             int id = 0;
             try {
                 id = Integer.valueOf(lines[0].trim());
             } catch (NumberFormatException e) {
                 // sometime the line feed is missing here
-                Matcher matcher = fallBackPattern.matcher(lines[0].trim());
+                Matcher matcher = FALL_BACK_PATTERN.matcher(lines[0].trim());
                 if (matcher.find()) {
                     id = Integer.valueOf(matcher.group(1));
                     properties.put(matcher.group(2).trim(), matcher.group(3).trim());
                 }
             }
             for (int j = 1; j < lines.length; j++) {
-                Matcher matcher = pattern.matcher(lines[j]);
+                Matcher matcher = PATTERN.matcher(lines[j]);
                 if (matcher.find()) {
                     properties.put(matcher.group(1).trim(), matcher.group(2).trim());
                 }
@@ -313,7 +314,7 @@ public class Parser {
                     try {
                         item.setState(AbstractAudioDeviceConfig.State.valueOf(properties.get("state")));
                     } catch (IllegalArgumentException e) {
-                        logger.error("unhandled state {} in source-output item #{}", properties.get("state"), id);
+                        LOGGER.error("unhandled state {} in source-output item #{}", properties.get("state"), id);
                     }
                 }
                 if (properties.containsKey("muted")) {
@@ -343,12 +344,12 @@ public class Parser {
         int volumeTotal = 0;
         int nChannels = 0;
         for (String channel : vol.split(", ")) {
-            Matcher matcher = volumePattern.matcher(channel.trim());
+            Matcher matcher = VOLUME_PATTERN.matcher(channel.trim());
             if (matcher.find()) {
                 volumeTotal += Integer.valueOf(matcher.group(3));
                 nChannels++;
             } else {
-                logger.debug("Unable to parse channel volume '{}'", channel);
+                LOGGER.debug("Unable to parse channel volume '{}'", channel);
             }
         }
         if (nChannels > 0) {
@@ -373,7 +374,7 @@ public class Parser {
         try {
             id = Integer.valueOf(raw.trim());
         } catch (NumberFormatException e) {
-            Matcher matcher = numberValuePattern.matcher(raw.trim());
+            Matcher matcher = NUMBER_VALUE_PATTERN.matcher(raw.trim());
             if (matcher.find()) {
                 id = Integer.valueOf(matcher.group(1));
             }

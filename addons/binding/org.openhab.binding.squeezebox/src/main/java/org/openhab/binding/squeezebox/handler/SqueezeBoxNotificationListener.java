@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,9 +8,11 @@
  */
 package org.openhab.binding.squeezebox.handler;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +21,7 @@ import org.slf4j.LoggerFactory;
  * that's used to monitor certain events related to the notification functionality.
  *
  * @author Mark Hilbush - Implement AudioSink and notifications
+ * @author Mark Hilbush - Added event to update favorites list
  */
 public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEventListener {
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxNotificationListener.class);
@@ -112,12 +115,26 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
      * Monitor for when the volume is updated to a specific target value
      */
     @Override
-    public void volumeChangeEvent(String mac, int volume) {
+    public void absoluteVolumeChangeEvent(String mac, int volume) {
         if (!this.playerMAC.equals(mac)) {
             return;
         }
         this.volume.set(volume);
         logger.trace("Volume is {} for player {}", volume, mac);
+    }
+
+    @Override
+    public void relativeVolumeChangeEvent(String mac, int volumeChange) {
+        if (!this.playerMAC.equals(mac)) {
+            return;
+        }
+
+        int newVolume = this.volume.get() + volumeChange;
+        newVolume = Math.min(newVolume, 100);
+        newVolume = Math.max(newVolume, 0);
+
+        this.volume.set(newVolume);
+        logger.trace("Volume changed [{}] for player {}. New volume: {}", volumeChange, mac, volume);
     }
 
     @Override
@@ -186,5 +203,9 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
 
     @Override
     public void irCodeChangeEvent(String mac, String ircode) {
+    }
+
+    @Override
+    public void updateFavoritesListEvent(List<Favorite> favorites) {
     }
 }

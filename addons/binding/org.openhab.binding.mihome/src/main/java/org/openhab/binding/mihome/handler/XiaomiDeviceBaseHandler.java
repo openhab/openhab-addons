@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,6 +13,8 @@ import static org.openhab.binding.mihome.XiaomiGatewayBindingConstants.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -41,16 +43,20 @@ import com.google.gson.JsonSyntaxException;
  * @author Dieter Schmidt - Added cube rotation, heartbeat and voltage handling, configurable window and motion delay,
  *         Aqara
  *         switches
+ * @author Daniel Walters - Added Aqara Door/Window sensor and Aqara temperature, humidity and pressure sensor
  */
 public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiItemUpdateListener {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_GATEWAY,
-            THING_TYPE_SENSOR_HT, THING_TYPE_SENSOR_MOTION, THING_TYPE_SENSOR_SWITCH, THING_TYPE_SENSOR_MAGNET,
-            THING_TYPE_SENSOR_CUBE, THING_TYPE_SENSOR_AQARA1, THING_TYPE_SENSOR_AQARA2, THING_TYPE_SENSOR_GAS,
-            THING_TYPE_SENSOR_SMOKE, THING_TYPE_ACTOR_AQARA1, THING_TYPE_ACTOR_AQARA2, THING_TYPE_ACTOR_PLUG,
-            THING_TYPE_ACTOR_AQARA_ZERO1, THING_TYPE_ACTOR_AQARA_ZERO2, THING_TYPE_ACTOR_CURTAIN));
+            THING_TYPE_SENSOR_HT, THING_TYPE_SENSOR_AQARA_WEATHER_V1, THING_TYPE_SENSOR_MOTION,
+            THING_TYPE_SENSOR_AQARA_MOTION, THING_TYPE_SENSOR_SWITCH, THING_TYPE_SENSOR_AQARA_SWITCH,
+            THING_TYPE_SENSOR_MAGNET, THING_TYPE_SENSOR_AQARA_MAGNET, THING_TYPE_SENSOR_CUBE, THING_TYPE_SENSOR_AQARA1,
+            THING_TYPE_SENSOR_AQARA2, THING_TYPE_SENSOR_GAS, THING_TYPE_SENSOR_SMOKE, THING_TYPE_SENSOR_WATER,
+            THING_TYPE_ACTOR_AQARA1, THING_TYPE_ACTOR_AQARA2, THING_TYPE_ACTOR_PLUG, THING_TYPE_ACTOR_AQARA_ZERO1,
+            THING_TYPE_ACTOR_AQARA_ZERO2, THING_TYPE_ACTOR_CURTAIN));
 
     private static final long ONLINE_TIMEOUT_MILLIS = 2 * 60 * 60 * 1000; // 2 hours
+    private ScheduledFuture<?> onlineCheckTask;
 
     private JsonParser parser = new JsonParser();
 
@@ -71,7 +77,8 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
     @Override
     public void initialize() {
         setItemId((String) getConfig().get(ITEM_ID));
-        updateThingStatus();
+        onlineCheckTask = scheduler.scheduleWithFixedDelay(this::updateThingStatus, 0, ONLINE_TIMEOUT_MILLIS / 2,
+                TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -84,13 +91,17 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
             }
             setItemId(null);
         }
+        if (!onlineCheckTask.isDone()) {
+            onlineCheckTask.cancel(false);
+        }
+
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Device {} on channel {} received command {}", getItemId(), channelUID, command);
         if (command instanceof RefreshType) {
-            JsonObject message = getXiaomiBridgeHandler().getRetentedMessage(getItemId());
+            JsonObject message = getXiaomiBridgeHandler().getDeferredMessage(getItemId());
             if (message != null) {
                 String cmd = message.get("cmd").getAsString();
                 logger.debug("Update Item {} with retented message", getItemId());
@@ -104,6 +115,9 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
     @Override
     public void onItemUpdate(String sid, String command, JsonObject message) {
         if (getItemId() != null && getItemId().equals(sid)) {
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
             logger.debug("Item got update: {}", message);
             try {
                 JsonObject data = parser.parse(message.get("data").getAsString()).getAsJsonObject();
@@ -111,7 +125,6 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
             } catch (JsonSyntaxException e) {
                 logger.warn("Unable to parse message as valid JSON: {}", message);
             }
-            updateThingStatus();
         }
     }
 

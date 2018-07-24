@@ -1,613 +1,613 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="atlona"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- AT-UHD-PRO3-44M -->
-    <thing-type id="pro3-44m">
-        <label>Atlona Pro3 4x4 HDBaseT Matrix</label>
-        <description>Atlona Pro3 4x4 HDBaseT Matrix (Model AT-UHD-PRO3-44M)</description>
+	<!-- AT-UHD-PRO3-44M -->
+	<thing-type id="pro3-44m">
+		<label>Atlona Pro3 4x4 HDBaseT Matrix</label>
+		<description>Atlona Pro3 4x4 HDBaseT Matrix (Model AT-UHD-PRO3-44M)</description>
 
-        <channel-groups>
-            <channel-group id="primary" typeId="primarygroup"/>
-            <channel-group id="port1" typeId="portgroup">        
-                <label>Port 1</label>
-                <description>Output Port 1 Channels</description>
-            </channel-group>
-            <channel-group id="port2" typeId="portgroup">       
-                <label>Port 2</label>
-                <description>Output Port 2 Channels</description>
-            </channel-group>
-            <channel-group id="port3" typeId="portgroup">        
-                <label>Port 3</label>
-                <description>Output Port 3 Channels</description>
-            </channel-group>
-            <channel-group id="port4" typeId="portgroup">
-                <label>Port 4</label>
-                <description>Output Port 4 Channels</description>
-            </channel-group>
-            <channel-group id="port5" typeId="portgroup">
-                <label>Port 5</label>
-                <description>Output Port 5 Channels</description>
-            </channel-group>
-            <channel-group id="mirror5" typeId="mirrorgroup">
-                <label>HDMI Port 5</label>
-                <description>HDMI Port 5 Mirroring Channels</description>
-            </channel-group>
-            <channel-group id="volume1" typeId="volumegroup">
-                <label>Volume 1</label>
-                <description>Volume 1 channels</description>
-            </channel-group>
-            <channel-group id="volume2" typeId="volumegroup">
-                <label>Volume 2</label>
-                <description>Volume 2 channels</description>
-            </channel-group>
-            <channel-group id="volume3" typeId="volumegroup">
-                <label>Volume 3</label>
-                <description>Volume 3 channels</description>
-            </channel-group>
-        </channel-groups>
-                
-        <config-description>
-            <parameter name="ipAddress" type="text">
-                <context>network-address</context>
-                <label>IP or Host Name</label>
-                <description>IP or Host name of Atlona Pro3 44M Switch</description>
-                <required>true</required>
-            </parameter>
-            <parameter name="userName" type="text">
-                <label>UserName to login with</label>
-                <description>User Name to login with if Telnet Login is on</description>
-                <required>false</required>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="password" type="text">
-                <context>password</context>
-                <label>Password to login with</label>
-                <description>Password to login with if Telnet Login is on</description>
-                <required>false</required>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="polling" type="integer">
-                <label>Polling Interval</label>
-                <description>Interval (in seconds) to poll the actual state of the Matrix</description>
-                <default>600</default>
-                <advanced>true</advanced>
-            </parameter>            
-            <parameter name="ping" type="integer">
-                <label>Pint Interval</label>
-                <description>Ping Interval (in seconds) to keep the connection alive</description>
-                <default>30</default>
-                <advanced>true</advanced>
-            </parameter>            
-            <parameter name="retryPolling" type="integer">
-                <label>Polling Interval to try to reconnect</label>
-                <description>Interval (in seconds) to try to (re)connect to the matrix</description>
-                <default>10</default>
-                <advanced>true</advanced>
-            </parameter>            
-        </config-description>
-    </thing-type>
+		<channel-groups>
+			<channel-group id="primary" typeId="primarygroup"/>
+			<channel-group id="port1" typeId="portgroup">
+				<label>Port 1</label>
+				<description>Output Port 1 Channels</description>
+			</channel-group>
+			<channel-group id="port2" typeId="portgroup">
+				<label>Port 2</label>
+				<description>Output Port 2 Channels</description>
+			</channel-group>
+			<channel-group id="port3" typeId="portgroup">
+				<label>Port 3</label>
+				<description>Output Port 3 Channels</description>
+			</channel-group>
+			<channel-group id="port4" typeId="portgroup">
+				<label>Port 4</label>
+				<description>Output Port 4 Channels</description>
+			</channel-group>
+			<channel-group id="port5" typeId="portgroup">
+				<label>Port 5</label>
+				<description>Output Port 5 Channels</description>
+			</channel-group>
+			<channel-group id="mirror5" typeId="mirrorgroup">
+				<label>HDMI Port 5</label>
+				<description>HDMI Port 5 Mirroring Channels</description>
+			</channel-group>
+			<channel-group id="volume1" typeId="volumegroup">
+				<label>Volume 1</label>
+				<description>Volume 1 channels</description>
+			</channel-group>
+			<channel-group id="volume2" typeId="volumegroup">
+				<label>Volume 2</label>
+				<description>Volume 2 channels</description>
+			</channel-group>
+			<channel-group id="volume3" typeId="volumegroup">
+				<label>Volume 3</label>
+				<description>Volume 3 channels</description>
+			</channel-group>
+		</channel-groups>
 
-    <!-- AT-UHD-PRO3-66M -->
-    <thing-type id="pro3-66m">
-        <label>Atlona Pro3 6x6 HDBaseT Matrix</label>
-        <description>Atlona Pro3 6x6 HDBaseT Matrix (Model AT-UHD-PRO3-66M)</description>
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<context>network-address</context>
+				<label>IP or Host Name</label>
+				<description>IP or Host name of Atlona Pro3 44M Switch</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="userName" type="text">
+				<label>UserName to login with</label>
+				<description>User Name to login with if Telnet Login is on</description>
+				<required>false</required>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password to login with</label>
+				<description>Password to login with if Telnet Login is on</description>
+				<required>false</required>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="polling" type="integer">
+				<label>Polling Interval</label>
+				<description>Interval (in seconds) to poll the actual state of the Matrix</description>
+				<default>600</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ping" type="integer">
+				<label>Pint Interval</label>
+				<description>Ping Interval (in seconds) to keep the connection alive</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="retryPolling" type="integer">
+				<label>Polling Interval to try to reconnect</label>
+				<description>Interval (in seconds) to try to (re)connect to the matrix</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-        <channel-groups>
-            <channel-group id="primary" typeId="primarygroup"/>
-            <channel-group id="port1" typeId="portgroup">        
-                <label>Port 1</label>
-                <description>Output Port 1 Channels</description>
-            </channel-group>
-            <channel-group id="port2" typeId="portgroup">       
-                <label>Port 2</label>
-                <description>Output Port 2 Channels</description>
-            </channel-group>
-            <channel-group id="port3" typeId="portgroup">        
-                <label>Port 3</label>
-                <description>Output Port 3 Channels</description>
-            </channel-group>
-            <channel-group id="port4" typeId="portgroup">
-                <label>Port 4</label>
-                <description>Output Port 4 Channels</description>
-            </channel-group>
-            <channel-group id="port5" typeId="portgroup">
-                <label>Port 5</label>
-                <description>Output Port 5 Channels</description>
-            </channel-group>
-            <channel-group id="port6" typeId="portgroup">
-                <label>Port 6</label>
-                <description>Output Port 6 Channels</description>
-            </channel-group>
-            <channel-group id="port7" typeId="portgroup">
-                <label>Port 7</label>
-                <description>Output Port 7 Channels</description>
-            </channel-group>
-            <channel-group id="port8" typeId="portgroup">
-                <label>Port 8</label>
-                <description>Output Port 8 Channels</description>
-            </channel-group>
-            <channel-group id="mirror6" typeId="mirrorgroup">
-                <label>HDMI Port 6</label>
-                <description>HDMI Port 6 Mirroring Channels</description>
-            </channel-group>
-            <channel-group id="mirror8" typeId="mirrorgroup">
-                <label>HDMI Port 8</label>
-                <description>HDMI Port 8 Mirroring Channels</description>
-            </channel-group>
-            <channel-group id="volume1" typeId="volumegroup">
-                <label>Volume 1</label>
-                <description>Volume 1 channels</description>
-            </channel-group>
-            <channel-group id="volume2" typeId="volumegroup">
-                <label>Volume 2</label>
-                <description>Volume 2 channels</description>
-            </channel-group>
-            <channel-group id="volume3" typeId="volumegroup">
-                <label>Volume 3</label>
-                <description>Volume 3 channels</description>
-            </channel-group>
-            <channel-group id="volume4" typeId="volumegroup">
-                <label>Volume 4</label>
-                <description>Volume 4 channels</description>
-            </channel-group>
-        </channel-groups>
-        
-        <config-description>
-            <parameter name="ipAddress" type="text">
-                <context>network-address</context>
-                <label>IP or Host Name</label>
-                <description>IP or Host name of Atlona Pro3 66M Switch</description>
-                <required>true</required>
-            </parameter>
-            <parameter name="userName" type="text">
-                <label>UserName to login with</label>
-                <description>User Name to login with if Telnet Login is on</description>
-                <required>false</required>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="password" type="text">
-                <context>password</context>
-                <label>Password to login with</label>
-                <description>Password to login with if Telnet Login is on</description>
-                <required>false</required>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="polling" type="integer">
-                <label>Polling Interval</label>
-                <description>Interval (in seconds) to poll the actual state of the Matrix</description>
-                <default>600</default>
-                <advanced>true</advanced>
-            </parameter>            
-            <parameter name="ping" type="integer">
-                <label>Pint Interval</label>
-                <description>Ping Interval (in seconds) to keep the connection alive</description>
-                <default>30</default>
-                <advanced>true</advanced>
-            </parameter>            
-            <parameter name="retryPolling" type="integer">
-                <label>Polling Interval to try to reconnect</label>
-                <description>Interval (in seconds) to try to (re)connect to the matrix</description>
-                <default>10</default>
-                <advanced>true</advanced>
-            </parameter>            
-        </config-description>
-    </thing-type>
+	<!-- AT-UHD-PRO3-66M -->
+	<thing-type id="pro3-66m">
+		<label>Atlona Pro3 6x6 HDBaseT Matrix</label>
+		<description>Atlona Pro3 6x6 HDBaseT Matrix (Model AT-UHD-PRO3-66M)</description>
 
-    <!-- AT-UHD-PRO3-88M -->
-    <thing-type id="pro3-88m">
-        <label>Atlona Pro3 8x8 HDBaseT Matrix</label>
-        <description>Atlona Pro3 8x8 HDBaseT Matrix (Model AT-UHD-PRO3-66M)</description>
+		<channel-groups>
+			<channel-group id="primary" typeId="primarygroup"/>
+			<channel-group id="port1" typeId="portgroup">
+				<label>Port 1</label>
+				<description>Output Port 1 Channels</description>
+			</channel-group>
+			<channel-group id="port2" typeId="portgroup">
+				<label>Port 2</label>
+				<description>Output Port 2 Channels</description>
+			</channel-group>
+			<channel-group id="port3" typeId="portgroup">
+				<label>Port 3</label>
+				<description>Output Port 3 Channels</description>
+			</channel-group>
+			<channel-group id="port4" typeId="portgroup">
+				<label>Port 4</label>
+				<description>Output Port 4 Channels</description>
+			</channel-group>
+			<channel-group id="port5" typeId="portgroup">
+				<label>Port 5</label>
+				<description>Output Port 5 Channels</description>
+			</channel-group>
+			<channel-group id="port6" typeId="portgroup">
+				<label>Port 6</label>
+				<description>Output Port 6 Channels</description>
+			</channel-group>
+			<channel-group id="port7" typeId="portgroup">
+				<label>Port 7</label>
+				<description>Output Port 7 Channels</description>
+			</channel-group>
+			<channel-group id="port8" typeId="portgroup">
+				<label>Port 8</label>
+				<description>Output Port 8 Channels</description>
+			</channel-group>
+			<channel-group id="mirror6" typeId="mirrorgroup">
+				<label>HDMI Port 6</label>
+				<description>HDMI Port 6 Mirroring Channels</description>
+			</channel-group>
+			<channel-group id="mirror8" typeId="mirrorgroup">
+				<label>HDMI Port 8</label>
+				<description>HDMI Port 8 Mirroring Channels</description>
+			</channel-group>
+			<channel-group id="volume1" typeId="volumegroup">
+				<label>Volume 1</label>
+				<description>Volume 1 channels</description>
+			</channel-group>
+			<channel-group id="volume2" typeId="volumegroup">
+				<label>Volume 2</label>
+				<description>Volume 2 channels</description>
+			</channel-group>
+			<channel-group id="volume3" typeId="volumegroup">
+				<label>Volume 3</label>
+				<description>Volume 3 channels</description>
+			</channel-group>
+			<channel-group id="volume4" typeId="volumegroup">
+				<label>Volume 4</label>
+				<description>Volume 4 channels</description>
+			</channel-group>
+		</channel-groups>
 
-        <channel-groups>
-            <channel-group id="primary" typeId="primarygroup"/>
-            <channel-group id="port1" typeId="portgroup">        
-                <label>Port 1</label>
-                <description>Output Port 1 Channels</description>
-            </channel-group>
-            <channel-group id="port2" typeId="portgroup">       
-                <label>Port 2</label>
-                <description>Output Port 2 Channels</description>
-            </channel-group>
-            <channel-group id="port3" typeId="portgroup">        
-                <label>Port 3</label>
-                <description>Output Port 3 Channels</description>
-            </channel-group>
-            <channel-group id="port4" typeId="portgroup">
-                <label>Port 4</label>
-                <description>Output Port 4 Channels</description>
-            </channel-group>
-            <channel-group id="port5" typeId="portgroup">
-                <label>Port 5</label>
-                <description>Output Port 5 Channels</description>
-            </channel-group>
-            <channel-group id="port6" typeId="portgroup">
-                <label>Port 6</label>
-                <description>Output Port 6 Channels</description>
-            </channel-group>
-            <channel-group id="port7" typeId="portgroup">
-                <label>Port 7</label>
-                <description>Output Port 7 Channels</description>
-            </channel-group>
-            <channel-group id="port8" typeId="portgroup">
-                <label>Port 8</label>
-                <description>Output Port 8 Channels</description>
-            </channel-group>
-            <channel-group id="port9" typeId="portgroup">
-                <label>Port 9</label>
-                <description>Output Port 9 Channels</description>
-            </channel-group>
-            <channel-group id="port10" typeId="portgroup">
-                <label>Port 10</label>
-                <description>Output Port 10 Channels</description>
-            </channel-group>
-            <channel-group id="mirror8" typeId="mirrorgroup">
-                <label>HDMI Port 8</label>
-                <description>HDMI Port 8 Mirroring Channels</description>
-            </channel-group>
-            <channel-group id="mirror10" typeId="mirrorgroup">
-                <label>HDMI Port 10</label>
-                <description>HDMI Port 10 Mirroring Channels</description>
-            </channel-group>
-            <channel-group id="volume1" typeId="volumegroup">
-                <label>Volume 1</label>
-                <description>Volume 1 channels</description>
-            </channel-group>
-            <channel-group id="volume2" typeId="volumegroup">
-                <label>Volume 2</label>
-                <description>Volume 2 channels</description>
-            </channel-group>
-            <channel-group id="volume3" typeId="volumegroup">
-                <label>Volume 3</label>
-                <description>Volume 3 channels</description>
-            </channel-group>
-            <channel-group id="volume4" typeId="volumegroup">
-                <label>Volume 4</label>
-                <description>Volume 4 channels</description>
-            </channel-group>
-            <channel-group id="volume5" typeId="volumegroup">
-                <label>Volume 5</label>
-                <description>Volume 5 channels</description>
-            </channel-group>
-            <channel-group id="volume6" typeId="volumegroup">
-                <label>Volume 6</label>
-                <description>Volume 6 channels</description>
-            </channel-group>
-        </channel-groups>
-        
-        <config-description>
-            <parameter name="ipAddress" type="text" required="true">
-                <context>network-address</context>
-                <label>IP or Host Name</label>
-                <description>IP or Host name of Atlona Switch</description>
-                <default></default>
-            </parameter>
-            <parameter name="userName" type="text">
-                <label>UserName</label>
-                <description>User Name to use (if Telnet Login is ON)</description>
-                <default></default>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="password" type="text">
-                <context>password</context>
-                <label>Password to login with</label>
-                <description>Password to use (if Telnet Login is ON)</description>
-                <default></default>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="polling" type="integer">
-                <label>Polling Interval</label>
-                <description>Interval (in seconds) to poll the actual state</description>
-                <default>600</default>
-                <advanced>true</advanced>
-            </parameter>            
-            <parameter name="ping" type="integer">
-                <label>Pint Interval</label>
-                <description>Ping Interval (in seconds) to keep the connection alive</description>
-                <default>30</default>
-                <advanced>true</advanced>
-            </parameter>            
-            <parameter name="retryPolling" type="integer">
-                <label>Polling Interval to try to reconnect</label>
-                <description>Interval (in seconds) to try to (re)connect</description>
-                <default>10</default>
-                <advanced>true</advanced>
-            </parameter>            
-        </config-description>
-    </thing-type>
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<context>network-address</context>
+				<label>IP or Host Name</label>
+				<description>IP or Host name of Atlona Pro3 66M Switch</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="userName" type="text">
+				<label>UserName to login with</label>
+				<description>User Name to login with if Telnet Login is on</description>
+				<required>false</required>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password to login with</label>
+				<description>Password to login with if Telnet Login is on</description>
+				<required>false</required>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="polling" type="integer">
+				<label>Polling Interval</label>
+				<description>Interval (in seconds) to poll the actual state of the Matrix</description>
+				<default>600</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ping" type="integer">
+				<label>Pint Interval</label>
+				<description>Ping Interval (in seconds) to keep the connection alive</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="retryPolling" type="integer">
+				<label>Polling Interval to try to reconnect</label>
+				<description>Interval (in seconds) to try to (re)connect to the matrix</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-    <!-- AT-UHD-PRO3-1616M -->
-    <thing-type id="pro3-1616m">
-        <label>Atlona Pro3 16x16 HDBaseT Matrix</label>
-        <description>Atlona Pro3 16x16 HDBaseT Matrix (Model AT-UHD-PRO3-1616M)</description>
+	<!-- AT-UHD-PRO3-88M -->
+	<thing-type id="pro3-88m">
+		<label>Atlona Pro3 8x8 HDBaseT Matrix</label>
+		<description>Atlona Pro3 8x8 HDBaseT Matrix (Model AT-UHD-PRO3-66M)</description>
 
-        <channel-groups>
-            <channel-group id="primary" typeId="primarygroup"/>
-            <channel-group id="port1" typeId="portgroup">        
-                <label>Port 1</label>
-                <description>Output Port 1 Channels</description>
-            </channel-group>
-            <channel-group id="port2" typeId="portgroup">       
-                <label>Port 2</label>
-                <description>Output Port 2 Channels</description>
-            </channel-group>
-            <channel-group id="port3" typeId="portgroup">        
-                <label>Port 3</label>
-                <description>Output Port 3 Channels</description>
-            </channel-group>
-            <channel-group id="port4" typeId="portgroup">
-                <label>Port 4</label>
-                <description>Output Port 4 Channels</description>
-            </channel-group>
-            <channel-group id="port5" typeId="portgroup">
-                <label>Port 5</label>
-                <description>Output Port 5 Channels</description>
-            </channel-group>
-            <channel-group id="port6" typeId="portgroup">
-                <label>Port 6</label>
-                <description>Output Port 6 Channels</description>
-            </channel-group>
-            <channel-group id="port7" typeId="portgroup">
-                <label>Port 7</label>
-                <description>Output Port 7 Channels</description>
-            </channel-group>
-            <channel-group id="port8" typeId="portgroup">
-                <label>Port 8</label>
-                <description>Output Port 8 Channels</description>
-            </channel-group>
-            <channel-group id="port9" typeId="portgroup">
-                <label>Port 9</label>
-                <description>Output Port 9 Channels</description>
-            </channel-group>
-            <channel-group id="port10" typeId="portgroup">
-                <label>Port 10</label>
-                <description>Output Port 10 Channels</description>
-            </channel-group>
-            <channel-group id="port11" typeId="portgroup">        
-                <label>Port 11</label>
-                <description>Output Port 11 Channels</description>
-            </channel-group>
-            <channel-group id="port12" typeId="portgroup">       
-                <label>Port 12</label>
-                <description>Output Port 12 Channels</description>
-            </channel-group>
-            <channel-group id="port13" typeId="portgroup">        
-                <label>Port 13</label>
-                <description>Output Port 13 Channels</description>
-            </channel-group>
-            <channel-group id="port14" typeId="portgroup">
-                <label>Port 14</label>
-                <description>Output Port 14 Channels</description>
-            </channel-group>
-            <channel-group id="port15" typeId="portgroup">
-                <label>Port 15</label>
-                <description>Output Port 15 Channels</description>
-            </channel-group>
-            <channel-group id="port16" typeId="portgroup">
-                <label>Port 16</label>
-                <description>Output Port 16 Channels</description>
-            </channel-group>
-            <channel-group id="port17" typeId="portgroup">
-                <label>Port 17</label>
-                <description>Output Port 17 Channels</description>
-            </channel-group>
-            <channel-group id="port18" typeId="portgroup">
-                <label>Port 18</label>
-                <description>Output Port 18 Channels</description>
-            </channel-group>
-            <channel-group id="port19" typeId="portgroup">
-                <label>Port 19</label>
-                <description>Output Port 19 Channels</description>
-            </channel-group>
-            <channel-group id="port20" typeId="portgroup">
-                <label>Port 20</label>
-                <description>Output Port 20 Channels</description>
-            </channel-group>
-            <channel-group id="mirror17" typeId="mirrorgroup">
-                <label>HDMI Port 17</label>
-                <description>HDMI Port 17 Mirroring Channels</description>
-            </channel-group>
-            <channel-group id="mirror18" typeId="mirrorgroup">
-                <label>HDMI Port 18</label>
-                <description>HDMI Port 18 Mirroring Channels</description>
-            </channel-group>
-            <channel-group id="mirror19" typeId="mirrorgroup">
-                <label>HDMI Port 19</label>
-                <description>HDMI Port 19 Mirroring Channels</description>
-            </channel-group>
-            <channel-group id="mirror20" typeId="mirrorgroup">
-                <label>HDMI Port 20</label>
-                <description>HDMI Port 20 Mirroring Channels</description>
-            </channel-group>
-            <channel-group id="volume1" typeId="volumegroup">
-                <label>Volume 1</label>
-                <description>Volume 1 channels</description>
-            </channel-group>
-            <channel-group id="volume2" typeId="volumegroup">
-                <label>Volume 2</label>
-                <description>Volume 2 channels</description>
-            </channel-group>
-            <channel-group id="volume3" typeId="volumegroup">
-                <label>Volume 3</label>
-                <description>Volume 3 channels</description>
-            </channel-group>
-            <channel-group id="volume4" typeId="volumegroup">
-                <label>Volume 4</label>
-                <description>Volume 4 channels</description>
-            </channel-group>
-            <channel-group id="volume5" typeId="volumegroup">
-                <label>Volume 5</label>
-                <description>Volume 5 channels</description>
-            </channel-group>
-            <channel-group id="volume6" typeId="volumegroup">
-                <label>Volume 6</label>
-                <description>Volume 6 channels</description>
-            </channel-group>
-            <channel-group id="volume7" typeId="volumegroup">
-                <label>Volume 7</label>
-                <description>Volume 7 channels</description>
-            </channel-group>
-            <channel-group id="volume8" typeId="volumegroup">
-                <label>Volume 8</label>
-                <description>Volume 8 channels</description>
-            </channel-group>
-            <channel-group id="volume9" typeId="volumegroup">
-                <label>Volume 9</label>
-                <description>Volume 9 channels</description>
-            </channel-group>
-            <channel-group id="volume10" typeId="volumegroup">
-                <label>Volume 10</label>
-                <description>Volume 10 channels</description>
-            </channel-group>
-            <channel-group id="volume11" typeId="volumegroup">
-                <label>Volume 11</label>
-                <description>Volume 11 channels</description>
-            </channel-group>
-            <channel-group id="volume12" typeId="volumegroup">
-                <label>Volume 12</label>
-                <description>Volume 12 channels</description>
-            </channel-group>
-        </channel-groups>
-                
-        <config-description>
-            <parameter name="ipAddress" type="text">
-                <context>network-address</context>
-                <label>IP or Host Name</label>
-                <description>IP or Host name of Atlona Pro3 1616M Switch</description>
-                <required>true</required>
-            </parameter>
-            <parameter name="userName" type="text">
-                <label>UserName to login with</label>
-                <description>User Name to login with if Telnet Login is on</description>
-                <required>false</required>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="password" type="text">
-                <context>password</context>
-                <label>Password to login with</label>
-                <description>Password to login with if Telnet Login is on</description>
-                <required>false</required>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="polling" type="integer">
-                <label>Polling Interval</label>
-                <description>Interval (in seconds) to poll the actual state of the Matrix</description>
-                <default>600</default>
-                <advanced>true</advanced>
-            </parameter>            
-            <parameter name="ping" type="integer">
-                <label>Pint Interval</label>
-                <description>Ping Interval (in seconds) to keep the connection alive</description>
-                <default>30</default>
-                <advanced>true</advanced>
-            </parameter>            
-            <parameter name="retryPolling" type="integer">
-                <label>Polling Interval to try to reconnect</label>
-                <description>Interval (in seconds) to try to (re)connect to the matrix</description>
-                <default>10</default>
-                <advanced>true</advanced>
-            </parameter>            
-        </config-description>
-    </thing-type>
+		<channel-groups>
+			<channel-group id="primary" typeId="primarygroup"/>
+			<channel-group id="port1" typeId="portgroup">
+				<label>Port 1</label>
+				<description>Output Port 1 Channels</description>
+			</channel-group>
+			<channel-group id="port2" typeId="portgroup">
+				<label>Port 2</label>
+				<description>Output Port 2 Channels</description>
+			</channel-group>
+			<channel-group id="port3" typeId="portgroup">
+				<label>Port 3</label>
+				<description>Output Port 3 Channels</description>
+			</channel-group>
+			<channel-group id="port4" typeId="portgroup">
+				<label>Port 4</label>
+				<description>Output Port 4 Channels</description>
+			</channel-group>
+			<channel-group id="port5" typeId="portgroup">
+				<label>Port 5</label>
+				<description>Output Port 5 Channels</description>
+			</channel-group>
+			<channel-group id="port6" typeId="portgroup">
+				<label>Port 6</label>
+				<description>Output Port 6 Channels</description>
+			</channel-group>
+			<channel-group id="port7" typeId="portgroup">
+				<label>Port 7</label>
+				<description>Output Port 7 Channels</description>
+			</channel-group>
+			<channel-group id="port8" typeId="portgroup">
+				<label>Port 8</label>
+				<description>Output Port 8 Channels</description>
+			</channel-group>
+			<channel-group id="port9" typeId="portgroup">
+				<label>Port 9</label>
+				<description>Output Port 9 Channels</description>
+			</channel-group>
+			<channel-group id="port10" typeId="portgroup">
+				<label>Port 10</label>
+				<description>Output Port 10 Channels</description>
+			</channel-group>
+			<channel-group id="mirror8" typeId="mirrorgroup">
+				<label>HDMI Port 8</label>
+				<description>HDMI Port 8 Mirroring Channels</description>
+			</channel-group>
+			<channel-group id="mirror10" typeId="mirrorgroup">
+				<label>HDMI Port 10</label>
+				<description>HDMI Port 10 Mirroring Channels</description>
+			</channel-group>
+			<channel-group id="volume1" typeId="volumegroup">
+				<label>Volume 1</label>
+				<description>Volume 1 channels</description>
+			</channel-group>
+			<channel-group id="volume2" typeId="volumegroup">
+				<label>Volume 2</label>
+				<description>Volume 2 channels</description>
+			</channel-group>
+			<channel-group id="volume3" typeId="volumegroup">
+				<label>Volume 3</label>
+				<description>Volume 3 channels</description>
+			</channel-group>
+			<channel-group id="volume4" typeId="volumegroup">
+				<label>Volume 4</label>
+				<description>Volume 4 channels</description>
+			</channel-group>
+			<channel-group id="volume5" typeId="volumegroup">
+				<label>Volume 5</label>
+				<description>Volume 5 channels</description>
+			</channel-group>
+			<channel-group id="volume6" typeId="volumegroup">
+				<label>Volume 6</label>
+				<description>Volume 6 channels</description>
+			</channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP or Host Name</label>
+				<description>IP or Host name of Atlona Switch</description>
+				<default></default>
+			</parameter>
+			<parameter name="userName" type="text">
+				<label>UserName</label>
+				<description>User Name to use (if Telnet Login is ON)</description>
+				<default></default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password to login with</label>
+				<description>Password to use (if Telnet Login is ON)</description>
+				<default></default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="polling" type="integer">
+				<label>Polling Interval</label>
+				<description>Interval (in seconds) to poll the actual state</description>
+				<default>600</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ping" type="integer">
+				<label>Pint Interval</label>
+				<description>Ping Interval (in seconds) to keep the connection alive</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="retryPolling" type="integer">
+				<label>Polling Interval to try to reconnect</label>
+				<description>Interval (in seconds) to try to (re)connect</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- AT-UHD-PRO3-1616M -->
+	<thing-type id="pro3-1616m">
+		<label>Atlona Pro3 16x16 HDBaseT Matrix</label>
+		<description>Atlona Pro3 16x16 HDBaseT Matrix (Model AT-UHD-PRO3-1616M)</description>
+
+		<channel-groups>
+			<channel-group id="primary" typeId="primarygroup"/>
+			<channel-group id="port1" typeId="portgroup">
+				<label>Port 1</label>
+				<description>Output Port 1 Channels</description>
+			</channel-group>
+			<channel-group id="port2" typeId="portgroup">
+				<label>Port 2</label>
+				<description>Output Port 2 Channels</description>
+			</channel-group>
+			<channel-group id="port3" typeId="portgroup">
+				<label>Port 3</label>
+				<description>Output Port 3 Channels</description>
+			</channel-group>
+			<channel-group id="port4" typeId="portgroup">
+				<label>Port 4</label>
+				<description>Output Port 4 Channels</description>
+			</channel-group>
+			<channel-group id="port5" typeId="portgroup">
+				<label>Port 5</label>
+				<description>Output Port 5 Channels</description>
+			</channel-group>
+			<channel-group id="port6" typeId="portgroup">
+				<label>Port 6</label>
+				<description>Output Port 6 Channels</description>
+			</channel-group>
+			<channel-group id="port7" typeId="portgroup">
+				<label>Port 7</label>
+				<description>Output Port 7 Channels</description>
+			</channel-group>
+			<channel-group id="port8" typeId="portgroup">
+				<label>Port 8</label>
+				<description>Output Port 8 Channels</description>
+			</channel-group>
+			<channel-group id="port9" typeId="portgroup">
+				<label>Port 9</label>
+				<description>Output Port 9 Channels</description>
+			</channel-group>
+			<channel-group id="port10" typeId="portgroup">
+				<label>Port 10</label>
+				<description>Output Port 10 Channels</description>
+			</channel-group>
+			<channel-group id="port11" typeId="portgroup">
+				<label>Port 11</label>
+				<description>Output Port 11 Channels</description>
+			</channel-group>
+			<channel-group id="port12" typeId="portgroup">
+				<label>Port 12</label>
+				<description>Output Port 12 Channels</description>
+			</channel-group>
+			<channel-group id="port13" typeId="portgroup">
+				<label>Port 13</label>
+				<description>Output Port 13 Channels</description>
+			</channel-group>
+			<channel-group id="port14" typeId="portgroup">
+				<label>Port 14</label>
+				<description>Output Port 14 Channels</description>
+			</channel-group>
+			<channel-group id="port15" typeId="portgroup">
+				<label>Port 15</label>
+				<description>Output Port 15 Channels</description>
+			</channel-group>
+			<channel-group id="port16" typeId="portgroup">
+				<label>Port 16</label>
+				<description>Output Port 16 Channels</description>
+			</channel-group>
+			<channel-group id="port17" typeId="portgroup">
+				<label>Port 17</label>
+				<description>Output Port 17 Channels</description>
+			</channel-group>
+			<channel-group id="port18" typeId="portgroup">
+				<label>Port 18</label>
+				<description>Output Port 18 Channels</description>
+			</channel-group>
+			<channel-group id="port19" typeId="portgroup">
+				<label>Port 19</label>
+				<description>Output Port 19 Channels</description>
+			</channel-group>
+			<channel-group id="port20" typeId="portgroup">
+				<label>Port 20</label>
+				<description>Output Port 20 Channels</description>
+			</channel-group>
+			<channel-group id="mirror17" typeId="mirrorgroup">
+				<label>HDMI Port 17</label>
+				<description>HDMI Port 17 Mirroring Channels</description>
+			</channel-group>
+			<channel-group id="mirror18" typeId="mirrorgroup">
+				<label>HDMI Port 18</label>
+				<description>HDMI Port 18 Mirroring Channels</description>
+			</channel-group>
+			<channel-group id="mirror19" typeId="mirrorgroup">
+				<label>HDMI Port 19</label>
+				<description>HDMI Port 19 Mirroring Channels</description>
+			</channel-group>
+			<channel-group id="mirror20" typeId="mirrorgroup">
+				<label>HDMI Port 20</label>
+				<description>HDMI Port 20 Mirroring Channels</description>
+			</channel-group>
+			<channel-group id="volume1" typeId="volumegroup">
+				<label>Volume 1</label>
+				<description>Volume 1 channels</description>
+			</channel-group>
+			<channel-group id="volume2" typeId="volumegroup">
+				<label>Volume 2</label>
+				<description>Volume 2 channels</description>
+			</channel-group>
+			<channel-group id="volume3" typeId="volumegroup">
+				<label>Volume 3</label>
+				<description>Volume 3 channels</description>
+			</channel-group>
+			<channel-group id="volume4" typeId="volumegroup">
+				<label>Volume 4</label>
+				<description>Volume 4 channels</description>
+			</channel-group>
+			<channel-group id="volume5" typeId="volumegroup">
+				<label>Volume 5</label>
+				<description>Volume 5 channels</description>
+			</channel-group>
+			<channel-group id="volume6" typeId="volumegroup">
+				<label>Volume 6</label>
+				<description>Volume 6 channels</description>
+			</channel-group>
+			<channel-group id="volume7" typeId="volumegroup">
+				<label>Volume 7</label>
+				<description>Volume 7 channels</description>
+			</channel-group>
+			<channel-group id="volume8" typeId="volumegroup">
+				<label>Volume 8</label>
+				<description>Volume 8 channels</description>
+			</channel-group>
+			<channel-group id="volume9" typeId="volumegroup">
+				<label>Volume 9</label>
+				<description>Volume 9 channels</description>
+			</channel-group>
+			<channel-group id="volume10" typeId="volumegroup">
+				<label>Volume 10</label>
+				<description>Volume 10 channels</description>
+			</channel-group>
+			<channel-group id="volume11" typeId="volumegroup">
+				<label>Volume 11</label>
+				<description>Volume 11 channels</description>
+			</channel-group>
+			<channel-group id="volume12" typeId="volumegroup">
+				<label>Volume 12</label>
+				<description>Volume 12 channels</description>
+			</channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<context>network-address</context>
+				<label>IP or Host Name</label>
+				<description>IP or Host name of Atlona Pro3 1616M Switch</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="userName" type="text">
+				<label>UserName to login with</label>
+				<description>User Name to login with if Telnet Login is on</description>
+				<required>false</required>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password to login with</label>
+				<description>Password to login with if Telnet Login is on</description>
+				<required>false</required>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="polling" type="integer">
+				<label>Polling Interval</label>
+				<description>Interval (in seconds) to poll the actual state of the Matrix</description>
+				<default>600</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ping" type="integer">
+				<label>Pint Interval</label>
+				<description>Ping Interval (in seconds) to keep the connection alive</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="retryPolling" type="integer">
+				<label>Polling Interval to try to reconnect</label>
+				<description>Interval (in seconds) to try to (re)connect to the matrix</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 	<channel-group-type id="primarygroup">
-	    <label>Primary Channels</label>
-	    <description>Primary Channels</description>
-	
-	    <channels>
-            <channel id="power" typeId="power"/>
-            <channel id="panellock" typeId="panellock"/>
-            <channel id="irenable" typeId="irenable"/>
-            <channel id="presetcmd" typeId="presetcmd"/>
-            <channel id="matrixcmd" typeId="matrixcmd"/>
-	    </channels>
-    </channel-group-type>  
-	  
-    <channel-group-type id="portgroup">
-        <label>Port</label>
-        <description>Output Port Channels</description>
-        <channels>
-          <channel id="portpower" typeId="portpower" />
-          <channel id="portoutput" typeId="portoutput" />
-        </channels>
-    </channel-group-type>  
-    
-    
-    <channel-group-type id="mirrorgroup">
-        <label>HDMI Port</label>
-        <description>HDMI Port Mirroring Channels</description>
-        <channels>
-          <channel id="portmirror" typeId="portmirror" />
-          <channel id="portmirrorenabled" typeId="portmirrorenabled" />
-        </channels>
-    </channel-group-type>
-            
-    <channel-group-type id="volumegroup">
-        <label>Volume</label>
-        <description>Volume channels</description>
-        <channels>
-          <channel id="volume" typeId="volume" />
-          <channel id="volumemute" typeId="volumemute" />
-        </channels>
-    </channel-group-type>  
-        
-    <!-- Port Channel Type -->
-    <channel-type id="power">
-        <item-type>Switch</item-type>
-        <label>Power</label>
-        <description>Whether the matrix is on or not</description>
-    </channel-type>
-    <channel-type id="panellock" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Panel Lock</label>
-        <description>Whether the front panel buttons are locked or not</description>
-    </channel-type>
-    <channel-type id="irenable" advanced="true">
-        <item-type>Switch</item-type>
-        <label>IR Enable</label>
-        <description>Enables or Disables IR</description>
-    </channel-type>
-    <channel-type id="presetcmd" advanced="true">
-        <item-type>String</item-type>
-        <label>Preset Command</label>
-        <description>Send a preset command ("saveX", "recallX", "clearX")</description>
-    </channel-type>
-    <channel-type id="matrixcmd" advanced="true">
-        <item-type>String</item-type>
-        <label>Matrix Command</label>
-        <description>Send a matrix command ("resetmatrix", "resetports", "allportsX")</description>
-    </channel-type>
-    <channel-type id="portpower" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Output Port Power</label>
-        <description>Turns on/off the output port</description>
-    </channel-type>
-    <channel-type id="portoutput">
-        <item-type>Number</item-type>
-        <label>Output Port</label>
-        <description>Sets the output port to the input port</description>
-    </channel-type>
-    <channel-type id="portmirror">
-        <item-type>Number</item-type>
-        <label>Mirror Port</label>
-        <description>Sets the port to be mirrored on the output port</description>
-    </channel-type>
-    <channel-type id="portmirrorenabled">
-        <item-type>Switch</item-type>
-        <label>Mirror Enabled</label>
-        <description>Whether the HDMI port mirroring is enabled or not</description>
-    </channel-type>
-    <channel-type id="volume">
-        <item-type>Number</item-type>
-        <label>Output Volume</label>
-        <description>Sets the volume (in db) of the output port (default: -40db with range from -79db to 15db)</description>
-        <state min="-79" max="15"/>
-    </channel-type>
-    <channel-type id="volumemute">
-        <item-type>Switch</item-type>
-        <label>Mute</label>
-        <description>Sets the output to muted or not</description>
-    </channel-type>
+		<label>Primary Channels</label>
+		<description>Primary Channels</description>
+
+		<channels>
+			<channel id="power" typeId="power"/>
+			<channel id="panellock" typeId="panellock"/>
+			<channel id="irenable" typeId="irenable"/>
+			<channel id="presetcmd" typeId="presetcmd"/>
+			<channel id="matrixcmd" typeId="matrixcmd"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="portgroup">
+		<label>Port</label>
+		<description>Output Port Channels</description>
+		<channels>
+			<channel id="portpower" typeId="portpower" />
+			<channel id="portoutput" typeId="portoutput" />
+		</channels>
+	</channel-group-type>
+
+
+	<channel-group-type id="mirrorgroup">
+		<label>HDMI Port</label>
+		<description>HDMI Port Mirroring Channels</description>
+		<channels>
+			<channel id="portmirror" typeId="portmirror" />
+			<channel id="portmirrorenabled" typeId="portmirrorenabled" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="volumegroup">
+		<label>Volume</label>
+		<description>Volume channels</description>
+		<channels>
+			<channel id="volume" typeId="volume" />
+			<channel id="volumemute" typeId="volumemute" />
+		</channels>
+	</channel-group-type>
+
+	<!-- Port Channel Type -->
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Whether the matrix is on or not</description>
+	</channel-type>
+	<channel-type id="panellock" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Panel Lock</label>
+		<description>Whether the front panel buttons are locked or not</description>
+	</channel-type>
+	<channel-type id="irenable" advanced="true">
+		<item-type>Switch</item-type>
+		<label>IR Enable</label>
+		<description>Enables or Disables IR</description>
+	</channel-type>
+	<channel-type id="presetcmd" advanced="true">
+		<item-type>String</item-type>
+		<label>Preset Command</label>
+		<description>Send a preset command ("saveX", "recallX", "clearX")</description>
+	</channel-type>
+	<channel-type id="matrixcmd" advanced="true">
+		<item-type>String</item-type>
+		<label>Matrix Command</label>
+		<description>Send a matrix command ("resetmatrix", "resetports", "allportsX")</description>
+	</channel-type>
+	<channel-type id="portpower" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output Port Power</label>
+		<description>Turns on/off the output port</description>
+	</channel-type>
+	<channel-type id="portoutput">
+		<item-type>Number</item-type>
+		<label>Output Port</label>
+		<description>Sets the output port to the input port</description>
+	</channel-type>
+	<channel-type id="portmirror">
+		<item-type>Number</item-type>
+		<label>Mirror Port</label>
+		<description>Sets the port to be mirrored on the output port</description>
+	</channel-type>
+	<channel-type id="portmirrorenabled">
+		<item-type>Switch</item-type>
+		<label>Mirror Enabled</label>
+		<description>Whether the HDMI port mirroring is enabled or not</description>
+	</channel-type>
+	<channel-type id="volume">
+		<item-type>Number</item-type>
+		<label>Output Volume</label>
+		<description>Sets the volume (in db) of the output port (default: -40db with range from -79db to 15db)</description>
+		<state min="-79" max="15"/>
+	</channel-type>
+	<channel-type id="volumemute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Sets the output to muted or not</description>
+	</channel-type>
 </thing:thing-descriptions>

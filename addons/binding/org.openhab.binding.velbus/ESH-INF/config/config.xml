@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="bridge-type:velbus:bridge">
+		<parameter name="port" type="text">
+			<context>serial-port</context>
+			<label>Serial port</label>
+			<description>Select serial port (COM1, /dev/ttyS0, ...)</description>
+			<required>true</required>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velbus:1channelDevice">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velbus:2channelDevice">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 name</label>
+			<description>The name of CH2.</description>
+			<default>CH2</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velbus:4channelDevice">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 name</label>
+			<description>The name of CH2.</description>
+			<default>CH2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH3" type="text">
+			<label>CH3 name</label>
+			<description>The name of CH3.</description>
+			<default>CH3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH4" type="text">
+			<label>CH4 name</label>
+			<description>The name of CH4.</description>
+			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velbus:5channelDevice">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 name</label>
+			<description>The name of CH2.</description>
+			<default>CH2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH3" type="text">
+			<label>CH3 name</label>
+			<description>The name of CH3.</description>
+			<default>CH3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH4" type="text">
+			<label>CH4 name</label>
+			<description>The name of CH4.</description>
+			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH5" type="text">
+			<label>CH5 name</label>
+			<description>The name of CH5.</description>
+			<default>CH5</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velbus:6channelDevice">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 name</label>
+			<description>The name of CH2.</description>
+			<default>CH2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH3" type="text">
+			<label>CH3 name</label>
+			<description>The name of CH3.</description>
+			<default>CH3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH4" type="text">
+			<label>CH4 name</label>
+			<description>The name of CH4.</description>
+			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH5" type="text">
+			<label>CH5 name</label>
+			<description>The name of CH5.</description>
+			<default>CH5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH6" type="text">
+			<label>CH6 name</label>
+			<description>The name of CH6.</description>
+			<default>CH6</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velbus:7channelDevice">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 name</label>
+			<description>The name of CH2.</description>
+			<default>CH2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH3" type="text">
+			<label>CH3 name</label>
+			<description>The name of CH3.</description>
+			<default>CH3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH4" type="text">
+			<label>CH4 name</label>
+			<description>The name of CH4.</description>
+			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH5" type="text">
+			<label>CH5 name</label>
+			<description>The name of CH5.</description>
+			<default>CH5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH6" type="text">
+			<label>CH6 name</label>
+			<description>The name of CH6.</description>
+			<default>CH6</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH7" type="text">
+			<label>CH7 name</label>
+			<description>The name of CH7.</description>
+			<default>CH7</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velbus:8channelDevice">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 name</label>
+			<description>The name of CH2.</description>
+			<default>CH2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH3" type="text">
+			<label>CH3 name</label>
+			<description>The name of CH3.</description>
+			<default>CH3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH4" type="text">
+			<label>CH4 name</label>
+			<description>The name of CH4.</description>
+			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH5" type="text">
+			<label>CH5 name</label>
+			<description>The name of CH5.</description>
+			<default>CH5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH6" type="text">
+			<label>CH6 name</label>
+			<description>The name of CH6.</description>
+			<default>CH6</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH7" type="text">
+			<label>CH7 name</label>
+			<description>The name of CH7.</description>
+			<default>CH7</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH8" type="text">
+			<label>CH8 name</label>
+			<description>The name of CH8.</description>
+			<default>CH8</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velbus:9channelDeviceWithTemperatureSensor">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="refresh" type="integer">
+			<label>Refresh interval</label>
+			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
+			<default>300</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 name</label>
+			<description>The name of CH2.</description>
+			<default>CH2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH3" type="text">
+			<label>CH3 name</label>
+			<description>The name of CH3.</description>
+			<default>CH3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH4" type="text">
+			<label>CH4 name</label>
+			<description>The name of CH4.</description>
+			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH5" type="text">
+			<label>CH5 name</label>
+			<description>The name of CH5.</description>
+			<default>CH5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH6" type="text">
+			<label>CH6 name</label>
+			<description>The name of CH6.</description>
+			<default>CH6</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH7" type="text">
+			<label>CH7 name</label>
+			<description>The name of CH7.</description>
+			<default>CH7</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH8" type="text">
+			<label>CH8 name</label>
+			<description>The name of CH8.</description>
+			<default>CH8</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH9" type="text">
+			<label>CH9 name</label>
+			<description>The name of CH9 (temperature sensor channel).</description>
+			<default>Temperature</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velbus:33channelDeviceWithTemperatureSensor">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="refresh" type="integer">
+			<label>Refresh interval</label>
+			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
+			<default>300</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 name</label>
+			<description>The name of CH2.</description>
+			<default>CH2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH3" type="text">
+			<label>CH3 name</label>
+			<description>The name of CH3.</description>
+			<default>CH3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH4" type="text">
+			<label>CH4 name</label>
+			<description>The name of CH4.</description>
+			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH5" type="text">
+			<label>CH5 name</label>
+			<description>The name of CH5.</description>
+			<default>CH5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH6" type="text">
+			<label>CH6 name</label>
+			<description>The name of CH6.</description>
+			<default>CH6</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH7" type="text">
+			<label>CH7 name</label>
+			<description>The name of CH7.</description>
+			<default>CH7</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH8" type="text">
+			<label>CH8 name</label>
+			<description>The name of CH8.</description>
+			<default>CH8</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH9" type="text">
+			<label>CH9 name</label>
+			<description>The name of CH9.</description>
+			<default>CH9</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH10" type="text">
+			<label>CH10 name</label>
+			<description>The name of CH10.</description>
+			<default>CH10</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH11" type="text">
+			<label>CH11 name</label>
+			<description>The name of CH11.</description>
+			<default>CH11</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH12" type="text">
+			<label>CH12 name</label>
+			<description>The name of CH12.</description>
+			<default>CH12</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH13" type="text">
+			<label>CH13 name</label>
+			<description>The name of CH13.</description>
+			<default>CH13</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH14" type="text">
+			<label>CH14 name</label>
+			<description>The name of CH14.</description>
+			<default>CH14</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH15" type="text">
+			<label>CH15 name</label>
+			<description>The name of CH15.</description>
+			<default>CH15</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH16" type="text">
+			<label>CH16 name</label>
+			<description>The name of CH16.</description>
+			<default>CH16</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH17" type="text">
+			<label>CH17 name</label>
+			<description>The name of CH17.</description>
+			<default>CH17</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH18" type="text">
+			<label>CH18 name</label>
+			<description>The name of CH18.</description>
+			<default>CH18</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH19" type="text">
+			<label>CH19 name</label>
+			<description>The name of CH19.</description>
+			<default>CH19</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH20" type="text">
+			<label>CH20 name</label>
+			<description>The name of CH20.</description>
+			<default>CH20</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH21" type="text">
+			<label>CH21 name</label>
+			<description>The name of CH21.</description>
+			<default>CH21</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH22" type="text">
+			<label>CH22 name</label>
+			<description>The name of CH22.</description>
+			<default>CH22</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH23" type="text">
+			<label>CH23 name</label>
+			<description>The name of CH23.</description>
+			<default>CH23</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH24" type="text">
+			<label>CH24 name</label>
+			<description>The name of CH24.</description>
+			<default>CH24</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH25" type="text">
+			<label>CH25 name</label>
+			<description>The name of CH25.</description>
+			<default>CH25</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH26" type="text">
+			<label>CH26 name</label>
+			<description>The name of CH26.</description>
+			<default>CH26</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH27" type="text">
+			<label>CH27 name</label>
+			<description>The name of CH27.</description>
+			<default>CH27</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH28" type="text">
+			<label>CH28 name</label>
+			<description>The name of CH28.</description>
+			<default>CH28</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH29" type="text">
+			<label>CH29 name</label>
+			<description>The name of CH29.</description>
+			<default>CH29</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH30" type="text">
+			<label>CH30 name</label>
+			<description>The name of CH30.</description>
+			<default>CH30</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH31" type="text">
+			<label>CH31 name</label>
+			<description>The name of CH31.</description>
+			<default>CH31</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH32" type="text">
+			<label>CH32 name</label>
+			<description>The name of CH32.</description>
+			<default>CH32</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH33" type="text">
+			<label>CH33 name</label>
+			<description>The name of CH33 (temperature sensor channel).</description>
+			<default>Temperature</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

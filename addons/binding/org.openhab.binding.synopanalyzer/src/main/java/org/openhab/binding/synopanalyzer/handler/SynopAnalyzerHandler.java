@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,14 +12,18 @@ import static org.openhab.binding.synopanalyzer.SynopAnalyzerBindingConstants.*;
 import static org.openhab.binding.synopanalyzer.internal.UnitUtils.*;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -32,7 +36,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.synopanalyzer.config.SynopAnalyzerConfiguration;
+import org.openhab.binding.synopanalyzer.internal.config.SynopAnalyzerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,19 +51,26 @@ import com.nwpi.synop.SynopShip;
  * sent to one of the channels.
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Mark Herwege - Correction for timezone treatment
  */
+
 public class SynopAnalyzerHandler extends BaseThingHandler {
 
-    private static final String OGIMET_SYNOP_PATH = "http://www.ogimet.com/cgi-bin/getsynop?";
+    private static final String OGIMET_SYNOP_PATH = "http://www.ogimet.com/cgi-bin/getsynop?block=";
     private static final int REQUEST_TIMEOUT = 5000;
-    private static final SimpleDateFormat SYNOP_DATE_FORMAT = new SimpleDateFormat("yyyyMMddHH00");
+    private static final DateTimeFormatter SYNOP_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHH00");
+    private static final String MPS = "m/s";
+    private static final String KNOTS = "knots";
+    private static final String UTC = "UTC";
+    private static final double KASTEN_POWER = 3.4;
+    private static final double OCTA_MAX = 8.0;
 
     private Logger logger = LoggerFactory.getLogger(SynopAnalyzerHandler.class);
 
     private ScheduledFuture<?> executionJob;
-    protected SynopAnalyzerConfiguration configuration;
+    private SynopAnalyzerConfiguration configuration;
 
-    public SynopAnalyzerHandler(Thing thing) {
+    public SynopAnalyzerHandler(@NonNull Thing thing) {
         super(thing);
     }
 
@@ -72,52 +83,42 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
 
         executionJob = scheduler.scheduleWithFixedDelay(() -> {
             updateSynopChannels();
-        }, 1, configuration.refreshInterval, TimeUnit.MINUTES);
-        super.initialize();
+        }, 0, configuration.refreshInterval, TimeUnit.MINUTES);
+        updateStatus(ThingStatus.ONLINE);
 
     }
 
     private Synop getLastAvailableSynop() {
         logger.debug("Retrieving last Synop message");
-        Calendar observationTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        String message = "";
 
-        for (int backInTime = 0; backInTime < 24 && !message.startsWith(configuration.stationId); backInTime++) {
-            observationTime.roll(Calendar.HOUR, false);
-
-            String url = forgeURL(observationTime);
-
-            try {
-                message = HttpUtil.executeUrl("GET", url, REQUEST_TIMEOUT);
+        String url = forgeURL();
+        try {
+            String answer = HttpUtil.executeUrl("GET", url, REQUEST_TIMEOUT);
+            List<String> messages = Arrays.asList(answer.split("\n"));
+            if (!messages.isEmpty()) {
+                String message = messages.get(messages.size() - 1);
                 logger.debug(message);
-            } catch (IOException e) {
-                logger.warn("Synop request timedout : {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE);
-                return null;
+                if (message.startsWith(configuration.stationId)) {
+                    logger.debug("Valid Synop message received");
+
+                    List<String> messageParts = Arrays.asList(message.split(","));
+                    String synopMessage = messageParts.get(messageParts.size() - 1);
+
+                    return createSynopObject(synopMessage);
+                }
             }
-
+            logger.warn("No valid Synop found for last 24h");
+        } catch (IOException e) {
+            logger.warn("Synop request timedout : {}", e.getMessage());
         }
-
-        if (message.startsWith(configuration.stationId)) {
-            logger.debug("Valid Synop message received");
-            updateStatus(ThingStatus.ONLINE);
-
-            String[] messageParts = message.split(",");
-            String synopMessage = messageParts[messageParts.length - 1];
-
-            Synop synopObject = createSynopObject(synopMessage);
-            return synopObject;
-        } else {
-            logger.warn("No valid Synop for last 24h");
-            updateStatus(ThingStatus.OFFLINE);
-            return null;
-        }
+        return null;
     }
 
     private void updateSynopChannels() {
         logger.debug("Updating device channels");
 
         Synop synop = getLastAvailableSynop();
+        updateStatus(synop != null ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
         if (synop != null) {
             getThing().getChannels().forEach(channel -> {
                 String channelId = channel.getUID().getId();
@@ -132,7 +133,12 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
             case HORIZONTAL_VISIBILITY:
                 return new StringType(synop.getHorizontalVisibility());
             case OCTA:
-                return new DecimalType(synop.getOcta());
+                return new DecimalType(Math.max(0, synop.getOcta()));
+            case ATTENUATION_FACTOR:
+                double kc = Math.max(0, Math.min(synop.getOcta(), OCTA_MAX)) / OCTA_MAX;
+                kc = Math.pow(kc, KASTEN_POWER);
+                kc = 1 - 0.75 * kc;
+                return new DecimalType(kc);
             case OVERCAST:
                 return new StringType(synop.getOvercast());
             case PRESSURE:
@@ -146,14 +152,14 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                 String direction = getWindDirection(angle);
                 return new StringType(direction);
             case WIND_SPEED_MS:
-                if (synop.getWindUnit().equalsIgnoreCase("m/s")) {
+                if (synop.getWindUnit().equalsIgnoreCase(MPS)) {
                     return new DecimalType(synop.getWindSpeed());
                 } else {
                     Double kmhSpeed = knotsToKmh(new Double(synop.getWindSpeed()));
                     return new DecimalType(kmhToMps(kmhSpeed));
                 }
             case WIND_SPEED_KNOTS:
-                if (synop.getWindUnit().equalsIgnoreCase("knots")) {
+                if (synop.getWindUnit().equalsIgnoreCase(KNOTS)) {
                     return new DecimalType(synop.getWindSpeed());
                 } else {
                     Double kmhSpeed = mpsToKmh(new Double(synop.getWindSpeed()));
@@ -162,7 +168,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                 }
             case WIND_SPEED_BEAUFORT:
                 Double kmhSpeed;
-                if (synop.getWindUnit().equalsIgnoreCase("m/s")) {
+                if (synop.getWindUnit().equalsIgnoreCase(MPS)) {
                     kmhSpeed = mpsToKmh(new Double(synop.getWindSpeed()));
                 } else {
                     kmhSpeed = knotsToKmh(new Double(synop.getWindSpeed()));
@@ -170,7 +176,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                 Double beaufort = kmhToBeaufort(kmhSpeed);
                 return new DecimalType(beaufort);
             case TIME_UTC:
-                Calendar observationTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                Calendar observationTime = Calendar.getInstance(TimeZone.getTimeZone(UTC));
                 observationTime.set(Calendar.DAY_OF_MONTH, synop.getDay());
                 observationTime.set(Calendar.HOUR_OF_DAY, synop.getHour());
                 observationTime.set(Calendar.MINUTE, 0);
@@ -194,11 +200,12 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
         }
     }
 
-    private String forgeURL(Calendar currentTime) {
-        String beginDate = SYNOP_DATE_FORMAT.format(currentTime.getTime());
+    private String forgeURL() {
+        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC).minusDays(1);
+        String beginDate = SYNOP_DATE_FORMAT.format(utc);
 
-        StringBuilder url = new StringBuilder().append(OGIMET_SYNOP_PATH).append("block=")
-                .append(configuration.stationId).append("&begin=").append(beginDate);
+        StringBuilder url = new StringBuilder().append(OGIMET_SYNOP_PATH).append(configuration.stationId)
+                .append("&begin=").append(beginDate);
 
         return url.toString();
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.audio.AudioStream;
 import org.eclipse.smarthome.core.audio.FixedLengthAudioStream;
 import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
+import org.eclipse.smarthome.core.audio.UnsupportedAudioStreamException;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
@@ -36,16 +37,18 @@ import org.slf4j.LoggerFactory;
  * implements the AudioSink interface.
  * This will allow to register the derived ThingHandler to be registered as a AudioSink in the framework.
  *
- * @author pail
- *
+ * @author Paul Frank - Initial contribution
  */
 public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements AudioSink, UpnpIOParticipant {
 
-    private static HashSet<AudioFormat> supportedFormats = new HashSet<>();
+    private static final Set<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
+    private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = new HashSet<>();
 
     static {
-        supportedFormats.add(AudioFormat.WAV);
-        supportedFormats.add(AudioFormat.MP3);
+        SUPPORTED_FORMATS.add(AudioFormat.WAV);
+        SUPPORTED_FORMATS.add(AudioFormat.MP3);
+
+        SUPPORTED_STREAMS.add(AudioStream.class);
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -66,7 +69,6 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
 
     protected void handlePlayUri(Command command) {
         if (command != null && command instanceof StringType) {
-
             try {
                 playMedia(command.toString());
 
@@ -91,11 +93,16 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return supportedFormats;
+        return SUPPORTED_FORMATS;
+    }
+
+    @Override
+    public Set<Class<? extends AudioStream>> getSupportedStreams() {
+        return SUPPORTED_STREAMS;
     }
 
     private void stop() {
-        Map<String, String> inputs = new HashMap<String, String>();
+        Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", "0");
 
         Map<String, String> result = service.invokeAction(this, "AVTransport", "Stop", inputs);
@@ -106,8 +113,7 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
     }
 
     private void play() {
-
-        Map<String, String> inputs = new HashMap<String, String>();
+        Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", "0");
         inputs.put("Speed", "1");
         Map<String, String> result = service.invokeAction(this, "AVTransport", "Play", inputs);
@@ -118,7 +124,7 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
     }
 
     private void removeAllTracksFromQueue() {
-        Map<String, String> inputs = new HashMap<String, String>();
+        Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", "0");
 
         Map<String, String> result = service.invokeAction(this, "AVTransport", "RemoveAllTracksFromQueue", inputs);
@@ -128,15 +134,14 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
         }
     }
 
-    private void setCurrentURI(String URI, String URIMetaData) {
-        if (URI != null && URIMetaData != null) {
-
-            Map<String, String> inputs = new HashMap<String, String>();
+    private void setCurrentURI(String uri, String uriMetaData) {
+        if (uri != null && uriMetaData != null) {
+            Map<String, String> inputs = new HashMap<>();
 
             try {
                 inputs.put("InstanceID", "0");
-                inputs.put("CurrentURI", URI);
-                inputs.put("CurrentURIMetaData", URIMetaData);
+                inputs.put("CurrentURI", uri);
+                inputs.put("CurrentURIMetaData", uriMetaData);
             } catch (NumberFormatException ex) {
                 logger.error("Action Invalid Value Format Exception {}", ex.getMessage());
             }
@@ -160,7 +165,8 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
     }
 
     @Override
-    public void process(AudioStream audioStream) throws UnsupportedAudioFormatException {
+    public void process(AudioStream audioStream)
+            throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
         String url = null;
         if (audioStream instanceof URLAudioStream) {
             // it is an external URL, the speaker can access it itself and play it.
@@ -182,7 +188,6 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
             }
         }
         playMedia(url);
-
     }
 
     @Override
@@ -202,6 +207,5 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
 
     @Override
     public void onStatusChanged(boolean status) {
-
     }
 }

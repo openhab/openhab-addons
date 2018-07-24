@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.rme;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class RMEBindingConstants {
 
     public static final String BINDING_ID = "rme";
@@ -55,7 +57,6 @@ public class RMEBindingConstants {
         }
 
         public static DataField get(int valueSelectorNumber) throws IllegalArgumentException {
-
             for (DataField c : DataField.values()) {
                 if (c.number == valueSelectorNumber) {
                     return c;
@@ -66,7 +67,6 @@ public class RMEBindingConstants {
         }
 
         public static DataField get(String valueSelectorText) throws IllegalArgumentException {
-
             for (DataField c : DataField.values()) {
                 if (c.id.equals(valueSelectorText)) {
                     return c;

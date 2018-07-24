@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,7 +27,7 @@ import org.openhab.binding.milight.internal.protocol.MilightV6SessionManager.Ses
  * The {@link MilightBridgeV6Handler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author David Graeff <david.graeff@web.de>
+ * @author David Graeff - Initial contribution
  */
 public class MilightBridgeV6Handler extends AbstractMilightBridgeHandler implements ISessionState {
     private MilightV6SessionManager session;
@@ -44,11 +44,11 @@ public class MilightBridgeV6Handler extends AbstractMilightBridgeHandler impleme
             return;
         }
 
-        BigDecimal pw_byte1 = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_PASSWORD_BYTE_1);
-        BigDecimal pw_byte2 = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_PASSWORD_BYTE_2);
-        if (pw_byte1 != null && pw_byte2 != null && pw_byte1.intValue() >= 0 && pw_byte1.intValue() <= 255
-                && pw_byte2.intValue() >= 0 && pw_byte2.intValue() <= 255) {
-            session.setPasswordBytes((byte) pw_byte1.intValue(), (byte) pw_byte2.intValue());
+        BigDecimal pwByte1 = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_PASSWORD_BYTE_1);
+        BigDecimal pwByte2 = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_PASSWORD_BYTE_2);
+        if (pwByte1 != null && pwByte2 != null && pwByte1.intValue() >= 0 && pwByte1.intValue() <= 255
+                && pwByte2.intValue() >= 0 && pwByte2.intValue() <= 255) {
+            session.setPasswordBytes((byte) pwByte1.intValue(), (byte) pwByte2.intValue());
         }
     }
 
@@ -86,19 +86,16 @@ public class MilightBridgeV6Handler extends AbstractMilightBridgeHandler impleme
 
     @Override
     protected Runnable getKeepAliveRunnable() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    session.keep_alive(refrehIntervalSec * 1000);
-                } catch (InterruptedException e) {
-                    // Someone wants to end this thread
-                    return;
-                }
-                updateProperty(MilightBindingConstants.PROPERTY_SESSIONID, session.getSession());
-                updateProperty(MilightBindingConstants.PROPERTY_SESSIONCONFIRMED,
-                        String.valueOf(session.getLastSessionValidConfirmation()));
+        return () -> {
+            try {
+                session.keepAlive(refreshIntervalSec * 1000);
+            } catch (InterruptedException e) {
+                // Someone wants to end this thread
+                return;
             }
+            updateProperty(MilightBindingConstants.PROPERTY_SESSIONID, session.getSession());
+            updateProperty(MilightBindingConstants.PROPERTY_SESSIONCONFIRMED,
+                    String.valueOf(session.getLastSessionValidConfirmation()));
         };
     }
 
@@ -120,7 +117,6 @@ public class MilightBridgeV6Handler extends AbstractMilightBridgeHandler impleme
     // Therefore we present the user all possible bulbs
     // (4 groups each for white/rgbw and 1 for the obsolete rgb bulb ).
     private void addBulbsToDiscovery() {
-
         // The iBox has an integrated bridge lamp
         thingDiscoveryService.addDevice(
                 new ThingUID(MilightBindingConstants.RGB_IBOX_THING_TYPE, this.getThing().getUID(), "0"),
@@ -165,9 +161,9 @@ public class MilightBridgeV6Handler extends AbstractMilightBridgeHandler impleme
             case SESSION_VALID:
                 updateStatus(ThingStatus.ONLINE);
                 // Setup the keep alive timer as soon as we have established a valid session
-                BigDecimal refresh_sec = (BigDecimal) thing.getConfiguration()
+                BigDecimal refreshSec = (BigDecimal) thing.getConfiguration()
                         .get(MilightBindingConstants.CONFIG_REFRESH_SEC);
-                setupRefreshTimer(refresh_sec == null ? refrehIntervalSec : refresh_sec.intValue());
+                setupRefreshTimer(refreshSec == null ? refreshIntervalSec : refreshSec.intValue());
                 addBulbsToDiscovery();
                 // As soon as the session is valid, update the user visible configuration of the host IP.
                 Configuration c = editConfiguration();

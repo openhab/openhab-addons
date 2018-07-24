@@ -1,12 +1,11 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.openhab.binding.tankerkoenig.internal.config;
 
 /**
@@ -14,39 +13,38 @@ package org.openhab.binding.tankerkoenig.internal.config;
  * request. (LittleStation because it has nearly no other information than gas prices. Stripped down version of
  * Station.java)
  *
- * @author Dennis Dollinger
- *
+ * @author Dennis Dollinger - Initial contribution
  */
-
 public class LittleStation {
 
-    private double e5;
-    private double e10;
-    private double diesel;
+    private String e5;
+    private String e10;
+    private String diesel;
     private String status;
     private String id;
+    private Boolean open;
 
-    public double getE5() {
+    public String getE5() {
         return e5;
     }
 
-    public void setE5(double e5) {
+    public void setE5(String e5) {
         this.e5 = e5;
     }
 
-    public double getE10() {
+    public String getE10() {
         return e10;
     }
 
-    public void setE10(double e10) {
+    public void setE10(String e10) {
         this.e10 = e10;
     }
 
-    public double getDiesel() {
+    public String getDiesel() {
         return diesel;
     }
 
-    public void setDiesel(double diesel) {
+    public void setDiesel(String diesel) {
         this.diesel = diesel;
     }
 
@@ -65,4 +63,13 @@ public class LittleStation {
     public void setID(String id) {
         this.id = id;
     }
+
+    public Boolean isOpen() {
+        return open;
+    }
+
+    public void setOpen(Boolean isOpen) {
+        this.open = isOpen;
+    }
+
 }

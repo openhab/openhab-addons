@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,30 +24,24 @@ public interface DeviceStatusListener {
     /**
      * This method is called whenever the state of the given device has changed.
      *
-     * @param bridge
-     *            The Pulseaudio bridge the changed device is connected to.
-     * @param device
-     *            The device which received the state update.
+     * @param bridge The Pulseaudio bridge the changed device is connected to.
+     * @param device The device which received the state update.
      */
     public void onDeviceStateChanged(ThingUID bridge, AbstractAudioDeviceConfig device);
 
     /**
      * This method us called whenever a device is removed.
      *
-     * @param bridge
-     *            The Pulseaudio bridge the removed device was connected to.
-     * @param device
-     *            The device which is removed.
+     * @param bridge The Pulseaudio bridge the removed device was connected to.
+     * @param device The device which is removed.
      */
     public void onDeviceRemoved(PulseaudioBridgeHandler bridge, AbstractAudioDeviceConfig device);
 
     /**
      * This method us called whenever a device is added.
      *
-     * @param bridge
-     *            The Pulseaudio bridge the added device was connected to.
-     * @param device
-     *            The device which is added.
+     * @param bridge The Pulseaudio bridge the added device was connected to.
+     * @param device The device which is added.
      */
     public void onDeviceAdded(Bridge bridge, AbstractAudioDeviceConfig device);
 

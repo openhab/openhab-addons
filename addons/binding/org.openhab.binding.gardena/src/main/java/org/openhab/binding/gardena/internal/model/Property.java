@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,7 +23,7 @@ import com.google.gson.annotations.SerializedName;
 public class Property {
 
     private String name;
-    private String value;
+    private PropertyValue value;
     private Date timestamp;
     private String unit;
     private boolean writeable;
@@ -37,7 +37,7 @@ public class Property {
 
     public Property(GardenaSmartCommandName commandName, String value) {
         this.name = commandName.toString().toLowerCase();
-        this.value = value;
+        this.value = new PropertyValue(value);
     }
 
     /**
@@ -50,14 +50,21 @@ public class Property {
     /**
      * Returns the value of the property.
      */
-    public String getValue() {
+    public String getValueAsString() {
+        return value != null ? value.getValue() : null;
+    }
+
+    /**
+     * Returns the value of the property.
+     */
+    public PropertyValue getValue() {
         return value;
     }
 
     /**
      * Sets the value of the property.
      */
-    public void setValue(String value) {
+    public void setValue(PropertyValue value) {
         this.value = value;
     }
 

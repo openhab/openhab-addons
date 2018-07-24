@@ -8,12 +8,16 @@
 	<thing-type id="Comet_DECT">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
 		</supported-bridge-type-refs>
+
 		<label>Comet DECT</label>
-		<description>Comet DECT heating thermostat</description>
+		<description>Comet DECT heating thermostat.</description>
+
 		<channels>
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
 			<channel id="temperature" typeId="temperature" />
 			<channel id="actual_temp" typeId="actual_temp" />
 			<channel id="set_temp" typeId="set_temp" />
@@ -24,24 +28,54 @@
 			<channel id="next_temp" typeId="next_temp" />
 			<channel id="battery_low" typeId="system.low-battery" />
 		</channels>
-		<config-description>
-			<parameter name="ain" type="text" required="true">
-				<label>AIN</label>
-				<description>The AHA id (AIN) that identifies one specific device.
-				</description>
-			</parameter>
-		</config-description>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
+	</thing-type>
+
+	<thing-type id="FRITZ_DECT_301">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
+		</supported-bridge-type-refs>
+
+		<label>FRITZ!DECT 301</label>
+		<description>FRITZ!DECT 301 heating thermostat.</description>
+
+		<channels>
+			<channel id="mode" typeId="mode" />
+			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
+			<channel id="temperature" typeId="temperature" />
+			<channel id="actual_temp" typeId="actual_temp" />
+			<channel id="set_temp" typeId="set_temp" />
+			<channel id="eco_temp" typeId="eco_temp" />
+			<channel id="comfort_temp" typeId="comfort_temp" />
+			<channel id="radiator_mode" typeId="radiator_mode" />
+			<channel id="next_change" typeId="next_change" />
+			<channel id="next_temp" typeId="next_temp" />
+			<channel id="battery_low" typeId="system.low-battery" />
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
 
 	<thing-type id="FRITZ_DECT_300">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
 		</supported-bridge-type-refs>
+
 		<label>FRITZ!DECT 300</label>
-		<description>FRITZ!DECT 300 heating thermostat</description>
+		<description>FRITZ!DECT 300 heating thermostat.</description>
+
 		<channels>
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
 			<channel id="temperature" typeId="temperature" />
 			<channel id="actual_temp" typeId="actual_temp" />
 			<channel id="set_temp" typeId="set_temp" />
@@ -52,294 +86,151 @@
 			<channel id="next_temp" typeId="next_temp" />
 			<channel id="battery_low" typeId="system.low-battery" />
 		</channels>
-		<config-description>
-			<parameter name="ain" type="text" required="true">
-				<label>AIN</label>
-				<description>The AHA id (AIN) that identifies one specific device.
-				</description>
-			</parameter>
-		</config-description>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
 
 	<thing-type id="FRITZ_DECT_210">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
 		</supported-bridge-type-refs>
 
 		<label>FRITZ!DECT 210</label>
-		<description>FRITZ!DECT210 switchable outlet</description>
+		<description>FRITZ!DECT210 switchable outlet.</description>
 
 		<channels>
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
 			<channel id="temperature" typeId="temperature" />
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
 			<channel id="outlet" typeId="outlet" />
 		</channels>
 
-		<config-description>
-			<parameter name="ain" type="text" required="true">
-				<label>AIN</label>
-				<description>The AHA id (AIN) that identifies one specific device.
-				</description>
-			</parameter>
-		</config-description>
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
 
 	<thing-type id="FRITZ_DECT_200">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
 		</supported-bridge-type-refs>
 
 		<label>FRITZ!DECT 200</label>
-		<description>FRITZ!DECT200 switchable outlet</description>
+		<description>FRITZ!DECT200 switchable outlet.</description>
 
 		<channels>
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
 			<channel id="temperature" typeId="temperature" />
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
 			<channel id="outlet" typeId="outlet" />
 		</channels>
 
-		<config-description>
-			<parameter name="ain" type="text" required="true">
-				<label>AIN</label>
-				<description>The AHA id (AIN) that identifies one specific device.
-				</description>
-			</parameter>
-		</config-description>
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
 
 	<thing-type id="FRITZ_Powerline_546E">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
 		</supported-bridge-type-refs>
 
 		<label>FRITZ!Powerline 546E</label>
-		<description>FRITZ!Powerline 546E with switchable outlet</description>
+		<description>FRITZ!Powerline 546E with switchable outlet.
+		</description>
 
 		<channels>
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
 			<channel id="outlet" typeId="outlet" />
 		</channels>
 
-		<config-description>
-			<parameter name="ain" type="text" required="true">
-				<label>AIN</label>
-				<description>The AHA id (AIN) that identifies one specific device.
-				</description>
-			</parameter>
-		</config-description>
-	</thing-type>
+		<representation-property>ain</representation-property>
 
-	<thing-type id="FRITZ_Powerline_546E_Solo">
-		<label>FRITZ!Powerline 546E</label>
-		<description>FRITZ!Powerline 546E with switchable outlet</description>
-
-		<channels>
-			<channel id="mode" typeId="mode" />
-			<channel id="locked" typeId="locked" />
-			<channel id="energy" typeId="energy" />
-			<channel id="power" typeId="power" />
-			<channel id="outlet" typeId="outlet" />
-		</channels>
-
-		<config-description>
-			<parameter name="ipAddress" type="text" required="true">
-				<context>network-address</context>
-				<label>IP address</label>
-				<description>The local IP address or hostname of the FRITZ!Box
-				</description>
-				<default>fritz.powerline</default>
-			</parameter>
-			<parameter name="port" type="integer" required="false" min="0"
-				max="65335">
-				<label>Port</label>
-				<description>Port of the FRITZ!Box</description>
-			</parameter>
-			<parameter name="protocol" type="text" required="false">
-				<label>Protocol</label>
-				<description>Protocol to connect to the FRITZ!Box (http or https)
-				</description>
-				<default>http</default>
-				<options>
-					<option value="http">HTTP</option>
-					<option value="https">HTTPS</option>
-				</options>
-			</parameter>
-			<parameter name="password" type="text" required="false">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password to access the FRITZ!Box device.
-				</description>
-			</parameter>
-			<parameter name="pollingInterval" type="integer" required="false"
-				min="5" max="60">
-				<label>Polling Interval</label>
-				<description>Interval polling the FRITZ!Box.
-				</description>
-				<default>15</default>
-			</parameter>
-			<parameter name="asyncTimeout" type="integer" required="false"
-				min="1000" max="60000">
-				<label>Async Timeout</label>
-				<description>Timeout for asynchronous connections.
-				</description>
-				<default>10000</default>
-			</parameter>
-			<parameter name="syncTimeout" type="integer" required="false"
-				min="500" max="15000">
-				<label>Sync Timeout</label>
-				<description>Timeout for synchronous connections.
-				</description>
-				<default>2000</default>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
 
 	<thing-type id="FRITZ_DECT_Repeater_100">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
 		</supported-bridge-type-refs>
+
 		<label>FRITZ!DECT Repeater 100</label>
-		<description>FRITZ!DECT Repeater 100 DECT repeater</description>
+		<description>FRITZ!DECT Repeater 100 DECT repeater.</description>
 
 		<channels>
-			<channel typeId="temperature" id="temperature"></channel>
+			<channel typeId="temperature" id="temperature" />
 		</channels>
 
-		<config-description>
-			<parameter name="ain" type="text" required="true">
-				<label>AIN</label>
-				<description>The AHA id (AIN) that identifies one specific device.
-				</description>
-			</parameter>
-		</config-description>
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
 
-	<!-- Channel definitions of all FRITZ! devices -->
-	<channel-type id="mode">
-		<item-type>String</item-type>
-		<label>Mode</label>
-		<description>States the mode of the device (MANUAL/AUTOMATIC).
-		</description>
-		<state pattern="%s" readOnly="true">
-			<options>
-				<option value="MANUAL">MANUAL</option>
-				<option value="AUTOMATIC">AUTOMATIC</option>
-			</options>
-		</state>
-	</channel-type>
+	<!-- Supported FRITZ! groups and features -->
+	<thing-type id="FRITZ_GROUP_HEATING">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
+		</supported-bridge-type-refs>
 
-	<channel-type id="locked" advanced="true">
-		<item-type>Contact</item-type>
-		<label>Device locked (external)</label>
-		<description>Device is locked for switching over external sources.
-		</description>
-		<category>Contact</category>
-		<state pattern="%s" readOnly="true" />
-	</channel-type>
+		<label>Heating Group</label>
+		<description>Group for heating thermostats.</description>
 
-	<!-- Channel definitions of specific FRITZ! devices -->
-	<channel-type id="temperature">
-		<item-type>Number</item-type>
-		<label>Actual Temperature</label>
-		<description>Actual measured temperature</description>
-		<category>Temperature</category>
-		<state pattern="%.1f °C" readOnly="true" />
-	</channel-type>
+		<channels>
+			<channel id="mode" typeId="mode" />
+			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
+			<channel id="actual_temp" typeId="actual_temp" />
+			<channel id="set_temp" typeId="set_temp" />
+			<channel id="eco_temp" typeId="eco_temp" />
+			<channel id="comfort_temp" typeId="comfort_temp" />
+			<channel id="radiator_mode" typeId="radiator_mode" />
+			<channel id="next_change" typeId="next_change" />
+			<channel id="next_temp" typeId="next_temp" />
+			<channel id="battery_low" typeId="system.low-battery" />
+		</channels>
 
-	<channel-type id="energy">
-		<item-type>Number</item-type>
-		<label>Energy Consumption</label>
-		<description>Accumulated energy consumption</description>
-		<category>Energy</category>
-		<state pattern="%.3f kWh" readOnly="true" />
-	</channel-type>
+		<representation-property>ain</representation-property>
 
-	<channel-type id="power">
-		<item-type>Number</item-type>
-		<label>Power</label>
-		<description>Current power consumption</description>
-		<category>Energy</category>
-		<state pattern="%.2f W" readOnly="true" />
-	</channel-type>
+		<config-description-ref uri="thing-type:avmfritz:fritzgroup" />
+	</thing-type>
 
-	<channel-type id="outlet">
-		<item-type>Switch</item-type>
-		<label>Outlet</label>
-		<description>Switched outlet</description>
-		<category>PowerOutlet</category>
-		<state readOnly="false" />
-	</channel-type>
+	<thing-type id="FRITZ_GROUP_SWITCH">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
+		</supported-bridge-type-refs>
 
-	<channel-type id="actual_temp" advanced="true">
-		<item-type>Number</item-type>
-		<label>Actual Temperature</label>
-		<description>Actual measured temperature</description>
-		<category>Temperature</category>
-		<state pattern="%.1f °C" readOnly="true" />
-	</channel-type>
+		<label>Switch Group</label>
+		<description>Group for switchable outlets and power meters.</description>
 
-	<channel-type id="set_temp">
-		<item-type>Number</item-type>
-		<label>Setpoint Temperature</label>
-		<description>Thermostat temperature setpoint</description>
-		<category>Temperature</category>
-		<state min="8" max="28" step="0.5" pattern="%.1f °C" readOnly="false" />
-	</channel-type>
+		<channels>
+			<channel id="mode" typeId="mode" />
+			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
+			<channel id="energy" typeId="energy" />
+			<channel id="power" typeId="power" />
+			<channel id="outlet" typeId="outlet" />
+		</channels>
 
-	<channel-type id="eco_temp">
-		<item-type>Number</item-type>
-		<label>Eco Temperature</label>
-		<description>Eco measured temperature</description>
-		<category>Temperature</category>
-		<state pattern="%.1f °C" readOnly="true" />
-	</channel-type>
+		<representation-property>ain</representation-property>
 
-	<channel-type id="comfort_temp">
-		<item-type>Number</item-type>
-		<label>Comfort Temperature</label>
-		<description>Comfort measured temperature</description>
-		<category>Temperature</category>
-		<state pattern="%.1f °C" readOnly="true" />
-	</channel-type>
-
-	<channel-type id="radiator_mode">
-		<item-type>String</item-type>
-		<label>Radiator mode</label>
-		<description>States the mode of the radiator
-			(ON/OFF/COMFORT/ECO/BOOST).</description>
-		<state pattern="%s">
-			<options>
-				<option value="ON">ON</option>
-				<option value="OFF">OFF</option>
-				<option value="COMFORT">COMFORT</option>
-				<option value="ECO">ECO</option>
-				<option value="BOOST">BOOST</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="next_change" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Next Setpoint Change</label>
-		<description>Next change of Set Temperature</description>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="next_temp" advanced="true">
-		<item-type>Number</item-type>
-		<label>Next Setpoint Temperature</label>
-		<description>Next Set Temperature</description>
-		<category>Temperature</category>
-		<state pattern="%.1f °C" readOnly="true" />
-	</channel-type>
-
+		<config-description-ref uri="thing-type:avmfritz:fritzgroup" />
+	</thing-type>
 </thing:thing-descriptions>

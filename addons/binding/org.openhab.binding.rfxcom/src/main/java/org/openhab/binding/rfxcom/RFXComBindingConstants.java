@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,6 +11,7 @@ package org.openhab.binding.rfxcom;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 
@@ -23,6 +24,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class RFXComBindingConstants {
 
     public static final String BINDING_ID = "rfxcom";
@@ -66,6 +68,8 @@ public class RFXComBindingConstants {
     public static final String CHANNEL_DIMMING_LEVEL = "dimmingLevel";
     public static final String CHANNEL_UV = "uv";
     public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_FOOD_TEMPERATURE = "foodTemperature";
+    public static final String CHANNEL_BBQ_TEMPERATURE = "bbqTemperature";
     public static final String CHANNEL_CHILL_TEMPERATURE = "chillTemperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_HUMIDITY_STATUS = "humidityStatus";
@@ -162,9 +166,9 @@ public class RFXComBindingConstants {
      * Map RFXCOM packet types to RFXCOM Thing types and vice versa.
      */
     public static final Map<PacketType, ThingTypeUID> PACKET_TYPE_THING_TYPE_UID_MAP = ImmutableMap
-            .<PacketType, ThingTypeUID>builder()
+            .<PacketType, ThingTypeUID> builder()
             .put(PacketType.BAROMETRIC, RFXComBindingConstants.THING_TYPE_BAROMETRIC)
-            .put(PacketType.BBQ1, RFXComBindingConstants.THING_TYPE_BBQ_TEMPERATURE)
+            .put(PacketType.BBQ, RFXComBindingConstants.THING_TYPE_BBQ_TEMPERATURE)
             .put(PacketType.BLINDS1, RFXComBindingConstants.THING_TYPE_BLINDS1)
             .put(PacketType.CAMERA1, RFXComBindingConstants.THING_TYPE_CAMERA1)
             .put(PacketType.CHIME, RFXComBindingConstants.THING_TYPE_CHIME)

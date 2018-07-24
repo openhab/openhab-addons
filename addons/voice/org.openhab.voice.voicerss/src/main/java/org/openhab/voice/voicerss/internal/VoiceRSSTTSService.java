@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.smarthome.config.core.ConfigConstants;
+import org.eclipse.smarthome.config.core.ConfigurableService;
 import org.eclipse.smarthome.core.audio.AudioException;
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioStream;
@@ -23,6 +24,9 @@ import org.eclipse.smarthome.core.voice.TTSException;
 import org.eclipse.smarthome.core.voice.TTSService;
 import org.eclipse.smarthome.core.voice.Voice;
 import org.openhab.voice.voicerss.internal.cloudapi.CachedVoiceRSSCloudImplementation;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +36,10 @@ import org.slf4j.LoggerFactory;
  * @author Jochen Hiller - Initial contribution and API
  * @author Laurent Garnier - add support for OGG and AAC audio formats
  */
+@Component(configurationPid = "org.openhab.voicerss", property = { Constants.SERVICE_PID + "=org.openhab.voicerss",
+        ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=voice:voicerss",
+        ConfigurableService.SERVICE_PROPERTY_LABEL + "=VoiceRSS",
+        ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=voice" })
 public class VoiceRSSTTSService implements TTSService {
 
     /** Cache folder name is below userdata/voicerss/cache. */
@@ -74,6 +82,7 @@ public class VoiceRSSTTSService implements TTSService {
         }
     }
 
+    @Modified
     protected void modified(Map<String, Object> config) {
         if (config != null) {
             this.apiKey = config.containsKey(CONFIG_API_KEY) ? config.get(CONFIG_API_KEY).toString() : null;
@@ -224,5 +233,4 @@ public class VoiceRSSTTSService implements TTSService {
     public String getLabel(Locale locale) {
         return "VoiceRSS Text-to-Speech Engine";
     }
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PanelThingHandler extends DSCAlarmBaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(PanelThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PanelThingHandler.class);
 
     /**
      * Constructor.
@@ -57,9 +57,6 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
     private static final int PANEL_COMMAND_SET_TIME_DATE = 10;
     private static final int PANEL_COMMAND_CODE_SEND = 200;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void updateChannel(ChannelUID channelUID, int state, String description) {
         logger.debug("updateChannel(): Panel Channel UID: {}", channelUID);
@@ -183,12 +180,8 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         logger.debug("handleCommand(): Command Received - {} {}.", channelUID, command);
 
         if (command instanceof RefreshType) {
@@ -196,7 +189,6 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         }
 
         if (dscAlarmBridgeHandler != null && dscAlarmBridgeHandler.isConnected()) {
-
             int cmd;
 
             switch (channelUID.getId()) {
@@ -267,7 +259,7 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         boolean isTimeStamp = timeStamp != "";
 
         if ((timeStamp == "" && isTimeStamp == false) || (timeStamp != "" && isTimeStamp == true)) {
-            logger.debug("setTimeStampState(): Already Set!", timeStamp);
+            logger.debug("setTimeStampState(): Already Set: {}", timeStamp);
             return;
         } else if (timeStamp != "") {
             state = 1;
@@ -412,11 +404,36 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
     }
 
     /**
-     * {@inheritDoc}
+     * Restores all partitions that are in alarm after special panel alarm conditions have been restored.
+     *
+     * @param dscAlarmCode
      */
+    private void restorePartitionsInAlarm(DSCAlarmCode dscAlarmCode) {
+
+        logger.debug("restorePartitionsInAlarm(): DSC Alarm Code: {}!", dscAlarmCode.toString());
+
+        ChannelUID channelUID = null;
+
+        if (dscAlarmCode == DSCAlarmCode.FireKeyRestored || dscAlarmCode == DSCAlarmCode.AuxiliaryKeyRestored
+                || dscAlarmCode == DSCAlarmCode.PanicKeyRestored
+                || dscAlarmCode == DSCAlarmCode.AuxiliaryInputAlarmRestored) {
+            List<Thing> things = dscAlarmBridgeHandler.getThing().getThings();
+            for (Thing thg : things) {
+                if (thg.getThingTypeUID().equals(PARTITION_THING_TYPE)) {
+                    DSCAlarmBaseThingHandler handler = (DSCAlarmBaseThingHandler) thg.getHandler();
+                    if (handler != null) {
+                        channelUID = new ChannelUID(thg.getUID(), PARTITION_IN_ALARM);
+                        handler.updateChannel(channelUID, 0, "");
+
+                        logger.debug("restorePartitionsInAlarm(): Partition In Alarm Restored: {}!", thg.getUID());
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public void dscAlarmEventReceived(EventObject event, Thing thing) {
-
         if (thing != null) {
             DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;
             DSCAlarmMessage dscAlarmMessage = dscAlarmEvent.getDSCAlarmMessage();
@@ -465,24 +482,28 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                     case FireKeyRestored: /* 622 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_FIRE_KEY_ALARM);
                         updateChannel(channelUID, state, "");
+                        restorePartitionsInAlarm(dscAlarmCode);
                         break;
                     case AuxiliaryKeyAlarm: /* 623 */
                         state = 1;
                     case AuxiliaryKeyRestored: /* 624 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_AUX_KEY_ALARM);
                         updateChannel(channelUID, state, "");
+                        restorePartitionsInAlarm(dscAlarmCode);
                         break;
                     case PanicKeyAlarm: /* 625 */
                         state = 1;
                     case PanicKeyRestored: /* 626 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_PANIC_KEY_ALARM);
                         updateChannel(channelUID, state, "");
+                        restorePartitionsInAlarm(dscAlarmCode);
                         break;
                     case AuxiliaryInputAlarm: /* 631 */
                         state = 1;
                     case AuxiliaryInputAlarmRestored: /* 632 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_AUX_INPUT_ALARM);
                         updateChannel(channelUID, state, "");
+                        restorePartitionsInAlarm(dscAlarmCode);
                         break;
                     case TroubleLEDOn: /* 840 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_TROUBLE_LED);

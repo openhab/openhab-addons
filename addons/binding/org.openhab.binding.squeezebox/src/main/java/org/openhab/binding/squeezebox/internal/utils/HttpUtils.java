@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,11 +8,10 @@
  */
 package org.openhab.binding.squeezebox.internal.utils;
 
-import java.net.URL;
-import java.net.URLConnection;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -29,11 +28,13 @@ import com.google.gson.JsonParser;
  *
  * @author Dan Cunningham
  * @author Svilen Valkanov - replaced Apache HttpClient with Jetty
+ * @author Mark Hilbush - Add support for LMS authentication
+ * @author Mark Hilbush - Rework exception handling
  */
 public class HttpUtils {
     private static Logger logger = LoggerFactory.getLogger(HttpUtils.class);
 
-    private static int TIMEOUT = 5000;
+    private static final int TIMEOUT = 5000;
     private static HttpClient client = new HttpClient();
     /**
      * JSON request to get the CLI port from a Squeeze Server
@@ -43,43 +44,45 @@ public class HttpUtils {
     /**
      * Simple logic to perform a post request
      *
-     * @param url
-     * @param timeout
-     * @return
+     * @param url URL to be sent to LMS server
+     * @param postData Data to be sent to LMS server
+     * @return Content received from LMS
+     * @throws SqueezeBoxCommunicationException
+     * @throws SqueezeBoxNotAuthorizedException
      */
-    public static String post(String url, String postData) throws Exception {
+    public static String post(String url, String postData)
+            throws SqueezeBoxNotAuthorizedException, SqueezeBoxCommunicationException {
         if (!client.isStarted()) {
-            client.start();
+            try {
+                client.start();
+            } catch (Exception e) {
+                throw new SqueezeBoxCommunicationException("Jetty http client exception: " + e.getMessage());
+            }
         }
 
-        // @formatter:off
-        ContentResponse response = client.newRequest(url)
-                .method(HttpMethod.POST)
-                .content(new StringContentProvider(postData))
-                .timeout(TIMEOUT, TimeUnit.MILLISECONDS)
-                .send();
+        ContentResponse response;
+        try {
+            response = client.newRequest(url).method(HttpMethod.POST).content(new StringContentProvider(postData))
+                    .timeout(TIMEOUT, TimeUnit.MILLISECONDS).send();
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            throw new SqueezeBoxCommunicationException("Jetty http client exception: " + e.getMessage());
+        }
 
         int statusCode = response.getStatus();
 
+        if (statusCode == HttpStatus.UNAUTHORIZED_401) {
+            String statusLine = response.getStatus() + " " + response.getReason();
+            logger.error("Received '{}' from squeeze server", statusLine);
+            throw new SqueezeBoxNotAuthorizedException("Unauthorized: " + statusLine);
+        }
+
         if (statusCode != HttpStatus.OK_200) {
             String statusLine = response.getStatus() + " " + response.getReason();
-            logger.error("Method failed: {}", statusLine);
-            throw new Exception("Method failed: " + statusLine);
+            logger.error("HTTP POST method failed: {}", statusLine);
+            throw new SqueezeBoxCommunicationException("Http post to server failed: " + statusLine);
         }
 
         return response.getContentAsString();
-    }
-
-    /**
-     * Returns a byte array from a URL string
-     *
-     * @param urlString
-     * @return byte array of data
-     */
-    public static byte[] getData(String urlString) throws Exception {
-        URL url = new URL(urlString);
-        URLConnection connection = url.openConnection();
-        return IOUtils.toByteArray(connection.getInputStream());
     }
 
     /**
@@ -87,10 +90,13 @@ public class HttpUtils {
      *
      * @param ip
      * @param webPort
-     * @return
-     * @throws Exception
+     * @return Command Line Interpreter (CLI) port number
+     * @throws SqueezeBoxNotAuthorizedException
+     * @throws SqueezeBoxCommunicationException
+     * @throws NumberFormatException
      */
-    public static int getCliPort(String ip, int webPort) throws Exception {
+    public static int getCliPort(String ip, int webPort)
+            throws SqueezeBoxNotAuthorizedException, SqueezeBoxCommunicationException {
         String url = "http://" + ip + ":" + webPort + "/jsonrpc.js";
         String json = HttpUtils.post(url, JSON_REQ);
         logger.trace("Recieved json from server {}", json);

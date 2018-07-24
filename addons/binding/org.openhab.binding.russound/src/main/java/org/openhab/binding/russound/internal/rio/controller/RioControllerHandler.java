@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -39,7 +39,7 @@ import com.google.gson.Gson;
  * zones ({@link RioZoneHandler}). This
  * implementation must be attached to a {@link RioSystemHandler} bridge.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class RioControllerHandler extends AbstractBridgeHandler<RioControllerProtocol> implements RioNamedHandler {
     /**
@@ -115,9 +115,8 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
     private void handleRefresh(String id) {
         if (id.equals(RioConstants.CHANNEL_CTLZONES)) {
             refreshNamedHandler(gson, RioZoneHandler.class, RioConstants.CHANNEL_CTLZONES);
-        } else {
-            // Can't refresh any others...
         }
+        // Can't refresh any others...
     }
 
     /**
@@ -231,7 +230,7 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
             throw new IllegalArgumentException("childHandler cannot be null");
         }
         if (childHandler instanceof RioZoneHandler) {
-            final RioHandlerCallback callback = ((RioZoneHandler) childHandler).getCallback();
+            final RioHandlerCallback callback = ((RioZoneHandler) childHandler).getRioHandlerCallback();
             if (callback != null) {
                 if (added) {
                     callback.addListener(RioConstants.CHANNEL_ZONENAME, handlerCallbackListener);

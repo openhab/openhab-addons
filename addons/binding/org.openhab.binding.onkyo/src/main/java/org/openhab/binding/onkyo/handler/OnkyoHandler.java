@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.openhab.binding.onkyo.internal.OnkyoAlbumArt;
 import org.openhab.binding.onkyo.internal.OnkyoConnection;
@@ -55,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventListener {
 
-    private Logger logger = LoggerFactory.getLogger(OnkyoHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(OnkyoHandler.class);
 
     private OnkyoDeviceConfiguration configuration;
 
@@ -69,7 +70,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
     private OnkyoAlbumArt onkyoAlbumArt = new OnkyoAlbumArt();
 
-    private final int NET_USB_ID = 43;
+    private static final int NET_USB_ID = 43;
 
     public OnkyoHandler(Thing thing, UpnpIOService upnpIOService, AudioHTTPServer audioHTTPServer, String callbackUrl) {
         super(thing, upnpIOService, audioHTTPServer, callbackUrl);
@@ -87,35 +88,26 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         connection = new OnkyoConnection(configuration.ipAddress, configuration.port);
         connection.addEventListener(this);
 
-        scheduler.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                logger.debug("Open connection to Onkyo Receiver @{}", connection.getConnectionName());
-                connection.openConnection();
-                if (connection.isConnected()) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
+        scheduler.execute(() -> {
+            logger.debug("Open connection to Onkyo Receiver @{}", connection.getConnectionName());
+            connection.openConnection();
+            if (connection.isConnected()) {
+                updateStatus(ThingStatus.ONLINE);
             }
         });
 
         if (configuration.refreshInterval > 0) {
             // Start resource refresh updater
-            resourceUpdaterFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        logger.debug("Send resource update requests to Onkyo Receiver @{}",
-                                connection.getConnectionName());
-                        checkStatus();
-                    } catch (LinkageError e) {
-                        logger.warn("Failed to send resource update requests to Onkyo Receiver @{}. Cause: {}",
-                                connection.getConnectionName(), e.getMessage());
-                    } catch (Exception ex) {
-                        logger.warn("Exception in resource refresh Thread Onkyo Receiver @{}. Cause: {}",
-                                connection.getConnectionName(), ex.getMessage());
-                    }
+            resourceUpdaterFuture = scheduler.scheduleWithFixedDelay(() -> {
+                try {
+                    logger.debug("Send resource update requests to Onkyo Receiver @{}", connection.getConnectionName());
+                    checkStatus();
+                } catch (LinkageError e) {
+                    logger.warn("Failed to send resource update requests to Onkyo Receiver @{}. Cause: {}",
+                            connection.getConnectionName(), e.getMessage());
+                } catch (Exception ex) {
+                    logger.warn("Exception in resource refresh Thread Onkyo Receiver @{}. Cause: {}",
+                            connection.getConnectionName(), ex.getMessage());
                 }
             }, configuration.refreshInterval, configuration.refreshInterval, TimeUnit.SECONDS);
         }
@@ -137,7 +129,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand for channel {}: {}", channelUID.getId(), command.toString());
         switch (channelUID.getId()) {
-
             /*
              * ZONE 1
              */
@@ -335,7 +326,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             logger.debug("Received command {}", receivedCommand);
 
             switch (receivedCommand) {
-
                 /*
                  * ZONE 1
                  */
@@ -441,15 +431,15 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             }
 
         } catch (Exception ex) {
-            logger.error("Exception in statusUpdateReceived for Onkyo Receiver @{}. Cause: {}, data received: {}",
+            logger.warn("Exception in statusUpdateReceived for Onkyo Receiver @{}. Cause: {}, data received: {}",
                     connection.getConnectionName(), ex.getMessage(), data);
         }
     }
 
     @Override
-    public void connectionError(String ip) {
+    public void connectionError(String ip, String errorMsg) {
         logger.debug("Connection error occurred to Onkyo Receiver @{}", ip);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
     }
 
     private State convertDeviceValueToOpenHabState(String data, Class<?> classToConvert) {
@@ -532,7 +522,11 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             try {
                 byte[] imgData = onkyoAlbumArt.getAlbumArt();
                 if (imgData != null && imgData.length > 0) {
-                    updateState(CHANNEL_ALBUM_ART, new RawType(imgData));
+                    String mimeType = onkyoAlbumArt.getAlbumArtMimeType();
+                    if (mimeType.isEmpty()) {
+                        mimeType = guessMimeTypeFromData(imgData);
+                    }
+                    updateState(CHANNEL_ALBUM_ART, new RawType(imgData, mimeType));
                 } else {
                     updateState(CHANNEL_ALBUM_ART, UnDefType.UNDEF);
                 }
@@ -674,7 +668,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
     private void sendCommand(EiscpCommand deviceCommand, Command command) {
         if (connection != null) {
-
             final String cmd = deviceCommand.getCommand();
             String valTemplate = deviceCommand.getValue();
             String val;
@@ -711,7 +704,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         sendCommand(EiscpCommand.POWER_QUERY);
 
         if (connection != null && connection.isConnected()) {
-
             sendCommand(EiscpCommand.VOLUME_QUERY);
             sendCommand(EiscpCommand.SOURCE_QUERY);
             sendCommand(EiscpCommand.MUTE_QUERY);
@@ -738,11 +730,9 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
     private boolean isChannelAvailable(String channel) {
         List<Channel> channels = getThing().getChannels();
-        if (channels != null) {
-            for (Channel c : channels) {
-                if (c.getUID().getId().equals(channel)) {
-                    return true;
-                }
+        for (Channel c : channels) {
+            if (c.getUID().getId().equals(channel)) {
+                return true;
             }
         }
         return false;
@@ -815,5 +805,15 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     @Override
     public void setVolume(PercentType volume) throws IOException {
         handleVolumeSet(EiscpCommand.Zone.ZONE1, volumeLevelZone1, downScaleVolume(volume));
+    }
+
+    private String guessMimeTypeFromData(byte[] data) {
+        String mimeType = HttpUtil.guessContentTypeFromData(data);
+        logger.debug("Mime type guess from content: {}", mimeType);
+        if (mimeType == null) {
+            mimeType = RawType.DEFAULT_MIME_TYPE;
+        }
+        logger.debug("Mime type: {}", mimeType);
+        return mimeType;
     }
 }

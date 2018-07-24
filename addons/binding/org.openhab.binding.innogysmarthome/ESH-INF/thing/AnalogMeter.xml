@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="innogysmarthome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="AnalogMeter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Analog Meter</label>
+		<description>The Analog Meter from the innogy EnergyControl product.</description>
+
+		<channels>
+			<channel id="energy_consumption_month_kwh" typeId="EnergyConsumptionMonthKWh" />
+			<channel id="absolute_energy_consumption" typeId="AbsoluteEnergyConsumption" />
+			<channel id="energy_consumption_month_euro" typeId="EnergyConsumptionMonthEuro" />
+			<channel id="energy_consumption_day_euro" typeId="EnergyConsumptionDayEuro" />
+			<channel id="energy_consumption_day_kwh" typeId="EnergyConsumptionDayKWh" />
+		</channels>
+
+		<config-description-ref uri="thing-type:innogysmarthome:config" />
+	</thing-type>
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,6 +19,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -40,9 +41,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link WebserviceHandler} is responsible for handling the things (stations)
  *
- *
- * @author Dennis Dollinger
- * @author Jürgen Baginski
+ * @author Dennis Dollinger - Initial contribution
+ * @author Jürgen Baginski - Initial contribution
  */
 public class WebserviceHandler extends BaseBridgeHandler {
 
@@ -51,6 +51,7 @@ public class WebserviceHandler extends BaseBridgeHandler {
     private int refreshInterval;
     private boolean modeOpeningTime;
     private String userAgent;
+    private boolean isHoliday;
     private final TankerkoenigService service = new TankerkoenigService();
 
     private Map<String, LittleStation> stationMap;
@@ -61,12 +62,15 @@ public class WebserviceHandler extends BaseBridgeHandler {
 
     public WebserviceHandler(Bridge bridge) {
         super(bridge);
-        stationMap = new HashMap<String, LittleStation>();
+        stationMap = new HashMap<>();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // no code needed.
+        if (channelUID.getId().equals(TankerkoenigBindingConstants.CHANNEL_HOLIDAY)) {
+            logger.debug("HandleCommand recieved: {}", channelUID.getId());
+            isHoliday = (command == OnOffType.ON);
+        }
     }
 
     @Override
@@ -87,18 +91,14 @@ public class WebserviceHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         int pollingPeriod = this.getRefreshInterval();
-        pollingJob = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                logger.debug("Try to refresh data");
-                try {
-                    updateStationData();
-                    updateStationThings();
-                } catch (RuntimeException r) {
-                    logger.debug("Caught exception in ScheduledExecutorService of BridgeHandler. RuntimeException: ",
-                            r);
-                    updateStatus(ThingStatus.OFFLINE);
-                }
+        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+            logger.debug("Try to refresh data");
+            try {
+                updateStationData();
+                updateStationThings();
+            } catch (RuntimeException r) {
+                logger.debug("Caught exception in ScheduledExecutorService of BridgeHandler. RuntimeException: ", r);
+                updateStatus(ThingStatus.OFFLINE);
             }
         }, pollingPeriod, pollingPeriod, TimeUnit.MINUTES);
         logger.debug("Refresh job scheduled to run every {} min. for '{}'", pollingPeriod, getThing().getUID());
@@ -156,6 +156,7 @@ public class WebserviceHandler extends BaseBridgeHandler {
                 setTankerkoenigListResult(result);
                 stationMap.clear();
                 for (LittleStation station : result.getPrices().getStations()) {
+                    station.setOpen("open".equals(station.getStatus()));
                     stationMap.put(station.getID(), station);
                 }
                 logger.debug("UpdateStationData: tankstellenList.size {}", stationMap.size());
@@ -237,6 +238,10 @@ public class WebserviceHandler extends BaseBridgeHandler {
                         DayOfWeek weekday = today.getDayOfWeek();
                         logger.debug("Checking day: {}", day);
                         logger.debug("Todays weekday: {}", weekday);
+                        if (isHoliday) {
+                            weekday = DayOfWeek.SUNDAY;
+                            logger.debug("Today is a holiday using : {}", weekday);
+                        }
                         // if Daily, further checking not needed!
                         if (day.contains("täglich")) {
                             logger.debug("Found a setting for daily opening times.");

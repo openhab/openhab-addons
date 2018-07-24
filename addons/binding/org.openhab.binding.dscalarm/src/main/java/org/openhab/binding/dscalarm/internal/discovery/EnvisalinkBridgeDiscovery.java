@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -84,7 +84,6 @@ public class EnvisalinkBridgeDiscovery {
         logger.debug("   High IP:          {}", convertNumberToIP(highIP));
 
         for (long ip = lowIP; ip <= highIP; ip++) {
-
             try (Socket socket = new Socket()) {
                 ipAddress = convertNumberToIP(ip);
 
@@ -92,7 +91,6 @@ public class EnvisalinkBridgeDiscovery {
                 socket.setReceiveBufferSize(32);
                 socket.connect(new InetSocketAddress(ipAddress, ENVISALINK_BRIDGE_PORT), CONNECTION_TIMEOUT);
                 if (socket.isConnected()) {
-
                     String message = "";
                     socket.setSoTimeout(SO_TIMEOUT);
                     try (BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
@@ -134,7 +132,6 @@ public class EnvisalinkBridgeDiscovery {
      * @return
      */
     private long convertIPToNumber(String ipAddress) {
-
         String octets[] = ipAddress.split("\\.");
 
         if (octets.length != 4) {

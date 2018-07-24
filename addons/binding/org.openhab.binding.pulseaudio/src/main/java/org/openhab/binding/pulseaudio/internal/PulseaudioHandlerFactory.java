@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.pulseaudio.internal;
 
+import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -21,11 +23,14 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.pulseaudio.PulseaudioBindingConstants;
 import org.openhab.binding.pulseaudio.handler.PulseaudioBridgeHandler;
 import org.openhab.binding.pulseaudio.handler.PulseaudioHandler;
 import org.openhab.binding.pulseaudio.internal.discovery.PulseaudioDeviceDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,13 +42,15 @@ import com.google.common.collect.Sets;
  *
  * @author Tobias Bräutigam - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.pulseaudio")
 public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(PulseaudioHandlerFactory.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .union(PulseaudioBridgeHandler.SUPPORTED_THING_TYPES_UIDS, PulseaudioHandler.SUPPORTED_THING_TYPES_UIDS);
 
-    private Map<ThingHandler, ServiceRegistration<?>> discoveryServiceReg = new HashMap<ThingHandler, ServiceRegistration<?>>();
+    private Map<ThingHandler, ServiceRegistration<?>> discoveryServiceReg = new HashMap<>();
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -73,7 +80,7 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
             ThingUID bridgeUID) {
         if (thingUID == null) {
             String name = (String) configuration.get(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME);
-            thingUID = new ThingUID(thingTypeUID, name, bridgeUID.getId());
+            return new ThingUID(thingTypeUID, name, bridgeUID.getId());
         }
         return thingUID;
     }
@@ -102,5 +109,27 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
+    }
+
+    @Override
+    protected synchronized void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        modified(componentContext);
+    }
+
+    protected synchronized void modified(ComponentContext componentContext) {
+        Dictionary<String, ?> properties = componentContext.getProperties();
+        logger.info("pulseaudio configuration update received ({})", properties);
+        if (properties == null) {
+            return;
+        }
+        Enumeration<String> e = properties.keys();
+        while (e.hasMoreElements()) {
+            String k = e.nextElement();
+            if (PulseaudioBindingConstants.TYPE_FILTERS.containsKey(k)) {
+                PulseaudioBindingConstants.TYPE_FILTERS.put(k, (boolean) properties.get(k));
+            }
+            logger.debug("update received {}: {}", k, properties.get(k));
+        }
     }
 }

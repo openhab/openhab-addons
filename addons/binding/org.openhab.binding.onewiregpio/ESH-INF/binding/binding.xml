@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="onewiregpio" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+	<name>OneWireGPIO Binding</name>
+	<description>Use GPIO in various devices like RaspberryPi to communicate the OneWire protocol</description>
+	<author>Anatol Ogorek</author>
+</binding:binding>

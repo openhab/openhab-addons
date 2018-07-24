@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,13 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.silvercrestwifisocket.SilvercrestWifiSocketBindingConstants;
 import org.openhab.binding.silvercrestwifisocket.handler.SilvercrestWifiSocketHandler;
 import org.openhab.binding.silvercrestwifisocket.handler.SilvercrestWifiSocketMediator;
 import org.openhab.binding.silvercrestwifisocket.internal.exceptions.MacAddressNotValidException;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jaime Vaz - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.silvercrestwifisocket")
 public class SilvercrestWifiSocketHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
@@ -42,6 +46,7 @@ public class SilvercrestWifiSocketHandlerFactory extends BaseThingHandlerFactory
      *
      * @param mediator the mediator
      */
+    @Reference
     public void setMediator(final SilvercrestWifiSocketMediator mediator) {
         logger.debug("Mediator has been injected on handler factory service.");
         this.mediator = mediator;
@@ -64,7 +69,6 @@ public class SilvercrestWifiSocketHandlerFactory extends BaseThingHandlerFactory
 
     @Override
     protected ThingHandler createHandler(final Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(SilvercrestWifiSocketBindingConstants.THING_TYPE_WIFI_SOCKET)) {
@@ -84,7 +88,6 @@ public class SilvercrestWifiSocketHandlerFactory extends BaseThingHandlerFactory
             } catch (MacAddressNotValidException e) {
                 logger.debug("The mac address passed to WifiSocketHandler by configurations is not valid.");
             }
-
         }
         return null;
     }

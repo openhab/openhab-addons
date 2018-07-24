@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,6 +28,9 @@ public class XiaomiAqaraActorSwitch1Handler extends XiaomiActorBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiAqaraActorSwitch1Handler.class);
 
+    private static final String CHANNEL_0 = "channel_0";
+    private static final String ON = "on";
+
     public XiaomiAqaraActorSwitch1Handler(Thing thing) {
         super(thing);
     }
@@ -36,7 +39,8 @@ public class XiaomiAqaraActorSwitch1Handler extends XiaomiActorBaseHandler {
     void execute(ChannelUID channelUID, Command command) {
         if (CHANNEL_SWITCH_CH0.equals(channelUID.getId())) {
             String status = command.toString().toLowerCase();
-            getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { "channel_0" }, new Object[] { status });
+            getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { CHANNEL_0 }, new Object[] { status });
+            return;
         }
         // Only gets here, if no condition was met
         logger.error("Can't handle command {} on channel {}", command, channelUID);
@@ -64,8 +68,8 @@ public class XiaomiAqaraActorSwitch1Handler extends XiaomiActorBaseHandler {
 
     @Override
     void parseDefault(JsonObject data) {
-        if (data.has("channel_0")) {
-            boolean isOn = "on".equals(data.get("channel_0").getAsString().toLowerCase());
+        if (data.has(CHANNEL_0)) {
+            boolean isOn = ON.equals(data.get(CHANNEL_0).getAsString().toLowerCase());
             updateState(CHANNEL_SWITCH_CH0, isOn ? OnOffType.ON : OnOffType.OFF);
         }
     }

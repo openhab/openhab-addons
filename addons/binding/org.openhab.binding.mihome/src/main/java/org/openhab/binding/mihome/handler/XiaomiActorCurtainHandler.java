@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -31,9 +31,16 @@ public class XiaomiActorCurtainHandler extends XiaomiActorBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(XiaomiActorCurtainHandler.class);
     private String lastDirection;
 
+    private static final String STATUS = "status";
+    private static final String OPEN = "open";
+    private static final String CLOSED = "close";
+    private static final String STOP = "stop";
+    private static final String CURTAIN_LEVEL = "curtain_level";
+    private static final String AUTO = "auto";
+
     public XiaomiActorCurtainHandler(Thing thing) {
         super(thing);
-        lastDirection = "open";
+        lastDirection = OPEN;
     }
 
     @Override
@@ -43,31 +50,31 @@ public class XiaomiActorCurtainHandler extends XiaomiActorBaseHandler {
             case CHANNEL_CURTAIN_CONTROL:
                 if (command instanceof UpDownType) {
                     if (command.equals(UpDownType.UP)) {
-                        status = "open";
+                        status = OPEN;
                     } else {
-                        status = "close";
+                        status = CLOSED;
                     }
                 } else if (command instanceof StopMoveType) {
                     if (command.equals(StopMoveType.STOP)) {
-                        status = "stop";
+                        status = STOP;
                     } else {
                         status = lastDirection;
                     }
                 } else if (command instanceof PercentType) {
-                    getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { "status" },
-                            new Object[] { "auto" });
-                    getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { "curtain_level" },
+                    getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { STATUS },
+                            new Object[] { AUTO });
+                    getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { CURTAIN_LEVEL },
                             new Object[] { status });
                 } else {
                     logger.warn("Only UpDown or StopMove commands supported - not the command {}", command);
                     return;
                 }
-                if ("open".equals(status) | "close".equals(status)) {
+                if (OPEN.equals(status) | CLOSED.equals(status)) {
                     if (!status.equals(lastDirection)) {
                         lastDirection = status;
                     }
                 }
-                getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { "status" }, new Object[] { status });
+                getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { STATUS }, new Object[] { status });
                 break;
             default:
                 logger.warn("Can't handle command {} on channel {}", command, channelUID);
@@ -96,8 +103,8 @@ public class XiaomiActorCurtainHandler extends XiaomiActorBaseHandler {
 
     @Override
     void parseDefault(JsonObject data) {
-        if (data.has("curtain_level")) {
-            int level = data.get("curtain_level").getAsInt();
+        if (data.has(CURTAIN_LEVEL)) {
+            int level = data.get(CURTAIN_LEVEL).getAsInt();
             if (level >= 0 | level <= 100) {
                 updateState(CHANNEL_CURTAIN_CONTROL, new PercentType(level));
             }

@@ -8,7 +8,8 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 		<label>Xiaomi Mi Wireless Switch</label>
-		<description>Round-shaped mini wireless switch that allows to trigger four types of event: single click, double click, long click press, long click release.</description>
+		<description>Round-shaped mini wireless switch that allows to trigger four types of event: single click, double click,
+			long click press, long click release.</description>
 		<channels>
 			<channel id="button" typeId="button" />
 			<channel id="batteryLevel" typeId="system.battery-level" />

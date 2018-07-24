@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,9 +8,11 @@
  */
 package org.openhab.binding.kodi.internal;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
@@ -19,6 +21,7 @@ import org.eclipse.smarthome.core.audio.AudioStream;
 import org.eclipse.smarthome.core.audio.FixedLengthAudioStream;
 import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
+import org.eclipse.smarthome.core.audio.UnsupportedAudioStreamException;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.kodi.handler.KodiHandler;
@@ -26,25 +29,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This makes kodi to serve as an {@link AudioSink}-
+ * This makes Kodi to serve as an {@link AudioSink}.
  *
  * @author Kai Kreuzer - Initial contribution and API
- * @author Paul Frank - Adapted for kodi
- *
+ * @author Paul Frank - Adapted for Kodi
+ * @author Christoph Weitkamp - Improvements for playing audio notifications
  */
 public class KodiAudioSink implements AudioSink {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(KodiAudioSink.class);
 
-    private static HashSet<AudioFormat> supportedFormats = new HashSet<>();
+    private static final Set<AudioFormat> SUPPORTED_AUDIO_FORMATS = Collections
+            .unmodifiableSet(Stream.of(AudioFormat.MP3, AudioFormat.WAV).collect(Collectors.toSet()));
+    private static final Set<Class<? extends AudioStream>> SUPPORTED_AUDIO_STREAMS = Collections
+            .unmodifiableSet(Stream.of(FixedLengthAudioStream.class, URLAudioStream.class).collect(Collectors.toSet()));
+    // Needed because Kodi does multiple requests for the stream
+    private static final int STREAM_TIMEOUT = 30;
 
-    static {
-        supportedFormats.add(AudioFormat.WAV);
-        supportedFormats.add(AudioFormat.MP3);
-    }
-
-    private AudioHTTPServer audioHTTPServer;
-    private KodiHandler handler;
+    private final KodiHandler handler;
+    private final AudioHTTPServer audioHTTPServer;
     private final String callbackUrl;
 
     public KodiAudioSink(KodiHandler handler, AudioHTTPServer audioHTTPServer, String callbackUrl) {
@@ -64,42 +67,59 @@ public class KodiAudioSink implements AudioSink {
     }
 
     @Override
-    public void process(AudioStream audioStream) throws UnsupportedAudioFormatException {
-        String url = null;
-        if (audioStream instanceof URLAudioStream) {
-            // it is an external URL, the speaker can access it itself and play it.
-            URLAudioStream urlAudioStream = (URLAudioStream) audioStream;
-            url = urlAudioStream.getURL();
-        } else if (audioStream instanceof FixedLengthAudioStream) {
-            FixedLengthAudioStream fixedLengthAudioStream = (FixedLengthAudioStream) audioStream;
-            if (callbackUrl != null) {
-                // we serve it on our own HTTP server for 30 seconds as Kodi requests the stream several times
-                String relativeUrl = audioHTTPServer.serve(fixedLengthAudioStream, 30);
-                url = callbackUrl + relativeUrl;
-            } else {
-                logger.warn("We do not have any callback url, so kodi cannot play the audio stream!");
-                return;
-            }
+    public void process(AudioStream audioStream)
+            throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
+        if (audioStream == null) {
+            // in case the audioStream is null, this should be interpreted as a request to end any currently playing
+            // stream.
+            logger.trace("Stop currently playing stream.");
+            handler.stop();
         } else {
-            throw new UnsupportedAudioFormatException("Kodi can only handle FixedLengthAudioStreams.", null);
-        }
-        handler.playURI(new StringType(url));
+            AudioFormat format = audioStream.getFormat();
+            if (!AudioFormat.MP3.isCompatible(format) && !AudioFormat.WAV.isCompatible(format)) {
+                throw new UnsupportedAudioFormatException("Currently only MP3 and WAV formats are supported.", format);
+            }
 
+            if (audioStream instanceof URLAudioStream) {
+                // it is an external URL, the speaker can access it itself and play it
+                String url = ((URLAudioStream) audioStream).getURL();
+                logger.trace("Processing audioStream URL {} of format {}.", url, format);
+                handler.playURI(new StringType(url));
+            } else if (audioStream instanceof FixedLengthAudioStream) {
+                if (callbackUrl != null) {
+                    // we serve it on our own HTTP server for 30 seconds as Kodi requests the stream several times
+                    // Form the URL for streaming the notification from the OH2 web server
+                    String url = callbackUrl
+                            + audioHTTPServer.serve((FixedLengthAudioStream) audioStream, STREAM_TIMEOUT);
+                    logger.trace("Processing audioStream URL {} of format {}.", url, format);
+                    handler.playNotificationSoundURI(new StringType(url));
+                } else {
+                    logger.warn("We do not have any callback url, so Kodi cannot play the audio stream!");
+                }
+            } else {
+                throw new UnsupportedAudioStreamException(
+                        "Kodi can only handle URLAudioStream or FixedLengthAudioStreams.", audioStream.getClass());
+            }
+        }
     }
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return supportedFormats;
+        return SUPPORTED_AUDIO_FORMATS;
+    }
+
+    @Override
+    public Set<Class<? extends AudioStream>> getSupportedStreams() {
+        return SUPPORTED_AUDIO_STREAMS;
     }
 
     @Override
     public PercentType getVolume() {
-        return handler.getNotificationSoundVolume();
+        return handler.getVolume();
     }
 
     @Override
     public void setVolume(PercentType volume) {
-        handler.setNotificationSoundVolume(volume);
+        handler.setVolume(volume);
     }
-
 }

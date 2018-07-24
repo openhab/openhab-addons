@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.meteostick.handler;
 
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.*;
 import static org.openhab.binding.meteostick.MeteostickBindingConstants.*;
 
 import java.io.IOException;
@@ -23,7 +25,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -52,21 +54,21 @@ import gnu.io.UnsupportedCommOperationException;
 public class MeteostickBridgeHandler extends BaseBridgeHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
-    private Logger logger = LoggerFactory.getLogger(MeteostickBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(MeteostickBridgeHandler.class);
 
-    private static int RECEIVE_TIMEOUT = 3000;
+    private static final int RECEIVE_TIMEOUT = 3000;
 
     private SerialPort serialPort;
     private ReceiveThread receiveThread;
 
-    private ScheduledFuture<?> offlineTimerJob = null;
+    private ScheduledFuture<?> offlineTimerJob;
 
     private String meteostickMode = "m1";
     private final String meteostickFormat = "o1";
 
     private Date lastData;
 
-    private ConcurrentMap<Integer, MeteostickEventListener> eventListeners = new ConcurrentHashMap<Integer, MeteostickEventListener>();
+    private ConcurrentMap<Integer, MeteostickEventListener> eventListeners = new ConcurrentHashMap<>();
 
     public MeteostickBridgeHandler(Bridge thing) {
         super(thing);
@@ -75,9 +77,8 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing MeteoStick Bridge handler.");
-        super.initialize();
 
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.UNKNOWN);
 
         Configuration config = getThing().getConfiguration();
 
@@ -88,17 +89,14 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
             meteostickMode = "m" + mode.toString();
         }
 
-        Runnable pollingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                if (connectPort(port) == true) {
-                    offlineTimerJob.cancel(true);
-                }
+        Runnable pollingRunnable = () -> {
+            if (connectPort(port)) {
+                offlineTimerJob.cancel(true);
             }
         };
 
         // Scheduling a job on each hour to update the last hour rainfall
-        offlineTimerJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, 60, TimeUnit.SECONDS);
+        offlineTimerJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, 60, TimeUnit.SECONDS);
     }
 
     @Override
@@ -258,11 +256,11 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
                             case "B": // Barometer
                                 BigDecimal temperature = new BigDecimal(p[1]);
                                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_INDOOR_TEMPERATURE),
-                                        new DecimalType(temperature.setScale(1)));
+                                        new QuantityType<>(temperature.setScale(1), CELSIUS));
 
                                 BigDecimal pressure = new BigDecimal(p[2]);
                                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_PRESSURE),
-                                        new DecimalType(pressure.setScale(1, RoundingMode.HALF_UP)));
+                                        new QuantityType<>(pressure.setScale(1, RoundingMode.HALF_UP), HECTO(PASCAL)));
                                 break;
                             case "#":
                                 break;
@@ -320,17 +318,14 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
     }
 
     private synchronized void startTimeoutCheck() {
-        Runnable pollingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                String detail;
-                if (lastData == null) {
-                    detail = "No data received";
-                } else {
-                    detail = "No data received since " + lastData.toString();
-                }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
+        Runnable pollingRunnable = () -> {
+            String detail;
+            if (lastData == null) {
+                detail = "No data received";
+            } else {
+                detail = "No data received since " + lastData.toString();
             }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
         };
 
         if (offlineTimerJob != null) {

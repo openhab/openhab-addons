@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,12 +22,12 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.dscalarm.config.DSCAlarmPanelConfiguration;
-import org.openhab.binding.dscalarm.config.DSCAlarmPartitionConfiguration;
-import org.openhab.binding.dscalarm.config.DSCAlarmZoneConfiguration;
 import org.openhab.binding.dscalarm.internal.DSCAlarmCode;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage.DSCAlarmMessageInfoType;
+import org.openhab.binding.dscalarm.internal.config.DSCAlarmPanelConfiguration;
+import org.openhab.binding.dscalarm.internal.config.DSCAlarmPartitionConfiguration;
+import org.openhab.binding.dscalarm.internal.config.DSCAlarmZoneConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(DSCAlarmBaseThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DSCAlarmBaseThingHandler.class);
 
     /** Bridge Handler for the Thing. */
     public DSCAlarmBaseBridgeHandler dscAlarmBridgeHandler = null;
@@ -71,9 +71,6 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
         super(thing);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         logger.debug("Initializing DSC Alarm Thing handler - Thing Type: {}; Thing ID: {}.", dscAlarmThingType,
@@ -85,9 +82,6 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
         updateStatus(ThingStatus.OFFLINE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         logger.debug("Thing {} disposed.", getThing().getUID());
@@ -101,11 +95,8 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
      * Method to Initialize Thing Handler.
      */
     public void initializeThingHandler() {
-
         if (getDSCAlarmBridgeHandler() != null) {
-
             if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
-
                 Thing thing = getThing();
                 List<Channel> channels = thing.getChannels();
                 logger.debug("initializeThingHandler(): Initialize Thing Handler - {}", thing.getUID());
@@ -138,9 +129,7 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
      * @return dscAlarmBridgeHandler
      */
     public synchronized DSCAlarmBaseBridgeHandler getDSCAlarmBridgeHandler() {
-
         if (this.dscAlarmBridgeHandler == null) {
-
             Bridge bridge = getBridge();
 
             if (bridge == null) {
@@ -195,7 +184,6 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-
         if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
             updateStatus(bridgeStatusInfo.getStatus());
             this.initializeThingHandler();
@@ -213,7 +201,6 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
      * @param dscAlarmDeviceType
      */
     private void getConfiguration(DSCAlarmThingType dscAlarmDeviceType) {
-
         switch (dscAlarmDeviceType) {
             case PANEL:
                 DSCAlarmPanelConfiguration panelConfiguration = getConfigAs(DSCAlarmPanelConfiguration.class);

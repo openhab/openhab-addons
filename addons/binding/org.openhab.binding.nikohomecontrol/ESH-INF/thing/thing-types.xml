@@ -6,6 +6,10 @@
 	<bridge-type id="bridge">
 		<label>Niko Home Control Bridge</label>
 		<description>This bridge represents a Niko Home Control IP-interface</description>
+		<channels>
+			<channel id="alarm" typeId="alarm" />
+			<channel id="notice" typeId="notice" />
+		</channels>
 		<config-description>
 			<parameter name="addr" type="text" required="true">
 				<label>IP or Host Name</label>
@@ -103,6 +107,21 @@
 		<label>Rollershutter</label>
 		<description>Rollershutter control for rollershutter action in Niko Home Control</description>
 		<category>Blinds</category>
+	</channel-type>
+
+	<channel-type id="alarm">
+		<kind>trigger</kind>
+		<label>Alarm</label>
+		<description>Alarm from Niko Home Control</description>
+		<event>
+		</event>
+	</channel-type>
+	<channel-type id="notice">
+		<kind>trigger</kind>
+		<label>Notice</label>
+		<description>Notice from Niko Home Control</description>
+		<event>
+		</event>
 	</channel-type>
 
 </thing:thing-descriptions>

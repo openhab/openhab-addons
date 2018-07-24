@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.meteostick;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Chris Jackson - Initial contribution
  */
+@NonNullByDefault
 public class MeteostickBindingConstants {
 
     public static final String BINDING_ID = "meteostick";
@@ -34,10 +36,19 @@ public class MeteostickBindingConstants {
     public static final String CHANNEL_RAIN_LASTHOUR = "rain-lasthour";
     public static final String CHANNEL_WIND_SPEED = "wind-speed";
     public static final String CHANNEL_WIND_DIRECTION = "wind-direction";
+    public static final String CHANNEL_WIND_SPEED_LAST2MIN_AVERAGE = "wind-speed-last2min-average";
+    public static final String CHANNEL_WIND_SPEED_LAST2MIN_MAXIMUM = "wind-speed-last2min-maximum";
+    public static final String CHANNEL_WIND_DIRECTION_LAST2MIN_AVERAGE = "wind-direction-last2min-average";
     public static final String CHANNEL_SOLAR_POWER = "solar-power";
     public static final String CHANNEL_SIGNAL_STRENGTH = "signal-strength";
     public static final String CHANNEL_LOW_BATTERY = "low-battery";
 
     // List of parameters
     public static final String PARAMETER_CHANNEL = "channel";
+    public static final String PARAMETER_SPOON = "spoon";
+    public static final String PARAMETER_SPOON_DEFAULT = "0.254";
+
+    // Miscellaneous constants
+    public static final long HOUR_IN_SEC = 60 * 60;
+    public static final long HOUR_IN_MSEC = HOUR_IN_SEC * 1000;
 }
