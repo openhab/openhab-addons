@@ -17,8 +17,8 @@ The Drayton Wiser binding supports the following things:
 
 ## Discovery
 
-The HeatHub can be discovered automatically via mDNS, however the `SECRET` cannot be determined automatically.
-Once the `SECRET` has been configured, all other devices can be discovered by triggering device discovery again.
+The HeatHub can be discovered automatically via mDNS, however the `secret` cannot be determined automatically.
+Once the `secret` has been configured, all other devices can be discovered by triggering device discovery again.
 
 ## Binding Configuration
 
@@ -28,35 +28,15 @@ None required
 
 ### HeatHub Configuration
 
-Once discovered, the HeatHub `AUTHTOKEN` needs to be configured.
+Once discovered, the HeatHub `secret` needs to be configured.
 There are a few ways to obtain this, assuming you have already configured the system using the Wiser App.
 
-1. Temporarily install a packet sniffing tool on your mobile device. Every request made includes the `SECRET` in the header.
-2. Enable setup mode on the HeatHub. Connect a machine temporarily to the `WiserHeat_XXXXX` network and browse to `http://192.168.8.1/secret` to obtain the `AUTHTOKEN`.
+1. Temporarily install a packet sniffing tool on your mobile device. Every request made includes the `secret` in the header.
+2. Enable setup mode on the HeatHub. Connect a machine temporarily to the `WiserHeat_XXXXX` network and browse to `http://192.168.8.1/secret` to obtain the `secret`.
 
-The `REFRESH` interval defines in seconds, how often the binding will poll the controller for updates.
+The `refresh` interval defines in seconds, how often the binding will poll the controller for updates.
 
-The `AWAY MODE SET POINT` defines the temperature in degrees Celsius that will be sent to the heathub when away mode is activated.
-
-### Manual configuration with .things files
-
-```
-Bridge draytonwiser:heathub:HeatHub [ ADDR="192.168.1.X", REFRESH=60, AUTHTOKEN="authtoken from hub" ]
-{
-	controller controller
-	room livingroom	[ roomName="Living Room" ]
-	room bathroom	[ roomName="Bathroom" ]
-	room bedroom	[ roomName="Bedroom" ]
-	roomstat livingroomstat [ serialNumber="ABCDEF1234" ]
-	itrv livingroomtrv [ serialNumber="ABCDEF1235" ]
-	hotwater hotwater
-    smart-plug tvplug [ serialNumber="ABCDEF1236" ]
-}
-```
-
-The `roomName` corresponds to the room name configured in the Wiser App.
-It is not case sensitive.
-The `serialNumber` corresponds to the device serial number which can be found on a sticker inside the battery compartment of the Smart Valves/TRVs, and behind the wall mount of the Room Thermostats.
+The `awaySetPoint` defines the temperature in degrees Celsius that will be sent to the heathub when away mode is activated.
 
 ## Channels
 
@@ -198,7 +178,27 @@ The `id`, `Type`, `CurrentSetPoint`, `NextEventTime` and `NextEventSetpoint` sho
 
 ## Full Example
 
-Example sitemap snippet where items and things have been configured in PaperUI.
+### .things file
+
+```
+Bridge draytonwiser:heathub:HeatHub [ ADDR="192.168.1.X", refresh=60, secret="secret from hub" ]
+{
+	controller controller
+	room livingroom	[ roomName="Living Room" ]
+	room bathroom	[ roomName="Bathroom" ]
+	room bedroom	[ roomName="Bedroom" ]
+	roomstat livingroomstat [ serialNumber="ABCDEF1234" ]
+	itrv livingroomtrv [ serialNumber="ABCDEF1235" ]
+	hotwater hotwater
+    smart-plug tvplug [ serialNumber="ABCDEF1236" ]
+}
+```
+
+The `roomName` corresponds to the room name configured in the Wiser App.
+It is not case sensitive.
+The `serialNumber` corresponds to the device serial number which can be found on a sticker inside the battery compartment of the Smart Valves/TRVs, and behind the wall mount of the Room Thermostats.
+
+### Sitemap
 
 ```
 Text item=draytonwiser_room_WiserHeatXXXXXX_livingroom_heatRequest label="Heating" icon="fire" {

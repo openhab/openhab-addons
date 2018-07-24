@@ -548,10 +548,10 @@ public class HeatHubHandler extends BaseBridgeHandler {
         try {
             logger.debug("Sending message to heathub: " + path);
             String address = (String) getConfig().get(DraytonWiserBindingConstants.ADDRESS);
-            String authtoken = (String) getConfig().get(DraytonWiserBindingConstants.AUTH_TOKEN);
+            String secret = (String) getConfig().get(DraytonWiserBindingConstants.SECRET);
             StringContentProvider contentProvider = new StringContentProvider(content);
             ContentResponse response = httpClient.newRequest("http://" + address + "/" + path).method(method)
-                    .header("SECRET", authtoken).content(contentProvider).timeout(10, TimeUnit.SECONDS).send();
+                    .header("SECRET", secret).content(contentProvider).timeout(10, TimeUnit.SECONDS).send();
             if (response.getStatus() == 200) {
                 updateStatus(ThingStatus.ONLINE);
                 return response;

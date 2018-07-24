@@ -16,23 +16,21 @@
                 <description>Network address of the HeatHub</description>
                 <required>true</required>
             </parameter>
-            <parameter name="AUTHTOKEN" type="text">
+            <parameter name="secret" type="text">
                 <label>Authorisation Token</label>
                 <description>
                     Auth token required to access the API.
                 </description>
                 <required>true</required>
             </parameter>
-            <parameter name="REFRESH" type="integer">
+            <parameter name="refresh" type="integer">
                 <label>Refresh interval</label>
                 <description>Interval in seconds between automatic refreshes</description>
-                <required>true</required>
                 <default>10</default>
             </parameter>
-            <parameter name="AWAYSETPOINT" type="integer">
+            <parameter name="awaySetPoint" type="integer">
 	            <label>Away Mode Setpoint</label>
 	            <description>Set point temperature for away mode in degrees celsius</description>
-	            <required>true</required>
 	            <default>16</default>
             </parameter>
         </config-description>

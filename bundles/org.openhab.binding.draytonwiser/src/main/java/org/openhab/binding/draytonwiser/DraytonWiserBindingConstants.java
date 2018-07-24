@@ -31,11 +31,11 @@ public class DraytonWiserBindingConstants {
 
     public static final String ADDRESS = "ADDR";
 
-    public static final String AUTH_TOKEN = "AUTHTOKEN";
+    public static final String SECRET = "secret";
 
-    public static final String REFRESH_INTERVAL = "REFRESH";
+    public static final String REFRESH_INTERVAL = "refresh";
 
-    public static final String AWAY_MODE_SETPOINT = "AWAYSETPOINT";
+    public static final String AWAY_MODE_SETPOINT = "awaySetPoint";
 
     public static final Integer OFFLINE_TEMPERATURE = -32768;
 
