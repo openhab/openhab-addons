@@ -31,8 +31,10 @@ import org.openhab.binding.tplinksmarthome.internal.model.HasErrorResponse;
 public class DimmerDevice extends SwitchDevice {
 
     @Override
-    protected @Nullable HasErrorResponse setOnOffState(Connection connection, OnOffType onOff) throws IOException {
-        return commands.setSwitchStateResponse(connection.sendCommand(commands.setSwitchState(onOff)));
+    protected @Nullable HasErrorResponse setOnOffState(Connection connection, @Nullable OnOffType onOff)
+            throws IOException {
+        return onOff != null ? commands.setSwitchStateResponse(connection.sendCommand(commands.setSwitchState(onOff)))
+                : null;
     }
 
     @Override
@@ -54,7 +56,7 @@ public class DimmerDevice extends SwitchDevice {
             response = commands.setDimmerBrightnessResponse(
                     connection.sendCommand(commands.setDimmerBrightness((decimalCommand).intValue())));
             checkErrors(response);
-            response = setOnOffState(connection, (OnOffType) decimalCommand.as(OnOffType.class));
+            response = setOnOffState(connection, decimalCommand.as(OnOffType.class));
         }
         checkErrors(response);
         return response != null;
