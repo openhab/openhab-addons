@@ -19,9 +19,7 @@ Import-Package:
  com.google.gson.annotations,
  javax.measure,
  javax.measure.quantity,
- com.google.common.collect,
  org.apache.commons.io,
- org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
@@ -29,6 +27,7 @@ Import-Package:
  org.eclipse.smarthome.core.library.unit,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j

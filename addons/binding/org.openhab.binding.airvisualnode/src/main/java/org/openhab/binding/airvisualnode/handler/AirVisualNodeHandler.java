@@ -186,45 +186,46 @@ public class AirVisualNodeHandler extends BaseThingHandler {
     private State getChannelState(String channelId, NodeData nodeData) {
         State state = UnDefType.UNDEF;
 
-        switch (channelId) {
-            case CHANNEL_CO2:
-                state = new QuantityType<>(nodeData.getMeasurements().getCo2Ppm(), PARTS_PER_MILLION);
-                break;
-            case CHANNEL_HUMIDITY:
-                state = new QuantityType<>(nodeData.getMeasurements().getHumidityRH(), PERCENT);
-                break;
-            case CHANNEL_AQI_US:
-                state = new QuantityType<>(nodeData.getMeasurements().getPm25AQIUS(), ONE);
-                break;
-            case CHANNEL_PM_25:
-                // PM2.5 is in ug/m3
-                state = new QuantityType<>(nodeData.getMeasurements().getPm25Ugm3(), MICRO(GRAM).divide(CUBIC_METRE));
-                break;
-            case CHANNEL_TEMP_CELSIUS:
-                state = new QuantityType<>(nodeData.getMeasurements().getTemperatureC(), CELSIUS);
-                break;
-            case CHANNEL_BATTERY_LEVEL:
-                state = new DecimalType(BigDecimal.valueOf(nodeData.getStatus().getBattery()).longValue());
-                break;
-            case CHANNEL_WIFI_STRENGTH:
-                state = new DecimalType(BigDecimal.valueOf(Math.max(0, nodeData.getStatus().getWifiStrength()-1))
-                        .longValue());
-                break;
-            case CHANNEL_TIMESTAMP:
-                // It seem the Node timestamp is Unix timestamp converted from UTC time plus timezone offset.
-                // Not sure about DST though, but it's best guess at now
-                Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-                cal.setTimeInMillis(nodeData.getStatus().getDatetime() * 1000L);
-                TimeZone tzSettings = TimeZone.getTimeZone(nodeData.getSettings().getTimezone());
-                cal.add(Calendar.MILLISECOND, -tzSettings.getRawOffset());
-                if (tzSettings.inDaylightTime(cal.getTime())) {
-                    cal.add(Calendar.MILLISECOND, -cal.getTimeZone().getDSTSavings());
-                }
-                state = new DateTimeType(cal);
-                break;
-            case CHANNEL_USED_MEMORY:
-                state = new DecimalType(BigDecimal.valueOf(nodeData.getStatus().getUsedMemory()).longValue());
-                break;
+        // Handle system channel IDs separately, because 'switch/case' expressions must be constant expressions
+        if (CHANNEL_BATTERY_LEVEL.equals(channelId)) {
+            state = new DecimalType(BigDecimal.valueOf(nodeData.getStatus().getBattery()).longValue());
+        } else if (CHANNEL_WIFI_STRENGTH.equals(channelId)) {
+            state = new DecimalType(BigDecimal.valueOf(Math.max(0, nodeData.getStatus().getWifiStrength()-1)).longValue());
+        } else {
+            // Handle binding-specific channel IDs
+            switch (channelId) {
+                case CHANNEL_CO2:
+                    state = new QuantityType<>(nodeData.getMeasurements().getCo2Ppm(), PARTS_PER_MILLION);
+                    break;
+                case CHANNEL_HUMIDITY:
+                    state = new QuantityType<>(nodeData.getMeasurements().getHumidityRH(), PERCENT);
+                    break;
+                case CHANNEL_AQI_US:
+                    state = new QuantityType<>(nodeData.getMeasurements().getPm25AQIUS(), ONE);
+                    break;
+                case CHANNEL_PM_25:
+                    // PM2.5 is in ug/m3
+                    state = new QuantityType<>(nodeData.getMeasurements().getPm25Ugm3(), MICRO(GRAM).divide(CUBIC_METRE));
+                    break;
+                case CHANNEL_TEMP_CELSIUS:
+                    state = new QuantityType<>(nodeData.getMeasurements().getTemperatureC(), CELSIUS);
+                    break;
+                case CHANNEL_TIMESTAMP:
+                    // It seem the Node timestamp is Unix timestamp converted from UTC time plus timezone offset.
+                    // Not sure about DST though, but it's best guess at now
+                    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                    cal.setTimeInMillis(nodeData.getStatus().getDatetime() * 1000L);
+                    TimeZone tzSettings = TimeZone.getTimeZone(nodeData.getSettings().getTimezone());
+                    cal.add(Calendar.MILLISECOND, -tzSettings.getRawOffset());
+                    if (tzSettings.inDaylightTime(cal.getTime())) {
+                        cal.add(Calendar.MILLISECOND, -cal.getTimeZone().getDSTSavings());
+                    }
+                    state = new DateTimeType(cal);
+                    break;
+                case CHANNEL_USED_MEMORY:
+                    state = new DecimalType(BigDecimal.valueOf(nodeData.getStatus().getUsedMemory()).longValue());
+                    break;
+            }
         }
 
         return state;

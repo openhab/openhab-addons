@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.DefaultSystemChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -36,10 +37,12 @@ public class AirVisualNodeBindingConstants {
     public static final String CHANNEL_AQI_US = "aqi";
     public static final String CHANNEL_PM_25 = "pm_25";
     public static final String CHANNEL_TEMP_CELSIUS = "temperature";
-    public static final String CHANNEL_BATTERY_LEVEL = "battery_level";
-    public static final String CHANNEL_WIFI_STRENGTH = "signal_strength";
     public static final String CHANNEL_TIMESTAMP = "timestamp";
     public static final String CHANNEL_USED_MEMORY = "used_memory";
+    public static final String CHANNEL_BATTERY_LEVEL = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL
+            .getUID().getId();
+    public static final String CHANNEL_WIFI_STRENGTH = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_SIGNAL_STRENGTH
+            .getUID().getId();
 
     // List of all supported Thing UIDs
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections

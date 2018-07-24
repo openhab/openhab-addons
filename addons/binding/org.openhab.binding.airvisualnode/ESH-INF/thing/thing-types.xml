@@ -18,8 +18,8 @@
 			<channel id="temperature" typeId="Temperature" />
 			<channel id="timestamp" typeId="Timestamp" />
 			<channel id="used_memory" typeId="Used_memory" />
-			<channel id="signal_strength" typeId="system.signal-strength" />
-			<channel id="battery_level" typeId="system.battery-level" />
+			<channel id="signal-strength" typeId="system.signal-strength" />
+			<channel id="battery-level" typeId="system.battery-level" />
 		</channels>
 
 		<!-- Configuration parameters -->
@@ -80,7 +80,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>AQI</label>
 		<description>Air Quality Index (US)</description>
-		<category>Flow</category>
 		<state readOnly="true" pattern="%d" />
 	</channel-type>
 
@@ -88,7 +87,6 @@
 		<item-type>Number:Density</item-type>
 		<label>PM2.5</label>
 		<description>PM2.5 level, μg/m&#179;</description>
-		<category>Flow</category>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 

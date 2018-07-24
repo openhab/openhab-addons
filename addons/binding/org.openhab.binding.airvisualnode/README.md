@@ -42,10 +42,10 @@ The binding supports the following channels:
 | aqi             | Number:Dimensionless  | Air Quality Index (US)      |
 | pm_25           | Number:Density        | PM2.5 level, μg/m³          |
 | temperature     | Number:Temperature    | Temperature                 |
-| battery_level   | Number                | Battery level, %            |
-| signal_strength | Number                | Wi-Fi signal strength       |
 | used_memory     | Number                | Used memory                 |
 | timestamp       | DateTime              | Timestamp                   |
+| battery-level   | Number                | Battery level, %            |
+| signal-strength | Number                | Wi-Fi signal strength, 0-4  |
 
 The Node updates measurements data every 5 minutes in active mode and every 15 minutes in power saving mode (screen off).
 
@@ -67,10 +67,10 @@ Here is an example of items for the AirVisual Node:
 ```
 Number:Temperature Livingroom_Temperature "Temperature [%.1f %unit%]" <temperature> {channel="airvisualnode:avnode:1a2b3c4:temperature"}
 Number:Dimensionless Livingroom_Humidity "Humidity [%d %unit%]" <humidity> {channel="airvisualnode:avnode:1a2b3c4:humidity"}
-Number:Dimensionless Livingroom_CO2_Level "CO₂" <flow> {channel="airvisualnode:avnode:1a2b3c4:co2"}
-Number:Dimensionless Livingroom_Aqi_Level "Air Quality Index" <flow> { channel="airvisualnode:avnode:1a2b3c4:aqi" }
-Number:Density Livingroom_Pm25_Level  "PM2.5 Level" <line> { channel="airvisualnode:avnode:1a2b3c4:pm_25" }
-DateTime Livingroom_Aqi_Timestamp "AQI Timestamp [%1$tH:%1$tM]" <clock> { channel="airvisualnode:avnode:1a2b3c4:timestamp" }
+Number:Dimensionless Livingroom_CO2_Level "CO₂" {channel="airvisualnode:avnode:1a2b3c4:co2"}
+Number:Dimensionless Livingroom_Aqi_Level "Air Quality Index" { channel="airvisualnode:avnode:1a2b3c4:aqi" }
+Number:Density Livingroom_Pm25_Level "PM2.5 Level" { channel="airvisualnode:avnode:1a2b3c4:pm_25" }
+DateTime Livingroom_Aqi_Timestamp "AQI Timestamp [%1$tH:%1$tM]" { channel="airvisualnode:avnode:1a2b3c4:timestamp" }
 ```
 
 ### Rules
