@@ -8,10 +8,11 @@
  */
 package org.openhab.binding.max.internal.message;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.net.util.Base64;
-import org.openhab.binding.max.MaxBinding;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.DeviceInformation;
 import org.openhab.binding.max.internal.device.DeviceType;
@@ -29,8 +30,8 @@ import org.slf4j.LoggerFactory;
 public final class M_Message extends Message {
     private final Logger logger = LoggerFactory.getLogger(M_Message.class);
 
-    public ArrayList<RoomInformation> rooms;
-    public ArrayList<DeviceInformation> devices;
+    public List<RoomInformation> rooms;
+    public List<DeviceInformation> devices;
     private Boolean hasConfiguration;
 
     public M_Message(String raw) {
@@ -39,75 +40,76 @@ public final class M_Message extends Message {
 
         String[] tokens = this.getPayload().split(Message.DELIMETER);
 
-        if (tokens.length > 1) {
-            try {
-                byte[] bytes = Base64.decodeBase64(tokens[2].getBytes());
-
-                hasConfiguration = true;
-                logger.trace("*** M_Message trace**** ");
-                logger.trace("\tMagic? (expect 86) : {}", (int) bytes[0]);
-                logger.trace("\tVersion? (expect 2): {}", (int) bytes[1]);
-                logger.trace("\t#defined rooms in M: {}", (int) bytes[2]);
-
-                rooms = new ArrayList<RoomInformation>();
-                devices = new ArrayList<DeviceInformation>();
-
-                int roomCount = bytes[2];
-
-                int byteOffset = 3; // start of rooms
-
-                /* process room */
-
-                for (int i = 0; i < roomCount; i++) {
-
-                    int position = bytes[byteOffset++];
-
-                    int nameLength = bytes[byteOffset++] & 0xff;
-                    byte[] data = new byte[nameLength];
-                    System.arraycopy(bytes, byteOffset, data, 0, nameLength);
-                    byteOffset += nameLength;
-                    String name = new String(data, "UTF-8");
-
-                    String rfAddress = Utils.toHex((bytes[byteOffset] & 0xff), (bytes[byteOffset + 1] & 0xff),
-                            (bytes[byteOffset + 2] & 0xff));
-                    byteOffset += 3;
-
-                    rooms.add(new RoomInformation(position, name, rfAddress));
-                }
-
-                /* process devices */
-
-                int deviceCount = bytes[byteOffset++];
-
-                for (int deviceId = 0; deviceId < deviceCount; deviceId++) {
-                    DeviceType deviceType = DeviceType.create(bytes[byteOffset++]);
-
-                    String rfAddress = Utils.toHex((bytes[byteOffset] & 0xff), (bytes[byteOffset + 1] & 0xff),
-                            (bytes[byteOffset + 2] & 0xff));
-                    byteOffset += 3;
-
-                    String serialNumber = "";
-
-                    for (int i = 0; i < 10; i++) {
-                        serialNumber += (char) bytes[byteOffset++];
-                    }
-
-                    int nameLength = bytes[byteOffset++] & 0xff;
-                    byte[] data = new byte[nameLength];
-                    System.arraycopy(bytes, byteOffset, data, 0, nameLength);
-                    byteOffset += nameLength;
-                    String deviceName = new String(data, "UTF-8");
-
-                    int roomId = bytes[byteOffset++] & 0xff;
-                    devices.add(new DeviceInformation(deviceType, serialNumber, rfAddress, deviceName, roomId));
-                }
-            } catch (Exception e) {
-                logger.info("Unknown error parsing the M Message: {}", e.getMessage(), e);
-                logger.debug("\tRAW : {}", this.getPayload());
-            }
-        } else {
+        if (tokens.length <= 1) {
             logger.info("No rooms defined. Configure your Max! Cube");
             hasConfiguration = false;
+            return;
+        }
+        try {
+            byte[] bytes = Base64.decodeBase64(tokens[2].getBytes(StandardCharsets.UTF_8));
+
+            hasConfiguration = true;
+            logger.trace("*** M_Message trace**** ");
+            logger.trace("\tMagic? (expect 86) : {}", (int) bytes[0]);
+            logger.trace("\tVersion? (expect 2): {}", (int) bytes[1]);
+            logger.trace("\t#defined rooms in M: {}", (int) bytes[2]);
+
+            rooms = new ArrayList<RoomInformation>();
+            devices = new ArrayList<DeviceInformation>();
+
+            int roomCount = bytes[2];
+
+            int byteOffset = 3; // start of rooms
+
+            /* process room */
+
+            for (int i = 0; i < roomCount; i++) {
+
+                int position = bytes[byteOffset++];
+
+                int nameLength = bytes[byteOffset++] & 0xff;
+                byte[] data = new byte[nameLength];
+                System.arraycopy(bytes, byteOffset, data, 0, nameLength);
+                byteOffset += nameLength;
+                String name = new String(data, StandardCharsets.UTF_8);
+
+                String rfAddress = Utils.toHex((bytes[byteOffset] & 0xff), (bytes[byteOffset + 1] & 0xff),
+                        (bytes[byteOffset + 2] & 0xff));
+                byteOffset += 3;
+
+                rooms.add(new RoomInformation(position, name, rfAddress));
+            }
+
+            /* process devices */
+
+            int deviceCount = bytes[byteOffset++];
+
+            for (int deviceId = 0; deviceId < deviceCount; deviceId++) {
+                DeviceType deviceType = DeviceType.create(bytes[byteOffset++]);
+
+                String rfAddress = Utils.toHex((bytes[byteOffset] & 0xff), (bytes[byteOffset + 1] & 0xff),
+                        (bytes[byteOffset + 2] & 0xff));
+                byteOffset += 3;
+
+                final StringBuilder serialNumberBuilder = new StringBuilder(10);
+
+                for (int i = 0; i < 10; i++) {
+                    serialNumberBuilder.append((char) bytes[byteOffset++]);
+                }
+
+                int nameLength = bytes[byteOffset++] & 0xff;
+                byte[] data = new byte[nameLength];
+                System.arraycopy(bytes, byteOffset, data, 0, nameLength);
+                byteOffset += nameLength;
+                String deviceName = new String(data, StandardCharsets.UTF_8);
+
+                int roomId = bytes[byteOffset++] & 0xff;
+                devices.add(new DeviceInformation(deviceType, serialNumberBuilder.toString(), rfAddress, deviceName,
+                        roomId));
+            }
+        } catch (Exception e) {
+            logger.info("Unknown error parsing the M Message: {}", e.getMessage(), e);
+            logger.debug("\tRAW : {}", this.getPayload());
         }
     }
 

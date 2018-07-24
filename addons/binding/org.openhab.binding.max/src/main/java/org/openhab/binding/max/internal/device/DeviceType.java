@@ -23,7 +23,7 @@ public enum DeviceType {
     ShutterContact(4),
     EcoSwitch(5);
 
-    private int value;
+    private final int value;
 
     private DeviceType(int value) {
         this.value = value;

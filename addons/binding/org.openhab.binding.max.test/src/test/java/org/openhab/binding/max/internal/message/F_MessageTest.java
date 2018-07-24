@@ -21,13 +21,13 @@ import org.junit.Test;
  */
 public class F_MessageTest {
 
-    public final String rawData = "F:nl.ntp.pool.org,ntp.homematic.com";
+    public static final String RAW_DATA = "F:nl.ntp.pool.org,ntp.homematic.com";
 
-    private F_Message message = null;
+    private F_Message message;
 
     @Before
     public void Before() {
-        message = new F_Message(rawData);
+        message = new F_Message(RAW_DATA);
     }
 
     @Test

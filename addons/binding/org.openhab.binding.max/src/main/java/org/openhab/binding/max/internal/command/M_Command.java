@@ -10,8 +10,10 @@ package org.openhab.binding.max.internal.command;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
@@ -39,15 +41,14 @@ public class M_Command extends CubeCommand {
     private static int MAX_DEVICES_COUNT = 140;
     private static int MAX_MSG_LENGTH = 1900;
 
-    private ArrayList<Device> devices = new ArrayList<Device>();
-    public ArrayList<RoomInformation> rooms = new ArrayList<RoomInformation>();
+    private final List<Device> devices;
+    public final List<RoomInformation> rooms;
 
-    public M_Command(ArrayList<Device> devices) {
-        this.devices = new ArrayList<Device>(devices);
-        roombuilder();
+    public M_Command(List<Device> devices) {
+        this(devices, new ArrayList<>());
     }
 
-    public M_Command(ArrayList<Device> devices, ArrayList<RoomInformation> rooms) {
+    public M_Command(List<Device> devices, List<RoomInformation> rooms) {
         this.devices = new ArrayList<Device>(devices);
         this.rooms = new ArrayList<RoomInformation>(rooms);
         roombuilder();
@@ -59,7 +60,7 @@ public class M_Command extends CubeCommand {
         }
     }
 
-    public ArrayList<RoomInformation> getRooms() {
+    public List<RoomInformation> getRooms() {
         return rooms;
     }
 
@@ -100,17 +101,17 @@ public class M_Command extends CubeCommand {
             byte[] header = { MAGIC_NR, M_VERSION, (byte) rooms.size() };
             message.write(header);
 
-            TreeSet<Integer> sortedRooms = new TreeSet<Integer>();
+            Set<Integer> sortedRooms = new TreeSet<Integer>();
             for (RoomInformation room : rooms) {
                 sortedRooms.add(room.getPosition());
-
             }
 
             for (Integer roomPos : sortedRooms) {
                 for (RoomInformation room : rooms) {
                     if (room.getPosition() == roomPos) {
                         if (roomCount < MAX_GROUP_COUNT) {
-                            byte[] roomName = StringUtils.abbreviate(room.getName(), MAX_NAME_LENGTH).getBytes("UTF-8");
+                            byte[] roomName = StringUtils.abbreviate(room.getName(), MAX_NAME_LENGTH)
+                                    .getBytes(StandardCharsets.UTF_8);
                             byte[] nameLength = new byte[] { (byte) roomName.length };
                             byte[] rfAddress = Utils.hexStringToByteArray(room.getRFAddress());
                             message.write(roomPos.byteValue());
@@ -137,9 +138,10 @@ public class M_Command extends CubeCommand {
                 if (deviceCount > 0) {
                     byte[] deviceType = { (byte) di.getType().getValue() };
                     byte[] rfAddress = Utils.hexStringToByteArray(di.getRFAddress());
-                    byte[] deviceName = StringUtils.abbreviate(di.getName(), MAX_NAME_LENGTH).getBytes("UTF-8");
+                    byte[] deviceName = StringUtils.abbreviate(di.getName(), MAX_NAME_LENGTH)
+                            .getBytes(StandardCharsets.UTF_8);
                     byte[] nameLength = { (byte) deviceName.length };
-                    byte[] serialNumber = di.getSerialNumber().getBytes();
+                    byte[] serialNumber = di.getSerialNumber().getBytes(StandardCharsets.UTF_8);
                     byte[] roomId = { (byte) di.getRoomId() };
 
                     message.write(deviceType);
@@ -162,16 +164,16 @@ public class M_Command extends CubeCommand {
 
         }
 
-        String encodedString = Base64.encodeBase64StringUnChunked(message.toByteArray());
-
-        String commandString = "";
+        final String encodedString = Base64.encodeBase64StringUnChunked(message.toByteArray());
+        final StringBuilder commandStringBuilder = new StringBuilder();
         int parts = (int) Math.round(encodedString.length() / MAX_MSG_LENGTH + 0.5);
         for (int i = 0; i < parts; i++) {
             String partString = StringUtils.abbreviate(encodedString.substring((i) * MAX_MSG_LENGTH), MAX_MSG_LENGTH);
-            commandString = commandString + "m:" + String.format("%02d", i) + "," + partString + '\r' + '\n';
+            commandStringBuilder.append("m:").append(String.format("%02d", i)).append(",").append(partString)
+                    .append('\r').append('\n');
         }
 
-        return commandString;
+        return commandStringBuilder.toString();
     }
 
     @Override

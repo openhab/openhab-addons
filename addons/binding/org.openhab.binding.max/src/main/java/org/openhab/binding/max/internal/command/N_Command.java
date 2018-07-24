@@ -23,8 +23,7 @@ public class N_Command extends CubeCommand {
 
     @Override
     public String getCommandString() {
-        String cmd = "n:" + String.format("%02x", DEFAULT_TIMEOUT) + '\r' + '\n';
-        return cmd;
+        return "n:" + String.format("%02x", DEFAULT_TIMEOUT) + '\r' + '\n';
     }
 
     @Override

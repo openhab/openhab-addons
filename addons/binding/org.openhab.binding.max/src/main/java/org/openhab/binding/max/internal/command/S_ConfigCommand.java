@@ -21,9 +21,9 @@ import org.slf4j.LoggerFactory;
  */
 public class S_ConfigCommand extends CubeCommand {
 
-    private String baseString = null;
-    private String rfAddress = null;
-    private int roomId = -1;
+    private String baseString;
+    private final String rfAddress;
+    private final int roomId;
 
     private byte[] commandBytes;
 
@@ -37,7 +37,7 @@ public class S_ConfigCommand extends CubeCommand {
         ProgramData
     }
 
-    private ConfigCommandType configCommandType;
+    private final ConfigCommandType configCommandType;
 
     /**
      * Creates a base command with rfAddress and roomID.
@@ -67,18 +67,7 @@ public class S_ConfigCommand extends CubeCommand {
     }
 
     /**
-     *
      * Set the Thermostat temperature configuration
-     *
-     * @param rfAddress
-     * @param roomId
-     * @param tempComfort
-     * @param tempEco
-     * @param tempSetpointMax
-     * @param tempSetpointMin
-     * @param tempOffset
-     * @param tempOpenWindow
-     * @param durationOpenWindow
      */
     public S_ConfigCommand(String rfAddress, int roomId, double tempComfort, double tempEco, double tempSetpointMax,
             double tempSetpointMin, double tempOffset, double tempOpenWindow, int durationOpenWindow) {
@@ -126,13 +115,13 @@ public class S_ConfigCommand extends CubeCommand {
             double tempOffset, double tempOpenWindow, int durationOpenWindow) {
         baseString = "000011000000";
 
-        Byte tempComfortByte = (byte) (tempComfort * 2);
-        Byte tempEcoByte = (byte) (tempEco * 2);
-        Byte tempSetpointMaxByte = (byte) (tempSetpointMax * 2);
-        Byte tempSetpointMinByte = (byte) (tempSetpointMin * 2);
-        Byte tempOffsetByte = (byte) ((tempOffset + 3.5) * 2);
-        Byte tempOpenWindowByte = (byte) (tempOpenWindow * 2);
-        Byte durationOpenWindowByte = (byte) (durationOpenWindow / 5);
+        byte tempComfortByte = (byte) (tempComfort * 2);
+        byte tempEcoByte = (byte) (tempEco * 2);
+        byte tempSetpointMaxByte = (byte) (tempSetpointMax * 2);
+        byte tempSetpointMinByte = (byte) (tempSetpointMin * 2);
+        byte tempOffsetByte = (byte) ((tempOffset + 3.5) * 2);
+        byte tempOpenWindowByte = (byte) (tempOpenWindow * 2);
+        byte durationOpenWindowByte = (byte) (durationOpenWindow / 5);
         commandBytes = new byte[] { tempComfortByte, tempEcoByte, tempSetpointMaxByte, tempSetpointMinByte,
                 tempOffsetByte, tempOpenWindowByte, durationOpenWindowByte };
         logger.debug(
@@ -148,7 +137,7 @@ public class S_ConfigCommand extends CubeCommand {
     @Override
     public String getCommandString() {
 
-        StringBuilder commandConfigString = new StringBuilder();
+        final StringBuilder commandConfigString = new StringBuilder();
         for (byte b : commandBytes) {
             commandConfigString.append(String.format("%02X", b));
         }

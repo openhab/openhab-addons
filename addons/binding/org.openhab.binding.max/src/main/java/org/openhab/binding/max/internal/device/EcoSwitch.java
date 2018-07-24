@@ -19,13 +19,8 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 
 public class EcoSwitch extends ShutterContact {
 
-    private OnOffType ecoMode = null;
+    private OnOffType ecoMode;
 
-    /**
-     * Class constructor.
-     *
-     * @param c
-     */
     public EcoSwitch(DeviceConfiguration c) {
         super(c);
     }

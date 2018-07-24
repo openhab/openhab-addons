@@ -8,9 +8,7 @@
  */
 package org.openhab.binding.max.internal.message;
 
-import org.openhab.binding.max.MaxBinding;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link: F_Message} contains information about the Cube NTP Configuration
@@ -32,15 +30,12 @@ public final class F_Message extends Message {
     public F_Message(String raw) {
         super(raw);
 
-        int i = 1;
-        for (String server : this.getPayload().split(",")) {
-            if (i == 1) {
-                ntpServer1 = server;
-            }
-            if (i == 2) {
-                ntpServer2 = server;
-            }
-            i++;
+        final String[] servers = this.getPayload().split(",");
+        if (servers.length > 0) {
+            ntpServer1 = servers[0];
+        }
+        if (servers.length > 1) {
+            ntpServer2 = servers[1];
         }
     }
 

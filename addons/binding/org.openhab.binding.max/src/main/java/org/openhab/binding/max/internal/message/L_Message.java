@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.max.internal.message;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,15 +35,15 @@ public final class L_Message extends Message {
 
     public Collection<? extends Device> getDevices(List<DeviceConfiguration> configurations) {
 
-        List<Device> devices = new ArrayList<Device>();
+        final List<Device> devices = new ArrayList<Device>();
 
-        byte[] decodedRawMessage = Base64.decodeBase64(getPayload().getBytes());
+        final byte[] decodedRawMessage = Base64.decodeBase64(getPayload().getBytes(StandardCharsets.UTF_8));
 
-        MaxTokenizer tokenizer = new MaxTokenizer(decodedRawMessage);
+        final MaxTokenizer tokenizer = new MaxTokenizer(decodedRawMessage);
 
         while (tokenizer.hasMoreElements()) {
             byte[] token = tokenizer.nextElement();
-            Device tempDevice = Device.create(token, configurations);
+            final Device tempDevice = Device.create(token, configurations);
             if (tempDevice != null) {
                 devices.add(tempDevice);
             }
@@ -53,7 +54,7 @@ public final class L_Message extends Message {
 
     public Collection<? extends Device> updateDevices(List<Device> devices, List<DeviceConfiguration> configurations) {
 
-        byte[] decodedRawMessage = Base64.decodeBase64(getPayload().getBytes());
+        byte[] decodedRawMessage = Base64.decodeBase64(getPayload().getBytes(StandardCharsets.UTF_8));
 
         MaxTokenizer tokenizer = new MaxTokenizer(decodedRawMessage);
 

@@ -73,58 +73,34 @@ public final class H_Message extends Message {
         properties.put("NTPCounter", rawNTPCounter);
     }
 
-    /**
-     * @return the Serial Number
-     */
     public String getSerialNumber() {
         return rawSerialNumber;
     }
 
-    /**
-     * @return the Rf Address
-     */
     public String getRFAddress() {
         return rawRFAddress;
     }
 
-    /**
-     * @return the Firmware Version
-     */
     public String getFirmwareVersion() {
         return rawFirmwareVersion;
     }
 
-    /**
-     * @return the ConnectionId
-     */
     public String getConnectionId() {
         return rawConnectionId;
     }
 
-    /**
-     * @return the DutyCycle
-     */
     public int getDutyCycle() {
         return Integer.parseInt(rawDutyCycle);
     }
 
-    /**
-     * @return the FreeMemorySlots
-     */
     public int getFreeMemorySlots() {
         return Integer.parseInt(rawFreeMemorySlots);
     }
 
-    /**
-     * @return the CubeTimeState
-     */
     public String getCubeTimeState() {
         return rawCubeTimeState;
     }
 
-    /**
-     * @return the NTPCounter
-     */
     public String getNTPCounter() {
         return rawNTPCounter;
     }

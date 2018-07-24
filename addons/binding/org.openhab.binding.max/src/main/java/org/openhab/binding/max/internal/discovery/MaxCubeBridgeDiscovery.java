@@ -17,6 +17,7 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -43,12 +44,12 @@ import org.slf4j.LoggerFactory;
  */
 public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
-    static final String MAXCUBE_DISCOVER_STRING = "eQ3Max*\0**********I";
+    private static final String MAXCUBE_DISCOVER_STRING = "eQ3Max*\0**********I";
     private static final int SEARCH_TIME = 15;
 
     private final Logger logger = LoggerFactory.getLogger(MaxCubeBridgeDiscovery.class);
 
-    static boolean discoveryRunning = false;
+    protected static boolean discoveryRunning;
 
     /** The refresh interval for discovery of MAX! Cubes */
     private static final long SEARCH_INTERVAL = 600;
@@ -103,24 +104,21 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
     private void receiveDiscoveryMessage() {
 
-        DatagramSocket bcReceipt = null;
-
-        try {
+        try (final DatagramSocket bcReceipt = new DatagramSocket(23272)) {
             discoveryRunning = true;
-            bcReceipt = new DatagramSocket(23272);
             bcReceipt.setReuseAddress(true);
             bcReceipt.setSoTimeout(5000);
 
             while (discoveryRunning) {
                 // Wait for a response
-                byte[] recvBuf = new byte[1500];
-                DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
+                final byte[] recvBuf = new byte[1500];
+                final DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
                 bcReceipt.receive(receivePacket);
 
                 // We have a response
-                byte[] messageBuf = Arrays.copyOfRange(receivePacket.getData(), receivePacket.getOffset(),
+                final byte[] messageBuf = Arrays.copyOfRange(receivePacket.getData(), receivePacket.getOffset(),
                         receivePacket.getOffset() + receivePacket.getLength());
-                String message = new String(messageBuf);
+                final String message = new String(messageBuf, StandardCharsets.UTF_8);
                 logger.trace("Broadcast response from {} : {} '{}'", receivePacket.getAddress(), message.length(),
                         message);
 
@@ -154,15 +152,6 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
         } catch (IOException e) {
             logger.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
             discoveryRunning = false;
-        } finally {
-            // Close the port!
-            try {
-                if (bcReceipt != null) {
-                    bcReceipt.close();
-                }
-            } catch (Exception e) {
-                logger.debug("{}", e.toString());
-            }
         }
     }
 
@@ -188,13 +177,11 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
      *            String to be used for the discovery
      */
     private void sendDiscoveryMessage(String discoverString) {
-        DatagramSocket bcSend = null;
         // Find the MaxCube using UDP broadcast
-        try {
-            bcSend = new DatagramSocket();
+        try (DatagramSocket bcSend = new DatagramSocket()) {
             bcSend.setBroadcast(true);
 
-            byte[] sendData = discoverString.getBytes();
+            byte[] sendData = discoverString.getBytes(StandardCharsets.UTF_8);
 
             // Broadcast the message over all the network interfaces
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -229,16 +216,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
         } catch (IOException e) {
             logger.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
-        } finally {
-            try {
-                if (bcSend != null) {
-                    bcSend.close();
-                }
-            } catch (Exception e) {
-                // Ignore
-            }
         }
-
     }
 
 }

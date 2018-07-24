@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.max.internal;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Date;
 
 /**

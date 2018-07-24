@@ -24,7 +24,7 @@ import org.openhab.binding.max.internal.exceptions.UnsupportedMessageTypeExcepti
  */
 public class MessageProcessorTest {
 
-    MessageProcessor processor;
+    private MessageProcessor processor;
 
     @Before
     public void before() {
