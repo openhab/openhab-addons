@@ -15,7 +15,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -43,8 +43,7 @@ public class FeicanHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(FeicanHandler.class);
     private final Commands commands = new Commands();
 
-    @Nullable
-    private Connection connection;
+    private @NonNullByDefault({}) Connection connection;
 
     /**
      * Creates a new handler for the Feican thing.
@@ -98,13 +97,21 @@ public class FeicanHandler extends BaseThingHandler {
     /**
      * Handle for {@link OnOffType} commands.
      *
-     * @param channelUID
-     *
      * @param onOff value to set: on or off
      * @throws IOException Connection to the bulb failed
      */
     private void handleOnOff(OnOffType onOff) throws IOException {
         connection.sendCommand(commands.switchOnOff(onOff));
+    }
+
+    /**
+     * Handle for {@link DecimalType} as an {@link OnOffType} command.
+     *
+     * @param value value to derive on or off state from
+     * @throws IOException Connection to the bulb failed
+     */
+    private void handleOnOff(DecimalType value) throws IOException {
+        handleOnOff(DecimalType.ZERO.equals(value) ? OnOffType.OFF : OnOffType.ON);
     }
 
     /**
@@ -128,7 +135,7 @@ public class FeicanHandler extends BaseThingHandler {
             handleBrightness(command.getBrightness());
             connection.sendCommand(
                     commands.color(new HSBType(command.getHue(), command.getSaturation(), PercentType.HUNDRED)));
-            handleOnOff((OnOffType) command.as(OnOffType.class));
+            handleOnOff(command);
         }
     }
 
@@ -147,7 +154,7 @@ public class FeicanHandler extends BaseThingHandler {
         switch (id) {
             case CHANNEL_COLOR:
                 handleBrightness(command);
-                handleOnOff((OnOffType) command.as(OnOffType.class));
+                handleOnOff(command);
                 break;
             case CHANNEL_COLOR_TEMPERATURE:
                 handleColorTemperature(command);

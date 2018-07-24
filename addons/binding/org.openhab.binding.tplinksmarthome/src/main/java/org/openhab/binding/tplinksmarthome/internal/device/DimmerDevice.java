@@ -54,7 +54,8 @@ public class DimmerDevice extends SwitchDevice {
             response = commands.setDimmerBrightnessResponse(
                     connection.sendCommand(commands.setDimmerBrightness((decimalCommand).intValue())));
             checkErrors(response);
-            response = setOnOffState(connection, (OnOffType) decimalCommand.as(OnOffType.class));
+            response = setOnOffState(connection,
+                    DecimalType.ZERO.equals(decimalCommand) ? OnOffType.OFF : OnOffType.ON);
         }
         checkErrors(response);
         return response != null;
