@@ -164,9 +164,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      * Called from {@link FritzAhaWebInterface#authenticate()} to update the bridge status because updateStatus is
      * protected.
      *
-     * @param status       Bridge status
+     * @param status Bridge status
      * @param statusDetail Bridge status detail
-     * @param description  Bridge status description
+     * @param description Bridge status description
      */
     public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         updateStatus(status, statusDetail, description);
@@ -207,7 +207,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     /**
      * Updates thing from device model.
      *
-     * @param thing  Thing to be updated.
+     * @param thing Thing to be updated.
      * @param device Device model with new data.
      */
     protected void updateThingFromDevice(Thing thing, AVMFritzBaseModel device) {
@@ -293,9 +293,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     /**
      * Updates thing channels.
      *
-     * @param thing     Thing which channels should be updated.
+     * @param thing Thing which channels should be updated.
      * @param channelId ID of the channel to be updated.
-     * @param state     State to be set.
+     * @param state State to be set.
      */
     private void updateThingChannelState(Thing thing, String channelId, State state) {
         Channel channel = thing.getChannel(channelId);
@@ -313,18 +313,16 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     /**
      * Updates thing channel configurations.
      *
-     * @param thing     Thing which channel configuration should be updated.
+     * @param thing Thing which channel configuration should be updated.
      * @param channelId ID of the channel which configuration to be updated.
-     * @param configId  ID of the configuration to be updated.
-     * @param value     Value to be set.
+     * @param configId ID of the configuration to be updated.
+     * @param value Value to be set.
      */
     private void updateThingChannelConfiguration(Thing thing, String channelId, String configId, Object value) {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
             Configuration config = channel.getConfiguration();
-            // editConfiguration()
             Configuration editConfig = new Configuration(new HashMap<>(config.getProperties()));
-            // updateConfiguration()
             editConfig.put(configId, value);
             config.setProperties(editConfig.getProperties());
         }
