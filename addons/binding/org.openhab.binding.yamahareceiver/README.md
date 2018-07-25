@@ -4,12 +4,22 @@ This binding connects openHAB with Yamaha Receivers of product line CX-A5000, RX
 
 If your hardware is on the list but still does not work, please fill a bug report!
 
-## Configuration
+## Supported Things
 
-Just use the auto discovery feature or add a thing for the binding manually by providing host and port.
-Initially a thing for the main zone will be created. This will trigger a zone detection internally and all available additional zones will appear as new things.
+Thing | Type | Description
+--------|------|------
+yamahaAV | Bridge | Yamaha Receiver hardware
+zone | Thing | Zones of your receiver
 
-When using zones feature, to manually add a receiver, use
+
+## Discovery
+
+Just use the auto discovery feature to detect your hardware. Initially a thing for the main zone will be created. This will trigger a zone detection internally and all available additional zones will appear as new things.
+
+
+## Thing Configuration
+
+To manually add a receiver and its zones a `things/yamahareceiver.things` file could look like this:
 
 ```
 Bridge yamahareceiver:yamahaAV:ReceiverID "Yamaha Receiver Bridge Name" [host="a.b.c.d"] {
@@ -20,38 +30,35 @@ Bridge yamahareceiver:yamahaAV:ReceiverID "Yamaha Receiver Bridge Name" [host="a
 }
 ```
 
-If your receiver is using menu-based net radio navigation, you can use this binding to
-select radio stations from a configured menu.
-
-Configuration parameters for Bridge type `yamahareceiver`:
+Configuration parameters for Bridge `yamahaAV`:
 
 Parameter | Required | Default | Description
 --------|------|------|------
-`host` | yes | / | The IP address of the AVR to control
+`host` | yes | N/A | The IP address of the AVR to control
 `port` | no | 80 | The API port of the AVR to control
 `refreshInterval` | no | 60 | Refresh interval in seconds
-`albumUrl` | no | / | When the album image is not provided by the Yamaha input source, you can specify the default image URL to apply
-`inputMapping` | no | / | Some Yamaha models return different input values on status update than required in the change input commands. See [below](#input-values) for details
+`albumUrl` | no | embedded image URL | When the album image is not provided by the Yamaha input source, you can specify the default image URL to apply
+`inputMapping` | no | "" (empty string) | Some Yamaha models return different input values on status update than required in the change input commands. See [below](#input-values) for details
 
-Configruation parameters for Thing type `zone`:
+Configruation parameters for Thing `zone`:
 
 Parameter | Required | Default | Description
 --------|------|------|------
-`zone` | yes | / | The zone can be Main_Zone, ZONE_2, ZONE_3, ZONE_4 depending on your device
+`zone` | yes | / | The zone can be Main_Zone, Zone_2, Zone_3, Zone_4 depending on your device
 `volumeRelativeChangeFactor` | no | 2 | Relative volume change in percent
 `volumeDbMin` | no | -80 | Lowest volume in dB
 `volumeDbMax` | no | 12 | Highest volume in dB
 
 
-## Features
+## Channels
 
-The implemented channels for the AVR thing are:
+The implemented channels for the `yamahaAV` bridge are:
 
 Channel | openHAB Type | Comment
 --------|------|------
 `power` | `Switch` | Switches the AVR ON or OFF. Your receiver has to be in network standby for this to work.
 
-The implemented channels for a zone thing are grouped in three groups.
+The implemented channels for a `zone` thing are grouped in three groups.
 
 Zone control channels are:
 
