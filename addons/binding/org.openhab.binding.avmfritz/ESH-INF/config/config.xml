@@ -135,4 +135,12 @@
 			<description>The AHA id (AIN) that identifies one specific FRITZ! group.</description>
 		</parameter>
 	</config-description>
+
+	<config-description uri="channel-type:avmfritz:temperature">
+		<parameter name="offset" type="decimal" required="false" readOnly="true" unit="Cel">
+			<label>Temperature offset</label>
+			<description>Current temperature offset (in °C).</description>
+			<default>0</default>
+		</parameter>
+	</config-description>
 </config-description:config-descriptions>

@@ -39,12 +39,13 @@ public class AVMFritzModelTest {
     @Before
     public void setUp() {
         String xml = "<devicelist version=\"1\">"
-                + "<group identifier=\"F0:A3:7F-900\" id=\"20001\" functionbitmask=\"640\" fwversion=\"1.0\" manufacturer=\"AVM\" productname=\"\"><present>1</present><name>Schlafzimmer</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><power>0</power><energy>2087</energy></powermeter><groupinfo><masterdeviceid>1000</masterdeviceid><members>20000</members></groupinfo></group>"
-                + "<device identifier=\"08761 0000434\" id=\"17\" functionbitmask=\"2944\" fwversion=\"03.83\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 200\"><present>1</present><name>FRITZ!DECT 200 #1</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><power>45</power><energy>166</energy></powermeter><temperature><celsius>255</celsius><offset>0</offset></temperature></device>"
-                + "<device identifier=\"08761 0000437\" id=\"20\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 300\"><present>0</present><name>FRITZ!DECT 300 #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><batterylow>0</batterylow><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>"
-                + "<device identifier=\"08761 0000436\" id=\"21\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 301\"><present>0</present><name>FRITZ!DECT 301 #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><batterylow>0</batterylow><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>"
-                + "<device identifier=\"08761 0000435\" id=\"22\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"Comet DECT\"><present>0</present><name>Comet DECT #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><batterylow>0</batterylow><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>"
-                + "<device identifier=\"5C:49:79:F0:A3:84\" id=\"30\" functionbitmask=\"640\" fwversion=\"06.92\" manufacturer=\"AVM\" productname=\"FRITZ!Powerline 546E\"><present>1</present><name>FRITZ!Powerline 546E #1</name><switch><state>0</state><mode>manuell</mode><lock>0</lock><devicelock>1</devicelock></switch><powermeter><power>0</power><energy>2087</energy></powermeter></device>"
+                + "<group identifier=\"F0:A3:7F-900\" id=\"20001\" functionbitmask=\"640\" fwversion=\"1.0\" manufacturer=\"AVM\" productname=\"\"><present>1</present><name>Schlafzimmer</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><voltage>230051</voltage><power>0</power><energy>2087</energy></powermeter><groupinfo><masterdeviceid>1000</masterdeviceid><members>20000</members></groupinfo></group>"
+                + "<device identifier=\"08761 0000434\" id=\"17\" functionbitmask=\"2944\" fwversion=\"03.83\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 200\"><present>1</present><name>FRITZ!DECT 200 #1</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><voltage>230051</voltage><power>0</power><energy>2087</energy></powermeter><temperature><celsius>255</celsius><offset>0</offset></temperature></device>"
+                + "<device identifier=\"08761 0000438\" id=\"18\" functionbitmask=\"2944\" fwversion=\"03.83\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 210\"><present>1</present><name>FRITZ!DECT 210 #8</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><voltage>230051</voltage><power>0</power><energy>2087</energy></powermeter><temperature><celsius>255</celsius><offset>0</offset></temperature></device>"
+                + "<device identifier=\"08761 0000437\" id=\"20\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 300\"><present>0</present><name>FRITZ!DECT 300 #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><batterylow>0</batterylow><battery>100</battery><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>"
+                + "<device identifier=\"08761 0000436\" id=\"21\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 301\"><present>0</present><name>FRITZ!DECT 301 #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><batterylow>0</batterylow><battery>100</battery><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>"
+                + "<device identifier=\"08761 0000435\" id=\"22\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"Comet DECT\"><present>0</present><name>Comet DECT #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><batterylow>0</batterylow><battery>100</battery><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>"
+                + "<device identifier=\"5C:49:79:F0:A3:84\" id=\"30\" functionbitmask=\"640\" fwversion=\"06.92\" manufacturer=\"AVM\" productname=\"FRITZ!Powerline 546E\"><present>1</present><name>FRITZ!Powerline 546E #1</name><switch><state>0</state><mode>manuell</mode><lock>0</lock><devicelock>1</devicelock></switch><powermeter><voltage>230051</voltage><power>0</power><energy>2087</energy></powermeter></device>"
                 + "<device identifier=\"08761 0954669\" id=\"40\" functionbitmask=\"1280\" fwversion=\"03.86\" manufacturer=\"AVM\" productname=\"FRITZ!DECT Repeater 100\"><present>1</present><name>FRITZ!DECT Repeater 100 #5</name><temperature><celsius>230</celsius><offset>0</offset></temperature></device>"
                 + "</devicelist>";
 
@@ -59,7 +60,7 @@ public class AVMFritzModelTest {
     @Test
     public void validateDevicelistModel() {
         assertNotNull(devices);
-        assertEquals(7, devices.getDevicelist().size());
+        assertEquals(8, devices.getDevicelist().size());
         assertEquals("1", devices.getXmlApiVersion());
     }
 
@@ -86,12 +87,14 @@ public class AVMFritzModelTest {
         assertFalse(device.isHeatingThermostat());
 
         assertNull(device.getSwitch());
-        assertNotNull(device.getTemperature());
-        assertNull(device.getPowermeter());
-        assertNull(device.getHkr());
 
+        assertNotNull(device.getTemperature());
         assertEquals(new BigDecimal("23.0"), device.getTemperature().getCelsius());
         assertEquals(new BigDecimal("0.0"), device.getTemperature().getOffset());
+
+        assertNull(device.getPowermeter());
+
+        assertNull(device.getHkr());
     }
 
     @Test
@@ -117,20 +120,55 @@ public class AVMFritzModelTest {
         assertFalse(device.isHeatingThermostat());
 
         assertNotNull(device.getSwitch());
-        assertNotNull(device.getTemperature());
-        assertNotNull(device.getPowermeter());
-        assertNull(device.getHkr());
-
         assertEquals(SwitchModel.ON, device.getSwitch().getState());
         assertEquals(MODE_MANUAL, device.getSwitch().getMode());
         assertEquals(BigDecimal.ZERO, device.getSwitch().getLock());
         assertEquals(BigDecimal.ZERO, device.getSwitch().getDevicelock());
 
+        assertNotNull(device.getTemperature());
         assertEquals(new BigDecimal("25.5"), device.getTemperature().getCelsius());
         assertEquals(new BigDecimal("0.0"), device.getTemperature().getOffset());
 
-        assertEquals(new BigDecimal("0.045"), device.getPowermeter().getPower());
-        assertEquals(new BigDecimal("166"), device.getPowermeter().getEnergy());
+        validatePowerMeter(device.getPowermeter());
+
+        assertNull(device.getHkr());
+    }
+
+    @Test
+    public void validateDECT210Model() {
+        Optional<AVMFritzBaseModel> optionalDevice = findModel("FRITZ!DECT 210");
+        assertTrue(optionalDevice.isPresent());
+        assertTrue(optionalDevice.get() instanceof DeviceModel);
+
+        DeviceModel device = (DeviceModel) optionalDevice.get();
+        assertEquals("FRITZ!DECT 210", device.getProductName());
+        assertEquals("087610000438", device.getIdentifier());
+        assertEquals("18", device.getDeviceId());
+        assertEquals("03.83", device.getFirmwareVersion());
+        assertEquals("AVM", device.getManufacturer());
+
+        assertEquals(1, device.getPresent());
+        assertEquals("FRITZ!DECT 210 #8", device.getName());
+
+        assertFalse(device.isDectRepeater());
+        assertTrue(device.isSwitchableOutlet());
+        assertTrue(device.isTempSensor());
+        assertTrue(device.isPowermeter());
+        assertFalse(device.isHeatingThermostat());
+
+        assertNotNull(device.getSwitch());
+        assertEquals(SwitchModel.ON, device.getSwitch().getState());
+        assertEquals(MODE_MANUAL, device.getSwitch().getMode());
+        assertEquals(BigDecimal.ZERO, device.getSwitch().getLock());
+        assertEquals(BigDecimal.ZERO, device.getSwitch().getDevicelock());
+
+        assertNotNull(device.getTemperature());
+        assertEquals(new BigDecimal("25.5"), device.getTemperature().getCelsius());
+        assertEquals(new BigDecimal("0.0"), device.getTemperature().getOffset());
+
+        validatePowerMeter(device.getPowermeter());
+
+        assertNull(device.getHkr());
     }
 
     @Test
@@ -156,27 +194,14 @@ public class AVMFritzModelTest {
         assertTrue(device.isHeatingThermostat());
 
         assertNull(device.getSwitch());
-        assertNotNull(device.getTemperature());
-        assertNull(device.getPowermeter());
-        assertNotNull(device.getHkr());
 
+        assertNotNull(device.getTemperature());
         assertEquals(new BigDecimal("22.0"), device.getTemperature().getCelsius());
         assertEquals(new BigDecimal("-1.0"), device.getTemperature().getOffset());
 
-        assertEquals(new BigDecimal(44), device.getHkr().getTist());
-        assertEquals(new BigDecimal(42), device.getHkr().getTsoll());
-        assertEquals(new BigDecimal(28), device.getHkr().getAbsenk());
-        assertEquals(new BigDecimal(42), device.getHkr().getKomfort());
-        assertEquals(BigDecimal.ONE, device.getHkr().getLock());
-        assertEquals(BigDecimal.ONE, device.getHkr().getDevicelock());
-        assertEquals(HeatingModel.BATTERY_OFF, device.getHkr().getBatterylow());
-        assertEquals(MODE_AUTO, device.getHkr().getMode());
-        assertEquals(MODE_COMFORT, device.getHkr().getRadiatorMode());
+        assertNull(device.getPowermeter());
 
-        assertNotNull(device.getHkr().getNextchange());
-
-        assertEquals(1484341200, device.getHkr().getNextchange().getEndperiod());
-        assertEquals(new BigDecimal(28), device.getHkr().getNextchange().getTchange());
+        validateHeatingModel(device.getHkr());
     }
 
     @Test
@@ -202,27 +227,14 @@ public class AVMFritzModelTest {
         assertTrue(device.isHeatingThermostat());
 
         assertNull(device.getSwitch());
-        assertNotNull(device.getTemperature());
-        assertNull(device.getPowermeter());
-        assertNotNull(device.getHkr());
 
+        assertNotNull(device.getTemperature());
         assertEquals(new BigDecimal("22.0"), device.getTemperature().getCelsius());
         assertEquals(new BigDecimal("-1.0"), device.getTemperature().getOffset());
 
-        assertEquals(new BigDecimal(44), device.getHkr().getTist());
-        assertEquals(new BigDecimal(42), device.getHkr().getTsoll());
-        assertEquals(new BigDecimal(28), device.getHkr().getAbsenk());
-        assertEquals(new BigDecimal(42), device.getHkr().getKomfort());
-        assertEquals(BigDecimal.ONE, device.getHkr().getLock());
-        assertEquals(BigDecimal.ONE, device.getHkr().getDevicelock());
-        assertEquals(HeatingModel.BATTERY_OFF, device.getHkr().getBatterylow());
-        assertEquals(MODE_AUTO, device.getHkr().getMode());
-        assertEquals(MODE_COMFORT, device.getHkr().getRadiatorMode());
+        assertNull(device.getPowermeter());
 
-        assertNotNull(device.getHkr().getNextchange());
-
-        assertEquals(1484341200, device.getHkr().getNextchange().getEndperiod());
-        assertEquals(new BigDecimal(28), device.getHkr().getNextchange().getTchange());
+        validateHeatingModel(device.getHkr());
     }
 
     @Test
@@ -248,27 +260,14 @@ public class AVMFritzModelTest {
         assertTrue(device.isHeatingThermostat());
 
         assertNull(device.getSwitch());
-        assertNotNull(device.getTemperature());
-        assertNull(device.getPowermeter());
-        assertNotNull(device.getHkr());
 
+        assertNotNull(device.getTemperature());
         assertEquals(new BigDecimal("22.0"), device.getTemperature().getCelsius());
         assertEquals(new BigDecimal("-1.0"), device.getTemperature().getOffset());
 
-        assertEquals(new BigDecimal(44), device.getHkr().getTist());
-        assertEquals(new BigDecimal(42), device.getHkr().getTsoll());
-        assertEquals(new BigDecimal(28), device.getHkr().getAbsenk());
-        assertEquals(new BigDecimal(42), device.getHkr().getKomfort());
-        assertEquals(BigDecimal.ONE, device.getHkr().getLock());
-        assertEquals(BigDecimal.ONE, device.getHkr().getDevicelock());
-        assertEquals(HeatingModel.BATTERY_OFF, device.getHkr().getBatterylow());
-        assertEquals(MODE_AUTO, device.getHkr().getMode());
-        assertEquals(MODE_COMFORT, device.getHkr().getRadiatorMode());
+        assertNull(device.getPowermeter());
 
-        assertNotNull(device.getHkr().getNextchange());
-
-        assertEquals(1484341200, device.getHkr().getNextchange().getEndperiod());
-        assertEquals(new BigDecimal(28), device.getHkr().getNextchange().getTchange());
+        validateHeatingModel(device.getHkr());
     }
 
     @Test
@@ -294,17 +293,16 @@ public class AVMFritzModelTest {
         assertFalse(device.isHeatingThermostat());
 
         assertNotNull(device.getSwitch());
-        assertNull(device.getTemperature());
-        assertNotNull(device.getPowermeter());
-        assertNull(device.getHkr());
-
         assertEquals(SwitchModel.OFF, device.getSwitch().getState());
         assertEquals(MODE_MANUAL, device.getSwitch().getMode());
         assertEquals(BigDecimal.ZERO, device.getSwitch().getLock());
         assertEquals(BigDecimal.ONE, device.getSwitch().getDevicelock());
 
-        assertEquals(new BigDecimal("0.000"), device.getPowermeter().getPower());
-        assertEquals(new BigDecimal("2087"), device.getPowermeter().getEnergy());
+        assertNull(device.getTemperature());
+
+        validatePowerMeter(device.getPowermeter());
+
+        assertNull(device.getHkr());
     }
 
     @Test
@@ -330,23 +328,46 @@ public class AVMFritzModelTest {
         assertFalse(group.isHeatingThermostat());
 
         assertNotNull(group.getSwitch());
-        assertNotNull(group.getPowermeter());
-        assertNull(group.getHkr());
-        assertNotNull(group.getGroupinfo());
-
         assertEquals(SwitchModel.ON, group.getSwitch().getState());
         assertEquals(MODE_MANUAL, group.getSwitch().getMode());
         assertEquals(BigDecimal.ZERO, group.getSwitch().getLock());
         assertEquals(BigDecimal.ZERO, group.getSwitch().getDevicelock());
 
-        assertEquals(new BigDecimal("0.000"), group.getPowermeter().getPower());
-        assertEquals(new BigDecimal("2087"), group.getPowermeter().getEnergy());
+        validatePowerMeter(group.getPowermeter());
 
+        assertNull(group.getHkr());
+
+        assertNotNull(group.getGroupinfo());
         assertEquals("1000", group.getGroupinfo().getMasterdeviceid());
         assertEquals("20000", group.getGroupinfo().getMembers());
     }
 
     private Optional<AVMFritzBaseModel> findModel(@NonNull String name) {
         return devices.getDevicelist().stream().filter(it -> name.equals(it.getProductName())).findFirst();
+    }
+
+    private void validatePowerMeter(PowerMeterModel model) {
+        assertNotNull(model);
+        assertEquals(new BigDecimal("230.051"), model.getVoltage());
+        assertEquals(new BigDecimal("0.000"), model.getPower());
+        assertEquals(new BigDecimal("2087"), model.getEnergy());
+    }
+
+    private void validateHeatingModel(HeatingModel model) {
+        assertNotNull(model);
+        assertEquals(new BigDecimal(44), model.getTist());
+        assertEquals(new BigDecimal(42), model.getTsoll());
+        assertEquals(new BigDecimal(28), model.getAbsenk());
+        assertEquals(new BigDecimal(42), model.getKomfort());
+        assertEquals(BigDecimal.ONE, model.getLock());
+        assertEquals(BigDecimal.ONE, model.getDevicelock());
+        assertEquals(new BigDecimal("100"), model.getBattery());
+        assertEquals(HeatingModel.BATTERY_OFF, model.getBatterylow());
+        assertEquals(MODE_AUTO, model.getMode());
+        assertEquals(MODE_COMFORT, model.getRadiatorMode());
+
+        assertNotNull(model.getNextchange());
+        assertEquals(1484341200, model.getNextchange().getEndperiod());
+        assertEquals(new BigDecimal(28), model.getNextchange().getTchange());
     }
 }

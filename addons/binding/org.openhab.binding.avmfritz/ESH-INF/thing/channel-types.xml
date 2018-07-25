@@ -8,12 +8,12 @@
 	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Mode</label>
-		<description>States the mode of the device (MANUAL/AUTOMATIC).
-		</description>
+		<description>States the mode of the device (MANUAL/AUTOMATIC/VACATION).</description>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="MANUAL">Manual</option>
 				<option value="AUTOMATIC">Automatic</option>
+				<option value="VACATION">Vacation</option>
 			</options>
 		</state>
 	</channel-type>
@@ -21,8 +21,7 @@
 	<channel-type id="locked" advanced="true">
 		<item-type>Contact</item-type>
 		<label>Device locked (external)</label>
-		<description>Device is locked for switching over external sources.
-		</description>
+		<description>Device is locked for switching over external sources.</description>
 		<category>Contact</category>
 		<state pattern="%s" readOnly="true" />
 	</channel-type>
@@ -30,8 +29,7 @@
 	<channel-type id="device_locked" advanced="true">
 		<item-type>Contact</item-type>
 		<label>Locked (manual)</label>
-		<description>Device is locked for switching by pressing the button on the device.
-		</description>
+		<description>Device is locked for switching by pressing the button on the device.</description>
 		<category>Contact</category>
 		<state pattern="%s" readOnly="true" />
 	</channel-type>
@@ -43,6 +41,8 @@
 		<description>Current measured temperature.</description>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true" />
+
+		<config-description-ref uri="channel-type:avmfritz:temperature" />
 	</channel-type>
 
 	<channel-type id="energy">
@@ -59,6 +59,14 @@
 		<description>Current power consumption.</description>
 		<category>Energy</category>
 		<state pattern="%.2f %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Current voltage.</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="outlet">
@@ -103,9 +111,7 @@
 	<channel-type id="radiator_mode">
 		<item-type>String</item-type>
 		<label>Radiator mode</label>
-		<description>States the mode of the radiator
-			(ON/OFF/COMFORT/ECO/BOOST).
-		</description>
+		<description>States the mode of the radiator (ON/OFF/COMFORT/ECO/BOOST/WINDOW_OPEN).</description>
 		<state pattern="%s">
 			<options>
 				<option value="ON">On</option>
@@ -113,6 +119,7 @@
 				<option value="COMFORT">Comfort</option>
 				<option value="ECO">Eco</option>
 				<option value="BOOST">Boost</option>
+				<option value="WINDOW_OPEN">Window open</option>
 			</options>
 		</state>
 	</channel-type>
