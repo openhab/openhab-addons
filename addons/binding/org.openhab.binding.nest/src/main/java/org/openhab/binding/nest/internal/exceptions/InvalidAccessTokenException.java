@@ -14,6 +14,7 @@ package org.openhab.binding.nest.internal.exceptions;
  * @author Martin van Wingerden - Initial contribution
  * @author Martin van Wingerden - Added more centralized handling of invalid access tokens
  */
+@SuppressWarnings("serial")
 public class InvalidAccessTokenException extends Exception {
     public InvalidAccessTokenException(Exception cause) {
         super(cause);
