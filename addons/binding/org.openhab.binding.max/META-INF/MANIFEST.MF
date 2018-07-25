@@ -9,9 +9,9 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Export-Package: org.openhab.binding.max
 Import-Package: 
- com.google.common.base,
  com.google.common.collect,
  org.apache.commons.lang,
+ org.apache.commons.lang.builder,
  org.apache.commons.net.util,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,

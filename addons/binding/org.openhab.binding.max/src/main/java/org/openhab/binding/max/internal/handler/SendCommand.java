@@ -8,11 +8,10 @@
  */
 package org.openhab.binding.max.internal.handler;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.max.internal.command.CubeCommand;
-
-import com.google.common.base.Objects;
 
 /**
  * Class for sending a command.
@@ -120,9 +119,9 @@ public final class SendCommand {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(SendCommand.class).add("id", id).add("channelUID", channelUID)
-                .add("command", command).add("cubeCommand", cubeCommand).add("serialNumber", serialNumber)
-                .add("key", key).add("commandText", commandText).toString();
+        return new ToStringBuilder(this).append("id", id).append("channelUID", channelUID).append("command", command)
+                .append("cubeCommand", cubeCommand).append("serialNumber", serialNumber).append("key", key)
+                .append("commandText", commandText).toString();
     }
 
 }

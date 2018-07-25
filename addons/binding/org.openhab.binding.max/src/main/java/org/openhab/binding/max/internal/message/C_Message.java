@@ -27,8 +27,6 @@ import org.openhab.binding.max.internal.device.DeviceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-
 /**
  * The {@link C_Message} contains configuration about a MAX! device.
  *
@@ -281,10 +279,9 @@ public final class C_Message extends Message {
         for (String key : properties.keySet()) {
             if (!key.startsWith("Unknown")) {
                 String propertyName = StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(key), ' ');
-                logger.debug("{}:{}{}", propertyName, Strings.repeat(" ", 25 - propertyName.length()),
-                        properties.get(key));
+                logger.debug("{}: {}", propertyName, properties.get(key));
             } else {
-                logger.debug("{}:{}{}", key, Strings.repeat(" ", 25 - key.length()), properties.get(key));
+                logger.debug("{}: {}", key, properties.get(key));
             }
         }
         if (programData != null) {
