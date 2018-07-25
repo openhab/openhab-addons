@@ -121,6 +121,7 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestThingD
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected <U extends Quantity<U>> QuantityType<U> commandToQuantityType(Command command, Unit<U> defaultUnit) {
         if (command instanceof QuantityType) {
             return (QuantityType<U>) command;
@@ -175,7 +176,7 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestThingD
         return value == null ? UnDefType.NULL : new StringType(value.toString());
     }
 
-    protected State getAsStringTypeListOrNull(@Nullable Collection<? extends Object> values) {
+    protected State getAsStringTypeListOrNull(@Nullable Collection<?> values) {
         return values == null || values.isEmpty() ? UnDefType.NULL : new StringType(StringUtils.join(values, ","));
     }
 

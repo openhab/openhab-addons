@@ -14,7 +14,9 @@ package org.openhab.binding.nest.internal.exceptions;
  * @author Martin van Wingerden - Initial contribution
  * @author Martin van Wingerden - Added more centralized handling of failure when retrieving data
  */
+@SuppressWarnings("serial")
 public class FailedRetrievingNestDataException extends Exception {
+
     public FailedRetrievingNestDataException(String message) {
         super(message);
     }

@@ -61,6 +61,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService {
     private final DiscoveryDataListener<Thermostat> thermostatDiscoveryDataListener = new DiscoveryDataListener<>(
             Thermostat.class, THING_TYPE_THERMOSTAT, this::addDeviceDiscoveryResult);
 
+    @SuppressWarnings("rawtypes")
     private final List<DiscoveryDataListener> discoveryDataListeners = Stream.of(cameraDiscoveryDataListener,
             smokeDetectorDiscoveryDataListener, structureDiscoveryDataListener, thermostatDiscoveryDataListener)
             .collect(Collectors.toList());
