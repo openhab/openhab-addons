@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,19 +8,37 @@
  */
 package org.openhab.binding.spotify;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link SpotifyBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link SpotifyBindingConstants} class defines common constants, which are used across the whole binding.
  *
  * @author Andreas Stenlund - Initial contribution
+ * @author Hilbrand Bouwkamp - Added more constants
  */
 public class SpotifyBindingConstants {
 
-    private static final String BINDING_ID = "spotify";
+    // List of Spotify services related urls, information
+    public static final String SPOTIFY_ACCOUNT_URL = "https://accounts.spotify.com";
+    public static final String SPOTIFY_AUTHORIZE_URL = SPOTIFY_ACCOUNT_URL + "/authorize";
+    public static final String SPOTIFY_API_TOKEN_URL = SPOTIFY_ACCOUNT_URL + "/api/token";
+    /**
+     * Spotify scopes needed by this binding to work.
+     */
+    public static final String SPOTIFY_SCOPES = Arrays.asList("user-read-playback-state", "user-modify-playback-state")
+            .stream().collect(Collectors.joining("%20"));
+    public static final String SPOTIFY_API_URL = "https://api.spotify.com/v1/me";
+    public static final String SPOTIFY_API_PLAYER_URL = SPOTIFY_API_URL + "/player";
+
+    // Authorization related Serlvet and resources aliases.
+    public static final String SPOTIFY_ALIAS = "/connectspotify";
+    public static final String SPOTIFY_IMG_ALIAS = "/img";
 
     // List of all Thing Type UIDs
+    private static final String BINDING_ID = "spotify";
     public static final ThingTypeUID THING_TYPE_PLAYER = new ThingTypeUID(BINDING_ID, "player");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
@@ -30,7 +48,6 @@ public class SpotifyBindingConstants {
     public static final String CHANNEL_TRACKPLAY = "trackPlay";
     public static final String CHANNEL_TRACKPLAYER = "trackPlayer";
     public static final String CHANNEL_TRACKREPEAT = "trackRepeat";
-    // public static final String CHANNEL_CURRENTDEVICEID = "currentDeviceId";
 
     public static final String CHANNEL_PLAYED_TRACKID = "trackId";
     public static final String CHANNEL_PLAYED_TRACKURI = "trackUri";
@@ -50,6 +67,7 @@ public class SpotifyBindingConstants {
     public static final String CHANNEL_PLAYED_ALBUMHREF = "albumHref";
     public static final String CHANNEL_PLAYED_ALBUMNAME = "albumName";
     public static final String CHANNEL_PLAYED_ALBUMTYPE = "albumType";
+    public static final String CHANNEL_PLAYED_ALBUMIMAGE = "albumImage";
 
     public static final String CHANNEL_PLAYED_ARTISTID = "artistId";
     public static final String CHANNEL_PLAYED_ARTISTURI = "artistUri";
@@ -66,4 +84,11 @@ public class SpotifyBindingConstants {
     public static final String CHANNEL_DEVICESHUFFLE = "deviceShuffle";
     public static final String CHANNEL_DEVICEPLAY = "devicePlay";
 
+    // List of Bridge configuration params
+    public static final String CONFIGURATION_CLIENT_ID = "clientId";
+    public static final String CONFIGURATION_CLIENT_REFRESH_TOKEN = "refreshToken";
+
+    // List of Bridge/Thing properties
+    public static final String PROPERTY_SPOTIFY_USER = "user";
+    public static final String PROPERTY_SPOTIFY_DEVICE_ID = "id";
 }

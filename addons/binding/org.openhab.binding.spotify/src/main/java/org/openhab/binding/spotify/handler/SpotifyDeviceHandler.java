@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,11 +11,8 @@ package org.openhab.binding.spotify.handler;
 import static org.openhab.binding.spotify.SpotifyBindingConstants.*;
 
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.NextPreviousType;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
@@ -29,194 +26,126 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.spotify.internal.SpotifyHandleCommands;
+import org.openhab.binding.spotify.internal.api.SpotifyApi;
+import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
+import org.openhab.binding.spotify.internal.api.model.Device;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SpotifyDeviceHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link SpotifyDeviceHandler} is responsible for handling commands, which are sent to one of the channels.
  *
  * @author Andreas Stenlund - Initial contribution
+ * @author Hilbrand Bouwkamp - Code cleanup, moved channel state to this class, generic stability.
  */
+@NonNullByDefault
 public class SpotifyDeviceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SpotifyDeviceHandler.class);
-    private SpotifyHandler player = null;
-    private String deviceId;
 
-    /*
-     * Initializer
+    private @NonNullByDefault({}) SpotifyHandleCommands commandHandler;
+    private @NonNullByDefault({}) SpotifyApi spotifyApi;
+
+    /**
+     * Constructor
      *
-     * @nonNull Thing
+     * @param thing Thing representing this device.
      */
     public SpotifyDeviceHandler(Thing thing) {
         super(thing);
-
-        if (getBridge() != null) {
-            player = (SpotifyHandler) getBridge().getHandler();
-        }
-    }
-
-    public void changeStatus(ThingStatus status) {
-        updateStatus(status);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received channel: {}, command: {}", channelUID, command);
-
-        if (player == null && getBridge() != null) {
-            player = (SpotifyHandler) getBridge().getHandler();
-        }
-
-        if (player == null) {
-            return;
-        }
-
-        String channel = channelUID.getId();
-
-        switch (channel) {
-            case CHANNEL_DEVICEPLAY:
-                logger.debug("CHANNEL_DEVICEPLAY {}", command.getClass().getName());
-
-                if (command instanceof PlayPauseType) {
-                    if (command.equals(PlayPauseType.PLAY)) {
-                        player.getSpotifySession().transferPlay(getDeviceId());
-                        player.getSpotifySession().playActiveTrack(getDeviceId());
-                    } else if (command.equals(PlayPauseType.PAUSE)) {
-                        player.getSpotifySession().pauseActiveTrack(getDeviceId());
-                    }
-                }
-                if (command instanceof OnOffType) {
-                    if (command.equals(OnOffType.ON)) {
-                        player.getSpotifySession().transferPlay(getDeviceId());
-                        player.getSpotifySession().playActiveTrack(getDeviceId());
-                    } else if (command.equals(OnOffType.OFF)) {
-                        player.getSpotifySession().pauseActiveTrack(getDeviceId());
-                    }
-                }
-                if (command instanceof NextPreviousType) {
-                    if (command.equals(NextPreviousType.NEXT)) {
-                        player.getSpotifySession().playActiveTrack(getDeviceId());
-                    } else if (command.equals(NextPreviousType.PREVIOUS)) {
-                        player.getSpotifySession().previousTrack(getDeviceId());
-                    }
-
-                }
-                if (command instanceof StringType) {
-                    String cmd = ((StringType) command).toString();
-                    if (cmd.equalsIgnoreCase("play")) {
-                        player.getSpotifySession().playActiveTrack();
-                        setChannelValue(CHANNEL_TRACKPLAYER, PlayPauseType.PLAY);
-                    } else if (cmd.equalsIgnoreCase("pause")) {
-                        player.getSpotifySession().pauseActiveTrack();
-                        setChannelValue(CHANNEL_TRACKPLAYER, PlayPauseType.PAUSE);
-                    } else if (cmd.equalsIgnoreCase("next")) {
-                        player.getSpotifySession().nextTrack();
-                    } else if (cmd.equalsIgnoreCase("prev") || cmd.equalsIgnoreCase("previous")) {
-                        player.getSpotifySession().previousTrack();
-                    }
-
-                }
-                break;
-            case CHANNEL_DEVICESHUFFLE:
-                logger.debug("CHANNEL_DEVICESHUFFLE {}", command.getClass().getName());
-
-                if (command instanceof OnOffType) {
-                    player.getSpotifySession().setShuffleState(getDeviceId(),
-                            command.equals(OnOffType.OFF) ? "false" : "true");
-                }
-                break;
-            case CHANNEL_DEVICEVOLUME:
-                if (command instanceof DecimalType) {
-                    PercentType volume = new PercentType(((DecimalType) command).intValue());
-                    player.getSpotifySession().setVolume(volume.intValue());
-                    setChannelValue(CHANNEL_DEVICEVOLUME, volume);
-                } else if (command instanceof PercentType) {
-                    PercentType volume = (PercentType) command;
-                    player.getSpotifySession().setVolume(volume.intValue());
-                    setChannelValue(CHANNEL_DEVICEVOLUME, volume);
-                }
-                break;
-            case CHANNEL_TRACKPLAY:
-                if (command instanceof StringType) {
-                    player.getSpotifySession().transferPlay(getDeviceId(), ((StringType) command).toString());
-                    player.getSpotifySession().playTrack(getDeviceId(), ((StringType) command).toString());
-                }
-                break;
+        try {
+            if (commandHandler != null) {
+                commandHandler.handleCommand(channelUID, command);
+            }
+        } catch (SpotifyException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
         }
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initialize Spotify device handler.");
+        SpotifyBridgeHandler bridgeHandler = (SpotifyBridgeHandler) getBridge().getHandler();
+        spotifyApi = bridgeHandler.getSpotifyApi();
 
-        super.initialize();
-        Map<String, String> props = this.thing.getProperties();
-        deviceId = props.get("id");
-        String isRestricted = props.get("is_restricted");
-
-        if (isRestricted == null || isRestricted.equals("true")) {
-            updateStatus(ThingStatus.OFFLINE);
-        } else {
-            updateStatus(ThingStatus.ONLINE);
-        }
-
-        logger.debug("Initialize Spotify device handler done.");
+        Map<String, String> props = thing.getProperties();
+        commandHandler = new SpotifyHandleCommands(spotifyApi, props.get(PROPERTY_SPOTIFY_DEVICE_ID));
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("SpotifyDevice {}: SpotifyBridge status changed to {}.", getDeviceId(),
-                bridgeStatusInfo.getStatus());
-
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Spotify Bridge Offline"); // SpotifyConnectBindingConstants.getI18nConstant(SpotifyConnectBindingConstants.OFFLINE_CTLR_OFFLINE)
-            logger.debug("SpotifyDevice {}: SpotifyBridge is not online.", getDeviceId(), bridgeStatusInfo.getStatus());
-            return;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Spotify Bridge Offline");
+            logger.debug("SpotifyDevice {}: SpotifyBridge is not online.", getThing().getThingTypeUID(),
+                    bridgeStatusInfo.getStatus());
         }
-
-        /*
-         * for (Channel channel : getThing().getChannels()) {
-         * // Process the channel properties and configuration
-         * Map<String, String> properties = channel.getProperties();
-         * Configuration configuration = channel.getConfiguration();
-         * }
-         */
     }
 
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParmeters) {
-        // can be overridden by subclasses
-        Configuration configuration = editConfiguration();
-        for (Entry<String, Object> configurationParmeter : configurationParmeters.entrySet()) {
-            configuration.put(configurationParmeter.getKey(), configurationParmeter.getValue());
+    /**
+     * Updates the status if the given device matches with this handler.
+     *
+     * @param device device with status information
+     * @param playing
+     * @return returns true if given device matches with this handler
+     */
+    public boolean updateDeviceStatus(Device device, boolean playing) {
+        if (thing.getProperties().get(PROPERTY_SPOTIFY_DEVICE_ID).equals(device.getId())) {
+            logger.debug("Updating status of Thing: {} Device [ {} {}, {} ]", thing.getUID(), device.getId(),
+                    device.getName(), device.getType());
+            boolean online = setOnlineStatus(device.isRestricted());
+            updateChannelState(CHANNEL_DEVICEID, new StringType(device.getId()));
+            updateChannelState(CHANNEL_DEVICENAME, new StringType(device.getName()));
+            updateChannelState(CHANNEL_DEVICETYPE, new StringType(device.getType()));
+            updateChannelState(CHANNEL_DEVICEVOLUME,
+                    device.getVolumePercent() == null ? UnDefType.UNDEF : new PercentType(device.getVolumePercent()));
+            updateChannelState(CHANNEL_DEVICEACTIVE, device.isActive() ? OnOffType.ON : OnOffType.OFF);
+            updateChannelState(CHANNEL_DEVICEPLAY,
+                    online && device.isActive() && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
+            return true;
+        } else {
+            return false;
         }
 
-        // reinitialize with new configuration and persist changes
-        dispose();
-        updateConfiguration(configuration);
-        initialize();
     }
 
-    public void setChannelValue(String CHANNEL, State state) {
-        if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            Channel channel = getThing().getChannel(CHANNEL);
+    /**
+     * Sets the device online status. If the device is restricted it will be set offline.
+     *
+     * @param restricted true if device is restricted (no access)
+     * @return true if device is online
+     */
+    private boolean setOnlineStatus(boolean restricted) {
+        updateChannelState(CHANNEL_DEVICERESTRICTED, restricted ? OnOffType.ON : OnOffType.OFF);
+        if (restricted) {
+            // Only change status if device is currently online
+            if (thing.getStatus() == ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "Restricted. No Web API commands will be accepted by this device.");
+            }
+            return false;
+        } else if (thing.getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
+        return true;
+    }
+
+    /**
+     * Convenience method to update the channel state but only if the channel is linked.
+     *
+     * @param channelId id of the channel to update
+     * @param state State to set on the channel
+     */
+    private void updateChannelState(String channelId, State state) {
+        Channel channel = thing.getChannel(channelId);
+
+        if (channel != null && isLinked(channel.getUID())) {
             updateState(channel.getUID(), state);
-            // logger.debug("Updating status of spotify device {} channel {}.", getThing().getLabel(),
-            // channel.getUID());
         }
-    }
-
-    public String getDeviceId() {
-        return deviceId;
-    }
-
-    public SpotifyHandler getController() {
-        return player;
-    }
-
-    public void setController(SpotifyHandler controller) {
-        this.player = controller;
     }
 }

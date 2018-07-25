@@ -1,360 +1,365 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="spotify"
-						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-
-                                                 
-    <!-- Spotify Player Device -->
-    <bridge-type id="player">
-
-        <label>Spotify Player Bridge</label>
-        <description>Bridge representing the Spotify Player in the context of a user account. The bridge is associated with one specific Spotify account. If you want to control your devices in the context of different accounts you have to register a bridge for each account.</description>
-
-        <channels>
-            <channel id="accessToken" typeId="accessToken" />
-            
-            <channel id="deviceId" typeId="activeDeviceId"/>
-            <channel id="deviceName" typeId="activeDeviceName"/>
-            <channel id="deviceType" typeId="activeDeviceType"/>
-            <channel id="deviceVolume" typeId="activeDeviceVolume"/>
-            <channel id="deviceShuffle" typeId="activeDeviceShuffle"/>
-
-            <channel id="trackPlay" typeId="trackPlay"/>
-            <channel id="trackPlayer" typeId="trackPlayer"/>
-            <channel id="trackRepeat" typeId="trackRepeat"/>
-            <channel id="trackId" typeId="currentlyPlayedTrackId"/>
-            <channel id="trackHref" typeId="currentlyPlayedTrackHref"/>
-            <channel id="trackUri" typeId="currentlyPlayedTrackUri"/>
-            <channel id="trackName" typeId="currentlyPlayedTrackName"/>
-            <channel id="trackType" typeId="currentlyPlayedTrackType"/>
-            <channel id="trackNumber" typeId="currentlyPlayedTrackNumber"/>
-            <channel id="trackDiscNumber" typeId="currentlyPlayedTrackDiscNumber"/>
-            <channel id="trackPopularity" typeId="currentlyPlayedTrackPopularity"/>
-            <channel id="trackDurationMs" typeId="currentlyPlayedTrackDurationMs"/>
-            <channel id="trackProgressMs" typeId="currentlyPlayedTrackProgressMs"/>
-            <channel id="trackDuration" typeId="currentlyPlayedTrackDuration"/>
-            <channel id="trackProgress" typeId="currentlyPlayedTrackProgress"/>
-
-            <channel id="albumId" typeId="currentlyPlayedAlbumId"/>
-            <channel id="albumUri" typeId="currentlyPlayedAlbumUri"/>
-            <channel id="albumHref" typeId="currentlyPlayedAlbumHref"/>
-            <channel id="albumType" typeId="currentlyPlayedAlbumType"/>
-            <channel id="albumName" typeId="currentlyPlayedAlbumName"/>
-
-            <channel id="artistId" typeId="currentlyPlayedArtistId"/>
-            <channel id="artistUri" typeId="currentlyPlayedArtistUri"/>
-            <channel id="artistHref" typeId="currentlyPlayedArtistHref"/>
-            <channel id="artistType" typeId="currentlyPlayedArtistType"/>
-            <channel id="artistName" typeId="currentlyPlayedArtistName"/>
-        </channels>
-   
-        <config-description>
-            <parameter name="clientId" type="text">
-                <context>clientId</context>
-                <required>true</required>
-                <label>Application Client ID</label>
-                <description>This is the Client ID provided by Spotify when you add a new Application for openHAB to your Spotify Account. Go to https://developer.spotify.com/</description>
-            </parameter>
-            <parameter name="clientSecret" type="text">
-                <context>clientSecret</context>
-                <required>true</required>
-                <label>Application Client Secret</label>
-                <description>
-                    This is the Client Secret provided by Spotify when you add a new Application for openHAB to your Spotify Account.
-                </description>
-            </parameter>
-            <parameter name="refreshPeriod" type="integer" min="1" max="60">
-                <context>refreshPeriod</context>
-                <required>true</required>
-                <default>5</default>
-                <label>Connect refresh period (seconds)</label>
-                <description>
-                    This is the frequency of the polling requests to the Spotify Connect WebAPI. There are limits to the number of requests that can be sent to the WebAPI. The more often you poll, the better status updates - at the risk of running out of your request quota.
-                </description>
-            </parameter>
-            <parameter name="refreshToken" type="text">
-                <context>refreshToken</context>
-                <required>false</required>
-                <default>Go to http://[your.server:port]/connectspotify/ to authorize</default>
-                <label>Client Authorization Refresh Token</label>
-                <description>
-                    This is the refresh token provided by Spotify when you authorize yourself with the Web API and grant the required scope access. After authorization this field will hold the refreshToken used to re-authorize with the Web API.
-                </description>
-            </parameter>
-        </config-description>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 
-        </bridge-type>
+	<!-- Spotify Player Device -->
+	<bridge-type id="player">
 
-      
-    <!-- Spotify Player Device -->
-        <thing-type id="device">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="player" />
-        </supported-bridge-type-refs>
-        
-                <label>Spotify Connect Device Thing</label>
-                <description>Thing representing a Spotify Connect device. The device exists in the context of the bridge and the Spotfy account associated with the bride. This means the same device can be present as a thing under each Spotify bridge you have configured.</description>
+		<label>Spotify Player Bridge</label>
+		<description>Bridge representing the Spotify Player in the context of a user account. The bridge is associated with
+one specific Spotify account. If you want to control your devices in the context of different accounts you have to
+register a bridge for each account.</description>
 
-                <channels>
-            <channel id="trackPlay" typeId="trackPlay"/>
-            <channel id="deviceId" typeId="deviceId"/>
-            <channel id="deviceName" typeId="deviceName"/>
-            <channel id="deviceType" typeId="deviceType"/>
-            <channel id="devicePlay" typeId="devicePlay"/>
-            <channel id="deviceVolume" typeId="deviceVolume"/>
-            <channel id="deviceActive" typeId="deviceActive"/>
-            <channel id="deviceRestricted" typeId="deviceRestricted"/>
-            <channel id="deviceShuffle" typeId="deviceShuffle"/>
-        </channels>
-        
-       <properties>
-             <property name="id"></property>
-             <property name="is_restricted"></property>
-        </properties>
-        
-        </thing-type>
+		<channels>
+			<channel id="accessToken" typeId="accessToken" />
 
+			<channel id="deviceId" typeId="activeDeviceId" />
+			<channel id="deviceName" typeId="activeDeviceName" />
+			<channel id="deviceType" typeId="activeDeviceType" />
+			<channel id="deviceVolume" typeId="activeDeviceVolume" />
+			<channel id="deviceShuffle" typeId="activeDeviceShuffle" />
 
-        <!-- Channel Types -->
-    <channel-type id="accessToken" advanced="true">
-        <item-type>String</item-type>
-        <label>Access Token</label>
-        <description>This channel provides the access token used to authorize calls to the Spotify WebAPI. It can be used from rules or client-side scripting make call to WebAPI.</description>
-    </channel-type>
-    <channel-type id="activeDeviceId" advanced="true">
-        <item-type>String</item-type>
-        <label>Active Device Id</label>
-        <description>Channel to get/set active device id</description>
-    </channel-type>
-    <channel-type id="activeDeviceName">
-        <item-type>String</item-type>
-        <label>Active Device Name</label>
-        <description>Channel reports active device name</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="activeDeviceType" advanced="true">
-        <item-type>String</item-type>
-        <label>Active Device Type</label>
-        <description>Channel reports active device type</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="activeDeviceVolume">
-        <item-type>Dimmer</item-type>
-        <label>Active Device Volume</label>
-        <description>Channel get/set active device volume</description>
-        <category>SoundVolume</category>
-    </channel-type>
-    <channel-type id="activeDeviceShuffle">
-        <item-type>Switch</item-type>
-        <label>Active Device Shuffle</label>
-        <description>Channel to get/set shuffle for active device</description>
-        <category>Switch</category>
-    </channel-type>
-    
-    
-    <channel-type id="trackPlay">
-        <item-type>String</item-type>
-        <label>Track to Play</label>
-        <description>Channel to assign track/album/playlist to play. Accepts Spotify Uri:s and Hrefs.</description>
-    </channel-type>
-    <channel-type id="trackPlayer">
-        <item-type>Player</item-type>
-        <label>Player Control</label>
-        <description>Channel for player control</description>
-        <category>Player</category>
-    </channel-type>
-    <channel-type id="trackRepeat">
-        <item-type>String</item-type>
-        <label>Repeat Mode</label>
-        <description>Channel get/sets player repeat mode</description>
-    </channel-type>
-    <channel-type id="currentlyPlayedTrackId" advanced="true">
-        <item-type>String</item-type>
-        <label>Track Id</label>
-        <description>Channel reports track id currently being played.</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="currentlyPlayedTrackHref" advanced="true">
-        <item-type>String</item-type>
-        <label>Track href</label>
-        <description>Channel reports track href currently played</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="currentlyPlayedTrackUri" advanced="true">
-        <item-type>String</item-type>
-        <label>Track Uri</label>
-        <description>Channel reports track Uri currently played</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="currentlyPlayedTrackName">
-        <item-type>String</item-type>
-        <label>Track Name</label>
-        <description>Channel reports currently played track name</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="currentlyPlayedTrackType" advanced="true">
-        <item-type>String</item-type>
-        <label>Track Type</label>
-        <description>Channel reports currently played track type</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="currentlyPlayedTrackDurationMs" advanced="true">
-        <item-type>Number</item-type>
-        <label>Track Duration ms</label>
-        <description>Channel reports currently played track duration (ms)</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="currentlyPlayedTrackProgressMs" advanced="true">
-        <item-type>Number</item-type>
-        <label>Track Progress ms</label>
-        <description>Channel reports currently played track progress (ms)</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="currentlyPlayedTrackDuration">
-        <item-type>String</item-type>
-        <label>Track Duration (m:ss)</label>
-        <description>Channel reports currently played track duration formatted (m:ss)</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="currentlyPlayedTrackProgress">
-        <item-type>String</item-type>
-        <label>Track Progress (m:ss)</label>
-        <description>Channel reports currently played track progress formatted (m:ss)</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="currentlyPlayedTrackNumber" advanced="true">
-        <item-type>String</item-type>
-        <label>Track Number</label>
-        <description>Channel reports currently played track number</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="currentlyPlayedTrackDiscNumber" advanced="true">
-        <item-type>String</item-type>
-        <label>Track Disc Number</label>
-        <description>Channel reports currently played track disc number</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="currentlyPlayedTrackPopularity" advanced="true">
-        <item-type>Dimmer</item-type>
-        <label>Track Popularity</label>
-        <description>Channel reports currently played track popularity</description>
-        <state readOnly="true"></state>
-    </channel-type>
+			<channel id="trackPlay" typeId="trackPlay" />
+			<channel id="trackPlayer" typeId="trackPlayer" />
+			<channel id="trackRepeat" typeId="trackRepeat" />
+			<channel id="trackId" typeId="currentlyPlayedTrackId" />
+			<channel id="trackHref" typeId="currentlyPlayedTrackHref" />
+			<channel id="trackUri" typeId="currentlyPlayedTrackUri" />
+			<channel id="trackName" typeId="currentlyPlayedTrackName" />
+			<channel id="trackType" typeId="currentlyPlayedTrackType" />
+			<channel id="trackNumber" typeId="currentlyPlayedTrackNumber" />
+			<channel id="trackDiscNumber" typeId="currentlyPlayedTrackDiscNumber" />
+			<channel id="trackPopularity" typeId="currentlyPlayedTrackPopularity" />
+			<channel id="trackDurationMs" typeId="currentlyPlayedTrackDurationMs" />
+			<channel id="trackProgressMs" typeId="currentlyPlayedTrackProgressMs" />
+			<channel id="trackDuration" typeId="currentlyPlayedTrackDuration" />
+			<channel id="trackProgress" typeId="currentlyPlayedTrackProgress" />
 
-    
-    <channel-type id="currentlyPlayedAlbumId" advanced="true">
-        <item-type>String</item-type>
-        <label>Album href</label>
-        <description>Channel reports currently played album href</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="currentlyPlayedAlbumHref" advanced="true">
-        <item-type>String</item-type>
-        <label>Album href</label>
-        <description>Channel reports currently played album href</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="currentlyPlayedAlbumUri" advanced="true">
-        <item-type>String</item-type>
-        <label>Album href</label>
-        <description>Channel reports currently played album Uri</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="currentlyPlayedAlbumName">
-        <item-type>String</item-type>
-        <label>Album Name</label>
-        <description>Channel reports currently played album name</description>
-        <state readOnly="true"></state>
-    </channel-type>    
-    <channel-type id="currentlyPlayedAlbumType" advanced="true">
-        <item-type>String</item-type>
-        <label>Album Type</label>
-        <description>Channel reports currently played album type</description>
-        <state readOnly="true"></state>
-    </channel-type>    
+			<channel id="albumId" typeId="currentlyPlayedAlbumId" />
+			<channel id="albumUri" typeId="currentlyPlayedAlbumUri" />
+			<channel id="albumHref" typeId="currentlyPlayedAlbumHref" />
+			<channel id="albumType" typeId="currentlyPlayedAlbumType" />
+			<channel id="albumImage" typeId="currentlyPlayedAlbumImage" />
+			<channel id="albumName" typeId="currentlyPlayedAlbumName" />
+
+			<channel id="artistId" typeId="currentlyPlayedArtistId" />
+			<channel id="artistUri" typeId="currentlyPlayedArtistUri" />
+			<channel id="artistHref" typeId="currentlyPlayedArtistHref" />
+			<channel id="artistType" typeId="currentlyPlayedArtistType" />
+			<channel id="artistName" typeId="currentlyPlayedArtistName" />
+		</channels>
+
+		<properties>
+			<property name="user" />
+		</properties>
+
+		<representation-property>user</representation-property>
+
+		<config-description>
+			<parameter name="clientId" type="text">
+				<required>true</required>
+				<label>Application Client ID</label>
+				<description>This is the Client ID provided by Spotify when you add a new Application for openHAB to your Spotify
+Account. Go to https://developer.spotify.com/</description>
+			</parameter>
+			<parameter name="clientSecret" type="text">
+				<required>true</required>
+				<label>Application Client Secret</label>
+				<description>This is the Client Secret provided by Spotify when you add a new Application for openHAB to your Spotify Account.</description>
+			</parameter>
+			<parameter name="refreshPeriod" type="integer" min="1" max="60">
+				<required>true</required>
+				<default>5</default>
+				<label>Connect refresh period (seconds)</label>
+				<description>This is the frequency of the polling requests to the Spotify Connect WebAPI. There are limits to the number of requests
+that can be sent to the WebAPI. The more often you poll, the better status updates - at the risk of running out of your request quota.</description>
+			</parameter>
+			<parameter name="refreshToken" type="text" readOnly="true">
+				<required>false</required>
+				<label>Client Authorization Refresh Token</label>
+				<description>This This is the refresh token provided by Spotify when you authorize yourself with the Web API and grant the required scope
+access. After authorization this field will hold the refreshToken used to re-authorize with the Web API.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
 
 
-   <channel-type id="currentlyPlayedArtistId" advanced="true">
-        <item-type>String</item-type>
-        <label>Artist Id</label>
-        <description>Channel reports currently played artist Id</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="currentlyPlayedArtistHref" advanced="true">
-        <item-type>String</item-type>
-        <label>Artist href</label>
-        <description>Channel reports currently played artist href</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="currentlyPlayedArtistUri" advanced="true">
-        <item-type>String</item-type>
-        <label>Artist Uri</label>
-        <description>Channel reports currently played artist Uri</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="currentlyPlayedArtistName">
-        <item-type>String</item-type>
-        <label>Artist Name</label>
-        <description>Channel reports currently played artist name</description>
-        <state readOnly="true"></state>
-    </channel-type>    
-    <channel-type id="currentlyPlayedArtistType" advanced="true">
-        <item-type>String</item-type>
-        <label>Artist Type</label>
-        <description>Channel reports currently played artist type</description>
-        <state readOnly="true"></state>
-    </channel-type>    
- 
-   
-    <channel-type id="deviceId" advanced="true">
-        <item-type>String</item-type>
-        <label>Device Id</label>
-        <description>Channel reports device id</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="deviceName">
-        <item-type>String</item-type>
-        <label>Device Name</label>
-        <description>Channel reports active device name</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="deviceType" advanced="true">
-        <item-type>String</item-type>
-        <label>Device Type</label>
-        <description>Channel reports device type</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="devicePlay">
-        <item-type>Player</item-type>
-        <label>Device Play</label>
-        <description>Channel controlling device play/pause/next/previous</description>
-        <category>Player</category>
-    </channel-type>
-    <channel-type id="deviceVolume">
-        <item-type>Dimmer</item-type>
-        <label>Device Volume</label>
-        <description>Channel get/set currently playing device volume</description>
-        <category>SoundVolume</category>
-    </channel-type>
-    <channel-type id="deviceShuffle">
-        <item-type>Switch</item-type>
-        <label>Device Shuffle</label>
-        <description>Channel to get/set shuffle for device</description>
-        <category>Switch</category>
-    </channel-type>
-    <channel-type id="deviceActive" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Device Active</label>
-        <description>Channel reports active status for device</description>
-        <category>Switch</category>
-    </channel-type>
-    <channel-type id="deviceRestricted" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Device Restricted</label>
-        <description>Channel reports whether the device is restricted</description>
-        <category>Switch</category>
-    </channel-type>
+	<!-- Spotify Player Device -->
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="player" />
+		</supported-bridge-type-refs>
+
+		<label>Spotify Connect Device Thing</label>
+		<description>Thing representing a Spotify Connect device. The device exists in the context of the bridge and the
+Spotify account associated with the bride. This means the same device can be present as a thing under each Spotify
+bridge you have configured.</description>
+
+		<channels>
+			<channel id="trackPlay" typeId="trackPlay" />
+			<channel id="deviceId" typeId="deviceId" />
+			<channel id="deviceName" typeId="deviceName" />
+			<channel id="deviceType" typeId="deviceType" />
+			<channel id="devicePlay" typeId="devicePlay" />
+			<channel id="deviceVolume" typeId="deviceVolume" />
+			<channel id="deviceActive" typeId="deviceActive" />
+			<channel id="deviceRestricted" typeId="deviceRestricted" />
+			<channel id="deviceShuffle" typeId="deviceShuffle" />
+		</channels>
+
+		<properties>
+			<property name="id" />
+		</properties>
+
+		<representation-property>id</representation-property>
+	</thing-type>
+
+	<!-- Channel Types -->
+	<channel-type id="accessToken" advanced="true">
+		<item-type>String</item-type>
+		<label>Access Token</label>
+		<description>This channel provides the access token used to authorize calls to the Spotify WebAPI. It can be used from rules or client-side scripting make call to WebAPI.</description>
+	</channel-type>
+	<channel-type id="activeDeviceId" advanced="true">
+		<item-type>String</item-type>
+		<label>Active Device Id</label>
+		<description>Channel to get/set active device id</description>
+	</channel-type>
+	<channel-type id="activeDeviceName">
+		<item-type>String</item-type>
+		<label>Active Device Name</label>
+		<description>Channel reports active device name</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="activeDeviceType" advanced="true">
+		<item-type>String</item-type>
+		<label>Active Device Type</label>
+		<description>Channel reports active device type</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="activeDeviceVolume">
+		<item-type>Dimmer</item-type>
+		<label>Active Device Volume</label>
+		<description>Channel get/set active device volume</description>
+		<category>SoundVolume</category>
+	</channel-type>
+	<channel-type id="activeDeviceShuffle">
+		<item-type>Switch</item-type>
+		<label>Active Device Shuffle</label>
+		<description>Channel to get/set shuffle for active device</description>
+	</channel-type>
+
+	<channel-type id="trackPlay" advanced="true">
+		<item-type>String</item-type>
+		<label>Track to Play</label>
+		<description>Channel to assign track/album/playlist to play. Accepts Spotify Uri:s and Hrefs.</description>
+	</channel-type>
+	<channel-type id="trackPlayer">
+		<item-type>Player</item-type>
+		<label>Player Control</label>
+		<description>Channel for player control</description>
+		<category>Player</category>
+	</channel-type>
+	<channel-type id="trackRepeat">
+		<item-type>String</item-type>
+		<label>Repeat Mode</label>
+		<description>Track will repeat the current track. Context will repeat the current context. Off will turn repeat off.</description>
+		<state>
+			<options>
+				<option value="track">Track</option>
+				<option value="context">Context</option>
+				<option value="off">Off</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackId" advanced="true">
+		<item-type>String</item-type>
+		<label>Track Id</label>
+		<description>Channel reports track id currently being played.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackHref" advanced="true">
+		<item-type>String</item-type>
+		<label>Track href</label>
+		<description>Channel reports track href currently played</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackUri" advanced="true">
+		<item-type>String</item-type>
+		<label>Track Uri</label>
+		<description>Channel reports track Uri currently played</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackName">
+		<item-type>String</item-type>
+		<label>Track Name</label>
+		<description>Channel reports currently played track name</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackType" advanced="true">
+		<item-type>String</item-type>
+		<label>Track Type</label>
+		<description>Channel reports currently played track type</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackDurationMs" advanced="true">
+		<item-type>Number</item-type>
+		<label>Track Duration ms</label>
+		<description>Channel reports currently played track duration (ms)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackProgressMs" advanced="true">
+		<item-type>Number</item-type>
+		<label>Track Progress ms</label>
+		<description>Channel reports currently played track progress (ms)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackDuration">
+		<item-type>String</item-type>
+		<label>Track Duration (m:ss)</label>
+		<description>Channel reports currently played track duration formatted (m:ss)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackProgress">
+		<item-type>String</item-type>
+		<label>Track Progress (m:ss)</label>
+		<description>Channel reports currently played track progress formatted (m:ss)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackNumber" advanced="true">
+		<item-type>Number</item-type>
+		<label>Track Number</label>
+		<description>Channel reports currently played track number</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackDiscNumber" advanced="true">
+		<item-type>Number</item-type>
+		<label>Track Disc Number</label>
+		<description>Channel reports currently played track disc number</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackPopularity" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Track Popularity</label>
+		<description>Channel reports currently played track popularity</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="currentlyPlayedAlbumId" advanced="true">
+		<item-type>String</item-type>
+		<label>Album href</label>
+		<description>Channel reports currently played album href</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedAlbumHref" advanced="true">
+		<item-type>String</item-type>
+		<label>Album href</label>
+		<description>Channel reports currently played album href</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedAlbumUri" advanced="true">
+		<item-type>String</item-type>
+		<label>Album href</label>
+		<description>Channel reports currently played album Uri</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedAlbumName">
+		<item-type>String</item-type>
+		<label>Album Name</label>
+		<description>Channel reports currently played album name</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedAlbumType" advanced="true">
+		<item-type>String</item-type>
+		<label>Album Type</label>
+		<description>Channel reports currently played album type</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedAlbumImage">
+		<item-type>Image</item-type>
+		<label>Album Image</label>
+		<description>Channel reports currently played album image</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="currentlyPlayedArtistId" advanced="true">
+		<item-type>String</item-type>
+		<label>Artist Id</label>
+		<description>Channel reports currently played artist Id</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedArtistHref" advanced="true">
+		<item-type>String</item-type>
+		<label>Artist href</label>
+		<description>Channel reports currently played artist href</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedArtistUri" advanced="true">
+		<item-type>String</item-type>
+		<label>Artist Uri</label>
+		<description>Channel reports currently played artist Uri</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedArtistName">
+		<item-type>String</item-type>
+		<label>Artist Name</label>
+		<description>Channel reports currently played artist name</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentlyPlayedArtistType" advanced="true">
+		<item-type>String</item-type>
+		<label>Artist Type</label>
+		<description>Channel reports currently played artist type</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="deviceId" advanced="true">
+		<item-type>String</item-type>
+		<label>Device Id</label>
+		<description>Channel reports device id</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="deviceName">
+		<item-type>String</item-type>
+		<label>Device Name</label>
+		<description>Channel reports active device name</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="deviceType" advanced="true">
+		<item-type>String</item-type>
+		<label>Device Type</label>
+		<description>Channel reports device type</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="devicePlay">
+		<item-type>Player</item-type>
+		<label>Device Play</label>
+		<description>Channel controlling device play/pause/next/previous</description>
+		<category>Player</category>
+	</channel-type>
+	<channel-type id="deviceVolume">
+		<item-type>Dimmer</item-type>
+		<label>Device Volume</label>
+		<description>Channel get/set currently playing device volume</description>
+		<category>SoundVolume</category>
+	</channel-type>
+	<channel-type id="deviceShuffle">
+		<item-type>Switch</item-type>
+		<label>Device Shuffle</label>
+		<description>Channel to get/set shuffle for device</description>
+	</channel-type>
+	<channel-type id="deviceActive" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Device Active</label>
+		<description>Channel reports active status for device</description>
+	</channel-type>
+	<channel-type id="deviceRestricted" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Device Restricted</label>
+		<description>Channel reports whether the device is restricted</description>
+	</channel-type>
 
 </thing:thing-descriptions>
