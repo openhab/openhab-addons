@@ -15,8 +15,6 @@ import java.util.Map;
 import org.openhab.binding.max.internal.Utils;
 import org.slf4j.Logger;
 
-import com.google.common.base.Strings;
-
 /**
  * The H message contains information about the MAX! Cube.
  *
@@ -123,7 +121,7 @@ public final class H_Message extends Message {
         logger.trace("\tRAW:            : {}", this.getPayload());
         logger.trace("\tReading Time    : {}", cal.getTime());
         for (String key : properties.keySet()) {
-            logger.debug("\t{}:{}{}", key, Strings.repeat(" ", 25 - key.length()), properties.get(key));
+            logger.debug("\t{}: {}", key, properties.get(key));
         }
     }
 

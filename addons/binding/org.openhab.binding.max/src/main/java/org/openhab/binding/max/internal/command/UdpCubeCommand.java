@@ -24,8 +24,6 @@ import org.openhab.binding.max.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-
 /**
  * The {@link UdpCubeCommand} is responsible for sending UDP commands to the MAX!
  * Cube LAN gateway.
@@ -146,8 +144,7 @@ public class UdpCubeCommand {
                     if (logger.isDebugEnabled()) {
                         final StringBuilder builder = new StringBuilder();
                         for (final Map.Entry<String, String> entry : commandResponse.entrySet()) {
-                            builder.append(String.format("%s:%s%s\n", entry.getKey(),
-                                    Strings.repeat(" ", 25 - entry.getKey().length()), entry.getValue()));
+                            builder.append(String.format("%s: %s\n", entry.getKey(), entry.getValue()));
                         }
                         logger.debug("MAX! UDP response {}", builder);
                     }
