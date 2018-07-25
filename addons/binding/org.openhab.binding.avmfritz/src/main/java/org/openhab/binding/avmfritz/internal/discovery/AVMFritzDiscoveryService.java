@@ -116,7 +116,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
             ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, bridgeHandler.getThingName(device));
 
             Map<String, Object> properties = new HashMap<>();
-            properties.put(THING_AIN, device.getIdentifier());
+            properties.put(CONFIG_AIN, device.getIdentifier());
             properties.put(PROPERTY_VENDOR, device.getManufacturer());
             properties.put(PROPERTY_MODEL_ID, device.getDeviceId());
             properties.put(PROPERTY_SERIAL_NUMBER, device.getIdentifier());
@@ -127,7 +127,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
             }
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(THING_AIN).withBridge(bridgeUID).withLabel(device.getName()).build();
+                    .withRepresentationProperty(CONFIG_AIN).withBridge(bridgeUID).withLabel(device.getName()).build();
 
             thingDiscovered(discoveryResult);
         } else {
