@@ -163,7 +163,7 @@ public class UplinkWebInterface implements AtomicReferenceUtils {
      */
     public void start() {
         updateJobReference(requestExecutorJobReference, scheduler.scheduleWithFixedDelay(requestExecutor,
-                REQUEST_INITIAL_DELAY, REQUEST_INTERVAL, TimeUnit.MILLISECONDS), "requestExecutorJob");
+                REQUEST_INITIAL_DELAY, REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
     }
 
     /**
@@ -241,7 +241,7 @@ public class UplinkWebInterface implements AtomicReferenceUtils {
      */
     public void dispose() {
         logger.debug("Webinterface disposed.");
-        cancelJobReference(requestExecutorJobReference, "requestExecutorJob");
+        cancelJobReference(requestExecutorJobReference);
     }
 
     private boolean isAuthenticated() {

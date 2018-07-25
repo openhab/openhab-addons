@@ -126,11 +126,9 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
      */
     private void startPolling() {
         updateJobReference(pollingJobReference,
-                scheduler.scheduleWithFixedDelay(new UplinkPolling(this), 30, refreshInterval, TimeUnit.SECONDS),
-                "pollingJob");
+                scheduler.scheduleWithFixedDelay(new UplinkPolling(this), 30, refreshInterval, TimeUnit.SECONDS));
         updateJobReference(deadChannelHouseKeepingReference,
-                scheduler.scheduleWithFixedDelay(deadChannels::clear, 300, houseKeepingInterval, TimeUnit.SECONDS),
-                "deadChannelHouseKeeping");
+                scheduler.scheduleWithFixedDelay(deadChannels::clear, 300, houseKeepingInterval, TimeUnit.SECONDS));
     }
 
     /**
@@ -140,8 +138,8 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     public void dispose() {
         logger.debug("Handler disposed.");
 
-        cancelJobReference(pollingJobReference, "pollingJob");
-        cancelJobReference(deadChannelHouseKeepingReference, "deadChannelHouseKeeping");
+        cancelJobReference(pollingJobReference);
+        cancelJobReference(deadChannelHouseKeepingReference);
 
         // the webinterface also makes use of the scheduler and must stop it's jobs
         webInterface.dispose();

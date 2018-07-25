@@ -32,25 +32,12 @@ public interface AtomicReferenceUtils {
         }
     }
 
-    default void updateJobReference(AtomicReference<@Nullable Future<?>> jobReference, Future<?> newJob,
-            String jobName) {
-        Future<?> job = jobReference.get();
-        if (job == null || job.isCancelled()) {
-            logger.debug("start polling job: '{}'", jobName);
-            cancelJob(jobReference.getAndSet(newJob));
-        } else {
-            logger.debug("pollingJob already active: '{}'");
-        }
-
+    default void updateJobReference(AtomicReference<@Nullable Future<?>> jobReference, Future<?> newJob) {
         cancelJob(jobReference.getAndSet(newJob));
     }
 
-    default void cancelJobReference(AtomicReference<@Nullable Future<?>> jobReference, String jobName) {
-        Future<?> job = jobReference.get();
-        if (job != null && !job.isCancelled()) {
-            logger.debug("stop job: '{}'", jobName);
-            cancelJob(jobReference.getAndSet(null));
-        }
+    default void cancelJobReference(AtomicReference<@Nullable Future<?>> jobReference) {
+        cancelJob(jobReference.getAndSet(null));
     }
 
 }
