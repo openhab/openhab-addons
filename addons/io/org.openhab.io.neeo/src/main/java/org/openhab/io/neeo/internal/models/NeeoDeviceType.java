@@ -11,6 +11,7 @@ package org.openhab.io.neeo.internal.models;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -24,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class NeeoDeviceType {
     /** Represents an device that should be excluded */
     public static final NeeoDeviceType EXCLUDE = new NeeoDeviceType("");

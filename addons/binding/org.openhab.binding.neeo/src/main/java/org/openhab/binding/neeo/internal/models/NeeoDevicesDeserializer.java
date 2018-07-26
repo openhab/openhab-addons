@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.JsonDeserializationContext;
@@ -27,6 +28,7 @@ import com.google.gson.JsonParseException;
  *
  * @author Tim Roberts - Initial contribution
  */
+@NonNullByDefault
 public class NeeoDevicesDeserializer implements JsonDeserializer<@Nullable NeeoDevices> {
     @Nullable
     @Override

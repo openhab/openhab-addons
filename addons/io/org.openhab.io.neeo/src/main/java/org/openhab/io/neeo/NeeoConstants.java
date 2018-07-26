@@ -10,6 +10,7 @@ package org.openhab.io.neeo;
 
 import java.io.File;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 
 /**
@@ -17,6 +18,7 @@ import org.eclipse.smarthome.config.core.ConfigConstants;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class NeeoConstants {
 
     /**
@@ -55,7 +57,6 @@ public class NeeoConstants {
     public static final String CFG_EXPOSE_ALL = "exposeAll";
     public static final String CFG_EXPOSENEEOBINDING = "exposeNeeoBinding";
     public static final String CFG_CHECKSTATUSINTERVAL = "checkStatusInterval";
-    public static final String CFG_LOCALIPADDRESS = "localIpAddress";
     public static final String CFG_SEARCHLIMIT = "searchLimit";
 
     /** The name of the adapter */

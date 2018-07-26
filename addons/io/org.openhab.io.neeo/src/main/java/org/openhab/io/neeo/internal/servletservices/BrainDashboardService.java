@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.neeo.NeeoBrainServlet;
 import org.openhab.io.neeo.NeeoService;
 import org.openhab.io.neeo.internal.NeeoUtil;
@@ -34,6 +35,7 @@ import com.google.gson.JsonParseException;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class BrainDashboardService extends DefaultServletService {
 
     /** The logger */

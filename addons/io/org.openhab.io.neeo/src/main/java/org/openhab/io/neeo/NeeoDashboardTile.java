@@ -8,6 +8,7 @@
  */
 package org.openhab.io.neeo;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.ui.dashboard.DashboardTile;
 import org.osgi.service.component.annotations.Component;
@@ -17,6 +18,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 @Component(service = org.openhab.ui.dashboard.DashboardTile.class, immediate = true)
 public class NeeoDashboardTile implements DashboardTile {
 

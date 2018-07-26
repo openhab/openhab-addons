@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="neeo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="neeo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -40,6 +41,59 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
+	<!-- The following bridge type is a template for a dynamically created NEEO room. The following 'variables' will be substituted 
+		when dynamically creating the room type: bbb - NEEO Brain ID rrr - NEEO Room Key nnn - NEEO Room Name sss - NEEO Room Scenario 
+		Key ccc - NEEO Room Recipe Key -->
+	<bridge-type id="room-rrr">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="brain" />
+		</supported-bridge-type-refs>
+		<label>nnn (NEEO bbb)</label>
+		<description>nnn (NEEO bbb) (rrr)</description>
+		<channel-groups>
+			<channel-group id="state" typeId="room-state" />
+			<channel-group id="scenario-sss" typeId="room-scenario" />
+			<channel-group id="recipe-ccc" typeId="room-recipe" />
+		</channel-groups>
+		<config-description>
+			<parameter name="roomKey" type="text" required="true">
+				<label>Room Key</label>
+				<description>Unique key of the room</description>
+			</parameter>
+			<parameter name="excludeThings" type="boolean">
+				<label>Exclude Things</label>
+				<description>Exclude openHAB things (from NEEO transport)</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshPolling" type="integer">
+				<label>Refresh Polling</label>
+				<description>The time (in seconds) to refresh state (&lt;= 0 to disable)</description>
+				<default>120</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+	<!-- The following thing type is a template for a dynamically created NEEO Device. The following 'variables' will be substituted 
+		when dynamically creating the device type: bbb - NEEO Brain ID rrr - NEEO Room Key ddd - NEEO Device Key nnn - NEEO Room 
+		Name Please note that the channel group types are dynamically created as well (see bottom of this file for their templates) -->
+	<thing-type id="device-ddd">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="room-rrr" />
+		</supported-bridge-type-refs>
+		<label>nnn (NEEO bbb)</label>
+		<description>nnn (NEEO bbb) (ddd)</description>
+		<channel-groups>
+			<channel-group id="macros" typeId="device-macros-ddd" />
+		</channel-groups>
+		<config-description>
+			<parameter name="deviceKey" type="text" required="true">
+				<label>Device Key</label>
+				<description>Unique key of the device</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<!-- Channel types for the NEEO Brain -->
 	<channel-type id="brain-forwardactions">
 		<kind>trigger</kind>
 		<label>Forward Actions</label>
@@ -47,22 +101,14 @@
 		<event>
 		</event>
 	</channel-type>
-	<!-- Various channel groups for the dynamically created things -->
+	<!-- Channel Types for the NEEO Room -->
 	<channel-group-type id="room-state">
 		<label>Room State</label>
 		<description>The room's state</description>
 		<channels>
-			<channel id="activeScenarios" typeId="room-state-activescenarios" />
 			<channel id="currentStep" typeId="room-state-currentstep" />
 		</channels>
 	</channel-group-type>
-	<channel-type id="room-state-activescenarios">
-		<kind>trigger</kind>
-		<label>Active Scenarios</label>
-		<description>Active Scenarios (javascript array)</description>
-		<event>
-		</event>
-	</channel-type>
 	<channel-type id="room-state-currentstep">
 		<kind>trigger</kind>
 		<label>Current Step</label>
@@ -128,5 +174,20 @@
 		<item-type>Switch</item-type>
 		<label>Status</label>
 		<description>Whether the scenario is running or not (send ON to turn on the scenario, OFF to turn off the scenario)</description>
+	</channel-type>
+	<!-- The following channel type definitions are created dynamically for each NEEO Device Macro. The following 'variables' 
+		will be substituted when dynamically creating the macro channel types: ddd - NEEO Device Name mmm - NEEO Macro key lll - 
+		NEEO Macro Name or NEEO Macro Label (if no name) or "Unknown" if neither -->
+	<channel-group-type id="device-macros-ddd">
+		<label>Macros</label>
+		<description>Macros for ddd</description>
+		<channels>
+			<channel id="mmm" typeId="device-macros-status-mmm" />
+		</channels>
+	</channel-group-type>
+	<channel-type id="device-macros-status-mmm">
+		<item-type>Switch</item-type>
+		<label>lll</label>
+		<description>Send ON to trigger the macro</description>
 	</channel-type>
 </thing:thing-descriptions>

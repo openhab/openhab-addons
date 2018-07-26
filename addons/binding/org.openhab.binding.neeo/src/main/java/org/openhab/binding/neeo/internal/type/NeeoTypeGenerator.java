@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.neeo.internal.type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.neeo.internal.models.NeeoDevice;
 import org.openhab.binding.neeo.internal.models.NeeoRoom;
@@ -17,6 +18,7 @@ import org.openhab.binding.neeo.internal.models.NeeoRoom;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public interface NeeoTypeGenerator {
 
     /**

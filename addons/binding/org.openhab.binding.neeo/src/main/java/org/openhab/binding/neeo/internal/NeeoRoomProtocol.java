@@ -9,13 +9,12 @@
 package org.openhab.binding.neeo.internal;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -32,13 +31,12 @@ import org.openhab.binding.neeo.internal.type.UidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * This protocol class for a Neeo Room
  *
  * @author Tim Roberts - Initial contribution
  */
+@NonNullByDefault
 public class NeeoRoomProtocol {
 
     /** The logger */
@@ -58,9 +56,6 @@ public class NeeoRoomProtocol {
 
     /** The currently active step */
     private final AtomicReference<@Nullable String> currentStep = new AtomicReference<>();
-
-    /** Gson to serialize active scenarios */
-    private final Gson gson = NeeoUtil.getGson();
 
     /**
      * Instantiates a new neeo room protocol.
@@ -142,30 +137,8 @@ public class NeeoRoomProtocol {
                 : (String[]) ArrayUtils.add(activeScenarios, scenarioKey);
 
         this.activeScenarios.set(newScenarios);
-        triggerActiveScenarios();
 
         refreshScenarioStatus(scenarioKey);
-    }
-
-    /**
-     * Sends the channel trigger for active scenarios
-     */
-    private void triggerActiveScenarios() {
-        final String[] newScenarios = this.activeScenarios.get();
-
-        final List<String> scenarioNames = new ArrayList<>();
-        for (String key : newScenarios) {
-            final NeeoScenario scenario = neeoRoom.getScenarios().getScenario(key);
-            final String scenarioName = scenario == null ? null : scenario.getName();
-            if (scenarioName == null || StringUtils.isEmpty(scenarioName)) {
-                scenarioNames.add(key);
-            } else {
-                scenarioNames.add(scenarioName);
-            }
-
-        }
-        callback.triggerEvent(UidUtils.createChannelId(NeeoConstants.ROOM_CHANNEL_GROUP_STATEID,
-                NeeoConstants.ROOM_CHANNEL_ACTIVESCENARIOS), gson.toJson(scenarioNames));
     }
 
     /**
@@ -289,7 +262,7 @@ public class NeeoRoomProtocol {
     /**
      * Refresh active scenarios
      */
-    private void refreshActiveScenarios() {
+    public void refreshActiveScenarios() {
         final NeeoBrainApi api = callback.getApi();
         if (api == null) {
             logger.debug("API is null [likely bridge is offline]");
@@ -299,8 +272,6 @@ public class NeeoRoomProtocol {
                 final String[] oldScenarios = this.activeScenarios.getAndSet(activeScenarios);
 
                 if (!ArrayUtils.isEquals(activeScenarios, oldScenarios)) {
-                    triggerActiveScenarios();
-
                     for (String scenario : activeScenarios) {
                         refreshScenarioStatus(scenario);
                     }
@@ -319,9 +290,9 @@ public class NeeoRoomProtocol {
     }
 
     /**
-     * Refresh the current step
+     * Sends the trigger for the current step
      */
-    private void refreshCurrentStep() {
+    private void sendCurrentStepTrigger() {
         final String step = currentStep.get();
 
         if (step != null) {
@@ -345,12 +316,12 @@ public class NeeoRoomProtocol {
             final NeeoRecipe recipe = neeoRoom.getRecipes().getRecipe(recipeKey);
             final String scenarioKey = recipe == null ? null : recipe.getScenarioKey();
 
-            if (recipe != null && scenarioKey != null) {
+            if (recipe != null) {
                 if (recipe.isEnabled()) {
                     final boolean isLaunch = StringUtils.equalsIgnoreCase(NeeoRecipe.LAUNCH, recipe.getType());
 
                     try {
-                        if (isLaunch) {
+                        if (isLaunch || scenarioKey == null || StringUtils.isEmpty(scenarioKey)) {
                             handleExecuteResult(scenarioKey, recipeKey, true, api.executeRecipe(roomKey, recipeKey));
                         } else {
                             handleExecuteResult(scenarioKey, recipeKey, false, api.stopScenario(roomKey, scenarioKey));
@@ -394,31 +365,34 @@ public class NeeoRoomProtocol {
     /**
      * Handle the {@link ExecuteResult} from a call
      *
-     * @param scenarioKey the non-null scenario key being changed
+     * @param scenarioKey the possibly null scenario key being changed
      * @param recipeKey the non-null recipe key being used
      * @param launch whether the recipe launches the scenario (true) or not (false)
      * @param result the non-null result (null will do nothing)
      */
-    private void handleExecuteResult(String scenarioKey, String recipeKey, boolean launch, ExecuteResult result) {
+    private void handleExecuteResult(@Nullable String scenarioKey, String recipeKey, boolean launch,
+            ExecuteResult result) {
         Objects.requireNonNull(result, "result cannot be empty");
         NeeoUtil.requireNotEmpty(recipeKey, "recipeKey cannot be empty");
 
         int nextStep = 0;
-        callback.scheduleTask(() -> {
-            processScenarioChange(scenarioKey, launch);
-        }, 1);
+        if (scenarioKey != null && StringUtils.isNotEmpty(scenarioKey)) {
+            callback.scheduleTask(() -> {
+                processScenarioChange(scenarioKey, launch);
+            }, 1);
+        }
 
         for (final ExecuteStep step : result.getSteps()) {
             callback.scheduleTask(() -> {
                 currentStep.set(step.getText());
-                refreshCurrentStep();
+                sendCurrentStepTrigger();
             }, nextStep);
             nextStep += step.getDuration();
         }
 
         callback.scheduleTask(() -> {
             currentStep.set(null);
-            refreshCurrentStep();
+            sendCurrentStepTrigger();
             refreshRecipeStatus(recipeKey);
         }, nextStep);
     }

@@ -8,6 +8,7 @@
  */
 package org.openhab.io.neeo.internal.models;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.neeo.internal.NeeoUtil;
 
 /**
@@ -17,6 +18,7 @@ import org.openhab.io.neeo.internal.NeeoUtil;
  * @author Tim Roberts - Initial Contribution
  *
  */
+@NonNullByDefault
 public class NeeoDirectoryRequestAction {
     /** The action identifier from the item */
     private final String actionIdentifier;

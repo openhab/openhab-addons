@@ -10,6 +10,7 @@ package org.openhab.io.neeo.internal.models;
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -18,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Tim Roberts - Initial Contribution
  * @param <T> the type that will be scored
  */
+@NonNullByDefault
 public class TokenScore<T> implements Comparable<TokenScore<T>> {
 
     /** The score */

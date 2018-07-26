@@ -11,6 +11,7 @@ package org.openhab.binding.neeo.internal;
 import java.io.IOException;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.binding.neeo.NeeoConstants;
 import org.openhab.binding.neeo.NeeoUtil;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tim Roberts - Initial contribution
  */
+@NonNullByDefault
 public class NeeoDeviceProtocol {
 
     /** The logger */
@@ -122,7 +124,7 @@ public class NeeoDeviceProtocol {
                     // NEEO macros are not what we generally think of for macros
                     // Trigger a NEEO macro is simply asking the brain to send an IR pulse
                     // for whatever the macro is linked up to (POWER ON would send the IR
-                    // pulse for the specified device). Because of thise, the execution of the
+                    // pulse for the specified device). Because of this, the execution of the
                     // macro will never take more than 100ms to complete. Since we get no
                     // feedback from the brain whether the macro has executed or completed
                     // AND it's impossible to tell if any macro is executing or not (no equivalent
@@ -133,6 +135,11 @@ public class NeeoDeviceProtocol {
                     }, 500);
                 }
             } catch (IOException e) {
+                // Some macros have issues executing on the NEEO Brain (depends on the firmware)
+                // and IO exception will be thrown if the macro encounters an issue
+                // (mostly it depends on the state of the brain - if it's starting up or in the process
+                // of executing a long scenario - the macro will likely timeout or simply throw an exception)
+                // Because of this, we simply log the error versus taking the binding offline
                 logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
                 // callback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }

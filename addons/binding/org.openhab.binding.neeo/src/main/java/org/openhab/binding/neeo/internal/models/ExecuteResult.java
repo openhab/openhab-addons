@@ -10,6 +10,7 @@ package org.openhab.binding.neeo.internal.models;
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -17,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Tim Roberts - Initial contribution
  */
-
+@NonNullByDefault
 public class ExecuteResult {
 
     /** The estimated duration */

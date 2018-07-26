@@ -8,6 +8,7 @@
  */
 package org.openhab.io.neeo.internal.models;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Tim Roberts - Initial Contribution
  *
  */
+@NonNullByDefault
 public class NeeoDeviceTiming {
     // The default, min and max delays allowed by NEEO
     private static final int DEFAULT_DELAY = 5000;

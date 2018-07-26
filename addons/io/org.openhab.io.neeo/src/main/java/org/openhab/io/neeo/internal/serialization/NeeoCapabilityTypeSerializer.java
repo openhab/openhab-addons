@@ -11,6 +11,7 @@ package org.openhab.io.neeo.internal.serialization;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.neeo.internal.models.NeeoCapabilityType;
 
@@ -28,6 +29,7 @@ import com.google.gson.JsonSerializer;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class NeeoCapabilityTypeSerializer
         implements JsonSerializer<NeeoCapabilityType>, JsonDeserializer<NeeoCapabilityType> {
     @Override

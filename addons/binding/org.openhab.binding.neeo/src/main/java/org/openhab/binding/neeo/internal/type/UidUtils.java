@@ -11,6 +11,7 @@ package org.openhab.binding.neeo.internal.type;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -31,9 +32,10 @@ import org.openhab.binding.neeo.internal.models.NeeoScenario;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class UidUtils {
 
-    /** The delimiter for channel groups */
+    /** The delimiter to separate 'parts' of an UID */
     private static final char DELIMITER = '-';
 
     /**
@@ -65,7 +67,7 @@ public class UidUtils {
      */
     public static ThingTypeUID generateThingTypeUID(NeeoRoom room) {
         Objects.requireNonNull(room, "room cannot be null");
-        return new ThingTypeUID(NeeoConstants.BINDING_ID, "room-" + room.getKey());
+        return new ThingTypeUID(NeeoConstants.BINDING_ID, "room" + DELIMITER + room.getKey());
     }
 
     /**
@@ -76,7 +78,7 @@ public class UidUtils {
      */
     public static ThingTypeUID generateThingTypeUID(NeeoDevice device) {
         Objects.requireNonNull(device, "device cannot be null");
-        return new ThingTypeUID(NeeoConstants.BINDING_ID, "device-" + device.getKey());
+        return new ThingTypeUID(NeeoConstants.BINDING_ID, "device" + DELIMITER + device.getKey());
     }
 
     /**
@@ -158,18 +160,21 @@ public class UidUtils {
      * @param macro a non-null {@link NeeoMacro}
      * @return a non-null {@link ChannelTypeUID}
      */
-    public static ChannelTypeUID createChannelType(NeeoMacro macro) {
+    public static ChannelTypeUID createChannelTypeUID(NeeoMacro macro) {
         Objects.requireNonNull(macro, "macro cannot be null");
         return new ChannelTypeUID(NeeoConstants.BINDING_ID,
-                NeeoConstants.DEVICE_CHANNEL_MACRO_STATUS + "-" + macro.getKey());
+                NeeoConstants.DEVICE_CHANNEL_MACRO_STATUS + DELIMITER + macro.getKey());
     }
 
     /**
      * Creates a {@link ChannelGroupTypeUID}
      *
+     * @param device a non-null {@link NeeoDevice}
      * @return a non-null {@link ChannelGroupTypeUID}
      */
-    static ChannelGroupTypeUID createMacroChannelGroupType() {
-        return new ChannelGroupTypeUID(NeeoConstants.BINDING_ID, NeeoConstants.DEVICE_GROUP_MACROS);
+    static ChannelGroupTypeUID createMacroChannelGroupTypeUID(NeeoDevice device) {
+        Objects.requireNonNull(device, "device cannot be null");
+        return new ChannelGroupTypeUID(NeeoConstants.BINDING_ID,
+                NeeoConstants.DEVICE_GROUP_MACROS + DELIMITER + device.getKey());
     }
 }

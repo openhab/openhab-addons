@@ -10,12 +10,15 @@ package org.openhab.io.neeo.internal.models;
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The model represents a token score result given to the NEEO brain (serialize/deserialize json use only)
  *
  * @author Tim Roberts - Initial Contribution
  * @param <T> the type that will be scored
  */
+@NonNullByDefault
 public class TokenScoreResult<T> {
 
     /** The item being scored */

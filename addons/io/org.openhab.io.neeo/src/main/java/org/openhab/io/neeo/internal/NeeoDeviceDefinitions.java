@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
@@ -41,6 +42,7 @@ import com.google.gson.JsonParseException;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class NeeoDeviceDefinitions {
 
     /** The logger */

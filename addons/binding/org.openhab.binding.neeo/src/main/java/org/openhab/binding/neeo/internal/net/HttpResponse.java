@@ -18,6 +18,7 @@ import java.util.Objects;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -25,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Tim Roberts - Initial contribution
  */
+@NonNullByDefault
 public class HttpResponse {
 
     /** The http status */

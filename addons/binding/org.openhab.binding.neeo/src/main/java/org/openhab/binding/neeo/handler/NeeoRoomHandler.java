@@ -17,12 +17,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -38,11 +41,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A subclass of {@link AbstractBridgeHandler} that is responsible for handling commands for a room
+ * A subclass of {@link BaseBridgeHandler} that is responsible for handling commands for a room
  *
  * @author Tim Roberts - Initial contribution
  */
-public class NeeoRoomHandler extends AbstractBridgeHandler {
+@NonNullByDefault
+public class NeeoRoomHandler extends BaseBridgeHandler {
 
     /** The logger */
     private final Logger logger = LoggerFactory.getLogger(NeeoRoomHandler.class);
@@ -286,6 +290,45 @@ public class NeeoRoomHandler extends AbstractBridgeHandler {
             NeeoUtil.checkInterrupt();
             protocol.refreshState();
         }
+    }
+
+    /**
+     * Helper method to return the {@link NeeoBrainHandler} associated with this handler
+     *
+     * @return a possibly null {@link NeeoBrainHandler}
+     */
+    @Nullable
+    private NeeoBrainHandler getBrainHandler() {
+        final Bridge parent = getBridge();
+        if (parent != null) {
+            final BridgeHandler handler = parent.getHandler();
+            if (handler instanceof NeeoBrainHandler) {
+                return ((NeeoBrainHandler) handler);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the {@link NeeoBrainApi} associated with this handler.
+     *
+     * @return the {@link NeeoBrainApi} or null if not found
+     */
+    @Nullable
+    public NeeoBrainApi getNeeoBrainApi() {
+        final NeeoBrainHandler handler = getBrainHandler();
+        return handler == null ? null : handler.getNeeoBrainApi();
+    }
+
+    /**
+     * Returns the brain ID associated with this handler.
+     *
+     * @return the brain ID or null if not found
+     */
+    @Nullable
+    public String getNeeoBrainId() {
+        final NeeoBrainHandler handler = getBrainHandler();
+        return handler == null ? null : handler.getNeeoBrainId();
     }
 
     @Override

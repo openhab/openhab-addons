@@ -11,6 +11,7 @@ package org.openhab.io.neeo.internal.servletservices.models;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.neeo.internal.models.NeeoDevice;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannel;
@@ -21,6 +22,7 @@ import org.openhab.io.neeo.internal.models.NeeoDeviceChannel;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class ReturnStatus {
 
     /** The static success helper */

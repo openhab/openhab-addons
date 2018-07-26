@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemNotFoundException;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class NeeoDevice {
 
     /** The logger */

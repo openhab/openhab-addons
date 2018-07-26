@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
@@ -49,6 +50,7 @@ import com.google.gson.JsonParser;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class NeeoApi implements AutoCloseable {
 
     /** The property name used for connection change notifications */
@@ -165,20 +167,20 @@ public class NeeoApi implements AutoCloseable {
         // Get the port the service is listening on
         final int port = HttpServiceUtil.getHttpServicePort(context.getComponentContext().getBundleContext());
 
-        final String primeAddress = context.getNetworkAddressService().getPrimaryIpv4HostAddress();
-        if (primeAddress == null) {
+        final String primaryAddress = context.getNetworkAddressService().getPrimaryIpv4HostAddress();
+        if (primaryAddress == null) {
             throw new IOException(
                     "Unable to create a callback URL because there is no primary address specified (please set the primary address in the configuration)");
         }
 
-        callbackUrl = new URL("http://" + primeAddress + ":" + (port == -1 ? NeeoConstants.DEFAULT_OPENHAB_PORT : port)
-                + NeeoUtil.getServletUrl(brainId));
+        callbackUrl = new URL("http://" + primaryAddress + ":"
+                + (port == -1 ? NeeoConstants.DEFAULT_OPENHAB_PORT : port) + NeeoUtil.getServletUrl(brainId));
 
     }
 
     /**
      * Returns the brain's system information
-     * 
+     *
      * @return a non-null system information
      */
     public NeeoSystemInfo getSystemInfo() {
@@ -506,6 +508,15 @@ public class NeeoApi implements AutoCloseable {
                 break;
             }
         }
+    }
+
+    /**
+     * Returns the IP Address for the brain
+     *
+     * @return a non-null, non-empty, valid IP Address
+     */
+    public String getBrainIpAddress() {
+        return brainIpAddress;
     }
 
     /**

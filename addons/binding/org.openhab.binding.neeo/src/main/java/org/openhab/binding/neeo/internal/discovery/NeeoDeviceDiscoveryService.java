@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.StringUtils;
@@ -23,7 +22,6 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -50,6 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tim Roberts - Initial contribution
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true)
 public class NeeoDeviceDiscoveryService extends AbstractDiscoveryService {
 
@@ -58,9 +57,6 @@ public class NeeoDeviceDiscoveryService extends AbstractDiscoveryService {
 
     /** The scanning task (not-null when connecting, null otherwise) */
     private final AtomicReference<@Nullable Future<?>> scan = new AtomicReference<>();
-
-    /** The scheduler used to schedule tasks */
-    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(NeeoConstants.THREADPOOL_ID);
 
     /** The thing registry that we use */
     @NonNullByDefault({})

@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.binding.BindingInfo;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.type.ThingType;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class TokenSearch {
 
     private final Logger logger = LoggerFactory.getLogger(TokenSearch.class);

@@ -19,6 +19,7 @@ import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.openhab.binding.neeo.NeeoUtil;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tim Roberts - Initial contribution
  */
+@NonNullByDefault
 public class HttpRequest implements AutoCloseable {
 
     /** the logger */

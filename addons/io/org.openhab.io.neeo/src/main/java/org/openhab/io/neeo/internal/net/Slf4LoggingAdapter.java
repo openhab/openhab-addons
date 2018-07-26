@@ -11,6 +11,7 @@ package org.openhab.io.neeo.internal.net;
 import java.util.Objects;
 import java.util.logging.LogRecord;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 class Slf4LoggingAdapter extends java.util.logging.Logger {
 
     /** The logger. */

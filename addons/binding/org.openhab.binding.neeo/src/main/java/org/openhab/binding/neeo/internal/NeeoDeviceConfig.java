@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.neeo.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neeo.handler.NeeoDeviceHandler;
 
@@ -16,6 +17,7 @@ import org.openhab.binding.neeo.handler.NeeoDeviceHandler;
  *
  * @author Tim Roberts - initial contribution
  */
+@NonNullByDefault
 public class NeeoDeviceConfig {
 
     /** The NEEO device key */

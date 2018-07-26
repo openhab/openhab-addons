@@ -13,6 +13,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.events.Event;
 import org.eclipse.smarthome.core.events.EventFilter;
@@ -23,6 +24,7 @@ import org.eclipse.smarthome.core.events.EventFilter;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 class DefaultServletService implements ServletService {
 
     /**

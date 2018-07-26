@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.binding.BindingInfoRegistry;
 import org.eclipse.smarthome.core.events.EventPublisher;
 import org.eclipse.smarthome.core.items.ItemRegistry;
@@ -31,6 +32,7 @@ import org.osgi.service.http.HttpService;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class ServiceContext {
 
     /** The component context provided by openHAB during # */

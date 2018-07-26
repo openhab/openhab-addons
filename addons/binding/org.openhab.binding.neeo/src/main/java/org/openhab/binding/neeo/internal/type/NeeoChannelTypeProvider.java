@@ -10,6 +10,7 @@ package org.openhab.binding.neeo.internal.type;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
@@ -20,6 +21,7 @@ import org.openhab.binding.neeo.internal.models.NeeoDevice;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public interface NeeoChannelTypeProvider extends ChannelTypeProvider {
     /**
      * Adds a list of {@link ChannelType} to the provider

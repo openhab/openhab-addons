@@ -8,6 +8,7 @@
  */
 package org.openhab.io.neeo.internal.models;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -17,6 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Tim Roberts - Initial Contribution
  *
  */
+@NonNullByDefault
 public class NeeoDirectoryRequest {
     /** The offset position within the overall list */
     private final int offset;

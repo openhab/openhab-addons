@@ -10,6 +10,7 @@ package org.openhab.io.neeo.internal.models;
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -17,6 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class NeeoDeviceChannelDirectory extends NeeoDeviceChannel {
 
     private final NeeoDeviceChannelDirectoryListItem[] listItems;

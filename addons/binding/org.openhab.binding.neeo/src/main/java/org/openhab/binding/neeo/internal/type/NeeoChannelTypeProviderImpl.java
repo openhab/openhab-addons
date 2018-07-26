@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
@@ -28,6 +29,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 @Component(immediate = true, service = { ChannelTypeProvider.class, NeeoChannelTypeProvider.class })
 public class NeeoChannelTypeProviderImpl implements NeeoChannelTypeProvider {
     /** The list of {@link ChannelType } */

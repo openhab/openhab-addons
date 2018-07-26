@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.openhab.io.neeo.NeeoConstants;
 import org.openhab.io.neeo.NeeoService;
@@ -40,6 +41,7 @@ import com.google.gson.JsonParseException;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class ThingDashboardService extends DefaultServletService {
 
     /** The logger */

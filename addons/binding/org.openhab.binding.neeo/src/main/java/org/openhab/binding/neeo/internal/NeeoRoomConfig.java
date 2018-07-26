@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.neeo.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neeo.handler.NeeoRoomHandler;
 
@@ -16,6 +17,7 @@ import org.openhab.binding.neeo.handler.NeeoRoomHandler;
  *
  * @author Tim Roberts - initial contribution
  */
+@NonNullByDefault
 public class NeeoRoomConfig {
 
     /** The NEEO room key */

@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.neeo.NeeoConstants;
 import org.openhab.binding.neeo.NeeoUtil;
@@ -32,6 +33,7 @@ import com.google.gson.Gson;
  *
  * @author Tim Roberts - Initial contribution
  */
+@NonNullByDefault
 public class NeeoBrainApi implements AutoCloseable {
     /** The logger */
     private final Logger logger = LoggerFactory.getLogger(NeeoBrainApi.class);

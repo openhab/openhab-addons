@@ -8,11 +8,14 @@
  */
 package org.openhab.io.neeo.internal.discovery;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This interface defines the contract for brain discovery implementations
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public interface BrainDiscovery extends AutoCloseable {
 
     /**

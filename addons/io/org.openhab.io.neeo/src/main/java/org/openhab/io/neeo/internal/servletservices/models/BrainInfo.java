@@ -8,6 +8,7 @@
  */
 package org.openhab.io.neeo.internal.servletservices.models;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class BrainInfo {
     /** The possibly null, possibly empty brain identifier (used when removing a brain) */
     @Nullable

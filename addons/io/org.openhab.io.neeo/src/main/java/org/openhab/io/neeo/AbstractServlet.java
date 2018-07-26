@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.events.Event;
 import org.eclipse.smarthome.core.events.EventFilter;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public abstract class AbstractServlet extends HttpServlet implements AutoCloseable {
 
     /** The serial UID */

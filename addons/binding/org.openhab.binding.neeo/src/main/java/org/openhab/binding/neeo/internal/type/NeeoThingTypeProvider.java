@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.neeo.internal.type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.binding.ThingTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ThingType;
 
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.type.ThingType;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public interface NeeoThingTypeProvider extends ThingTypeProvider {
 
     /**

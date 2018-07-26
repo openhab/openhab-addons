@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neeo.internal.models.NeeoDevices;
 import org.openhab.binding.neeo.internal.models.NeeoDevicesDeserializer;
@@ -33,6 +34,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author Tim Roberts - initial contribution
  */
+@NonNullByDefault
 public class NeeoUtil {
 
     /**
@@ -103,5 +105,4 @@ public class NeeoUtil {
             throw new IllegalArgumentException(msg);
         }
     }
-
 }

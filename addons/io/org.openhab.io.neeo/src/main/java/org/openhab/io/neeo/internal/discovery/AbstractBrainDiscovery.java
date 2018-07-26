@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.neeo.internal.models.NeeoSystemInfo;
 
 /**
@@ -21,6 +22,7 @@ import org.openhab.io.neeo.internal.models.NeeoSystemInfo;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 abstract class AbstractBrainDiscovery implements BrainDiscovery {
 
     /** The listeners */

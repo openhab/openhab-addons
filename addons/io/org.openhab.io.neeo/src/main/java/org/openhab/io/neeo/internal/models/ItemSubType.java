@@ -11,6 +11,7 @@ package org.openhab.io.neeo.internal.models;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Describes the 'subtypes' for an item. A subtype is basically a property on the type that we will create a channel
@@ -19,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
  * @author Tim Roberts - Initial Contribution
  *
  */
+@NonNullByDefault
 public enum ItemSubType {
     /** No subtypes (the type is the only value) */
     NONE("none"),

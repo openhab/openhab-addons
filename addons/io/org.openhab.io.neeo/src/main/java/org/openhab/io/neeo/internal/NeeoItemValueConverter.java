@@ -11,6 +11,7 @@ package org.openhab.io.neeo.internal;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class NeeoItemValueConverter {
     /** The logger */
     private final Logger logger = LoggerFactory.getLogger(NeeoItemValueConverter.class);
@@ -132,7 +134,7 @@ public class NeeoItemValueConverter {
             return new NeeoItemValue(convertedState == UpDownType.UP);
 
         } else if (convertedState instanceof DecimalType) {
-            if (StringUtils.isEmpty(format)) {
+            if (StringUtils.isEmpty(format) || channel.getType() == NeeoCapabilityType.SLIDER) {
                 return new NeeoItemValue(((DecimalType) convertedState).toBigDecimal());
             }
         } else if (convertedState instanceof UnDefType) {

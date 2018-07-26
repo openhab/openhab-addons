@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 @Component(immediate = true)
 public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
 
@@ -159,7 +160,7 @@ public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
         final NeeoConfigDescriptionProvider localConfigDescriptionProvider = configDescriptionProvider;
         Objects.requireNonNull(localConfigDescriptionProvider, "configDescriptionProvider cannot be null");
 
-        final String label = "NEEO Room " + room.getName() + " (" + brainId + ")";
+        final String label = room.getName() + " (NEEO " + brainId + ")";
         final String description = String.format("%s (%s)", label, room.getKey());
 
         final List<String> supportedBridgeTypeUids = new ArrayList<>();
@@ -265,7 +266,7 @@ public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
         final NeeoChannelTypeProvider localChannelTypeProvider = channelTypeProvider;
         Objects.requireNonNull(localChannelTypeProvider, "channelTypeProvider cannot be null");
 
-        final String label = "NEEO Device " + device.getName() + " (" + brainId + ")";
+        final String label = device.getName() + " (NEEO " + brainId + ")";
         final String description = String.format("%s (%s)", label, device.getKey());
 
         final List<String> supportedBridgeTypeUids = new ArrayList<>();
@@ -280,8 +281,8 @@ public class NeeoTypeGeneratorImpl implements NeeoTypeGenerator {
             generateConfigDescription(device, configDescriptionURI);
         }
 
-        localChannelTypeProvider.addChannelTypes(MetadataUtils.getChannelTypes(device));
         localChannelTypeProvider.addChannelGroupTypes(MetadataUtils.getChannelGroupTypes(device));
+        localChannelTypeProvider.addChannelTypes(MetadataUtils.getChannelTypes(device));
 
         final List<ChannelGroupDefinition> groupDefinitions = MetadataUtils.getGroupDefinitions(device);
 

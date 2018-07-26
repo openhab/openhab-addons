@@ -11,6 +11,7 @@ package org.openhab.io.neeo.internal.models;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -20,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class NeeoButtonGroup {
     /**
      * The Power ON/OFF button group that will create the "POWER ON" and "POWER OFF" buttons with suffixes of "on/off"

@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -48,6 +49,7 @@ import com.google.gson.JsonSerializer;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class NeeoDeviceSerializer implements JsonSerializer<NeeoDevice>, JsonDeserializer<NeeoDevice> {
 
     /** The service */

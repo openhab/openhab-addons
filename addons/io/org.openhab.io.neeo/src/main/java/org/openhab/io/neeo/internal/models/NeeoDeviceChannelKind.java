@@ -11,6 +11,7 @@ package org.openhab.io.neeo.internal.models;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 
 /**
@@ -18,6 +19,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelKind;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public enum NeeoDeviceChannelKind {
     /** Represents an item */
     ITEM("item"),

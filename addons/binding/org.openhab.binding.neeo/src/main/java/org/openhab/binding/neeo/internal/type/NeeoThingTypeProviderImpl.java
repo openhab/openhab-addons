@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.type.ThingType;
@@ -23,6 +24,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 @Component(immediate = true, service = { org.eclipse.smarthome.core.thing.binding.ThingTypeProvider.class,
         NeeoThingTypeProvider.class })
 public class NeeoThingTypeProviderImpl implements NeeoThingTypeProvider {

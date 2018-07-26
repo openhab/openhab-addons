@@ -19,10 +19,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.smarthome.core.common.ThreadPoolManager;
-import org.openhab.binding.neeo.NeeoConstants;
 import org.openhab.binding.neeo.internal.net.HttpRequest;
 import org.openhab.binding.neeo.internal.net.HttpResponse;
 import org.slf4j.Logger;
@@ -35,6 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Tim Roberts - Initial contribution
  *
  */
+@NonNullByDefault
 @SuppressWarnings("serial")
 public class NeeoForwardActionsServlet extends HttpServlet {
 
@@ -49,19 +49,22 @@ public class NeeoForwardActionsServlet extends HttpServlet {
     private final String forwardChain;
 
     /** The scheduler to use to schedule recipe execution */
-    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(NeeoConstants.THREADPOOL_ID);
+    private final ScheduledExecutorService scheduler;
 
     /**
      * Creates the servlet the will process foward action events from the NEEO brain.
      *
+     * @param scheduler a non-null {@link ScheduledExecutorService} to schedule forward actions
      * @param callback a non-null {@link Callback}
      * @param forwardChain a possibly null, possibly empty forwarding chain
      */
-    NeeoForwardActionsServlet(Callback callback, @Nullable String forwardChain) {
+    NeeoForwardActionsServlet(ScheduledExecutorService scheduler, Callback callback, @Nullable String forwardChain) {
         super();
 
+        Objects.requireNonNull(scheduler, "scheduler cannot be null");
         Objects.requireNonNull(callback, "callback cannot be null");
 
+        this.scheduler = scheduler;
         this.callback = callback;
         this.forwardChain = forwardChain;
     }

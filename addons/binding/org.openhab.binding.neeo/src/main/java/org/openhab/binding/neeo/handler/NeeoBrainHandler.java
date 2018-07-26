@@ -27,7 +27,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.servlet.ServletException;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.neeo.NeeoConstants;
@@ -51,12 +52,13 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * A subclass of {@link AbstractBridgeHandler} is responsible for handling commands and discovery for a
+ * A subclass of {@link BaseBridgeHandler} is responsible for handling commands and discovery for a
  * {@link NeeoBrain}
  *
  * @author Tim Roberts - Initial contribution
  */
-public class NeeoBrainHandler extends AbstractBridgeHandler {
+@NonNullByDefault
+public class NeeoBrainHandler extends BaseBridgeHandler {
 
     /** The logger */
     private final Logger logger = LoggerFactory.getLogger(NeeoBrainHandler.class);
@@ -178,22 +180,23 @@ public class NeeoBrainHandler extends AbstractBridgeHandler {
             if (config.isEnableForwardActions()) {
                 NeeoUtil.checkInterrupt();
 
-                forwardActionServlet = new NeeoForwardActionsServlet(new NeeoForwardActionsServlet.Callback() {
-                    @Override
-                    public void post(String json) {
-                        triggerChannel(NeeoConstants.CHANNEL_BRAIN_FOWARDACTIONS, json);
+                forwardActionServlet = new NeeoForwardActionsServlet(scheduler,
+                        new NeeoForwardActionsServlet.Callback() {
+                            @Override
+                            public void post(String json) {
+                                triggerChannel(NeeoConstants.CHANNEL_BRAIN_FOWARDACTIONS, json);
 
-                        final NeeoAction action = gson.fromJson(json, NeeoAction.class);
+                                final NeeoAction action = gson.fromJson(json, NeeoAction.class);
 
-                        for (final Thing child : getThing().getThings()) {
-                            final ThingHandler th = child.getHandler();
-                            if (th instanceof NeeoRoomHandler) {
-                                ((NeeoRoomHandler) th).processAction(action);
+                                for (final Thing child : getThing().getThings()) {
+                                    final ThingHandler th = child.getHandler();
+                                    if (th instanceof NeeoRoomHandler) {
+                                        ((NeeoRoomHandler) th).processAction(action);
+                                    }
+                                }
                             }
-                        }
-                    }
 
-                }, config.getForwardChain());
+                        }, config.getForwardChain());
 
                 NeeoUtil.checkInterrupt();
                 try {
@@ -262,7 +265,6 @@ public class NeeoBrainHandler extends AbstractBridgeHandler {
      * @return a possibly null {@link NeeoBrainApi}
      */
     @Nullable
-    @Override
     public NeeoBrainApi getNeeoBrainApi() {
         final Lock readerLock = stateLock.readLock();
         readerLock.lock();
@@ -278,8 +280,6 @@ public class NeeoBrainHandler extends AbstractBridgeHandler {
      *
      * @return a non-null, non-empty brain id
      */
-    @NonNull
-    @Override
     public String getNeeoBrainId() {
         return getThing().getUID().getId();
     }
@@ -349,7 +349,6 @@ public class NeeoBrainHandler extends AbstractBridgeHandler {
                     } catch (IOException e) {
                         logger.debug("IOException occurred deregistering the forward actions: {}", e.getMessage(), e);
                     }
-
                 }
 
                 if (servletPath != null) {

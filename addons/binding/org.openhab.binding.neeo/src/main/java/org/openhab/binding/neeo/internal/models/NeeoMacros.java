@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -19,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Tim Roberts - Initial contribution
  */
+@NonNullByDefault
 public class NeeoMacros {
 
     /** The macros. */

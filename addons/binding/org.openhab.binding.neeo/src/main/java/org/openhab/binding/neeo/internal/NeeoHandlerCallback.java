@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.neeo.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -24,6 +25,7 @@ import org.eclipse.smarthome.core.types.State;
  * @author Tim Roberts - initial contribution
  *
  */
+@NonNullByDefault
 public interface NeeoHandlerCallback {
     /**
      * Callback to the bridge/thing to update the status of the bridge/thing.

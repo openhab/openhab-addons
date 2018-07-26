@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.neeo.internal.type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.ConfigDescription;
 import org.eclipse.smarthome.config.core.ConfigDescriptionProvider;
 
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.config.core.ConfigDescriptionProvider;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public interface NeeoConfigDescriptionProvider extends ConfigDescriptionProvider {
 
     /**

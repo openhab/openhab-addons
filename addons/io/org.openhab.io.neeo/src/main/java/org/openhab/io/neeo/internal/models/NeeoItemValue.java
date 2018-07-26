@@ -8,11 +8,14 @@
  */
 package org.openhab.io.neeo.internal.models;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The model representing an item value (serialize/deserialize json use only).
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class NeeoItemValue {
 
     /** The value */

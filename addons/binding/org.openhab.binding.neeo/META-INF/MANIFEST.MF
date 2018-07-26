@@ -53,3 +53,4 @@ Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.neeo,
  org.openhab.binding.neeo.handler
 Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.smarthome.core.thing

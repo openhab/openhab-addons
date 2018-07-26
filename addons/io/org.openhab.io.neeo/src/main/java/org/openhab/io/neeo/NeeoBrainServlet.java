@@ -12,21 +12,23 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.neeo.internal.NeeoApi;
 import org.openhab.io.neeo.internal.NeeoDeviceKeys;
 import org.openhab.io.neeo.internal.NeeoUtil;
 import org.openhab.io.neeo.internal.ServiceContext;
 import org.openhab.io.neeo.internal.models.BrainStatus;
 import org.openhab.io.neeo.internal.servletservices.NeeoBrainService;
-import org.openhab.io.neeo.internal.servletservices.SearchService;
+import org.openhab.io.neeo.internal.servletservices.NeeoBrainSearchService;
 
 /**
  * This implementation of {@link AbstractServlet} will handle any requests from the NEEO Brain. The brain will ask for
- * any search results (performed by {@link SearchService}) and requests state values, set
+ * any search results (performed by {@link NeeoBrainSearchService}) and requests state values, set
  * state values (performed by {@Link NeeoBrainService})
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class NeeoBrainServlet extends AbstractServlet {
 
     /** The serial UID */
@@ -43,7 +45,7 @@ public class NeeoBrainServlet extends AbstractServlet {
      * @param api the non-null API
      */
     private NeeoBrainServlet(ServiceContext context, String servletUrl, NeeoApi api) {
-        super(context, servletUrl, new SearchService(context), new NeeoBrainService(api, context));
+        super(context, servletUrl, new NeeoBrainSearchService(context), new NeeoBrainService(api, context));
 
         Objects.requireNonNull(context, "context cannot be null");
         NeeoUtil.requireNotEmpty(servletUrl, "servletUrl cannot be empty");

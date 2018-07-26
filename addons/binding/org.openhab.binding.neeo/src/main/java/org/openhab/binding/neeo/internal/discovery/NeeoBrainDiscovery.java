@@ -21,6 +21,7 @@ import java.util.Set;
 import javax.jmdns.ServiceInfo;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tim Roberts - initial contribution
  */
+@NonNullByDefault
 @Component(service = MDNSDiscoveryParticipant.class, immediate = true)
 public class NeeoBrainDiscovery implements MDNSDiscoveryParticipant {
 

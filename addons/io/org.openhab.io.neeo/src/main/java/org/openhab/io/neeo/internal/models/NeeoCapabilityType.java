@@ -11,6 +11,7 @@ package org.openhab.io.neeo.internal.models;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 
@@ -19,6 +20,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelType;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public enum NeeoCapabilityType {
     /** Represents the NEEO BUTTON capability */
     BUTTON("button"),

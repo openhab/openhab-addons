@@ -10,6 +10,7 @@ package org.openhab.io.neeo.internal.discovery;
 
 import java.net.InetAddress;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.neeo.internal.models.NeeoSystemInfo;
 
 /**
@@ -17,6 +18,7 @@ import org.openhab.io.neeo.internal.models.NeeoSystemInfo;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public interface DiscoveryListener {
 
     /**

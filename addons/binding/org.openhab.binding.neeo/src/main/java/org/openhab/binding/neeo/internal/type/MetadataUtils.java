@@ -12,11 +12,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.type.ChannelDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
+import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
 import org.openhab.binding.neeo.NeeoConstants;
 import org.openhab.binding.neeo.internal.models.NeeoDevice;
 import org.openhab.binding.neeo.internal.models.NeeoMacro;
@@ -29,6 +33,7 @@ import org.openhab.binding.neeo.internal.models.NeeoScenario;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 class MetadataUtils {
     /**
      * Gets the group definitions from a {@link NeeoRoom}
@@ -79,8 +84,11 @@ class MetadataUtils {
 
         final List<ChannelType> channelTypes = new ArrayList<>();
         for (NeeoMacro macro : device.getMacros().getMacros()) {
-            final ChannelType channelType = new ChannelType(UidUtils.createChannelType(macro), false, "Switch",
-                    macro.getName(), "Send ON to trigger the macro", null, null, null, null);
+            final String channelLabel = StringUtils.isEmpty(macro.getName()) ? macro.getLabel() : macro.getName();
+
+            final ChannelType channelType = ChannelTypeBuilder.state(UidUtils.createChannelTypeUID(macro),
+                    channelLabel == null || StringUtils.isEmpty(channelLabel) ? "Unknown" : channelLabel, "Switch")
+                    .withDescription("Send ON to trigger the macro").build();
 
             channelTypes.add(channelType);
         }
@@ -100,15 +108,15 @@ class MetadataUtils {
 
         final List<ChannelGroupType> channelGroupTypes = new ArrayList<>();
 
-        final ChannelGroupTypeUID macrosGroupTypeUID = UidUtils.createMacroChannelGroupType();
-
         final List<ChannelDefinition> channelDefinitions = new ArrayList<>();
         for (NeeoMacro macro : device.getMacros().getMacros()) {
-            channelDefinitions.add(new ChannelDefinition(macro.getKey(), UidUtils.createChannelType(macro)));
+            channelDefinitions.add(new ChannelDefinition(macro.getKey(), UidUtils.createChannelTypeUID(macro)));
         }
 
-        final ChannelGroupType macrosGroupType = new ChannelGroupType(macrosGroupTypeUID, false, "Macros",
-                "Macros for " + device.getName(), null, channelDefinitions);
+        final ChannelGroupTypeUID macrosGroupTypeUID = UidUtils.createMacroChannelGroupTypeUID(device);
+
+        final ChannelGroupType macrosGroupType = ChannelGroupTypeBuilder.instance(macrosGroupTypeUID, "Macros")
+                .withDescription("Macros for " + device.getName()).withChannelDefinitions(channelDefinitions).build();
 
         channelGroupTypes.add(macrosGroupType);
 
@@ -126,8 +134,7 @@ class MetadataUtils {
 
         final List<ChannelGroupDefinition> groupChannelDefinitions = new ArrayList<>();
         groupChannelDefinitions.add(new ChannelGroupDefinition(NeeoConstants.DEVICE_GROUP_MACROSID,
-                new ChannelGroupTypeUID(NeeoConstants.BINDING_ID, NeeoConstants.DEVICE_GROUP_MACROS), "Macros",
-                "Macros for " + device.getName()));
+                UidUtils.createMacroChannelGroupTypeUID(device), "Macros", "Macros for " + device.getName()));
 
         return groupChannelDefinitions;
     }

@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.neeo.internal.models;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
@@ -18,6 +19,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Tim Roberts - Initial contribution
  *
  */
+@NonNullByDefault
 public class NeeoAction {
     /** The action - can be null */
     @Nullable

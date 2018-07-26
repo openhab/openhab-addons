@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.neeo;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,13 +17,11 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Tim Roberts - Initial contribution
  */
+@NonNullByDefault
 public class NeeoConstants {
 
     /** The main binding */
     public static final String BINDING_ID = "neeo";
-
-    /** Threadpool ID */
-    public static final String THREADPOOL_ID = "neeo.binding";
 
     /** The bridge thing uid */
     public static final ThingTypeUID BRIDGE_TYPE_BRAIN = new ThingTypeUID(BINDING_ID, "brain");
@@ -57,7 +56,6 @@ public class NeeoConstants {
     public static final String ROOM_CHANNEL_ENABLED = "enabled";
     public static final String ROOM_CHANNEL_CONFIGURED = "configured";
     public static final String ROOM_CHANNEL_STATUS = "status";
-    public static final String ROOM_CHANNEL_ACTIVESCENARIOS = "activeScenarios";
     public static final String ROOM_CHANNEL_CURRENTSTEP = "currentStep";
 
     public static final String DEVICE_GROUP_MACROS = "device-macros";

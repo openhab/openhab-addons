@@ -32,6 +32,7 @@ import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.io.transport.mdns.MDNSClient;
@@ -52,6 +53,7 @@ import com.google.gson.JsonParseException;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
 
     /** The logger */

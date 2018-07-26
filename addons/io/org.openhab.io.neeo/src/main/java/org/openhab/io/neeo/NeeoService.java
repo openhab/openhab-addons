@@ -10,6 +10,7 @@ package org.openhab.io.neeo;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.servlet.ServletException;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.binding.BindingInfoRegistry;
 import org.eclipse.smarthome.core.events.Event;
@@ -28,12 +30,15 @@ import org.eclipse.smarthome.core.events.EventPublisher;
 import org.eclipse.smarthome.core.events.EventSubscriber;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.items.events.ItemStateChangedEvent;
+import org.eclipse.smarthome.core.net.CidrAddress;
+import org.eclipse.smarthome.core.net.NetworkAddressChangeListener;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeRegistry;
 import org.eclipse.smarthome.core.thing.type.ThingTypeRegistry;
 import org.eclipse.smarthome.io.transport.mdns.MDNSClient;
+import org.openhab.io.neeo.internal.NeeoApi;
 import org.openhab.io.neeo.internal.NeeoUtil;
 import org.openhab.io.neeo.internal.ServiceContext;
 import org.openhab.io.neeo.internal.discovery.BrainDiscovery;
@@ -57,12 +62,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tim Roberts - Initial Contribution
  */
-@Component(service = org.eclipse.smarthome.core.events.EventSubscriber.class, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true, property = {
-        "service.pid=org.openhab.io.neeo.NeeoService", "service.config.description.uri=io:neeo",
-        "service.config.label=NEEO Transport", "service.config.category=io" }
+@NonNullByDefault
+@Component(service = { org.eclipse.smarthome.core.events.EventSubscriber.class,
+        NetworkAddressChangeListener.class }, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true, property = {
+                "service.pid=org.openhab.io.neeo.NeeoService", "service.config.description.uri=io:neeo",
+                "service.config.label=NEEO Transport", "service.config.category=io" }
 
 )
-public class NeeoService implements EventSubscriber {
+public class NeeoService implements EventSubscriber, NetworkAddressChangeListener {
 
     /** The logger */
     private final Logger logger = LoggerFactory.getLogger(NeeoService.class);
@@ -610,5 +617,27 @@ public class NeeoService implements EventSubscriber {
         for (AbstractServlet servlet : servlets) {
             servlet.receive(event);
         }
+    }
+
+    @Override
+    public void onPrimaryAddressChanged(@Nullable String oldPrimaryAddress, @Nullable String newPrimaryAddress) {
+        for (final NeeoBrainServlet servlet : servlets) {
+            final NeeoApi api = servlet.getBrainApi();
+            final NeeoSystemInfo sysInfo = api.getSystemInfo();
+            final String brainIpAddress = api.getBrainIpAddress();
+            brainRemoved(sysInfo);
+            try {
+                brainDiscovered(sysInfo, InetAddress.getByName(brainIpAddress));
+            } catch (UnknownHostException e) {
+                logger.warn(
+                        "Already connected brain had an invalid IP Address (shouldn't happen!): name: {} address: {}",
+                        api.getBrainId(), brainIpAddress);
+            }
+        }
+    }
+
+    @Override
+    public void onChanged(List<CidrAddress> added, List<CidrAddress> removed) {
+        // Implementation does nothing on this change notification
     }
 }

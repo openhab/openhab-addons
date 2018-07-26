@@ -8,6 +8,7 @@
  */
 package org.openhab.io.neeo;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.neeo.internal.ServiceContext;
 import org.openhab.io.neeo.internal.servletservices.BrainDashboardService;
 import org.openhab.io.neeo.internal.servletservices.ServletService;
@@ -19,6 +20,7 @@ import org.openhab.io.neeo.internal.servletservices.ThingDashboardService;
  * @author Tim Roberts - Initial Contribution
  *
  */
+@NonNullByDefault
 public class NeeoDashboardServlet extends AbstractServlet {
     private static final long serialVersionUID = 2407461893925595039L;
 

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.neeo.NeeoConstants;
 import org.openhab.io.neeo.internal.NeeoUtil;
@@ -42,6 +43,7 @@ import com.google.gson.JsonSerializer;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
 
     /** The logger */

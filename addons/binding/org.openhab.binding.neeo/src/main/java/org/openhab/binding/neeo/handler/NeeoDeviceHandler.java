@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -29,6 +30,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
@@ -52,11 +54,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An extension of {@link AbstractThingHandler} that is responsible for handling commands for a device
+ * An extension of {@link BaseThingHandler} that is responsible for handling commands for a device
  *
  * @author Tim Roberts - Initial contribution
  */
-public class NeeoDeviceHandler extends AbstractThingHandler {
+@NonNullByDefault
+public class NeeoDeviceHandler extends BaseThingHandler {
 
     /** The logger */
     private final Logger logger = LoggerFactory.getLogger(NeeoDeviceHandler.class);
@@ -102,7 +105,7 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
             logger.debug("GroupID for channel is null - ignoring command: {}", channelUID);
             return;
         }
-        
+
         if (command instanceof RefreshType) {
             refreshChannel(protocol, groupId, channelId);
         } else {
@@ -190,7 +193,7 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
                 if (key != null && StringUtils.isNotEmpty(key)) {
                     final Channel channel = ChannelBuilder
                             .create(new ChannelUID(thingUid, NeeoConstants.DEVICE_GROUP_MACROSID, key), "Switch")
-                            .withType(UidUtils.createChannelType(macro)).build();
+                            .withType(UidUtils.createChannelTypeUID(macro)).build();
 
                     channels.add(channel);
                 }
@@ -313,6 +316,23 @@ public class NeeoDeviceHandler extends AbstractThingHandler {
             return "";
         }
         return i.toString();
+    }
+
+    /**
+     * Returns the {@link NeeoBrainApi} associated with this handler.
+     *
+     * @return the {@link NeeoBrainApi} or null if not found
+     */
+    @Nullable
+    private NeeoBrainApi getNeeoBrainApi() {
+        final Bridge parent = getBridge();
+        if (parent != null) {
+            final BridgeHandler handler = parent.getHandler();
+            if (handler instanceof NeeoRoomHandler) {
+                return ((NeeoRoomHandler) handler).getNeeoBrainApi();
+            }
+        }
+        return null;
     }
 
     @Override

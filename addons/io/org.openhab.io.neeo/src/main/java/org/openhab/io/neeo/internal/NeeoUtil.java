@@ -21,6 +21,7 @@ import java.util.concurrent.Future;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -62,6 +63,7 @@ import com.google.gson.JsonPrimitive;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class NeeoUtil {
 
     /**

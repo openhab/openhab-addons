@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.neeo.NeeoConstants;
 import org.openhab.io.neeo.internal.NeeoUtil;
 import org.openhab.io.neeo.internal.ServiceContext;
@@ -42,10 +43,11 @@ import com.google.gson.JsonObject;
  *
  * @author Tim Roberts - Initial Contribution
  */
-public class SearchService extends DefaultServletService {
+@NonNullByDefault
+public class NeeoBrainSearchService extends DefaultServletService {
 
     /** The logger */
-    private final Logger logger = LoggerFactory.getLogger(SearchService.class);
+    private final Logger logger = LoggerFactory.getLogger(NeeoBrainSearchService.class);
 
     /** The gson used to for json manipulation */
     private final Gson gson;
@@ -61,7 +63,7 @@ public class SearchService extends DefaultServletService {
      *
      * @param context the non-null {@link ServiceContext}
      */
-    public SearchService(ServiceContext context) {
+    public NeeoBrainSearchService(ServiceContext context) {
         Objects.requireNonNull(context, "context cannot be null");
 
         this.context = context;

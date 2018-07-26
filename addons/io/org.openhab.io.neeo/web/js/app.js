@@ -752,7 +752,7 @@ angular.module('ui.bootstrap').controller('AddItemsInstanceCtrl', function ($sco
                 
                 // note: will screwup on something like: itemType itemName "label //stuff"...
                 // but we don't care because we only care about the itemName
-                var cmnts = /(\/\*[\w\'\s\r\n\*]*\*\/)|(\/\/.*$)|(\<![\-\-\s\w\>\/]*\>)/gm;
+                var cmnts = /^\s*((\/\*[\w\'\s\r\n\*]*\*\/)|(\/\/.*$)|(\<![\-\-\s\w\>\/]*\>))\s*/gm;
                 data = data.replace(cmnts, "");
                 
                 // uuuuuggglllyyy

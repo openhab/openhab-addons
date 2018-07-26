@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigDescription;
 import org.eclipse.smarthome.config.core.ConfigDescriptionProvider;
@@ -25,6 +26,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 @Component(immediate = true, service = { NeeoConfigDescriptionProvider.class, ConfigDescriptionProvider.class })
 public class NeeoConfigDescriptionProviderImpl implements NeeoConfigDescriptionProvider {
 

@@ -9,6 +9,7 @@
 package org.openhab.io.neeo.internal.models;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.io.neeo.NeeoConstants;
 
@@ -19,6 +20,7 @@ import org.openhab.io.neeo.NeeoConstants;
  * @author Tim Roberts - Initial Contribution
  *
  */
+@NonNullByDefault
 public class NeeoThingUID extends ThingUID {
     /**
      * Constructs the {@link NeeoThingUID} from a {@link ThingUID}

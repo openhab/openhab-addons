@@ -1,90 +1,119 @@
 # Neeo Binding
 
-This binding will help openHAB control a NEEO smart remote (specifically the NEEO Brain).  
-NEEO is a smart home solution that includes an IP based remote.  
-More information can be found at [NEEO](neeo.com) or in the forums at [NEEO Planet](https://planet.neeo.com). 
-**This binding was not developed by NEEO** - so please don't ask questions on the NEEO forums.  
+This binding will help openHAB control a NEEO smart remote (specifically the NEEO Brain).
+NEEO is a smart home solution that includes an IP based remote.
+More information can be found at [NEEO](neeo.com) or in the forums at [NEEO Planet](https://planet.neeo.com).
+**This binding was not developed by NEEO** - so please don't ask questions on the NEEO forums.
 
 Discovery occurs in three steps:
 
-1. Discover your NEEO Brain
-2. Once you have added a NEEO Brain, each Room will be discovered (which will include all Recipes and Scenarios)
+1. Discover your NEEO Brain.
+2. Once you have added a NEEO Brain, each Room will be discovered (which will include all Recipes and Scenarios).
 3. Once you have added a NEEO Room, each Device in the Room will be discovered (which will include all Macros for the Device).
 
-The Recipes/Scenarios can then be started or stopped from openHAB or from the remote.  If a Recipe/Scenario is started on the Brain, the status of the Recipe/Scenario will change in openHAB as well.  Likewise, starting a Recipe/Scenario in openHAB will change the status on the Brain/remote.
+The Recipes/Scenarios can then be started or stopped from openHAB or from the remote.
+If a Recipe/Scenario is started on the Brain, the status of the Recipe/Scenario will change in openHAB as well.
+Likewise, starting a Recipe/Scenario in openHAB will change the status on the Brain/remote.
 
 This binding has been designed to compliment the NEEO Transport (which will expose openHAB Devices to the Brain[s] and expose each Brains Device to the other Brains).
 
-The Room/Scenario/Recipe/Device information is read at startup time.  If you make changes to any Room/Scenario/Recipe/Device, you'll need to delete the item in question and re-discover the item (see discovery section below).  
+The Room/Scenario/Recipe/Device information is read at startup time.
+If you make changes to any Room/Scenario/Recipe/Device, you'll need to delete the item in question and re-discover the item (see discovery section below).
 
-Since this binding allows you to trigger actions on NEEO Devices, this allows you to use the NEEO Brain as a IR solution to openHAB.  In other words, if the NEEO Brain supports a Device over IR - then openHAB can use the NEEO Brain to control that Device regardless if there is an openHAB binding for it or not.
+Since this binding allows you to trigger actions on NEEO Devices, this allows you to use the NEEO Brain as a IR solution to openHAB.
+In other words, if the NEEO Brain supports a Device over IR - then openHAB can use the NEEO Brain to control that Device regardless if there is an openHAB binding for it or not.
 
 ## openHAB Primary Address
 
-This binding will use the primary address defined in openHAB to register itself with the NEEO Brain (allowing the NEEO Brain to forward events back to the binding).  If you have multiple network interfaces on the machine that openHAB runs on or if forward actions are not being recieved, you'll likely need to set the primary address configuration field (PaperUI->Configuration->System->Network Settings->Primary Address).  Please set this BEFORE YOU INSTALL THE TRANSPORT.  If you set the primary address AFTER install the transport, you'll need to restart openHAB for the transport to use the correct address.
+This binding will use the primary address defined in openHAB to register itself with the NEEO Brain (allowing the NEEO Brain to forward events back to the binding).
+If you change the primary address option, this binding will de-register the old address and re-register the new address with the NEEO Brain.
 
 ## Definitions
 
-A NEEO Scenario is a package of Recipes making up the Scenario.  A Scenario is generally related to the buttons on the NEEO remote screen and are named "Watch a TV" or "Watch a Movie", etc.  The Scenario will have one or more Recipes - most commonly two Recipes (a launch and poweroff Recipe)  
+A NEEO Scenario is a package of Recipes making up the Scenario.
+A Scenario is generally related to the buttons on the NEEO remote screen and are named "Watch a TV" or "Watch a Movie", etc.
+The Scenario will have one or more Recipes - most commonly two Recipes (a launch and poweroff Recipe).
 
-A NEEO Recipes is a sequence of steps that accomplish a single task (launching a Scenario or turning off a Scenario).  You can view/modify Recipes using the NEEO app.
+A NEEO Recipes is a sequence of steps that accomplish a single task (launching a Scenario or turning off a Scenario).
+You can view/modify Recipes using the NEEO app.
 
-You can run a Scenario by sending ON to the Scenario status channel and end the Scenario by sending OFF to the Scenario status channel.  Likewise, you can send ON to any "launch" type Recipe status channel to start the Scenario and send ON to the "poweroff" type Recipe status channel to end the Scenario.  Sending OFF to any Recipe status channel does nothing.
+You can run a Scenario by sending ON to the Scenario status channel and end the Scenario by sending OFF to the Scenario status channel.
+Likewise, you can send ON to any "launch" type Recipe status channel to start the Scenario and send ON to the "poweroff" type Recipe status channel to end the Scenario.
+Sending OFF to any Recipe status channel does nothing.
 
 A NEEO Device is simply a collection of Macros that the Device supports.
 
-A NEEO Macro is an action that can be performed on the Device.  Actions can be triggered by sending ON to the channel
+A NEEO Macro is an action that can be performed on the Device.
+Actions can be triggered by sending ON to the channel
 
 ## Supported Things
 
-* Bridge: NEEO Brain.  This bridge represents a physical NEEO Brain and will contain one to many Rooms within it.
+* Bridge: NEEO Brain.
+This bridge represents a physical NEEO Brain and will contain one to many Rooms within it.
 
-* Bridge: NEEO Room. Represents a Room on the NEEO Brain.  Please note that Room bridges are dynamically generated by the binding.
+* Bridge: NEEO Room.
+Represents a Room on the NEEO Brain.
+Please note that Room bridges are dynamically generated by the binding.
 
-* Thing: NEEO Device.  Represents a Device within the NEEO Room.  Please note that Device things are dynamically generated by the binding.
+* Thing: NEEO Device.
+Represents a Device within the NEEO Room.
+Please note that Device things are dynamically generated by the binding.
 
 ## Discover
 
 NEEO Brains will be automatically discovered if MDNS/bonjour/zeroconf is installed on the local machine:
 
-1. On Windows - installing iTunes will install bonjour
-2. On Linux - please install zeroconf (see vendor documentation on how to do that)
-3. On Mac - should already be installed
+1. On Windows - installing iTunes will install bonjour.
+2. On Linux - please install zeroconf (see vendor documentation on how to do that).
+3. On Mac - should already be installed.
 
-When you add the NEEO Brain, the Rooms on the Brain will then be auto discovered and placed in the inbox. When you add a Room, all Devices should be auto discovered and placed in the inbox.  If you remove any discovered thing either from the inbox or from the added things, simply re-trigger a NEEO binding scan to rediscover it. 
+When you add the NEEO Brain, the Rooms on the Brain will then be auto discovered and placed in the inbox.
+When you add a Room, all Devices should be auto discovered and placed in the inbox.
+If you remove any discovered thing either from the inbox or from the added things, simply re-trigger a NEEO binding scan to rediscover it.
 
-If you have the Brain both wired and wireless, the Brain will NOT be discovered twice (only once) and which interface is discovered depends on the timing of the beacon discover message (first one wins).  If you discovered the wired first but want to use the wireless (or in the reverse), add the Brain and then modify it's configuration to the IP address you want to use.
+If you have the Brain both wired and wireless, the Brain will NOT be discovered twice (only once) and which interface is discovered depends on the timing of the beacon discover message (first one wins).
+If you discovered the wired first but want to use the wireless (or in the reverse), add the Brain and then modify it's configuration to the IP address you want to use.
 
 If the Brain is not discovered, here is list of the most common issues:
 
-1.  You can generally trigger discovery by starting up the NEEO APP on your mobile device, press MENU->NEEO Brain->Change Brain.  This will generally send out the necessary MDNS broadcast messages to discovery the Brain.
-2.  You didn't wait long enough.  I've noticed that it will take up to 5 minutes for the discovery to find the Brain.
-3.  Local firewall is blocking the MDNS broadcast messages.  Modify the firewall to allow MDNS packets - typically port 5353 and/or IP address 224.0.0.251 
-4.  The Brain is on a different subnet.  Unless you have special routing rules, having the Brain on a different subnet than the openHAB instance will prevent discovery.  Either add routing rules or move one of them to the same subnet.
-5.  Bug in the MDNS library.  Occasionally a broadcast will be missed and a simple openHAB restart will fix the issue.
-6.  Brain isn't reachable.  Ping the Brain's address from the openHAB machine and see if it responds.  
+1.  You can generally trigger discovery by starting up the NEEO APP on your mobile device, press MENU->NEEO Brain->Change Brain.
+This will generally send out the necessary MDNS broadcast messages to discovery the Brain.
+2.  You didn't wait long enough.
+I've noticed that it will take up to 5 minutes for the discovery to find the Brain.
+3.  Local firewall is blocking the MDNS broadcast messages.
+Modify the firewall to allow MDNS packets - typically port 5353 and/or IP address 224.0.0.251
+4.  The Brain is on a different subnet.
+Unless you have special routing rules, having the Brain on a different subnet than the openHAB instance will prevent discovery.
+Either add routing rules or move one of them to the same subnet.
+5.  Bug in the MDNS library.
+Occasionally a broadcast will be missed and a simple openHAB restart will fix the issue.
+6.  Brain isn't reachable.
+Ping the Brain's address from the openHAB machine and see if it responds.
 
-If none of the above work, there are a few more things you can try
+If none of the above work, there are a few more things you can try:
 
-1.  Use your local dns-sd command to see if you find the instance ("dns-sd -B _neeo._tcp")
-2.  Manually configure the Brain and specify it's IP address
-3.  Look in the issues forum on the NEEO SDK Github - specifically the [Brain Discovery not working](https://github.com/NEEOInc/neeo-sdk/issues/36)
+1.  Use your local dns-sd command to see if you find the instance ("dns-sd -B _neeo._tcp").
+2.  Manually configure the Brain and specify it's IP address.
+3.  Look in the issues forum on the NEEO SDK Github - specifically the [Brain Discovery not working](https://github.com/NEEOInc/neeo-sdk/issues/36).
 
 ## Forward Actions
 
-The NEEO Brain has the option to forward all actions performed on it to a specific address.  The forward actions will be a JSON string representation:
+The NEEO Brain has the option to forward all actions performed on it to a specific address.
+The forward actions will be a JSON string representation:
 
 ```
 { "action": "xxx", "actionparameter": "xxx", "recipe": "xxx", "device": "xxx", "room": "xxx" }
 ```
 
-All parameters are optional (based on what action has been taken) with atleast one of them filled in.  If the Recipe "Watch TV" is launched, the forward action would be:
+All parameters are optional (based on what action has been taken) with atleast one of them filled in.
+If the Recipe "Watch TV" is launched, the forward action would be:
 
 ```
 { "action": "launch", "recipe": "Watch TV" }
 ```
 
-The NEEO Brain bridge will register itself as the destination for actions and has a trigger channel defined to accept the results of any forward action.  An example rule might look like (for a Brain with an ID of d487672e):
+The NEEO Brain bridge will register itself as the destination for actions and has a trigger channel defined to accept the results of any forward action.
+An example rule might look like (for a Brain with an ID of d487672e):
 
 ```
 rule "NEEO"
@@ -94,7 +123,7 @@ rule "NEEO"
         logInfo("neeo", "action received")
         
         var data = receivedEvent.getEvent()
- 
+
         logInfo("neeo", "data: {}", data)
 
         var String recipe = transform("JSONPATH", "$.recipe", data);
@@ -109,10 +138,10 @@ end
 
 Since the NEEO Brain ONLY allows a single forward actions URL, the NEEO Brain Bridge can be configured to:
 
-1. Whether to register for forward actions or not
-2. If forward actions has been registered, forward the action on to other URLs for processing
+1. Whether to register for forward actions or not.
+2. If forward actions has been registered, forward the action on to other URLs for processing.
 
-This will allow you to use other devices that want to consume the forward actions (in addition to openHAB).  
+This will allow you to use other devices that want to consume the forward actions (in addition to openHAB).
 
 ## Thing Configuration
 
@@ -155,7 +184,7 @@ The NEEO Brain has the following channels:
 | Channel Type ID    | Read/Write | Item Type    | Description                                                                                |
 |--------------------|------------|--------------|--------------------------------------------------------------------------------------------|
 | forwardActions     | R          | Trigger      | The forward actions channel                                                                |
-  
+
 
 The following properties are available at the time of this writing:
 
@@ -172,7 +201,8 @@ The following properties are available at the time of this writing:
 
 ### NEEO Room
 
-The NEEO Room is dynamically generated from the Brain.  Each Room will dynamically generate the following channel groups:
+The NEEO Room is dynamically generated from the Brain.
+Each Room will dynamically generate the following channel groups:
 
 1) Each Room will have exactly one "room-state" representing the current state of the Room.
 2) Each Room will have zero or more "room-recipe-xxx" (where xxx is the Recipe key) groups representing each Recipe in the Room.
@@ -180,18 +210,20 @@ The NEEO Room is dynamically generated from the Brain.  Each Room will dynamical
 
 #### Room State Group
 
-The following channels will be in the Room state group
+The following channels will be in the Room state group:
 
 | Channel Type ID    | Read/Write | Item Type    | Description                                                                                |
 |--------------------|------------|--------------|--------------------------------------------------------------------------------------------|
-| activeScenarios    | R          | Trigger      | The name of the active Scenarios (JSON array of names.  Example: "['TV','DVR']")           |
 | currentStep*       | R          | trigger      | Displays the current step being executed                                                   |
 
-* Current Step will ONLY be shown if openHAB started the Recipe/Scenario and will ONLY be shown on openHAB.  The current step is ONLY communicated from the Brain to the device that started the Recipe/Scenario.  If the remote started the Recipe/Scenario, it will show the current step but openHAB will not be notified.  Likewise if openHAB starts the Recipe/scenario, the remote will not be notified of the current step (although it will know the Recipe/Scenario became active).
+* Current Step will ONLY be shown if openHAB started the Recipe/Scenario and will ONLY be shown on openHAB.
+The current step is ONLY communicated from the Brain to the device that started the Recipe/Scenario.
+If the remote started the Recipe/Scenario, it will show the current step but openHAB will not be notified.
+Likewise if openHAB starts the Recipe/scenario, the remote will not be notified of the current step (although it will know the Recipe/Scenario became active).
 
 #### Room Recipe Group
 
-Each Room Recipe group will have the following channels
+Each Room Recipe group will have the following channels:
 
 | Channel Type ID    | Read/Write | Item Type    | Description                                                                           |
 |--------------------|------------|--------------|---------------------------------------------------------------------------------------|
@@ -200,11 +232,12 @@ Each Room Recipe group will have the following channels
 | enabled            | R          | Switch       | Whether the Recipe is enabled or not                                                  |
 | status             | RW         | Switch       | Whether the Recipe is currently running (you can start/stop Recipes with this switch) |
 
-* The list of types is unknown at this time and the only ones I know of are "launch" and "poweroff".  Simply view the Recipe channel prior to using the type in a rule.
+* The list of types is unknown at this time and the only ones I know of are "launch" and "poweroff".
+Simply view the Recipe channel prior to using the type in a rule.
 
 #### Room Scenario Group
 
-Each  Scenario group will have the following channels
+Each Scenario group will have the following channels:
 
 | Channel Type ID    | Read/Write | Item Type    | Description                                                                              |
 |--------------------|------------|--------------|----------------------------------------------------------------------------------------- |
@@ -214,7 +247,8 @@ Each  Scenario group will have the following channels
 
 ### NEEO Device
 
-The NEEO Device is dynamically generated from the Brain.  Each Device will have a single group (Macros) and that group will contain one or more channels defined by the Macro key (as defined by the NEEO Brain).
+The NEEO Device is dynamically generated from the Brain.
+Each Device will have a single group (Macros) and that group will contain one or more channels defined by the Macro key (as defined by the NEEO Brain):
 
 | Channel Type ID    | Read/Write | Item Type    | Description                                                                              |
 |--------------------|------------|--------------|----------------------------------------------------------------------------------------- |
@@ -226,8 +260,8 @@ The NEEO Device is dynamically generated from the Brain.  Each Device will have 
 
 ```
 neeo:brain:home                                                             [ ipAddress="192.168.1.24" ]
-neeo:room-6277847230179180544:attic   (neeo:brain:home)                     [ roomKey="6277847230179180544" ] 
-neeo:device-6343464057630097408:tv    (neeo:room-6277847230179180544:attic) [ roomKey="6277847230179180544", deviceKey="6343464057630097408" ] 
+neeo:room-6277847230179180544:attic   (neeo:brain:home)                     [ roomKey="6277847230179180544" ]
+neeo:device-6343464057630097408:tv    (neeo:room-6277847230179180544:attic) [ roomKey="6277847230179180544", deviceKey="6343464057630097408" ]
 ```
 
 .items

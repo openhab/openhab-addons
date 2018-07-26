@@ -11,6 +11,7 @@ package org.openhab.io.neeo.internal.models;
 import java.util.Arrays;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
@@ -22,6 +23,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Tim Roberts - Initial Contribution
  *
  */
+@NonNullByDefault
 public class NeeoDirectoryResult {
     /** The title of the directory */
     private final String title;

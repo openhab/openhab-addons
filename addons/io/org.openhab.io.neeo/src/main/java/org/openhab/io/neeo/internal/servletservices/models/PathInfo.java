@@ -11,6 +11,7 @@ package org.openhab.io.neeo.internal.servletservices.models;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.neeo.internal.models.ItemSubType;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
@@ -20,6 +21,7 @@ import org.openhab.io.neeo.internal.models.NeeoThingUID;
  *
  * @author Tim Roberts - Initial Contribution
  */
+@NonNullByDefault
 public class PathInfo {
 
     /** The thing uid */
