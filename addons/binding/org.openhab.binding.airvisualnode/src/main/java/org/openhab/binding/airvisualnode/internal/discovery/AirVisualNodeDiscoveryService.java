@@ -68,7 +68,7 @@ public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService impl
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Starting background discovery");
-        backgroundDiscoveryFuture = scheduler.scheduleWithFixedDelay(this::scan, 0, 300, TimeUnit.SECONDS);
+        backgroundDiscoveryFuture = scheduler.scheduleWithFixedDelay(this::scan, 0, 5, TimeUnit.MINUTES);
     }
 
     @Override

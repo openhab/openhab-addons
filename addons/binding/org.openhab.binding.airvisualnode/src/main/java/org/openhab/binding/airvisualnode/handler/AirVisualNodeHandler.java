@@ -13,8 +13,11 @@ import static org.openhab.binding.airvisualnode.AirVisualNodeBindingConstants.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.Calendar;
-import java.util.TimeZone;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.zone.ZoneRules;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -168,7 +171,7 @@ public class AirVisualNodeHandler extends BaseThingHandler {
     }
 
     private String getNodeJsonData() throws IOException {
-        String url = "smb://" + nodeAddress +"/" + nodeShareName + "/" + NODE_JSON_FILE;
+        String url = "smb://" + nodeAddress + "/" + nodeShareName + "/" + NODE_JSON_FILE;
         NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication(null, nodeUsername, nodePassword);
         try (SmbFileInputStream in = new SmbFileInputStream(new SmbFile(url, auth))) {
             return IOUtils.toString(in, StandardCharsets.UTF_8.name());
@@ -213,14 +216,15 @@ public class AirVisualNodeHandler extends BaseThingHandler {
                 case CHANNEL_TIMESTAMP:
                     // It seem the Node timestamp is Unix timestamp converted from UTC time plus timezone offset.
                     // Not sure about DST though, but it's best guess at now
-                    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-                    cal.setTimeInMillis(nodeData.getStatus().getDatetime() * 1000L);
-                    TimeZone tzSettings = TimeZone.getTimeZone(nodeData.getSettings().getTimezone());
-                    cal.add(Calendar.MILLISECOND, -tzSettings.getRawOffset());
-                    if (tzSettings.inDaylightTime(cal.getTime())) {
-                        cal.add(Calendar.MILLISECOND, -cal.getTimeZone().getDSTSavings());
+                    Instant instant = Instant.ofEpochMilli(nodeData.getStatus().getDatetime() * 1000L);
+                    ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.of("UTC"));
+                    ZoneId zoneId = ZoneId.of(nodeData.getSettings().getTimezone());
+                    ZoneRules zoneRules = zoneId.getRules();
+                    zonedDateTime.minus(Duration.ofSeconds(zoneRules.getOffset(instant).getTotalSeconds()));
+                    if (zoneRules.isDaylightSavings(instant)) {
+                        zonedDateTime.minus(Duration.ofSeconds(zoneRules.getDaylightSavings(instant).getSeconds()));
                     }
-                    state = new DateTimeType(cal);
+                    state = new DateTimeType(zonedDateTime);
                     break;
                 case CHANNEL_USED_MEMORY:
                     state = new DecimalType(BigDecimal.valueOf(nodeData.getStatus().getUsedMemory()).longValue());
