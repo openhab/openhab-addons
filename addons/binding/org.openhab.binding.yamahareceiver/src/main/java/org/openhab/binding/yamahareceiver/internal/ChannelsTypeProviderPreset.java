@@ -8,11 +8,9 @@
  */
 package org.openhab.binding.yamahareceiver.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
@@ -23,12 +21,17 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
+import org.openhab.binding.yamahareceiver.internal.state.PresetInfoState;
+
+import static java.util.stream.Collectors.*;
+import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.BINDING_ID;
+import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.CHANNEL_PLAYBACK_PRESET_TYPE_NAMED;
 
 /**
  * Provide a custom channel type for the preset channel
  *
- * @author David Graeff
+ * @author David Graeff - Initial controbution
+ * @author Tomasz Maruszak - RX-V3900 compatibility improvements
  */
 public class ChannelsTypeProviderPreset implements ChannelTypeProvider {
     private ChannelType channelType;
@@ -66,27 +69,26 @@ public class ChannelsTypeProviderPreset implements ChannelTypeProvider {
         /**
          * We generate a thing specific channelTypeUID, because presets absolutely depends on the thing.
          */
-        channelTypeUID = new ChannelTypeUID(YamahaReceiverBindingConstants.BINDING_ID,
-                YamahaReceiverBindingConstants.CHANNEL_PLAYBACK_PRESET_TYPE_NAMED + thing.getId());
+        channelTypeUID = new ChannelTypeUID(BINDING_ID, CHANNEL_PLAYBACK_PRESET_TYPE_NAMED + thing.getId());
 
         StateDescription state = getDefaultStateDescription();
         createChannelType(state);
     }
 
     private StateDescription getDefaultStateDescription() {
-        List<StateOption> options = new ArrayList<StateOption>();
-        for (int i = 1; i <= 40; i++) {
-            options.add(new StateOption(Integer.toString(i), "Item_" + i));
-        }
+        List<StateOption> options = IntStream.rangeClosed(1, 40)
+                .mapToObj(i -> new StateOption(Integer.toString(i), "Item_" + i))
+                .collect(toList());
+
         StateDescription state = new StateDescription(null, null, null, "%s", false, options);
         return state;
     }
 
-    public void changePresetNames(String presetNames[]) {
-        List<StateOption> options = new ArrayList<>();
-        for (int i = 1; i <= presetNames.length; ++i) {
-            options.add(new StateOption(String.valueOf(i), presetNames[i - 1]));
-        }
+    public void changePresetNames(List<PresetInfoState.Preset> presets) {
+        List<StateOption> options = presets.stream()
+                .map(preset -> new StateOption(String.valueOf(preset.getValue()), preset.getName()))
+                .collect(toList());
+
         StateDescription state = new StateDescription(null, null, null, "%s", false, options);
         createChannelType(state);
     }

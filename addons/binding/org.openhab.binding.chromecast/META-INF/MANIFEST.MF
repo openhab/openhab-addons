@@ -1,9 +1,10 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.chromecast
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
  lib/protobuf-java-2.6.0.jar,
- lib/api-v2-0.10.1.jar,
+ lib/api-v2-0.10.3.jar,
  lib/jackson-core-asl-1.9.2.jar,
  lib/jackson-mapper-asl-1.9.2.jar
 Bundle-ManifestVersion: 2

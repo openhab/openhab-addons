@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.max.internal.message;
 
-import org.openhab.binding.max.MaxBinding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

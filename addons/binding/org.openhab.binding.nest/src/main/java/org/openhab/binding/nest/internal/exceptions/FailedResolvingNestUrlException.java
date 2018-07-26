@@ -14,6 +14,7 @@ package org.openhab.binding.nest.internal.exceptions;
  * @author Wouter Born - Initial contribution
  * @author Wouter Born - Improve exception handling while sending data
  */
+@SuppressWarnings("serial")
 public class FailedResolvingNestUrlException extends Exception {
     public FailedResolvingNestUrlException(String message) {
         super(message);

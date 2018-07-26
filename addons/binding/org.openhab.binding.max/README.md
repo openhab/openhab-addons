@@ -71,7 +71,8 @@ max.things:
 
 ```
 Bridge max:bridge:KEQ0565026 [ ipAddress="192.168.3.9", serialNumber="KEQ0565026" ] {
-    Thing max:thermostat:KEQ0565026:KEQ0565123 [ serialNumber="KEQ0565123" ]
+    Thing thermostat KEQ0565123 [ serialNumber="KEQ0565123", refreshActualRate=60 ]
+    Thing shuttercontact NEQ1150510 [ serialNumber="NEQ1150510" ]
 }
 ```
 
@@ -84,6 +85,8 @@ Switch maxBattery "Battery Low" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ06
 String maxMode    "Thermostat Mode Setting" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:mode"}
 Number maxActual  "Actual measured room temperature  [%.1f °C]" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:actual_temp"}
 Number maxSetTemp "Thermostat temperature setpoint [%.1f °C]" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:set_temp"}
+Contact maxShuttercontactState "Contact State" (gMAX) {channel="max:shuttercontact:KEQ0565026:NEQ1150510:contact_state"}
+Switch maxShuttercontactBattery "Contact Battery Low" <battery> (gMAX) {channel="max:shuttercontact:KEQ0565026:NEQ1150510:battery_low"}
 ```
 
 demo.sitemap:
@@ -97,7 +100,6 @@ sitemap demo label="Main Menu"
 			Text item=maxActual  icon="temperature"
 			Switch  item=maxBattery
 		}
-
 }
 ```
 

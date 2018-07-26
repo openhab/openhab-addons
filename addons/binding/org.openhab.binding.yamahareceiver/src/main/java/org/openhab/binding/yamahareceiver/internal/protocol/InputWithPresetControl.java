@@ -23,6 +23,9 @@ import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.
  */
 
 public interface InputWithPresetControl extends IStateUpdatable {
+
+    int PRESET_CHANNELS = 40;
+
     /**
      * List all inputs that are compatible with this kind of control
      */

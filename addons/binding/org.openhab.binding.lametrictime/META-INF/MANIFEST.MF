@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.lametrictime
 Bundle-ManifestVersion: 2
 Bundle-Name: LaMetric Time Binding
 Bundle-SymbolicName: org.openhab.binding.lametrictime;singleton:=true

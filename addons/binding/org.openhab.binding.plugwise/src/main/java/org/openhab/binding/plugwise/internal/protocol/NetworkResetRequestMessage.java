@@ -13,8 +13,7 @@ import static org.openhab.binding.plugwise.internal.protocol.field.MessageType.N
 /**
  * Requests the Plugwise network to be reset. Currently not used in the binding.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class NetworkResetRequestMessage extends Message {
 

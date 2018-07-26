@@ -274,16 +274,18 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
             int least = -1;
             int total = 0;
 
-            for (int value : storage.values()) {
-                if (least == -1) {
-                    least = value;
-                    continue;
-                }
+            synchronized (storage) {
+                for (int value : storage.values()) {
+                    if (least == -1) {
+                        least = value;
+                        continue;
+                    }
 
-                if (value < least) {
-                    total = 256 - least + value;
-                } else {
-                    total = value - least;
+                    if (value < least) {
+                        total = 256 - least + value;
+                    } else {
+                        total = value - least;
+                    }
                 }
             }
 
@@ -333,13 +335,16 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
             double nsSum = 0;
             double totalSpeed = 0;
             double maxSpeed = 0;
-            int size = storage.size();
-            for (WindSample sample : storage.values()) {
-                ewSum += sample.ewVector;
-                nsSum += sample.nsVector;
-                totalSpeed += sample.speed;
-                if (sample.speed > maxSpeed) {
-                    maxSpeed = sample.speed;
+            int size = 0;
+            synchronized (storage) {
+                size = storage.size();
+                for (WindSample sample : storage.values()) {
+                    ewSum += sample.ewVector;
+                    nsSum += sample.nsVector;
+                    totalSpeed += sample.speed;
+                    if (sample.speed > maxSpeed) {
+                        maxSpeed = sample.speed;
+                    }
                 }
             }
 

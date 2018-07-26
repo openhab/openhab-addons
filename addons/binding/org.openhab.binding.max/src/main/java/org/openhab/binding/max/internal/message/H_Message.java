@@ -15,8 +15,6 @@ import java.util.Map;
 import org.openhab.binding.max.internal.Utils;
 import org.slf4j.Logger;
 
-import com.google.common.base.Strings;
-
 /**
  * The H message contains information about the MAX! Cube.
  *
@@ -73,58 +71,34 @@ public final class H_Message extends Message {
         properties.put("NTPCounter", rawNTPCounter);
     }
 
-    /**
-     * @return the Serial Number
-     */
     public String getSerialNumber() {
         return rawSerialNumber;
     }
 
-    /**
-     * @return the Rf Address
-     */
     public String getRFAddress() {
         return rawRFAddress;
     }
 
-    /**
-     * @return the Firmware Version
-     */
     public String getFirmwareVersion() {
         return rawFirmwareVersion;
     }
 
-    /**
-     * @return the ConnectionId
-     */
     public String getConnectionId() {
         return rawConnectionId;
     }
 
-    /**
-     * @return the DutyCycle
-     */
     public int getDutyCycle() {
         return Integer.parseInt(rawDutyCycle);
     }
 
-    /**
-     * @return the FreeMemorySlots
-     */
     public int getFreeMemorySlots() {
         return Integer.parseInt(rawFreeMemorySlots);
     }
 
-    /**
-     * @return the CubeTimeState
-     */
     public String getCubeTimeState() {
         return rawCubeTimeState;
     }
 
-    /**
-     * @return the NTPCounter
-     */
     public String getNTPCounter() {
         return rawNTPCounter;
     }
@@ -147,7 +121,7 @@ public final class H_Message extends Message {
         logger.trace("\tRAW:            : {}", this.getPayload());
         logger.trace("\tReading Time    : {}", cal.getTime());
         for (String key : properties.keySet()) {
-            logger.debug("\t{}:{}{}", key, Strings.repeat(" ", 25 - key.length()), properties.get(key));
+            logger.debug("\t{}: {}", key, properties.get(key));
         }
     }
 

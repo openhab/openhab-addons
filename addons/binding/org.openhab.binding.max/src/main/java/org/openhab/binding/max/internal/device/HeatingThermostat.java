@@ -42,7 +42,7 @@ public class HeatingThermostat extends Device {
     private DeviceType deviceType = DeviceType.HeatingThermostat;
 
     /** Date/Time the actual temperature was last updated */
-    private Date actualTempLastUpdated = null;
+    private Date actualTempLastUpdated;
 
     public HeatingThermostat(DeviceConfiguration c) {
         super(c);

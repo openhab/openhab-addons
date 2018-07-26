@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.yamahareceiver
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
@@ -17,6 +18,7 @@ Import-Package:
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.upnp,
  org.eclipse.smarthome.config.xml,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
@@ -25,9 +27,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.link,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.jupnp,
- org.jupnp.binding.xml,
- org.jupnp.model,
  org.jupnp.model.meta,
  org.jupnp.model.types,
  org.openhab.binding.yamahareceiver,

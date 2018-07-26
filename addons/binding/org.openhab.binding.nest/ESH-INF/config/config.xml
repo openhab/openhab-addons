@@ -34,7 +34,6 @@
 			<description>The access token used for authenticating to the Nest API.
 			It is automatically obtained from Nest when the value is empty and 
 			a valid pincode parameter is entered</description>
-			<required>false</required>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
