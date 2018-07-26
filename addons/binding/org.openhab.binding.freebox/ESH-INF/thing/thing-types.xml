@@ -41,7 +41,7 @@
 		<config-description>
 			<parameter name="fqdn" type="text">
 				<label>Freebox Server FQDN</label>
-				<context>network_address</context>
+				<context>network-address</context>
 				<description>The IP address / FQDN of the Freebox Server (can include port number)</description>
 				<default>mafreebox.freebox.fr</default>
 				<required>false</required>
