@@ -33,7 +33,7 @@ public class PicoTTSService implements TTSService {
             .collect(Collectors.toSet());
 
     private final Set<AudioFormat> audioFormats = Collections.singleton(
-            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null, null));
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null, 16000L));
 
     @Override
     public Set<Voice> getAvailableVoices() {
