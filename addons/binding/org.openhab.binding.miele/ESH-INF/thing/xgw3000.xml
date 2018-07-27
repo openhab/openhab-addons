@@ -14,13 +14,13 @@
 
 		<config-description>
 			<parameter name="ipAddress" type="text">
-				<context>network_address</context>
+				<context>network-address</context>
 				<label>Network Address</label>
 				<description>Network address of the Miele@home gateway.</description>
 				<required>true</required>
 			</parameter>
 			<parameter name="interface" type="text">
-				<context>network_address</context>
+				<context>network-address</context>
 				<label>Network Address of the Multicast interface</label>
 				<description>Network address of openHAB host interface where the binding will listen for multicast events coming from the Miele@home gateway</description>
 				<required>true</required>

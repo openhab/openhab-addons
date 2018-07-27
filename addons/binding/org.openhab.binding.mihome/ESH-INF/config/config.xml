@@ -20,14 +20,14 @@
 		</parameter>
 
 		<parameter name="ipAddress" type="text">
-			<context>network_address</context>
+			<context>network-address</context>
 			<label>Network Address</label>
 			<description>Network address of this Xiaomi bridge</description>
 			<required>true</required>
 		</parameter>
 
 		<parameter name="port" type="integer">
-			<context>network_address</context>
+			<context>network-address</context>
 			<label>Port</label>
 			<description>Port of the MiHome communication channel</description>
 			<required>true</required>

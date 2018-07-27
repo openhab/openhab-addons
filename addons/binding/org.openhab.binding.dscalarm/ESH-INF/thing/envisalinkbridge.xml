@@ -20,7 +20,7 @@
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
-				<context>network_address</context>
+				<context>network-address</context>
 				<label>IP Address</label>
 				<description>The IP address of the EyezOn Envlisalink 3/2D Ethernet
 					interface.</description>
