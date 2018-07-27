@@ -10,7 +10,7 @@
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Hostname</label>
-				<context>network_address</context>
+				<context>network-address</context>
 				<description>The IP address / FQDN of the CoolMasterNet unit</description>
 				<default></default>
 				<required>true</required>
