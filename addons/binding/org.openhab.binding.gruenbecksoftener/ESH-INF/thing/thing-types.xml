@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gruenbecksoftener"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="softener">
+		<label>Grünbeck Softener</label>
+		<description>
+		
+		</description>
+
+		<channel-groups>
+			<channel-group typeId="installer" id="installer"></channel-group>
+			<channel-group typeId="actuals" id="actuals"></channel-group>
+			<channel-group typeId="settings" id="settings"></channel-group>
+			<channel-group typeId="email" id="email"></channel-group>
+		</channel-groups>
+		
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host</label>
+				<description>The IP of the Grünbeck device</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="30" required="false">
+				<label>Refresh interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+
+
+	</thing-type>
+
+	<channel-group-type id="settings">
+		<label>General Settings</label>
+		<channels>
+			<channel typeId="D_C_1_1" id="D_C_1_1"></channel>
+			<channel id="D_C_2_1" typeId="D_C_2_1" />
+			<channel id="D_C_4_2" typeId="D_C_4_2" />
+			<channel id="D_C_5_2" typeId="D_C_5_2" />
+			<channel id="D_C_5_3" typeId="D_C_5_3" />
+			<channel id="D_C_4_1" typeId="D_C_4_1" />
+			<channel id="D_C_4_3" typeId="D_C_4_3" />
+			<channel id="D_C_4_4" typeId="D_C_4_4" />
+			<channel id="D_C_4_5" typeId="D_C_4_5" />
+			<channel id="D_C_5_1" typeId="D_C_5_1" />
+			<channel id="D_C_6_1" typeId="D_C_6_1" />
+			<channel id="D_C_7_1" typeId="D_C_7_1" />
+			<channel id="D_C_8_1" typeId="D_C_8_1" />
+			<channel id="D_C_8_2" typeId="D_C_8_2" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="email">
+		<label>E-Mail configuration</label>
+		<channels>
+			<channel id="D_Y_8_1_1" typeId="D_Y_8_1_1" />
+			<channel id="D_Y_8_1_2" typeId="D_Y_8_1_2" />
+			<channel id="D_Y_8_1_3" typeId="D_Y_8_1_3" />
+			<channel id="D_Y_8_2" typeId="D_Y_8_2" />
+			<channel id="D_Y_8_3" typeId="D_Y_8_3" />
+			<channel id="D_Y_8_4" typeId="D_Y_8_4" />
+			<channel id="D_Y_8_5" typeId="D_Y_8_5" />
+			<channel id="D_Y_8_6" typeId="D_Y_8_6" />
+			<channel id="D_Y_8_7" typeId="D_Y_8_7" />
+			<channel id="D_Y_8_8" typeId="D_Y_8_8" />
+			<channel id="D_Y_8_9" typeId="D_Y_8_9" />
+			<channel id="D_Y_8_10" typeId="D_Y_8_10" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="installer">
+		<label>Installer data</label>
+		<description>Contact data of Installer</description>
+		<channels>
+			<channel typeId="D_A_4_1" id="D_A_4_1"></channel>
+			<channel typeId="D_A_4_2" id="D_A_4_2"></channel>
+			<channel typeId="D_A_4_3" id="D_A_4_3"></channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="actuals">
+		<label>Actuals</label>
+		<channels>
+
+			<channel id="D_A_1_7" typeId="D_A_1_7">
+				<properties>
+					<property name="unit">%default%</property>
+				</properties>
+			</channel>
+			<channel id="D_D_1" typeId="D_D_1">
+				<properties>
+					<property name="unit">%default%</property>
+				</properties>
+			</channel>
+			<channel id="D_D_2" typeId="D_D_2">
+                <properties>
+                    <property name="unit">%default%</property>
+                </properties>
+            </channel>
+			<channel id="D_K_2" typeId="D_K_2">
+				<properties>
+					<property name="code">245</property>
+				</properties>
+			</channel>
+			<channel id="D_Y_3_1" typeId="D_Y_3_1">
+				<properties>
+					<property name="code">245</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="D_D_1">
+		<item-type>Number:AmountOfSubstance</item-type>
+		<label>Rohwasserhärte</label>
+		<description>Rohwasserhärte</description>
+		<state pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="D_D_2">
+		<item-type>Number:AmountOfSubstance</item-type>
+		<label>Sollwert Weichwasserhärte</label>
+		<description>Sollwert Weichwasserhärte</description>
+		<state pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="D_A_4_1">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Name Installer</description>
+		<state pattern="%s" />
+	</channel-type>
+
+	<channel-type id="D_A_4_2">
+		<item-type>String</item-type>
+		<label>Tel</label>
+		<description>Telephone number of Installer</description>
+		<state pattern="%s" />
+	</channel-type>
+
+	<channel-type id="D_A_4_3">
+		<item-type>String</item-type>
+		<label>E-Mail</label>
+		<description>E-Mail of Installer</description>
+		<state pattern="%s" />
+	</channel-type>
+
+	<channel-type id="D_C_1_1">
+		<item-type>Number</item-type>
+		<label>Language</label>
+		<description>Language</description>
+		<state>
+			<options>
+				<option value="0">German</option>
+				<option value="1">English</option>
+				<option value="2">French</option>
+				<option value="3">Italian</option>
+				<option value="4">Netherlands</option>
+				<option value="5">Russian</option>
+				<option value="6">Spanish</option>
+				<option value="7">Chinese</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="D_C_2_1">
+		<item-type>Number</item-type>
+		<label>Härteeinheit</label>
+		<description>Härteeinheit</description>
+		<state>
+			<options>
+				<option value="0">°dH</option>
+				<option value="1">°fH</option>
+				<option value="2">°e</option>
+				<option value="3">°ppm</option>
+				<option value="4">mol/m³</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="D_C_4_2">
+		<item-type>DateTime</item-type>
+		<label>Uhrzeit</label>
+		<description>Uhrzeit (xx:xx)</description>
+		<state pattern="%1$tH:%1$tM" />
+	</channel-type>
+
+	<channel-type id="D_C_5_2">
+		<item-type>DateTime</item-type>
+		<label>Datum</label>
+		<description>Datum (TT.MM.JJJJ)</description>
+		<state pattern="%1$tDD.%1$tMM.%1$tJJJJ" />
+	</channel-type>
+
+	<channel-type id="D_C_5_3">
+		<item-type>Number</item-type>
+		<label>Sommer/Winterzeit</label>
+		<description>Automatische Umschaltung Sommer-/Winterzeit)</description>
+		<state>
+			<options>
+				<option value="0">on</option>
+				<option value="1">off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="D_C_4_1">
+		<item-type>Number</item-type>
+		<label>Regenerationszeitpunkt</label>
+		<description>Regenerationszeitpunkt wählen</description>
+		<state>
+			<options>
+				<option value="0">automatisch</option>
+				<option value="1">fest</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="D_C_4_3">
+		<item-type>DateTime</item-type>
+		<label>Startzeit Regeneration 1</label>
+		<description>Startzeit Regeneration 1</description>
+		<state pattern="%1$tH:%1$tM" />
+	</channel-type>
+
+	<channel-type id="D_C_4_4">
+		<item-type>DateTime</item-type>
+		<label>Startzeit Regeneration 2</label>
+		<description>Startzeit Regeneration 2 (nur softliQ:MC)</description>
+		<state pattern="%1$tH:%1$tM" />
+	</channel-type>
+
+	<channel-type id="D_C_4_5">
+		<item-type>DateTime</item-type>
+		<label>Startzeit Regeneration 3</label>
+		<description>Startzeit Regeneration 3 (nur softliQ:MC)</description>
+		<state pattern="%1$tH:%1$tM" />
+	</channel-type>
+
+	<channel-type id="D_C_5_1">
+		<item-type>Number</item-type>
+		<label>Arbeitsweise</label>
+		<description>Arbeitsweise</description>
+		<state>
+			<options>
+				<option value="0">eco</option>
+				<option value="1">power</option>
+				<option value="2">comfort(softliQ:MC)</option>
+				<option value="3">individual(softliQ:MC)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="D_C_6_1">
+		<item-type>Number</item-type>
+		<label>Display</label>
+		<description>Aktives Display im Standby</description>
+		<state>
+			<options>
+				<option value="0">deaktiviert</option>
+				<option value="1">aktiviert</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="D_C_7_1">
+		<item-type>Number:Time</item-type>
+		<label>Display</label>
+		<description>Aktives Display im Standby</description>
+		<state pattern="%.1f Day" />
+	</channel-type>
+
+	<channel-type id="D_C_8_1">
+		<item-type>Number</item-type>
+		<label>Leuchtring Funktion</label>
+		<description>LED-Leuchtring Funktion bei Wasserbehandlung, Bedienung, Störung (nicht bei softliQ:SC18)</description>
+		<state>
+			<options>
+				<option value="0">deaktiviert</option>
+				<option value="1">Bei Störung</option>
+				<option value="2">Bei Bedienung, Störung</option>
+				<option value="3">Bei Wasserbehandlung, Bedienung, Störung</option>
+				<option value="4">Dauerhaftes Leuchten</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="D_C_8_2">
+		<item-type>Number</item-type>
+		<label>Leuchtring Salzwarnung</label>
+		<description>LED-Leuchtring blink bei Salz-Vorwarnung(nicht bei softliQ:SC18)</description>
+		<state>
+			<options>
+				<option value="0">nein</option>
+				<option value="1">ja</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="D_Y_8_1_1">
+		<item-type>String</item-type>
+		<label>E-Mail Adresse 1</label>
+		<description>E-Mail Adresse 1 für Weiterleitung Meldung/Störung(Base64 verschl.)</description>
+		<state pattern="%s" />
+	</channel-type>
+
+	<channel-type id="D_Y_8_1_2">
+		<item-type>String</item-type>
+		<label>E-Mail Adresse 2</label>
+		<description>E-Mail Adresse 2 für Weiterleitung Meldung/Störung(Base64 verschl.)</description>
+		<state pattern="%s" />
+	</channel-type>
+
+	<channel-type id="D_Y_8_1_3">
+		<item-type>String</item-type>
+		<label>E-Mail Adresse 3</label>
+		<description>E-Mail Adresse 3 für Weiterleitung Meldung/Störung(Base64 verschl.)</description>
+		<state pattern="%s" />
+	</channel-type>
+
+	<channel-type id="D_Y_8_2">
+		<item-type>String</item-type>
+		<label>SMTP Server</label>
+		<description>SMTP Server für E-Mail Versand</description>
+		<state pattern="%s" />
+	</channel-type>
+
+	<channel-type id="D_Y_8_2">
+		<item-type>Number</item-type>
+		<label>E-Mail Port</label>
+		<description>Port für E-Mail Versand</description>
+		<state />
+	</channel-type>
+
+	<channel-type id="D_Y_8_4">
+		<item-type>String</item-type>
+		<label>Benutzername</label>
+		<description>Benutzername für E-Mail Versand</description>
+		<state pattern="%s" />
+	</channel-type>
+
+	<channel-type id="D_Y_8_5">
+		<item-type>String</item-type>
+		<label>Passwort</label>
+		<description>Passwort für E-Mail Versand</description>
+		<state pattern="%s" />
+	</channel-type>
+
+	<channel-type id="D_Y_8_6">
+		<item-type>String</item-type>
+		<label>E-Mail Adresse</label>
+		<description>E-Mail Adresse</description>
+		<state pattern="%s" />
+	</channel-type>
+
+	<channel-type id="D_Y_8_7">
+		<item-type>String</item-type>
+		<label>Telefonnummer</label>
+		<description>Telefonnummer</description>
+		<state pattern="%s" />
+	</channel-type>
+
+	<channel-type id="D_Y_8_8">
+		<item-type>String</item-type>
+		<label>Nachname</label>
+		<description>Nachname</description>
+		<state pattern="%s" />
+	</channel-type>
+
+	<channel-type id="D_Y_8_9">
+		<item-type>String</item-type>
+		<label>Text Störmeldung</label>
+		<description>Text für Störmeldeweiterleitung</description>
+		<state pattern="%s" />
+	</channel-type>
+
+	<channel-type id="D_C_8_2">
+		<item-type>Number</item-type>
+		<label>Test E-Mail</label>
+		<description>Test E-Mail versenden</description>
+		<state>
+			<options>
+				<option value="0">nein</option>
+				<option value="1">ja</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- Read parameters -->
+
+	<channel-type id="D_A_1_7">
+		<item-type>Number:AmountOfSubstance</item-type>
+		<label>Gesamtdurchfluss</label>
+		<description>Gesamtdurchfluss der Anlage</description>
+		<state readOnly="true" pattern="%.1f m3/h" />
+	</channel-type>
+
+	<channel-type id="D_A_2_3">
+		<item-type>Number:Time</item-type>
+		<label>Salzreichweite</label>
+		<description>Salzreichweite in Tagen</description>
+		<state readOnly="true" pattern="%d Day" />
+	</channel-type>
+
+	<channel-type id="D_A_1_6">
+		<item-type>Number:AmountOfSubstance</item-type>
+		<label>Weichwasserhärte Ist/Soll</label>
+		<description>Anzeigewert == Istwert Weichwasserhärte bei Anlagendurchfluss >0,00 m³/h Anzeigwert == Sollwert Weichwasserhärte bei Anlagendurchfluss = 0 m³/h</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="D_K_1">
+		<item-type>Number</item-type>
+		<label>Zähler Regenerationen</label>
+		<description>Zähler Regenerationen</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="D_K_2">
+		<item-type>Number:Volume</item-type>
+		<label>Zähler Weichwassermenge</label>
+		<description>Zähler Weichwassermenge</description>
+		<state readOnly="true" pattern="%.1f m3" />
+	</channel-type>
+
+	<channel-type id="D_A_2_2">
+		<item-type>Number:Time</item-type>
+		<label>Nächste Regeneration</label>
+		<description>Tage bis zur nächsten Regeneration</description>
+		<state readOnly="true" pattern="%d Day" />
+	</channel-type>
+
+
+
+	<channel-type id="D_Y_3_1">
+		<item-type>Number:Mass</item-type>
+		<label>Salzverbrauch gestern</label>
+		<description>Salzverbrauch gestern</description>
+		<state readOnly="true" pattern="%.1f m3" />
+	</channel-type>
+
+
+
+
+</thing:thing-descriptions>
+
