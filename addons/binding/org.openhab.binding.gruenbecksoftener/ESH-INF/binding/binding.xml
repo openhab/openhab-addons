@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="gruenbecksoftener"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>Grünbeck Softener Binding</name>
+	<description>Get data from Grünbeck Softener (SC18, SC23)</description>
+	<author>Matthias Steigenberger</author>
+
+</binding:binding>
