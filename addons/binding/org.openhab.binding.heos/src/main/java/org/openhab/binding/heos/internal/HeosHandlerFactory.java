@@ -71,7 +71,7 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
+        if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             HeosBridgeHandler bridgeHandler = new HeosBridgeHandler((Bridge) thing, heos, api);
             HeosPlayerDiscovery playerDiscovery = new HeosPlayerDiscovery(bridgeHandler);
             playerDiscovery.addDiscoveryListener(bridgeHandler);
@@ -79,10 +79,9 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
                     DiscoveryService.class.getName(), playerDiscovery, new Hashtable<String, Object>()));
             logger.info("Register discovery service for HEOS player and HEOS groups by bridge '{}'",
                     bridgeHandler.getThing().getUID().getId());
-
             return bridgeHandler;
         }
-        if (thingTypeUID.equals(THING_TYPE_PLAYER)) {
+        if (THING_TYPE_PLAYER.equals(thingTypeUID)) {
             HeosPlayerHandler playerHandler = new HeosPlayerHandler(thing, heos, api);
             // register the speaker as an audio sink
             HeosAudioSink audioSink = new HeosAudioSink(playerHandler, audioHTTPServer, callbackUrl);
@@ -92,7 +91,7 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
             audioSinkRegistrations.put(thing.getUID().toString(), reg);
             return playerHandler;
         }
-        if (thingTypeUID.equals(THING_TYPE_GROUP)) {
+        if (THING_TYPE_GROUP.equals(thingTypeUID)) {
             HeosGroupHandler groupHandler = new HeosGroupHandler(thing, heos, api);
             // register the group as an audio sink
             HeosAudioSink audioSink = new HeosAudioSink(groupHandler, audioHTTPServer, callbackUrl);
@@ -117,7 +116,7 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
                         thing.getUID().getId());
             }
         }
-        if (thing.getThingTypeUID().equals(THING_TYPE_PLAYER) || thing.getThingTypeUID().equals(THING_TYPE_GROUP)) {
+        if (THING_TYPE_PLAYER.equals(thing.getThingTypeUID()) || THING_TYPE_GROUP.equals(thing.getThingTypeUID())) {
             super.unregisterHandler(thing);
             ServiceRegistration<AudioSink> reg = audioSinkRegistrations.get(thing.getUID().toString());
             if (reg != null) {

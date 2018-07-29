@@ -112,7 +112,6 @@ public class HeosGroup extends HeosMediaObject {
         // Generating a dedicated sorted and un-sorted list for different purposes
         groupMemberPidListSorted = new ArrayList<String>(playerList.size());
         groupMemberPidListSorted.addAll(groupMemberPidList);
-        // Collections.reverse(groupMemberPidList); // List has to be reversed so that leader is at the beginning
         Collections.sort(groupMemberPidListSorted);
         groupMembersHash = Integer.toUnsignedString(groupMemberPidListSorted.hashCode());
     }
@@ -149,7 +148,7 @@ public class HeosGroup extends HeosMediaObject {
         return groupInfo;
     }
 
-    public void setGroupInfo(HashMap<String, String> groupInfo) {
+    public void setGroupInfo(Map<String, String> groupInfo) {
         this.groupInfo = groupInfo;
     }
 
@@ -157,7 +156,7 @@ public class HeosGroup extends HeosMediaObject {
         return groupState;
     }
 
-    public void setGroupState(HashMap<String, String> groupState) {
+    public void setGroupState(Map<String, String> groupState) {
         this.groupState = groupState;
     }
 

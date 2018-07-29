@@ -18,8 +18,7 @@ import org.openhab.binding.heos.internal.api.HeosFacade;
  * The {@link HeosChannelHandlerBuildGroup} handles the BuidlGroup channel command
  * from the implementing thing.
  *
- * @author Johannes Einig - Initial contribution
- *
+ * @author Johannes Einig - Initial contribution *
  */
 public class HeosChannelHandlerBuildGroup extends HeosChannelHandler {
 

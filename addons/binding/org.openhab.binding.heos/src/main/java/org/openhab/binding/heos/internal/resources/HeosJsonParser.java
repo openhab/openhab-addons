@@ -13,7 +13,7 @@ import com.google.gson.GsonBuilder;
 
 /**
  * The {@link HeosJsonParser} parses the JSON message of the
- * Heos bridge to the correct Deserializer
+ * HEOS bridge to the correct Deserializer
  *
  * @author Johannes Einig - Initial contribution
  */
@@ -21,9 +21,9 @@ import com.google.gson.GsonBuilder;
 public class HeosJsonParser {
 
     private HeosResponse response;
-    private HeosResponseEvent eventResponse = null;
-    private HeosResponsePayload payloadResponse = null;
-    Gson gson = null;
+    private HeosResponseEvent eventResponse;
+    private HeosResponsePayload payloadResponse;
+    private Gson gson;
 
     public HeosJsonParser(HeosResponse response) {
         this.response = response;
@@ -45,8 +45,8 @@ public class HeosJsonParser {
         this.response.setEvent(eventResponse);
         this.response.setPayload(payloadResponse);
 
-        if (eventResponse.getMessagesMap().containsKey("pid")) {
-            response.setPid((eventResponse.getMessagesMap().get("pid")));
+        if (eventResponse.getMessagesMap().containsKey(HeosConstants.PID)) {
+            response.setPid((eventResponse.getMessagesMap().get(HeosConstants.PID)));
         }
         return response;
     }

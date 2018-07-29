@@ -19,8 +19,8 @@ public class HeosResponse {
 
     private HeosResponseEvent event;
     private HeosResponsePayload payload;
-    private String pid = "0";
-    private String rawResponseMessage = "";
+    private String pid;
+    private String rawResponseMessage;
 
     public HeosResponse() {
         this.event = new HeosResponseEvent();

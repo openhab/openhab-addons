@@ -80,7 +80,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
             for (String playerPID : playerMap.keySet()) {
                 HeosPlayer player = playerMap.get(playerPID);
                 ThingUID uid = new ThingUID(THING_TYPE_PLAYER, playerMap.get(playerPID).getPid());
-                HashMap<String, Object> properties = new HashMap<String, Object>();
+                Map<String, Object> properties = new HashMap<>();
                 properties.put(NAME, player.getName());
                 properties.put(PID, player.getPid());
                 properties.put(PLAYER_TYPE, player.getModel());
@@ -114,7 +114,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
                     // as known
 
                     ThingUID uid = new ThingUID(THING_TYPE_GROUP, group.getGroupMemberHash());
-                    HashMap<String, Object> properties = new HashMap<String, Object>();
+                    Map<String, Object> properties = new HashMap<>();
                     properties.put(NAME, group.getName());
                     properties.put(GID, group.getGid());
                     properties.put(LEADER, group.getLeader());

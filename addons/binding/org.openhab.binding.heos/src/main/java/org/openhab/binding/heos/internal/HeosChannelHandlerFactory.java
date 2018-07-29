@@ -35,7 +35,7 @@ import org.openhab.binding.heos.internal.handler.HeosChannelHandlerVolume;
 /**
  * The {@link HeosChannelHandlerFactory} is responsible for creating the single handler
  * for the channel of the single things.
- * 
+ *
  * @author Johannes Einig - Initial contribution
  *
  */
@@ -58,51 +58,39 @@ public class HeosChannelHandlerFactory {
         } else {
             channelTypeUID = channel.getChannelTypeUID();
         }
-
-        if (channelUID.getId().equals(CH_ID_CONTROL)) {
-            return new HeosChannelHandlerControl(bridge, api);
-        }
-        if (channelUID.getId().equals(CH_ID_VOLUME)) {
-            return new HeosChannelHandlerVolume(bridge, api);
-        }
-        if (channelUID.getId().equals(CH_ID_MUTE)) {
-            return new HeosChannelHandlerMute(bridge, api);
-        }
-        if (channelUID.getId().equals(CH_ID_PLAY_URL)) {
-            return new HeosChannelHandlerPlayURL(bridge, api);
-        }
-        if (channelUID.getId().equals(CH_ID_INPUTS)) {
-            return new HeosChannelHandlerInputs(bridge, api);
-        }
-        if (channelUID.getId().equals(CH_ID_UNGROUP)) {
-            return new HeosChannelHandlerGrouping(bridge, api);
-        }
-        if (channelUID.getId().equals(CH_ID_RAW_COMMAND)) {
-            return new HeosChannelHandlerRawCommand(bridge, api);
-        }
-        if (channelUID.getId().equals(CH_ID_REBOOT)) {
-            return new HeosChannelHandlerReboot(bridge, api);
-        }
-        if (channelUID.getId().equals(CH_ID_DYNGROUPSHAND)) {
-            return new HeosChannelHandlerDynGroupHandling(bridge, api);
-        }
-        if (channelUID.getId().equals(CH_ID_BUILDGROUP)) {
-            return new HeosChannelHandlerBuildGroup(bridge, api);
-        }
-        if (channelUID.getId().equals(CH_ID_PLAYLISTS)) {
-            return new HeosChannelHandlerPlaylist(bridge, api);
-        }
-        if (channelUID.getId().equals(CH_ID_REPEAT_MODE)) {
-            return new HeosChannelHandlerRepeatMode(bridge, api);
-        }
-        if (channelUID.getId().equals(CH_ID_SHUFFLE_MODE)) {
-            return new HeosChannelHandlerShuffleMode(bridge, api);
+        switch (channelUID.getId()) {
+            case CH_ID_CONTROL:
+                return new HeosChannelHandlerControl(bridge, api);
+            case CH_ID_VOLUME:
+                return new HeosChannelHandlerVolume(bridge, api);
+            case CH_ID_MUTE:
+                return new HeosChannelHandlerMute(bridge, api);
+            case CH_ID_PLAY_URL:
+                return new HeosChannelHandlerPlayURL(bridge, api);
+            case CH_ID_INPUTS:
+                return new HeosChannelHandlerInputs(bridge, api);
+            case CH_ID_UNGROUP:
+                return new HeosChannelHandlerGrouping(bridge, api);
+            case CH_ID_RAW_COMMAND:
+                return new HeosChannelHandlerRawCommand(bridge, api);
+            case CH_ID_REBOOT:
+                return new HeosChannelHandlerReboot(bridge, api);
+            case CH_ID_DYNGROUPSHAND:
+                return new HeosChannelHandlerDynGroupHandling(bridge, api);
+            case CH_ID_BUILDGROUP:
+                return new HeosChannelHandlerBuildGroup(bridge, api);
+            case CH_ID_PLAYLISTS:
+                return new HeosChannelHandlerPlaylist(bridge, api);
+            case CH_ID_REPEAT_MODE:
+                return new HeosChannelHandlerRepeatMode(bridge, api);
+            case CH_ID_SHUFFLE_MODE:
+                return new HeosChannelHandlerShuffleMode(bridge, api);
         }
         if (channelTypeUID != null) {
-            if (channelTypeUID.equals(CH_TYPE_FAVORITE)) {
+            if (CH_TYPE_FAVORITE.equals(channelTypeUID)) {
                 return new HeosChannelHandlerFavoriteSelect(bridge, api);
             }
-            if (channelTypeUID.equals(CH_TYPE_PLAYER)) {
+            if (CH_TYPE_PLAYER.equals(channelTypeUID)) {
                 return new HeosChannelHandlerPlayerSelect(bridge, api);
             }
         }

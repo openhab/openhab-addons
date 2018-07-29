@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.heos.internal.resources;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +29,13 @@ public class HeosResponseEvent {
     // Values evaluated from Gson filled Values
     private String commandType;
     private String eventType;
-    private HashMap<String, String> messagesMap = null;
+    private Map<String, String> messagesMap;
 
     // Error values
     private String errorCode;
     private String errorMessage;
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(HeosResponseEvent.class);
 
     @Override
     public String toString() {
@@ -105,7 +105,7 @@ public class HeosResponseEvent {
      * @return a map with all messages
      */
 
-    public HashMap<String, String> getMessagesMap() {
+    public Map<String, String> getMessagesMap() {
         return messagesMap;
     }
 
@@ -147,7 +147,7 @@ public class HeosResponseEvent {
         this.eventType = eventType;
     }
 
-    public void setMessagesMap(HashMap<String, String> messagesMap) {
+    public void setMessagesMap(Map<String, String> messagesMap) {
         this.messagesMap = messagesMap;
     }
 

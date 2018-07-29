@@ -111,12 +111,10 @@ public class Telnet {
      * @return true after the command was send
      * @throws IOException
      */
-
     public boolean sendClear(String command) throws IOException {
         if (client.isConnected()) {
             outStream.writeBytes(command);
             outStream.flush();
-
             return true;
         } else {
             return false;
@@ -132,7 +130,6 @@ public class Telnet {
      *
      * @throws IOException
      */
-
     public boolean read() throws IOException {
         if (client.isConnected()) {
             int i = 1;
@@ -160,7 +157,6 @@ public class Telnet {
      * @throws ReadException
      * @throws IOException
      */
-
     public List<String> readLine() throws ReadException, IOException {
         return readLine(READ_TIMEOUT);
     }
@@ -177,17 +173,13 @@ public class Telnet {
      * @throws ReadException
      * @throws IOException
      */
-
     public List<String> readLine(int timeOut) throws ReadException, IOException {
         readResultList.clear();
-
         long timeZero = System.currentTimeMillis();
         long timeAfterTry = 0;
         long timeTryiedToRead = 0;
-
         if (client.isConnected()) {
             readLineResult = "";
-
             int i = 1;
             while (i != -1) {
                 i = bufferedStream.available();
@@ -197,11 +189,9 @@ public class Telnet {
                 i = concatReadLineResult(str);
                 timeAfterTry = System.currentTimeMillis();
                 timeTryiedToRead = timeAfterTry - timeZero;
-
                 if (timeTryiedToRead >= timeOut) {
                     throw new ReadException();
                 }
-                ;
             }
             return readResultList;
         } else {
@@ -217,10 +207,8 @@ public class Telnet {
      * End of line is detected. Each element of the list
      * should be a JSON Element
      */
-
     private int concatReadLineResult(String value) {
         readLineResult = readLineResult.concat(value);
-
         if (readLineResult.endsWith("\r\n")) {
             readLineResult = readLineResult.trim();
             while (readLineResult.contains("\r\n")) {
@@ -230,7 +218,6 @@ public class Telnet {
                 readLineResult = readLineResult.trim();
             }
             readResultList.add(readLineResult);
-
             return -1;
         }
         return 0;
@@ -241,7 +228,6 @@ public class Telnet {
      *
      * @throws IOException
      */
-
     public void disconnect() throws IOException {
         inputStream.close();
         outStream.close();
@@ -251,7 +237,6 @@ public class Telnet {
     /**
      * Input Listener which fires event if input is detected
      */
-
     public void startInputListener() {
         inputListener = new TelnetInputListener() {
             @Override
@@ -271,7 +256,6 @@ public class Telnet {
      * available data without any check
      *
      */
-
     private void inputAvailableRead() {
         try {
             int i = bufferedStream.available();
@@ -308,7 +292,6 @@ public class Telnet {
      *
      * @return true if HEOS is reachable
      */
-
     public boolean isConnectionAlive() {
         try {
             return address.isReachable(IS_ALIVE_TIMEOUT);
@@ -327,7 +310,6 @@ public class Telnet {
     }
 
     public class ReadException extends Exception {
-
         public ReadException() {
             super("Can not read from client");
         }

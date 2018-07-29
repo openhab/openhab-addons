@@ -21,7 +21,7 @@ import java.util.Map;
 public class HeosPlayer extends HeosMediaObject {
 
     private final String[] supportedPlayerInfo = { "name", "pid", "gip", "ip", "model", "version", "lineout, network" };
-    private final String[] supportedPlayerStates = { "state", "level", "mute", "duration", "curPos" };
+    private final String[] supportedPlayerStates = { "state", "level", "mute", "duration", "cur_pos" };
 
     private Map<String, String> playerInfo;
     private Map<String, String> playerState;
@@ -238,9 +238,9 @@ public class HeosPlayer extends HeosMediaObject {
         return curPos;
     }
 
-    public void setCurPos(String cur_pos) {
-        this.curPos = cur_pos;
-        playerState.put("cur_pos", cur_pos);
+    public void setCurPos(String curPos) {
+        this.curPos = curPos;
+        playerState.put("cur_pos", curPos);
     }
 
     public String[] getSupportedPlayerStates() {

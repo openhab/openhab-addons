@@ -51,8 +51,8 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     protected HeosChannelHandlerFactory channelHandlerFactory;
     protected HeosBridgeHandler bridge;
 
-    private long refreshStartTime = 0;
-    private long refreshRequestTime = 0;
+    private long refreshStartTime;
+    private long refreshRequestTime;
     private static final int REFRESH_BLOCK_TIME = 5000;
 
     private Logger logger = LoggerFactory.getLogger(HeosThingBaseHandler.class);
@@ -87,7 +87,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     @Override
     public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
         if (command instanceof RefreshType) {
-            if (this.getThing().getStatus().toString().equals(ONLINE)) {
+            if (ONLINE.equals(this.getThing().getStatus().toString())) {
                 handleRefresh();
             }
             return;

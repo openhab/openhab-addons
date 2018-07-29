@@ -85,7 +85,6 @@ public class HeosAudioSink implements AudioSink {
                 // we serve it on our own HTTP server for 30 seconds as HEOS requests the stream several times
                 String relativeUrl = audioHTTPServer.serve((FixedLengthAudioStream) audioStream, 30).toString();
                 url = callbackUrl + relativeUrl;
-
                 AudioFormat audioFormat = audioStream.getFormat();
                 if (!ThingHandlerHelper.isHandlerInitialized(handler)) {
                     logger.warn("HEOS speaker '{}' is not initialized - status is {}", handler.getThing().getUID(),

@@ -406,7 +406,6 @@ public class HeosSystem {
             int playerCount = response.getPayload().getPlayerList().get(groupCounter).size();
 
             // Defining the Group leader
-
             for (int i = 0; i < playerCount; i++) {
                 Map<String, String> playerMap = new HashMap<>();
                 playerMap = response.getPayload().getPlayerList().get(groupCounter).get(i);
@@ -419,17 +418,14 @@ public class HeosSystem {
                     }
                 }
             }
-
             // Switched to NameHash value
             heosGroup.generateGroupUID();
-
             groupMapNew.put(heosGroup.getNameHash(), heosGroup);
             removedGroupMap = compareGroupMaps(groupMapNew, groupMapOld);
             groupMapOld.clear(); // clear the old map so that only the currently available groups are added in the next
                                  // step.
             groupMapOld.putAll(groupMapNew);
             groupCounter++;
-
         }
         return groupMapNew;
     }
@@ -570,7 +566,6 @@ public class HeosSystem {
      * @author Johannes Einig
      *
      */
-
     public class KeepAliveRunnable implements Runnable {
         @Override
         public void run() {
@@ -597,7 +592,6 @@ public class HeosSystem {
         private void restartConnection() {
             closeConnection();
             eventController.connectionToSystemLost();
-
             try {
                 while (!sendCommand.isConnectionAlive()) {
                     logger.info("Trying to reconnect to HEOS Network...");

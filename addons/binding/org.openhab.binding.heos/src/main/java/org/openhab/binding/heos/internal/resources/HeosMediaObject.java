@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class HeosMediaObject {
 
-    private final String[] supportedMediaItems = { "type", "station", "song", "album", "artist", "imageUrl", "qid",
+    private final String[] supportedMediaItems = { "type", "station", "song", "album", "artist", "image_url", "qid",
             "mid", "albumId" };
 
     private Map<String, String> mediaInfo;

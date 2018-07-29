@@ -18,12 +18,17 @@ package org.openhab.binding.heos.internal.resources;
 public class HeosConstants {
 
     public static final String HEOS = "heos";
+    public static final String COMMAND = "command";
+    public static final String RESULT = "result";
+    public static final String MESSAGE = "message";
+    public static final String TEXT = "text";
 
     public static final String CONNECTION_LOST = "connection_lost";
     public static final String CONNECTION_RESTORED = "connection_restored";
 
     public static final String PID = "pid";
     public static final String GID = "gid";
+    public static final String EID = "eid";
 
     public static final String BROWSE = "browse";
     public static final String GET_MUSIC_SOURCES = "get_music_sources";
@@ -33,6 +38,7 @@ public class HeosConstants {
     public static final String SUCCESS = "success";
     public static final String TRUE = "true";
     public static final String FALSE = "false";
+    public static final String ERROR = "Error";
     public static final String COM_UNDER_PROCESS = "command under process";
     public static final String HEOS_ON = "on";
     public static final String HEOS_OFF = "off";

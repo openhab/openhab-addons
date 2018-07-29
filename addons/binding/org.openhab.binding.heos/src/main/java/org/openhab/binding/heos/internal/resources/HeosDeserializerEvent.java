@@ -8,8 +8,11 @@
  */
 package org.openhab.binding.heos.internal.resources;
 
+import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
+
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -28,13 +31,13 @@ public class HeosDeserializerEvent implements JsonDeserializer<HeosResponseEvent
 
     private HeosResponseEvent responseHeos = new HeosResponseEvent();
 
-    private String rawCommand = null;
-    private String rawResult = null;
-    private String rawMessage = null;
+    private String rawCommand;
+    private String rawResult;
+    private String rawMessage;
 
-    private String eventType = null;
-    private String commandType = null;
-    private HashMap<String, String> messages = new HashMap<String, String>();
+    private String eventType;
+    private String commandType;
+    private Map<String, String> messages = new HashMap<>();
 
     @Override
     public HeosResponseEvent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
@@ -44,51 +47,51 @@ public class HeosDeserializerEvent implements JsonDeserializer<HeosResponseEvent
 
         if (json.isJsonObject()) {
             jsonObject = json.getAsJsonObject();
-            jsonHeos = jsonObject.get("heos").getAsJsonObject();
+            jsonHeos = jsonObject.get(HEOS).getAsJsonObject();
         } else {
             return null;
         }
 
         // sets the Basic command String and decodes it afterwards to eventType and commandType
-        this.rawCommand = jsonHeos.get("command").getAsString();
+        this.rawCommand = jsonHeos.get(COMMAND).getAsString();
         decodeCommand(rawCommand);
         responseHeos.setCommand(rawCommand);
         responseHeos.setEventType(eventType);
         responseHeos.setCommandType(commandType);
 
         // not all Messages has a result field. Field is only set if check is true
-        if (jsonHeos.has("result")) {
-            this.rawResult = jsonHeos.get("result").getAsString();
+        if (jsonHeos.has(RESULT)) {
+            this.rawResult = jsonHeos.get(RESULT).getAsString();
             responseHeos.setResult(rawResult);
         } else {
             responseHeos.setResult("null");
         }
         // not all Messages has a message field. Field is only set if check is true
-        if (jsonHeos.has("message")) {
-            if (!jsonHeos.get("message").getAsString().isEmpty()) {
-                this.rawMessage = jsonHeos.get("message").getAsString();
+        if (jsonHeos.has(MESSAGE)) {
+            if (!jsonHeos.get(MESSAGE).getAsString().isEmpty()) {
+                this.rawMessage = jsonHeos.get(MESSAGE).getAsString();
                 responseHeos.setMessage(rawMessage); // raw Message
                 decodeMessage(rawMessage);
                 responseHeos.setMessagesMap(messages);
             } else {
-                this.messages.put("command under process", "false");
+                this.messages.put(COM_UNDER_PROCESS, FALSE);
                 responseHeos.setMessagesMap(messages);
             }
         }
-        if (rawResult.equals("fail")) {
-            responseHeos.setErrorCode(messages.get("eid"));
-            responseHeos.setErrorMessage(messages.get("text"));
+        if (rawResult.equals(FAIL)) {
+            responseHeos.setErrorCode(messages.get(EID));
+            responseHeos.setErrorMessage(messages.get(TEXT));
         }
         return responseHeos;
     }
 
     private void decodeMessage(String message) {
-        if (message.contains("command under")) {
-            this.messages.put("command under process", "true");
+        if (message.contains(COM_UNDER_PROCESS)) {
+            this.messages.put(COM_UNDER_PROCESS, TRUE);
             return;
         }
 
-        this.messages.put("command under process", "false");
+        this.messages.put(COM_UNDER_PROCESS, FALSE);
 
         String input = "&" + message;
         int start = 0;
@@ -98,7 +101,7 @@ public class HeosDeserializerEvent implements JsonDeserializer<HeosResponseEvent
             start = input.indexOf("&", start) + 1;
             stop = input.indexOf("=", start);
             if (stop < 0) {
-                this.messages.put("message", message);
+                this.messages.put(MESSAGE, message);
                 return;
             }
             String key = input.substring(start, stop);
@@ -122,7 +125,7 @@ public class HeosDeserializerEvent implements JsonDeserializer<HeosResponseEvent
             this.eventType = command.substring(start, stop);
             this.commandType = command.substring(stop + 1);
         } else {
-            this.eventType = "Error";
+            this.eventType = ERROR;
             this.commandType = command;
         }
     }

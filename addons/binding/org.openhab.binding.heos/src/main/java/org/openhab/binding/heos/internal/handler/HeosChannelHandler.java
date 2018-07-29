@@ -23,8 +23,7 @@ import org.slf4j.LoggerFactory;
  * channel handler which handles the command from the channels of the things
  * to the HEOS system
  *
- * @author Johannes Einig - Initial contribution
- *
+ * @author Johannes Einig - Initial contribution *
  */
 
 public abstract class HeosChannelHandler {
@@ -35,7 +34,7 @@ public abstract class HeosChannelHandler {
     protected String id;
     protected Command command;
     protected ChannelUID channelUID;
-    protected Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected Logger logger = LoggerFactory.getLogger(HeosChannelHandler.class);
 
     /**
      *
