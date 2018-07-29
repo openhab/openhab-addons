@@ -79,19 +79,19 @@ public class TRVHandler extends DraytonWiserThingHandler {
                         getSignalLQI());
                 updateState(new ChannelUID(getThing().getUID(),
                         DraytonWiserBindingConstants.CHANNEL_CURRENT_BATTERY_VOLTAGE), getBatteryVoltage());
+                updateState(
+                        new ChannelUID(getThing().getUID(),
+                                DraytonWiserBindingConstants.CHANNEL_CURRENT_WISER_SIGNAL_STRENGTH),
+                        getWiserSignalStrength());
                 updateState(new ChannelUID(getThing().getUID(),
                         DraytonWiserBindingConstants.CHANNEL_CURRENT_SIGNAL_STRENGTH), getSignalStrength());
                 updateState(
                         new ChannelUID(getThing().getUID(),
-                                DraytonWiserBindingConstants.CHANNEL_CURRENT_UNIFIED_SIGNAL_STRENGTH),
-                        getUnifiedSignalStrength());
+                                DraytonWiserBindingConstants.CHANNEL_CURRENT_WISER_BATTERY_LEVEL),
+                        getWiserBatteryLevel());
                 updateState(
                         new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_BATTERY_LEVEL),
                         getBatteryLevel());
-                updateState(
-                        new ChannelUID(getThing().getUID(),
-                                DraytonWiserBindingConstants.CHANNEL_CURRENT_UNIFIED_BATTERY_LEVEL),
-                        getUnifiedBatteryLevel());
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_ZIGBEE_CONNECTED),
                         getZigbeeConnected());
                 updateState(new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_DEVICE_LOCKED),
@@ -160,7 +160,7 @@ public class TRVHandler extends DraytonWiserThingHandler {
         return UnDefType.UNDEF;
     }
 
-    private State getSignalStrength() {
+    private State getWiserSignalStrength() {
         if (smartValve != null && bridgeHandler != null) {
             Device device = bridgeHandler.getExtendedDeviceProperties(smartValve.getId());
             if (device != null) {
@@ -171,11 +171,11 @@ public class TRVHandler extends DraytonWiserThingHandler {
         return UnDefType.UNDEF;
     }
 
-    private State getUnifiedSignalStrength() {
+    private State getSignalStrength() {
         if (smartValve != null && bridgeHandler != null) {
             Device device = bridgeHandler.getExtendedDeviceProperties(smartValve.getId());
             if (device != null) {
-                return new DecimalType(DraytonWiserBindingConstants.UNIFIED_SIGNAL_STRENGTH_MAP
+                return new DecimalType(DraytonWiserBindingConstants.SIGNAL_STRENGTH_MAP
                         .getOrDefault(device.getDisplayedSignalStrength(), 0));
             }
         }
@@ -194,7 +194,7 @@ public class TRVHandler extends DraytonWiserThingHandler {
         return UnDefType.UNDEF;
     }
 
-    private State getBatteryLevel() {
+    private State getWiserBatteryLevel() {
         if (smartValve != null && bridgeHandler != null) {
             Device device = bridgeHandler.getExtendedDeviceProperties(smartValve.getId());
             if (device != null) {
@@ -205,12 +205,12 @@ public class TRVHandler extends DraytonWiserThingHandler {
         return UnDefType.UNDEF;
     }
 
-    private State getUnifiedBatteryLevel() {
+    private State getBatteryLevel() {
         if (smartValve != null && bridgeHandler != null) {
             Device device = bridgeHandler.getExtendedDeviceProperties(smartValve.getId());
             if (device != null) {
-                return new DecimalType(DraytonWiserBindingConstants.UNIFIED_BATTERY_LEVEL_MAP
-                        .getOrDefault(device.getBatteryLevel(), 0));
+                return new DecimalType(
+                        DraytonWiserBindingConstants.BATTERY_LEVEL_MAP.getOrDefault(device.getBatteryLevel(), 0));
             }
         }
 

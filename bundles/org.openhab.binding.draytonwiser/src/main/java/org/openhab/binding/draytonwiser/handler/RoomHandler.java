@@ -127,7 +127,7 @@ public class RoomHandler extends DraytonWiserThingHandler {
         if (bridgeHandler == null) {
             return false;
         }
-        room = bridgeHandler.getRoom(getThing().getConfiguration().get("roomName").toString());
+        room = bridgeHandler.getRoom(getThing().getConfiguration().get("name").toString());
         return room != null;
     }
 
@@ -141,7 +141,7 @@ public class RoomHandler extends DraytonWiserThingHandler {
 
     private void setSetPoint(Integer setPoint) {
         if (bridgeHandler != null) {
-            bridgeHandler.setRoomSetPoint(getThing().getConfiguration().get("roomName").toString(), setPoint);
+            bridgeHandler.setRoomSetPoint(getThing().getConfiguration().get("name").toString(), setPoint);
         }
     }
 
@@ -205,13 +205,13 @@ public class RoomHandler extends DraytonWiserThingHandler {
 
     private void setManualMode(Boolean manualMode) {
         if (bridgeHandler != null) {
-            bridgeHandler.setRoomManualMode(getThing().getConfiguration().get("roomName").toString(), manualMode);
+            bridgeHandler.setRoomManualMode(getThing().getConfiguration().get("name").toString(), manualMode);
         }
     }
 
     private void setWindowStateDetection(Boolean stateDetection) {
         if (bridgeHandler != null) {
-            bridgeHandler.setRoomWindowStateDetection(getThing().getConfiguration().get("roomName").toString(),
+            bridgeHandler.setRoomWindowStateDetection(getThing().getConfiguration().get("name").toString(),
                     stateDetection);
         }
     }
@@ -241,17 +241,17 @@ public class RoomHandler extends DraytonWiserThingHandler {
     private void setBoostDuration(Integer durationMinutes) {
         if (bridgeHandler != null && room != null) {
             if (durationMinutes > 0) {
-                bridgeHandler.setRoomBoostActive(getThing().getConfiguration().get("roomName").toString(),
+                bridgeHandler.setRoomBoostActive(getThing().getConfiguration().get("name").toString(),
                         room.getCalculatedTemperature() + 20, durationMinutes);
             } else {
-                bridgeHandler.setRoomBoostInactive(getThing().getConfiguration().get("roomName").toString());
+                bridgeHandler.setRoomBoostInactive(getThing().getConfiguration().get("name").toString());
             }
         }
     }
 
     private void setMasterScheduleState(String scheduleJSON) {
         if (bridgeHandler != null && room != null) {
-            bridgeHandler.setRoomSchedule(getThing().getConfiguration().get("roomName").toString(), scheduleJSON);
+            bridgeHandler.setRoomSchedule(getThing().getConfiguration().get("name").toString(), scheduleJSON);
         }
     }
 

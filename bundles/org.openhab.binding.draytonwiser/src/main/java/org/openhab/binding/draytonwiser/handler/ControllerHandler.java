@@ -89,12 +89,12 @@ public class ControllerHandler extends DraytonWiserThingHandler {
                 updateState(
                         new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_CURRENT_SIGNAL_RSSI),
                         getRSSI());
-                updateState(new ChannelUID(getThing().getUID(),
-                        DraytonWiserBindingConstants.CHANNEL_CURRENT_SIGNAL_STRENGTH), getSignalStrength());
                 updateState(
                         new ChannelUID(getThing().getUID(),
-                                DraytonWiserBindingConstants.CHANNEL_CURRENT_UNIFIED_SIGNAL_STRENGTH),
-                        getUnifiedSignalStrength());
+                                DraytonWiserBindingConstants.CHANNEL_CURRENT_WISER_SIGNAL_STRENGTH),
+                        getWiserSignalStrength());
+                updateState(new ChannelUID(getThing().getUID(),
+                        DraytonWiserBindingConstants.CHANNEL_CURRENT_SIGNAL_STRENGTH), getSignalStrength());
                 updateState(
                         new ChannelUID(getThing().getUID(), DraytonWiserBindingConstants.CHANNEL_HEATCHANNEL_1_DEMAND),
                         getHeatChannel1Demand());
@@ -153,7 +153,7 @@ public class ControllerHandler extends DraytonWiserThingHandler {
         return UnDefType.UNDEF;
     }
 
-    private State getSignalStrength() {
+    private State getWiserSignalStrength() {
         if (device != null) {
             return new StringType(device.getDisplayedSignalStrength());
         }
@@ -161,9 +161,9 @@ public class ControllerHandler extends DraytonWiserThingHandler {
         return UnDefType.UNDEF;
     }
 
-    private State getUnifiedSignalStrength() {
+    private State getSignalStrength() {
         if (device != null) {
-            return new DecimalType(DraytonWiserBindingConstants.UNIFIED_SIGNAL_STRENGTH_MAP
+            return new DecimalType(DraytonWiserBindingConstants.SIGNAL_STRENGTH_MAP
                     .getOrDefault(device.getDisplayedSignalStrength(), 0));
         }
 

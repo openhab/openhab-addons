@@ -8,7 +8,7 @@ The integration happens through the HeatHub, which acts as an IP gateway to the 
 The Drayton Wiser binding supports the following things:
 
 * Bridge - The network device in the controller that allows us to interact with the other devices in the system
-* Controller - The _HeatHub_ attached to the boiler. This also acts as the hub device.
+* Boiler Controller - The _HeatHub_ attached to the boiler. This also acts as the hub device.
 * Rooms - Virtual groups of _Room Thermostats_ and _TRVs_ that can have temperatures and schedules
 * Room Thermostats - Wireless thermostats which monitor temperature and humidity, and call for heat
 * Smart TRVs - Wireless TRVs that monitor temperature, alter the radiator valve state and call for heat
@@ -42,7 +42,7 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 
 ### Readonly Channels
 
-#### Controller
+#### Boiler Controller
 
 | Channel                        | Description                                              |
 |--------------------------------|----------------------------------------------------------|
@@ -52,8 +52,8 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 | `heatChannel2Demand`           | Current demand level of heating channel 2                |
 | `heatChannel2DemandState`      | Is channel 2 calling the boiler for heat                 |
 | `currentSignalRSSI`            | Relative Signal Strength Indicator                       |
-| `currentSignalStrength`        | Human readable signal strength                           |
-| `currentUnifiedSignalStrength` | Signal strength value that maps to qualityofservice icon |
+| `currentWiserSignalStrength`   | Human readable signal strength                           |
+| `currentSignalStrength`        | Signal strength value that maps to qualityofservice icon |
 
 #### Hot Water
 
@@ -84,12 +84,12 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 | `currentHumidity`              | Currently reported humidity                              |
 | `currentSetPoint`              | Currently reported set point                             |
 | `currentBatteryVoltage`        | Currently reported battery voltage                       |
-| `currentBatteryLevel`          | Human readable battery level                             |
-| `currentUnifiedBatteryLevel`   | Battery level in percent                                 |
+| `currentWiserBatteryLevel`     | Human readable battery level                             |
+| `currentBatteryLevel`          | Battery level in percent                                 |
 | `currentSignalRSSI`            | Relative Signal Strength Indicator                       |
 | `currentSignalLQI`             | Link Quality Indicator                                   |
-| `currentSignalStrength`        | Human readable signal strength                           |
-| `currentUnifiedSignalStrength` | Signal strength value that maps to qualityofservice icon |
+| `currentWiserSignalStrength`   | Human readable signal strength                           |
+| `currentSignalStrength`        | Signal strength value that maps to qualityofservice icon |
 | `zigbeeConnected`              | Is the roomstat joined to network                        |
 
 #### Smart TRV
@@ -100,12 +100,12 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 | `currentDemand`                | Current heat demand percentage of the TRV                |
 | `currentSetPoint`              | Currently reported set point                             |
 | `currentBatteryVoltage`        | Currently reported battery voltage                       |
-| `currentBatteryLevel`          | Human readable battery level                             |
-| `currentUnifiedBatteryLevel`   | Battery level in percent                                 |
+| `currentWiserBatteryLevel`     | Human readable battery level                             |
+| `currentBatteryLevel`          | Battery level in percent                                 |
 | `currentSignalRSSI`            | Relative Signal Strength Indicator                       |
 | `currentSignalLQI`             | Link Quality Indicator                                   |
-| `currentSignalStrength`        | Human readable signal strength                           |
-| `currentUnifiedSignalStrength` | Signal strength value that maps to qualityofservice icon |
+| `currentWiserSignalStrength`   | Human readable signal strength                           |
+| `currentSignalStrength`        | Signal strength value that maps to qualityofservice icon |
 | `zigbeeConnected`              | Is the TRV joined to network                             |
 
 #### Smart Plug
@@ -118,7 +118,7 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 
 ### Writeable Channels
 
-#### Controller
+#### Boiler Controller
 
 | Channel            | Description                |
 |--------------------|----------------------------|
@@ -183,18 +183,18 @@ The `id`, `Type`, `CurrentSetPoint`, `NextEventTime` and `NextEventSetpoint` sho
 ```
 Bridge draytonwiser:heathub:HeatHub [ ADDR="192.168.1.X", refresh=60, secret="secret from hub" ]
 {
-	controller controller
-	room livingroom	[ roomName="Living Room" ]
-	room bathroom	[ roomName="Bathroom" ]
-	room bedroom	[ roomName="Bedroom" ]
+	boiler-controller controller
+	room livingroom	[ name="Living Room" ]
+	room bathroom	[ name="Bathroom" ]
+	room bedroom	[ name="Bedroom" ]
 	roomstat livingroomstat [ serialNumber="ABCDEF1234" ]
 	itrv livingroomtrv [ serialNumber="ABCDEF1235" ]
 	hotwater hotwater
-    smart-plug tvplug [ serialNumber="ABCDEF1236" ]
+   smart-plug tvplug [ serialNumber="ABCDEF1236" ]
 }
 ```
 
-The `roomName` corresponds to the room name configured in the Wiser App.
+The `name` corresponds to the room name configured in the Wiser App.
 It is not case sensitive.
 The `serialNumber` corresponds to the device serial number which can be found on a sticker inside the battery compartment of the Smart Valves/TRVs, and behind the wall mount of the Room Thermostats.
 

@@ -144,7 +144,7 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
     private void onRoomAdded(Room r) {
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         Map<String, Object> properties = new HashMap<>();
-        properties.put("roomName", r.getName());
+        properties.put("name", r.getName());
         DiscoveryResult discoveryResult = DiscoveryResultBuilder
                 .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_ROOM, bridgeUID,
                         r.getName().replaceAll("[^A-Za-z0-9]", "").toLowerCase()))

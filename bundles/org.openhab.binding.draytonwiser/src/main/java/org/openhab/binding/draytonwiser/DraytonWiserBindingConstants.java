@@ -29,7 +29,7 @@ public class DraytonWiserBindingConstants {
 
     public static final String BINDING_ID = "draytonwiser";
 
-    public static final String ADDRESS = "ADDR";
+    public static final String ADDRESS = "networkAddress";
 
     public static final String SECRET = "secret";
 
@@ -56,7 +56,7 @@ public class DraytonWiserBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "heathub");
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_CONTROLLER = new ThingTypeUID(BINDING_ID, "controller");
+    public static final ThingTypeUID THING_TYPE_CONTROLLER = new ThingTypeUID(BINDING_ID, "boiler-controller");
     public static final ThingTypeUID THING_TYPE_ROOM = new ThingTypeUID(BINDING_ID, "room");
     public static final ThingTypeUID THING_TYPE_ROOMSTAT = new ThingTypeUID(BINDING_ID, "roomstat");
     public static final ThingTypeUID THING_TYPE_ITRV = new ThingTypeUID(BINDING_ID, "itrv");
@@ -69,13 +69,13 @@ public class DraytonWiserBindingConstants {
     public static final String CHANNEL_CURRENT_SETPOINT = "currentSetPoint";
     public static final String CHANNEL_CURRENT_BATTERY_VOLTAGE = "currentBatteryVoltage";
     public static final String CHANNEL_CURRENT_BATTERY_LEVEL = "currentBatteryLevel";
-    public static final String CHANNEL_CURRENT_UNIFIED_BATTERY_LEVEL = "currentUnifiedBatteryLevel";
+    public static final String CHANNEL_CURRENT_WISER_BATTERY_LEVEL = "currentWiserBatteryLevel";
     public static final String CHANNEL_CURRENT_DEMAND = "currentDemand";
     public static final String CHANNEL_HEAT_REQUEST = "heatRequest";
     public static final String CHANNEL_CURRENT_SIGNAL_RSSI = "currentSignalRSSI";
     public static final String CHANNEL_CURRENT_SIGNAL_LQI = "currentSignalLQI";
     public static final String CHANNEL_CURRENT_SIGNAL_STRENGTH = "currentSignalStrength";
-    public static final String CHANNEL_CURRENT_UNIFIED_SIGNAL_STRENGTH = "currentUnifiedSignalStrength";
+    public static final String CHANNEL_CURRENT_WISER_SIGNAL_STRENGTH = "currentWiserSignalStrength";
     public static final String CHANNEL_HEATING_OVERRIDE = "heatingOverride";
     public static final String CHANNEL_HOT_WATER_OVERRIDE = "hotWaterOverride";
     public static final String CHANNEL_HEATCHANNEL_1_DEMAND = "heatChannel1Demand";
@@ -106,10 +106,10 @@ public class DraytonWiserBindingConstants {
             THING_TYPE_SMARTPLUG);
 
     // Lookups from text representations to useful openhab values
-    public static final Map<String, Integer> UNIFIED_SIGNAL_STRENGTH_MAP = Maps
+    public static final Map<String, Integer> SIGNAL_STRENGTH_MAP = Maps
             .newHashMap(ImmutableMap.of("VeryGood", 4, "Good", 3, "Medium", 2, "Poor", 1, "NoSignal", 0));
 
-    public static final Map<String, Integer> UNIFIED_BATTERY_LEVEL_MAP = ImmutableMap.<String, Integer> builder()
+    public static final Map<String, Integer> BATTERY_LEVEL_MAP = ImmutableMap.<String, Integer> builder()
             .put("Full", 100).put("Normal", 80).put("TwoThirds", 60).put("OneThird", 40).put("Low", 20)
             .put("Critical", 0).build();
 }
