@@ -14,6 +14,7 @@ import static org.openhab.binding.heos.internal.resources.HeosConstants.GID;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -98,7 +99,7 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
     }
 
     @Override
-    public void playerMediaChangeEvent(String pid, HashMap<String, String> info) {
+    public void playerMediaChangeEvent(String pid, Map<String, String> info) {
         if (pid.equals(this.gid)) {
             handleThingMediaUpdate(info);
         }
@@ -136,7 +137,6 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
      *
      * @return The instance of the HEOS group
      */
-
     public HeosGroup getHeosGroup() {
         return heosGroup;
     }

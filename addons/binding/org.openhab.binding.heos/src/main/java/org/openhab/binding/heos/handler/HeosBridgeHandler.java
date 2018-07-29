@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -57,16 +58,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventListener, DiscoveryListener {
 
-    private List<String> heosPlaylists = new ArrayList<String>();
+    private List<String> heosPlaylists = new ArrayList<>();
 
-    private HashMap<ThingUID, ThingHandler> handlerList = new HashMap<>();
-    private HashMap<String, String> selectedPlayer = new HashMap<String, String>();
-    private ArrayList<String[]> selectedPlayerList = new ArrayList<String[]>();
-    private HashMap<ThingUID, ThingStatus> thingOnlineState = new HashMap<ThingUID, ThingStatus>();
-    private HeosChannelHandlerFactory channelHandlerFactory = null;
+    private Map<ThingUID, ThingHandler> handlerList = new HashMap<>();
+    private Map<String, String> selectedPlayer = new HashMap<>();
+    private List<String[]> selectedPlayerList = new ArrayList<>();
+    private Map<ThingUID, ThingStatus> thingOnlineState = new HashMap<>();
+    private HeosChannelHandlerFactory channelHandlerFactory;
 
     private ScheduledExecutorService initPhaseExecutor;
     private InitProcedure initPhaseRunnable = new InitProcedure();
@@ -120,9 +120,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         }
         loggedIn = false;
 
-        logger.info("Initialize Bridge Brige '{}' with IP '{}'", thing.getConfiguration().get(NAME),
+        logger.info("Initialize Bridge '{}' with IP '{}'", thing.getConfiguration().get(NAME),
                 thing.getConfiguration().get(HOST));
-
         heartbeatPulse = Integer.valueOf(thing.getConfiguration().get(HEARTBEAT).toString());
         heos.setConnectionIP(thing.getConfiguration().get(HOST).toString());
         heos.setConnectionPort(1255);
@@ -168,7 +167,6 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
      * of the thing to ThingStatus.ONLINE.
      * Add also the player or group channel to the bridge.
      */
-
     @Override
     public synchronized void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         handlerList.put(childThing.getUID(), childHandler);
@@ -180,10 +178,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     /**
      * Manages the removal of the childHandler from the handlerList and sets the Status
      * of the thing to ThingsStatus.REMOVED
-     * Removes also the channel of the player or group from the bridge.
-     *
+     * Removes also the channel of the player or group from the bridge. *
      */
-
     @Override
     public synchronized void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         try {
@@ -228,7 +224,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     }
 
     @Override
-    public void playerMediaChangeEvent(String pid, HashMap<String, String> info) {
+    public void playerMediaChangeEvent(String pid, Map<String, String> info) {
         // Do nothing
     }
 
@@ -253,14 +249,14 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
                 if (result.equals(SUCCESS)) {
                     if (!loggedIn) {
                         loggedIn = true;
-                        addFavorits();
+                        addFavorites();
                         addPlaylists();
                     }
                 }
             } else if (command.equals(USER_CHANGED)) {
                 if (!loggedIn) {
                     loggedIn = true;
-                    addFavorits();
+                    addFavorites();
                     addPlaylists();
                 }
             }
@@ -272,7 +268,6 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
      * and the state is only temporary set to OFFLINE. If so initialize() of the
      * thing is called.
      */
-
     @Override
     public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
         if (handlerList.containsKey(result.getThingUID())) {
@@ -291,7 +286,6 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
      * If handleGroups is not active the thing is completely removed. The handler
      * is removed from the handler list via childHandlerDisposed()
      */
-
     @Override
     public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
         logger.info("Removing Thing: {}.", thingUID.getId());
@@ -325,37 +319,37 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         }
     }
 
-    public void addFavorits() {
+    public void addFavorites() {
         if (loggedIn) {
             logger.info("Adding HEOS Favorite Channels");
-            removeChannels(CH_TYPE_FAVORIT);
+            removeChannels(CH_TYPE_FAVORITE);
             logger.info("Old Favorite Channels removed");
 
-            List<HashMap<String, String>> favList = new ArrayList<HashMap<String, String>>();
-            HashMap<String, String> favorits = new HashMap<String, String>(4);
-            favList = heos.getFavorits();
+            List<Map<String, String>> favList = new ArrayList<>();
+            Map<String, String> favorites = new HashMap<>(4);
+            favList = heos.getFavorites();
             int favCount = favList.size();
-            ArrayList<Channel> favoritChannels = new ArrayList<Channel>(favCount);
+            List<Channel> favoriteChannels = new ArrayList<>(favCount);
 
             if (favCount != 0) {
                 for (int i = 0; i < favCount; i++) {
                     for (String key : favList.get(i).keySet()) {
                         if (key.equals(MID)) {
-                            favorits.put(key, favList.get(i).get(key));
+                            favorites.put(key, favList.get(i).get(key));
                         }
                         if (key.equals(NAME)) {
-                            favorits.put(key, favList.get(i).get(key));
+                            favorites.put(key, favList.get(i).get(key));
                         }
                         if (key.equals("null")) {
                             return;
                         }
                     }
-                    logger.info("Add Favorite Channel: {}", favorits.get(NAME));
+                    logger.info("Add Favorite Channel: {}", favorites.get(NAME));
 
-                    favoritChannels.add(createFavoritChannel(favorits));
+                    favoriteChannels.add(createFavoriteChannel(favorites));
                 }
             }
-            addChannel(favoritChannels);
+            addChannel(favoriteChannels);
         }
     }
 
@@ -365,7 +359,6 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
      *
      * @param childThing the thing the channel is created for
      */
-
     private void addPlayerChannel(Thing childThing) {
         String channelIdentifyer = "";
         String pid = "";
@@ -383,14 +376,14 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
         ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), channelIdentifyer);
         if (!hasChannel(channelUID)) {
-            HashMap<String, String> properties = new HashMap<String, String>(2);
+            Map<String, String> properties = new HashMap<>(2);
             properties.put(NAME, childThing.getConfiguration().get(NAME).toString());
             properties.put(PID, pid);
 
             Channel channel = ChannelBuilder.create(channelUID, "Switch").withLabel(playerName).withType(CH_TYPE_PLAYER)
                     .withProperties(properties).build();
 
-            ArrayList<Channel> newChannelList = new ArrayList<>(1);
+            List<Channel> newChannelList = new ArrayList<>(1);
             newChannelList.add(channel);
             addChannel(newChannelList);
         }
@@ -398,7 +391,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
     private void addChannel(List<Channel> newChannelList) {
         List<Channel> existingChannelList = thing.getChannels();
-        ArrayList<Channel> mutableChannelList = new ArrayList<Channel>();
+        List<Channel> mutableChannelList = new ArrayList<>();
         mutableChannelList.addAll(existingChannelList);
         mutableChannelList.addAll(newChannelList);
 
@@ -407,17 +400,17 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         updateThing(thingBuilder.build());
     }
 
-    private Channel createFavoritChannel(HashMap<String, String> properties) {
-        String favoritName = properties.get(NAME);
+    private Channel createFavoriteChannel(Map<String, String> properties) {
+        String favoriteName = properties.get(NAME);
         Channel channel = ChannelBuilder.create(new ChannelUID(this.getThing().getUID(), properties.get(MID)), "Switch")
-                .withLabel(favoritName).withType(CH_TYPE_FAVORIT).withProperties(properties).build();
+                .withLabel(favoriteName).withType(CH_TYPE_FAVORITE).withProperties(properties).build();
 
         return channel;
     }
 
     private void removeChannels(ChannelTypeUID channelType) {
         List<Channel> channelList = thing.getChannels();
-        ArrayList<Channel> mutableChannelList = new ArrayList<Channel>();
+        List<Channel> mutableChannelList = new ArrayList<>();
         mutableChannelList.addAll(channelList);
         for (int i = 0; i < mutableChannelList.size(); i++) {
             if (mutableChannelList.get(i).getChannelTypeUID().equals(channelType)) {
@@ -434,7 +427,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     private void removeChannel(ChannelTypeUID channelType, String channelIdentifyer) {
         ChannelUID channelUID = new ChannelUID(this.thing.getUID(), channelIdentifyer);
         List<Channel> channelList = thing.getChannels();
-        ArrayList<Channel> mutableChannelList = new ArrayList<Channel>();
+        List<Channel> mutableChannelList = new ArrayList<>();
         mutableChannelList.addAll(channelList);
         for (int i = 0; i < mutableChannelList.size(); i++) {
             if (mutableChannelList.get(i).getUID().equals(channelUID)) {
@@ -456,19 +449,19 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         return false;
     }
 
-    public HashMap<String, HeosPlayer> getNewPlayer() {
+    public Map<String, HeosPlayer> getNewPlayer() {
         return heos.getAllPlayer();
     }
 
-    public HashMap<String, HeosGroup> getNewGroups() {
+    public Map<String, HeosGroup> getNewGroups() {
         return heos.getGroups();
     }
 
-    public HashMap<String, HeosGroup> getRemovedGroups() {
+    public Map<String, HeosGroup> getRemovedGroups() {
         return heos.getGroupsRemoved();
     }
 
-    public HashMap<String, HeosPlayer> getRemovedPlayer() {
+    public Map<String, HeosPlayer> getRemovedPlayer() {
         return heos.getPlayerRemoved();
     }
 
@@ -477,8 +470,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
      *
      * @return a HashMap which the currently selected player
      */
-
-    public HashMap<String, String> getSelectedPlayer() {
+    public Map<String, String> getSelectedPlayer() {
         selectedPlayer.clear();
         for (int i = 0; i < selectedPlayerList.size(); i++) {
             selectedPlayer.put(selectedPlayerList.get(i)[0], selectedPlayerList.get(i)[1]);
@@ -486,21 +478,21 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         return selectedPlayer;
     }
 
-    public void setSelectedPlayer(HashMap<String, String> selectedPlayer) {
+    public void setSelectedPlayer(Map<String, String> selectedPlayer) {
         this.selectedPlayer = selectedPlayer;
     }
 
     /**
      * @return the selectedPlayerList
      */
-    public ArrayList<String[]> getSelectedPlayerList() {
+    public List<String[]> getSelectedPlayerList() {
         return selectedPlayerList;
     }
 
     /**
      * @return the selectedPlayerList
      */
-    public void setSelectedPlayerList(ArrayList<String[]> selectedPlayerList) {
+    public void setSelectedPlayerList(List<String[]> selectedPlayerList) {
         this.selectedPlayerList = selectedPlayerList;
     }
 

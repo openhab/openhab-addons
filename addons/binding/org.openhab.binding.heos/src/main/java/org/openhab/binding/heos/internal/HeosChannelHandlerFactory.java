@@ -33,6 +33,9 @@ import org.openhab.binding.heos.internal.handler.HeosChannelHandlerShuffleMode;
 import org.openhab.binding.heos.internal.handler.HeosChannelHandlerVolume;
 
 /**
+ * The {@link HeosChannelHandlerFactory} is responsible for creating the single handler
+ * for the channel of the single things.
+ * 
  * @author Johannes Einig - Initial contribution
  *
  */
@@ -96,7 +99,7 @@ public class HeosChannelHandlerFactory {
             return new HeosChannelHandlerShuffleMode(bridge, api);
         }
         if (channelTypeUID != null) {
-            if (channelTypeUID.equals(CH_TYPE_FAVORIT)) {
+            if (channelTypeUID.equals(CH_TYPE_FAVORITE)) {
                 return new HeosChannelHandlerFavoriteSelect(bridge, api);
             }
             if (channelTypeUID.equals(CH_TYPE_PLAYER)) {

@@ -13,23 +13,21 @@ import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.resources.HeosConstants;
 
 /**
+ * The {@link HeosChannelHandlerRepeatMode} handles the RepeatMode channel command
+ * from the implementing thing.
+ *
  * @author Johannes Einig - Initial contribution
  *
  */
 public class HeosChannelHandlerRepeatMode extends HeosChannelHandler {
 
-    /**
-     * @param bridge
-     * @param api
-     */
     public HeosChannelHandlerRepeatMode(HeosBridgeHandler bridge, HeosFacade api) {
         super(bridge, api);
     }
 
     /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandPlayer()
+     * @see
+     * org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandPlayer()
      */
     @Override
     protected void handleCommandPlayer() {
@@ -38,9 +36,8 @@ public class HeosChannelHandlerRepeatMode extends HeosChannelHandler {
     }
 
     /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandGroup()
+     * @see
+     * org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandGroup()
      */
     @Override
     protected void handleCommandGroup() {
@@ -49,9 +46,8 @@ public class HeosChannelHandlerRepeatMode extends HeosChannelHandler {
     }
 
     /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandBridge()
+     * @see
+     * org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandBridge()
      */
     @Override
     protected void handleCommandBridge() {

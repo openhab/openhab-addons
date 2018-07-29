@@ -1,8 +1,6 @@
 # Denon HEOS Binding
 
-HEOS Binding for OpenHab
-
-This binding support the HEOS-System from Denon for OpenHab 2. The binding provides control of the players and groups within the network. It also supports selecting favorites and play them on players or groups within the HEOS-Network. 
+This binding support the HEOS-System from Denon for openHAB 2. The binding provides control of the players and groups within the network. It also supports selecting favorites and play them on players or groups within the HEOS-Network. 
 The binding first establishes a connection to one of the players of the HEOS-Network and use them as a bridge. After a connection is established, the binding searches for all available players and groups via the bridge. To keep the network traffic low it is recommended to establish only one connection via one bridge. Connection to the bridge is done via a Telnet connection.
 
 #### A detailed explanation of binding possibilities and the handling can be found at the end. Also some examples are provided how the binding can be used
@@ -23,17 +21,17 @@ Groups are supported by this binding.
 
 This binding supports full automatic discovery of available players to be used as a bridge, players and groups (both after establishing a connection via a bridge). It is recommended to use the PaperUI or other GUI to setup the system and add all players and groups.
 The bridge is discovered through UPnP in the local network. Once it is added the players and groups are discovered via the bridge and placed within the inbox.
-Nether the less also manual configuration is possible
+Nethertheless also manual configuration is possible
 
 ## Binding Configuration
 
 This binding does not require any configuration via a .cfg file. The configuration is done via the Thing definition.
-Within the binding the callback URL can be set. This URL is needed if a player or a group is registered as an audio sink within OpenHab. If a device is registered as an audio sink notification sounds will be played at this device.
-For further information about notifications also refer to the [OpenHab documentation](http://docs.openhab.org/configuration/multimedia.html).
+Within the binding the callback URL can be set. This URL is needed if a player or a group is registered as an audio sink within openHAB. If a device is registered as an audio sink notification sounds will be played at this device.
+For further information about notifications also refer to the [openHAB documentation](http://docs.openHAB.org/configuration/multimedia.html).
 
-The URL defines the base address where the sound files are located. For example if the files are placed within the OpenHab directory \openHAB-conf\sounds the callback address has be set to the OpenHab server address inclusive the port.  
+The URL defines the base address where the sound files are located. For example if the files are placed within the openHAB directory \openHAB-conf\sounds the callback address has be set to the openHAB server address inclusive the port.  
 
-Example: http://192.168.0.7:8080 if the sound file can be accessed there, or if the sound file is located on the OpenHab server http://localhost:8080 for example.
+Example: http://192.168.0.7:8080 if the sound file can be accessed there, or if the sound file is located on the openHAB server http://localhost:8080 for example.
 
 
 ## Thing Configuration
@@ -42,7 +40,8 @@ Example: http://192.168.0.7:8080 if the sound file can be accessed there, or if 
 
 ### Bridge Configuration
 
-The bridge can be added via the PaperUI. After adding the bridge the user name and password can be set by editing the thing via the PaperUI. For manual configuration the following parameters can be defined. The ipAddress has to be defined. All other fields are optional.
+The bridge can be added via the PaperUI. After adding the bridge, the user name and password can be set by editing the thing via the PaperUI. For manual configuration the following parameters can be defined. The ipAddress has to be defined. All other fields are optional.
+The password and the user name are used to login to the HEOS account. This is required to load the favorites, playlists and so on from personal settings. If no login information is provided these features can't be used.  
 
 ````
 Bridge heos:bridge:main "name" [ipAddress="192.168.0.1", name="Default", unserName="xxx", password="123456"]  
@@ -97,23 +96,24 @@ The channels have different paths if you configure our Things manual or via an U
 
 ### Player provide the following channels:
 
-Channel ID | Item Type | Description
-----------------|-----------|-------------
-Control | Player | Play (also ON) / Pause (also OFF) / Next / Previous
-Volume | Dimmer | Volume control / also accepts "DECREASE" & "INCREASE"
-Mute | Switch | Mute the Player
-Title | String | Song Title
-Interpret | String | Song Interpret
-Album | String  | Album Title
-ImageUrl | String |The URL where the cover can be found 
-Inputs | String | The input to be switched to. Input values from HEOS protocol
-CurrentPosition | String | Shows the current trakc position in milliseconds
-Duration | String | The overall track duration in milliseconds
-Type | String | The type of the played media. Station or song for example
-Station | String | The station name if it is a station (Spotify shows track name....)
-PlayUrl | String | Plays a media file located at the URL
-Shuffle | Switch | Switches shuffle ON or OFF 
-RepeatMode | String | Defines the repeat mode: Inputs are: "One" ; "All" or "Off"
+| Channel ID        | Item Type     | Description                                                           |
+|-----------------  |-----------    |---------------------------------------------------------------------  |
+| Control           | Player        | Play (also ON) / Pause (also OFF) / Next / Previous                   |
+| Volume            | Dimmer        | Volume control / also accepts "DECREASE" & "INCREASE"                 |
+| Mute              | Switch        | Mute the Player                                                       |
+| Title             | String        | Song Title                                                            |
+| Interpret         | String        | Song Interpret                                                        |
+| Album             | String        | Album Title                                                           |
+| ImageUrl          | Image         | The cover of the actual song                                          |
+| Inputs            | String        | The input to be switched to. Input values from HEOS protocol          |
+| CurrentPosition   | Number        | Shows the current track position in seconds                           |
+| Duration          | Number        | The overall track duration in seconds                                 |
+| Type              | String        | The type of the played media. Station or song for example             |
+| Station           | String        | The station name if it is a station (Spotify shows track name....)    |
+| PlayUrl           | String        | Plays a media file located at the URL                                 |
+| Shuffle           | Switch        | Switches shuffle ON or OFF                                            |
+| RepeatMode        | String        | Defines the repeat mode: Inputs are: "One" ; "All" or "Off"           |
+
 
 
 ####Example:
@@ -124,76 +124,73 @@ Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Contro
 
 ### Groups provide the following channels:
 
-Channel ID | Item Type | Description
-----------------|-----------|-------------
-Control | Player | Play (also ON) / Pause (also OFF) / Next / Previous
-Volume | Dimmer | Volume control / also accepts "DECREASE" & "INCREASE"
-Mute | Switch | Mute the Group
-Title | String | Song Title
-Interpret | String | Song Interpret
-Album | String  | Album Title
-Ungroup | Switch | Deletes the group (OFF) or generate the group again (ON) 
-ImageUrl | String |The URL where the cover can be found
-CurrentPosition | String | Shows the current track position in milliseconds
-Duration | String | The overall track duration in milliseconds
-Type | String | The type of the played media. Station or song for example
-Station | String | The station name if it is a station (Spotify shows track name....)
-Inputs | String | The input to be switched to. Input values from HEOS protocol
-PlayUrl | String | Plays a media file located at the URL
-Shuffle | Switch | Switches shuffle ON or OFF
-RepeatMode | String | Defines the repeat mode: Inputs are: "One" ; "All" or "Off" 
+| Channel ID        | Item Type     | Description                                                           |
+|-----------------  |-----------    |--------------------------------------------------------------------   |
+| Control           | Player        | Play (also ON) / Pause (also OFF) / Next / Previous                   |
+| Volume            | Dimmer        | Volume control / also accepts "DECREASE" & "INCREASE"                 |
+| Mute              | Switch        | Mute the Group                                                        |
+| Title             | String        | Song Title                                                            |
+| Interpret         | String        | Song Interpret                                                        |
+| Album             | String        | Album Title                                                           |
+| Ungroup           | Switch        | Deletes the group (OFF) or generate the group again (ON)              |
+| ImageUrl          | Image         | The cover of the actual song                                          |
+| CurrentPosition   | Number        | Shows the current track position in seconds                           |
+| Duration          | Number        | The overall track duration in seconds                                 |
+| Type              | String        | The type of the played media. Station or song for example             |
+| Station           | String        | The station name if it is a station (Spotify shows track name....)    |
+| Inputs            | String        | The input to be switched to. Input values from HEOS protocol          |
+| PlayUrl           | String        | Plays a media file located at the URL                                 |
+| Shuffle           | Switch        | Switches shuffle ON or OFF                                            |
+| RepeatMode        | String        | Defines the repeat mode: Inputs are: "One" ; "All" or "Off"           |
 
 #### Inputs depending on Player type (Date 12.02.2017):
 
-Input names |
-----------------|
-aux_in_1 
-aux_in_2 
-aux_in_3 
-aux_in_4 
-aux1 /
-aux2 /
-aux3 /
-aux4 /
-aux5 /
-aux6 /
-aux7 /
-line_in_1 /
-line_in_2 /
-line_in_3 /
-line_in_4 /
-coax_in_1 /
-coax_in_2 /
-optical_in_1 /
-optical_in_2 /
-hdmi_in_1 /
-hdmi_arc_1 /
-cable_sat /
-dvd /
-bluray /
-game /
-mediaplayer /
-cd /
-tuner /
-hdradio /
-tvaudio /
-phono /
+| Input names   |
+|-------------- |
+| aux_in_1      |
+| aux_in_2      |
+| aux_in_3      |
+| aux_in_4      |
+| aux1          |
+| aux2          |
+| aux3          |
+| aux4          |
+| aux5          |
+| aux6          |
+| aux7          |
+| line_in_1     |
+| line_in_2     |
+| line_in_3     |
+| line_in_4     |
+| coax_in_1     |
+| coax_in_2     |
+| optical_in_1  |
+| optical_in_2  |
+| hdmi_in_1     |
+| hdmi_arc_1    |
+| cable_sat     |
+| dvd           |
+| bluray        |
+| game          |
+| mediaplayer   |
+| cd            |
+| tuner         |
+| hdradio       |
+| tvaudio       |
+| phono         |
 
-An actual list can be found within the HEOS CLI protocol which can be found [here](http://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf):
- 
-http://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf
-
+An actual list can be found within the HEOS CLI protocol which can be found [here](http://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf).
 
 ### The Bridge provides the following channels:
 
-Channel ID | Item Type | Description
-----------------|-----------|-------------
-Reboot | Switch | Reboot the whole HEOS System. Can be used if you get in trouble with the system
-DynamicGroupHandling | Switch | If this option id activated the system automatically removes groups if they are ungrouped. Only works if the group is added via an UI.
-BuildGroup | Switch | Is used to define a group. The player which shall be grouped has to be selected first. If Switch is then activated the group is build.
-Playlists | String | Plays a playlist on the prior selected Player Channel (see below) Playlists are identified by numbers. List can be found in the HEOS App
-RawCommand | String | A channel where every HEOS CLI command can be send to.
-PlayUrl | String | Plays a media file located at the URL. First select the player channel where the stram shall be played. Then send the stream via the Play URL channel.
+| Channel ID            | Item Type     | Description                                                                                                                                               |
+|---------------------- |-----------    |--------------------------------------------------------------------------------------------------------------------------------------------------------   |
+| Reboot                | Switch        | Reboot the whole HEOS System. Can be used if you get in trouble with the system                                                                           |
+| DynamicGroupHandling  | Switch        | If this option id activated the system automatically removes groups if they are ungrouped. Only works if the group is added via an UI.                    |
+| BuildGroup            | Switch        | Is used to define a group. The player which shall be grouped has to be selected first. If Switch is then activated the group is build.                    |
+| Playlists             | String        | Plays a playlist on the prior selected Player Channel (see below) Playlists are identified by numbers. List can be found in the HEOS App                  |
+| RawCommand            | String        | A channel where every HEOS CLI command can be send to.                                                                                                    |
+| PlayUrl               | String        | Plays a media file located at the URL. First select the player channel where the stram shall be played. Then send the stream via the Play URL channel.    |
 
 For a list of the commands please refer to the [HEOS CLI protocol](http://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf).
 
@@ -215,9 +212,9 @@ Also the bridge supports dynamic channels which represent the players of the net
 
 ### Favorite Channels
 
-Channel ID | Item Type | Description
-----------------|-----------|-------------
- {mid} | Switch | A channel which represents the favorite. Please check via UI how the correct Channel Type looks like.
+| Channel ID    | Item Type     | Description                                                                                               |
+|------------   |-----------    |-------------------------------------------------------------------------------------------------------    |
+| {mid}         | Switch        | A channel which represents the favorite. Please check via UI how the correct Channel Type looks like.     |
  
  Example
 
@@ -227,9 +224,9 @@ Channel ID | Item Type | Description
 
 ### Player Channels
 
-Channel ID | Item Type | Description
-----------------|-----------|-------------
-{playerID} | Switch | A channel which represents the player. Please check via UI how the correct Channel Type looks like.
+| Channel ID    | Item Type     | Description                                                                                           |
+|------------   |-----------    |-----------------------------------------------------------------------------------------------------  |
+| {playerID}    | Switch        | A channel which represents the player. Please check via UI how the correct Channel Type looks like.   |
 
 Example
 
@@ -391,7 +388,7 @@ If dynamic group handling is deactivated the group thing is completely removed i
 
 Playlists can be played by sending the number (starts at 0!) to the binding via the playlists channel at the bridge. To find the correct number for the playlist, please have a look to the HEOS App and see at which position the playlist you want to play is located.
 To tell the binding at which player or group the playlist shall be played, select the related player or group channel at the bridge prior sending the command to the playlist channel.
-This can be done by a rule within openHab
+This can be done by a rule within openHAB
 
 #### Example
 
@@ -421,7 +418,3 @@ Sitemap:
 ```
 Switch item=HeosKitchen_Playlist  	mappings=[0="San Glaser", 1="Classic", 2="Beasty Boys"]
 ```
-
-### 
-
-

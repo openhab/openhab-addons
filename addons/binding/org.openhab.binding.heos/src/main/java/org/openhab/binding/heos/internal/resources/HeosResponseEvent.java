@@ -44,11 +44,9 @@ public class HeosResponseEvent {
 
     public void getInfos() {
         logger.debug("Event Type: {} \n Command: {}", eventType, commandType);
-        // System.out.println("\n\nEvent Type: " + eventType + "\nCommand: " + commandType);
         if (message != null) {
             for (String key : messagesMap.keySet()) {
                 logger.debug("{} : {}", key, messagesMap.get(key));
-                // System.out.println(key + ": " + messagesMap.get(key));
             }
         }
     }

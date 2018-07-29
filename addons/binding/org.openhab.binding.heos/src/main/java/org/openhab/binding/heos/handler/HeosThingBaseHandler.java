@@ -13,18 +13,21 @@ import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.heos.internal.HeosChannelHandlerFactory;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.api.HeosSystem;
@@ -40,7 +43,6 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Einig - Initial contribution
  *
  */
-
 public abstract class HeosThingBaseHandler extends BaseThingHandler implements HeosEventListener {
 
     protected String id;
@@ -51,9 +53,9 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
 
     private long refreshStartTime = 0;
     private long refreshRequestTime = 0;
-    private final int REFRESH_BLOCK_TIME = 5000;
+    private static final int REFRESH_BLOCK_TIME = 5000;
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(HeosThingBaseHandler.class);
 
     public HeosThingBaseHandler(Thing thing, HeosSystem heos, HeosFacade api) {
         super(thing);
@@ -67,7 +69,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      * for updating the HEOS thing via the {@link HeosSystem}. As example
      * for a player the command would be {@link HeosSystem#getPlayerState(String)}
      */
-
     protected abstract void updateHeosThingState();
 
     /**
@@ -75,7 +76,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      * For more information about refreshing the channels see
      * {link {@link HeosThingBaseHandler#handleRefresh()}
      */
-
     protected abstract void refreshChannels();
 
     public abstract void setStatusOffline();
@@ -105,7 +105,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      * lead to a high amount of network traffic. So the handleRefresh() blocks
      * the update request of {@link HeosThingBaseHandler#updateHeosThingState()}.
      */
-
     private synchronized void handleRefresh() {
         refreshRequestTime = System.currentTimeMillis();
         if (refreshRequestTime - refreshStartTime > REFRESH_BLOCK_TIME) {
@@ -128,7 +127,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      * Has to be called by the player or group handler to initialize
      * {@link HeosChannelHandlerFactory} and bridge
      */
-
     protected void initChannelHandlerFatory() {
         if (getBridge() != null) {
             this.bridge = (HeosBridgeHandler) getBridge().getHandler();
@@ -142,7 +140,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      * Dispose the handler and unregister the handler
      * form Change Events
      */
-
     @Override
     public void dispose() {
         api.unregisterforChangeEvents(this);
@@ -173,7 +170,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      * @param event
      * @param command
      */
-
     protected void handleThingStateUpdate(@NonNull String event, @NonNull String command) {
         if (event.equals(HEOS_STATE)) {
             switch (command) {
@@ -204,10 +200,10 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
             }
         }
         if (event.equals(HEOS_CUR_POS)) {
-            this.updateState(CH_ID_CUR_POS, StringType.valueOf(command));
+            this.updateState(CH_ID_CUR_POS, DecimalType.valueOf(command));
         }
         if (event.equals(HEOS_DURATION)) {
-            this.updateState(CH_ID_DURATION, StringType.valueOf(command));
+            this.updateState(CH_ID_DURATION, DecimalType.valueOf(command));
         }
         if (event.equals(SHUFFLE_MODE_CHANGED)) {
             if (command.equals(HEOS_ON)) {
@@ -227,7 +223,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
         }
     }
 
-    protected void handleThingMediaUpdate(HashMap<String, String> info) {
+    protected void handleThingMediaUpdate(@NonNull Map<String, String> info) {
         for (String key : info.keySet()) {
             switch (key) {
                 case SONG:
@@ -240,24 +236,37 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                     updateState(CH_ID_ALBUM, StringType.valueOf(info.get(key)));
                     break;
                 case IMAGE_URL:
-                    updateState(CH_ID_IMAGE_URL, StringType.valueOf(info.get(key)));
-                    break;
+                    try {
+                        URL url = new URL(info.get(key)); // checks if String is proper URL
+                        RawType cover = HttpUtil.downloadImage(url.toString());
+                        if (cover != null) {
+                            updateState(CH_ID_IMAGE_URL, cover);
+                        }
+                        break;
+                    } catch (MalformedURLException e) {
+                        logger.debug("Cover can't be loaded. No propper URL: {}", info.get(key));
+                        break;
+                    }
                 case STATION:
+                    updateState(CH_ID_STATION, StringType.valueOf(info.get(key)));
                     if (info.get(SID).equals(INPUT_SID)) {
-                        String inputName = info.get(MID).substring(info.get(MID).indexOf("/") + 1); // removes the
-                                                                                                    // "input/" part
-                                                                                                    // before the
-                                                                                                    // input name
+                        // removes the "input/" part before the input name
+                        String inputName = info.get(MID).substring(info.get(MID).indexOf("/") + 1);
                         updateState(CH_ID_INPUTS, StringType.valueOf(inputName));
                     }
-                    updateState(CH_ID_STATION, StringType.valueOf(info.get(key)));
+                    // else {
+                    // updateState(CH_ID_INPUTS, StringType.valueOf(""));
+                    // }
                     break;
                 case TYPE:
-                    updateState(CH_ID_TYPE, StringType.valueOf(info.get(key)));
-                    if (info.get(key).equals(STATION)) {
-                        updateState(CH_ID_STATION, StringType.valueOf(info.get(STATION)));
+                    if (INPUT_SID.equals(info.get(SID))) {
+                        updateState(CH_ID_TYPE, StringType.valueOf(info.get(STATION)));
                     } else {
-                        updateState(CH_ID_STATION, StringType.valueOf("No Station"));
+                        updateState(CH_ID_TYPE, StringType.valueOf(info.get(key)));
+                        updateState(CH_ID_INPUTS, StringType.valueOf(""));
+                    }
+                    if (!STATION.equals(info.get(key))) {
+                        updateState(CH_ID_STATION, StringType.valueOf(""));
                     }
                     break;
             }

@@ -53,9 +53,7 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
     private AudioHTTPServer audioHTTPServer;
     private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
-    // private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = HeosBindingConstants.supportedThingTypes();
-
-    private String callbackUrl = null;
+    private String callbackUrl;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

@@ -14,50 +14,43 @@ import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.resources.HeosConstants;
 
 /**
+ * The {@link HeosChannelHandlerShuffleMode} handles the SchuffelModechannel command
+ * from the implementing thing.
+ *
  * @author Johannes Einig - Initial contribution
  *
  */
 public class HeosChannelHandlerShuffleMode extends HeosChannelHandler {
 
-    /**
-     * @param bridge
-     * @param api
-     */
     public HeosChannelHandlerShuffleMode(HeosBridgeHandler bridge, HeosFacade api) {
         super(bridge, api);
     }
 
     /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandPlayer()
+     * @see
+     * org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandPlayer()
      */
     @Override
     protected void handleCommandPlayer() {
         setShuffleMode();
-
     }
 
     /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandGroup()
+     * @see
+     * org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandGroup()
      */
     @Override
     protected void handleCommandGroup() {
         setShuffleMode();
-
     }
 
     /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandBridge()
+     * @see
+     * org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandBridge()
      */
     @Override
     protected void handleCommandBridge() {
         // Do nothing
-
     }
 
     private void setShuffleMode() {

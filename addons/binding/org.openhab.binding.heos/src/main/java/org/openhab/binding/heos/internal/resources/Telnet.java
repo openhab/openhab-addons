@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.commons.net.telnet.TelnetInputListener;
@@ -31,42 +32,42 @@ import org.slf4j.LoggerFactory;
 
 public class Telnet {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final int READ_TIMEOUT = 3000;
+    private static final int IS_ALIVE_TIMEOUT = 10000;
 
-    private String ip = "";
-    private int port = 0;
+    private final Logger logger = LoggerFactory.getLogger(Telnet.class);
 
-    private String readResult = "";
-    private String readLineResult = "";
-    private ArrayList<String> readResultList = new ArrayList<String>(5);
+    private String ip;
+    private int port;
+
+    private String readResult;
+    private String readLineResult;
+    private List<String> readResultList = new ArrayList<>(5);
 
     private InetAddress address;
-    private TelnetClient client = null;
-    private DataOutputStream outStream = null;
-    private InputStream inputStream = null;
-    private BufferedInputStream bufferedStream = null;
+    private TelnetClient client;
+    private DataOutputStream outStream;
+    private InputStream inputStream;
+    private BufferedInputStream bufferedStream;
 
     private HeosStringPropertyChangeListener eolNotifyer = new HeosStringPropertyChangeListener();
 
-    private TelnetInputListener inputListener = null;
-
-    private final int READ_TIMEOUT = 3000;
-    private final int IS_ALIVE_TIMEOUT = 10000;
+    private TelnetInputListener inputListener;
 
     public Telnet() {
         client = new TelnetClient();
+        readResult = ""; // Has to bin initialized because value is used later with readResult.concat() function
     }
 
     /**
      * Connects to a host with the specified IP address and port
      *
-     * @param ip IP Address of the host
+     * @param ip   IP Address of the host
      * @param port where to be connected
      * @return True if connection was successful
      * @throws SocketException
      * @throws IOException
      */
-
     public boolean connect(String ip, int port) throws SocketException, IOException {
         this.ip = ip;
         this.port = port;
@@ -94,7 +95,6 @@ public class Telnet {
      * @return true after the command was send
      * @throws IOException
      */
-
     public boolean send(String command) throws IOException {
         if (client.isConnected()) {
             sendClear(command + "\r\n");
@@ -161,7 +161,7 @@ public class Telnet {
      * @throws IOException
      */
 
-    public ArrayList<String> readLine() throws ReadException, IOException {
+    public List<String> readLine() throws ReadException, IOException {
         return readLine(READ_TIMEOUT);
     }
 
@@ -178,7 +178,7 @@ public class Telnet {
      * @throws IOException
      */
 
-    public ArrayList<String> readLine(int timeOut) throws ReadException, IOException {
+    public List<String> readLine(int timeOut) throws ReadException, IOException {
         readResultList.clear();
 
         long timeZero = System.currentTimeMillis();

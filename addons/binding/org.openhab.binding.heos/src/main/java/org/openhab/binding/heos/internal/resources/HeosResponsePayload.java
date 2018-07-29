@@ -9,8 +9,8 @@
 package org.openhab.binding.heos.internal.resources;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The {@link HeosResponsePayload} provides the Payload message
@@ -21,8 +21,8 @@ import java.util.List;
 
 public class HeosResponsePayload {
 
-    private List<HashMap<String, String>> payload = new ArrayList<HashMap<String, String>>();
-    private List<List<HashMap<String, String>>> groupMembers = new ArrayList<List<HashMap<String, String>>>();
+    private List<Map<String, String>> payload = new ArrayList<>();
+    private List<List<Map<String, String>>> groupMembers = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -31,15 +31,12 @@ public class HeosResponsePayload {
 
     private String payloadToString() {
         String returnString = "";
-
         for (int i = 0; i < payload.size(); i++) {
             returnString = returnString + "\n\nPayload: " + (i + 1);
-
             for (String key : payload.get(i).keySet()) {
                 returnString = returnString + "\n" + key + ":\t " + payload.get(i).get(key);
             }
         }
-
         return returnString;
     }
 
@@ -53,11 +50,11 @@ public class HeosResponsePayload {
      * @return a list with HashMaps for each JSON Array
      */
 
-    public List<HashMap<String, String>> getPayloadList() {
+    public List<Map<String, String>> getPayloadList() {
         return payload;
     }
 
-    public void setPayload(List<HashMap<String, String>> payload) {
+    public void setPayload(List<Map<String, String>> payload) {
         this.payload = payload;
     }
 
@@ -72,11 +69,11 @@ public class HeosResponsePayload {
      * @return nested Lists for the groups and their members
      */
 
-    public List<List<HashMap<String, String>>> getPlayerList() {
+    public List<List<Map<String, String>>> getPlayerList() {
         return groupMembers;
     }
 
-    public void setPlayerList(List<List<HashMap<String, String>>> player) {
+    public void setPlayerList(List<List<Map<String, String>>> player) {
         this.groupMembers = player;
     }
 }

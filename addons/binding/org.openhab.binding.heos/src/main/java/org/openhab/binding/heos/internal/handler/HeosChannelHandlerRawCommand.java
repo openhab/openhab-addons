@@ -12,22 +12,20 @@ import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
 /**
+ *
+ * The {@link HeosChannelHandlerRawCommand} handles the RawCommand channel command
+ * from the implementing thing.
+ *
  * @author Johannes Einig - Initial contribution
  *
  */
 public class HeosChannelHandlerRawCommand extends HeosChannelHandler {
 
-    /**
-     * @param bridge
-     * @param api
-     */
     public HeosChannelHandlerRawCommand(HeosBridgeHandler bridge, HeosFacade api) {
         super(bridge, api);
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.internal.channelHandler.HeosChannelHandler#handleCommandPlayer(org.eclipse.smarthome.
      * core.types.Command)
@@ -35,12 +33,9 @@ public class HeosChannelHandlerRawCommand extends HeosChannelHandler {
     @Override
     protected void handleCommandPlayer() {
         // not used on player
-
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.internal.channelHandler.HeosChannelHandler#handleCommandGroup(org.eclipse.smarthome.core
      * .types.Command)
@@ -48,12 +43,9 @@ public class HeosChannelHandlerRawCommand extends HeosChannelHandler {
     @Override
     protected void handleCommandGroup() {
         // not used on group
-
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.internal.channelHandler.HeosChannelHandler#handleCommandBridge(org.eclipse.smarthome.
      * core.types.Command)

@@ -54,7 +54,8 @@ public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
             properties.put(HOST, device.getIdentity().getDescriptorURL().getHost());
             properties.put(NAME, device.getDetails().getModelDetails().getModelName());
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(PLAYER_TYPE).build();
+                    .withLabel(" Bridge - " + device.getDetails().getFriendlyName())
+                    .withRepresentationProperty(PLAYER_TYPE).build();
             logger.info("Found HEOS device with UID: {}", uid.getAsString());
             return result;
         }
@@ -63,7 +64,6 @@ public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
-
         Optional<RemoteDevice> optDevice = Optional.ofNullable(device);
         String modelName = optDevice.map(RemoteDevice::getDetails).map(DeviceDetails::getModelDetails)
                 .map(ModelDetails::getModelName).orElse("UNKNOWN");
@@ -72,49 +72,13 @@ public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
         if (modelManufacturer.equals("Denon")) {
             if (modelName.startsWith("HEOS") || modelName.endsWith("H")) {
-                if (device.getType().getType().startsWith("ACT")) {
+                String deviceType = device.getType().getType();
+                if (deviceType.startsWith("ACT") || deviceType.startsWith("Aios")) {
                     return new ThingUID(THING_TYPE_BRIDGE,
                             optDevice.get().getIdentity().getUdn().getIdentifierString());
                 }
             }
         }
         return null;
-
-        // optDevice.map(RemoteDevice::getDetails).map(DeviceDetails::getModelDetails).map(ModelDetails::getModelName)
-        // .ifPresent(modelName -> {
-        // optDevice.map(RemoteDevice::getDetails).map(DeviceDetails::getManufacturerDetails)
-        // .map(ManufacturerDetails::getManufacturer).ifPresent(modelManufacturer -> {
-        // if (modelManufacturer.equals("Denon")) {
-        // if (modelName.startsWith("HEOS") || modelName.endsWith("H")) {
-        // if (device.getType().getType().startsWith("ACT")) {
-        // thingUID = new ThingUID(THING_TYPE_BRIDGE,
-        // optDevice.get().getIdentity().getUdn().getIdentifierString());
-        // }
-        // }
-        // }
-        // });
-        // });
-        // return thingUID;
-
-        // DeviceDetails details = device.getDetails();
-        // if (details != null) {
-        // ModelDetails modelDetails = details.getModelDetails();
-        // ManufacturerDetails modelManufacturerDetails = details.getManufacturerDetails();
-        // if (modelDetails != null && modelManufacturerDetails != null) {
-        // String modelName = modelDetails.getModelName();
-        // String modelManufacturer = modelManufacturerDetails.getManufacturer();
-        // if (modelName != null && modelManufacturer != null) {
-        // if (modelManufacturer.equals("Denon")) {
-        // if (modelName.startsWith("HEOS") || modelName.endsWith("H")) {
-        // if (device.getType().getType().startsWith("ACT")) {
-        // return new ThingUID(THING_TYPE_BRIDGE,
-        // device.getIdentity().getUdn().getIdentifierString());
-        // }
-        // }
-        // }
-        // }
-        // }
-        // }
-        // return null;
     }
 }

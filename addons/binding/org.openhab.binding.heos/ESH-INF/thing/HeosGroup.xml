@@ -1,66 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="heos"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-        
-           <thing-type id="group">
-               <supported-bridge-type-refs>
-                   <bridge-type-ref id="bridge"/>
-               </supported-bridge-type-refs>
-               <label>HEOS Group</label>
-               <description>A group of HEOS Player</description>
-                
-            <channels>
-		        <channel id="Control"         typeId="control"/>
-		        <channel id="Volume"          typeId="volume" />
-		        <channel id="Mute"            typeId="mute" />		        
-		        <channel id="Inputs"          typeId="input" />		        
-		        <channel id="Title"           typeId="title"/> 
-		        <channel id="Interpret"       typeId="interpret"/>   
-		        <channel id="Album"           typeId="album"/> 
-		        <channel id="ImageUrl"        typeId="imageUrl"/>		         
-		        <channel id="CurrentPosition" typeId="currentPosition"/>
-		        <channel id="Duration"        typeId="duration"/>
-		        <channel id="Type"            typeId="type"/>
-		        <channel id="Station"         typeId="station"/>
-		        <channel id="PlayUrl"         typeId="playUrl"/>
-		        <channel id="Ungroup"         typeId="ungroup" />
-		        <channel id="Shuffel"         typeId="shuffleMode" />  
-                <channel id="RepeatMode"      typeId="repeatMode" />		             
-            </channels>
-            
-            <config-description>
-                <parameter name="gid" type="text" readOnly="true" > 
-                    <label>Group ID</label>
-                    <description>The internal group ID</description>                    
-                    <required>true</required>                
-                </parameter>
-                 <parameter name="name" type="text" readOnly="true">
-                     <label>Group Name</label>
-                      <description>The name of the group</description>
-                       <required>false</required>
-                 </parameter>
-                <parameter name="leader" type="text" readOnly="true">
-                     <label>Leading HEOS PID</label>
-                     <description>The PID of the group leading HEOS player</description>
-                     <required>false</required>                                    
-                </parameter>                       
-                <parameter name="type" type="text" readOnly="true">
-                    <label>Group or Player</label>
-                    <description> Defines if this is a single player or a group</description>
-                    <required>true</required>
-                </parameter>
-                <parameter name="nameHash" type="text" readOnly="true">
-                    <label>Group name Hash Value</label>
-                    <description> The Hash value calculated by the Group Name</description>
-                    <required>false</required>
-                </parameter> 
-                <parameter name="groupMemberHash" type="text" readOnly="true">
-                    <label>Group member Hash Value</label>
-                    <description> The Hash value calculated by the group member PIDs</description>
-                    <required>false</required>
-                </parameter>           
-            </config-description>                
-          </thing-type>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="group">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>HEOS Group</label>
+		<description>A group of HEOS Player</description>
+
+		<channels>
+			<channel id="Control" typeId="control" />
+			<channel id="Volume" typeId="volume" />
+			<channel id="Mute" typeId="mute" />
+			<channel id="Inputs" typeId="input" />
+			<channel id="Title" typeId="title" />
+			<channel id="Interpret" typeId="interpret" />
+			<channel id="Album" typeId="album" />
+			<channel id="ImageUrl" typeId="imageUrl" />
+			<channel id="CurrentPosition" typeId="currentPosition" />
+			<channel id="Duration" typeId="duration" />
+			<channel id="Type" typeId="type" />
+			<channel id="Station" typeId="station" />
+			<channel id="PlayUrl" typeId="playUrl" />
+			<channel id="Ungroup" typeId="ungroup" />
+			<channel id="Shuffel" typeId="shuffleMode" />
+			<channel id="RepeatMode" typeId="repeatMode" />
+		</channels>
+
+		<config-description>
+			<parameter name="gid" type="text" readOnly="true">
+				<label>Group ID</label>
+				<description>The internal group ID</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="name" type="text" readOnly="true">
+				<label>Group Name</label>
+				<description>The name of the group</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="leader" type="text" readOnly="true">
+				<label>Leading HEOS PID</label>
+				<description>The PID of the group leading HEOS player</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="type" type="text" readOnly="true">
+				<label>Group or Player</label>
+				<description> Defines if this is a single player or a group</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="nameHash" type="text" readOnly="true">
+				<label>Group name Hash Value</label>
+				<description> The Hash value calculated by the Group Name</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="groupMemberHash" type="text" readOnly="true">
+				<label>Group member Hash Value</label>
+				<description> The Hash value calculated by the group member PIDs</description>
+				<required>false</required>
+			</parameter>
+		</config-description>
+	</thing-type>
 </thing:thing-descriptions>

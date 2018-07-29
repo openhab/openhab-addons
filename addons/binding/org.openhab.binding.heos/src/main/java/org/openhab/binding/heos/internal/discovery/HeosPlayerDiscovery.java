@@ -12,6 +12,7 @@ import static org.openhab.binding.heos.HeosBindingConstants.*;
 import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -67,7 +68,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
     protected void startScan() {
         logger.info("Start scan for HEOS Player");
 
-        HashMap<String, HeosPlayer> playerMap = new HashMap<>();
+        Map<String, HeosPlayer> playerMap = new HashMap<>();
         playerMap = bridge.getNewPlayer();
 
         if (playerMap == null) {
@@ -93,7 +94,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
 
         logger.info("Start scan for HEOS Groups");
 
-        HashMap<String, HeosGroup> groupMap = new HashMap<>();
+        Map<String, HeosGroup> groupMap = new HashMap<>();
 
         groupMap = bridge.getNewGroups();
 
@@ -136,7 +137,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
     // Informs the system of removed groups by using the thingRemoved method.
 
     private void removedGroups() {
-        HashMap<String, HeosGroup> removedGroupMap = new HashMap<>();
+        Map<String, HeosGroup> removedGroupMap = new HashMap<>();
         removedGroupMap = bridge.getRemovedGroups();
         if (!removedGroupMap.isEmpty()) {
             for (String key : removedGroupMap.keySet()) {
@@ -151,7 +152,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
     // Informs the system of removed players by using the thingRemoved method.
 
     private void removedPlayers() {
-        HashMap<String, HeosPlayer> removedPlayerMap = new HashMap<>();
+        Map<String, HeosPlayer> removedPlayerMap = new HashMap<>();
         removedPlayerMap = bridge.getRemovedPlayer();
         if (!removedPlayerMap.isEmpty()) {
             for (String key : removedPlayerMap.keySet()) {
@@ -166,7 +167,6 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         logger.trace("Start HEOS Player background discovery");
-
         if (scanningJob == null || scanningJob.isCancelled()) {
             this.scanningJob = scheduler.scheduleWithFixedDelay(this.scanningRunnable, INITIAL_DELAY, SCAN_INTERVAL,
                     TimeUnit.SECONDS);

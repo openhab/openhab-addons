@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The {@link HeosGroup} represents the group within the
@@ -24,9 +25,9 @@ public class HeosGroup extends HeosMediaObject {
     private final String[] supportedGroupInfo = { "name", "gip", "leader" };
     private final String[] supportedGroupStates = { "state", "level", "mute" };
 
-    private HashMap<String, String> groupInfo;
-    private HashMap<String, String> groupState;
-    private List<HashMap<String, String>> playerList;
+    private Map<String, String> groupInfo;
+    private Map<String, String> groupState;
+    private List<Map<String, String>> playerList;
     private List<String> groupMemberPidList;
     private List<String> groupMemberPidListSorted;
 
@@ -58,7 +59,7 @@ public class HeosGroup extends HeosMediaObject {
         initGroup();
     }
 
-    public void updateGroupInfo(HashMap<String, String> values) {
+    public void updateGroupInfo(Map<String, String> values) {
         groupInfo = values;
         for (String key : values.keySet()) {
             if (key.equals(NAME)) {
@@ -78,7 +79,7 @@ public class HeosGroup extends HeosMediaObject {
         }
     }
 
-    public void updateGroupState(HashMap<String, String> values) {
+    public void updateGroupState(Map<String, String> values) {
         groupState = values;
         for (String key : values.keySet()) {
             if (key.equals(STATE)) {
@@ -101,11 +102,11 @@ public class HeosGroup extends HeosMediaObject {
      * @param playerList The List of the Player (player as: HashMap<String,String>)
      */
 
-    public void updateGroupPlayers(List<HashMap<String, String>> playerList) {
+    public void updateGroupPlayers(List<Map<String, String>> playerList) {
         this.playerList = playerList;
         groupMemberPidList = new ArrayList<String>(playerList.size());
         for (int i = 0; i < this.playerList.size(); i++) {
-            HashMap<String, String> player = playerList.get(i);
+            Map<String, String> player = playerList.get(i);
             groupMemberPidList.add(player.get(PID));
         }
         // Generating a dedicated sorted and un-sorted list for different purposes
@@ -144,7 +145,7 @@ public class HeosGroup extends HeosMediaObject {
         updateGroupState(groupState);
     }
 
-    public HashMap<String, String> getGroupInfo() {
+    public Map<String, String> getGroupInfo() {
         return groupInfo;
     }
 
@@ -152,7 +153,7 @@ public class HeosGroup extends HeosMediaObject {
         this.groupInfo = groupInfo;
     }
 
-    public HashMap<String, String> getGroupState() {
+    public Map<String, String> getGroupState() {
         return groupState;
     }
 

@@ -11,7 +11,7 @@ package org.openhab.binding.heos.internal.resources;
 import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.openhab.binding.heos.internal.api.HeosEventController;
 import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HeosSendCommand} is responsibel to send a command
+ * The {@link HeosSendCommand} is responsible to send a command
  * to the HEOS bridge
  *
  * @author Johannes Einig - Initial contribution
@@ -31,9 +31,9 @@ public class HeosSendCommand {
     private HeosJsonParser parser;
     private HeosResponse response;
     private HeosEventController eventController;
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(HeosSendCommand.class);
 
-    private String command = "";
+    private String command;
 
     public HeosSendCommand(Telnet client, HeosJsonParser parser, HeosResponse response,
             HeosEventController eventController) {
@@ -63,7 +63,7 @@ public class HeosSendCommand {
                         } catch (InterruptedException e) {
                             logger.debug("Interrupted Exception - Message: {}", e.getMessage());
                         }
-                        ArrayList<String> readResultList = client.readLine(15000);
+                        List<String> readResultList = client.readLine(15000);
 
                         for (int i = 0; i < readResultList.size(); i++) {
                             parser.parseResult(readResultList.get(i));
@@ -107,7 +107,7 @@ public class HeosSendCommand {
     private boolean executeSendCommand() throws ReadException, IOException {
         boolean sendSuccess = client.send(command);
         if (sendSuccess) {
-            ArrayList<String> readResultList = client.readLine();
+            List<String> readResultList = client.readLine();
 
             for (int i = 0; i < readResultList.size(); i++) {
                 parser.parseResult(readResultList.get(i));

@@ -11,7 +11,7 @@ package org.openhab.binding.heos.handler;
 import static org.openhab.binding.heos.HeosBindingConstants.*;
 import static org.openhab.binding.heos.internal.resources.HeosConstants.PID;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +35,6 @@ import org.openhab.binding.heos.internal.resources.HeosPlayer;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosPlayerHandler extends HeosThingBaseHandler {
 
     private String pid;
@@ -77,7 +76,7 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
     }
 
     @Override
-    public void playerMediaChangeEvent(String pid, HashMap<String, String> info) {
+    public void playerMediaChangeEvent(String pid, Map<String, String> info) {
         this.player.updateMediaInfo(info);
         if (pid.equals(this.pid)) {
             handleThingMediaUpdate(info);
@@ -135,7 +134,6 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
         updateState(CH_ID_DURATION, StringType.valueOf("0"));
         updateState(CH_ID_INPUTS, StringType.valueOf("NULL"));
         updateState(CH_ID_REPEAT_MODE, StringType.valueOf(player.getRepeatMode()));
-
     }
 
     public class InitializationRunnable implements Runnable {

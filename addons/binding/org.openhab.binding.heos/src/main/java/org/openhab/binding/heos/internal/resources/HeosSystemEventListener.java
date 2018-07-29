@@ -9,7 +9,8 @@
 package org.openhab.binding.heos.internal.resources;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +27,9 @@ import org.slf4j.LoggerFactory;
 
 public class HeosSystemEventListener {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(HeosSystemEventListener.class);
 
-    protected ArrayList<HeosEventListener> listenerList = new ArrayList<HeosEventListener>();
+    protected List<HeosEventListener> listenerList = new ArrayList<>();
 
     /**
      * Register a listener from type {@link HeosEventListener} to be notified by
@@ -54,8 +55,8 @@ public class HeosSystemEventListener {
     /**
      * Notifies the registered listener of a changed state type event
      *
-     * @param pid the ID of the player or group which has changed
-     * @param event the name of the event (see {@link HeosConstants} for event types)
+     * @param pid     the ID of the player or group which has changed
+     * @param event   the name of the event (see {@link HeosConstants} for event types)
      * @param command the command of the event
      */
 
@@ -66,19 +67,19 @@ public class HeosSystemEventListener {
     /**
      * Notifies the registered listener of a changed media type event
      *
-     * @param pid the ID of the player or group which has changed
+     * @param pid  the ID of the player or group which has changed
      * @param info an HashMap which contains the media information
      */
 
-    public void fireMediaEvent(String pid, HashMap<String, String> info) {
+    public void fireMediaEvent(String pid, Map<String, String> info) {
         listenerList.forEach(element -> element.playerMediaChangeEvent(pid, info));
     }
 
     /**
      * Notifies the registered listener if a change of the bridge state
      *
-     * @param event the event type
-     * @param result the result (success or fail)
+     * @param event   the event type
+     * @param result  the result (success or fail)
      * @param command the command of the event
      */
 

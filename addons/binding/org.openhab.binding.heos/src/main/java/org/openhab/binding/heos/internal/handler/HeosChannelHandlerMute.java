@@ -13,22 +13,19 @@ import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
 /**
+ * The {@link HeosChannelHandlerMute} handles the Mute channel command
+ * from the implementing thing.
+ *
  * @author Johannes Einig - Initial contribution
  *
  */
 public class HeosChannelHandlerMute extends HeosChannelHandler {
 
-    /**
-     * @param bridge
-     * @param api
-     */
     public HeosChannelHandlerMute(HeosBridgeHandler bridge, HeosFacade api) {
         super(bridge, api);
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandPlayer(org.eclipse.smarthome.core.types.
      * Command)
@@ -43,8 +40,6 @@ public class HeosChannelHandlerMute extends HeosChannelHandler {
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandGroup(org.eclipse.smarthome.core.types.
      * Command)
@@ -59,8 +54,6 @@ public class HeosChannelHandlerMute extends HeosChannelHandler {
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandBridge(org.eclipse.smarthome.core.types.
      * Command)
@@ -69,5 +62,4 @@ public class HeosChannelHandlerMute extends HeosChannelHandler {
     protected void handleCommandBridge() {
         // No such channel on bridge
     }
-
 }

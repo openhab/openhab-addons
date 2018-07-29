@@ -13,22 +13,19 @@ import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
 /**
+ * The {@link HeosChannelHandlerReboot} handles the Reboot channel command
+ * from the implementing thing.
+ *
  * @author Johannes Einig - Initial contribution
  *
  */
 public class HeosChannelHandlerReboot extends HeosChannelHandler {
 
-    /**
-     * @param bridge
-     * @param api
-     */
     public HeosChannelHandlerReboot(HeosBridgeHandler bridge, HeosFacade api) {
         super(bridge, api);
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.internal.channelHandler.HeosChannelHandler#handleCommandPlayer(org.eclipse.smarthome.
      * core.types.Command)
@@ -36,12 +33,9 @@ public class HeosChannelHandlerReboot extends HeosChannelHandler {
     @Override
     protected void handleCommandPlayer() {
         // not used on player
-
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.internal.channelHandler.HeosChannelHandler#handleCommandGroup(org.eclipse.smarthome.core
      * .types.Command)
@@ -49,12 +43,9 @@ public class HeosChannelHandlerReboot extends HeosChannelHandler {
     @Override
     protected void handleCommandGroup() {
         // Not used on group
-
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.internal.channelHandler.HeosChannelHandler#handleCommandBridge(org.eclipse.smarthome.
      * core.types.Command)

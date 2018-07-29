@@ -9,7 +9,7 @@
 package org.openhab.binding.heos.internal.resources;
 
 import java.util.EventListener;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.heos.internal.api.HeosEventController;
@@ -27,7 +27,7 @@ public interface HeosEventListener extends EventListener {
 
     void playerStateChangeEvent(String pid, String event, String command);
 
-    void playerMediaChangeEvent(String pid, HashMap<String, String> info);
+    void playerMediaChangeEvent(String pid, Map<String, String> info);
 
     void bridgeChangeEvent(String event, String result, String command);
 

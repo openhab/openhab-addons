@@ -1,66 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="heos"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Heos Player Thing Type -->
-    <thing-type id="player">
-         <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge" />
-        </supported-bridge-type-refs>    
-        <label>Heos Player</label>
-        <description>A HEOS Player of the HEOS Network</description>
-        
-        <channels>
-            <channel id="Control"           typeId="control"/>
-            <channel id="Volume"            typeId="volume" />
-            <channel id="Mute"              typeId="mute" /> 
-            <channel id="Inputs"            typeId="input" />                       
-            <channel id="Title"             typeId="title" />
-            <channel id="Interpret"         typeId="interpret"/>
-            <channel id="Album"             typeId="album"/>
-            <channel id="ImageUrl"          typeId="imageUrl"/>      
-            <channel id="CurrentPosition"   typeId="currentPosition" />
-            <channel id="Duration"          typeId="duration" />
-            <channel id="Type"              typeId="type" />
-            <channel id="Station"           typeId="station"/>            
-            <channel id="PlayUrl"           typeId="playUrl"/>
-            <channel id="Shuffel"           typeId="shuffleMode" />
-            <channel id="RepeatMode"        typeId="repeatMode" />    
-        </channels>   
-        
-        <config-description>
-            <parameter name="pid" type="text"  readOnly="true">
-                <label>Player ID</label>
-                <description>The internal Player ID</description>
-                <required>true</required>
-            </parameter>
-            <parameter name="name" type="text"  readOnly="true">
-                <label>Player Name</label>
-                <description>The Player Name</description>
-                <required>false</required>                   
-            </parameter>
-            <parameter name="model" type="text"  readOnly="true">
-                <label>Player Model</label>
-                <required>false</required>
-            </parameter>
-             <parameter name="ipAddress" type="text"  readOnly="true">
-                <label>Player IP</label>
-                <required>false</required>
-            </parameter>
-            <parameter name="type" type="text" readOnly="true">
-                <label>Group or Player</label>
-                <description> Defines if this is a single Player or a Group</description>
-                <required>true</required>
-            </parameter> 
-                               
-        </config-description>
+	<!-- Heos Player Thing Type -->
+	<thing-type id="player">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Heos Player</label>
+		<description>A HEOS Player of the HEOS Network</description>
 
-
-    </thing-type>
-
-    
-    
-
+		<channels>
+			<channel id="Control" typeId="control" />
+			<channel id="Volume" typeId="volume" />
+			<channel id="Mute" typeId="mute" />
+			<channel id="Inputs" typeId="input" />
+			<channel id="Title" typeId="title" />
+			<channel id="Interpret" typeId="interpret" />
+			<channel id="Album" typeId="album" />
+			<channel id="ImageUrl" typeId="imageUrl" />
+			<channel id="CurrentPosition" typeId="currentPosition" />
+			<channel id="Duration" typeId="duration" />
+			<channel id="Type" typeId="type" />
+			<channel id="Station" typeId="station" />
+			<channel id="PlayUrl" typeId="playUrl" />
+			<channel id="Shuffel" typeId="shuffleMode" />
+			<channel id="RepeatMode" typeId="repeatMode" />
+		</channels>
+		<config-description>
+			<parameter name="pid" type="text" readOnly="true">
+				<label>Player ID</label>
+				<description>The internal Player ID</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="name" type="text" readOnly="true">
+				<label>Player Name</label>
+				<description>The Player Name</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="model" type="text" readOnly="true">
+				<label>Player Model</label>
+				<required>false</required>
+			</parameter>
+			<parameter name="ipAddress" type="text" readOnly="true">
+				<label>Player IP</label>
+				<required>false</required>
+			</parameter>
+			<parameter name="type" type="text" readOnly="true">
+				<label>Group or Player</label>
+				<description> Defines if this is a single Player or a Group</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
 </thing:thing-descriptions>

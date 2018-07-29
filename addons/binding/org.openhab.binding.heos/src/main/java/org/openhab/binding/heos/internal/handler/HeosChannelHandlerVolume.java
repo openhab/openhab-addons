@@ -13,7 +13,8 @@ import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
 /**
- * This class handles volume changes from the OpenHAb HEOS Volume channel
+ * The {@link HeosChannelHandlerVolume} handles the Volume channel command
+ * from the implementing thing.
  *
  * @author Johannes Einig - Initial contribution
  *
@@ -26,8 +27,6 @@ public class HeosChannelHandlerVolume extends HeosChannelHandler {
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandPlayer(org.eclipse.smarthome.core.types.
      * Command)
@@ -46,8 +45,6 @@ public class HeosChannelHandlerVolume extends HeosChannelHandler {
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandGroup(org.eclipse.smarthome.core.types.
      * Command)
@@ -66,8 +63,6 @@ public class HeosChannelHandlerVolume extends HeosChannelHandler {
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandBridge(org.eclipse.smarthome.core.types.
      * Command)

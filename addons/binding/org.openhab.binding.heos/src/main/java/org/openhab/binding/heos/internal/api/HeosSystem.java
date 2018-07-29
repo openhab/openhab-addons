@@ -17,6 +17,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -39,11 +40,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosSystem {
 
+    private static final int START_DELAY = 30;
+    private static final int WAIT_TIME_AFTER_RECONNECT = 15000;
+
     private String connectionIP = "";
-    private int connectionPort = 0;
+    private int connectionPort;
 
     private Telnet commandLine;
     private Telnet eventLine;
@@ -52,27 +55,20 @@ public class HeosSystem {
     private HeosJsonParser parser = new HeosJsonParser(response);
     private HeosEventController eventController = new HeosEventController(response, heosCommand, this);
     private HeosSendCommand sendCommand = new HeosSendCommand(commandLine, parser, response, eventController);
-    private HashMap<String, HeosPlayer> playerMapNew;
-    private HashMap<String, HeosGroup> groupMapNew;
-    private HashMap<String, HeosPlayer> playerMapOld;
-    private HashMap<String, HeosGroup> groupMapOld;
-    private HashMap<String, HeosPlayer> removedPlayerMap;
-    private HashMap<String, HeosGroup> removedGroupMap;
+    private Map<String, HeosPlayer> playerMapNew;
+    private Map<String, HeosGroup> groupMapNew;
+    private Map<String, HeosPlayer> playerMapOld;
+    private Map<String, HeosGroup> groupMapOld;
+    private Map<String, HeosPlayer> removedPlayerMap;
+    private Map<String, HeosGroup> removedGroupMap;
     private HeosFacade heosApi = new HeosFacade(this, eventController);
 
     private Logger logger = LoggerFactory.getLogger(HeosSystem.class);
 
-    boolean sendSuccess = false;
+    boolean sendSuccess;
 
     private ScheduledExecutorService keepAlive;
     private KeepAliveRunnable keepAliveRunnable = new KeepAliveRunnable();
-
-    private final int START_DELAY = 30;
-
-    private final int WAIT_TIME_AFTER_RECONNECT = 15000;
-
-    public HeosSystem() {
-    }
 
     /**
      * Method to be used to send a command to the HEOS system.
@@ -89,7 +85,6 @@ public class HeosSystem {
      * @param command the command to be send
      * @return true if sending and reading successful
      */
-
     public synchronized boolean send(String command) {
         logger.debug("Sending Command: {}", command);
         try {
@@ -113,12 +108,10 @@ public class HeosSystem {
                 }
             } catch (ReadException | IOException e1) {
                 logger.warn("HEOS System second try sending command not successful");
-                // e1.printStackTrace();
                 return false;
             }
         } catch (IOException e) {
             logger.warn("IO Exception during send HEOS command with message: {}", e.getMessage());
-            // e.printStackTrace();
             return false;
         }
     }
@@ -130,7 +123,6 @@ public class HeosSystem {
      * @param command
      * @return true if send was successful
      */
-
     public boolean sendWithoutResponse(String command) {
         if (sendCommand.sendWithoutResponse(command)) {
             return true;
@@ -146,7 +138,6 @@ public class HeosSystem {
      *
      * @return a class with all HEOS Commands
      */
-
     public HeosCommands command() {
         return heosCommand;
     }
@@ -156,10 +147,8 @@ public class HeosSystem {
      * set.
      *
      * @param connectionDelay if set to true system waits for 10 seconds before connecting to event line
-     *
      * @return {@code true} if connection is established else returns {@code false}
      */
-
     public boolean establishConnection(boolean connectionDelay) {
         this.playerMapNew = new HashMap<String, HeosPlayer>();
         this.groupMapNew = new HashMap<String, HeosGroup>();
@@ -218,10 +207,7 @@ public class HeosSystem {
         sendSuccess = send(command().registerChangeEventOFF());
         sendCommand.setTelnetClient(commandLine);
 
-        if (commandLine.isConnected() && eventLine.isConnected()) {
-            return true;
-        }
-        return false;
+        return commandLine.isConnected() && eventLine.isConnected();
     }
 
     private void retryEstablishConnection() {
@@ -249,9 +235,7 @@ public class HeosSystem {
      *
      * @see establishConnection()
      * @see HeosEvenController.class
-     *
      */
-
     public void startHeartBeat(int heartbeatPulse) {
         keepAlive = Executors.newScheduledThreadPool(1);
         keepAliveRunnable = new KeepAliveRunnable();
@@ -318,7 +302,6 @@ public class HeosSystem {
      * @return a HEOS Player with the updated states
      *
      */
-
     public synchronized HeosPlayer getPlayerState(String pid) {
         HeosPlayer heosPlayer = new HeosPlayer();
         send(command().getPlayerInfo(pid));
@@ -336,7 +319,6 @@ public class HeosSystem {
                 logger.debug("Interrupted Exception - Message: {}", e.getMessage());
             }
         }
-
         heosPlayer.updatePlayerInfo(response.getPayload().getPayloadList().get(0));
         heosPlayer = updatePlayerState(heosPlayer);
         heosPlayer.setOnline(true);
@@ -350,8 +332,7 @@ public class HeosSystem {
      *
      * @return a HashMap with all HEOS Player in the network
      */
-
-    public synchronized HashMap<String, HeosPlayer> getAllPlayer() {
+    public synchronized Map<String, HeosPlayer> getAllPlayer() {
         playerMapNew.clear();
 
         send(command().getPlayers());
@@ -362,9 +343,9 @@ public class HeosSystem {
             resultIsEmpty = response.getPayload().getPayloadList().isEmpty();
             logger.warn("HEOS System found no players.");
         }
-        List<HashMap<String, String>> playerList = response.getPayload().getPayloadList();
+        List<Map<String, String>> playerList = response.getPayload().getPayloadList();
 
-        for (HashMap<String, String> player : playerList) {
+        for (Map<String, String> player : playerList) {
             HeosPlayer heosPlayer = new HeosPlayer();
             heosPlayer.updatePlayerInfo(player);
             playerMapNew.put(heosPlayer.getPid(), heosPlayer);
@@ -401,7 +382,7 @@ public class HeosSystem {
      * @return a HashMap with all HEOS groups
      */
 
-    public synchronized HashMap<String, HeosGroup> getGroups() {
+    public synchronized Map<String, HeosGroup> getGroups() {
         groupMapNew.clear();
 
         send(command().getGroups());
@@ -411,10 +392,10 @@ public class HeosSystem {
             groupMapOld.putAll(groupMapNew);
             return groupMapNew;
         }
-        List<HashMap<String, String>> groupList = response.getPayload().getPayloadList();
+        List<Map<String, String>> groupList = response.getPayload().getPayloadList();
         int groupCounter = 0;
 
-        for (HashMap<String, String> group : groupList) {
+        for (Map<String, String> group : groupList) {
             HeosGroup heosGroup = new HeosGroup();
             heosGroup.updateGroupInfo(group);
             heosGroup.updateGroupPlayers(response.getPayload().getPlayerList().get(groupCounter));
@@ -427,7 +408,7 @@ public class HeosSystem {
             // Defining the Group leader
 
             for (int i = 0; i < playerCount; i++) {
-                HashMap<String, String> playerMap = new HashMap<>();
+                Map<String, String> playerMap = new HashMap<>();
                 playerMap = response.getPayload().getPlayerList().get(groupCounter).get(i);
                 for (String key : playerMap.keySet()) {
                     if (key.equals(HEOS_ROLE)) {
@@ -463,7 +444,6 @@ public class HeosSystem {
      * @return a HEOS group with the updated states
      *
      */
-
     public synchronized HeosGroup getGroupState(HeosGroup heosGroup) {
         String gid = heosGroup.getGid();
         send(command().getGroupInfo(gid));
@@ -503,9 +483,8 @@ public class HeosSystem {
         return heosGroup;
     }
 
-    private HashMap<String, HeosGroup> compareGroupMaps(HashMap<String, HeosGroup> mapNew,
-            HashMap<String, HeosGroup> mapOld) {
-        HashMap<String, HeosGroup> removedItems = new HashMap<String, HeosGroup>();
+    private Map<String, HeosGroup> compareGroupMaps(Map<String, HeosGroup> mapNew, Map<String, HeosGroup> mapOld) {
+        Map<String, HeosGroup> removedItems = new HashMap<>();
         for (String key : mapOld.keySet()) {
             if (!mapNew.containsKey(key)) {
                 removedItems.put(key, mapOld.get(key));
@@ -514,9 +493,8 @@ public class HeosSystem {
         return removedItems;
     }
 
-    private HashMap<String, HeosPlayer> comparePlayerMaps(HashMap<String, HeosPlayer> mapNew,
-            HashMap<String, HeosPlayer> mapOld) {
-        HashMap<String, HeosPlayer> removedItems = new HashMap<String, HeosPlayer>();
+    private Map<String, HeosPlayer> comparePlayerMaps(Map<String, HeosPlayer> mapNew, Map<String, HeosPlayer> mapOld) {
+        Map<String, HeosPlayer> removedItems = new HashMap<>();
         for (String key : mapOld.keySet()) {
             if (!mapNew.containsKey(key)) {
                 removedItems.put(key, mapOld.get(key));
@@ -527,17 +505,15 @@ public class HeosSystem {
 
     /**
      * Be used to fill the map which contains old Groups at startup
-     * with existing HEOS groups.
-     *
+     * with existing HEOS groups. *
      *
      * @param map a HashMap with {@code heosGroup.getNameHash(), heosGroup}
      */
-
-    public void addHeosGroupToOldGroupMap(HashMap<String, HeosGroup> map) {
+    public void addHeosGroupToOldGroupMap(Map<String, HeosGroup> map) {
         groupMapOld.putAll(map);
     }
 
-    public List<HashMap<String, String>> getFavorits() {
+    public List<Map<String, String>> getFavorites() {
         send(command().browseSource(FAVORIT_SID));
         return response.getPayload().getPayloadList();
     }
@@ -545,7 +521,7 @@ public class HeosSystem {
     public List<String> getPlaylists() {
         List<String> playlistsList = new ArrayList<String>();
         send(command().browseSource(PLAYLISTS_SID));
-        List<HashMap<String, String>> payload = response.getPayload().getPayloadList();
+        List<Map<String, String>> payload = response.getPayload().getPayloadList();
         for (int i = 0; i < payload.size(); i++) {
             playlistsList.add(payload.get(i).get(CID));
         }
@@ -572,19 +548,19 @@ public class HeosSystem {
         this.connectionPort = connectionPort;
     }
 
-    public HashMap<String, HeosPlayer> getPlayerMap() {
+    public Map<String, HeosPlayer> getPlayerMap() {
         return playerMapNew;
     }
 
-    public HashMap<String, HeosGroup> getGroupMap() {
+    public Map<String, HeosGroup> getGroupMap() {
         return groupMapNew;
     }
 
-    public HashMap<String, HeosGroup> getGroupsRemoved() {
+    public Map<String, HeosGroup> getGroupsRemoved() {
         return removedGroupMap;
     }
 
-    public HashMap<String, HeosPlayer> getPlayerRemoved() {
+    public Map<String, HeosPlayer> getPlayerRemoved() {
         return removedPlayerMap;
     }
 

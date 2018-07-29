@@ -12,6 +12,8 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 /**
+ * The {@Link HeosStringPropertyChangeListener} provides the possibility
+ * to add a listener to an String and get informed about the new value.
  *
  * @author Johannes Einig - Initial contribution
  */
@@ -37,6 +39,6 @@ public class HeosStringPropertyChangeListener {
         String oldValue = this.value;
         this.value = newValue;
         this.pcs.firePropertyChange("value", oldValue, newValue);
-        value = null; // experimental
+        value = null;
     }
 }

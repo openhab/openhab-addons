@@ -9,6 +9,7 @@
 package org.openhab.binding.heos.internal.resources;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The {@link HeosMediaObjekt } represents a Media object within
@@ -19,26 +20,26 @@ import java.util.HashMap;
 
 public class HeosMediaObject {
 
-    private final String[] supportedMediaItems = { "type", "station", "song", "album", "artist", "image_url", "qid",
-            "mid", "album_id" };
+    private final String[] supportedMediaItems = { "type", "station", "song", "album", "artist", "imageUrl", "qid",
+            "mid", "albumId" };
 
-    private HashMap<String, String> mediaInfo;
+    private Map<String, String> mediaInfo;
 
     private String type;
     private String station;
     private String song;
     private String album;
     private String artist;
-    private String image_url;
+    private String imageUrl;
     private String qid;
     private String mid;
-    private String album_id;
+    private String albumId;
 
     public HeosMediaObject() {
         initObject();
     }
 
-    public void updateMediaInfo(HashMap<String, String> values) {
+    public void updateMediaInfo(Map<String, String> values) {
         this.mediaInfo = values;
 
         for (String key : this.mediaInfo.keySet()) {
@@ -53,7 +54,7 @@ public class HeosMediaObject {
                     this.artist = this.mediaInfo.get(key);
                     break;
                 case "image_url":
-                    this.image_url = this.mediaInfo.get(key);
+                    this.imageUrl = this.mediaInfo.get(key);
                     break;
                 case "qid":
                     this.qid = this.mediaInfo.get(key);
@@ -62,7 +63,7 @@ public class HeosMediaObject {
                     this.mid = this.mediaInfo.get(key);
                     break;
                 case "album_id":
-                    this.album_id = this.mediaInfo.get(key);
+                    this.albumId = this.mediaInfo.get(key);
                     break;
                 case "type":
                     this.type = this.getMediaInfo().get(key);
@@ -84,7 +85,7 @@ public class HeosMediaObject {
         }
     }
 
-    public HashMap<String, String> getMediaInfo() {
+    public Map<String, String> getMediaInfo() {
         return mediaInfo;
     }
 
@@ -132,11 +133,11 @@ public class HeosMediaObject {
     }
 
     public String getImageUrl() {
-        return image_url;
+        return imageUrl;
     }
 
     public void setImageUrl(String imageUrl) {
-        this.image_url = imageUrl;
+        this.imageUrl = imageUrl;
         mediaInfo.put("image_url", imageUrl);
     }
 
@@ -159,11 +160,11 @@ public class HeosMediaObject {
     }
 
     public String getAlbumId() {
-        return album_id;
+        return albumId;
     }
 
     public void setAlbumId(String albumId) {
-        this.album_id = albumId;
+        this.albumId = albumId;
         mediaInfo.put("album_id", albumId);
     }
 

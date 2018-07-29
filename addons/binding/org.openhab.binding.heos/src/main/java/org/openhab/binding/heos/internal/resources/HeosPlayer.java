@@ -9,6 +9,7 @@
 package org.openhab.binding.heos.internal.resources;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The {@link HeosPlayer} represents a player within the HEOS
@@ -20,10 +21,10 @@ import java.util.HashMap;
 public class HeosPlayer extends HeosMediaObject {
 
     private final String[] supportedPlayerInfo = { "name", "pid", "gip", "ip", "model", "version", "lineout, network" };
-    private final String[] supportedPlayerStates = { "state", "level", "mute", "duration", "cur_pos" };
+    private final String[] supportedPlayerStates = { "state", "level", "mute", "duration", "curPos" };
 
-    private HashMap<String, String> playerInfo;
-    private HashMap<String, String> playerState;
+    private Map<String, String> playerInfo;
+    private Map<String, String> playerState;
 
     // Player Infos Variables
     private String pid;
@@ -41,7 +42,7 @@ public class HeosPlayer extends HeosMediaObject {
     private String level;
     private String mute;
     private String duration;
-    private String cur_pos;
+    private String curPos;
     private String shuffle;
     private String repeatMode;
 
@@ -50,7 +51,7 @@ public class HeosPlayer extends HeosMediaObject {
         initPlayer();
     }
 
-    public void updatePlayerInfo(HashMap<String, String> values) {
+    public void updatePlayerInfo(Map<String, String> values) {
         playerInfo = values;
         for (String key : values.keySet()) {
             if (key.equals("name")) {
@@ -80,7 +81,7 @@ public class HeosPlayer extends HeosMediaObject {
         }
     }
 
-    public void updatePlayerState(HashMap<String, String> values) {
+    public void updatePlayerState(Map<String, String> values) {
         playerState = values;
         for (String key : values.keySet()) {
             if (key.equals("state")) {
@@ -96,7 +97,7 @@ public class HeosPlayer extends HeosMediaObject {
                 duration = values.get(key);
             }
             if (key.equals("cur_pos")) {
-                cur_pos = values.get(key);
+                curPos = values.get(key);
             }
         }
     }
@@ -115,7 +116,7 @@ public class HeosPlayer extends HeosMediaObject {
         updatePlayerState(playerState);
     }
 
-    public HashMap<String, String> getPlayerInfo() {
+    public Map<String, String> getPlayerInfo() {
         return playerInfo;
     }
 
@@ -234,11 +235,11 @@ public class HeosPlayer extends HeosMediaObject {
     }
 
     public String getCurPos() {
-        return cur_pos;
+        return curPos;
     }
 
     public void setCurPos(String cur_pos) {
-        this.cur_pos = cur_pos;
+        this.curPos = cur_pos;
         playerState.put("cur_pos", cur_pos);
     }
 
@@ -246,7 +247,7 @@ public class HeosPlayer extends HeosMediaObject {
         return supportedPlayerStates;
     }
 
-    public HashMap<String, String> getPlayerState() {
+    public Map<String, String> getPlayerState() {
         return playerState;
     }
 

@@ -14,6 +14,9 @@ import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
 /**
+ * The {@link HeosChannelHandlerControl} handles the control commands
+ * coming from the implementing thing
+ *
  * @author Johannes Einig - Initial contribution
  *
  */
@@ -25,8 +28,6 @@ public class HeosChannelHandlerControl extends HeosChannelHandler {
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandPlayer(org.eclipse.smarthome.core.types.
      * Command)
@@ -37,8 +38,6 @@ public class HeosChannelHandlerControl extends HeosChannelHandler {
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandGroup(org.eclipse.smarthome.core.types.
      * Command)
@@ -49,8 +48,6 @@ public class HeosChannelHandlerControl extends HeosChannelHandler {
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandBridge(org.eclipse.smarthome.core.types.
      * Command)

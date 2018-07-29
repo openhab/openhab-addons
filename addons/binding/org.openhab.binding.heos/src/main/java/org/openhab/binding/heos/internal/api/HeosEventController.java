@@ -24,13 +24,13 @@ import org.slf4j.LoggerFactory;
  */
 
 public class HeosEventController extends HeosSystemEventListener {
-    private HeosResponse response = null;
-    private HeosSystem system = null;
-    private HeosCommands command = null;
-    private String eventType = null;
-    private String eventCommand = null;
+    private HeosResponse response;
+    private HeosSystem system;
+    private HeosCommands command;
+    private String eventType;
+    private String eventCommand;
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(HeosEventController.class);
 
     public HeosEventController(HeosResponse response, HeosCommands command, HeosSystem system) {
         this.response = response;
@@ -169,8 +169,11 @@ public class HeosEventController extends HeosSystemEventListener {
         String duration = response.getEvent().getMessagesMap().get(HEOS_DURATION);
         String pid = response.getPid();
 
-        fireStateEvent(pid, HEOS_CUR_POS, pos);
-        fireStateEvent(pid, HEOS_DURATION, duration);
+        int intPosition = Integer.valueOf(pos) / 1000;
+        int intDuration = Integer.valueOf(duration) / 1000;
+
+        fireStateEvent(pid, HEOS_CUR_POS, String.valueOf(intPosition));
+        fireStateEvent(pid, HEOS_DURATION, String.valueOf(intDuration));
     }
 
     private void volumeChanged() {

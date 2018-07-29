@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
@@ -24,7 +23,6 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 @NonNullByDefault
 public class HeosBindingConstants {
 
@@ -38,9 +36,9 @@ public class HeosBindingConstants {
 
     // List off all Channel Types
 
-    public static final ChannelTypeUID CH_TYPE_PLAYER = new ChannelTypeUID(BINDING_ID, "ch_player");
-    public static final ChannelTypeUID CH_TYPE_FAVORIT = new ChannelTypeUID(BINDING_ID, "ch_favorit");
-    public static final ChannelTypeUID CH_TYPE_GROUP = new ChannelTypeUID(BINDING_ID, "ch_group");
+    public static final ChannelTypeUID CH_TYPE_PLAYER = new ChannelTypeUID(BINDING_ID, "chPlayer");
+    public static final ChannelTypeUID CH_TYPE_FAVORITE = new ChannelTypeUID(BINDING_ID, "chFavorite");
+    public static final ChannelTypeUID CH_TYPE_GROUP = new ChannelTypeUID(BINDING_ID, "chGroup");
 
     // List of all Channel IDs
     public static final String CH_ID_CONTROL = "Control";
@@ -104,7 +102,7 @@ public class HeosBindingConstants {
     public static final String GROUP_MEMBER_HASH = "groupMemberHash";
     public static final String GROUP_MEMBER_PID_LIST = "groupMemberPidList";
 
-    public static final Set<@NonNull ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(THING_TYPE_BRIDGE, THING_TYPE_GROUP, THING_TYPE_PLAYER).collect(Collectors.toSet()));
 
 }

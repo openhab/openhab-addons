@@ -10,29 +10,26 @@ package org.openhab.binding.heos.internal.handler;
 
 import static org.openhab.binding.heos.internal.resources.HeosConstants.FAVORIT_SID;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
 /**
+ * The {@link HeosChannelHandlerFavoriteSelect} handles the favorite selection channel command
+ * from the implementing thing.
+ *
  * @author Johannes Einig - Initial contribution
  *
  */
 public class HeosChannelHandlerFavoriteSelect extends HeosChannelHandler {
 
-    /**
-     * @param bridge
-     * @param api
-     */
     public HeosChannelHandlerFavoriteSelect(HeosBridgeHandler bridge, HeosFacade api) {
         super(bridge, api);
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.internal.channelHandler.HeosChannelHandler#handleCommandPlayer(org.eclipse.smarthome.
      * core.types.Command)
@@ -40,12 +37,9 @@ public class HeosChannelHandlerFavoriteSelect extends HeosChannelHandler {
     @Override
     protected void handleCommandPlayer() {
         // not used on player
-
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.internal.channelHandler.HeosChannelHandler#handleCommandGroup(org.eclipse.smarthome.core
      * .types.Command)
@@ -53,12 +47,9 @@ public class HeosChannelHandlerFavoriteSelect extends HeosChannelHandler {
     @Override
     protected void handleCommandGroup() {
         // not used on group
-
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.internal.channelHandler.HeosChannelHandler#handleCommandBridge(org.eclipse.smarthome.
      * core.types.Command, org.eclipse.smarthome.core.thing.ChannelUID)
@@ -66,7 +57,7 @@ public class HeosChannelHandlerFavoriteSelect extends HeosChannelHandler {
     @Override
     protected void handleCommandBridge() {
         if (command.equals(OnOffType.ON)) {
-            ArrayList<String[]> selectedPlayerList = bridge.getSelectedPlayerList();
+            List<String[]> selectedPlayerList = bridge.getSelectedPlayerList();
             if (!selectedPlayerList.isEmpty()) {
                 for (int i = 0; i < selectedPlayerList.size(); i++) {
                     String pid = selectedPlayerList.get(i)[0];

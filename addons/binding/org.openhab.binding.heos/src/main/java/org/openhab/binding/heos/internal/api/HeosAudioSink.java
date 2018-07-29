@@ -29,19 +29,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This makes HEOS to serve as an {@link AudioSink}-
+ * This makes HEOS to serve as an {@link AudioSink}. *
  *
  * @author Kai Kreuzer - Initial contribution and API
- * @author Johannes Einig - Adapted for HEOS
- *
+ * @author Johannes Einig - Originally class was written for the Sonos binding by Kai Kreuzer. Adapted the class to be
+ *         used by the HEOS binding *
  */
 
 public class HeosAudioSink implements AudioSink {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(HeosAudioSink.class);
 
-    private static final HashSet<AudioFormat> SUPPORTED_AUDIO_FORMATS = new HashSet<>();
-    private static final HashSet<Class<? extends AudioStream>> SUPPORTED_AUDIO_STREAMS = new HashSet<>();
+    private static final Set<AudioFormat> SUPPORTED_AUDIO_FORMATS = new HashSet<>();
+    private static final Set<Class<? extends AudioStream>> SUPPORTED_AUDIO_STREAMS = new HashSet<>();
 
     static {
         SUPPORTED_AUDIO_FORMATS.add(AudioFormat.WAV);

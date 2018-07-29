@@ -13,26 +13,19 @@ import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
 /**
+ * The {@link HeosChannelHandlerInputs} handles the Input channel command
+ * from the implementing thing.
+ *
  * @author Johannes Einig - Initial contribution
  *
  */
 public class HeosChannelHandlerInputs extends HeosChannelHandler {
 
-    /**
-     * Allows playing external sources like Aux In
-     * If no player on bridge is selected play input from requesting player or group
-     * Only one source can be selected
-     *
-     * @param bridge
-     * @param api
-     */
     public HeosChannelHandlerInputs(HeosBridgeHandler bridge, HeosFacade api) {
         super(bridge, api);
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandPlayer(org.eclipse.smarthome.core.types.
      * Command)
@@ -43,8 +36,6 @@ public class HeosChannelHandlerInputs extends HeosChannelHandler {
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandGroup(org.eclipse.smarthome.core.types.
      * Command)
@@ -55,8 +46,6 @@ public class HeosChannelHandlerInputs extends HeosChannelHandler {
     }
 
     /*
-     * (non-Javadoc)
-     *
      * @see
      * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandBridge(org.eclipse.smarthome.core.types.
      * Command)
@@ -64,7 +53,6 @@ public class HeosChannelHandlerInputs extends HeosChannelHandler {
     @Override
     protected void handleCommandBridge() {
         // not used on bridge
-
     }
 
     private void handleCommand(Command command) {

@@ -21,8 +21,8 @@ import org.openhab.binding.heos.internal.resources.HeosEventListener;
 
 public class HeosFacade {
 
-    private HeosSystem controller = null;
-    private HeosEventController event = null;
+    private HeosSystem controller;
+    private HeosEventController event;
 
     public HeosFacade(HeosSystem controller, HeosEventController event) {
         this.controller = controller;
@@ -368,7 +368,6 @@ public class HeosFacade {
      *
      * @param command to send
      */
-
     public void sendRawCommand(String command) {
         controller.send(command);
     }
