@@ -20,7 +20,7 @@
 			<channel id="Title" typeId="title" />
 			<channel id="Interpret" typeId="interpret" />
 			<channel id="Album" typeId="album" />
-			<channel id="ImageUrl" typeId="imageUrl" />
+			<channel id="Cover" typeId="cover" />
 			<channel id="CurrentPosition" typeId="currentPosition" />
 			<channel id="Duration" typeId="duration" />
 			<channel id="Type" typeId="type" />

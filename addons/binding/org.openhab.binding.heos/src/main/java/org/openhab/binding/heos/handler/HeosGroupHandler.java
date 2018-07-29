@@ -172,7 +172,7 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
         updateState(CH_ID_SONG, StringType.valueOf(heosGroup.getSong()));
         updateState(CH_ID_ARTIST, StringType.valueOf(heosGroup.getArtist()));
         updateState(CH_ID_ALBUM, StringType.valueOf(heosGroup.getAlbum()));
-        updateState(CH_ID_IMAGE_URL, StringType.valueOf(heosGroup.getImageUrl()));
+        updateState(CH_ID_COVER, StringType.valueOf(heosGroup.getImageUrl()));
         updateState(CH_ID_STATION, StringType.valueOf(heosGroup.getStation()));
         updateState(CH_ID_TYPE, StringType.valueOf(heosGroup.getType()));
         updateState(CH_ID_CUR_POS, StringType.valueOf("0"));

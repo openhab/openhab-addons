@@ -240,7 +240,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                         URL url = new URL(info.get(key)); // checks if String is proper URL
                         RawType cover = HttpUtil.downloadImage(url.toString());
                         if (cover != null) {
-                            updateState(CH_ID_IMAGE_URL, cover);
+                            updateState(CH_ID_COVER, cover);
                         }
                         break;
                     } catch (MalformedURLException e) {

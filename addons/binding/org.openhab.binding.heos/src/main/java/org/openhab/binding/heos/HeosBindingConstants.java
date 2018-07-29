@@ -52,7 +52,7 @@ public class HeosBindingConstants {
     public static final String CH_ID_BUILDGROUP = "BuildGroup";
     public static final String CH_ID_DYNGROUPSHAND = "DynamicGroupHandling";
     public static final String CH_ID_REBOOT = "Reboot";
-    public static final String CH_ID_IMAGE_URL = "ImageUrl";
+    public static final String CH_ID_COVER = "Cover";
     public static final String CH_ID_PLAYLISTS = "Playlists";
     public static final String CH_ID_INPUTS = "Inputs";
     public static final String CH_ID_CUR_POS = "CurrentPosition";

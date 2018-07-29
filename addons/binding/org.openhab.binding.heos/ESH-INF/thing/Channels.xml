@@ -36,7 +36,7 @@
 		<label>Album</label>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="imageUrl" advanced="true">
+	<channel-type id="cover" advanced="true">
 		<item-type>Image</item-type>
 		<label>Cover</label>
 		<state readOnly="true"></state>

@@ -127,7 +127,7 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
         updateState(CH_ID_SONG, StringType.valueOf(player.getSong()));
         updateState(CH_ID_ARTIST, StringType.valueOf(player.getArtist()));
         updateState(CH_ID_ALBUM, StringType.valueOf(player.getAlbum()));
-        updateState(CH_ID_IMAGE_URL, StringType.valueOf(player.getImageUrl()));
+        updateState(CH_ID_COVER, StringType.valueOf(player.getImageUrl()));
         updateState(CH_ID_STATION, StringType.valueOf(player.getStation()));
         updateState(CH_ID_TYPE, StringType.valueOf(player.getType()));
         updateState(CH_ID_CUR_POS, StringType.valueOf("0"));

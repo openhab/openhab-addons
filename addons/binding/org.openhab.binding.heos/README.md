@@ -104,7 +104,7 @@ The channels have different paths if you configure our Things manual or via an U
 | Title             | String        | Song Title                                                            |
 | Interpret         | String        | Song Interpret                                                        |
 | Album             | String        | Album Title                                                           |
-| ImageUrl          | Image         | The cover of the actual song                                          |
+| Cover             | Image         | The cover of the actual song                                          |
 | Inputs            | String        | The input to be switched to. Input values from HEOS protocol          |
 | CurrentPosition   | Number        | Shows the current track position in seconds                           |
 | Duration          | Number        | The overall track duration in seconds                                 |
@@ -133,7 +133,7 @@ Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Contro
 | Interpret         | String        | Song Interpret                                                        |
 | Album             | String        | Album Title                                                           |
 | Ungroup           | Switch        | Deletes the group (OFF) or generate the group again (ON)              |
-| ImageUrl          | Image         | The cover of the actual song                                          |
+| Cover             | Image         | The cover of the actual song                                          |
 | CurrentPosition   | Number        | Shows the current track position in seconds                           |
 | Duration          | Number        | The overall track duration in seconds                                 |
 | Type              | String        | The type of the played media. Station or song for example             |
