@@ -9,7 +9,10 @@
 package org.openhab.binding.gruenbecksoftener.handler;
 
 import java.util.Arrays;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.items.ItemFactory;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -29,6 +32,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.TypeParser;
+import org.openhab.binding.gruenbecksoftener.SoftenerBindingConstants;
 import org.openhab.binding.gruenbecksoftener.internal.SoftenerConfiguration;
 import org.openhab.binding.gruenbecksoftener.json.SoftenerEditData;
 import org.openhab.binding.gruenbecksoftener.json.SoftenerXmlResponse;
@@ -42,6 +46,10 @@ import org.slf4j.LoggerFactory;
  * @author Matthias Steigenberger - Initial contribution
  */
 public class SoftenerThingHandler extends BaseThingHandler {
+
+    private static final Function<String, SoftenerXmlResponse> RESPONSE_PARSER_FUNCTION = new XmlResponseParser();
+
+    private static final ResponseFunction SOFTENER_RESPONSE_FUNCTION = new HttpResponseFunction();
 
     private static final String SOFTENER_UNIT_ID = "D_C_2_1";
 
@@ -95,7 +103,7 @@ public class SoftenerThingHandler extends BaseThingHandler {
     private void startAutomaticRefresh() {
 
         cancelHandler = this.softenerHandler.startAutomaticRefresh(getConfigAs(SoftenerConfiguration.class),
-                new HttpResponseFunction(), new XmlResponseParser(), scheduler, response -> {
+                SOFTENER_RESPONSE_FUNCTION, RESPONSE_PARSER_FUNCTION, scheduler, response -> {
                     // Update all channels from the updated Softener response data
                     softenerResponse = response;
                     for (Channel channel : getThing().getChannels()) {
@@ -103,9 +111,10 @@ public class SoftenerThingHandler extends BaseThingHandler {
                             updateChannel(channel.getUID(), response);
                         }
                     }
-                }, exception -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                },
+                exception -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         exception.getLocalizedMessage()),
-                () -> getThing().getChannels().stream().map(channel -> {
+                () -> getThing().getChannels().stream().filter(channel -> isLinked(channel.getUID())).map(channel -> {
                     SoftenerInputData softenerInputData = new SoftenerInputData();
                     softenerInputData.setDatapointId(channel.getUID().getIdWithoutGroup());
                     softenerInputData
@@ -130,19 +139,26 @@ public class SoftenerThingHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             updateChannel(channelUID, softenerResponse);
         } else {
+            Channel channel = getThing().getChannel(channelUID.getId());
+            if (channel == null) {
+                throw new IllegalArgumentException("Channel with ID " + channelUID + " not known");
+            }
             State state = (State) command;
-            HttpResponseFunction httpResponseFunction = new HttpResponseFunction();
             SoftenerEditData editData = new SoftenerEditData();
             editData.setDatapointId(channelUID.getIdWithoutGroup());
-            String pattern = channelTypeRegistry
-                    .getChannelType(getThing().getChannel(channelUID.getId()).getChannelTypeUID()).getState()
-                    .getPattern();
+            String pattern;
+            ChannelType channelType = channelTypeRegistry.getChannelType(channel.getChannelTypeUID());
+            if (channelType != null) {
+                pattern = channelType.getState().getPattern();
+            } else {
+                pattern = null;
+            }
             String value = pattern != null ? state.format(pattern) : state.toFullString();
             editData.setValue(value);
             SoftenerXmlResponse response;
             try {
-                response = httpResponseFunction.editParameter(getConfigAs(SoftenerConfiguration.class), editData,
-                        new XmlResponseParser());
+                response = SOFTENER_RESPONSE_FUNCTION.editParameter(getConfigAs(SoftenerConfiguration.class), editData,
+                        RESPONSE_PARSER_FUNCTION);
                 logger.debug("Data {} was successfully set to {}", channelUID, response.getData());
                 updateChannel(channelUID, response);
             } catch (Exception e) {
@@ -161,8 +177,8 @@ public class SoftenerThingHandler extends BaseThingHandler {
             Channel channel = getThing().getChannel(channelId.getId());
             if (channel != null) {
 
-                String unit = channel.getProperties().get("unit");
-                State state = getValue(channelId, channel.getChannelTypeUID(), softenerResponse, unit);
+                extractHardnessUnit(softenerResponse);
+                State state = getValue(channelId, channel.getChannelTypeUID(), softenerResponse);
                 logger.debug("Update channel {} with state {}", channelId, (state == null) ? "null" : state.toString());
 
                 // Update the channel
@@ -174,24 +190,21 @@ public class SoftenerThingHandler extends BaseThingHandler {
         }
     }
 
-    private State getValue(ChannelUID channelId, ChannelTypeUID channelTypeId, SoftenerXmlResponse data, String unit) {
+    private State getValue(ChannelUID channelId, ChannelTypeUID channelTypeId, SoftenerXmlResponse data) {
         if (data != null) {
-            String defaultUnit = data.getData().get(SOFTENER_UNIT_ID);
-            if (defaultUnit != null) {
-                ChannelType channelType = channelTypeRegistry.getChannelType(channelTypeId);
-                if (channelType != null) {
-                    channelType.getState().getOptions().stream().filter(option -> option.getValue().equals(defaultUnit))
-                            .findFirst().ifPresent(option -> hardnessUnit = option.getLabel());
-                }
-            }
+            ChannelType channelType = channelTypeRegistry.getChannelType(channelTypeId);
+            boolean isHardnessUnitChannel = channelType != null
+                    && channelType.getTags().contains(SoftenerBindingConstants.HARDNESS_UNIT_CONFIGURATION);
             String value = data.getData().get(channelId.getIdWithoutGroup());
             if (value != null) {
                 value = value.trim();
-                String unitToAssign = unit;
-                if ("%default%".equals(unit)) {
-                    unitToAssign = hardnessUnit;
+                String unitToAssign;
+                if (isHardnessUnitChannel) {
+                    unitToAssign = getHardnessUnit();
+                } else {
+                    unitToAssign = null;
                 }
-                if (unit != null) {
+                if (unitToAssign != null) {
                     value += " " + unitToAssign;
                 }
                 State state = TypeParser.parseState(
@@ -201,6 +214,37 @@ public class SoftenerThingHandler extends BaseThingHandler {
             }
         }
         return null;
+    }
+
+    private String getHardnessUnit() {
+        if (hardnessUnit != null) {
+            return hardnessUnit;
+        }
+        SoftenerInputData softenerInputData = new SoftenerInputData();
+        softenerInputData.setDatapointId(SOFTENER_UNIT_ID);
+        softenerInputData.setDatatype(SoftenerDataType.NUMBER);
+
+        BiConsumer<SoftenerConfiguration, Stream<SoftenerInputData>> responseFunction = SOFTENER_RESPONSE_FUNCTION
+                .getResponseFunction(RESPONSE_PARSER_FUNCTION, this::extractHardnessUnit);
+        responseFunction.accept(getConfigAs(SoftenerConfiguration.class), Stream.of(softenerInputData));
+        return getHardnessUnit();
+    }
+
+    private void extractHardnessUnit(SoftenerXmlResponse data) {
+        String defaultUnit = data.getData().get(SOFTENER_UNIT_ID);
+        if (defaultUnit != null) {
+            getThing().getChannels().stream()
+                    .filter(channel -> channel.getUID().getIdWithoutGroup().equals(SOFTENER_UNIT_ID)).findFirst()
+                    .ifPresent(channel -> {
+                        ChannelType hardnessUnitchannelType = channelTypeRegistry
+                                .getChannelType(channel.getChannelTypeUID());
+                        if (hardnessUnitchannelType != null) {
+                            hardnessUnitchannelType.getState().getOptions().stream()
+                                    .filter(option -> option.getValue().equals(defaultUnit)).findFirst()
+                                    .ifPresent(option -> hardnessUnit = option.getLabel());
+                        }
+                    });
+        }
     }
 
 }

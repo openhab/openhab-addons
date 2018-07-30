@@ -39,6 +39,8 @@ public class SoftenerBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SOFTENER = new ThingTypeUID(BINDING_ID, "softener");
 
+    public static final String HARDNESS_UNIT_CONFIGURATION = "hardnessunit";
+
     // List of all Channel id's
     public static final String AQI = "aqiLevel";
     public static final String AQIDESCRIPTION = "aqiDescription";

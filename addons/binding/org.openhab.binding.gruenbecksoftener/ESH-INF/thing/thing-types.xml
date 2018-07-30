@@ -16,7 +16,7 @@
 			<channel-group typeId="settings" id="settings"></channel-group>
 			<channel-group typeId="email" id="email"></channel-group>
 		</channel-groups>
-		
+
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host</label>
@@ -84,21 +84,9 @@
 		<label>Actuals</label>
 		<channels>
 
-			<channel id="D_A_1_7" typeId="D_A_1_7">
-				<properties>
-					<property name="unit">%default%</property>
-				</properties>
-			</channel>
-			<channel id="D_D_1" typeId="D_D_1">
-				<properties>
-					<property name="unit">%default%</property>
-				</properties>
-			</channel>
-			<channel id="D_D_2" typeId="D_D_2">
-                <properties>
-                    <property name="unit">%default%</property>
-                </properties>
-            </channel>
+			<channel id="D_A_1_7" typeId="D_A_1_7" />
+			<channel id="D_D_1" typeId="D_D_1"/>
+			<channel id="D_D_2" typeId="D_D_2"/>
 			<channel id="D_K_2" typeId="D_K_2">
 				<properties>
 					<property name="code">245</property>
@@ -116,6 +104,9 @@
 		<item-type>Number:AmountOfSubstance</item-type>
 		<label>Rohwasserhärte</label>
 		<description>Rohwasserhärte</description>
+		<tags>
+            <tag>hardnessunit</tag>
+        </tags>
 		<state pattern="%.1f %unit%" />
 	</channel-type>
 
@@ -123,6 +114,9 @@
 		<item-type>Number:AmountOfSubstance</item-type>
 		<label>Sollwert Weichwasserhärte</label>
 		<description>Sollwert Weichwasserhärte</description>
+		<tags>
+			<tag>hardnessunit</tag>
+		</tags>
 		<state pattern="%.1f %unit%" />
 	</channel-type>
 
@@ -269,7 +263,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Display</label>
 		<description>Aktives Display im Standby</description>
-		<state pattern="%.1f Day" />
+		<state pattern="%d Day" />
 	</channel-type>
 
 	<channel-type id="D_C_8_1">

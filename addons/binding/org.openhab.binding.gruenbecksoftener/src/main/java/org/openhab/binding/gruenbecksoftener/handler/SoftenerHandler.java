@@ -36,6 +36,7 @@ public class SoftenerHandler {
             Runnable runnable = () -> {
                 try {
                     // Request new softener data
+                    // Group the data to collect at once by the group
                     inputData.get().collect(Collectors.groupingBy(SoftenerInputData::getGroup)).entrySet().stream()
                             .forEach(input -> responseFunction.accept(config, input.getValue().stream()));
 
