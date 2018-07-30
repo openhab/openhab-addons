@@ -8,7 +8,10 @@
  */
 package org.openhab.binding.neeo;
 
+import java.io.File;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -90,4 +93,8 @@ public class NeeoConstants {
     /** Constants for scans in seconds */
     public static final int SCAN_ROOMS = 2000;
     public static final int SCAN_DEVICES = 1000;
+
+    /** Constants used to store various types */
+    public static final String FILENAME_THINGTYPES = ConfigConstants.getUserDataFolder() + File.separator + "neeo"
+            + File.separator + "neeothingtypes.json";
 }

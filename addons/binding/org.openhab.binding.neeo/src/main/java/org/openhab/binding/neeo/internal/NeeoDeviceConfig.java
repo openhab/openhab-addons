@@ -39,7 +39,7 @@ public class NeeoDeviceConfig {
      *
      * @param deviceKey the new device key
      */
-    public void setKey(String deviceKey) {
+    public void setDeviceKey(String deviceKey) {
         this.deviceKey = deviceKey;
     }
 }

@@ -99,7 +99,7 @@ public class NeeoUtil {
      * @throws NullPointerException if value is null
      * @throws IllegalArgumentException if value is an empty string
      */
-    public static void requireNotEmpty(String value, String msg) {
+    public static void requireNotEmpty(@Nullable String value, String msg) {
         Objects.requireNonNull(value, msg);
         if (StringUtils.isEmpty(value)) {
             throw new IllegalArgumentException(msg);

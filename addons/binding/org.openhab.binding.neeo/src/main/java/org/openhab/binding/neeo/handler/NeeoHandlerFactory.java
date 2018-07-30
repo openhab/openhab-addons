@@ -12,6 +12,7 @@ import static org.openhab.binding.neeo.NeeoConstants.BRIDGE_TYPE_BRAIN;
 
 import java.util.Objects;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
@@ -23,9 +24,14 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.neeo.NeeoConstants;
+import org.openhab.binding.neeo.internal.NeeoDeviceConfig;
+import org.openhab.binding.neeo.internal.NeeoRoomConfig;
+import org.openhab.binding.neeo.internal.type.NeeoTypeGenerator;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NeeoHandlerFactory} is responsible for creating things and thing
@@ -37,6 +43,9 @@ import org.osgi.service.http.HttpService;
 @Component(service = ThingHandlerFactory.class, immediate = true)
 public class NeeoHandlerFactory extends BaseThingHandlerFactory {
 
+    /** The logger */
+    private final Logger logger = LoggerFactory.getLogger(NeeoHandlerFactory.class);
+
     /** The {@link HttpService} used to register callbacks */
     @NonNullByDefault({})
     private HttpService httpService;
@@ -44,6 +53,10 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
     /** The {@link NetworkAddressService} used for ip lookup */
     @NonNullByDefault({})
     private NetworkAddressService networkAddressService;
+
+    /** The {@link NetworkAddressService} used for ip lookup */
+    @NonNullByDefault({})
+    private NeeoTypeGenerator neeoTypeGenerator;
 
     /**
      * Sets the {@link HttpService}.
@@ -85,6 +98,26 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
         this.networkAddressService = null;
     }
 
+    /**
+     * Sets the {@link NeeoTypeGenerator}.
+     *
+     * @param neeoTypeGenerator the non-null {@link NeeoTypeGenerator} to use
+     */
+    @Reference
+    protected void setNeeoTypeGenerator(NeeoTypeGenerator neeoTypeGenerator) {
+        Objects.requireNonNull(neeoTypeGenerator, "neeoTypeGenerator cannot be null");
+        this.neeoTypeGenerator = neeoTypeGenerator;
+    }
+
+    /**
+     * Unsets the {@link NeeoTypeGenerator}
+     *
+     * @param neeoTypeGenerator the {@link NeeoTypeGenerator} (not used in this implementation)
+     */
+    protected void unsetNeeoTypeGenerator(NeeoTypeGenerator neeoTypeGenerator) {
+        this.neeoTypeGenerator = null;
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         Objects.requireNonNull(thingTypeUID, "thingTypeUID cannot be null");
@@ -116,5 +149,47 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
+    }
+
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof NeeoBrainHandler) {
+            final NeeoBrainHandler brainHandler = (NeeoBrainHandler) thingHandler;
+            final String brainId = brainHandler.getNeeoBrainId();
+            neeoTypeGenerator.removeBrain(brainId);
+        } else if (thingHandler instanceof NeeoRoomHandler) {
+            final NeeoRoomHandler roomHandler = (NeeoRoomHandler) thingHandler;
+            final String brainId = roomHandler.getNeeoBrainId();
+            final String roomKey = roomHandler.getThing().getConfiguration().as(NeeoRoomConfig.class).getRoomKey();
+
+            if (brainId == null || StringUtils.isEmpty(brainId)) {
+                logger.debug("Cannot remove thing type for room - no brain id: {}",
+                        roomHandler.getThing().getConfiguration());
+            } else if (roomKey == null || StringUtils.isEmpty(roomKey)) {
+                logger.debug("Cannot remove thing type for room - no roomKey: {}",
+                        roomHandler.getThing().getConfiguration());
+
+            } else {
+                neeoTypeGenerator.removeRoom(brainId, roomKey);
+            }
+        } else if (thingHandler instanceof NeeoDeviceHandler) {
+            final NeeoDeviceHandler deviceHandler = (NeeoDeviceHandler) thingHandler;
+            final String brainId = deviceHandler.getNeeoBrainId();
+            final String deviceKey = deviceHandler.getThing().getConfiguration().as(NeeoDeviceConfig.class)
+                    .getDeviceKey();
+
+            if (brainId == null || StringUtils.isEmpty(brainId)) {
+                logger.debug("Cannot remove thing type for device - no brain id: {}",
+                        deviceHandler.getThing().getConfiguration());
+            } else if (deviceKey == null || StringUtils.isEmpty(deviceKey)) {
+                logger.debug("Cannot remove thing type for device - no deviceKey: {}",
+                        deviceHandler.getThing().getConfiguration());
+
+            } else {
+                neeoTypeGenerator.removeDevice(brainId, deviceKey);
+            }
+
+        }
+        super.removeHandler(thingHandler);
     }
 }

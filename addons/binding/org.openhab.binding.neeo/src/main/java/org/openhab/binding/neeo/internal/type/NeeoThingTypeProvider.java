@@ -26,5 +26,4 @@ public interface NeeoThingTypeProvider extends ThingTypeProvider {
      * @param thingType the thing type
      */
     public void addThingType(ThingType thingType);
-
 }

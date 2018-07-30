@@ -319,20 +319,42 @@ public class NeeoDeviceHandler extends BaseThingHandler {
     }
 
     /**
+     * Helper method to return the {@link NeeoBrainHandler} associated with this handler
+     *
+     * @return a possibly null {@link NeeoBrainHandler}
+     */
+    @Nullable
+    private NeeoBrainHandler getBrainHandler() {
+        final Bridge parent = getBridge();
+        if (parent != null) {
+            final BridgeHandler handler = parent.getHandler();
+            if (handler instanceof NeeoBrainHandler) {
+                return ((NeeoBrainHandler) handler);
+            }
+        }
+        return null;
+    }
+
+    /**
      * Returns the {@link NeeoBrainApi} associated with this handler.
      *
      * @return the {@link NeeoBrainApi} or null if not found
      */
     @Nullable
     private NeeoBrainApi getNeeoBrainApi() {
-        final Bridge parent = getBridge();
-        if (parent != null) {
-            final BridgeHandler handler = parent.getHandler();
-            if (handler instanceof NeeoRoomHandler) {
-                return ((NeeoRoomHandler) handler).getNeeoBrainApi();
-            }
-        }
-        return null;
+        final NeeoBrainHandler handler = getBrainHandler();
+        return handler == null ? null : handler.getNeeoBrainApi();
+    }
+
+    /**
+     * Returns the brain ID associated with this handler.
+     *
+     * @return the brain ID or null if not found
+     */
+    @Nullable
+    public String getNeeoBrainId() {
+        final NeeoBrainHandler handler = getBrainHandler();
+        return handler == null ? null : handler.getNeeoBrainId();
     }
 
     @Override

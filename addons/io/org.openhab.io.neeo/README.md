@@ -319,11 +319,11 @@ When the volumes keys are pressed, a "INCREASE" or "DECREASE" will be sent to th
 
 ### Transport Storage
 
-All data used by the transport is stored under the "userdata/neeo" directory.
+All data used by the transport is stored under the "userdata/neeo" directory  (please note that this directory is shared with the NEEO binding).
 You may backup and restore these files as needed.
 If you restore the directory, you'll likely need to restart openHAB for the new file contents to be applied.
 
-There are two files being stored:
+There are two files being stored by the transport:
 
 1.  discoveredbrains.json will contain the brains that are discovered or manually added from the 'brains' tab.
 As brains are discovered, manually added or removed, this file will be updated.
