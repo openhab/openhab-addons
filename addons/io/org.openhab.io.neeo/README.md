@@ -24,13 +24,21 @@ Item changes in openHAB will appear in NEEO and vice-versa.
 
 If searching for openHAB devices on the NEEO Brain is always returning nothing, here are a few tips to solve the issue:
 
-1.  Make sure the openHAB primary address is set to an address that is reachable from the NEEO Brain (see openHAB Primary Address section below).
-2.  Make sure your firewall is not blocking access to the openHAB server
-3.  Your search criteria has included too many openHAB devices (especially if "Expose ALL" setting has been turned on).
+1.  Read sections IP Address and openHAB Primary Address below.
+2.  Make sure the openHAB primary address is set to an address that is reachable from the NEEO Brain (see openHAB Primary Address section below).
+3.  Make sure your firewall is not blocking access to the openHAB server
+4.  Your search criteria has included too many openHAB devices (especially if "Expose ALL" setting has been turned on).
+
 The NEEO brain has an (unknown) size limit to the amount of items that can be returned for a search and you may be going beyond that limit.
 Narrow your search to a specific item to see if you were hitting that search limit.
 
-## openHAB Primary Address
+### IP Address
+
+Whatever openHAB (with this transport) runs on will need a static IP address assigned to it.
+The transport will register the IP address with the brain and the brain will callback to the IP address.
+If your IP address changes, the brain will no longer be able to reach the transport and operation will fail (such as a search or receiving any updates in NEEO).
+
+### openHAB Primary Address
 
 This transport will use the primary address defined in openHAB to register itself as an SDK with the NEEO Brain (allowing the NEEO Brain to discover your things and to callback to openHAB to retrieve item values).
 If you change the primary address option, this binding will de-register the old address and re-register the new address with the NEEO Brain.
