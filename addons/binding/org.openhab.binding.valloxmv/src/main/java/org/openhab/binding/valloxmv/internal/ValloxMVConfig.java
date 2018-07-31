@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.valloxmv.internal;
 
-import java.math.BigDecimal;
-
 /**
  * The {@link ValloxMVConfig} class holds the configuration properties of the thing.
  *
@@ -18,7 +16,7 @@ import java.math.BigDecimal;
 
 public class ValloxMVConfig {
     private String ip;
-    private BigDecimal updateinterval;
+    private int updateinterval;
 
     public String getIp() {
         return ip;
@@ -28,11 +26,11 @@ public class ValloxMVConfig {
         this.ip = ip;
     }
 
-    public BigDecimal getUpdateinterval() {
+    public int getUpdateinterval() {
         return updateinterval;
     }
 
-    public void setUpdateinterval(BigDecimal updateinterval) {
+    public void setUpdateinterval(int updateinterval) {
         this.updateinterval = updateinterval;
     }
 }

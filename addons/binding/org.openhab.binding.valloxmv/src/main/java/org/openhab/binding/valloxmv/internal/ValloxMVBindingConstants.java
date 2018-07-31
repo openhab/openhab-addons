@@ -22,7 +22,7 @@ public class ValloxMVBindingConstants {
     private static final String BINDING_ID = "valloxmv";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "valloxmv");
+    public static final ThingTypeUID THING_TYPE_VALLOXMV = new ThingTypeUID(BINDING_ID, "valloxmv");
 
     // 4 states of ventilation unit (Fireplace = 1, Away = 2, At home = 3, Boost = 4)
     public static final int STATE_FIREPLACE = 1;

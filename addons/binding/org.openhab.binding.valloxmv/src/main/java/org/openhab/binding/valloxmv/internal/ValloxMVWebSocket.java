@@ -34,7 +34,6 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -72,28 +71,25 @@ public class ValloxMVWebSocket {
             logger.debug("Connecting to: {}", destUri);
             client.connect(socket, destUri, request);
             socket.awaitClose(2, TimeUnit.SECONDS);
-        } catch (IOException e) {
+        } catch (URISyntaxException | InterruptedException | IOException e) {
             connectionError(e);
-        } catch (URISyntaxException | InterruptedException e) {
-            logger.error("Error: {}", e);
         } catch (Exception e) {
-            logger.error("Error: {}", e);
+            logger.debug("Unexpected error");
+            connectionError(e);
         }
     }
 
     public void close() {
         try {
             client.stop();
-        } catch (IOException e) {
-            connectionError(e);
         } catch (Exception e) {
-            logger.error("Error: {}", e);
+            logger.debug("Error while closing connection: {}", e);
         }
         client.destroy();
         client = null;
     }
 
-    public void connectionError(IOException e) {
+    public void connectionError(Exception e) {
         logger.debug("Error connecting vallox unit.", e);
         voHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
     }
@@ -102,8 +98,8 @@ public class ValloxMVWebSocket {
     public class ValloxMVWebSocketListener {
         private final CountDownLatch closeLatch = new CountDownLatch(1);
 
-        private Logger logger = LoggerFactory.getLogger(ValloxMVWebSocketListener.class);
-        private String updateState;
+        private final Logger logger = LoggerFactory.getLogger(ValloxMVWebSocketListener.class);
+        private final String updateState;
         private ChannelUID channelUID;
 
         public ValloxMVWebSocketListener(ChannelUID channelUID, String updateState) {
@@ -126,7 +122,7 @@ public class ValloxMVWebSocket {
          * Method to generate ByteBuffer request to be sent to vallox online websocket
          * to request or set data
          *
-         * @param mode 246 for data request, 249 for setting data
+         * @param mode         246 for data request, 249 for setting data
          * @param hmParameters HashMap for setting data with register as key and value as value
          * @return ByteBuffer to be sent to websocket
          */
@@ -171,61 +167,46 @@ public class ValloxMVWebSocket {
                 // requestData (Length 3, Command to get data 246, empty set, checksum [sum of everything before])
                 return generateCustomRequest(246, new HashMap<Integer, Integer>());
             }
+            Map<Integer, Integer> request = new HashMap<>();
             if (ValloxMVBindingConstants.CHANNEL_STATE.equals(channelUID.getId())) {
                 if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_FIREPLACE) {
                     // 15 Min fireplace (Length 6, Command to set data 249, CYC_BOOST_TIMER (4612) = 0,
                     // CYC_FIREPLACE_TIMER
                     // (4613) = 15, checksum)
-                    Map<Integer, Integer> request = new HashMap<Integer, Integer>();
                     request.put(4612, 0);
                     request.put(4613, 15);
-                    return generateCustomRequest(249, request);
                 } else if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_ATHOME) {
                     // At Home (Length 8, Command to set data 249, CYC_STATE (4609) = 0, CYC_BOOST_TIMER (4612) = 0,
                     // CYC_FIREPLACE_TIMER (4613) = 0, checksum)
-                    Map<Integer, Integer> request = new HashMap<Integer, Integer>();
                     request.put(4609, 0);
                     request.put(4612, 0);
                     request.put(4613, 0);
-                    return generateCustomRequest(249, request);
                 } else if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_AWAY) {
                     // Away (Length 8, Command to set data 249, CYC_STATE (4609) = 1, CYC_BOOST_TIMER (4612) = 0,
                     // CYC_FIREPLACE_TIMER (4613) = 0, checksum)
-                    Map<Integer, Integer> request = new HashMap<Integer, Integer>();
                     request.put(4609, 1);
                     request.put(4612, 0);
                     request.put(4613, 0);
-                    return generateCustomRequest(249, request);
                 } else if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_BOOST) {
                     // 30 Min boost (Length 6, Command to set data 249, CYC_BOOST_TIMER (4612) = 30, CYC_FIREPLACE_TIMER
                     // (4613) = 0, checksum)
-                    Map<Integer, Integer> request = new HashMap<Integer, Integer>();
                     request.put(4612, 30);
                     request.put(4613, 0);
-                    return generateCustomRequest(249, request);
                 }
-            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_ONOFF)) {
-                HashMap<Integer, Integer> request = new HashMap<Integer, Integer>();
+            } else if (ValloxMVBindingConstants.CHANNEL_ONOFF.equals(channelUID.getId())) {
                 request.put(4610, Integer.parseInt(updateState));
-                return generateCustomRequest(249, request);
-            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE)) {
-                HashMap<Integer, Integer> request = new HashMap<Integer, Integer>();
+            } else if (ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE.equals(channelUID.getId())) {
                 request.put(20485, Integer.parseInt(updateState));
-                return generateCustomRequest(249, request);
-            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE)) {
-                HashMap<Integer, Integer> request = new HashMap<Integer, Integer>();
+            } else if (ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE.equals(channelUID.getId())) {
                 request.put(20486, Integer.parseInt(updateState));
-                return generateCustomRequest(249, request);
-            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING)) {
-                HashMap<Integer, Integer> request = new HashMap<Integer, Integer>();
+            } else if (ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING.equals(channelUID.getId())) {
                 request.put(20507, Integer.parseInt(updateState));
-                return generateCustomRequest(249, request);
-            } else if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET)) {
-                HashMap<Integer, Integer> request = new HashMap<Integer, Integer>();
+            } else if (ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET.equals(channelUID.getId())) {
                 request.put(20508, Integer.parseInt(updateState));
-                return generateCustomRequest(249, request);
+            } else {
+                return null;
             }
-            return null;
+            return generateCustomRequest(249, request);
         }
 
         @OnWebSocketMessage
@@ -237,7 +218,6 @@ public class ValloxMVWebSocket {
         public void onError(Throwable cause) {
             voHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             logger.debug("Connection failed: {}", cause.getMessage());
-            // ValloxMVWebSocket.this.close();
         }
 
         @OnWebSocketMessage
@@ -271,37 +251,37 @@ public class ValloxMVWebSocket {
 
                 logger.debug("Fan Speed: {}", (bytes[129] & 0xFF));
 
-                BigDecimal bdFanspeed = getNumber(bytes, 128);
-                BigDecimal bdFanspeedExtract = getNumber(bytes, 144);
-                BigDecimal bdFanspeedSupply = getNumber(bytes, 146);
+                int bdFanspeed = getNumber(bytes, 128);
+                int bdFanspeedExtract = getNumber(bytes, 144);
+                int bdFanspeedSupply = getNumber(bytes, 146);
                 BigDecimal bdTempInside = getTemperature(bytes, 130);
                 BigDecimal bdTempExhaust = getTemperature(bytes, 132);
                 BigDecimal bdTempOutside = getTemperature(bytes, 134);
                 BigDecimal bdTempIncomingBeforeHeating = getTemperature(bytes, 136);
                 BigDecimal bdTempIncoming = getTemperature(bytes, 138);
-                BigDecimal bdHumidity = getNumber(bytes, 166);
+                int bdHumidity = getNumber(bytes, 166);
 
-                BigDecimal bdStateOrig = getNumber(bytes, 214);
-                BigDecimal bdBoostTimer = getNumber(bytes, 220);
-                BigDecimal bdFireplaceTimer = getNumber(bytes, 222);
+                int bdStateOrig = getNumber(bytes, 214);
+                int bdBoostTimer = getNumber(bytes, 220);
+                int bdFireplaceTimer = getNumber(bytes, 222);
 
-                BigDecimal bdCellstate = getNumber(bytes, 228);
-                BigDecimal bdUptimeYears = getNumber(bytes, 230);
-                BigDecimal bdUptimeHours = getNumber(bytes, 232);
-                BigDecimal bdUptimeHoursCurrent = getNumber(bytes, 234);
+                int bdCellstate = getNumber(bytes, 228);
+                int bdUptimeYears = getNumber(bytes, 230);
+                int bdUptimeHours = getNumber(bytes, 232);
+                int bdUptimeHoursCurrent = getNumber(bytes, 234);
 
-                BigDecimal bdExtrFanBalanceBase = getNumber(bytes, 374);
-                BigDecimal bdSuppFanBalanceBase = getNumber(bytes, 376);
+                int bdExtrFanBalanceBase = getNumber(bytes, 374);
+                int bdSuppFanBalanceBase = getNumber(bytes, 376);
 
-                BigDecimal bdHomeSpeedSetting = getNumber(bytes, 418);
+                int bdHomeSpeedSetting = getNumber(bytes, 418);
                 BigDecimal bdHomeAirTempTarget = getTemperature(bytes, 420);
 
                 BigDecimal bdState;
-                if (bdFireplaceTimer.compareTo(new BigDecimal(0)) == 1) {
+                if (bdFireplaceTimer > 0) {
                     bdState = new BigDecimal(ValloxMVBindingConstants.STATE_FIREPLACE);
-                } else if (bdBoostTimer.compareTo(new BigDecimal(0)) == 1) {
+                } else if (bdBoostTimer > 0) {
                     bdState = new BigDecimal(ValloxMVBindingConstants.STATE_BOOST);
-                } else if (bdStateOrig.compareTo(new BigDecimal(1)) == 0) {
+                } else if (bdStateOrig == 1) {
                     bdState = new BigDecimal(ValloxMVBindingConstants.STATE_AWAY);
                 } else {
                     bdState = new BigDecimal(ValloxMVBindingConstants.STATE_ATHOME);
@@ -355,23 +335,19 @@ public class ValloxMVWebSocket {
         }
 
         private void updateChannel(String strChannelName, State state) {
-            Channel channel = voHandler.getThing().getChannel(strChannelName);
-            if (channel != null) {
-                voHandler.updateState(channel.getUID(), state);
-            }
+            voHandler.updateState(strChannelName, state);
         }
 
-        private BigDecimal getNumber(byte[] bytes, int pos) {
-            return (new BigDecimal(bytes[pos] & 0xff)).multiply(new BigDecimal(256))
-                    .add(new BigDecimal(bytes[pos + 1] & 0xff));
+        private int getNumber(byte[] bytes, int pos) {
+            return (bytes[pos] & 0xff) * 256 + (bytes[pos + 1] & 0xff);
         }
 
         @SuppressWarnings("null")
         private BigDecimal getTemperature(byte[] bytes, int pos) {
             // Fetch 2 byte number out of bytearray representing the temperature in milli degree kelvin
-            BigDecimal bdTempMiliKelvin = getNumber(bytes, pos);
+            BigDecimal bdTemperatureMiliKelvin = new BigDecimal(getNumber(bytes, pos));
             // Return number converted to degree celsius
-            return (new QuantityType<>(bdTempMiliKelvin, MetricPrefix.CENTI(SmartHomeUnits.KELVIN))
+            return (new QuantityType<>(bdTemperatureMiliKelvin, MetricPrefix.CENTI(SmartHomeUnits.KELVIN))
                     .toUnit(SIUnits.CELSIUS)).toBigDecimal();
         }
 

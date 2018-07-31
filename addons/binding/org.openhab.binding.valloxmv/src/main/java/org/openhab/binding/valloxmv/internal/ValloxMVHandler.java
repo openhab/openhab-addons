@@ -65,7 +65,7 @@ public class ValloxMVHandler extends BaseThingHandler {
                 valloxSendSocket.request(null, null);
             }
         } else {
-            if (channelUID.getId().equals(ValloxMVBindingConstants.CHANNEL_STATE)) {
+            if (ValloxMVBindingConstants.CHANNEL_STATE.equals(channelUID.getId())) {
                 try {
                     int cmd = Integer.parseInt(command.toString());
                     if ((cmd == ValloxMVBindingConstants.STATE_FIREPLACE)
@@ -122,11 +122,9 @@ public class ValloxMVHandler extends BaseThingHandler {
         String ip = getConfigAs(ValloxMVConfig.class).getIp();
         valloxSendSocket = new ValloxMVWebSocket(ValloxMVHandler.this, ip);
 
-        BigDecimal bdUpdateInterval = getConfigAs(ValloxMVConfig.class).getUpdateinterval();
-        if (bdUpdateInterval == null || bdUpdateInterval.compareTo(new BigDecimal(15)) == -1) {
+        updateInterval = getConfigAs(ValloxMVConfig.class).getUpdateinterval();
+        if (updateInterval < 15) {
             updateInterval = 60;
-        } else {
-            updateInterval = bdUpdateInterval.intValue();
         }
 
         scheduleUpdates();
@@ -156,8 +154,8 @@ public class ValloxMVHandler extends BaseThingHandler {
     }
 
     @Override
-    protected void updateState(ChannelUID uid, State dt) {
-        super.updateState(uid, dt);
+    protected void updateState(String strChannelName, State dt) {
+        super.updateState(strChannelName, dt);
     }
 
     @Override

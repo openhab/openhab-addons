@@ -22,10 +22,10 @@
 			<channel id="uptimeyears" typeId="uptimeyears" />
 			<channel id="uptimehours" typeId="uptimehours" />
 			<channel id="uptimehourscurrent" typeId="uptimehourscurrent" />
-            <channel id="extrfanbalancebase" typeId="extrfanbalancebase" />
-            <channel id="suppfanbalancebase" typeId="suppfanbalancebase" />
-            <channel id="homespeedsetting" typeId="homespeedsetting" />
-            <channel id="homeairtemptarget" typeId="homeairtemptarget" />
+			<channel id="extrfanbalancebase" typeId="extrfanbalancebase" />
+			<channel id="suppfanbalancebase" typeId="suppfanbalancebase" />
+			<channel id="homespeedsetting" typeId="homespeedsetting" />
+			<channel id="homeairtemptarget" typeId="homeairtemptarget" />
 		</channels>
 		<config-description>
 			<parameter name="ip" type="text" required="true">
@@ -167,32 +167,32 @@
 		<state pattern="%d h" readOnly="true" />
 	</channel-type>
 
-    <channel-type id="extrfanbalancebase" advanced="true">
-        <item-type>Number:Dimensionless</item-type>
-        <label>Extract fan base speed</label>
-        <description>Extract fan base speed in % (0-100)</description>
-        <state readOnly="false" min="0" max="1" pattern="%d %unit%" />
-    </channel-type>
+	<channel-type id="extrfanbalancebase" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Extract fan base speed</label>
+		<description>Extract fan base speed in % (0-100)</description>
+		<state readOnly="false" min="0" max="1" pattern="%d %unit%" />
+	</channel-type>
 
-    <channel-type id="suppfanbalancebase" advanced="true">
-        <item-type>Number:Dimensionless</item-type>
-        <label>Supply fan base speed</label>
-        <description>Supply fan base speed in % (0-100)</description>
-        <state readOnly="false" min="0" max="1" pattern="%d %unit%" />
-    </channel-type>
+	<channel-type id="suppfanbalancebase" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Supply fan base speed</label>
+		<description>Supply fan base speed in % (0-100)</description>
+		<state readOnly="false" min="0" max="1" pattern="%d %unit%" />
+	</channel-type>
 
-    <channel-type id="homespeedsetting" advanced="true">
-        <item-type>Number:Dimensionless</item-type>
-        <label>Home fan speed</label>
-        <description>Home fan speed in % (0-100)</description>
-        <state readOnly="false" min="0" max="1" pattern="%d %unit%" />
-    </channel-type>
+	<channel-type id="homespeedsetting" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Home fan speed</label>
+		<description>Home fan speed in % (0-100)</description>
+		<state readOnly="false" min="0" max="1" pattern="%d %unit%" />
+	</channel-type>
 
-    <channel-type id="homeairtemptarget" advanced="true">
-        <item-type>Number:Temperature</item-type>
-        <label>Home target temperature</label>
-        <description>Target temperature in home state</description>
-        <category>Temperature</category>
-        <state pattern="%.2f %unit%" readOnly="false" />
-    </channel-type>
+	<channel-type id="homeairtemptarget" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Home target temperature</label>
+		<description>Target temperature in home state</description>
+		<category>Temperature</category>
+		<state pattern="%.2f %unit%" readOnly="false" />
+	</channel-type>
 </thing:thing-descriptions>

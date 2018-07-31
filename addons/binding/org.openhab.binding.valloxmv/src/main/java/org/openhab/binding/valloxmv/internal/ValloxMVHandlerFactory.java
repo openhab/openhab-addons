@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.valloxmv.internal;
 
-import static org.openhab.binding.valloxmv.internal.ValloxMVBindingConstants.THING_TYPE_SAMPLE;
+import static org.openhab.binding.valloxmv.internal.ValloxMVBindingConstants.THING_TYPE_VALLOXMV;
 
 import java.util.Collections;
 import java.util.Set;
@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
 public class ValloxMVHandlerFactory extends BaseThingHandlerFactory {
 
     @SuppressWarnings("null")
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_VALLOXMV);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -44,7 +44,7 @@ public class ValloxMVHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SAMPLE)) {
+        if (THING_TYPE_VALLOXMV.equals(thingTypeUID)) {
             return new ValloxMVHandler(thing);
         }
 
