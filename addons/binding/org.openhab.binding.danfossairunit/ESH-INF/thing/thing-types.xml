@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="danfossairunit" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="danfossairccm">
+		<label>Danfoss Air CCM</label>
+		<description>The CCM of the Danfoss Air Unit</description>
+		<category>HVAC</category>
+		<channel-groups>
+			<channel-group typeId="main" id="main"></channel-group>
+			<channel-group typeId="humidity" id="humidity"></channel-group><channel-group typeId="temperatures" id="temperatures"></channel-group>
+			<channel-group typeId="recuperator" id="recuperator"></channel-group>
+			<channel-group typeId="service" id="service"></channel-group>
+
+		</channel-groups>
+
+		<config-description>
+			<parameter-group name="ethernet">
+				<label>Ethernet Connection</label>
+				<description>The ethernet address and port under which the Danfoss Air Unit CCM can be accessed. </description></parameter-group>
+			<parameter-group name="polling">
+				<label>Polling Intervals</label>
+				<advanced>true</advanced></parameter-group>
+			<parameter name="host" type="text" required="true" groupName="ethernet">
+				<label>Host</label>
+				<context>network-address</context>
+				<description>Host address or IP of the Danfoss Air Unit</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" groupName="ethernet" required="true" max="65535">
+				<label>Port</label>
+				<description>Web interface port of the Loxone Miniserver</description>
+				<default>30046</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="sensorPolling" type="integer" groupName="polling" required="false" unit="s">
+				<default>300</default>
+				<label>Sensors</label>
+				<unitLabel>Seconds</unitLabel>
+			</parameter>
+			<parameter name="settingPolling" type="integer" groupName="polling" required="false" unit="s">
+				<default>60</default>
+				<label>Settings</label>
+				<unitLabel>Seconds</unitLabel>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+	<channel-type id="sensorTemperature">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>A temperature measured by the air unit or air dial</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>CurrentTemperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f °C%"></state>
+	</channel-type>
+	<channel-type id="sensorHumidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<category>Humidity</category>
+		<tags>
+			<tag>CurrentHumidity</tag>
+		</tags>
+		<state min="0" max="100" pattern="%.2f %%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="fanSpeed">
+		<item-type>Number</item-type>
+		<label>Fan Speed</label>
+		<state min="0" max="10" step="1"></state>
+	</channel-type>
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>something switchable</label>
+	</channel-type>
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Demand, Program, Manual, Off</description>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Demand</option>
+				<option value="2">Manual</option>
+				<option value="3">Program</option>
+			</options></state>
+	</channel-type>
+	<channel-type id="filterLife">
+		<item-type>Number</item-type>
+		<label>Remaining Filter Life</label>
+		<description>Remaining life of filter until exchange is necessary</description>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %%"></state>
+	</channel-type>
+	<channel-type id="batteryLife">
+		<item-type>Number</item-type>
+		<label>Air Dial Battery Level</label>
+		<description>Remaining Air Dial Battery Level</description>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %%"></state>
+	</channel-type>
+	<channel-group-type id="main">
+		<label>Mode and Fan Speed</label>
+		<channels>
+			<channel typeId="mode" id="mode"></channel>
+			<channel typeId="fanSpeed" id="fanSpeed"></channel>
+			<channel typeId="switch" id="boost">
+				<label>Boost</label>
+				<description>Enables fan boost</description></channel>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="temperatures">
+		<label>Temperatures</label>
+		<category>Temperature</category>
+		<channels>
+			<channel id="roomTemperature" typeId="sensorTemperature">
+				<label>Room Temperature</label>
+				<description>Temperature of the air in the room of the Air Dial</description></channel><channel typeId="sensorTemperature" id="outdoorTemperature">
+				<label>Outdoor Temperature</label>
+				<description>Temperature of the air outside</description>
+</channel>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="recuperator" advanced="true">
+		<label>Recuperator</label>
+		<description>Heat exchaning device in the Air Unit</description>
+		<channels>
+			<channel typeId="switch" id="bypass">
+				<label>Bypass</label>
+				<description>Disables the heat exchange. Useful in summer when room temperature is above target and outside temperature is below target.</description></channel>
+			<channel typeId="sensorTemperature" id="supplyTemperature">
+				<label>Supply Air Temperature</label>
+				<description>Temperature of air which is passed to the rooms</description></channel><channel typeId="sensorTemperature" id="extractTemperature">
+				<label>Extract Air Temperature</label>
+				<description>Temperature of the air as extracted from the rooms</description></channel><channel typeId="sensorTemperature" id="exhaustTemperature">
+				<label>Exhaust Air Temperature</label>
+				<description>Temperature of the air when pushed outside</description></channel>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="humidity">
+		<label>Humidity</label>
+		<channels>
+			<channel typeId="sensorHumidity" id="humidity"></channel>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="service">
+		<label>Service</label>
+		<channels>
+			<channel typeId="batteryLife" id="batteryLife"></channel><channel typeId="filterLife" id="filterLife"></channel>
+			
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
