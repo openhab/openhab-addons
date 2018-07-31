@@ -140,7 +140,9 @@ public class NeeoDeviceProtocol {
                 // (mostly it depends on the state of the brain - if it's starting up or in the process
                 // of executing a long scenario - the macro will likely timeout or simply throw an exception)
                 // Because of this, we simply log the error versus taking the binding offline
-                logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
+                logger.warn(
+                        "Exception occurred during execution of a macro (may need to update the brain firmware): {}",
+                        e.getMessage(), e);
                 // callback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
