@@ -118,6 +118,7 @@ public class ValloxMVHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Start initializing!");
+        updateStatus(ThingStatus.UNKNOWN);
 
         String ip = getConfigAs(ValloxMVConfig.class).getIp();
         valloxSendSocket = new ValloxMVWebSocket(ValloxMVHandler.this, ip);
@@ -151,6 +152,7 @@ public class ValloxMVHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         updateTasks.cancel(true);
+        updateTasks = null;
     }
 
     @Override

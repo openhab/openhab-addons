@@ -4,7 +4,7 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="valloxmv">
-		<label>Vallox ventilation unit</label>
+		<label>Vallox Ventilation Unit</label>
 		<description>Interface to online interface of Vallox ventilation unit</description>
 		<channels>
 			<channel id="onoff" typeId="onoff" />
@@ -29,13 +29,14 @@
 		</channels>
 		<config-description>
 			<parameter name="ip" type="text" required="true">
-				<label>IP</label>
+				<label>IP Address</label>
+				<context>network-address</context>
 				<description>IP address or host name of online interface of ventilation unit</description>
 			</parameter>
 			<parameter name="updateinterval" type="integer" required="false">
 				<label>Update interval</label>
 				<description>Data update interval in seconds (default: 60s)</description>
-				<required>true</required>
+				<required>false</required>
 				<default>60</default>
 			</parameter>
 		</config-description>

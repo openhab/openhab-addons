@@ -4,7 +4,7 @@
 	xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-	<name>Vallox ventilation unit</name>
+	<name>ValloxMV Binding</name>
 	<description>Binding for online interface of Vallox ventilation unit</description>
 	<author>Björn Brings</author>
 

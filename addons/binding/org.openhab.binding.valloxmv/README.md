@@ -5,7 +5,7 @@ It has been tested so far only with Vallox 350 MV and 510 MV.
 
 ## Supported Things
 
-There is one thing supporting the connection via the web interface. There is NO support of former modbus connected devices.
+There is one thing (valloxmv) supporting the connection via the web interface of the Vallox MV. There is NO support of former modbus connected devices.
 
 ## Discovery
 
@@ -15,6 +15,11 @@ This binding does not support any discovery, IP address has to be provided.
 
 The Thing needs the information at which IP the web interface could be reached and how often the values should be updated.
 Minimum update interval is limited to 15 sec in order to avoid polling again before results have been evaluated.
+
+| Config                | Description                                           | Type  | Default |
+| :-------------------- |:------------------------------------------------------|:-----:|:-------:|
+| ip                    | IP address of web interface                           |string | n/a     |
+| updateinterval        | Interval in seconds in which the interface is polled  |int    | 60      |    
 
 ## Channels
 
