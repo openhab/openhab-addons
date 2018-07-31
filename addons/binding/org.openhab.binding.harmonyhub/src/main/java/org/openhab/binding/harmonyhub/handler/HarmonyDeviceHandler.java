@@ -31,6 +31,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -181,9 +182,9 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
 
         List<StateOption> states = getButtonStateOptions(harmonyConfig);
 
-        ChannelType channelType = new ChannelType(channelTypeUID, false, "String", "Send Button Press",
-                "Send a button press to device " + getThing().getLabel(), null, null,
-                new StateDescription(null, null, null, null, false, states), null);
+        ChannelType channelType = ChannelTypeBuilder.state(channelTypeUID, "Send Button Press", "String")
+                .withDescription("Send a button press to device " + getThing().getLabel())
+                .withStateDescription(new StateDescription(null, null, null, null, false, states)).build();
 
         factory.addChannelType(channelType);
 
