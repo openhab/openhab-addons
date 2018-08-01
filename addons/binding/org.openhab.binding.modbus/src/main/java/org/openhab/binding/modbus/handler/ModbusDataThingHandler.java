@@ -807,7 +807,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 String types = StringUtils.join(acceptedDataTypes.stream().map(cls -> cls.getSimpleName()).toArray(),
                         ", ");
                 logger.warn(
-                        "Channel {} will not be updated since transformation was unsuccesful. Channel is expecting the following data types [{}]. Input data: number value {} (value type '{}' taken into account) and bool value {}. Transformation: {}",
+                        "Channel {} will not be updated since transformation was unsuccessful. Channel is expecting the following data types [{}]. Input data: number value {} (value type '{}' taken into account) and bool value {}. Transformation: {}",
                         channelUID, types, numericState, readValueType, boolValue,
                         readTransformation.isIdentityTransform() ? "<identity>" : readTransformation);
             }
