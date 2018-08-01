@@ -31,7 +31,7 @@ public class NeeoRooms {
      *
      * @param rooms the rooms
      */
-    public NeeoRooms(NeeoRoom[] rooms) {
+    NeeoRooms(NeeoRoom[] rooms) {
         Objects.requireNonNull(rooms, "rooms cannot be null");
         this.rooms = rooms;
     }
@@ -52,7 +52,7 @@ public class NeeoRooms {
      * @param key the key
      * @return the room
      */
-    public NeeoRoom getRoom(String key) {
+    NeeoRoom getRoom(String key) {
         for (NeeoRoom room : getRooms()) {
             if (StringUtils.equalsIgnoreCase(key, room.getKey())) {
                 return room;

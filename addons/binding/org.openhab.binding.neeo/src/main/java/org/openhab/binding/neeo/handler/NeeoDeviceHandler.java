@@ -9,9 +9,7 @@
 package org.openhab.binding.neeo.handler;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Future;
@@ -24,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -32,13 +29,13 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
-import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.neeo.NeeoConstants;
 import org.openhab.binding.neeo.NeeoUtil;
+import org.openhab.binding.neeo.UidUtils;
 import org.openhab.binding.neeo.internal.NeeoBrainApi;
 import org.openhab.binding.neeo.internal.NeeoDeviceConfig;
 import org.openhab.binding.neeo.internal.NeeoDeviceProtocol;
@@ -47,9 +44,7 @@ import org.openhab.binding.neeo.internal.NeeoRoomConfig;
 import org.openhab.binding.neeo.internal.models.NeeoDevice;
 import org.openhab.binding.neeo.internal.models.NeeoDeviceDetails;
 import org.openhab.binding.neeo.internal.models.NeeoDeviceDetailsTiming;
-import org.openhab.binding.neeo.internal.models.NeeoMacro;
 import org.openhab.binding.neeo.internal.models.NeeoRoom;
-import org.openhab.binding.neeo.internal.type.UidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,25 +93,40 @@ public class NeeoDeviceHandler extends BaseThingHandler {
             return;
         }
 
-        final String groupId = channelUID.getGroupId();
-        final String channelId = channelUID.getIdWithoutGroup();
+        final String[] channelIds = UidUtils.parseChannelId(channelUID);
+        if (channelIds.length == 0) {
+            logger.debug("Bad group declaration: {}", channelUID);
+            return;
+        }
 
-        if (groupId == null || StringUtils.isEmpty(groupId)) {
+        final String localGroupId = channelUID.getGroupId();
+        final String groupId = localGroupId == null || StringUtils.isEmpty(localGroupId) ? "" : localGroupId;
+        final String channelId = channelIds[0];
+        final String channelKey = channelIds.length > 1 ? channelIds[1] : "";
+
+        if (StringUtils.isEmpty(groupId)) {
             logger.debug("GroupID for channel is null - ignoring command: {}", channelUID);
             return;
         }
 
         if (command instanceof RefreshType) {
-            refreshChannel(protocol, groupId, channelId);
+            refreshChannel(protocol, groupId, channelId, channelKey);
         } else {
             switch (groupId) {
-                case NeeoConstants.DEVICE_GROUP_MACROSID:
-                    if (command instanceof OnOffType) {
-                        protocol.setMacroStatus(channelId, command == OnOffType.ON);
+                case NeeoConstants.DEVICE_GROUP_MACROS_ID:
+                    switch (channelId) {
+                        case NeeoConstants.DEVICE_CHANNEL_STATUS:
+                            if (command instanceof OnOffType) {
+                                protocol.setMacroStatus(channelKey, command == OnOffType.ON);
+                            }
+                            break;
+                        default:
+                            logger.debug("Unknown channel to set: {}", channelUID);
+                            break;
                     }
                     break;
                 default:
-                    logger.debug("Unknown channel to set: {}", channelUID);
+                    logger.debug("Unknown group to set: {}", channelUID);
                     break;
             }
         }
@@ -128,15 +138,21 @@ public class NeeoDeviceHandler extends BaseThingHandler {
      * @param protocol a non-null protocol to use
      * @param groupId the non-empty groupId
      * @param channelId the non-empty channel id
+     * @param channelKey the non-empty channel key
      */
-    private void refreshChannel(NeeoDeviceProtocol protocol, String groupId, String channelId) {
+    private void refreshChannel(NeeoDeviceProtocol protocol, String groupId, String channelId, String channelKey) {
         Objects.requireNonNull(protocol, "protocol cannot be null");
         NeeoUtil.requireNotEmpty(groupId, "groupId must not be empty");
         NeeoUtil.requireNotEmpty(channelId, "channelId must not be empty");
+        NeeoUtil.requireNotEmpty(channelKey, "channelKey must not be empty");
 
         switch (groupId) {
-            case NeeoConstants.DEVICE_GROUP_MACROSID:
-                protocol.refreshMacroStatus(channelId);
+            case NeeoConstants.DEVICE_GROUP_MACROS_ID:
+                switch (channelId) {
+                    case NeeoConstants.DEVICE_CHANNEL_STATUS:
+                        protocol.refreshMacroStatus(channelKey);
+                        break;
+                }
                 break;
         }
     }
@@ -187,21 +203,6 @@ public class NeeoDeviceHandler extends BaseThingHandler {
             }
 
             final ThingUID thingUid = getThing().getUID();
-            final List<Channel> channels = new ArrayList<>();
-            for (NeeoMacro macro : device.getMacros().getMacros()) {
-                final String key = macro.getKey();
-                if (key != null && StringUtils.isNotEmpty(key)) {
-                    final Channel channel = ChannelBuilder
-                            .create(new ChannelUID(thingUid, NeeoConstants.DEVICE_GROUP_MACROSID, key), "Switch")
-                            .withType(UidUtils.createChannelTypeUID(macro)).build();
-
-                    channels.add(channel);
-                }
-            }
-
-            final ThingBuilder thingBuilder = editThing();
-            thingBuilder.withChannels(channels);
-            updateThing(thingBuilder.build());
 
             final Map<String, String> properties = new HashMap<>();
             final NeeoDeviceDetails details = device.getDetails();
@@ -222,7 +223,11 @@ public class NeeoDeviceHandler extends BaseThingHandler {
 
                 properties.put("Device Capabilities", StringUtils.join(details.getDeviceCapabilities(), ','));
             }
-            updateProperties(properties);
+
+            final ThingBuilder thingBuilder = editThing();
+            thingBuilder.withLabel(device.getName() + " (NEEO " + brainApi.getBrain().getKey() + ")")
+                    .withProperties(properties).withChannels(ChannelUtils.generateChannels(thingUid, device));
+            updateThing(thingBuilder.build());
 
             NeeoUtil.checkInterrupt();
             final NeeoDeviceProtocol protocol = new NeeoDeviceProtocol(new NeeoHandlerCallback() {
@@ -319,17 +324,17 @@ public class NeeoDeviceHandler extends BaseThingHandler {
     }
 
     /**
-     * Helper method to return the {@link NeeoBrainHandler} associated with this handler
+     * Helper method to return the {@link NeeoRoomHandler} associated with this handler
      *
-     * @return a possibly null {@link NeeoBrainHandler}
+     * @return a possibly null {@link NeeoRoomHandler}
      */
     @Nullable
-    private NeeoBrainHandler getBrainHandler() {
+    private NeeoRoomHandler getRoomHandler() {
         final Bridge parent = getBridge();
         if (parent != null) {
             final BridgeHandler handler = parent.getHandler();
-            if (handler instanceof NeeoBrainHandler) {
-                return ((NeeoBrainHandler) handler);
+            if (handler instanceof NeeoRoomHandler) {
+                return ((NeeoRoomHandler) handler);
             }
         }
         return null;
@@ -342,7 +347,7 @@ public class NeeoDeviceHandler extends BaseThingHandler {
      */
     @Nullable
     private NeeoBrainApi getNeeoBrainApi() {
-        final NeeoBrainHandler handler = getBrainHandler();
+        final NeeoRoomHandler handler = getRoomHandler();
         return handler == null ? null : handler.getNeeoBrainApi();
     }
 
@@ -353,7 +358,7 @@ public class NeeoDeviceHandler extends BaseThingHandler {
      */
     @Nullable
     public String getNeeoBrainId() {
-        final NeeoBrainHandler handler = getBrainHandler();
+        final NeeoRoomHandler handler = getRoomHandler();
         return handler == null ? null : handler.getNeeoBrainId();
     }
 

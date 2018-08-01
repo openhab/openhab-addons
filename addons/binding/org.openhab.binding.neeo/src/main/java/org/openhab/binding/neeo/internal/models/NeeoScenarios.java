@@ -31,7 +31,7 @@ public class NeeoScenarios {
      *
      * @param scenarios the scenarios
      */
-    public NeeoScenarios(NeeoScenario[] scenarios) {
+    NeeoScenarios(NeeoScenario[] scenarios) {
         Objects.requireNonNull(scenarios, "scenarios cannot be null");
         this.scenarios = scenarios;
     }

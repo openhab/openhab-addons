@@ -15,11 +15,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.binding.neeo.NeeoConstants;
 import org.openhab.binding.neeo.NeeoUtil;
+import org.openhab.binding.neeo.UidUtils;
 import org.openhab.binding.neeo.internal.models.NeeoDevice;
 import org.openhab.binding.neeo.internal.models.NeeoDevices;
 import org.openhab.binding.neeo.internal.models.NeeoMacro;
 import org.openhab.binding.neeo.internal.models.NeeoRoom;
-import org.openhab.binding.neeo.internal.type.UidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,8 +99,8 @@ public class NeeoDeviceProtocol {
 
         final NeeoMacro macro = neeoDevice.getMacros().getMacro(macroKey);
         if (macro != null) {
-            callback.stateChanged(UidUtils.createChannelId(NeeoConstants.DEVICE_GROUP_MACROSID, macroKey),
-                    OnOffType.OFF);
+            callback.stateChanged(UidUtils.createChannelId(NeeoConstants.DEVICE_GROUP_MACROS_ID,
+                    NeeoConstants.DEVICE_CHANNEL_STATUS, macroKey), OnOffType.OFF);
         }
     }
 
@@ -130,8 +130,8 @@ public class NeeoDeviceProtocol {
                     // AND it's impossible to tell if any macro is executing or not (no equivalent
                     // API to poll for), we simply refresh the status back to OFF after 500ms
                     callback.scheduleTask(() -> {
-                        callback.stateChanged(UidUtils.createChannelId(NeeoConstants.DEVICE_GROUP_MACROSID, macroKey),
-                                OnOffType.OFF);
+                        callback.stateChanged(UidUtils.createChannelId(NeeoConstants.DEVICE_GROUP_MACROS_ID,
+                                NeeoConstants.DEVICE_CHANNEL_STATUS, macroKey), OnOffType.OFF);
                     }, 500);
                 }
             } catch (IOException e) {

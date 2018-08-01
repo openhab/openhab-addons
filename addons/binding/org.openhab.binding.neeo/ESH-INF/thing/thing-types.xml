@@ -4,7 +4,7 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- The brain bridge - will have things dynamically assigned to it. -->
+	<!-- The brain bridge -->
 	<bridge-type id="brain">
 		<label>Neeo Brain</label>
 		<description>The NEEO Brain</description>
@@ -41,19 +41,16 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
-	<!-- The following bridge type is a template for a dynamically created NEEO room. The following 'variables' will be substituted 
-		when dynamically creating the room type: bbb - NEEO Brain ID rrr - NEEO Room Key nnn - NEEO Room Name sss - NEEO Room Scenario 
-		Key ccc - NEEO Room Recipe Key -->
-	<bridge-type id="room-rrr">
+	<bridge-type id="room">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="brain" />
 		</supported-bridge-type-refs>
-		<label>nnn (NEEO bbb)</label>
-		<description>nnn (NEEO bbb) (rrr)</description>
+		<label>Neeo Room</label>
+		<description>Neeo Room</description>
 		<channel-groups>
 			<channel-group id="state" typeId="room-state" />
-			<channel-group id="scenario-sss" typeId="room-scenario" />
-			<channel-group id="recipe-ccc" typeId="room-recipe" />
+			<channel-group id="scenario" typeId="room-scenario" />
+			<channel-group id="recipe" typeId="room-recipe" />
 		</channel-groups>
 		<config-description>
 			<parameter name="roomKey" type="text" required="true">
@@ -74,17 +71,14 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
-	<!-- The following thing type is a template for a dynamically created NEEO Device. The following 'variables' will be substituted 
-		when dynamically creating the device type: bbb - NEEO Brain ID rrr - NEEO Room Key ddd - NEEO Device Key nnn - NEEO Room 
-		Name Please note that the channel group types are dynamically created as well (see bottom of this file for their templates) -->
-	<thing-type id="device-ddd">
+	<thing-type id="device">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="room-rrr" />
+			<bridge-type-ref id="room" />
 		</supported-bridge-type-refs>
-		<label>nnn (NEEO bbb)</label>
-		<description>nnn (NEEO bbb) (ddd)</description>
+		<label>Neeo Device</label>
+		<description>Neeo Device</description>
 		<channel-groups>
-			<channel-group id="macros" typeId="device-macros-ddd" />
+			<channel-group id="macros" typeId="device-macros" />
 		</channel-groups>
 		<config-description>
 			<parameter name="deviceKey" type="text" required="true">
@@ -117,8 +111,8 @@
 		</event>
 	</channel-type>
 	<channel-group-type id="room-recipe">
-		<label>Recipe</label>
-		<description>A room recipe</description>
+		<label>Recipes</label>
+		<description>The room recipes</description>
 		<channels>
 			<channel id="name" typeId="room-recipe-name" />
 			<channel id="type" typeId="room-recipe-type" />
@@ -128,30 +122,30 @@
 	</channel-group-type>
 	<channel-type id="room-recipe-name" advanced="true">
 		<item-type>String</item-type>
-		<label>Name</label>
+		<label>Label dynamically generated</label>
 		<description>The recipe name</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="room-recipe-type" advanced="true">
 		<item-type>String</item-type>
-		<label>Type</label>
+		<label>Label dynamically generated</label>
 		<description>The type of recipe</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="room-recipe-enabled" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Enabled</label>
+		<label>Label dynamically generated</label>
 		<description>Whether the recipe is enabled or not.</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="room-recipe-status">
 		<item-type>Switch</item-type>
-		<label>Activate</label>
+		<label>Label dynamically generated</label>
 		<description>Send ON to execute the recipe</description>
 	</channel-type>
 	<channel-group-type id="room-scenario">
-		<label>Scenario</label>
-		<description>A room scenario</description>
+		<label>Scenarios</label>
+		<description>The room scenarios</description>
 		<channels>
 			<channel id="name" typeId="room-scenario-name" />
 			<channel id="configured" typeId="room-scenario-configured" />
@@ -160,34 +154,31 @@
 	</channel-group-type>
 	<channel-type id="room-scenario-name" advanced="true">
 		<item-type>String</item-type>
-		<label>Name</label>
+		<label>Label dynamically generated</label>
 		<description>The scenario name</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="room-scenario-configured" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Configured</label>
+		<label>Label dynamically generated</label>
 		<description>Whether the scenario is configured or not</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="room-scenario-status">
 		<item-type>Switch</item-type>
-		<label>Status</label>
+		<label>Label dynamically generated</label>
 		<description>Whether the scenario is running or not (send ON to turn on the scenario, OFF to turn off the scenario)</description>
 	</channel-type>
-	<!-- The following channel type definitions are created dynamically for each NEEO Device Macro. The following 'variables' 
-		will be substituted when dynamically creating the macro channel types: ddd - NEEO Device Name mmm - NEEO Macro key lll - 
-		NEEO Macro Name or NEEO Macro Label (if no name) or "Unknown" if neither -->
-	<channel-group-type id="device-macros-ddd">
+	<channel-group-type id="device-macros">
 		<label>Macros</label>
-		<description>Macros for ddd</description>
+		<description>Executable macros</description>
 		<channels>
-			<channel id="mmm" typeId="device-macros-status-mmm" />
+			<channel id="status" typeId="device-macros-status" />
 		</channels>
 	</channel-group-type>
-	<channel-type id="device-macros-status-mmm">
+	<channel-type id="device-macros-status">
 		<item-type>Switch</item-type>
-		<label>lll</label>
+		<label>Label dynamically generated</label>
 		<description>Send ON to trigger the macro</description>
 	</channel-type>
 </thing:thing-descriptions>

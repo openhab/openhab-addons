@@ -24,19 +24,22 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.neeo.NeeoConstants;
 import org.openhab.binding.neeo.NeeoUtil;
+import org.openhab.binding.neeo.UidUtils;
 import org.openhab.binding.neeo.internal.NeeoBrainApi;
 import org.openhab.binding.neeo.internal.NeeoHandlerCallback;
 import org.openhab.binding.neeo.internal.NeeoRoomConfig;
 import org.openhab.binding.neeo.internal.NeeoRoomProtocol;
 import org.openhab.binding.neeo.internal.models.NeeoAction;
-import org.openhab.binding.neeo.internal.type.UidUtils;
+import org.openhab.binding.neeo.internal.models.NeeoRoom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,27 +82,28 @@ public class NeeoRoomHandler extends BaseBridgeHandler {
         Objects.requireNonNull(channelUID, "channelUID cannot be null");
         Objects.requireNonNull(command, "command cannot be null");
 
-        final String[] groupIds = UidUtils.parseGroupId(channelUID);
-        if (groupIds.length == 0) {
-            logger.debug("Bad group declaration: {}", channelUID);
-            return;
-        }
-
         final NeeoRoomProtocol protocol = roomProtocol.get();
         if (protocol == null) {
             logger.debug("Protocol is null - ignoring update: {}", channelUID);
             return;
         }
 
-        final String channelSection = groupIds[0];
-        final String channelKey = groupIds.length > 1 ? groupIds[1] : "";
-        final String channelId = channelUID.getIdWithoutGroup();
+        final String[] channelIds = UidUtils.parseChannelId(channelUID);
+        if (channelIds.length == 0) {
+            logger.debug("Bad group declaration: {}", channelUID);
+            return;
+        }
+
+        final String localGroupId = channelUID.getGroupId();
+        final String groupId = localGroupId == null || StringUtils.isEmpty(localGroupId) ? "" : localGroupId;
+        final String channelId = channelIds[0];
+        final String channelKey = channelIds.length > 1 ? channelIds[1] : "";
 
         if (command instanceof RefreshType) {
-            refreshChannel(protocol, channelSection, channelKey, channelId);
+            refreshChannel(protocol, groupId, channelKey, channelId);
         } else {
-            switch (channelSection) {
-                case NeeoConstants.ROOM_CHANNEL_GROUP_RECIPEID:
+            switch (groupId) {
+                case NeeoConstants.ROOM_GROUP_RECIPE_ID:
                     switch (channelId) {
                         case NeeoConstants.ROOM_CHANNEL_STATUS:
                             // Ignore OFF status updates
@@ -109,7 +113,7 @@ public class NeeoRoomHandler extends BaseBridgeHandler {
                             break;
                     }
                     break;
-                case NeeoConstants.ROOM_CHANNEL_GROUP_SCENARIOID:
+                case NeeoConstants.ROOM_GROUP_SCENARIO_ID:
                     switch (channelId) {
                         case NeeoConstants.ROOM_CHANNEL_STATUS:
                             if (command instanceof OnOffType) {
@@ -129,17 +133,17 @@ public class NeeoRoomHandler extends BaseBridgeHandler {
      * Refresh the specified channel section, key and id using the specified protocol
      *
      * @param protocol a non-null protocol to use
-     * @param channelSection the non-empty channel section
+     * @param groupId the non-empty channel section
      * @param channelKey the non-empty channel key
      * @param channelId the non-empty channel id
      */
-    private void refreshChannel(NeeoRoomProtocol protocol, String channelSection, String channelKey, String channelId) {
+    private void refreshChannel(NeeoRoomProtocol protocol, String groupId, String channelKey, String channelId) {
         Objects.requireNonNull(protocol, "protocol cannot be null");
-        NeeoUtil.requireNotEmpty(channelSection, "channelSection must not be empty");
+        NeeoUtil.requireNotEmpty(groupId, "groupId must not be empty");
         NeeoUtil.requireNotEmpty(channelId, "channelId must not be empty");
 
-        switch (channelSection) {
-            case NeeoConstants.ROOM_CHANNEL_GROUP_RECIPEID:
+        switch (groupId) {
+            case NeeoConstants.ROOM_GROUP_RECIPE_ID:
                 NeeoUtil.requireNotEmpty(channelKey, "channelKey must not be empty");
                 switch (channelId) {
                     case NeeoConstants.ROOM_CHANNEL_NAME:
@@ -156,7 +160,7 @@ public class NeeoRoomHandler extends BaseBridgeHandler {
                         break;
                 }
                 break;
-            case NeeoConstants.ROOM_CHANNEL_GROUP_SCENARIOID:
+            case NeeoConstants.ROOM_GROUP_SCENARIO_ID:
                 NeeoUtil.requireNotEmpty(channelKey, "channelKey must not be empty");
                 switch (channelId) {
                     case NeeoConstants.ROOM_CHANNEL_NAME:
@@ -201,9 +205,17 @@ public class NeeoRoomHandler extends BaseBridgeHandler {
                 return;
             }
 
+            final NeeoRoom room = brainApi.getRoom(roomKey);
+
+            final ThingUID thingUid = getThing().getUID();
+
             final Map<String, String> properties = new HashMap<>();
             properties.put("Key", roomKey);
-            updateProperties(properties);
+
+            final ThingBuilder thingBuilder = editThing();
+            thingBuilder.withLabel(room.getName() + " (NEEO " + brainApi.getBrain().getKey() + ")")
+                    .withProperties(properties).withChannels(ChannelUtils.generateChannels(thingUid, room));
+            updateThing(thingBuilder.build());
 
             NeeoUtil.checkInterrupt();
             final NeeoRoomProtocol protocol = new NeeoRoomProtocol(new NeeoHandlerCallback() {

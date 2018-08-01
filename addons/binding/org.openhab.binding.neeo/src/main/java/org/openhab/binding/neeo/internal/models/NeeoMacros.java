@@ -31,7 +31,7 @@ public class NeeoMacros {
      *
      * @param macros the macros
      */
-    public NeeoMacros(NeeoMacro[] macros) {
+    NeeoMacros(NeeoMacro[] macros) {
         Objects.requireNonNull(macros, "macros cannot be null");
         this.macros = macros;
     }

@@ -127,17 +127,6 @@ public class NeeoBrain {
         return localRooms == null ? new NeeoRooms(new NeeoRoom[0]) : localRooms;
     }
 
-    /**
-     * Gets a specified room in the brain
-     *
-     * @param key the key
-     * @return the room
-     */
-    @Nullable
-    public NeeoRoom getRoom(String key) {
-        return getRooms().getRoom(key);
-    }
-
     @Override
     public String toString() {
         return "NeeoBrain [name=" + name + ", version=" + version + ", label=" + label + ", configured=" + configured

@@ -8,11 +8,9 @@
  */
 package org.openhab.binding.neeo;
 
-import java.io.File;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link NeeoConstants} class defines common constants, which are
@@ -26,8 +24,10 @@ public class NeeoConstants {
     /** The main binding */
     public static final String BINDING_ID = "neeo";
 
-    /** The bridge thing uid */
+    /** The various bridge/thing UIDs */
     public static final ThingTypeUID BRIDGE_TYPE_BRAIN = new ThingTypeUID(BINDING_ID, "brain");
+    public static final ThingTypeUID BRIDGE_TYPE_ROOM = new ThingTypeUID(BINDING_ID, "room");
+    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
     /** The MDNS type for the NEEO brain */
     public static final String NEEO_MDNS_TYPE = "_neeo._tcp.local.";
@@ -35,8 +35,6 @@ public class NeeoConstants {
     /** Various config related */
     public static final String CONFIG_IPADDRESS = "ipAddress";
     public static final String CONFIG_ENABLEFORWARDACTIONS = "enableForwardActions";
-    public static final String CONFIG_DESCRIPTION_URI_ROOM = "thing-type:neeo:room:config";
-    public static final String CONFIG_DESCRIPTION_URI_DEVICE = "thing-type:neeo:device:config";
     public static final String CONFIG_REFRESH_POLLING = "refreshPolling";
     public static final String CONFIG_DEVICEKEY = "deviceKey";
     public static final String CONFIG_ROOMKEY = "roomKey";
@@ -45,14 +43,6 @@ public class NeeoConstants {
     /** Brain channels */
     public static final String CHANNEL_BRAIN_FOWARDACTIONS = "forwardActions";
 
-    /** Various room channel grouping constants */
-    public static final String ROOM_CHANNEL_GROUP_STATE = "room-state";
-    public static final String ROOM_CHANNEL_GROUP_STATEID = "state";
-    public static final String ROOM_CHANNEL_GROUP_RECIPE = "room-recipe";
-    public static final String ROOM_CHANNEL_GROUP_RECIPEID = "recipe";
-    public static final String ROOM_CHANNEL_GROUP_SCENARIO = "room-scenario";
-    public static final String ROOM_CHANNEL_GROUP_SCENARIOID = "scenario";
-
     /** The various room channel constants */
     public static final String ROOM_CHANNEL_NAME = "name";
     public static final String ROOM_CHANNEL_TYPE = "type";
@@ -60,15 +50,25 @@ public class NeeoConstants {
     public static final String ROOM_CHANNEL_CONFIGURED = "configured";
     public static final String ROOM_CHANNEL_STATUS = "status";
     public static final String ROOM_CHANNEL_CURRENTSTEP = "currentStep";
+    public static final String ROOM_GROUP_STATE_ID = "state";
+    public static final String ROOM_GROUP_SCENARIO_ID = "scenario";
+    public static final String ROOM_GROUP_RECIPE_ID = "recipe";
+    public static final ChannelTypeUID ROOM_STATE_CURRENTSTEP_UID = new ChannelTypeUID(BINDING_ID,
+            "room-state-currentstep");
+    public static final ChannelTypeUID ROOM_SCENARIO_NAME_UID = new ChannelTypeUID(BINDING_ID, "room-scenario-name");
+    public static final ChannelTypeUID ROOM_SCENARIO_CONFIGURED_UID = new ChannelTypeUID(BINDING_ID,
+            "room-scenario-configured");
+    public static final ChannelTypeUID ROOM_SCENARIO_STATUS_UID = new ChannelTypeUID(BINDING_ID,
+            "room-scenario-status");
+    public static final ChannelTypeUID ROOM_RECIPE_NAME_UID = new ChannelTypeUID(BINDING_ID, "room-recipe-name");
+    public static final ChannelTypeUID ROOM_RECIPE_TYPE_UID = new ChannelTypeUID(BINDING_ID, "room-recipe-type");
+    public static final ChannelTypeUID ROOM_RECIPE_ENABLED_UID = new ChannelTypeUID(BINDING_ID, "room-recipe-enabled");
+    public static final ChannelTypeUID ROOM_RECIPE_STATUS_UID = new ChannelTypeUID(BINDING_ID, "room-recipe-status");
 
-    public static final String DEVICE_GROUP_MACROS = "device-macros";
-    public static final String DEVICE_GROUP_MACROSID = "macros";
-    public static final String DEVICE_CHANNEL_MACRO_STATUS = "device-macros-status";
-
-    /** Discovery timeouts (in seconds) */
-    public static final int BRAIN_DISCOVERY_TIMEOUT = 10;
-    public static final int ROOM_DISCOVERY_TIMEOUT = 5;
-    public static final int DEVICE_DISCOVERY_TIMEOUT = 5;
+    /** The various device channel constants */
+    public static final String DEVICE_CHANNEL_STATUS = "status";
+    public static final String DEVICE_GROUP_MACROS_ID = "macros";
+    public static final ChannelTypeUID DEVICE_MACRO_STATUS_UID = new ChannelTypeUID(BINDING_ID, "device-macros-status");
 
     public static final String WEBAPP_FORWARDACTIONS = "/neeo/binding/{brainid}/forwardactions";
 
@@ -89,12 +89,4 @@ public class NeeoConstants {
     public static final String STOP_SCENARIO = PROJECTS_HOME + "/rooms/{roomkey}/scenarios/{scenariokey}/poweroff";
     public static final String TRIGGER_MACRO = PROJECTS_HOME
             + "/rooms/{roomkey}/devices/{devicekey}/macros/{macrokey}/trigger";
-
-    /** Constants for scans in seconds */
-    public static final int SCAN_ROOMS = 2000;
-    public static final int SCAN_DEVICES = 1000;
-
-    /** Constants used to store various types */
-    public static final String FILENAME_THINGTYPES = ConfigConstants.getUserDataFolder() + File.separator + "neeo"
-            + File.separator + "neeothingtypes.json";
 }

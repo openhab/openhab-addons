@@ -31,7 +31,7 @@ public class NeeoRecipes {
      *
      * @param recipes the recipes
      */
-    public NeeoRecipes(NeeoRecipe[] recipes) {
+    NeeoRecipes(NeeoRecipe[] recipes) {
         Objects.requireNonNull(recipes, "recipes cannot be null");
         this.recipes = recipes;
     }

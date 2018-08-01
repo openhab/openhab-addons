@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.neeo.NeeoConstants;
 import org.openhab.binding.neeo.NeeoUtil;
+import org.openhab.binding.neeo.UidUtils;
 import org.openhab.binding.neeo.internal.models.ExecuteResult;
 import org.openhab.binding.neeo.internal.models.ExecuteStep;
 import org.openhab.binding.neeo.internal.models.NeeoAction;
@@ -27,7 +28,6 @@ import org.openhab.binding.neeo.internal.models.NeeoRecipe;
 import org.openhab.binding.neeo.internal.models.NeeoRecipes;
 import org.openhab.binding.neeo.internal.models.NeeoRoom;
 import org.openhab.binding.neeo.internal.models.NeeoScenario;
-import org.openhab.binding.neeo.internal.type.UidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,9 +53,6 @@ public class NeeoRoomProtocol {
 
     /** The currently active scenarios */
     private final AtomicReference<String[]> activeScenarios = new AtomicReference<>(new String[0]);
-
-    /** The currently active step */
-    private final AtomicReference<@Nullable String> currentStep = new AtomicReference<>();
 
     /**
      * Instantiates a new neeo room protocol.
@@ -158,7 +155,7 @@ public class NeeoRoomProtocol {
 
         final NeeoRecipe recipe = neeoRoom.getRecipes().getRecipe(recipeKey);
         if (recipe != null) {
-            callback.stateChanged(UidUtils.createChannelId(NeeoConstants.ROOM_CHANNEL_GROUP_RECIPEID,
+            callback.stateChanged(UidUtils.createChannelId(NeeoConstants.ROOM_GROUP_RECIPE_ID,
                     NeeoConstants.ROOM_CHANNEL_NAME, recipeKey), new StringType(recipe.getName()));
         }
     }
@@ -173,7 +170,7 @@ public class NeeoRoomProtocol {
 
         final NeeoRecipe recipe = neeoRoom.getRecipes().getRecipe(recipeKey);
         if (recipe != null) {
-            callback.stateChanged(UidUtils.createChannelId(NeeoConstants.ROOM_CHANNEL_GROUP_RECIPEID,
+            callback.stateChanged(UidUtils.createChannelId(NeeoConstants.ROOM_GROUP_RECIPE_ID,
                     NeeoConstants.ROOM_CHANNEL_TYPE, recipeKey), new StringType(recipe.getType()));
         }
     }
@@ -188,10 +185,8 @@ public class NeeoRoomProtocol {
 
         final NeeoRecipe recipe = neeoRoom.getRecipes().getRecipe(recipeKey);
         if (recipe != null) {
-            callback.stateChanged(
-                    UidUtils.createChannelId(NeeoConstants.ROOM_CHANNEL_GROUP_RECIPEID,
-                            NeeoConstants.ROOM_CHANNEL_ENABLED, recipeKey),
-                    recipe.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+            callback.stateChanged(UidUtils.createChannelId(NeeoConstants.ROOM_GROUP_RECIPE_ID,
+                    NeeoConstants.ROOM_CHANNEL_ENABLED, recipeKey), recipe.isEnabled() ? OnOffType.ON : OnOffType.OFF);
         }
     }
 
@@ -205,7 +200,7 @@ public class NeeoRoomProtocol {
 
         final NeeoRecipe recipe = neeoRoom.getRecipes().getRecipe(recipeKey);
         if (recipe != null) {
-            callback.stateChanged(UidUtils.createChannelId(NeeoConstants.ROOM_CHANNEL_GROUP_RECIPEID,
+            callback.stateChanged(UidUtils.createChannelId(NeeoConstants.ROOM_GROUP_RECIPE_ID,
                     NeeoConstants.ROOM_CHANNEL_STATUS, recipeKey), OnOffType.OFF);
         }
     }
@@ -220,7 +215,7 @@ public class NeeoRoomProtocol {
 
         final NeeoScenario scenario = neeoRoom.getScenarios().getScenario(scenarioKey);
         if (scenario != null) {
-            callback.stateChanged(UidUtils.createChannelId(NeeoConstants.ROOM_CHANNEL_GROUP_SCENARIOID,
+            callback.stateChanged(UidUtils.createChannelId(NeeoConstants.ROOM_GROUP_RECIPE_ID,
                     NeeoConstants.ROOM_CHANNEL_NAME, scenarioKey), new StringType(scenario.getName()));
         }
     }
@@ -235,9 +230,8 @@ public class NeeoRoomProtocol {
 
         final NeeoScenario scenario = neeoRoom.getScenarios().getScenario(scenarioKey);
         if (scenario != null) {
-            callback.stateChanged(
-                    UidUtils.createChannelId(NeeoConstants.ROOM_CHANNEL_GROUP_SCENARIOID,
-                            NeeoConstants.ROOM_CHANNEL_ENABLED, scenarioKey),
+            callback.stateChanged(UidUtils.createChannelId(NeeoConstants.ROOM_GROUP_SCENARIO_ID,
+                    NeeoConstants.ROOM_CHANNEL_ENABLED, scenarioKey),
                     scenario.isConfigured() ? OnOffType.ON : OnOffType.OFF);
         }
     }
@@ -254,7 +248,7 @@ public class NeeoRoomProtocol {
         if (scenario != null) {
             final String[] active = activeScenarios.get();
             final boolean isActive = ArrayUtils.contains(active, scenarioKey);
-            callback.stateChanged(UidUtils.createChannelId(NeeoConstants.ROOM_CHANNEL_GROUP_SCENARIOID,
+            callback.stateChanged(UidUtils.createChannelId(NeeoConstants.ROOM_GROUP_SCENARIO_ID,
                     NeeoConstants.ROOM_CHANNEL_STATUS, scenarioKey), isActive ? OnOffType.ON : OnOffType.OFF);
         }
     }
@@ -262,7 +256,7 @@ public class NeeoRoomProtocol {
     /**
      * Refresh active scenarios
      */
-    public void refreshActiveScenarios() {
+    private void refreshActiveScenarios() {
         final NeeoBrainApi api = callback.getApi();
         if (api == null) {
             logger.debug("API is null [likely bridge is offline]");
@@ -291,14 +285,13 @@ public class NeeoRoomProtocol {
 
     /**
      * Sends the trigger for the current step
+     *
+     * @param step a possibly null, possibly empty step to send
      */
-    private void sendCurrentStepTrigger() {
-        final String step = currentStep.get();
-
-        if (step != null) {
-            callback.triggerEvent(UidUtils.createChannelId(NeeoConstants.ROOM_CHANNEL_GROUP_STATEID,
-                    NeeoConstants.ROOM_CHANNEL_CURRENTSTEP), step);
-        }
+    private void sendCurrentStepTrigger(@Nullable String step) {
+        callback.triggerEvent(
+                UidUtils.createChannelId(NeeoConstants.ROOM_GROUP_STATE_ID, NeeoConstants.ROOM_CHANNEL_CURRENTSTEP),
+                step == null || StringUtils.isEmpty(step) ? "" : step);
     }
 
     /**
@@ -384,15 +377,13 @@ public class NeeoRoomProtocol {
 
         for (final ExecuteStep step : result.getSteps()) {
             callback.scheduleTask(() -> {
-                currentStep.set(step.getText());
-                sendCurrentStepTrigger();
+                sendCurrentStepTrigger(step.getText());
             }, nextStep);
             nextStep += step.getDuration();
         }
 
         callback.scheduleTask(() -> {
-            currentStep.set(null);
-            sendCurrentStepTrigger();
+            sendCurrentStepTrigger(null);
             refreshRecipeStatus(recipeKey);
         }, nextStep);
     }

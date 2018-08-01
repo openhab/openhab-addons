@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -27,17 +26,13 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.neeo.NeeoConstants;
+import org.openhab.binding.neeo.UidUtils;
 import org.openhab.binding.neeo.handler.NeeoRoomHandler;
 import org.openhab.binding.neeo.internal.NeeoBrainApi;
 import org.openhab.binding.neeo.internal.NeeoRoomConfig;
 import org.openhab.binding.neeo.internal.models.NeeoDevice;
 import org.openhab.binding.neeo.internal.models.NeeoRoom;
-import org.openhab.binding.neeo.internal.type.NeeoTypeGenerator;
-import org.openhab.binding.neeo.internal.type.UidUtils;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,39 +48,9 @@ public class NeeoDeviceDiscoveryService implements ThingDiscoveryParticipant {
     /** The logger */
     private final Logger logger = LoggerFactory.getLogger(NeeoDeviceDiscoveryService.class);
 
-    /** The type generator */
-    @NonNullByDefault({})
-    private NeeoTypeGenerator typeGenerator;
-
-    /**
-     * The thing types we discover. Since the device types are all dynamically generated, we simply return the binding
-     * id plus a dummy thingtypeid. The dummy thingtypeid doesn't matter since we only want to be part of the NEEO
-     * binding scan (which only uses the binding id part).
-     *
-     */
+    /** The device thing type we support */
     private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
-            .singleton(new ThingTypeUID(NeeoConstants.BINDING_ID, "devices"));
-
-    /**
-     * Set's the NEEO type generator
-     *
-     * @param typeGenerator a possibly null {@link NeeoTypeGenerator}
-     */
-    @Reference(cardinality = ReferenceCardinality.MANDATORY, service = NeeoTypeGenerator.class, name = "NeeoTypeGenerator", policy = ReferencePolicy.DYNAMIC, unbind = "unsetNeeoTypeGenerator")
-    protected void setNeeoTypeGenerator(NeeoTypeGenerator typeGenerator) {
-        Objects.requireNonNull(typeGenerator, "typeGenerator cannot be null");
-
-        this.typeGenerator = typeGenerator;
-    }
-
-    /**
-     * Unsets neeo type generator
-     *
-     * @param typeGenerator the neeo type provider (ignored)
-     */
-    protected void unsetNeeoTypeGenerator(NeeoTypeGenerator typeGenerator) {
-        this.typeGenerator = null;
-    }
+            .singleton(NeeoConstants.THING_TYPE_DEVICE);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -95,12 +60,6 @@ public class NeeoDeviceDiscoveryService implements ThingDiscoveryParticipant {
     @Override
     @Nullable
     public Collection<DiscoveryResult> createResults(Thing thing) {
-        final NeeoTypeGenerator localTypeGenerator = this.typeGenerator;
-        if (localTypeGenerator == null) {
-            logger.debug("TypeGenerator is null - can't create results");
-            return null;
-        }
-
         final ThingHandler handler = thing.getHandler();
         if (handler == null || !(handler instanceof NeeoRoomHandler)) {
             return null;
@@ -109,7 +68,6 @@ public class NeeoDeviceDiscoveryService implements ThingDiscoveryParticipant {
         final NeeoRoomHandler roomHandler = (NeeoRoomHandler) handler;
 
         final ThingUID roomUid = thing.getUID();
-        final ThingTypeUID roomTypeUid = thing.getThingTypeUID();
 
         final String brainId = roomHandler.getNeeoBrainId();
         if (brainId == null || StringUtils.isEmpty(brainId)) {
@@ -155,10 +113,7 @@ public class NeeoDeviceDiscoveryService implements ThingDiscoveryParticipant {
 
                 logger.debug("Device #{} found - {}", deviceKey, device.getName());
 
-                logger.debug("Generating thing type for {}, {}: {}", brainId, roomTypeUid, device);
-                localTypeGenerator.generate(brainId, roomTypeUid, device);
-
-                final ThingUID thingUID = new ThingUID(UidUtils.generateThingTypeUID(device), roomUid, "device");
+                final ThingUID thingUID = new ThingUID(NeeoConstants.THING_TYPE_DEVICE, roomUid, device.getKey());
 
                 results.add(
                         DiscoveryResultBuilder.create(thingUID).withProperty(NeeoConstants.CONFIG_DEVICEKEY, deviceKey)

@@ -31,7 +31,7 @@ public class NeeoDevices {
      *
      * @param devices the devices
      */
-    public NeeoDevices(NeeoDevice[] devices) {
+    NeeoDevices(NeeoDevice[] devices) {
         Objects.requireNonNull(devices, "devices cannot be null");
         this.devices = devices;
     }
