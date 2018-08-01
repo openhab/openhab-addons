@@ -10,6 +10,7 @@
 				<label>IP Address or hostname</label>
 				<description>Network address of the device</description>
 				<default>localhost</default>
+				<context>network-address</context>
 			</parameter>
 			<parameter name="port" type="integer">
 				<label>Port</label>
