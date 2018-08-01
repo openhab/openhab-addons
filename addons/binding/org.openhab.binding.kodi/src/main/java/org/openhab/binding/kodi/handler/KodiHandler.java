@@ -18,6 +18,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.measure.Unit;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -674,20 +676,17 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void updateCurrentTime(long currentTime) {
-        updateState(CHANNEL_CURRENTTIME,
-                currentTime < 0 ? UnDefType.UNDEF : new QuantityType<>(currentTime, SmartHomeUnits.SECOND));
+        updateState(CHANNEL_CURRENTTIME, createQuantityState(currentTime, SmartHomeUnits.SECOND));
     }
 
     @Override
     public void updateCurrentTimePercentage(double currentTimePercentage) {
-        updateState(CHANNEL_CURRENTTIMEPERCENTAGE, currentTimePercentage < 0 ? UnDefType.UNDEF
-                : new QuantityType<>(currentTimePercentage, SmartHomeUnits.PERCENT));
+        updateState(CHANNEL_CURRENTTIMEPERCENTAGE, createQuantityState(currentTimePercentage, SmartHomeUnits.PERCENT));
     }
 
     @Override
     public void updateDuration(long duration) {
-        updateState(CHANNEL_DURATION,
-                duration < 0 ? UnDefType.UNDEF : new QuantityType<>(duration, SmartHomeUnits.SECOND));
+        updateState(CHANNEL_DURATION, createQuantityState(duration, SmartHomeUnits.SECOND));
     }
 
     /**
@@ -722,5 +721,9 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         } else {
             return image;
         }
+    }
+
+    private State createQuantityState(Number value, Unit<?> unit) {
+        return (value == null) ? UnDefType.UNDEF : new QuantityType<>(value, unit);
     }
 }
