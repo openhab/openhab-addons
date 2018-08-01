@@ -91,21 +91,32 @@ public class ValloxMVHandler extends BaseThingHandler {
                 }
             } else if (ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE.equals(channelUID.getId())) {
                 QuantityType<Dimensionless> quantity = commandToQuantityType(command, SmartHomeUnits.PERCENT);
+                if (quantity == null) {
+                    return;
+                }
                 valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
                 valloxSendSocket.request(null, null);
             } else if (ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE.equals(channelUID.getId())) {
                 QuantityType<Dimensionless> quantity = commandToQuantityType(command, SmartHomeUnits.PERCENT);
+                if (quantity == null) {
+                    return;
+                }
                 valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
                 valloxSendSocket.request(null, null);
             } else if (ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING.equals(channelUID.getId())) {
                 QuantityType<Dimensionless> quantity = commandToQuantityType(command, SmartHomeUnits.PERCENT);
+                if (quantity == null) {
+                    return;
+                }
                 valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
                 valloxSendSocket.request(null, null);
             } else if (ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET.equals(channelUID.getId())) {
                 // Convert temperatur to milli degree Kelvin
                 QuantityType<Temperature> quantity = commandToQuantityType(command, SIUnits.CELSIUS)
                         .toUnit(SmartHomeUnits.KELVIN);
-                @SuppressWarnings("null")
+                if (quantity == null) {
+                    return;
+                }
                 int milliKelvin = quantity.multiply(new BigDecimal(100)).intValue();
                 valloxSendSocket.request(channelUID, Integer.toString(milliKelvin));
                 valloxSendSocket.request(null, null);
@@ -117,8 +128,11 @@ public class ValloxMVHandler extends BaseThingHandler {
     protected <U extends Quantity<U>> QuantityType<U> commandToQuantityType(Command command, Unit<U> defaultUnit) {
         if (command instanceof QuantityType) {
             return (QuantityType<U>) command;
+        } else if (command instanceof Number) {
+            return new QuantityType<U>((Number) command, defaultUnit);
+        } else {
+            return null;
         }
-        return new QuantityType<U>((Number) command, defaultUnit);
     }
 
     @Override
