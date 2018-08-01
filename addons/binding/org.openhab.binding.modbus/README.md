@@ -859,7 +859,7 @@ Simple solution is just increase the poll period with the associated performance
 
 It is also possible to use `REFRESH` command to ask the binding to update more frequently for a short while.
 
-`transform/rollershutter.js`:
+`rules/fast_refresh.rules`:
 
 ```javascript
 import org.eclipse.xtext.xbase.lib.Procedures
