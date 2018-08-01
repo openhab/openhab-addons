@@ -179,7 +179,7 @@ public class Transformation {
      * @param command
      * @return Transformed command, or null if no transformation was possible
      */
-    public State transformState(BundleContext context, List<Class<? extends State>> types, State state) {
+    public @Nullable State transformState(BundleContext context, List<Class<? extends State>> types, State state) {
         // Note that even identity transformations go through the State -> String -> State steps. This does add some
         // overhead but takes care of DecimalType -> PercentType conversions, for example.
         final String stateAsString = state.toString();
