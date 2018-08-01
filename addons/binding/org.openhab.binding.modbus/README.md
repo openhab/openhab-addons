@@ -848,6 +848,48 @@ sitemap modbus_ex_rollershutter label="modbus_ex_rollershutter" {
 })(input)
 ```
 
+### Eager Updates Using REFRESH
+
+In many cases fast enough poll interval is pretty long, e.g. 1 second.
+This is problematic in cases when faster updates are wanted based on events in openHAB.
+
+For example, in some cases it is useful to update faster when a command is sent to some specific items.
+
+Simple solution is just increase the poll period with the associated performance penalties and possible burden to the slave device.
+
+It is also possible to use `REFRESH` command to ask the binding to update more frequently for a short while.
+
+`transform/rollershutter.js`:
+
+```javascript
+import org.eclipse.xtext.xbase.lib.Procedures
+import org.eclipse.smarthome.core.types.RefreshType
+
+val Procedures$Procedure0 refreshData = [ |
+    // Refresh SetTemperature. In fact, all data things in the same poller are refreshed
+    SetTemperature.sendCommand(RefreshType.REFRESH)
+    return null
+]
+
+rule "Refresh modbus data quickly after changing settings"
+when
+    Item VacationMode received command or
+    Item HeatingEnabled received command
+then
+    if (receivedCommand != RefreshType.REFRESH) {
+        // Update more frequently for a short while, to get
+        // refereshed data after the newly received command
+        refreshData()
+        createTimer(now.plus(100), refreshData)
+        createTimer(now.plus(200), refreshData)
+        createTimer(now.plus(300), refreshData)
+        createTimer(now.plus(500), refreshData)
+    }
+end
+```
+
+Please be aware that `REFRESH` commands are "throttled" (to be exact, responses are cached) with `poller` parameter `cacheMillis`.
+
 ## Changes From Modbus 1.x Binding
 
 The older Modbus binding is quite different to the new binding.
