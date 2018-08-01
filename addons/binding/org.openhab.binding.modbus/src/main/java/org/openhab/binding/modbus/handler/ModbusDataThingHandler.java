@@ -157,7 +157,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             scheduler.schedule(() -> poller.refresh(), 0, TimeUnit.SECONDS);
             return;
         } else if (hasConfigurationError()) {
-            logger.warn(
+            logger.debug(
                     "Thing {} '{}' command '{}' to channel '{}': Thing has configuration error so ignoring the command",
                     getThing().getUID(), getThing().getLabel(), command, channelUID);
             return;
