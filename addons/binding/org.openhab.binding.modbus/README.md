@@ -91,7 +91,7 @@ When optional parameters are not specified, they default to the values shown in 
 
 ### `tcp` thing
 
-`tcp` is representing a particular Modbus TCP slave.
+`tcp` is representing a particular Modbus TCP server (slave).
 
 Basic parameters
 
@@ -154,7 +154,7 @@ With low baud rates and/or long read requests (that is, many items polled), ther
 
 ### `poller` thing
 
-`poller` thing takes care of polling the slave data regularly.
+`poller` thing takes care of polling the Modbus serial slave or Modbus TCP server data regularly.
 
 | Parameter     | Type    | Required | Default if omitted | Description                                                                                                                                                                            |
 | ------------- | ------- | -------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -173,7 +173,7 @@ See [Refresh command](#refresh-command) section for more details.
 ### `data` thing
 
 `data` is responsible of extracting relevant piece of data (e.g. a number `3.14`) from binary received from the slave.
-Similarly, `data` thing is responsible of converting openHAB commands to write requests to the modbus slave.
+Similarly, `data` thing is responsible of converting openHAB commands to write requests to the Modbus slave.
 
 | Parameter                                   | Type    | Required | Default if omitted | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------- | ------- | -------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
