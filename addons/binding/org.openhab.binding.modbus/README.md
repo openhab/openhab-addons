@@ -11,7 +11,7 @@ The binding can act as
 The Modbus binding polls the slave data with an configurable poll period.
 openHAB commands are translated to write requests.
 
-## Main features
+## Main Features
 
 The binding polls (or *reads*) Modbus data using function codes (FC) FC01 (Read coils), FC02 (Read discrete inputs), FC03 (Read multiple holding registers) or FC04 (Read input registers).
 This polled data is converted to data suitable for use in openHAB.
@@ -19,7 +19,7 @@ Functionality exists to interpret typical number formats (e.g. single precision 
 
 The binding can also *write* data to Modbus slaves using FC05 (Write single coil), FC06 (Write single holding register), FC15 (Write multiple coils) or FC16 (Write multiple holding registers).
 
-## Caveats and limitations
+## Caveats And Limitations
 
 Please note the following caveats or limitations
 
@@ -27,7 +27,7 @@ Please note the following caveats or limitations
 * the binding does *not* support Modbus RTU over Modbus TCP, also known as "Modbus over TCP/IP" or "Modbus over TCP" or "Modbus RTU/IP", although normal "Modbus TCP" is supported. However, there is a workaround: you can use a Virtual Serial Port Server, to emulate a COM Port and Bind it with openHAB using Modbus Serial.
 
 
-## Background material
+## Background Material
 
 Reader of the documentation should understand the basics of Modbus protocol.
 Good sources for further information:
@@ -57,11 +57,11 @@ For each Modbus read request, a `poller` is defined.
 Finally, one ore more `data` things are introduced to extract relevant numbers from the raw Modbus data.
 For write-only communication, `data` things can be introduced directly as children of `tcp` or `serial` bridges.
 
-## Binding configuration
+## Binding Configuration
 
 Other than the things themselves, there is no binding configuration.
 
-## Serial port configuration
+## Serial Port Configuration
 
 Without correct configuration, the binding might not be able to open the serial port for communication, and you will see an error message in the logs. Following section gives serial configuration advice with different platforms.
 
@@ -112,7 +112,7 @@ Note the differences with quoting.
 Required parameters *must* be specified in the `.things` file.
 When optional parameters are not specified, they default to the values shown in the table below.
 
-### `tcp` thing
+### `tcp` Thing
 
 `tcp` is representing a particular Modbus TCP server (slave).
 
@@ -139,7 +139,7 @@ Advanced parameters
 The advanced parameters have conservative defaults, meaning that they should work for most users.
 In some cases when extreme performance is required (e.g. poll period below 10 ms), one might want to decrease the delay parameters, especially `timeBetweenTransactionsMillis`. Similarly, with some slower devices on might need to increase the values.
 
-### `serial` thing
+### `serial` Thing
 
 `serial` is representing a particular Modbus serial slave.
 
@@ -175,7 +175,7 @@ With some slower devices on might need to increase the values.
 
 With low baud rates and/or long read requests (that is, many items polled), there might be need to increase the read timeout `receiveTimeoutMillis` to e.g. `5000` (=5 seconds).
 
-### `poller` thing
+### `poller` Thing
 
 `poller` thing takes care of polling the Modbus serial slave or Modbus TCP server data regularly.
 
@@ -193,7 +193,7 @@ When manually triggering polling, a new poll is executed as soon as possible, an
 In case the `poller` had just received a data response or an error occurred, a cached response is used instead.
 See [Refresh command](#refresh-command) section for more details.
 
-### `data` thing
+### `data` Thing
 
 `data` is responsible of extracting relevant piece of data (e.g. a number `3.14`) from binary received from the slave.
 Similarly, `data` thing is responsible of converting openHAB commands to write requests to the Modbus slave.
@@ -243,7 +243,7 @@ Furthermore, there are additional channels that are useful for diagnostics:
 
 ## Details
 
-### Comment on addressing
+### Comment On Addressing
 
 [Modbus Wikipedia article](https://en.wikipedia.org/wiki/Modbus#Coil.2C_discrete_input.2C_input_register.2C_holding_register_numbers_and_addresses) summarizes this excellently:
 
@@ -260,7 +260,7 @@ The openHAB modbus binding uses data frame entity addresses when referring to mo
 That is, the entity address configured in modbus binding is passed to modbus protocol frame as-is.
 For example, Modbus `poller` thing with `start=3`, `length=2` and `type=holding` will read modbus entities with the following numbers 40004 and 40005.
 
-### Value types on read and write
+### Value Types On Read And Write
 
 This section explains the detailed descriptions of different value types on read and write.
 Note that value types less than 16 bits are not supported on write (see [poller thing](#poller-thing) documentation for details).
@@ -337,7 +337,7 @@ If you get strange values using the `int32`, `uint32` or `float32` valuetypes th
 - it is assumed that each register is encoded in most significant bit first order (Big Endian)
 
 
-### REFRESH command
+### REFRESH Command
 
 `REFRESH` command to item bound to any [data channel](#channels) makes `poller` thing to poll new from the Modbus slave.
 All data channels of children `data` things are refreshed per the normal logic.
@@ -347,7 +347,7 @@ All data channels of children `data` things are refreshed per the normal logic.
 Note that poller has `cacheMillis` parameter to re-use previously received data, and thus avoid polling the Modbus slave too much.
 This parameter is specifically limiting the flood of requests that come when openHAB itself is calling `REFRESH` for new things.
 
-### Read steps
+### Read Steps
 
 Every time data is read by the binding, these steps are taken to convert the raw binary data to actual item `State` in openHAB:
 
@@ -361,9 +361,9 @@ Note that in case `readTransform="default"`, a default transformation provided b
 
 In case of read errors, all data channels are left unchanged, and `lastReadError` channel is updated with current time. Examples of errors include connection errors, IO errors on read, and explicit exception responses from the slave.
 
-### Write steps
+### Write Steps
 
-#### Basic case
+#### Basic Case
 
 Commands passed to openHAB items that are bound to a [data channel](#channels) are most often processed according to following steps:
 
@@ -379,7 +379,7 @@ In case all conversions fail, the command is discarded and nothing is written to
    * `writeType="holding"`: First, the command from the transformation is converted `1`/`0` number in case of `OPEN`/`ON` or `CLOSED`/`OFF`. The number is converted to one or more registers using `writeValueType`. For example, number `3.14` would be converted to two registers when `writeValueType="float32"`: [0x4048, 0xF5C3].
 6. Boolean (`writeType="coil"`) or registers (`writeType="holding"`) are written to the Modbus slave using `FC05`, `FC06`, `FC15`, or `FC16`, depending on the value of `writeMultipleEvenWithSingleRegisterOrCoil`. Write address is specified by `writeStart`.
 
-#### Advanced write using JSON
+#### Advanced Write Using JSON
 
 There are some more advanced use cases which need more control how the command is converted to set of bits or requests.
 Due to this reason, one can return a special [JSON](https://en.wikipedia.org/wiki/JSON) output from the transformation (step 3).
@@ -435,7 +435,7 @@ Specifically, note that you might not need transformations at all in some uses c
 
 Please also note that you should install relevant transformations, as necessary. For example, `openhab-transformation-javascript` feature provides the javascript (`JS`) transformation.
 
-#### Transform on read
+#### Transform On Read
 
 **`readTransform`** can be used to transform the polled data, after a number is extracted from the polled data using `readValueType` and `readStart` (consult [Read steps](#read-steps)).
 
@@ -447,7 +447,7 @@ There are three different format to specify the configuration:
 
 Consult [background documentation on items](http://docs.openhab.org/concepts/items.html) to understand accepted data types (state) by each item.
 
-#### Transform on write
+#### Transform On Write
 
 **`writeTransform`** can be used to transform the openHAB command before it is converted to actual binary data (see [Write steps](#write-steps)).
 
@@ -457,7 +457,7 @@ There are three different format to specify the configuration:
 2. `"SERVICENAME(ARG)"` for calling a transformation service. The transformation receives the command as input. This is useful for example scaling ("multiply by x") commands before the data is written to Modbus. See examples for more details.
 3. Any other value is interpreted as static text, in which case the actual command is ignored. Transformation result is always the same.
 
-#### Transformation example: scaling
+#### Transformation Example: Scaling
 
 Typical use case for transformations is scaling of numbers.
 The data in Modbus slaves is quite commonly encoded as integers, and thus scaling is necessary to convert them to useful float numbers.
@@ -490,7 +490,7 @@ The data in Modbus slaves is quite commonly encoded as integers, and thus scalin
 
 See [Scaling example](#scaling-example) for full example with things, items and a sitemap.
 
-#### Example: inverting binary data on read and write
+#### Example: Inverting Binary Data On Read And Write
 
 This example transformation is able to invert "boolean" input.
 In this case, boolean input is considered to be either number `0`/`1`, `ON`/`OFF`, or `OPEN`/`CLOSED`.
@@ -513,7 +513,7 @@ In this case, boolean input is considered to be either number `0`/`1`, `ON`/`OFF
 
 Things can be configured via the Paper UI, or using a `things` file like here.
 
-### Basic example
+### Basic Example
 
 This example reads different kind of Modbus items from the slave.
 
@@ -608,7 +608,7 @@ sitemap modbus_ex1 label="modbus_ex1"
 }
 ```
 
-### Writing to different address and type than read
+### Writing To Different Address And Type Than Read
 
 This updates the item from discrete input index 4, and writes commands to coil 5.
 This can be useful when the discrete input is the measurement (e.g. "is valve open?"), and the command is the control (e.g. "open/close valve").
@@ -659,7 +659,7 @@ sitemap modbus_ex2 label="modbus_ex2"
 }
 ```
 
-### Scaling example
+### Scaling Example
 
 This example divides value on read, and multiplies them on write.
 
@@ -693,7 +693,7 @@ sitemap modbus_ex_scaling label="modbus_ex_scaling"
 
 See [transformation example](#transformation-example-scaling) for the `divide10.js` and `multiply10.js`.
 
-### Rollershutter example
+### Rollershutter Example
 
 #### Rollershutter
 
@@ -778,7 +778,7 @@ sitemap modbus_ex_rollershutter label="modbus_ex_rollershutter" {
 })(input)
 ```
 
-## Changes from Modbus 1.x binding
+## Changes From Modbus 1.x Binding
 
 The older Modbus binding is quite different to the new binding.
 Major difference is the thing structure introduced in new openHAB2 binding which allows configuration uisng the PaperUI.
@@ -789,7 +789,7 @@ Due to the introduction of things, the configuration was bound to be backwards i
 This offered opportunity to simplify some aspects of configuration.
 The major differences are configuration logic are:
 
-### Absolute addresses instead of relative
+### Absolute Addresses Instead Of Relative
 
 The new Modbus binding uses *absolute* addresses.
 This means that all parameters referring to addresses of input registers, holding registers, discrete inputs or coils are *entity addresses*.
@@ -797,7 +797,7 @@ This means that the addresses start from zero (first entity), and can go up to 6
 
 Previous binding sometimes used absolute addresses (`modbus.cfg`), sometimes relative to polled data (items configuration).
 
-### Register and bit addressing
+### Register And Bit Addressing
 
 Now 32 bit value types refer start register address. For example `valueType="int32"` with `start="3"` refers to 32 bit integer in registers `3` and `4`.
 
@@ -811,33 +811,33 @@ However, if such need arises the addressing syntax is extensible to covert these
 Bits, and other <16 bit value types, inside registers are addressed using `start="X.Y"` convention.
 This is more explicit notation hopefully reduces the risk of misinterpretation.
 
-### Polling details
+### Polling Details
 
 The new binding polls data in parallel which means that errors with one slave do not necessarily slow down polling with some other slave.
 
 Furthermore, once can disable polling altogether and trigger polling on-demand using `REFRESH`.
 
-### Transformation changes
+### Transformation Changes
 
 With the new binding the transformations get slightly different input. In polling, the transformation always receives number as input (see [Read steps](#read-steps)).
 Old binding had converted the input based on item type.
 
-### Trigger removed
+### Trigger Removed
 
 The old binding had `trigger` parameter in item configuration to react only to some openHAB commands, or to some polled states.
 There is no trigger anymore but one can use transformations to accomplish the same thing. See [Transformations](#transformations) for examples.
 
-### Support for 32 bit value types in writing
+### Support For 32 Bit Value Types In Writing
 
 The new binding supports 32 bit values types when writing.
 
 ## Troubleshooting
 
-### Thing status
+### Thing Status
 
 Check thing status for errors in configuration or communication.
 
-### Enable verbose logging
+### Enable Verbose Logging
 
 Enable `DEBUG` or `TRACE` (even more verbose) logging for the loggers named:
 
@@ -847,9 +847,9 @@ Enable `DEBUG` or `TRACE` (even more verbose) logging for the loggers named:
 
 Consult [openHAB2 logging documentation](http://docs.openhab.org/administration/logging.html#defining-what-to-log) for more information.
 
-## For developers
+## For Developers
 
-### Testing serial implementation
+### Testing Serial Implementation
 
 You can use test serial slaves without any hardware on linux using these steps:
 
@@ -874,7 +874,7 @@ xxx.connection=/dev/pts/8:38400:8:none:1:rtu
 
 Naturally this is not the same thing as the real thing but helps to identify simple issues.
 
-### Testing TCP implementation
+### Testing TCP Implementation
 
 1. Download [diagslave](http://www.modbusdriver.com/diagslave.html) and start modbus tcp server (slave) using this command:
 
@@ -888,7 +888,7 @@ Naturally this is not the same thing as the real thing but helps to identify sim
 tcp.slave1.connection=127.0.0.1:55502
 ```
 
-### Writing data
+### Writing Data
 
 See this [community post](https://community.openhab.org/t/something-is-rounding-my-float-values-in-sitemap/13704/32?u=ssalonen) explaining how `pollmb` and `diagslave` can be used to debug modbus communication.
 
