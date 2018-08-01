@@ -74,7 +74,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ModbusDataThingHandler} is responsible for interperting polled modbus data, as well as handling openhab
+ * The {@link ModbusDataThingHandler} is responsible for interpreting polled modbus data, as well as handling openHAB
  * commands
  *
  * Thing can be re-initialized by the bridge in case of configuration changes (bridgeStatusChanged).
