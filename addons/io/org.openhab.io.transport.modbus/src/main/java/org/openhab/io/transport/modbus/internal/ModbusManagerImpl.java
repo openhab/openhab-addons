@@ -866,7 +866,7 @@ public class ModbusManagerImpl implements ModbusManager {
             scheduledThreadPoolExecutor = null;
             callbackThreadPool = null;
             connectionFactory = null;
-            logger.info("Modbus manager deactivated");
+            logger.debug("Modbus manager deactivated");
         }
     }
 
