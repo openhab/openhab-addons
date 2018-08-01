@@ -86,7 +86,7 @@ public class ModbusHandlerFactory extends BaseThingHandlerFactory {
 
     @Reference(service = ModbusManager.class, cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "unsetManager")
     public void setManager(ModbusManager manager) {
-        logger.info("Setting manager: {}", manager);
+        logger.debug("Setting manager: {}", manager);
         this.manager = manager;
     }
 
