@@ -205,33 +205,8 @@ public class ModbusDataHandlerTest extends JavaTest {
         }
 
         @Override
-        public boolean addTag(String itemName, String tag) {
-            throw new IllegalStateException();
-        }
-
-        @Override
-        public boolean addTags(String itemName, Collection<String> tags) {
-            throw new IllegalStateException();
-        }
-
-        @Override
-        public boolean removeTag(String itemName, String tag) {
-            throw new IllegalStateException();
-        }
-
-        @Override
-        public boolean removeTags(String itemName, Collection<String> tags) {
-            throw new IllegalStateException();
-        }
-
-        @Override
         public <T extends Item> @NonNull Collection<T> getItemsByTag(@NonNull Class<T> typeFilter,
                 @NonNull String... tags) {
-            throw new IllegalStateException();
-        }
-
-        @Override
-        public boolean removeTags(String itemName) {
             throw new IllegalStateException();
         }
 
