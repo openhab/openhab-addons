@@ -11,7 +11,6 @@ package org.openhab.binding.avmfritz.internal.discovery;
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_VENDOR;
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +48,6 @@ public class AVMFritzUpnpDiscoveryParticipant implements UpnpDiscoveryParticipan
     private final Logger logger = LoggerFactory.getLogger(AVMFritzUpnpDiscoveryParticipant.class);
 
     private boolean isAutoDiscoveryEnabled = true;
-    private Set<ThingTypeUID> supportedThingTypes = SUPPORTED_BRIDGE_THING_TYPES_UIDS;
 
     @Activate
     protected void activate(ComponentContext componentContext) {
@@ -67,56 +65,54 @@ public class AVMFritzUpnpDiscoveryParticipant implements UpnpDiscoveryParticipan
         if (autoDiscoveryPropertyValue != null && autoDiscoveryPropertyValue.length() != 0) {
             isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
         }
-        supportedThingTypes = isAutoDiscoveryEnabled ? SUPPORTED_BRIDGE_THING_TYPES_UIDS : Collections.emptySet();
     }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return supportedThingTypes;
+        return SUPPORTED_BRIDGE_THING_TYPES_UIDS;
     }
 
     @Override
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
-        ThingUID uid = getThingUID(device);
-        if (uid != null) {
-            logger.debug("discovered: {} ({}) at {}", device.getDisplayString(), device.getDetails().getFriendlyName(),
-                    device.getIdentity().getDescriptorURL().getHost());
+        if (isAutoDiscoveryEnabled) {
+            ThingUID uid = getThingUID(device);
+            if (uid != null) {
+                logger.debug("discovered: {} ({}) at {}", device.getDisplayString(),
+                        device.getDetails().getFriendlyName(), device.getIdentity().getDescriptorURL().getHost());
 
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(CONFIG_IP_ADDRESS, device.getIdentity().getDescriptorURL().getHost());
-            properties.put(PROPERTY_VENDOR, device.getDetails().getManufacturerDetails().getManufacturer());
+                Map<String, Object> properties = new HashMap<>();
+                properties.put(CONFIG_IP_ADDRESS, device.getIdentity().getDescriptorURL().getHost());
+                properties.put(PROPERTY_VENDOR, device.getDetails().getManufacturerDetails().getManufacturer());
 
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(CONFIG_IP_ADDRESS)
-                    .build();
+                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                        .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(CONFIG_IP_ADDRESS)
+                        .build();
 
-            return result;
+                return result;
+            }
         }
         return null;
     }
 
     @Override
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
-        if (isAutoDiscoveryEnabled) {
-            // newer FRITZ!OS versions return several upnp services (e.g. Mediaserver)
-            if (device.getType().getType().equals(BRIDGE_FRITZBOX)) {
-                DeviceDetails details = device.getDetails();
-                if (details != null) {
-                    ModelDetails modelDetails = details.getModelDetails();
-                    if (modelDetails != null) {
-                        String modelName = modelDetails.getModelName();
-                        if (modelName != null) {
-                            // It would be better to use udn but in my case FB is discovered twice
-                            // .getIdentity().getUdn().getIdentifierString()
-                            String id = device.getIdentity().getDescriptorURL().getHost().replaceAll(INVALID_PATTERN,
-                                    "_");
-                            if (modelName.startsWith(BOX_MODEL_NAME)) {
-                                logger.debug("discovered on {}", device.getIdentity().getDiscoveredOnLocalAddress());
-                                return new ThingUID(BRIDGE_THING_TYPE, id);
-                            } else if (modelName.startsWith(POWERLINE_MODEL_NAME)) {
-                                logger.debug("discovered on {}", device.getIdentity().getDiscoveredOnLocalAddress());
-                                return new ThingUID(PL546E_STANDALONE_THING_TYPE, id);
-                            }
+        // newer FRITZ!OS versions return several upnp services (e.g. Mediaserver)
+        if (device.getType().getType().equals(BRIDGE_FRITZBOX)) {
+            DeviceDetails details = device.getDetails();
+            if (details != null) {
+                ModelDetails modelDetails = details.getModelDetails();
+                if (modelDetails != null) {
+                    String modelName = modelDetails.getModelName();
+                    if (modelName != null) {
+                        // It would be better to use udn but in my case FB is discovered twice
+                        // .getIdentity().getUdn().getIdentifierString()
+                        String id = device.getIdentity().getDescriptorURL().getHost().replaceAll(INVALID_PATTERN, "_");
+                        if (modelName.startsWith(BOX_MODEL_NAME)) {
+                            logger.debug("discovered on {}", device.getIdentity().getDiscoveredOnLocalAddress());
+                            return new ThingUID(BRIDGE_THING_TYPE, id);
+                        } else if (modelName.startsWith(POWERLINE_MODEL_NAME)) {
+                            logger.debug("discovered on {}", device.getIdentity().getDiscoveredOnLocalAddress());
+                            return new ThingUID(PL546E_STANDALONE_THING_TYPE, id);
                         }
                     }
                 }
