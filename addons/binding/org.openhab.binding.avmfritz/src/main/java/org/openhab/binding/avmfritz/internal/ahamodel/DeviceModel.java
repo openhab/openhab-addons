@@ -72,6 +72,9 @@ public class DeviceModel extends AVMFritzBaseModel {
         public static final String HAN_FUN_SMOKE_DETECTOR_UNITTYPE = "516";
         public static final String HAN_FUN_SWITCH_UNITTYPE = "273";
 
+        public static final String HAN_FUN_ALERT_INTERFACE = "256";
+        public static final String HAN_FUN_BUTTON_INTERFACE = "772";
+
         private String etsideviceid;
         private String unittype;
         private String interfaces;

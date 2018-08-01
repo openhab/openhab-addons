@@ -624,16 +624,16 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
         String xml =
                 "<devicelist version=\"1\">" +
                     "<device identifier=\"11324 0059952-1\" id=\"2003\" functionbitmask=\"8208\" fwversion=\"0.0\" manufacturer=\"0x2c3c\" productname=\"HAN-FUN\">" +
-                    "<present>1</present>" +
-                    "<name>HAN-FUN #4: Unit #4</name>" +
-                    "<etsiunitinfo>" +
-                        "<etsideviceid>407</etsideviceid>" +
-                        "<unittype>516</unittype>" +
-                        "<interfaces>256</interfaces>" +
-                    "</etsiunitinfo>" +
-                    "<alert>" +
-                        "<state>0</state>" +
-                    "</alert>" +
+                        "<present>1</present>" +
+                        "<name>HAN-FUN #4: Unit #4</name>" +
+                        "<etsiunitinfo>" +
+                            "<etsideviceid>407</etsideviceid>" +
+                            "<unittype>516</unittype>" +
+                            "<interfaces>256</interfaces>" +
+                        "</etsiunitinfo>" +
+                        "<alert>" +
+                            "<state>0</state>" +
+                        "</alert>" +
                     "</device>" +
                 "</devicelist>";
         //@formatter:on
@@ -670,9 +670,9 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                         "<present>0</present>" +
                         "<name>HAN-FUN #2: Unit #2</name>" +
                         "<etsiunitinfo>" +
-                        "<etsideviceid>412</etsideviceid>" +
-                        "<unittype>273</unittype>" +
-                        "<interfaces>772</interfaces>" +
+                            "<etsideviceid>412</etsideviceid>" +
+                            "<unittype>273</unittype>" +
+                            "<interfaces>772</interfaces>" +
                         "</etsiunitinfo>" +
                         "<button>" +
                             "<lastpressedtimestamp>1529590797</lastpressedtimestamp>" +
