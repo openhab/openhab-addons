@@ -164,6 +164,9 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
     private void addTemperatureUpdateRequest(String celsiusField, String fahrenheitField, Command command) {
         Unit<Temperature> unit = getTemperatureUnit();
         QuantityType<Temperature> quantity = commandToQuantityType(command, unit);
+        if (quantity == null) {
+            return;
+        }
         BigDecimal value = quantityToRoundedTemperature(quantity, unit);
         if (value != null) {
             addUpdateRequest(NEST_THERMOSTAT_UPDATE_PATH, unit == CELSIUS ? celsiusField : fahrenheitField, value);
