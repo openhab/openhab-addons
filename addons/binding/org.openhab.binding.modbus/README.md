@@ -24,7 +24,7 @@ The binding can also *write* data to Modbus slaves using FC05 (Write single coil
 Please note the following caveats or limitations
 
 * the binding does *not* act as Modbus slave (e.g. as Modbus TCP server).
-* the binding does *not* support Modbus RTU over Modbus TCP, also known as "Modbus over TCP/IP" or "Modbus over TCP" or "Modbus RTU/IP", although normal "Modbus TCP" is supported. However, there is a workaround: you can use a Virtual Serial Port Server, to emulate a COM Port and Bind it with OpenHab unsing Modbus Serial.
+* the binding does *not* support Modbus RTU over Modbus TCP, also known as "Modbus over TCP/IP" or "Modbus over TCP" or "Modbus RTU/IP", although normal "Modbus TCP" is supported. However, there is a workaround: you can use a Virtual Serial Port Server, to emulate a COM Port and Bind it with openHAB using Modbus Serial.
 
 
 ## Background material
