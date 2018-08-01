@@ -862,7 +862,7 @@ public class ModbusManagerImpl implements ModbusManager {
                 monitorFuture = null;
             }
             // Note that it is not allowed to shutdown the executor, since they will be reused when
-            // when pool is received from ExpressionThreadPoolManager is called
+            // when pool is received from ThreadPoolManager is called
             scheduledThreadPoolExecutor = null;
             callbackThreadPool = null;
             connectionFactory = null;
