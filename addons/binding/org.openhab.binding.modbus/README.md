@@ -242,6 +242,75 @@ Furthermore, there are additional channels that are useful for diagnostics:
 | `lastWriteSuccess` | `DateTime` | Last successful write |
 | `lastWriteError`   | `DateTime` | Last erroring write   |
 
+## Item configuration
+
+Items are configured the typical way, using `channel` to bind the item to a particular channel.
+
+For example, in the following example, item `Temperature_Modbus_Livingroom` is bound to channel `number` of thing `modbus:data:siemensplc:holding:livingroom_temperature`.
+
+```bash
+Number  Temperature_Modbus_Livingroom                       "Temperature Living room [%.1f °C]"           <temperature>   { channel="modbus:data:siemensplc:holding:livingroom_temperature:number" }
+```
+
+Make sure you bind item to a channel that is compatible, or use transformations to make it compatible. See [Transformations](#transformations) section for more information on transformation.
+
+### `autoupdate` parameter with items
+
+Please note that Modbus protocol is polling, and commands in openHAB might take some time to propagate. This might produce some transient effects with item values when parameters are changed.
+
+By default, openHAB has `autoupdate` enabled. This means that item _state_ is updated according to received commands. In some situations this might have unexpected side effects with polling bindings such as Modbus - see example below.
+
+Typically, you see something like this
+
+```java
+1 [ome.event.ItemCommandEvent] - Item 'Kitchen_Bar_Table_Light' received command ON
+2 [vent.ItemStateChangedEvent] - Kitchen_Bar_Table_Light changed from OFF to ON
+3 [vent.ItemStateChangedEvent] - Kitchen_Bar_Table_Light changed from ON to OFF
+4 [vent.ItemStateChangedEvent] - Kitchen_Bar_Table_Light changed from OFF to ON
+```
+
+Let's go through it step by step
+
+
+```java
+// openHAB UI switch changed command is sent
+1 [ome.event.ItemCommandEvent] - Item 'Kitchen_Bar_Table_Light' received command ON
+// openHAB immediately updates the item state to match the command
+2 [vent.ItemStateChangedEvent] - Kitchen_Bar_Table_Light changed from OFF to ON
+// modbus binding poll completes (old value)
+3 [vent.ItemStateChangedEvent] - Kitchen_Bar_Table_Light changed from ON to OFF
+// (the binding writes the command over Modbus to the slave)
+// modbus binding poll completes (updated value)
+4 [vent.ItemStateChangedEvent] - Kitchen_Bar_Table_Light changed from OFF to ON
+```
+
+To prevent this "state fluctuation" (`OFF` -> `ON` -> `OFF` -> `ON`), some people prefer like to disable `autoupdate` with polling bindings. With `autoupdate` disabled, one would get
+
+```java
+// openHAB UI switch changed command is sent
+1 [ome.event.ItemCommandEvent] - Item 'Kitchen_Bar_Table_Light' received command ON
+// modbus binding poll completes (STILL the old value) -- UI not updated, still showing OFF
+// (the binding writes the command over Modbus to the slave)
+// modbus binding poll completes (updated value)
+4 [vent.ItemStateChangedEvent] - Kitchen_Bar_Table_Light changed from OFF to ON
+```
+
+Item state has no "fluctuation", it updates from `OFF` to `ON`.
+
+To summarize (credits to [rossko57's community post](https://community.openhab.org/t/rule-to-postupdate-an-item-works-but-item-falls-back-after-some-seconds/19986/2?u=ssalonen)):
+
+* `autoupdate=false`: monitor the _actual_ state of device
+* `autoupdate=true`: allows more faster display of the _expected_ state in a sitemap
+
+You can disable `autoupdate` as follows:
+
+```bash
+Number  Temperature_Modbus_Livingroom                       "Temperature Living room [%.1f °C]"           <temperature>   { channel="modbus:data:siemensplc:holding:livingroom_temperature:number", autoupdate="false" }
+```
+
+Main documentation on `autoupdate` in [Items section of openHAB docs](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax). 
+
+
 ## Details
 
 ### Comment On Addressing
