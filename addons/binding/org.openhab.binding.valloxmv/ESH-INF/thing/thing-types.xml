@@ -172,21 +172,21 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Extract fan base speed</label>
 		<description>Extract fan base speed in % (0-100)</description>
-		<state readOnly="false" min="0" max="1" pattern="%d %unit%" />
+		<state readOnly="false" min="0" max="100" pattern="%d %%" />
 	</channel-type>
 
 	<channel-type id="suppfanbalancebase" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Supply fan base speed</label>
 		<description>Supply fan base speed in % (0-100)</description>
-		<state readOnly="false" min="0" max="1" pattern="%d %unit%" />
+		<state readOnly="false" min="0" max="100" pattern="%d %%" />
 	</channel-type>
 
 	<channel-type id="homespeedsetting" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Home fan speed</label>
 		<description>Home fan speed in % (0-100)</description>
-		<state readOnly="false" min="0" max="1" pattern="%d %unit%" />
+		<state readOnly="false" min="0" max="100" pattern="%d %%" />
 	</channel-type>
 
 	<channel-type id="homeairtemptarget" advanced="true">
