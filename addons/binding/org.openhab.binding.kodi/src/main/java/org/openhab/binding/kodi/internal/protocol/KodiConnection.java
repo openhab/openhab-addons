@@ -544,24 +544,24 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
             long currentTime = -1;
             if (result.has("time")) {
-                JsonObject time = result.get("time").getAsJsonObject();
-                KodiDuration tmpTime = new KodiDuration();
-                tmpTime.setHours(time.get("hours").getAsLong());
-                tmpTime.setMinutes(time.get("minutes").getAsLong());
-                tmpTime.setSeconds(time.get("seconds").getAsLong());
-                tmpTime.setMilliseconds(time.get("milliseconds").getAsLong());
-                currentTime = tmpTime.toSeconds();
+                JsonObject timeObject = result.get("time").getAsJsonObject();
+                KodiDuration time = new KodiDuration();
+                time.setHours(timeObject.get("hours").getAsLong());
+                time.setMinutes(timeObject.get("minutes").getAsLong());
+                time.setSeconds(timeObject.get("seconds").getAsLong());
+                time.setMilliseconds(timeObject.get("milliseconds").getAsLong());
+                currentTime = time.toSeconds();
             }
 
             long duration = -1;
             if (result.has("totaltime")) {
-                JsonObject totalTime = result.get("totaltime").getAsJsonObject();
-                KodiDuration tmpTotalTime = new KodiDuration();
-                tmpTotalTime.setHours(totalTime.get("hours").getAsLong());
-                tmpTotalTime.setMinutes(totalTime.get("minutes").getAsLong());
-                tmpTotalTime.setSeconds(totalTime.get("seconds").getAsLong());
-                tmpTotalTime.setMilliseconds(totalTime.get("milliseconds").getAsLong());
-                duration = tmpTotalTime.toSeconds();
+                JsonObject totalTimeObject = result.get("totaltime").getAsJsonObject();
+                KodiDuration totalTime = new KodiDuration();
+                totalTime.setHours(totalTimeObject.get("hours").getAsLong());
+                totalTime.setMinutes(totalTimeObject.get("minutes").getAsLong());
+                totalTime.setSeconds(totalTimeObject.get("seconds").getAsLong());
+                totalTime.setMilliseconds(totalTimeObject.get("milliseconds").getAsLong());
+                duration = totalTime.toSeconds();
             }
 
             listener.updateCurrentTimePercentage(percentage);
