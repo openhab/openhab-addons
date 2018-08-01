@@ -63,7 +63,8 @@ Other than the things themselves, there is no binding configuration.
 
 ## Serial Port Configuration
 
-Without correct configuration, the binding might not be able to open the serial port for communication, and you will see an error message in the logs. Following section gives serial configuration advice with different platforms.
+Without correct configuration, the binding might not be able to open the serial port for communication, and you will see an error message in the logs.
+Following section gives serial configuration advice with different platforms.
 
 ### Windows
 
