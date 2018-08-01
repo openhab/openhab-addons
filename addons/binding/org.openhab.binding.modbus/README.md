@@ -1,17 +1,21 @@
 # Modbus Binding
 
-This is the binding to access Modbus TCP and serial slaves. RTU, ASCII and BIN variants of Serial Modbus are supported. Modbus TCP slaves are usually also called as Modbus TCP servers.
+This is the binding to access Modbus TCP and serial slaves. RTU, ASCII and BIN variants of Serial Modbus are supported.
+Modbus TCP slaves are usually also called as Modbus TCP servers.
 
 The binding can act as
 
 * Modbus TCP Client (that is, as modbus master), querying data from Modbus TCP servers (that is, modbus slaves)
 * Modbus serial master, querying data from modbus serial slaves
 
-The Modbus binding polls the slave data with an configurable poll period. openHAB commands are translated to write requests.
+The Modbus binding polls the slave data with an configurable poll period.
+openHAB commands are translated to write requests.
 
 ## Main features
 
-The binding polls (or *reads*) Modbus data using function codes (FC) FC01 (Read coils), FC02 (Read discrete inputs), FC03 (Read multiple holding registers) or FC04 (Read input registers). This polled data is converted to data suitable for use in openHAB. Functionality exists to interpret typical number formats (e.g. single precision float).
+The binding polls (or *reads*) Modbus data using function codes (FC) FC01 (Read coils), FC02 (Read discrete inputs), FC03 (Read multiple holding registers) or FC04 (Read input registers).
+This polled data is converted to data suitable for use in openHAB.
+Functionality exists to interpret typical number formats (e.g. single precision float).
 
 The binding can also *write* data to Modbus slaves using FC05 (Write single coil), FC06 (Write single holding register), FC15 (Write multiple coils) or FC16 (Write multiple holding registers).
 
