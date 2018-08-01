@@ -71,7 +71,7 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
                 managerRef.get().setEndpointPoolConfiguration(endpoint, poolConfiguration);
                 updateStatus(ThingStatus.ONLINE);
             } catch (ModbusConfigurationException e) {
-                logger.error("Exception during initialization", e);
+                logger.debug("Exception during initialization", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                         "Exception during initialization: %s (%s)", e.getMessage(), e.getClass().getSimpleName()));
             } finally {

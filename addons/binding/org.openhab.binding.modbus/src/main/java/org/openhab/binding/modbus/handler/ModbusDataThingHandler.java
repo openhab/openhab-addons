@@ -359,7 +359,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
             updateStatus(ThingStatus.ONLINE);
         } catch (ModbusConfigurationException | EndpointNotInitializedException e) {
-            logger.error("Thing {} '{}' initialization error: {}", getThing().getUID(), getThing().getLabel(),
+            logger.debug("Thing {} '{}' initialization error: {}", getThing().getUID(), getThing().getLabel(),
                     e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } finally {
