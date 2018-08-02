@@ -10,7 +10,10 @@ package org.openhab.binding.airquality;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
@@ -21,8 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link AirQualityBinding} class defines common constants, which are
@@ -57,9 +58,10 @@ public class AirQualityBindingConstants {
     public static final String HUMIDITY = "humidity";
     public static final String DOMINENTPOL = "dominentpol";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_AQI);
-    public static final Set<String> SUPPORTED_CHANNEL_IDS = ImmutableSet.of(AQI, AQIDESCRIPTION, PM25, PM10, O3, NO2,
-            CO, LOCATIONNAME, STATIONLOCATION, STATIONID, OBSERVATIONTIME, TEMPERATURE, PRESSURE, HUMIDITY);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AQI);
+    public static final Set<String> SUPPORTED_CHANNEL_IDS = Stream.of(AQI, AQIDESCRIPTION, PM25, PM10, O3, NO2, CO,
+            LOCATIONNAME, STATIONLOCATION, STATIONID, OBSERVATIONTIME, TEMPERATURE, PRESSURE, HUMIDITY)
+            .collect(Collectors.toSet());
 
     // Units of measurement of the data delivered by the API
     public static final Unit<Temperature> API_TEMPERATURE_UNIT = SIUnits.CELSIUS;
