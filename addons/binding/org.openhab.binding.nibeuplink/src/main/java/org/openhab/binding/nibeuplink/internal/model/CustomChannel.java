@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.nibeuplink.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * the channel class
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class CustomChannel extends Channel {
 
     CustomChannel(String id, String name) {
