@@ -37,10 +37,10 @@ import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusReadRequestBlueprintImpl;
+import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.PollTask;
-import org.openhab.io.transport.modbus.PollTaskImpl;
+import org.openhab.io.transport.modbus.BasicPollTaskImpl;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -219,7 +219,7 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
      * @author Sami Salonen
      *
      */
-    private static class ModbusPollerReadRequest extends ModbusReadRequestBlueprintImpl {
+    private static class ModbusPollerReadRequest extends BasicModbusReadRequestBlueprint {
 
         private static ModbusReadFunctionCode getFunctionCode(@Nullable String type) {
             if (!ModbusBindingConstants.READ_FUNCTION_CODES.containsKey(type)) {
@@ -363,9 +363,9 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
             return;
         }
 
-        ModbusReadRequestBlueprintImpl request = new ModbusPollerReadRequest(config, slaveEndpointThingHandler);
+        BasicModbusReadRequestBlueprint request = new ModbusPollerReadRequest(config, slaveEndpointThingHandler);
         @NonNull
-        PollTask task = new PollTaskImpl(endpoint, request, callbackDelegator);
+        PollTask task = new BasicPollTaskImpl(endpoint, request, callbackDelegator);
         pollTask = task;
 
         if (config.getRefresh() <= 0L) {

@@ -21,7 +21,7 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
  *
  */
 @NonNullByDefault
-public class WriteTaskImpl implements WriteTask {
+public class BasicWriteTask implements WriteTask {
 
     private static final StandardToStringStyle TO_STRING_STYLE = new StandardToStringStyle();
     static {
@@ -32,7 +32,7 @@ public class WriteTaskImpl implements WriteTask {
     private ModbusWriteRequestBlueprint request;
     private ModbusWriteCallback callback;
 
-    public WriteTaskImpl(ModbusSlaveEndpoint endpoint, ModbusWriteRequestBlueprint request,
+    public BasicWriteTask(ModbusSlaveEndpoint endpoint, ModbusWriteRequestBlueprint request,
             ModbusWriteCallback callback) {
         super();
         this.endpoint = endpoint;

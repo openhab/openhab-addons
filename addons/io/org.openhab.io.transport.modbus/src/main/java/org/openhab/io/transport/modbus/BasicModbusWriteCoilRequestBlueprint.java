@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-public class ModbusWriteCoilRequestBlueprintImpl implements ModbusWriteCoilRequestBlueprint {
+public class BasicModbusWriteCoilRequestBlueprint implements ModbusWriteCoilRequestBlueprint {
 
     private static StandardToStringStyle toStringStyle = new StandardToStringStyle();
 
@@ -33,7 +33,7 @@ public class ModbusWriteCoilRequestBlueprintImpl implements ModbusWriteCoilReque
      * @author Sami Salonen - Initial contribution
      *
      */
-    private static class SingleBitArray extends BitArrayImpl {
+    private static class SingleBitArray extends BasicBitArray {
 
         public SingleBitArray(boolean bit) {
             super(bit);
@@ -62,7 +62,7 @@ public class ModbusWriteCoilRequestBlueprintImpl implements ModbusWriteCoilReque
      *            {@link ModbusWriteFunctionCode.WRITE_COIL}
      * @param maxTries maximum number of tries in case of errors, should be at least 1
      */
-    public ModbusWriteCoilRequestBlueprintImpl(int slaveId, int reference, boolean data, boolean writeMultiple,
+    public BasicModbusWriteCoilRequestBlueprint(int slaveId, int reference, boolean data, boolean writeMultiple,
             int maxTries) {
         this(slaveId, reference, new SingleBitArray(data), writeMultiple, maxTries);
     }
@@ -79,7 +79,7 @@ public class ModbusWriteCoilRequestBlueprintImpl implements ModbusWriteCoilReque
      * @throws IllegalArgumentException in case <code>data</code> is empty, <code>writeMultiple</code> is
      *             <code>false</code> but there are many bits to write.
      */
-    public ModbusWriteCoilRequestBlueprintImpl(int slaveId, int reference, BitArray data, boolean writeMultiple,
+    public BasicModbusWriteCoilRequestBlueprint(int slaveId, int reference, BitArray data, boolean writeMultiple,
             int maxTries) {
         super();
         this.slaveId = slaveId;

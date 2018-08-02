@@ -20,20 +20,20 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public class BitArrayImpl implements BitArray {
+public class BasicBitArray implements BitArray {
 
     private BitSet wrapped;
     private int length;
 
-    public BitArrayImpl(int nbits) {
+    public BasicBitArray(int nbits) {
         this(new BitSet(nbits), nbits);
     }
 
-    public BitArrayImpl(boolean... bits) {
+    public BasicBitArray(boolean... bits) {
         this(bitSetFromBooleans(bits), bits.length);
     }
 
-    public BitArrayImpl(BitSet wrapped, int length) {
+    public BasicBitArray(BitSet wrapped, int length) {
         this.wrapped = wrapped;
         this.length = length;
     }

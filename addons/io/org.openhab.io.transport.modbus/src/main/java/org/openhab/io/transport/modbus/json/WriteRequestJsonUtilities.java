@@ -16,13 +16,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.io.transport.modbus.BitArrayImpl;
+import org.openhab.io.transport.modbus.BasicBitArray;
 import org.openhab.io.transport.modbus.ModbusRegister;
-import org.openhab.io.transport.modbus.ModbusRegisterArrayImpl;
-import org.openhab.io.transport.modbus.ModbusRegisterImpl;
-import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprintImpl;
+import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
+import org.openhab.io.transport.modbus.BasicModbusRegister;
+import org.openhab.io.transport.modbus.BasicModbusWriteCoilRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteFunctionCode;
-import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprintImpl;
+import org.openhab.io.transport.modbus.BasicModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 
 import com.google.gson.JsonArray;
@@ -175,11 +175,11 @@ public final class WriteRequestJsonUtilities {
                 if (valuesElem.size() == 0) {
                     throw new IllegalArgumentException("Must provide at least one coil");
                 }
-                BitArrayImpl bits = new BitArrayImpl(valuesElem.size());
+                BasicBitArray bits = new BasicBitArray(valuesElem.size());
                 for (int i = 0; i < valuesElem.size(); i++) {
                     bits.setBit(i, valuesElem.get(i).getAsInt() != 0);
                 }
-                return new ModbusWriteCoilRequestBlueprintImpl(unitId, address, bits, !writeSingle.get(), maxTries);
+                return new BasicModbusWriteCoilRequestBlueprint(unitId, address, bits, !writeSingle.get(), maxTries);
             case WRITE_SINGLE_REGISTER:
                 writeSingle.set(true);
                 if (valuesElem.size() != 1) {
@@ -193,10 +193,10 @@ public final class WriteRequestJsonUtilities {
                     throw new IllegalArgumentException("Must provide at least one register");
                 }
                 for (int i = 0; i < valuesElem.size(); i++) {
-                    registers[i] = new ModbusRegisterImpl(valuesElem.get(i).getAsInt());
+                    registers[i] = new BasicModbusRegister(valuesElem.get(i).getAsInt());
                 }
-                return new ModbusWriteRegisterRequestBlueprintImpl(unitId, address,
-                        new ModbusRegisterArrayImpl(registers), !writeSingle.get(), maxTries);
+                return new BasicModbusWriteRegisterRequestBlueprint(unitId, address,
+                        new BasicModbusRegisterArray(registers), !writeSingle.get(), maxTries);
             }
             default:
                 throw new IllegalArgumentException("Unknown function code");

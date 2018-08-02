@@ -95,8 +95,8 @@ import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.io.transport.modbus.ModbusRegisterArrayImpl;
-import org.openhab.io.transport.modbus.ModbusRegisterImpl;
+import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
+import org.openhab.io.transport.modbus.BasicModbusRegister;
 import org.openhab.io.transport.modbus.ModbusResponse;
 import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteFunctionCode;
@@ -709,7 +709,7 @@ public class ModbusDataHandlerTest extends JavaTest {
     public void testOnRegistersInt16StaticTransformation() {
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "-3", ModbusConstants.ValueType.INT16, null,
-                new ModbusRegisterArrayImpl(new ModbusRegister[] { new ModbusRegisterImpl((byte) 0xff, (byte) 0xfd) }),
+                new BasicModbusRegisterArray(new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
                 null);
 
         assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_READ_SUCCESS,
@@ -745,7 +745,7 @@ public class ModbusDataHandlerTest extends JavaTest {
         });
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "MULTIPLY(10)", ModbusConstants.ValueType.INT16, null,
-                new ModbusRegisterArrayImpl(new ModbusRegister[] { new ModbusRegisterImpl((byte) 0xff, (byte) 0xfd) }),
+                new BasicModbusRegisterArray(new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
                 null, bundleContext);
 
         assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_READ_SUCCESS,
@@ -775,7 +775,7 @@ public class ModbusDataHandlerTest extends JavaTest {
         });
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "MULTIPLY(10)", ModbusConstants.ValueType.INT16, null,
-                new ModbusRegisterArrayImpl(new ModbusRegister[] { new ModbusRegisterImpl((byte) 0xff, (byte) 0xfd) }),
+                new BasicModbusRegisterArray(new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
                 null, bundleContext,
                 // Not linking items and channels
                 false);
@@ -805,7 +805,7 @@ public class ModbusDataHandlerTest extends JavaTest {
         });
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "ONOFF(10)", ModbusConstants.ValueType.INT16, null,
-                new ModbusRegisterArrayImpl(new ModbusRegister[] { new ModbusRegisterImpl((byte) 0xff, (byte) 0xfd) }),
+                new BasicModbusRegisterArray(new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
                 null, bundleContext);
 
         assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_READ_SUCCESS,

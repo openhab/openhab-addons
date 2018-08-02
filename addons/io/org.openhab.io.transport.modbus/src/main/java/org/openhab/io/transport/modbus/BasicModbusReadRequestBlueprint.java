@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  */
 @NonNullByDefault
-public class ModbusReadRequestBlueprintImpl implements ModbusReadRequestBlueprint {
+public class BasicModbusReadRequestBlueprint implements ModbusReadRequestBlueprint {
     private static StandardToStringStyle toStringStyle = new StandardToStringStyle();
     static {
         toStringStyle.setUseShortClassName(true);
@@ -38,7 +38,7 @@ public class ModbusReadRequestBlueprintImpl implements ModbusReadRequestBlueprin
     private int length;
     private int maxTries;
 
-    public ModbusReadRequestBlueprintImpl(int slaveId, ModbusReadFunctionCode functionCode, int start, int length,
+    public BasicModbusReadRequestBlueprint(int slaveId, ModbusReadFunctionCode functionCode, int start, int length,
             int maxTries) {
         super();
         this.slaveId = slaveId;
@@ -96,7 +96,7 @@ public class ModbusReadRequestBlueprintImpl implements ModbusReadRequestBlueprin
         if (obj.getClass() != getClass()) {
             return false;
         }
-        ModbusReadRequestBlueprintImpl rhs = (ModbusReadRequestBlueprintImpl) obj;
+        BasicModbusReadRequestBlueprint rhs = (BasicModbusReadRequestBlueprint) obj;
         return new EqualsBuilder().append(slaveId, rhs.slaveId).append(functionCode, rhs.functionCode)
                 .append(start, rhs.start).append(length, rhs.length).isEquals();
     }

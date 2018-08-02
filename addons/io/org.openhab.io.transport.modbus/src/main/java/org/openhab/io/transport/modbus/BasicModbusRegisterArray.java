@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public class ModbusRegisterArrayImpl implements ModbusRegisterArray {
+public class BasicModbusRegisterArray implements ModbusRegisterArray {
 
     private ModbusRegister[] registers;
 
@@ -29,7 +29,7 @@ public class ModbusRegisterArrayImpl implements ModbusRegisterArray {
     public static ModbusRegister[] registersFromValues(int... registerValues) {
         ModbusRegister[] registers = new ModbusRegister[registerValues.length];
         for (int i = 0; i < registerValues.length; i++) {
-            registers[i] = new ModbusRegisterImpl(registerValues[i]);
+            registers[i] = new BasicModbusRegister(registerValues[i]);
         }
         return registers;
     }
@@ -39,7 +39,7 @@ public class ModbusRegisterArrayImpl implements ModbusRegisterArray {
      *
      * @param registers
      */
-    public ModbusRegisterArrayImpl(ModbusRegister[] registers) {
+    public BasicModbusRegisterArray(ModbusRegister[] registers) {
         this.registers = registers;
     }
 
@@ -49,7 +49,7 @@ public class ModbusRegisterArrayImpl implements ModbusRegisterArray {
      * @param registerValues register values, each <code>int</code> corresponding to one register
      * @return
      */
-    public ModbusRegisterArrayImpl(int... registerValues) {
+    public BasicModbusRegisterArray(int... registerValues) {
         this(registersFromValues(registerValues));
     }
 

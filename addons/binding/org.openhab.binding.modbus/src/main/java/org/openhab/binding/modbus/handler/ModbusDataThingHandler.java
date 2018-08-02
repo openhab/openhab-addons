@@ -63,11 +63,11 @@ import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusResponse;
 import org.openhab.io.transport.modbus.ModbusTransportException;
 import org.openhab.io.transport.modbus.ModbusWriteCallback;
-import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprintImpl;
-import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprintImpl;
+import org.openhab.io.transport.modbus.BasicModbusWriteCoilRequestBlueprint;
+import org.openhab.io.transport.modbus.BasicModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.io.transport.modbus.PollTask;
-import org.openhab.io.transport.modbus.WriteTaskImpl;
+import org.openhab.io.transport.modbus.BasicWriteTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.io.transport.modbus.json.WriteRequestJsonUtilities;
 import org.slf4j.Logger;
@@ -199,7 +199,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             return;
         }
 
-        WriteTaskImpl writeTask = new WriteTaskImpl(slaveEndpoint, request, this);
+        BasicWriteTask writeTask = new BasicWriteTask(slaveEndpoint, request, this);
         logger.trace("Submitting write task: {}", writeTask);
         manager.submitOneTimeWrite(writeTask);
     }
@@ -261,7 +261,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 return null;
             }
             boolean data = commandAsBoolean.get();
-            request = new ModbusWriteCoilRequestBlueprintImpl(slaveId, writeStart, data, writeMultiple,
+            request = new BasicModbusWriteCoilRequestBlueprint(slaveId, writeStart, data, writeMultiple,
                     config.getWriteMaxTries());
         } else if (writeType.equals(WRITE_TYPE_HOLDING)) {
             ValueType writeValueType = this.writeValueType;
@@ -273,7 +273,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             }
             ModbusRegisterArray data = ModbusBitUtilities.commandToRegisters(transformedCommand, writeValueType);
             writeMultiple = writeMultiple || data.size() > 1;
-            request = new ModbusWriteRegisterRequestBlueprintImpl(slaveId, writeStart, data, writeMultiple,
+            request = new BasicModbusWriteRegisterRequestBlueprint(slaveId, writeStart, data, writeMultiple,
                     config.getWriteMaxTries());
         } else {
             // Should not happen! This method is not called in case configuration errors and writeType is validated
@@ -302,7 +302,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             return;
         }
 
-        requests.stream().map(request -> new WriteTaskImpl(slaveEndpoint, request, this)).forEach(writeTask -> {
+        requests.stream().map(request -> new BasicWriteTask(slaveEndpoint, request, this)).forEach(writeTask -> {
             logger.trace("Submitting write task: {} (based from transformation {})", writeTask, transformOutput);
             manager.submitOneTimeWrite(writeTask);
         });

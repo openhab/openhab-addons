@@ -18,7 +18,7 @@ import net.wimpi.modbus.procimg.SimpleInputRegister;
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public class ModbusRegisterImpl implements ModbusRegister {
+public class BasicModbusRegister implements ModbusRegister {
 
     private SimpleInputRegister wrapped;
 
@@ -28,7 +28,7 @@ public class ModbusRegisterImpl implements ModbusRegister {
      * @param b1 the first (hi) byte of the word.
      * @param b2 the second (low) byte of the word.
      */
-    public ModbusRegisterImpl(byte b1, byte b2) {
+    public BasicModbusRegister(byte b1, byte b2) {
         wrapped = new SimpleInputRegister(b1, b2);
     }
 
@@ -37,7 +37,7 @@ public class ModbusRegisterImpl implements ModbusRegister {
      *
      * @param val value representing register data. The <code>int</code> will be downcasted to <code>short</code>.
      */
-    public ModbusRegisterImpl(int val) {
+    public BasicModbusRegister(int val) {
         wrapped = new SimpleInputRegister(val);
     }
 

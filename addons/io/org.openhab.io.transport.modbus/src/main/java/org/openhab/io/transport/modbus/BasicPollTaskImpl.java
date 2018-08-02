@@ -28,7 +28,7 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
  *
  */
 @NonNullByDefault
-public class PollTaskImpl implements PollTask {
+public class BasicPollTaskImpl implements PollTask {
 
     static StandardToStringStyle toStringStyle = new StandardToStringStyle();
     static {
@@ -36,14 +36,14 @@ public class PollTaskImpl implements PollTask {
     }
 
     private ModbusSlaveEndpoint endpoint;
-    private ModbusReadRequestBlueprintImpl request;
+    private BasicModbusReadRequestBlueprint request;
     private @Nullable ModbusReadCallback callback;
 
-    public PollTaskImpl(ModbusSlaveEndpoint endpoint, ModbusReadRequestBlueprintImpl request) {
+    public BasicPollTaskImpl(ModbusSlaveEndpoint endpoint, BasicModbusReadRequestBlueprint request) {
         this(endpoint, request, null);
     }
 
-    public PollTaskImpl(ModbusSlaveEndpoint endpoint, ModbusReadRequestBlueprintImpl request,
+    public BasicPollTaskImpl(ModbusSlaveEndpoint endpoint, BasicModbusReadRequestBlueprint request,
             @Nullable ModbusReadCallback callback) {
         this.endpoint = endpoint;
         this.request = request;
@@ -87,7 +87,7 @@ public class PollTaskImpl implements PollTask {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        PollTaskImpl rhs = (PollTaskImpl) obj;
+        BasicPollTaskImpl rhs = (BasicPollTaskImpl) obj;
         return new EqualsBuilder().append(request, rhs.request).append(endpoint, rhs.endpoint)
                 .append(getCallback(), rhs.getCallback()).isEquals();
     }

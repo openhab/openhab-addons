@@ -12,13 +12,13 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-import org.openhab.io.transport.modbus.BitArrayImpl;
+import org.openhab.io.transport.modbus.BasicBitArray;
 
-public class BitArrayImplTest {
+public class BasicBitArrayTest {
 
     @Test
     public void testGetBitAndSetBit() {
-        BitArrayImpl data1 = new BitArrayImpl(true, false, true);
+        BasicBitArray data1 = new BasicBitArray(true, false, true);
         assertThat(data1.size(), is(equalTo(3)));
         assertThat(data1.getBit(0), is(equalTo(true)));
         assertThat(data1.getBit(1), is(equalTo(false)));
@@ -34,7 +34,7 @@ public class BitArrayImplTest {
 
     @Test
     public void testGetBitAndSetBit2() {
-        BitArrayImpl data1 = new BitArrayImpl(3);
+        BasicBitArray data1 = new BasicBitArray(3);
         assertThat(data1.size(), is(equalTo(3)));
         assertThat(data1.getBit(0), is(equalTo(false)));
         assertThat(data1.getBit(1), is(equalTo(false)));
@@ -55,25 +55,25 @@ public class BitArrayImplTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testOutOfBounds() {
-        BitArrayImpl data1 = new BitArrayImpl(true, false, true);
+        BasicBitArray data1 = new BasicBitArray(true, false, true);
         data1.getBit(3);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testOutOfBounds2() {
-        BitArrayImpl data1 = new BitArrayImpl(true, false, true);
+        BasicBitArray data1 = new BasicBitArray(true, false, true);
         data1.getBit(-1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testOutOfBounds3() {
-        BitArrayImpl data1 = new BitArrayImpl(3);
+        BasicBitArray data1 = new BasicBitArray(3);
         data1.getBit(3);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testOutOfBounds4() {
-        BitArrayImpl data1 = new BitArrayImpl(3);
+        BasicBitArray data1 = new BasicBitArray(3);
         data1.getBit(-1);
     }
 }

@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-public class ModbusWriteRegisterRequestBlueprintImpl implements ModbusWriteRegisterRequestBlueprint {
+public class BasicModbusWriteRegisterRequestBlueprint implements ModbusWriteRegisterRequestBlueprint {
 
     private static StandardToStringStyle toStringStyle = new StandardToStringStyle();
 
@@ -45,7 +45,7 @@ public class ModbusWriteRegisterRequestBlueprintImpl implements ModbusWriteRegis
      * @throws IllegalArgumentException in case <code>data</code> is empty, <code>writeMultiple</code> is
      *             <code>false</code> but there are many registers to write.
      */
-    public ModbusWriteRegisterRequestBlueprintImpl(int slaveId, int reference, ModbusRegisterArray registers,
+    public BasicModbusWriteRegisterRequestBlueprint(int slaveId, int reference, ModbusRegisterArray registers,
             boolean writeMultiple, int maxTries) throws IllegalArgumentException {
         super();
         this.slaveId = slaveId;
