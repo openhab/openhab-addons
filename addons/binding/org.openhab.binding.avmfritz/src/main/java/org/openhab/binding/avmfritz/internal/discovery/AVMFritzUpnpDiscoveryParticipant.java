@@ -11,10 +11,13 @@ package org.openhab.binding.avmfritz.internal.discovery;
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_VENDOR;
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
@@ -23,7 +26,10 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.DeviceDetails;
 import org.jupnp.model.meta.ModelDetails;
 import org.jupnp.model.meta.RemoteDevice;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,50 +39,63 @@ import org.slf4j.LoggerFactory;
  *
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for groups
+ * @author Christoph Weitkamp - Use "discovery.avmfritz:background=false" to disable discovery service
  */
-@Component(service = UpnpDiscoveryParticipant.class, immediate = true)
+@Component(service = UpnpDiscoveryParticipant.class, immediate = true, configurationPid = "discovery.avmfritz")
+@NonNullByDefault
 public class AVMFritzUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
-    /**
-     * Logger
-     */
+
     private final Logger logger = LoggerFactory.getLogger(AVMFritzUpnpDiscoveryParticipant.class);
 
-    /**
-     * Provide supported ThingTypeUIDs
-     */
+    private boolean isAutoDiscoveryEnabled = true;
+
+    @Activate
+    protected void activate(ComponentContext componentContext) {
+        activateOrModifyService(componentContext);
+    }
+
+    @Modified
+    protected void modified(ComponentContext componentContext) {
+        activateOrModifyService(componentContext);
+    }
+
+    private void activateOrModifyService(ComponentContext componentContext) {
+        Dictionary<String, @Nullable Object> properties = componentContext.getProperties();
+        String autoDiscoveryPropertyValue = (String) properties.get("background");
+        if (autoDiscoveryPropertyValue != null && autoDiscoveryPropertyValue.length() != 0) {
+            isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
+        }
+    }
+
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
         return SUPPORTED_BRIDGE_THING_TYPES_UIDS;
     }
 
-    /**
-     * Create a discovery result from UPNP discovery
-     */
     @Override
-    public DiscoveryResult createResult(RemoteDevice device) {
-        ThingUID uid = getThingUID(device);
-        if (uid != null) {
-            logger.debug("discovered: {} ({}) at {}", device.getDisplayString(), device.getDetails().getFriendlyName(),
-                    device.getIdentity().getDescriptorURL().getHost());
+    public @Nullable DiscoveryResult createResult(RemoteDevice device) {
+        if (isAutoDiscoveryEnabled) {
+            ThingUID uid = getThingUID(device);
+            if (uid != null) {
+                logger.debug("discovered: {} ({}) at {}", device.getDisplayString(),
+                        device.getDetails().getFriendlyName(), device.getIdentity().getDescriptorURL().getHost());
 
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(CONFIG_IP_ADDRESS, device.getIdentity().getDescriptorURL().getHost());
-            properties.put(PROPERTY_VENDOR, device.getDetails().getManufacturerDetails().getManufacturer());
+                Map<String, Object> properties = new HashMap<>();
+                properties.put(CONFIG_IP_ADDRESS, device.getIdentity().getDescriptorURL().getHost());
+                properties.put(PROPERTY_VENDOR, device.getDetails().getManufacturerDetails().getManufacturer());
 
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(CONFIG_IP_ADDRESS)
-                    .build();
+                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                        .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(CONFIG_IP_ADDRESS)
+                        .build();
 
-            return result;
+                return result;
+            }
         }
         return null;
     }
 
-    /**
-     * Compute a FRITZ!Box / FRITZ!Powerline ThingUID.
-     */
     @Override
-    public ThingUID getThingUID(RemoteDevice device) {
+    public @Nullable ThingUID getThingUID(RemoteDevice device) {
         // newer FRITZ!OS versions return several upnp services (e.g. Mediaserver)
         if (device.getType().getType().equals(BRIDGE_FRITZBOX)) {
             DeviceDetails details = device.getDetails();

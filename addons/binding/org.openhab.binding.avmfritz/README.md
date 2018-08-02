@@ -47,9 +47,15 @@ The FRITZ!Box has to run at least on firmware FRITZ!OS 6.69.
 
 ## Discovery
 
-The FRITZ!Box and the powerline adapter are discovered through UPNP in the local network.
+The FRITZ!Box and the powerline adapter are discovered through UPnP in the local network.
+Auto-discovery is enabled by default.
 When added as things, a username/password has eventually to be set depending on your Box/Powerline security configuration.
 The credentials given in the settings must have HomeAuto permissions.
+To disable it, you can add the following line to `<openHAB-conf>/services/runtime.cfg`:
+
+```
+discovery.avmfritz:background=false
+```
 
 If correct credentials are set in the bridge configuration, connected AHA devices are discovered automatically (may last up to 3 minutes).
 
