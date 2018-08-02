@@ -162,7 +162,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                     getThing().getUID(), getThing().getLabel(), command, channelUID);
             return;
         } else if (!isWriteEnabled) {
-            logger.warn(
+            logger.debug(
                     "Thing {} '{}' command '{}' to channel '{}': no writing configured -> aborting processing command",
                     getThing().getUID(), getThing().getLabel(), command, channelUID);
             return;
