@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="tcp">
+		<label>Modbus TCP slave</label>
+		<description>Endpoint for Modbus TCP slaves</description>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>IP Address or hostname</label>
+				<description>Network address of the device</description>
+				<default>localhost</default>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>Port</label>
+				<description>Port of the slave</description>
+				<default>502</default>
+			</parameter>
+
+			<parameter name="id" type="integer">
+				<label>Id</label>
+				<description>Slave id. Also known as station address or unit identifier.</description>
+				<default>1</default>
+			</parameter>
+
+			<!-- connection handling -->
+			<parameter name="timeBetweenTransactionsMillis" type="integer" min="0">
+				<label>Time between transactions (ms)</label>
+				<description>How long to delay we must have at minimum between two consecutive MODBUS transactions. In milliseconds.
+				</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="timeBetweenReconnectMillis" type="integer" min="0">
+				<label>Time between reconnections (ms)</label>
+				<description>How long to wait to before trying to establish a new connection after the previous one has been
+					disconnected. In milliseconds.</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="connectMaxTries" type="integer" min="1">
+				<label>Maximum connection tries</label>
+				<description>How many times we try to establish the connection. Should be at least 1.</description>
+				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="reconnectAfterMillis" type="integer" min="0">
+				<label>Disconnect and establish the connection again after this time (ms)</label>
+				<description>The connection is kept open at least the time specified here. Value of zero means that connection is
+					disconnected after every MODBUS transaction. In milliseconds.</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="connectTimeoutMillis" type="integer" min="0">
+				<label>Timeout for establishing the connection (ms)</label>
+				<description>The maximum time that is waited when establishing the connection. Value of zero means that system/OS
+					default is respected. In milliseconds.</description>
+				<default>10000</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

@@ -304,6 +304,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.minecraft/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-modbus" description="Modbus Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>        
+        <feature>openhab-transport-modbus</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.modbus/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-nest" description="Nest Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.nest/${project.version}</bundle>
@@ -573,6 +579,12 @@
     <feature name="openhab-transport-feed" description="Feed Transport" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.transport.feed/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-transport-modbus" description="Modbus Transport" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.transport.modbus/${project.version}</bundle>
     </feature>
 
     <!-- misc -->

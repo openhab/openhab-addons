@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="serial">
+		<label>Modbus serial slave</label>
+		<description>Endpoint for Modbus serial slaves</description>
+		<config-description>
+			<parameter name="port" type="text" required="true">
+				<label>Serial port</label>
+				<context>serial-port</context>
+				<description>Serial port to use, for example /dev/ttyS0 or COM1</description>
+				<default>/dev/ttyS0</default>
+			</parameter>
+
+			<parameter name="id" type="integer">
+				<label>Id</label>
+				<description>Slave id. Also known as station address or unit identifier.</description>
+				<default>1</default>
+			</parameter>
+
+			<!-- serial parameters -->
+			<parameter name="baud" type="integer" multiple="false">
+				<label>Baud</label>
+				<description>Baud of the connection</description>
+				<default>9600</default>
+				<options>
+					<option value="75">75</option>
+					<option value="110">110</option>
+					<option value="300">300</option>
+					<option value="1200">1200</option>
+					<option value="2400">2400</option>
+					<option value="4800">4800</option>
+					<option value="9600">9600</option>
+					<option value="19200">19200</option>
+					<option value="38400">38400</option>
+					<option value="57600">57600</option>
+					<option value="115200">115200</option>
+				</options>
+			</parameter>
+			<parameter name="stopBits" type="text" multiple="false">
+				<label>Stop bits</label>
+				<description>Stop bits</description>
+				<default>1.0</default>
+				<options>
+					<option value="1.0">1</option>
+					<option value="1.5">1.5</option>
+					<option value="2.0">2</option>
+				</options>
+			</parameter>
+			<parameter name="parity" type="text" multiple="false">
+				<label>Parity</label>
+				<description>Parity</description>
+				<default>none</default>
+				<options>
+					<option value="none">None</option>
+					<option value="even">Even</option>
+					<option value="odd">Odd</option>
+				</options>
+			</parameter>
+			<parameter name="dataBits" type="integer" multiple="false">
+				<label>Data bits</label>
+				<description>Data bits</description>
+				<default>8</default>
+				<options>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+				</options>
+			</parameter>
+			<parameter name="encoding" type="text" multiple="false">
+				<label>Encoding</label>
+				<description>Encoding</description>
+				<default>rtu</default>
+				<options>
+					<option value="ascii">ASCII</option>
+					<option value="rtu">RTU</option>
+					<option value="bin">BIN</option>
+				</options>
+			</parameter>
+			<parameter name="echo" type="boolean">
+				<label>RS485 echo mode</label>
+				<description><![CDATA[Flag for setting the RS485 echo mode
+				<br/>
+				<br/>This controls whether we should try to read back whatever we send on the line, before reading the response.			
+				]]></description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="receiveTimeoutMillis" type="integer" min="0">
+				<label>Read operation timeout (ms)</label>
+				<description>Timeout for read operations. In milliseconds.</description>
+				<default>1500</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="flowControlIn" type="text" multiple="false">
+				<label>Flow control in</label>
+				<description>Type of flow control for receiving</description>
+				<default>none</default>
+				<!-- values here match SerialPort.FLOWCONTROL_* constants -->
+				<options>
+					<option value="none">None</option>
+					<option value="xon/xoff in">RTS/CTS</option>
+					<option value="rts/cts in">XON/XOFF</option>
+				</options>
+			</parameter>
+			<parameter name="flowControlOut" type="text" multiple="false">
+				<label>Flow control out</label>
+				<description>Type of flow control for sending</description>
+				<default>none</default>
+				<!-- values here match SerialPort.FLOWCONTROL_* constants -->
+				<options>
+					<option value="none">None</option>
+					<option value="xon/xoff out">RTS/CTS</option>
+					<option value="rts/cts out">XON/XOFF</option>
+				</options>
+			</parameter>
+
+			<!-- connection handling -->
+			<parameter name="timeBetweenTransactionsMillis" type="integer" min="0">
+				<label>Time between transactions (ms)</label>
+				<description>How long to delay we must have at minimum between two consecutive MODBUS transactions. In milliseconds.</description>
+				<default>35</default>
+			</parameter>
+			<parameter name="connectMaxTries" type="integer" min="1">
+				<label>Maximum connection tries</label>
+				<description>How many times we try to establish the connection. Should be at least 1.</description>
+				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="connectTimeoutMillis" type="integer" min="0">
+				<label>Timeout for establishing the connection (ms)</label>
+				<description>The maximum time that is waited when establishing the connection. Value of zero means that system/OS
+					default is respected. In milliseconds.</description>
+				<default>10000</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
