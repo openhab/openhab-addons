@@ -29,8 +29,6 @@ import org.openhab.io.transport.modbus.ModbusManager;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,13 +82,13 @@ public class ModbusHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    @Reference(service = ModbusManager.class, cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "unsetManager")
-    public void setManager(ModbusManager manager) {
+    @Reference
+    public void setModbusManager(ModbusManager manager) {
         logger.debug("Setting manager: {}", manager);
         this.manager = manager;
     }
 
-    public void unsetManager(ModbusManager manager) {
+    public void unsetModbusManager(ModbusManager manager) {
         this.manager = null;
     }
 }
