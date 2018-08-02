@@ -8,19 +8,27 @@
  */
 package org.openhab.binding.neeo.handler;
 
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.neeo.NeeoConstants;
+import org.openhab.binding.neeo.internal.discovery.NeeoDeviceDiscoveryService;
+import org.openhab.binding.neeo.internal.discovery.NeeoRoomDiscoveryService;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
@@ -42,6 +50,8 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
     /** The {@link NetworkAddressService} used for ip lookup */
     @NonNullByDefault({})
     private NetworkAddressService networkAddressService;
+
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     /**
      * Sets the {@link HttpService}.
@@ -105,14 +115,52 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
 
             final int port = HttpServiceUtil.getHttpServicePort(this.bundleContext);
 
-            return new NeeoBrainHandler((Bridge) thing, port < 0 ? NeeoConstants.DEFAULT_BRAIN_HTTP_PORT : port,
-                    localHttpService, localNetworkAddressService);
+            final NeeoBrainHandler handler = new NeeoBrainHandler((Bridge) thing,
+                    port < 0 ? NeeoConstants.DEFAULT_BRAIN_HTTP_PORT : port, localHttpService,
+                    localNetworkAddressService);
+            registerRoomDiscoveryService(handler);
+            return handler;
         } else if (thingTypeUID.equals(NeeoConstants.BRIDGE_TYPE_ROOM)) {
-            return new NeeoRoomHandler((Bridge) thing);
+            final NeeoRoomHandler handler = new NeeoRoomHandler((Bridge) thing);
+            registerDeviceDiscoveryService(handler);
+            return handler;
         } else if (thingTypeUID.equals(NeeoConstants.THING_TYPE_DEVICE)) {
             return new NeeoDeviceHandler(thing);
         }
 
         return null;
+    }
+
+    /**
+     * Helper method to register the room discovery service
+     * 
+     * @param handler a non-null brain handler
+     */
+    private synchronized void registerRoomDiscoveryService(NeeoBrainHandler handler) {
+        Objects.requireNonNull(handler, "handler cannot be null");
+        final NeeoRoomDiscoveryService discoveryService = new NeeoRoomDiscoveryService(handler);
+        this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
+                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+    }
+
+    /**
+     * Helper method to register the device discovery service
+     * 
+     * @param handler a non-null room handler
+     */
+    private synchronized void registerDeviceDiscoveryService(NeeoRoomHandler handler) {
+        Objects.requireNonNull(handler, "handler cannot be null");
+        final NeeoDeviceDiscoveryService discoveryService = new NeeoDeviceDiscoveryService(handler);
+        this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
+                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+    }
+
+    @Override
+    protected synchronized void removeHandler(ThingHandler thingHandler) {
+        final ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
+        if (serviceReg != null) {
+            serviceReg.unregister();
+            discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+        }
     }
 }

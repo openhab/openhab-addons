@@ -9,40 +9,34 @@
 package org.openhab.binding.neeo.internal.discovery;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.thing.ThingDiscoveryParticipant;
-import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.neeo.NeeoConstants;
 import org.openhab.binding.neeo.handler.NeeoBrainHandler;
 import org.openhab.binding.neeo.internal.NeeoBrainApi;
 import org.openhab.binding.neeo.internal.NeeoBrainConfig;
 import org.openhab.binding.neeo.internal.models.NeeoBrain;
 import org.openhab.binding.neeo.internal.models.NeeoRoom;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of {@link ThingDiscoveryParticipant} that will discover the rooms in a NEEO brain;
+ * Implementation of {@link AbstractDiscoveryService} that will discover the rooms in a NEEO brain;
  *
  * @author Tim Roberts - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true)
-public class NeeoRoomDiscoveryService implements ThingDiscoveryParticipant {
+public class NeeoRoomDiscoveryService extends AbstractDiscoveryService {
     /** The logger */
     private final Logger logger = LoggerFactory.getLogger(NeeoRoomDiscoveryService.class);
 
@@ -50,42 +44,47 @@ public class NeeoRoomDiscoveryService implements ThingDiscoveryParticipant {
     private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
             .singleton(NeeoConstants.BRIDGE_TYPE_ROOM);
 
-    @Override
-    public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return DISCOVERABLE_THING_TYPES_UIDS;
+    /** The timeout for searching the brain */
+    private static final int SEARCH_TIME = 10;
+
+    /** The brain handler that we will use */
+    private final NeeoBrainHandler brainHandler;
+
+    /**
+     * Constructs the discover service from the brain handler
+     * 
+     * @param brainHandler a non-null brain handler
+     */
+    public NeeoRoomDiscoveryService(NeeoBrainHandler brainHandler) {
+        super(DISCOVERABLE_THING_TYPES_UIDS, SEARCH_TIME);
+        Objects.requireNonNull(brainHandler, "brainHandler cannot be null");
+        this.brainHandler = brainHandler;
     }
 
     @Override
-    @Nullable
-    public Collection<DiscoveryResult> createResults(Thing thing) {
-        final ThingHandler handler = thing.getHandler();
-        if (handler == null || !(handler instanceof NeeoBrainHandler)) {
-            return null;
-        }
+    protected void startScan() {
+        final String brainId = brainHandler.getNeeoBrainId();
 
-        final NeeoBrainHandler brainHandler = (NeeoBrainHandler) handler;
-
-        final ThingUID brainUid = thing.getUID();
-        final String brainId = brainUid.getId();
+        final Bridge brainBridge = brainHandler.getThing();
+        final ThingUID brainUid = brainBridge.getUID();
 
         final NeeoBrainApi api = brainHandler.getNeeoBrainApi();
         if (api == null) {
             logger.debug("Brain API was not available for {} - skipping", brainId);
-            return null;
+            return;
         }
 
         try {
             final NeeoBrain brain = api.getBrain();
-            final NeeoBrainConfig config = thing.getConfiguration().as(NeeoBrainConfig.class);
+            final NeeoBrainConfig config = brainBridge.getConfiguration().as(NeeoBrainConfig.class);
             final NeeoRoom[] rooms = brain.getRooms().getRooms();
 
             if (rooms.length == 0) {
                 logger.debug("Brain {} ({}) found - but there were no rooms - skipping", brain.getName(), brainId);
-                return null;
+                return;
             }
 
             logger.debug("Brain {} ({}) found, scanning {} rooms in it", brain.getName(), brainId, rooms.length);
-            final List<DiscoveryResult> results = new ArrayList<>();
             for (NeeoRoom room : rooms) {
                 final String roomKey = room.getKey();
                 if (roomKey == null || StringUtils.isEmpty(roomKey)) {
@@ -102,15 +101,14 @@ public class NeeoRoomDiscoveryService implements ThingDiscoveryParticipant {
 
                 final ThingUID thingUID = new ThingUID(NeeoConstants.BRIDGE_TYPE_ROOM, brainUid, room.getKey());
 
-                results.add(DiscoveryResultBuilder.create(thingUID).withProperty(NeeoConstants.CONFIG_ROOMKEY, roomKey)
+                final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
+                        .withProperty(NeeoConstants.CONFIG_ROOMKEY, roomKey)
                         .withProperty(NeeoConstants.CONFIG_EXCLUDE_THINGS, true).withBridge(brainUid)
-                        .withLabel(room.getName() + " (NEEO " + brainId + ")").build());
+                        .withLabel(room.getName() + " (NEEO " + brainId + ")").build();
+                thingDiscovered(discoveryResult);
             }
-
-            return results;
         } catch (IOException e) {
             logger.debug("IOException occurred getting brain info ({}): {}", brainId, e.getMessage(), e);
-            return null;
         }
     }
 }
