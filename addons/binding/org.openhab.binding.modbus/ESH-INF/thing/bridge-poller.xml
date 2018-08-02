@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="poller">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp" />
+			<bridge-type-ref id="serial" />
+		</supported-bridge-type-refs>
+
+		<label>Regular poll</label>
+		<description>Regular poll of data from Modbus slaves</description>
+		<config-description>
+			<parameter name="refresh" type="integer" min="0">
+				<label>Poll interval (ms)</label>
+				<description>Poll interval in milliseconds. Use zero to disable automatic polling.</description>
+				<default>500</default>
+			</parameter>
+			<parameter name="start" type="integer">
+				<label>Start</label>
+				<description><![CDATA[Address of the first register, coil, or discrete input to poll. 
+				<br />
+				<br />Input as zero-based index number, e.g. in place of 400001 (first holding register), use the address 0.]]></description>
+				<default>0</default>
+			</parameter>
+			<parameter name="length" type="integer" required="true">
+				<label>Length</label>
+				<description>Number of registers, coils or discrete inputs to read.</description>
+			</parameter>
+			<parameter name="type" type="text" required="true">
+				<label>Type</label>
+				<description>Type of modbus items to poll</description>
+				<options>
+					<option value="coil">coil, or digital out (DO)</option>
+					<option value="discrete">discrete input, or digital in (DI)</option>
+					<option value="holding">holding register</option>
+					<option value="input">input register</option>
+				</options>
+			</parameter>
+			<parameter name="maxTries" type="integer" min="1">
+				<label>Maximum tries when reading</label>
+				<default>3</default>
+				<description>Number of tries when reading data, if some of the reading fail. For single try, enter 1.</description>
+			</parameter>
+			<parameter name="cacheMillis" type="integer" min="0">
+				<label>Cache duration (ms)</label>
+				<default>50</default>
+				<description><![CDATA[Duration for data cache to be valid, in milliseconds. This cache is used only to serve REFRESH commands. 
+					<br />
+					<br />Use zero to disable the caching.]]></description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
