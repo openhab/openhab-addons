@@ -61,11 +61,6 @@ public class LightBulbHandler extends WinkBaseThingHandler {
             }
         }
     }
-	
-	@Override
-	protected boolean connectionStatus(IWinkDevice device){
-		return getDevice().getCurrentState().get("connection").equals("true");
-	}
 
     private void setLightLevel(int level) {
         if (level > 0) {

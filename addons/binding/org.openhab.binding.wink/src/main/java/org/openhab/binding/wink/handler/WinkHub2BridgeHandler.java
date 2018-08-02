@@ -147,69 +147,6 @@ public class WinkHub2BridgeHandler extends BaseBridgeHandler {
 	 * @return The device
 	 */
 	public IWinkDevice getDevice(WinkSupportedDevice deviceType, String uuid) {
-		logger.debug("Getting device through handler {}", uuid);
 		return client.getDevice(deviceType, uuid);
 	}
-
-	/**
-	 * Sets the thermostat temperature to the level specified in celcius
-	 *
-	 * @param device The device to change temperature
-	 * @param temperature The temperature desired
-	 */
-	public void setThermostatTemperature(IWinkDevice device, float temperature) {
-		Map<String, String> updatedState = new HashMap<String, String>();
-		Map<String, String> jsonData = device.getCurrentStateComplexJson();
-
-		String units = "f";
-		if (jsonData.get("units") != null && !jsonData.get("units").equals("null")) {
-			units = jsonData.get("units");
-		}
-
-		float desiredTemperature = temperature;
-		if (units.equals("f")) {
-			// Convert to Celcius before setting new temp.
-			desiredTemperature = (desiredTemperature - 32) / 1.8f;
-		}
-
-		if (jsonData.get("mode") != null && !jsonData.get("mode").equals("null")) {
-			String currentOperationMode = jsonData.get("mode");
-			if (currentOperationMode.equals("cool_only")) {
-				updatedState.put("max_set_point", String.valueOf(desiredTemperature));
-			} else if (currentOperationMode.equals("heat_only")) {
-				updatedState.put("min_set_point", String.valueOf(desiredTemperature));
-			} else { // auto
-				// Set them both the same.
-				updatedState.put("min_set_point", String.valueOf(desiredTemperature));
-				updatedState.put("max_set_point", String.valueOf(desiredTemperature));
-			}
-
-			logger.debug("Setting new temperature to {}", desiredTemperature);
-			this.setDesiredState(device, updatedState);
-		}
-	}
-
-	/**
-	 * Sets the thermostat mode to the mode specified
-	 *
-	 * @param device The device to change temperature
-	 * @param mode The desired mode of operation, heat_only, cool_only, auto
-	 */
-	public void setThermostatMode(IWinkDevice device, String mode) {
-		Map<String, String> updatedState = new HashMap<String, String>();
-		if (mode.equals("Cool")) {
-			updatedState.put("mode", String.valueOf("cool_only"));
-		} else if (mode.equals("Heat")) {
-			updatedState.put("mode", String.valueOf("heat_only"));
-		} else if (mode.equals("Auto")) {
-			updatedState.put("mode", String.valueOf("auto"));
-		} else {
-			// unknown mode.
-			logger.warn("Detected unknown wink:thermostat mode '{}'", mode);
-		}
-
-		logger.debug("Setting new mode to {}", mode);
-		this.setDesiredState(device, updatedState);
-	}
-
 }

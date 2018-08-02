@@ -11,12 +11,9 @@ package org.openhab.binding.wink.client;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,47 +91,15 @@ public class JsonWinkDevice implements IWinkDevice {
 	}
 
 	private Map<String, String> toMap(JsonObject json) {
-		return new Gson().fromJson(json, new TypeToken<HashMap<String, String>>() {
+		Map<String, Object> theMap = new Gson().fromJson(json, new TypeToken<HashMap<String, Object>>() {
 		}.getType());
-	}
 
-	@Override
-	public Map<String, String> getCurrentStateComplexJson() {
-		try
-		{
-			JsonObject data = json.get("last_reading").getAsJsonObject();
-			Map<String, String> theMap = new HashMap<String, String>();
-			Set<Entry<String, JsonElement>> entrySet = data.entrySet();
-			for (Map.Entry<String, JsonElement> entry : entrySet) {
-				if (entry.getValue().isJsonArray()) {
-					// If it is a json array, iterate thru the items and add them as comma separated strings.
-					// This is the item that does not parse correctly in the toMap() call above.
-					String theValues = "";
-					for (JsonElement element : entry.getValue().getAsJsonArray()) {
-						if (element.isJsonNull()) {
-							theValues += "null,";
-							continue;
-						}
-						theValues += element.getAsString() + ",";
-					}
-					theMap.put(entry.getKey(), theValues.replaceFirst(",$", "")); // Remove trailing ','
-					logger.debug("json data: {}:{}", entry.getKey(), theValues.replaceFirst(",$", ""));
-					continue;
-				}
-
-				if (entry.getValue().isJsonNull()) {
-					theMap.put(entry.getKey(), "null");
-					continue;
-				}
-
-				theMap.put(entry.getKey(), entry.getValue().getAsString());
-				logger.debug("json data2: {}:{}", entry.getKey(), entry.getValue().getAsString());
-			}
-			return theMap;
-		} catch (RuntimeException e) {
-			logger.error("getCurrentStateComplexJson threw: {}", e.getMessage());
-			return null;
+		Map<String, String> mapString = new HashMap<String,String>();
+        for(Map.Entry entry : theMap.entrySet()){
+			mapString.put(entry.getKey().toString(), entry.getValue() == null ? null : entry.getValue().toString());
 		}
+
+		return mapString;
 	}
 
 	@Override

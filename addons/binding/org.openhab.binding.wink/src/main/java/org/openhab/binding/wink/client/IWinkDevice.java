@@ -53,13 +53,6 @@ public interface IWinkDevice {
     public Map<String, String> getDesiredState();
 
     /**
-     * The current state of the device
-     *
-     * @return An map of state parameters and values for the device parsed from slightly more complex Json
-     */
-    public Map<String, String> getCurrentStateComplexJson();
-
-    /**
      * Returns the pubnub subscriber key. Pubnub is used to communicate device events to
      * the class
      *

@@ -24,9 +24,8 @@ public class WinkAuthenticationService {
      */
     public static synchronized IWinkAuthenticationService getInstance() {
         if (instance == null) {
-            if (instance == null) {
-                instance = new DummyService();
-            }
+            // Missing the factory to get the correct Service???
+            instance = new DummyService();
         }
         return instance;
     }

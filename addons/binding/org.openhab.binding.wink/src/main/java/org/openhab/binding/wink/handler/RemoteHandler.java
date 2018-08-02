@@ -38,9 +38,4 @@ public class RemoteHandler extends WinkBaseThingHandler {
     protected void updateDeviceState(IWinkDevice device) {
         // noop
     }
-	
-	@Override
-	protected boolean connectionStatus(IWinkDevice device){
-		return getDevice().getCurrentState().get("connection").equals("true");
-	}
 }

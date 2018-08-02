@@ -11,6 +11,7 @@ package org.openhab.binding.wink.handler;
 import static org.openhab.binding.wink.WinkBindingConstants.*;
 
 import java.util.Map;
+import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -42,6 +43,8 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 
 	@Override
 	public void handleWinkCommand(ChannelUID channelUID, Command command) {
+		logger.debug("Thermostat handleWinkCommand ChannelUID: {}", channelUID.getId());
+		logger.debug("Thermostat handleWinkCommand command instanceof: {}", command.getClass().getName());
 		if (command instanceof RefreshType) {
 			logger.debug("Refreshing state");
 			updateDeviceState(getDevice());
@@ -66,19 +69,54 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 			}
 		}
 	}
-	
-	@Override
-	protected boolean connectionStatus(IWinkDevice device){
-		Map<String, String> jsonData = getDevice().getCurrentStateComplexJson();
-		return jsonData.get("connection").equals("true");
-	}
 
 	private void setDesiredTemperature(float temperature) {
-		bridgeHandler.setThermostatTemperature(getDevice(), temperature);
+		Map<String, String> updatedState = new HashMap<String, String>();
+		Map<String, String> jsonData = getDevice().getCurrentState();
+
+		String units = "f";
+		if (jsonData.get("units") != null && !jsonData.get("units").equals("null")) {
+			units = jsonData.get("units");
+		}
+
+		float desiredTemperature = temperature;
+		if (units.equals("f")) {
+			// Convert to Celcius before setting new temp.
+			desiredTemperature = (desiredTemperature - 32) / 1.8f;
+		}
+
+		if (jsonData.get("mode") != null && !jsonData.get("mode").equals("null")) {
+			String currentOperationMode = jsonData.get("mode");
+			if (currentOperationMode.equals("cool_only")) {
+				updatedState.put("max_set_point", String.valueOf(desiredTemperature));
+			} else if (currentOperationMode.equals("heat_only")) {
+				updatedState.put("min_set_point", String.valueOf(desiredTemperature));
+			} else { // auto
+				// Set them both the same.
+				updatedState.put("min_set_point", String.valueOf(desiredTemperature));
+				updatedState.put("max_set_point", String.valueOf(desiredTemperature));
+			}
+
+			logger.debug("Setting new temperature to {}", desiredTemperature);
+			bridgeHandler.setDesiredState(getDevice(), updatedState);
+		}
 	}
 
 	private void setDesiredMode(String mode) {
-		bridgeHandler.setThermostatMode(getDevice(), mode);
+		Map<String, String> updatedState = new HashMap<String, String>();
+		if (mode.equals("Cool")) {
+			updatedState.put("mode", String.valueOf("cool_only"));
+		} else if (mode.equals("Heat")) {
+			updatedState.put("mode", String.valueOf("heat_only"));
+		} else if (mode.equals("Auto")) {
+			updatedState.put("mode", String.valueOf("auto"));
+		} else {
+			// unknown mode.
+			logger.warn("Detected unknown wink:thermostat mode '{}'", mode);
+		}
+
+		logger.debug("Setting new mode to {}", mode);
+		bridgeHandler.setDesiredState(getDevice(), updatedState);
 	}
 
 	private void delayedUpdateState() {
@@ -93,14 +131,14 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 
 	@Override
 	protected WinkSupportedDevice getDeviceType() {
-		logger.error("Its a thermostat!");
+		logger.debug("Its a thermostat!");
 		return WinkSupportedDevice.THERMOSTAT;
 	}
 
 	@Override
 	protected void updateDeviceState(IWinkDevice device) {
-		logger.error("Updating Thermostat-=-=-=-=-=-=-");
-		Map<String, String> jsonData = device.getCurrentStateComplexJson();
+		logger.debug("Updating Thermostat-=-=-=-=-=-=-");
+		Map<String, String> jsonData = device.getCurrentState();
 		Map<String, String> jsonDataDesired = device.getDesiredState();
 
 		String units = "f";
@@ -114,23 +152,22 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 				temperature = temperature * 1.8f + 32;
 			}
 			updateState(CHANNEL_THERMOSTAT_CURRENTTEMPERATURE, new DecimalType(temperature));
-			logger.error("Updated CHANNEL_THERMOSTAT_CURRENTTEMPERATURE-=-=-=-=-=-=-");
+			logger.debug("Updated CHANNEL_THERMOSTAT_CURRENTTEMPERATURE-=-=-=-=-=-=-");
 		}
 
-		// For the channels the user changes, I need to take into account the desired data as well.
 		if (jsonData.get("mode") != null && !jsonData.get("mode").equals("null")) {
-			String desiredOperationMode = jsonDataDesired.get("mode");
+			//String desiredOperationMode = jsonDataDesired.get("mode");
 			String currentOperationMode = jsonData.get("mode");
 			String currentOperationModePretty = "";
 			float currentSetPoint = 0.0f;
 			float minSet = Float.valueOf(jsonData.get("min_set_point"));
 			float maxSet = Float.valueOf(jsonData.get("max_set_point"));
-			float minSetDesired = Float.valueOf(jsonDataDesired.get("min_set_point"));
-			float maxSetDesired = Float.valueOf(jsonDataDesired.get("max_set_point"));
+			//float minSetDesired = Float.valueOf(jsonDataDesired.get("min_set_point"));
+			//float maxSetDesired = Float.valueOf(jsonDataDesired.get("max_set_point"));
 			logger.debug(
 					"Updating State for set point and set mode. current mode '{}', desired mode '{}',"
 							+ " current min '{}', desired min '{}', current max '{}', desired max '{}'",
-					currentOperationMode, desiredOperationMode, minSet, minSetDesired, maxSet, maxSetDesired);
+					currentOperationMode, ""/*desiredOperationMode*/, minSet, ""/*minSetDesired*/, maxSet, ""/*maxSetDesired*/);
 			if (currentOperationMode.equals("cool_only")) {
 				currentSetPoint = maxSet;
 				currentOperationModePretty = "Cool";
@@ -149,8 +186,8 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 
 			updateState(CHANNEL_THERMOSTAT_CURRENTSETPOINT, new DecimalType(currentSetPoint));
 			updateState(CHANNEL_THERMOSTAT_CURRENTMODE, new StringType(currentOperationModePretty));
-			logger.error("Updated CHANNEL_THERMOSTAT_CURRENTSETPOINT-=-=-=-=-=-=-");
-			logger.error("Updated CHANNEL_THERMOSTAT_CURRENTMODE-=-=-=-=-=-=-");
+			logger.debug("Updated CHANNEL_THERMOSTAT_CURRENTSETPOINT-=-=-=-=-=-=-");
+			logger.debug("Updated CHANNEL_THERMOSTAT_CURRENTMODE-=-=-=-=-=-=-");
 		}
 
 		if (jsonData.get("smart_temperature") != null && !jsonData.get("smart_temperature").equals("null")) {
@@ -159,7 +196,7 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 				smartTemperature = smartTemperature * 1.8f + 32;
 			}
 			updateState(CHANNEL_THERMOSTAT_SMARTTEMPERATURE, new DecimalType(smartTemperature));
-			logger.error("Updated CHANNEL_THERMOSTAT_SMARTTEMPERATURE-=-=-=-=-=-=-");
+			logger.debug("Updated CHANNEL_THERMOSTAT_SMARTTEMPERATURE-=-=-=-=-=-=-");
 		}
 
 		if (jsonData.get("external_temperature") != null && !jsonData.get("external_temperature").equals("null")) {
@@ -173,7 +210,7 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 		if (jsonData.get("humidity") != null && !jsonData.get("humidity").equals("null")) {
 			final Float humidity = Float.valueOf(jsonData.get("humidity"));
 			updateState(CHANNEL_THERMOSTAT_HUMIDITY, new DecimalType(humidity));
-			logger.error("Updated CHANNEL_THERMOSTAT_HUMIDITY-=-=-=-=-=-=-");
+			logger.debug("Updated CHANNEL_THERMOSTAT_HUMIDITY-=-=-=-=-=-=-");
 		}
 
 		if (jsonData.get("connection") != null && !jsonData.get("connection").equals("null")) {
@@ -202,7 +239,7 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 		if (jsonData.get("fan_active") != null && !jsonData.get("fan_active").equals("null")) {
 			final boolean fanState = Boolean.valueOf(jsonData.get("fan_active"));
 			updateState(CHANNEL_THERMOSTAT_FANACTIVE, fanState ? OnOffType.ON : OnOffType.OFF);
-			logger.error("Updated CHANNEL_THERMOSTAT_FANACTIVE-=-=-=-=-=-=-");
+			logger.debug("Updated CHANNEL_THERMOSTAT_FANACTIVE-=-=-=-=-=-=-");
 		}
 
 		if (jsonData.get("last_error") != null && !jsonData.get("last_error").equals("null")) {
@@ -232,6 +269,6 @@ public class ThermostatHandler extends WinkBaseThingHandler {
 		}
 
 		updateState(CHANNEL_THERMOSTAT_RUNNINGMODE, new StringType(runningMode));
-		logger.error("All Done Updating Thermostat-=-=-=-=-=-=-");
+		logger.debug("All Done Updating Thermostat-=-=-=-=-=-=-");
 	}
 }

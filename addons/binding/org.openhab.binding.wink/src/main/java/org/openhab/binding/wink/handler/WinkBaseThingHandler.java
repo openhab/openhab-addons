@@ -65,18 +65,20 @@ public abstract class WinkBaseThingHandler extends BaseThingHandler {
                     "UUID must be specified in Config");
         } else {
             try {
-                if (connectionStatus(getDevice())) {
-                    updateStatus(ThingStatus.ONLINE);
-                    updateDeviceState(getDevice());
-                    registerToPubNub();
+                    if (getDevice().getCurrentState().get("connection").equals("true")) {
+                        updateStatus(ThingStatus.ONLINE);
+                        logger.debug("Thing is online, calling updateDeviceState()");
+                        updateDeviceState(getDevice());
+                        logger.debug("updateDeviceState() returned.  Calling registerToPubNub");
+                        registerToPubNub();
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device Not Connected");
                 }
             } catch (AuthenticationException e) {
-                logger.error("Unable to initialize device: {}", e.getMessage());
+                logger.error("Auth Exception, Unable to initialize device {}: {}", getThing(), e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } catch (RuntimeException e) {
-                logger.error("Unable to initialize device: {}", e.getMessage());
+                logger.error("RuntimeException, Unable to initialize device {}: {}", getThing(), e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -84,6 +86,7 @@ public abstract class WinkBaseThingHandler extends BaseThingHandler {
         pollingJob = this.scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
+                logger.debug("Polling device: {}", getDevice().toString());
                 updateDeviceState(getDevice());
             }
         }, 0, 300, TimeUnit.SECONDS);
@@ -118,8 +121,6 @@ public abstract class WinkBaseThingHandler extends BaseThingHandler {
      * @param command
      */
     protected abstract void handleWinkCommand(ChannelUID channelUID, Command command);
-
-	protected abstract boolean connectionStatus(IWinkDevice device);
 	
     @Override
     public void channelLinked(ChannelUID channelUID) {
@@ -127,12 +128,12 @@ public abstract class WinkBaseThingHandler extends BaseThingHandler {
             for (Channel channel : getThing().getChannels()) {
                 if (channelUID.equals(channel.getUID())) {
                     updateDeviceState(getDevice());
-                    logger.debug("Channel {} Linked", channelUID.getId());
+                    logger.debug("Channel: {} Linked for device: {}", channelUID.getId(), getDevice().toString());
                     break;
                 }
             }
         } catch (AuthenticationException e) {
-            logger.error("Unable to process channel link: {}", e.getMessage());
+            logger.error("Unable to process channel link: {}, for device: {}", e.getMessage(), getDevice().toString());
         }
     }
 
@@ -178,6 +179,7 @@ public abstract class WinkBaseThingHandler extends BaseThingHandler {
                 @Override
                 public void message(PubNub pubnub, PNMessageResult message) {
                     JsonParser parser = new JsonParser();
+                    logger.debug("PubNub.message string to be parsed by json: {}", message.getMessage().getAsString());
                     JsonObject jsonMessage = parser.parse(message.getMessage().getAsString()).getAsJsonObject();
                     IWinkDevice device = new JsonWinkDevice(jsonMessage);
                     logger.debug("pubnub.addListener: Received update from device: {}", device);
@@ -186,6 +188,7 @@ public abstract class WinkBaseThingHandler extends BaseThingHandler {
 
                 @Override
                 public void presence(PubNub pubnub, PNPresenceEventResult presence) {
+                    logger.debug("pubnub.addListener::presence() from device: {}", device);
                 }
 
                 @Override
