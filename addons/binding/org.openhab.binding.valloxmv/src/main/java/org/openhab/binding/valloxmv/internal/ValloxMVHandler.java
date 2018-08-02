@@ -12,15 +12,12 @@ import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.Quantity;
-import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -59,6 +56,7 @@ public class ValloxMVHandler extends BaseThingHandler {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             if (lastUpdate > System.currentTimeMillis() + updateInterval * 1000) {
@@ -90,48 +88,36 @@ public class ValloxMVHandler extends BaseThingHandler {
                     valloxSendSocket.request(null, null);
                 }
             } else if (ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE.equals(channelUID.getId())) {
-                QuantityType<Dimensionless> quantity = commandToQuantityType(command, SmartHomeUnits.PERCENT);
-                if (quantity == null) {
-                    return;
+                if (command instanceof QuantityType) {
+                    QuantityType<Dimensionless> quantity = (QuantityType<Dimensionless>) command;
+                    valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
+                    valloxSendSocket.request(null, null);
                 }
-                valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
-                valloxSendSocket.request(null, null);
             } else if (ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE.equals(channelUID.getId())) {
-                QuantityType<Dimensionless> quantity = commandToQuantityType(command, SmartHomeUnits.PERCENT);
-                if (quantity == null) {
-                    return;
+                if (command instanceof QuantityType) {
+                    QuantityType<Dimensionless> quantity = (QuantityType<Dimensionless>) command;
+                    valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
+                    valloxSendSocket.request(null, null);
                 }
-                valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
-                valloxSendSocket.request(null, null);
             } else if (ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING.equals(channelUID.getId())) {
-                QuantityType<Dimensionless> quantity = commandToQuantityType(command, SmartHomeUnits.PERCENT);
-                if (quantity == null) {
-                    return;
+                if (command instanceof QuantityType) {
+                    QuantityType<Dimensionless> quantity = (QuantityType<Dimensionless>) command;
+                    valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
+                    valloxSendSocket.request(null, null);
                 }
-                valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
-                valloxSendSocket.request(null, null);
             } else if (ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET.equals(channelUID.getId())) {
-                // Convert temperatur to milli degree Kelvin
-                QuantityType<Temperature> quantity = commandToQuantityType(command, SIUnits.CELSIUS)
-                        .toUnit(SmartHomeUnits.KELVIN);
-                if (quantity == null) {
-                    return;
+                if (command instanceof QuantityType) {
+                    // Convert temperature to millidegree Kelvin
+                    QuantityType<Temperature> quantity = ((QuantityType<Temperature>) command)
+                            .toUnit(SmartHomeUnits.KELVIN);
+                    if (quantity == null) {
+                        return;
+                    }
+                    int milliKelvin = quantity.multiply(new BigDecimal(100)).intValue();
+                    valloxSendSocket.request(channelUID, Integer.toString(milliKelvin));
+                    valloxSendSocket.request(null, null);
                 }
-                int milliKelvin = quantity.multiply(new BigDecimal(100)).intValue();
-                valloxSendSocket.request(channelUID, Integer.toString(milliKelvin));
-                valloxSendSocket.request(null, null);
             }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected <U extends Quantity<U>> QuantityType<U> commandToQuantityType(Command command, Unit<U> defaultUnit) {
-        if (command instanceof QuantityType) {
-            return (QuantityType<U>) command;
-        } else if (command instanceof Number) {
-            return new QuantityType<U>((Number) command, defaultUnit);
-        } else {
-            return null;
         }
     }
 
