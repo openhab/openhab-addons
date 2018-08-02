@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.nest.handler;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collection;
@@ -122,11 +121,15 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestThingD
     }
 
     @SuppressWarnings("unchecked")
-    protected <U extends Quantity<U>> QuantityType<U> commandToQuantityType(Command command, Unit<U> defaultUnit) {
+    protected @Nullable <U extends Quantity<U>> QuantityType<U> commandToQuantityType(Command command,
+            Unit<U> defaultUnit) {
         if (command instanceof QuantityType) {
             return (QuantityType<U>) command;
+        } else if (command instanceof Number) {
+            return new QuantityType<U>((Number) command, defaultUnit);
+        } else {
+            return null;
         }
-        return new QuantityType<U>(new BigDecimal(command.toString()), defaultUnit);
     }
 
     @Override
