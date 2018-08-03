@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://purl.org/atom/ns#" version="0.3">
+  <title>ExampleChannel</title>
+  <link rel = "alternate" href="http://example.com/" />
+  <tagline>My example channel</tagline>
+  <entry>
+    <title>News for September the Second</title>
+    <link rel = "alternate" href="http://example.com/2002/09/01" />
+    <author>
+      <name />
+    </author>
+    <id>http://example.com/2002/09/01</id>
+    <summary type = "text/html" mode="escaped">
+      other things happened today
+    </summary>
+  </entry>
+  <entry>
+    <title>News for September the First</title>
+    <link rel ="alternate" href="http://example.com/2002/09/02" />
+    <author>
+      <name />
+    </author>
+    <id>http://example.com/2002/09/02</id>
+  </entry>
+</feed>

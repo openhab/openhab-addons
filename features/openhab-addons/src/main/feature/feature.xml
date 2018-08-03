@@ -617,6 +617,12 @@
         <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.imperihome/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-transform-feed" description="Feed Transformation Service" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-feed</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.transform.feed/${project.version}</bundle>
+    </feature>
+
     <!-- voice -->
 
 <!--    <feature name="openhab-voice-kaldi" description="Kaldi Speech-to-Text" version="${project.version}">

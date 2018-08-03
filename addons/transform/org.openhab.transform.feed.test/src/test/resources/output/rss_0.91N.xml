@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rss PUBLIC "-//Netscape Communications//DTD RSS 0.91//EN" "http://my.netscape.com/publish/formats/rss-0.91.dtd">
+<rss version="0.91">
+  <channel>
+    <title>Example Channel</title>
+    <link>http://example.com/</link>
+    <description>My example channel</description>
+    <language>en-us</language>
+    <item>
+      <title>News for September the Second</title>
+      <link>http://example.com/2002/09/01</link>
+      <description>other things happened today</description>
+    </item>
+    <item>
+      <title>News for September the First</title>
+      <link>http://example.com/2002/09/02</link>
+    </item>
+  </channel>
+</rss>

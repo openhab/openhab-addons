@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/">
+  <channel rdf:about="http://example.com/">
+    <title>Example Channel</title>
+    <link>http://example.com/</link>
+    <description>My example channel</description>
+    <items>
+      <rdf:Seq>
+        <rdf:li rdf:resource="http://example.com/2002/09/01" />
+        <rdf:li rdf:resource="http://example.com/2002/09/02" />
+      </rdf:Seq>
+    </items>
+  </channel>
+  <item rdf:about="http://example.com/2002/09/01">
+    <title>News for September the Second</title>
+    <link>http://example.com/2002/09/01</link>
+    <description>other things happened today</description>
+  </item>
+  <item rdf:about="http://example.com/2002/09/02">
+    <title>News for September the First</title>
+    <link>http://example.com/2002/09/02</link>
+  </item>
+</rdf:RDF>

@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Fragment-Host: org.openhab.transform.feed
+Bundle-Name: Feed Transformation Service Tests
+Bundle-SymbolicName: org.openhab.transform.feed.test;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.1.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ClassPath: .
+Import-Package: com.google.common.base,
+ org.apache.commons.io,
+ org.junit,
+ org.hamcrest;core=split
+
+
