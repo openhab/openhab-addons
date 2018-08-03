@@ -262,6 +262,6 @@ public class ServiceContext {
      */
     public boolean isExposeNeeoBinding() {
         final Object cfgExpose = getComponentContext().getProperties().get(NeeoConstants.CFG_EXPOSENEEOBINDING);
-        return cfgExpose == null ? false : Boolean.parseBoolean(cfgExpose.toString());
+        return cfgExpose == null ? true : Boolean.parseBoolean(cfgExpose.toString());
     }
 }

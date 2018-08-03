@@ -189,7 +189,7 @@ public class NeeoDeviceHandler extends BaseThingHandler {
             NeeoUtil.checkInterrupt();
             final NeeoBrainApi brainApi = getNeeoBrainApi();
             if (brainApi == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Cannot find the NEEO Brain API");
                 return;
             }
 

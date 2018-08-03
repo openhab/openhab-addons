@@ -412,6 +412,13 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
         }
     }
 
+    /**
+     * Helper method to validate that the specific item wasn't null and convert it's type to a non-nullable type
+     *
+     * @param t the type to validate
+     * @param name a non-null, non-empty name
+     * @return the non-null type
+     */
     private static <T> T validate(@Nullable T t, String name) {
         if (t == null) {
             throw new IllegalStateException(name + " was not instantiated");
