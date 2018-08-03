@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Neeo Transport
+Bundle-Name: Neeo Integration
 Bundle-SymbolicName: org.openhab.io.neeo;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier

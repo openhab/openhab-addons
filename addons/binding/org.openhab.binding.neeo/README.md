@@ -1,6 +1,6 @@
-# Neeo Binding
+# NEEO Binding
 
-This binding will help openHAB control a NEEO smart remote (specifically the NEEO Brain).
+This binding will discovery and control a NEEO Brain/Remote combination.
 NEEO is a smart home solution that includes an IP based remote.
 More information can be found at [NEEO](neeo.com) or in the forums at [NEEO Planet](https://planet.neeo.com).
 **This binding was not developed by NEEO** - so please don't ask questions on the NEEO forums.

@@ -38,7 +38,11 @@ import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeRegistry;
 import org.eclipse.smarthome.core.thing.type.ThingTypeRegistry;
 import org.eclipse.smarthome.io.transport.mdns.MDNSClient;
+import org.openhab.io.neeo.internal.AbstractServlet;
 import org.openhab.io.neeo.internal.NeeoApi;
+import org.openhab.io.neeo.internal.NeeoBrainServlet;
+import org.openhab.io.neeo.internal.NeeoConstants;
+import org.openhab.io.neeo.internal.NeeoDashboardServlet;
 import org.openhab.io.neeo.internal.NeeoUtil;
 import org.openhab.io.neeo.internal.ServiceContext;
 import org.openhab.io.neeo.internal.discovery.BrainDiscovery;
@@ -57,8 +61,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The main entry point for the transport service. The transport service will listen for brain broadcasts and create a
- * transport for that brain (in addition to starting up the dashboard tile)
+ * The main entry point for the integration service. The integration service will listen for brain broadcasts, connect
+ * to the brain and handle communication with the brain (in addition to starting up the dashboard tile)
  *
  * @author Tim Roberts - Initial Contribution
  */
@@ -66,7 +70,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = { org.eclipse.smarthome.core.events.EventSubscriber.class,
         NetworkAddressChangeListener.class }, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true, property = {
                 "service.pid=org.openhab.io.neeo.NeeoService", "service.config.description.uri=io:neeo",
-                "service.config.label=NEEO Transport", "service.config.category=io" }
+                "service.config.label=NEEO Integration", "service.config.category=io" }
 
 )
 public class NeeoService implements EventSubscriber, NetworkAddressChangeListener {

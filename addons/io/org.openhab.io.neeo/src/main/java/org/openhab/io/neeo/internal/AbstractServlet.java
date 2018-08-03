@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.io.neeo;
+package org.openhab.io.neeo.internal;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,8 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.events.Event;
 import org.eclipse.smarthome.core.events.EventFilter;
-import org.openhab.io.neeo.internal.NeeoUtil;
-import org.openhab.io.neeo.internal.ServiceContext;
+import org.openhab.io.neeo.NeeoService;
 import org.openhab.io.neeo.internal.servletservices.ServletService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -195,7 +194,7 @@ public abstract class AbstractServlet extends HttpServlet implements AutoCloseab
      *
      * @param event the non-null event
      */
-    void receive(Event event) {
+    public void receive(Event event) {
         Objects.requireNonNull(event, "event cannot be null");
 
         for (ServletService target : services) {

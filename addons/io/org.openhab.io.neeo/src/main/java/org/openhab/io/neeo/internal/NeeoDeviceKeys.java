@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.io.neeo.NeeoConstants;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
 import org.openhab.io.neeo.internal.net.HttpRequest;
 import org.openhab.io.neeo.internal.net.HttpResponse;

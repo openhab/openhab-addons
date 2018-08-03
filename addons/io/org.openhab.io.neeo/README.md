@@ -1,18 +1,18 @@
-# openHAB NEEO Transport
+# openHAB NEEO Integration
 
-This transport will allow openHAB things/items to be exposed to the NEEO Brain and allow the NEEO smart remote to control them.
+This integration will allow openHAB things/items to be exposed to the NEEO Brain and allow the NEEO smart remote to control them.
 NEEO is a smart home solution that includes an IP based remote.
 More information can be found at [NEEO](neeo.com) or in the forums at [NEEO Planet](planet.neeo.com).
-**This transport was not developed by NEEO** - so please don't ask questions on the NEEO forums.
+**This integration was not developed by NEEO** - so please don't ask questions on the NEEO forums.
 
-The openHAB NEEO transport allows mapping of openHAB things/item to a NEEO device/capabilities (see Mappings below).
-Additionally, this transport provides full two-way communication between an openHAB instance and a NEEO Brain.
+The openHAB NEEO integration allows mapping of openHAB things/item to a NEEO device/capabilities (see Mappings below).
+Additionally, this integration provides full two-way communication between an openHAB instance and a NEEO Brain.
 
-This transport compliments the NEEO binding by exposing a brain's devices to all other brains as well (allowing you to create multi-brain recipes).
+This integration compliments the NEEO binding by exposing a brain's devices to all other brains as well (allowing you to create multi-brain recipes).
 
 ## Features
 
-The openHAB NEEO Transport will provide the following:
+The openHAB NEEO Integration will provide the following:
 
 * Automatic discovery of NEEO brains on the network and automatic registering of the openHAB as an SDK.
 * A NEEO dashboard tile that will show the status of NEEO Brain connections and provide the ability to customize the mapping between openHAB things/item and NEEO device/capabilities.
@@ -34,19 +34,19 @@ Narrow your search to a specific item to see if you were hitting that search lim
 
 ### IP Address
 
-Whatever openHAB (with this transport) runs on will need a static IP address assigned to it.
-The transport will register the IP address with the brain and the brain will callback to the IP address.
-If your IP address changes, the brain will no longer be able to reach the transport and operation will fail (such as a search or receiving any updates in NEEO).
+Whatever openHAB (with this integration) runs on will need a static IP address assigned to it.
+The integration will register the IP address with the brain and the brain will callback to the IP address.
+If your IP address changes, the brain will no longer be able to reach the integration and operation will fail (such as a search or receiving any updates in NEEO).
 
 ### openHAB Primary Address
 
-This transport will use the primary address defined in openHAB to register itself as an SDK with the NEEO Brain (allowing the NEEO Brain to discover your things and to callback to openHAB to retrieve item values).
+This integration will use the primary address defined in openHAB to register itself as an SDK with the NEEO Brain (allowing the NEEO Brain to discover your things and to callback to openHAB to retrieve item values).
 If you change the primary address option, this binding will de-register the old address and re-register the new address with the NEEO Brain.
 
 ## Mappings
 
 For openHAB things/items to appear on the NEEO system, you must create mappings between openHAB and NEEO.
-To accomplish this, go to the main openHAB dashboard (typically http://localhost:8080/start/index) and press the NEEO Transport dashboard tile.
+To accomplish this, go to the main openHAB dashboard (typically http://localhost:8080/start/index) and press the NEEO Integration dashboard tile.
 This tile will open up a screen similar to the following
 
 ![Configuration](doc/dashboardmain.png)
@@ -75,8 +75,8 @@ You will be prompted for the Brain's IP address and once entered, the brain shou
 4. The 'trash' icon will disconnect from the related Brain.
 This will allow you to remove a stale (no longer used) Brain or remove the Brain to be rediscovered again (which may fix a communication issue with the brain).
 
-Please note the transport will properly handle IP address changes.
-If the brain is assigned a new IP address, the transport will reconnect to the new IP address change when it receives the notification.
+Please note the integration will properly handle IP address changes.
+If the brain is assigned a new IP address, the integration will reconnect to the new IP address change when it receives the notification.
 You can force the issue immediately by doing an "Add Brain" with the new IP address.
 
 ### Things Tab
@@ -260,7 +260,7 @@ The following chart shows what openHAB command types are supported for each NEEO
 ##### HSBType
 
 HSBType has three attributes - Hue, Brightness and Saturation.
-This type is special in that the transport will create 4 capabilities for it:
+This type is special in that the integration will create 4 capabilities for it:
 
 1.  The first capability will you to control the on/off and will be named simply "item".
 2.  The second capability will allow you to control the HUE and will be named "item (Hue)".
@@ -325,13 +325,13 @@ The first instance is assigned to a text label that will then be formatted with 
 The second instance binds the item to a switch that uses the hard volume buttons on the remote.
 When the volumes keys are pressed, a "INCREASE" or "DECREASE" will be sent to the item.
 
-### Transport Storage
+### Integration Storage
 
-All data used by the transport is stored under the "userdata/neeo" directory  (please note that this directory is shared with the NEEO binding).
+All data used by the integration is stored under the "userdata/neeo" directory  (please note that this directory is shared with the NEEO binding).
 You may backup and restore these files as needed.
 If you restore the directory, you'll likely need to restart openHAB for the new file contents to be applied.
 
-There are two files being stored by the transport:
+There are two files being stored by the integration:
 
 1.  discoveredbrains.json will contain the brains that are discovered or manually added from the 'brains' tab.
 As brains are discovered, manually added or removed, this file will be updated.
@@ -380,14 +380,14 @@ The following changes have occurred:
 
 ## Configuration
 
-After installing this add-on, you will find configuration options in the Paper UI under _Configuration->Services->IO->NEEO Transport_:
+After installing this add-on, you will find configuration options in the Paper UI under _Configuration->Services->IO->NEEO Integration_:
 
 ![Configuration](doc/cfg.png)
 
 Alternatively, you can configure the settings in the file `conf/services/neeo.cfg`:
 
 ```
-############################## openHAB NEEO Transport #############################
+############################## openHAB NEEO Integration #############################
 
 # A boolean value describing whether to expose all things/items
 # by default or not.

@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.binding.BindingInfo;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.type.ThingType;
-import org.openhab.io.neeo.NeeoConstants;
 import org.openhab.io.neeo.internal.models.NeeoDevice;
 import org.openhab.io.neeo.internal.models.TokenScore;
 import org.slf4j.Logger;

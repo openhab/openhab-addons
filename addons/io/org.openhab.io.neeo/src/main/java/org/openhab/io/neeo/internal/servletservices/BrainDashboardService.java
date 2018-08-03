@@ -18,8 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.io.neeo.NeeoBrainServlet;
 import org.openhab.io.neeo.NeeoService;
+import org.openhab.io.neeo.internal.NeeoBrainServlet;
 import org.openhab.io.neeo.internal.NeeoUtil;
 import org.openhab.io.neeo.internal.models.BrainStatus;
 import org.openhab.io.neeo.internal.servletservices.models.BrainInfo;

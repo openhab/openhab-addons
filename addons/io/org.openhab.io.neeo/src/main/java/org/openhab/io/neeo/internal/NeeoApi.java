@@ -30,7 +30,6 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.id.InstanceUUID;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
-import org.openhab.io.neeo.NeeoConstants;
 import org.openhab.io.neeo.internal.models.NeeoAdapterRegistration;
 import org.openhab.io.neeo.internal.models.NeeoRecipe;
 import org.openhab.io.neeo.internal.models.NeeoRecipeUrls;

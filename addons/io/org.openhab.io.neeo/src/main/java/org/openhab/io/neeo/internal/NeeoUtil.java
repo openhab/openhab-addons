@@ -32,7 +32,6 @@ import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.StateDescription;
-import org.openhab.io.neeo.NeeoConstants;
 import org.openhab.io.neeo.NeeoService;
 import org.openhab.io.neeo.internal.models.ItemSubType;
 import org.openhab.io.neeo.internal.models.NeeoCapabilityType;
@@ -59,7 +58,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 /**
- * Various utility functions used by the NEEO Transport
+ * Various utility functions used by the NEEO Integration
  *
  * @author Tim Roberts - Initial Contribution
  */

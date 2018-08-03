@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
-import org.openhab.io.neeo.NeeoConstants;
 import org.openhab.io.neeo.internal.models.NeeoDevice;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannel;
 import org.openhab.io.neeo.internal.models.NeeoDeviceType;

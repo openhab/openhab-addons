@@ -12,7 +12,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The brain information class. This class will be used to communicate the brain ID or IP address between the transport
+ * The brain information class. This class will be used to communicate the brain ID or IP address between the
+ * integration
  * page and the servlet
  *
  * @author Tim Roberts - Initial Contribution

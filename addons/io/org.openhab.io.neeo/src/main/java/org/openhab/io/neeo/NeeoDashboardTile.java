@@ -10,11 +10,12 @@ package org.openhab.io.neeo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.neeo.internal.NeeoConstants;
 import org.openhab.ui.dashboard.DashboardTile;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * Implementation of the {@link DashboardTile} for the NEEO Transport
+ * Implementation of the {@link DashboardTile} for the NEEO Integration
  *
  * @author Tim Roberts - Initial Contribution
  */
@@ -24,7 +25,7 @@ public class NeeoDashboardTile implements DashboardTile {
 
     @Override
     public String getName() {
-        return "Neeo Transport";
+        return "Neeo Integration";
     }
 
     @Override

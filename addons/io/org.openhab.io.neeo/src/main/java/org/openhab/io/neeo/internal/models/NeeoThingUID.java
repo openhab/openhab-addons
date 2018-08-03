@@ -11,7 +11,7 @@ package org.openhab.io.neeo.internal.models;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.io.neeo.NeeoConstants;
+import org.openhab.io.neeo.internal.NeeoConstants;
 
 /**
  * Wrapper around a {@link ThingUID} to provide common initialization and to provide a non deprecated way to get the

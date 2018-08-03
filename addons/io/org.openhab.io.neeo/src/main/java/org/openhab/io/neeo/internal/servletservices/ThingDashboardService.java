@@ -20,8 +20,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.openhab.io.neeo.NeeoConstants;
 import org.openhab.io.neeo.NeeoService;
+import org.openhab.io.neeo.internal.NeeoConstants;
 import org.openhab.io.neeo.internal.NeeoUtil;
 import org.openhab.io.neeo.internal.ServiceContext;
 import org.openhab.io.neeo.internal.models.NeeoDevice;
@@ -110,7 +110,7 @@ public class ThingDashboardService extends DefaultServletService {
                 }
             } else if (StringUtils.equalsIgnoreCase(paths[0], "getvirtualdevice")) {
                 final NeeoThingUID uid = context.generate(NeeoConstants.VIRTUAL_THING_TYPE);
-                final NeeoDevice device = new NeeoDevice(uid, NeeoDeviceType.EXCLUDE, "NEEO Transport",
+                final NeeoDevice device = new NeeoDevice(uid, NeeoDeviceType.EXCLUDE, "NEEO Integration",
                         "New Virtual Thing", new ArrayList<>(), null, null, null, null);
                 NeeoUtil.write(resp, gson.toJson(new ReturnStatus(device)));
             } else {

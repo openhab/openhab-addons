@@ -6,10 +6,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.io.neeo;
+package org.openhab.io.neeo.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.io.neeo.internal.ServiceContext;
+import org.openhab.io.neeo.NeeoService;
 import org.openhab.io.neeo.internal.servletservices.BrainDashboardService;
 import org.openhab.io.neeo.internal.servletservices.ServletService;
 import org.openhab.io.neeo.internal.servletservices.ThingDashboardService;
@@ -34,7 +34,7 @@ public class NeeoDashboardServlet extends AbstractServlet {
      * @param servletUrl the non-empty servletUrl
      * @param context the non-null context
      */
-    NeeoDashboardServlet(NeeoService service, String servletUrl, ServiceContext context) {
+    public NeeoDashboardServlet(NeeoService service, String servletUrl, ServiceContext context) {
         super(context, servletUrl, new ServletService[] { new BrainDashboardService(service),
                 new ThingDashboardService(service, context) });
     }

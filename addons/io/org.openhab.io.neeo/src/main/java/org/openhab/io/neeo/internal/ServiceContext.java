@@ -22,7 +22,6 @@ import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeRegistry;
 import org.eclipse.smarthome.core.thing.type.ThingTypeRegistry;
 import org.eclipse.smarthome.io.transport.mdns.MDNSClient;
-import org.openhab.io.neeo.NeeoConstants;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.http.HttpService;

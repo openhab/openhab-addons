@@ -6,20 +6,16 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.io.neeo;
+package org.openhab.io.neeo.internal;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.io.neeo.internal.NeeoApi;
-import org.openhab.io.neeo.internal.NeeoDeviceKeys;
-import org.openhab.io.neeo.internal.NeeoUtil;
-import org.openhab.io.neeo.internal.ServiceContext;
 import org.openhab.io.neeo.internal.models.BrainStatus;
-import org.openhab.io.neeo.internal.servletservices.NeeoBrainService;
 import org.openhab.io.neeo.internal.servletservices.NeeoBrainSearchService;
+import org.openhab.io.neeo.internal.servletservices.NeeoBrainService;
 
 /**
  * This implementation of {@link AbstractServlet} will handle any requests from the NEEO Brain. The brain will ask for
@@ -38,7 +34,7 @@ public class NeeoBrainServlet extends AbstractServlet {
     private final NeeoApi api;
 
     /**
-     * Create a servlet to handle transport duties with the NEEO brain
+     * Create a servlet to handle integration duties with the NEEO brain
      *
      * @param context the non-null service context
      * @param servletUrl the non-null, non-empty servlet URL
@@ -64,8 +60,8 @@ public class NeeoBrainServlet extends AbstractServlet {
      * @return a non-null brain servlet
      * @throws IOException when an exception occurs contacting the brain
      */
-    static NeeoBrainServlet create(ServiceContext context, String servletUrl, String brainId, InetAddress ipAddress)
-            throws IOException {
+    public static NeeoBrainServlet create(ServiceContext context, String servletUrl, String brainId,
+            InetAddress ipAddress) throws IOException {
         Objects.requireNonNull(context, "context cannot be null");
         NeeoUtil.requireNotEmpty(servletUrl, "servletUrl cannot be empty");
         NeeoUtil.requireNotEmpty(brainId, "brainId cannot be empty");

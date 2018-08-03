@@ -27,7 +27,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
-import org.openhab.io.neeo.NeeoConstants;
 import org.openhab.io.neeo.internal.models.ItemSubType;
 import org.openhab.io.neeo.internal.models.NeeoCapabilityType;
 import org.openhab.io.neeo.internal.models.NeeoDevice;

@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.io.neeo;
+package org.openhab.io.neeo.internal;
 
 import java.io.File;
 
@@ -14,7 +14,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 
 /**
- * The constants class for the NEEO Transport
+ * The constants class for the NEEO Integration
  *
  * @author Tim Roberts - Initial Contribution
  */
@@ -37,7 +37,7 @@ public class NeeoConstants {
     /** As of version .51.1 - new sensor notification API - old one doesn't work */
     public static final String NEEO_FIRMWARE_0_51_1 = "0.51.1";
 
-    /** Binding ID/Thing Types for transport created things - must match app.js */
+    /** Binding ID/Thing Types for integration created things - must match app.js */
     public static final String NEEOBINDING_BINDING_ID = "neeo";
     public static final String NEEOBINDING_DEVICE_ID = NEEOBINDING_BINDING_ID + ":device";
     public static final String NEEOIO_BINDING_ID = "neeo_io";
@@ -48,7 +48,7 @@ public class NeeoConstants {
 
     /** Constants used for the Web APP */
     public static final String WEBAPP_PREFIX = "/neeo";
-    static final String WEBAPP_DASHBOARD_PREFIX = "/neeostatus";
+    public static final String WEBAPP_DASHBOARD_PREFIX = "/neeostatus";
 
     /** The MDNS type for neeo */
     public static final String NEEO_MDNS_TYPE = "_neeo._tcp.local.";
