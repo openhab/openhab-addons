@@ -44,7 +44,7 @@ public class NeeoRoomDiscoveryService extends AbstractDiscoveryService {
     private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
             .singleton(NeeoConstants.BRIDGE_TYPE_ROOM);
 
-    /** The timeout for searching the brain */
+    /** The timeout (in seconds) for searching the brain */
     private static final int SEARCH_TIME = 10;
 
     /** The brain handler that we will use */
@@ -52,7 +52,7 @@ public class NeeoRoomDiscoveryService extends AbstractDiscoveryService {
 
     /**
      * Constructs the discover service from the brain handler
-     * 
+     *
      * @param brainHandler a non-null brain handler
      */
     public NeeoRoomDiscoveryService(NeeoBrainHandler brainHandler) {

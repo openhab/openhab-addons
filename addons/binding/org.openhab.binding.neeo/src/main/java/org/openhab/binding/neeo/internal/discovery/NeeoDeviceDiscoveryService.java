@@ -46,7 +46,7 @@ public class NeeoDeviceDiscoveryService extends AbstractDiscoveryService {
     private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
             .singleton(NeeoConstants.THING_TYPE_DEVICE);
 
-    /** The timeout for searching the room */
+    /** The timeout (in seconds) for searching the room */
     private static final int SEARCH_TIME = 10;
 
     /** The room handler to search */
@@ -54,7 +54,7 @@ public class NeeoDeviceDiscoveryService extends AbstractDiscoveryService {
 
     /**
      * Constructs the discovery service from the room handler
-     * 
+     *
      * @param roomHandler a non-null room handler
      */
     public NeeoDeviceDiscoveryService(NeeoRoomHandler roomHandler) {

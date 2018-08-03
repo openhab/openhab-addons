@@ -8,10 +8,10 @@
  */
 package org.openhab.binding.neeo.handler;
 
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -51,7 +51,8 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
     @NonNullByDefault({})
     private NetworkAddressService networkAddressService;
 
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    /** The discovery services created by this class (one per room and one for each device) */
+    private final ConcurrentMap<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new ConcurrentHashMap<>();
 
     /**
      * Sets the {@link HttpService}.
@@ -133,10 +134,10 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
 
     /**
      * Helper method to register the room discovery service
-     * 
+     *
      * @param handler a non-null brain handler
      */
-    private synchronized void registerRoomDiscoveryService(NeeoBrainHandler handler) {
+    private void registerRoomDiscoveryService(NeeoBrainHandler handler) {
         Objects.requireNonNull(handler, "handler cannot be null");
         final NeeoRoomDiscoveryService discoveryService = new NeeoRoomDiscoveryService(handler);
         this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
@@ -145,10 +146,10 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
 
     /**
      * Helper method to register the device discovery service
-     * 
+     *
      * @param handler a non-null room handler
      */
-    private synchronized void registerDeviceDiscoveryService(NeeoRoomHandler handler) {
+    private void registerDeviceDiscoveryService(NeeoRoomHandler handler) {
         Objects.requireNonNull(handler, "handler cannot be null");
         final NeeoDeviceDiscoveryService discoveryService = new NeeoDeviceDiscoveryService(handler);
         this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
@@ -156,11 +157,10 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        final ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
+    protected void removeHandler(ThingHandler thingHandler) {
+        final ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
         if (serviceReg != null) {
             serviceReg.unregister();
-            discoveryServiceRegs.remove(thingHandler.getThing().getUID());
         }
     }
 }

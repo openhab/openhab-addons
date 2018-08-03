@@ -21,7 +21,7 @@ public class NeeoRecipeUrls {
 
     /**
      * The url identifier
-     * Note: this URL doesn't seme to be valid
+     * Note: this URL doesn't seem to be valid
      */
     private final String identify;
 
