@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -486,8 +487,9 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
         // The update of channels is delegated to each thing handler
         for (Thing thing : getThing().getThings()) {
-            if (thing.getHandler() != null) {
-                ((FreeboxThingHandler) thing.getHandler()).updateNetInfo(lanHostsConfiguration);
+            ThingHandler handler = thing.getHandler();
+            if (handler instanceof FreeboxThingHandler) {
+                ((FreeboxThingHandler) handler).updateNetInfo(lanHostsConfiguration);
             }
         }
 
@@ -499,8 +501,9 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
         // The update of channels is delegated to each thing handler
         for (Thing thing : getThing().getThings()) {
-            if (thing.getHandler() != null) {
-                ((FreeboxThingHandler) thing.getHandler()).updateAirPlayDevice(airPlayDevices);
+            ThingHandler handler = thing.getHandler();
+            if (handler instanceof FreeboxThingHandler) {
+                ((FreeboxThingHandler) handler).updateAirPlayDevice(airPlayDevices);
             }
         }
 

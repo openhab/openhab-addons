@@ -51,12 +51,10 @@ public class FreeboxServerDiscoveryParticipant implements MDNSDiscoveryParticipa
 
     @Override
     public ThingUID getThingUID(ServiceInfo service) {
-        if (service != null) {
-            if ((service.getType() != null) && service.getType().equals(getServiceType())
-                    && (service.getPropertyString("uid") != null)) {
-                return new ThingUID(FreeboxBindingConstants.FREEBOX_BRIDGE_TYPE_SERVER,
-                        service.getPropertyString("uid").replaceAll("[^A-Za-z0-9_]", "_"));
-            }
+        if ((service.getType() != null) && service.getType().equals(getServiceType())
+                && (service.getPropertyString("uid") != null)) {
+            return new ThingUID(FreeboxBindingConstants.FREEBOX_BRIDGE_TYPE_SERVER,
+                    service.getPropertyString("uid").replaceAll("[^A-Za-z0-9_]", "_"));
         }
         return null;
     }
