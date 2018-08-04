@@ -85,7 +85,7 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
             return super.createThing(thingTypeUID, configuration, thingUID, null);
         } else if (FreeboxBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             ThingUID newThingUID;
-            if (bridgeUID != null) {
+            if (bridgeUID != null && thingUID != null) {
                 newThingUID = new ThingUID(thingTypeUID, bridgeUID, thingUID.getId());
             } else {
                 newThingUID = thingUID;
