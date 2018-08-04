@@ -42,7 +42,7 @@ public class NAWebhookCameraEventPerson {
     @SerializedName("is_known")
     Boolean isKnown;
 
-    public Boolean IsKnown() {
+    public Boolean isKnown() {
         return isKnown;
     }
 }

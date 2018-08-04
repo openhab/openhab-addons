@@ -238,13 +238,13 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
             try {
                 switch (channelUID.getId()) {
                     case CHANNEL_SETPOINT_MODE: {
-                        String target_mode = command.toString();
-                        if (CHANNEL_SETPOINT_MODE_MANUAL.equals(target_mode)) {
+                        String targetMode = command.toString();
+                        if (CHANNEL_SETPOINT_MODE_MANUAL.equals(targetMode)) {
                             logger.info(
                                     "Switching to manual mode is done by assigning a setpoint temperature - command dropped");
                             updateState(channelUID, getSetpoint());
                         } else {
-                            pushSetpointUpdate(target_mode, null, null);
+                            pushSetpointUpdate(targetMode, null, null);
                         }
                         break;
                     }

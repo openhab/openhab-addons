@@ -85,8 +85,12 @@ public class WelcomeWebHookServlet extends HttpServlet {
     }
 
     private String inputStreamToString(HttpServletRequest req) throws IOException {
-        Scanner scanner = new Scanner(req.getInputStream()).useDelimiter("\\A");
-        return scanner.hasNext() ? scanner.next() : "";
+        String value = "";
+        try (Scanner scanner = new Scanner(req.getInputStream())) {
+            scanner.useDelimiter("\\A");
+            value = scanner.hasNext() ? scanner.next() : "";
+        }
+        return value;
     }
 
     private void setHeaders(HttpServletResponse response) {
