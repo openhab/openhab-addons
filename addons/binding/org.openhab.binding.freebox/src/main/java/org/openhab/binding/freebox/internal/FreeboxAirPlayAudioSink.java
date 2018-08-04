@@ -27,8 +27,8 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.util.ThingHandlerHelper;
-import org.openhab.binding.freebox.internal.config.FreeboxAirPlayDeviceConfiguration;
 import org.openhab.binding.freebox.handler.FreeboxThingHandler;
+import org.openhab.binding.freebox.internal.config.FreeboxAirPlayDeviceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,21 +66,21 @@ public class FreeboxAirPlayAudioSink implements AudioSink {
         this.callbackUrl = callbackUrl;
         Boolean acceptLowBitrate = (Boolean) handler.getThing().getConfiguration()
                 .get(FreeboxAirPlayDeviceConfiguration.ACCEPT_ALL_MP3);
-        this.SUPPORTED_FORMATS.add(WAV);
+        SUPPORTED_FORMATS.add(WAV);
         if (acceptLowBitrate) {
-            this.SUPPORTED_FORMATS.add(MP3);
+            SUPPORTED_FORMATS.add(MP3);
         } else {
             // Only accept MP3 bitrates >= 96 kbps
-            this.SUPPORTED_FORMATS.add(MP3_96);
-            this.SUPPORTED_FORMATS.add(MP3_112);
-            this.SUPPORTED_FORMATS.add(MP3_128);
-            this.SUPPORTED_FORMATS.add(MP3_160);
-            this.SUPPORTED_FORMATS.add(MP3_192);
-            this.SUPPORTED_FORMATS.add(MP3_224);
-            this.SUPPORTED_FORMATS.add(MP3_256);
-            this.SUPPORTED_FORMATS.add(MP3_320);
+            SUPPORTED_FORMATS.add(MP3_96);
+            SUPPORTED_FORMATS.add(MP3_112);
+            SUPPORTED_FORMATS.add(MP3_128);
+            SUPPORTED_FORMATS.add(MP3_160);
+            SUPPORTED_FORMATS.add(MP3_192);
+            SUPPORTED_FORMATS.add(MP3_224);
+            SUPPORTED_FORMATS.add(MP3_256);
+            SUPPORTED_FORMATS.add(MP3_320);
         }
-        this.SUPPORTED_FORMATS.add(OGG);
+        SUPPORTED_FORMATS.add(OGG);
     }
 
     @Override
@@ -123,9 +123,11 @@ public class FreeboxAirPlayAudioSink implements AudioSink {
                 logger.warn("We do not have any callback url, so AirPlay device cannot play the audio stream!");
             }
         }
-        try {
-            audioStream.close();
-        } catch (IOException e) {
+        if (audioStream != null) {
+            try {
+                audioStream.close();
+            } catch (IOException e) {
+            }
         }
         try {
             logger.debug("AirPlay audio sink: process url {}", url);
