@@ -108,8 +108,8 @@ public class VoiceRSSTTSService implements TTSService {
         }
         // Validate arguments
         // trim text
-        text = text.trim();
-        if ((null == text) || text.isEmpty()) {
+        String trimedText = text.trim();
+        if ((null == trimedText) || trimedText.isEmpty()) {
             throw new TTSException("The passed text is null or empty");
         }
         if (!this.voices.contains(voice)) {
@@ -129,7 +129,7 @@ public class VoiceRSSTTSService implements TTSService {
         // now create the input stream for given text, locale, format. There is
         // only a default voice
         try {
-            File cacheAudioFile = voiceRssImpl.getTextToSpeechAsFile(this.apiKey, text,
+            File cacheAudioFile = voiceRssImpl.getTextToSpeechAsFile(this.apiKey, trimedText,
                     voice.getLocale().toLanguageTag(), getApiAudioFormat(requestedFormat));
             if (cacheAudioFile == null) {
                 throw new TTSException("Could not read from VoiceRSS service");
