@@ -53,10 +53,10 @@ Players can be added via the PaperUI. All fields are then filled automatically.
 For manual configuration a player is defined as followed:
 
 ````
-Thing heos:player:pid "name" [pid="123456789", name="name", model="modelName", ipAddress="192.168.0.xxx", type="Player"] 
+Thing heos:player:pid "name" [pid="123456789", name="name", model="modelName", ipAddress="192.168.0.xxx"] 
 ````
 
-PID behind the heos:player:--- should be changed as required. Every name or value can be used. It is recommended to use the player PID. Within the configuration the PID as well as the type field is mandatory. The rest is not required.
+PID behind the heos:player:--- should be changed as required. Every name or value can be used. It is recommended to use the player PID. Within the configuration the PID is mandatory. The rest is not required.
 If the PID isn't known it can be discovered by establishing a TelNet connection (port 1255) to one player and search for available players
 (Command: heos://player/get_players)
 within the network. For further details refer to the [HEOS CLI](http://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf) specification.
@@ -67,12 +67,12 @@ within the network. For further details refer to the [HEOS CLI](http://rn.dmglob
 ### Group Configuration
 
 ```
-Thing heos:group:memberHash "name" [gid="123456789", name="name", model="modelName", ipAddress="192.168.0.xxx", type="Group", memberHash="123456789"] 
+Thing heos:group:memberHash "name" [gid="123456789", name="name", model="modelName", ipAddress="192.168.0.xxx", memberHash="123456789"] 
 ```
 
 *If group is configured by PaperUI the group UID is calculated by the Hash value of the group members*
 
-Required fields are the GID which is the PID of the group leading player and the type which is Group here.  
+Required fields are the GID which is the PID of the group leading player.  
 
 ### Defining Bridge and Players together
 
@@ -102,7 +102,7 @@ The channels have different paths if you configure our Things manual or via an U
 | Volume            | Dimmer        | Volume control / also accepts "DECREASE" & "INCREASE"                 |
 | Mute              | Switch        | Mute the Player                                                       |
 | Title             | String        | Song Title                                                            |
-| Interpret         | String        | Song Interpret                                                        |
+| Artist            | String        | Song Artist                                                           |
 | Album             | String        | Album Title                                                           |
 | Cover             | Image         | The cover of the actual song                                          |
 | Inputs            | String        | The input to be switched to. Input values from HEOS protocol          |
@@ -113,6 +113,7 @@ The channels have different paths if you configure our Things manual or via an U
 | PlayUrl           | String        | Plays a media file located at the URL                                 |
 | Shuffle           | Switch        | Switches shuffle ON or OFF                                            |
 | RepeatMode        | String        | Defines the repeat mode: Inputs are: "One" ; "All" or "Off"           |
+| Playlists         | String        | Plays a playlist. Playlists are identified by numbers (starting at 0!). List can be found in the HEOS App            |
 
 
 
@@ -130,7 +131,7 @@ Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Contro
 | Volume            | Dimmer        | Volume control / also accepts "DECREASE" & "INCREASE"                 |
 | Mute              | Switch        | Mute the Group                                                        |
 | Title             | String        | Song Title                                                            |
-| Interpret         | String        | Song Interpret                                                        |
+| Artist            | String        | Song Artist                                                           |
 | Album             | String        | Album Title                                                           |
 | Ungroup           | Switch        | Deletes the group (OFF) or generate the group again (ON)              |
 | Cover             | Image         | The cover of the actual song                                          |
@@ -142,7 +143,7 @@ Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Contro
 | PlayUrl           | String        | Plays a media file located at the URL                                 |
 | Shuffle           | Switch        | Switches shuffle ON or OFF                                            |
 | RepeatMode        | String        | Defines the repeat mode: Inputs are: "One" ; "All" or "Off"           |
-
+| Playlists         | String        | Plays a playlist. Playlists are identified by numbers (starting at 0!). List can be found in the HEOS App            |
 #### Inputs depending on Player type (Date 12.02.2017):
 
 | Input names   |
@@ -188,7 +189,6 @@ An actual list can be found within the HEOS CLI protocol which can be found [her
 | Reboot                | Switch        | Reboot the whole HEOS System. Can be used if you get in trouble with the system                                                                           |
 | DynamicGroupHandling  | Switch        | If this option id activated the system automatically removes groups if they are ungrouped. Only works if the group is added via an UI.                    |
 | BuildGroup            | Switch        | Is used to define a group. The player which shall be grouped has to be selected first. If Switch is then activated the group is build.                    |
-| Playlists             | String        | Plays a playlist on the prior selected Player Channel (see below) Playlists are identified by numbers. List can be found in the HEOS App                  |
 | RawCommand            | String        | A channel where every HEOS CLI command can be send to.                                                                                                    |
 | PlayUrl               | String        | Plays a media file located at the URL. First select the player channel where the stram shall be played. Then send the stream via the Play URL channel.    |
 
@@ -386,35 +386,19 @@ If dynamic group handling is deactivated the group thing is completely removed i
 
 ### Playlists
 
-Playlists can be played by sending the number (starts at 0!) to the binding via the playlists channel at the bridge. To find the correct number for the playlist, please have a look to the HEOS App and see at which position the playlist you want to play is located.
-To tell the binding at which player or group the playlist shall be played, select the related player or group channel at the bridge prior sending the command to the playlist channel.
-This can be done by a rule within openHAB
+Playlists can be played by sending the number (starts at 0!) to the binding via the playlists channel at the corresponding player or group. To find the correct number for the playlist, please have a look to the HEOS App and see at which position the playlist you want to play is located.
 
 #### Example
 
 Items:
 
 ```
-Switch HeosBridge_Play_Kitchen		"Kitchen"   (gHeos) {channel="heos:bridge:ed0ac1ff-0193-65c6-c1b8-506137456a50:P918797451"}
-String HeosBridge_Playlists		"Playlists" (gHeos) {channel="heos:bridge:ed0ac1ff-0193-65c6-c1b8-506137456a50:Playlists"}
-Number HeosKitchen_Playlist		"Playlist"  (gHeos)
-```
+String HeosKitchen_Playlist		"Playlists" (gHeos) {channel="heos:player:918797451:Playlists"}
 
-Rule:
-
-```
-rule"Playlist"
-	when
-		Item HeosKitchen_Playlist received command
-	then	
-		sendCommand(HeosBridge_Play_Kitchen, ON)
-		sendCommand(HeosBridge_Playlists, receivedCommand.toString)
-		sendCommand(HeosBridge_Play_Kitchen, OFF)		
-	end
 ```
 
 Sitemap:
 
 ```
-Switch item=HeosKitchen_Playlist  	mappings=[0="San Glaser", 1="Classic", 2="Beasty Boys"]
+Switch item=HeosKitchen_Playlists  	mappings=[0="San Glaser", 1="Classic", 2="Beasty Boys"]
 ```
