@@ -99,7 +99,8 @@
 	</channel-type>
 	<channel-type id="shuffleMode" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Sets the shuffle mode</label>
+		<label>Shuffle</label>
+		<description>Sets the shuffle mode</description>
 	</channel-type>
 	<channel-type id="repeatMode" advanced="true">
 		<item-type>String</item-type>
