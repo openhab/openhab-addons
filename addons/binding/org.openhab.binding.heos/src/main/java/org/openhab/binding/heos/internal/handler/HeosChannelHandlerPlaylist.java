@@ -10,8 +10,6 @@ package org.openhab.binding.heos.internal.handler;
 
 import static org.openhab.binding.heos.internal.resources.HeosConstants.PLAYLISTS_SID;
 
-import java.util.List;
-
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
@@ -28,42 +26,23 @@ public class HeosChannelHandlerPlaylist extends HeosChannelHandler {
         super(bridge, api);
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.internal.channelHandler.HeosChannelHandler#handleCommandPlayer(org.eclipse.smarthome.
-     * core.types.Command)
-     */
     @Override
     protected void handleCommandPlayer() {
-        // not used on player
+        handleCommand();
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.internal.channelHandler.HeosChannelHandler#handleCommandGroup(org.eclipse.smarthome.core
-     * .types.Command)
-     */
     @Override
     protected void handleCommandGroup() {
-        // not used on group
+        handleCommand();
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.internal.channelHandler.HeosChannelHandler#handleCommandBridge(org.eclipse.smarthome.
-     * core.types.Command)
-     */
     @Override
     protected void handleCommandBridge() {
-        logger.debug("Starting playlist number {}", command.toString());
-        List<String[]> selectedPlayerList = bridge.getSelectedPlayerList();
-        if (!selectedPlayerList.isEmpty()) {
-            for (int i = 0; i < selectedPlayerList.size(); i++) {
-                String pid = selectedPlayerList.get(i)[0];
-                String cid = bridge.getHeosPlaylists().get(Integer.valueOf(command.toString()));
-                api.addContainerToQueuePlayNow(pid, PLAYLISTS_SID, cid);
-            }
-        }
-        bridge.resetPlayerList(channelUID);
+        // not used on bridge
+    }
+
+    private void handleCommand() {
+        String cid = bridge.getHeosPlaylists().get(Integer.valueOf(command.toString()));
+        api.addContainerToQueuePlayNow(id, PLAYLISTS_SID, cid);
     }
 }

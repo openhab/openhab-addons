@@ -11,7 +11,6 @@ package org.openhab.binding.heos.internal.handler;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
@@ -28,43 +27,22 @@ public class HeosChannelHandlerPlayURL extends HeosChannelHandler {
         super(bridge, api);
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandPlayer(org.eclipse.smarthome.core.types.
-     * Command)
-     */
     @Override
     protected void handleCommandPlayer() {
-        handleCommand(command);
+        handleCommand();
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandGroup(org.eclipse.smarthome.core.types.
-     * Command)
-     */
     @Override
     protected void handleCommandGroup() {
-        handleCommand(command);
+        handleCommand();
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandBridge(org.eclipse.smarthome.core.types.
-     * Command)
-     */
     @Override
     protected void handleCommandBridge() {
-        if (!bridge.getSelectedPlayerList().isEmpty()) {
-            for (int i = 0; i < bridge.getSelectedPlayerList().size(); i++) {
-                this.id = bridge.getSelectedPlayerList().get(i)[0];
-                handleCommand(command);
-            }
-        }
-        bridge.resetPlayerList(channelUID);
+        // not used on bridge
     }
 
-    private void handleCommand(Command command) {
+    private void handleCommand() {
         try {
             URL url = new URL(command.toString());
             api.playURL(id, url);
@@ -72,5 +50,4 @@ public class HeosChannelHandlerPlayURL extends HeosChannelHandler {
             logger.debug("Command '{}' is not a propper URL. Error: {}", command.toString(), e.getMessage());
         }
     }
-
 }
