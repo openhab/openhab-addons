@@ -10,10 +10,8 @@
 		<channels>
 			<channel typeId="reboot" id="Reboot"></channel>
 			<channel typeId="dynamicGroupHandling" id="DynamicGroupHandling"></channel>
-			<channel typeId="buildGroup" id="BuildGroup"></channel>
-			<channel typeId="playlists" id="Playlists"></channel>
+			<channel typeId="buildGroup" id="BuildGroup"></channel>	
 			<channel typeId="rawCommand" id="RawCommand"></channel>
-			<channel typeId="playUrl" id="PlayUrl"></channel>
 		</channels>
 		<properties>
 			<property name="vendor">Denon</property>

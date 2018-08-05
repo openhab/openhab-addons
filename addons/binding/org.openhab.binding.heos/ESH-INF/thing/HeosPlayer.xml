@@ -18,7 +18,7 @@
 			<channel id="Mute" typeId="mute" />
 			<channel id="Inputs" typeId="input" />
 			<channel id="Title" typeId="title" />
-			<channel id="Interpret" typeId="interpret" />
+			<channel id="Artist" typeId="artist" />
 			<channel id="Album" typeId="album" />
 			<channel id="Cover" typeId="cover" />
 			<channel id="CurrentPosition" typeId="currentPosition" />
@@ -28,31 +28,27 @@
 			<channel id="PlayUrl" typeId="playUrl" />
 			<channel id="Shuffel" typeId="shuffleMode" />
 			<channel id="RepeatMode" typeId="repeatMode" />
+			<channel id="Playlists" typeId="playlists" />
 		</channels>
 		<config-description>
-			<parameter name="pid" type="text" readOnly="true">
+			<parameter name="pid" type="text" readOnly="false">
 				<label>Player ID</label>
 				<description>The internal Player ID</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="name" type="text" readOnly="true">
+			<parameter name="name" type="text" readOnly="false">
 				<label>Player Name</label>
 				<description>The Player Name</description>
 				<required>false</required>
 			</parameter>
-			<parameter name="model" type="text" readOnly="true">
+			<parameter name="model" type="text" readOnly="false">
 				<label>Player Model</label>
 				<required>false</required>
 			</parameter>
-			<parameter name="ipAddress" type="text" readOnly="true">
+			<parameter name="ipAddress" type="text" readOnly="false">
 				<label>Player IP</label>
 				<required>false</required>
-			</parameter>
-			<parameter name="type" type="text" readOnly="true">
-				<label>Group or Player</label>
-				<description> Defines if this is a single Player or a Group</description>
-				<required>true</required>
-			</parameter>
+			</parameter>			
 		</config-description>
 	</thing-type>
 </thing:thing-descriptions>

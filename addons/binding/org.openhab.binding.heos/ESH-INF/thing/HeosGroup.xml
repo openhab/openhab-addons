@@ -17,7 +17,7 @@
 			<channel id="Mute" typeId="mute" />
 			<channel id="Inputs" typeId="input" />
 			<channel id="Title" typeId="title" />
-			<channel id="Interpret" typeId="interpret" />
+			<channel id="Artist" typeId="artist" />
 			<channel id="Album" typeId="album" />
 			<channel id="Cover" typeId="cover" />
 			<channel id="CurrentPosition" typeId="currentPosition" />
@@ -28,28 +28,23 @@
 			<channel id="Ungroup" typeId="ungroup" />
 			<channel id="Shuffel" typeId="shuffleMode" />
 			<channel id="RepeatMode" typeId="repeatMode" />
+			<channel id="Playlists" typeId="playlists" />
 		</channels>
-
 		<config-description>
-			<parameter name="gid" type="text" readOnly="true">
+			<parameter name="gid" type="text" readOnly="false">
 				<label>Group ID</label>
 				<description>The internal group ID</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="name" type="text" readOnly="true">
+			<parameter name="name" type="text" readOnly="false">
 				<label>Group Name</label>
 				<description>The name of the group</description>
 				<required>false</required>
 			</parameter>
-			<parameter name="leader" type="text" readOnly="true">
+			<parameter name="leader" type="text" readOnly="false">
 				<label>Leading HEOS PID</label>
 				<description>The PID of the group leading HEOS player</description>
 				<required>false</required>
-			</parameter>
-			<parameter name="type" type="text" readOnly="true">
-				<label>Group or Player</label>
-				<description> Defines if this is a single player or a group</description>
-				<required>true</required>
 			</parameter>
 			<parameter name="nameHash" type="text" readOnly="true">
 				<label>Group name Hash Value</label>
