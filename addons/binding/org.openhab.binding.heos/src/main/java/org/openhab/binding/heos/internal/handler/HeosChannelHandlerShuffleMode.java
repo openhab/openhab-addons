@@ -26,37 +26,25 @@ public class HeosChannelHandlerShuffleMode extends HeosChannelHandler {
         super(bridge, api);
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandPlayer()
-     */
     @Override
     protected void handleCommandPlayer() {
-        setShuffleMode();
+        handleCommand();
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandGroup()
-     */
     @Override
     protected void handleCommandGroup() {
-        setShuffleMode();
+        handleCommand();
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandBridge()
-     */
     @Override
     protected void handleCommandBridge() {
         // Do nothing
     }
 
-    private void setShuffleMode() {
-        if (command.equals(OnOffType.ON)) {
+    private void handleCommand() {
+        if (OnOffType.ON.equals(command)) {
             api.setShuffleMode(id, HeosConstants.HEOS_ON);
-        } else if (command.equals(OnOffType.OFF)) {
+        } else if (OnOffType.OFF.equals(command)) {
             api.setShuffleMode(id, HeosConstants.HEOS_OFF);
         }
     }

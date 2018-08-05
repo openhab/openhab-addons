@@ -25,41 +25,27 @@ public class HeosChannelHandlerRepeatMode extends HeosChannelHandler {
         super(bridge, api);
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandPlayer()
-     */
     @Override
     protected void handleCommandPlayer() {
-        setRepeatMode();
-
+        handleCommand();
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandGroup()
-     */
     @Override
     protected void handleCommandGroup() {
-        setRepeatMode();
-
+        handleCommand();
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.internal.handler.HeosChannelHandler#handleCommandBridge()
-     */
     @Override
     protected void handleCommandBridge() {
         // Do nothing
     }
 
-    private void setRepeatMode() {
-        if (command.toString().equalsIgnoreCase(HeosConstants.HEOS_UI_ALL)) {
+    private void handleCommand() {
+        if (HeosConstants.HEOS_UI_ALL.equalsIgnoreCase(command.toString())) {
             api.setRepeatMode(id, HeosConstants.HEOS_REPEAT_ALL);
-        } else if (command.toString().equalsIgnoreCase(HeosConstants.HEOS_UI_ONE)) {
+        } else if (HeosConstants.HEOS_UI_ONE.equalsIgnoreCase(command.toString())) {
             api.setRepeatMode(id, HeosConstants.HEOS_REPEAT_ONE);
-        } else if (command.toString().equalsIgnoreCase(HeosConstants.HEOS_UI_OFF)) {
+        } else if (HeosConstants.HEOS_UI_OFF.equalsIgnoreCase(command.toString())) {
             api.setRepeatMode(id, HeosConstants.HEOS_OFF);
         }
     }

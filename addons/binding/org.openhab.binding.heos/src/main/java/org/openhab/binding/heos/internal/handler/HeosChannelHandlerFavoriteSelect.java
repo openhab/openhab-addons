@@ -29,31 +29,16 @@ public class HeosChannelHandlerFavoriteSelect extends HeosChannelHandler {
         super(bridge, api);
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.internal.channelHandler.HeosChannelHandler#handleCommandPlayer(org.eclipse.smarthome.
-     * core.types.Command)
-     */
     @Override
     protected void handleCommandPlayer() {
         // not used on player
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.internal.channelHandler.HeosChannelHandler#handleCommandGroup(org.eclipse.smarthome.core
-     * .types.Command)
-     */
     @Override
     protected void handleCommandGroup() {
         // not used on group
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.internal.channelHandler.HeosChannelHandler#handleCommandBridge(org.eclipse.smarthome.
-     * core.types.Command, org.eclipse.smarthome.core.thing.ChannelUID)
-     */
     @Override
     protected void handleCommandBridge() {
         if (command.equals(OnOffType.ON)) {

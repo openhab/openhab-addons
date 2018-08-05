@@ -26,15 +26,10 @@ public class HeosChannelHandlerVolume extends HeosChannelHandler {
         super(bridge, api);
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandPlayer(org.eclipse.smarthome.core.types.
-     * Command)
-     */
     @Override
     protected void handleCommandPlayer() {
         if (command instanceof IncreaseDecreaseType) {
-            if (command.equals(IncreaseDecreaseType.INCREASE)) {
+            if (IncreaseDecreaseType.INCREASE.equals(command)) {
                 api.increaseVolume(id);
             } else {
                 api.decreaseVolume(id);
@@ -44,15 +39,10 @@ public class HeosChannelHandlerVolume extends HeosChannelHandler {
         }
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandGroup(org.eclipse.smarthome.core.types.
-     * Command)
-     */
     @Override
     protected void handleCommandGroup() {
         if (command instanceof IncreaseDecreaseType) {
-            if (command.equals(IncreaseDecreaseType.INCREASE)) {
+            if (IncreaseDecreaseType.INCREASE.equals(command)) {
                 api.increaseGroupVolume(id);
             } else {
                 api.decreaseGroupVolume(id);
@@ -62,11 +52,6 @@ public class HeosChannelHandlerVolume extends HeosChannelHandler {
         }
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandBridge(org.eclipse.smarthome.core.types.
-     * Command)
-     */
     @Override
     protected void handleCommandBridge() {
         // not used on bridge

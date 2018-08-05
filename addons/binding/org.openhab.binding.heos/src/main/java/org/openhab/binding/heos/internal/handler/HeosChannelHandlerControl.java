@@ -9,7 +9,6 @@
 
 package org.openhab.binding.heos.internal.handler;
 
-import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
@@ -27,37 +26,22 @@ public class HeosChannelHandlerControl extends HeosChannelHandler {
         super(bridge, api);
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandPlayer(org.eclipse.smarthome.core.types.
-     * Command)
-     */
     @Override
     protected void handleCommandPlayer() {
-        handleCommand(command);
+        handleCommand();
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandGroup(org.eclipse.smarthome.core.types.
-     * Command)
-     */
     @Override
     protected void handleCommandGroup() {
-        handleCommand(command);
+        handleCommand();
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandBridge(org.eclipse.smarthome.core.types.
-     * Command)
-     */
     @Override
     protected void handleCommandBridge() {
         // No such channel within bridge
     }
 
-    private void handleCommand(Command command) {
+    private void handleCommand() {
         switch (command.toString()) {
             case "PLAY":
                 api.play(id);

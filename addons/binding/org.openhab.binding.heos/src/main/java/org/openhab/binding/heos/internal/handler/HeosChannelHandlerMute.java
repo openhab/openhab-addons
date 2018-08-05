@@ -25,11 +25,6 @@ public class HeosChannelHandlerMute extends HeosChannelHandler {
         super(bridge, api);
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandPlayer(org.eclipse.smarthome.core.types.
-     * Command)
-     */
     @Override
     protected void handleCommandPlayer() {
         if (command.equals(OnOffType.ON)) {
@@ -39,11 +34,6 @@ public class HeosChannelHandlerMute extends HeosChannelHandler {
         }
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandGroup(org.eclipse.smarthome.core.types.
-     * Command)
-     */
     @Override
     protected void handleCommandGroup() {
         if (command.equals(OnOffType.ON)) {
@@ -53,11 +43,6 @@ public class HeosChannelHandlerMute extends HeosChannelHandler {
         }
     }
 
-    /*
-     * @see
-     * org.openhab.binding.heos.handler.factory.HeosChannelHandler#handleCommandBridge(org.eclipse.smarthome.core.types.
-     * Command)
-     */
     @Override
     protected void handleCommandBridge() {
         // No such channel on bridge
