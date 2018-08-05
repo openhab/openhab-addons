@@ -26,7 +26,7 @@
 		<label>Song</label>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="interpret">
+	<channel-type id="artist">
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<state readOnly="true"></state>
@@ -108,7 +108,7 @@
 		<state readOnly="false">
 			<options>
 				<option value="One">One</option>
-				<option value="ALl">All</option>
+				<option value="All">All</option>
 				<option value="Off">Off</option>
 			</options>
 		</state>
