@@ -85,7 +85,6 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
                 properties.put(PID, player.getPid());
                 properties.put(PLAYER_TYPE, player.getModel());
                 properties.put(HOST, player.getIp());
-                properties.put(TYPE, PLAYER);
                 DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(player.getName())
                         .withProperties(properties).withBridge(bridgeUID).build();
                 thingDiscovered(result);
@@ -118,7 +117,6 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
                     properties.put(NAME, group.getName());
                     properties.put(GID, group.getGid());
                     properties.put(LEADER, group.getLeader());
-                    properties.put(TYPE, GROUP);
                     properties.put(NAME_HASH, group.getNameHash());
                     properties.put(GROUP_MEMBER_HASH, group.getGroupMemberHash());
                     properties.put(GROUP_MEMBER_PID_LIST, group.getGroupMemberPidList());
