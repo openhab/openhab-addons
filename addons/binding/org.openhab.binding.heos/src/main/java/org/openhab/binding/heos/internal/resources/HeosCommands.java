@@ -255,6 +255,10 @@ public class HeosCommands {
         return newCommand;
     }
 
+    public String playStation(String pid, String sid, String mid) {
+        return playStation + pid + "&sid=" + sid + "&mid=" + mid;
+    }
+
     public String playInputSource(String des_pid, String source_pid, String input) {
         return playInputSource + des_pid + "&spid=" + source_pid + "&input=inputs/" + input;
     }
