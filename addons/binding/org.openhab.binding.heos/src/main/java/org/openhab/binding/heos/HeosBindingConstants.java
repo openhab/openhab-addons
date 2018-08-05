@@ -46,7 +46,7 @@ public class HeosBindingConstants {
     public static final String CH_ID_MUTE = "Mute";
     public static final String CH_ID_UNGROUP = "Ungroup";
     public static final String CH_ID_SONG = "Title";
-    public static final String CH_ID_ARTIST = "Interpret";
+    public static final String CH_ID_ARTIST = "Artist";
     public static final String CH_ID_ALBUM = "Album";
     public static final String CH_ID_PLAYER = "Player";
     public static final String CH_ID_BUILDGROUP = "BuildGroup";
