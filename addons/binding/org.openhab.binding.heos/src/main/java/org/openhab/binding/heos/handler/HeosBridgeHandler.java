@@ -191,7 +191,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
                                             // OpenHab for example) and prevents it from being updated which stops the
                                             // disposal process.
             return;
-        } else if (childThing.getConfiguration().get(TYPE).equals(PLAYER)) {
+        } else if (HeosPlayerHandler.class.equals(childHandler.getClass())) {
             String channelIdentifyer = "P" + childThing.getConfiguration().get(PID).toString();
             this.removeChannel(CH_TYPE_PLAYER, channelIdentifyer);
         } else {
@@ -360,11 +360,10 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     private void addPlayerChannel(Thing childThing) {
         String channelIdentifyer = "";
         String pid = "";
-
-        if (PLAYER.equals(childThing.getConfiguration().get(TYPE))) {
+        if (HeosPlayerHandler.class.equals(childThing.getHandler().getClass())) {
             channelIdentifyer = "P" + childThing.getConfiguration().get(PID).toString();
             pid = childThing.getConfiguration().get(PID).toString();
-        } else if (GROUP.equals(childThing.getConfiguration().get(TYPE))) {
+        } else if (HeosGroupHandler.class.equals(childThing.getHandler().getClass())) {
             channelIdentifyer = "G" + childThing.getConfiguration().get(GID).toString();
             pid = childThing.getConfiguration().get(GID).toString();
         }
