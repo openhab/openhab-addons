@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wakeonlan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- WOL Device -->
+	<thing-type id="wol-device">
+		<label>Wol Device</label>
+		<description><![CDATA[
+		An IPv4 enabled device that suports waking up by a magic packet on LAN.
+		If your target device runs windows and you usually put it to sleep, 
+		you need to enable wake on lan from target network adapter properties page.
+		If your target device is a PC, you need to enable WOL in BIOS settings.
+		Raspberry Pis do not support WOL when powered off, instead keep them running on dynamic freq scaling to save power.
+		Binding level events are logged to 'org.openhab.binding.wakeonlan', 
+		Thing specific logging is done via logger named as Thing's label. 
+		]]>
+		</description>
+
+		<channels>
+			<channel id="wakeup" typeId="wakeup-channel" />
+			<channel id="shutdown" typeId="shutdown-channel" />
+			<channel id="power" typeId="power-channel" />
+			<channel id="status" typeId="status-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="targetMAC" type="text" required="true" pattern="([0-9a-fA-F]{2}[: -]?){5}[0-9a-fA-F]{2}">
+				<label>Target MAC Address</label>
+				<description><![CDATA[Target device's MAC address. 
+				You may use wifi adapter's MAC if it supports WoWLAN. 
+				The command 'iw phy phy0 info' on Linux reports whether WoWLAN is supported by wlan adapter<br/>
+				MAC address may be in one of the following hex formats:<br/> 
+				<b>b8:27:eb:d0:e6:12</b><br/>
+				<b>b8-27-eb-d0-e6-12</b><br/>
+				<b>b8 27 eb d0 e6 12</b><br/>
+				<b>b827ebd0e612</b><br/><br/>
+				Upper or lower case doesn't matter.<br/>
+				On Linux, you may find MAC addresses of network 
+				neighbours using command <b>arp</b> or <b>arp targetHostnameOrIp</b>.
+				]]>
+				</description>
+			</parameter>
+			<parameter name="targetIP" type="text" required="false" pattern="([0-9]{1,3}[.]){3}[0-9]{1,3}">
+				<!-- <context>network-address</context>-->
+				<label>Target IPv4 Subnet Broadcast Address</label>
+				<description><![CDATA[Target IPv4 BROADCAST IP to send wol UDP packet to. 
+				It could be limited broadcast address, 
+				subnet directed broadcast address, subnet base address or host's unicast IP address.
+				Default is 255.255.255.255 (limited broadcast). 
+				It works when openhab and target device is on same physical network (subnet).<br/>
+				Otherwise, you need directed subnet broadcast address e.g 192.168.1.255, 10.1.255.255.<br/>				
+				<b>How to calculate subnet directed broadcast address?</b><br/>
+				Formula is: <br/>
+				<b>TargetHostIP BITWISE_OR (BITWISE_NOT(TargetSubnetMask))</b><br/>
+				On linux, the command /sbin/ifconfig reports subnet directed broadcast address.
+				Sometimes, using target subnet's base address also works e.g. 192.168.1.0, 10.1.0.0 etc. 
+				Subnet base address is obtained by bitwise AND of target machine's unicast IP address and subnet mask.
+				If nothing works, try giving target host's unicast IP address itself.
+				]]>
+				</description>
+				<default>255.255.255.255</default>
+			</parameter>
+			<parameter name="targetUDPPort" type="integer" required="false" min="1" max="65535">
+				<context></context>
+				<label>Target UDP Port</label>
+				<description><![CDATA[WOL target UDP port. 
+				Typically it is 9 (discard) or 7 (echo). Default 9.
+				]]>
+				</description>
+				<default>9</default>
+			</parameter>
+			<parameter name="sendOnAllInterfaces" type="boolean" required="false">
+				<label>Send On All N/W Interfaces</label>
+				<description><![CDATA[Should the binding send WOL UDP packet on all physical n/w interfaces of opehab2 server?
+				If disabled, the OS routing table decides which interface to use for a given destination IP address.  
+				]]>
+				</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="sendOnInterface" type="text" required="false">
+				<label>Send On Specific N/W Interface</label>
+				<description><![CDATA[Should the binding send WOL UDP packet on specific physical n/w interface of opehab2 server?
+				If left empty, the OS routing table decides which interface to use for a given destination IP address.
+				Specify interface's name e.g eth0, eth1, wlan0.
+				Note that if your openhab2 server is only connected to network via wireless lan, the wifi router may or may not
+				forward the WOL broadcast packet to target machine connected via wired ethernet port. 
+				If it does not forward, you have to connect openhab2 server as well to wired ethernet port.
+				]]>
+				</description>
+			</parameter>
+			<parameter name="setSoBroadcast" type="boolean" required="false">
+				<label>Set SO_BROADCAST option on socket</label>
+				<description><![CDATA[Set SO_BROADCAST OS level socket option.
+					SO_BROADCAST allows OS to catch unwanted broadcast messages arising from buggy aplication software.
+					When application writer explicitely sets SO_BROADCAST, the intention becomes clear to OS and 
+					it allows sending packet to subnet base address or subnet broadcast address.
+					Some operating systems may require that the Java virtual machine be started with 
+					implementation specific privileges to enable this option or send broadcast datagrams.
+					If you get java.io.IOException: Permission denied, first try enabling this option, 
+					if that doesn't work try disabling this option and change <b>Target Address</b> to target host's unicast IP.
+				]]>
+				</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="periodicPing" type="boolean" required="false">
+				<label>Periodic Ping</label>
+				<description><![CDATA[Send periodic ping request from Java process to update status. 
+				Default true. Ping timer is enabled only if <b>Ping Hostname Or IP</b> is set.
+				]]>
+				</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="externalPing" type="boolean" required="false">
+				<label>External Ping</label>
+				<description><![CDATA[Use external ping program to determine host online status.
+				Enable this only if builtin Java ping doesn't work.
+				Default false. Ping timer is enabled only if <b>Ping Hostname Or IP</b> is set.
+				]]>
+				</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="pingIntervalMinutes" type="integer" required="false" min="1" max="30" step="1">
+				<label>Ping Interval Minutes</label>
+				<description><![CDATA[Send ping requests every X minutes. Default 2.
+				]]>
+				</description>
+				<default>2</default>
+			</parameter>
+			<parameter name="pingHostnameOrIp" type="text" required="false">
+				<label>Ping Hostname Or IP</label>
+				<description><![CDATA[Send ping request to hostname or IP.
+				Use IP only when host ip doesn't change often, say due to DHCP. 
+				Try using .local suffix if plain hostname doesn't get resolved.
+				If left empty, periodic ping will be disabled. 
+				]]>
+				</description>
+			</parameter>
+			<parameter name="shutdownCommands" type="text" required="false">
+				<label>Shutdown Using Item or Thing Commands</label>
+				<description><![CDATA[
+				Delegate shutdown by sending one or more commands to smarthome items or things.
+				Multiple targets should be separated by <b>&&</b><br/>
+				<br/>
+				Target has following formats:<br/>
+				<br/>
+				Item Name  | Command<br/>
+				ChannelUID | Command<br/>
+				<br/>
+				
+				Command could be any command supported by that item or channel.<br/>
+				<br/>
+				Examples:<br/>
+				kodi_kodi_8034c47d_322b_6779_f872_b4bbdacf9591_systemcommand|shutdown<br/>
+				kodi:kodi:8034c47d-322b-6779-f872-b4bbdacf9591:systemcommand|shutdown<br/>
+				kodi:kodi:kodi1:systemcommand|shutdown && mybinding:mythingtype:mybridgeid:mythingid:mychannelid|mycommand
+				]]>
+				</description>
+			</parameter>  
+			<parameter name="shutdownCommandExt" type="text" required="false">
+				<label>Shutdown Using External Program Or Script</label>
+				<description><![CDATA[
+				Delegate shutdown to external program or script.<br/>
+				When specifying program and its arguments, separate all of them by characters @@<br/>
+				If %h appears in command string, all of its occurences are replaced with hostname or IP 
+				configured in parameter <b>Ping Hostname Or IP</b><br/>
+				To specify literal %h, use %%h
+				]]>
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="wakeup-channel">
+		<item-type>Switch</item-type>
+		<label>Wakeup</label>
+		<description>Send WOL magic packet</description>
+		<category>PowerOutlet</category>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="shutdown-channel">
+		<item-type>Switch</item-type>
+		<label>Shutdown</label>
+		<description>Shutdown target device using configured method</description>
+		<category>PowerOutlet</category>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="power-channel">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Wakeup/Shutdown target device</description>
+		<category>PowerOutlet</category>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="status-channel">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Status Info</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+</thing:thing-descriptions>
+

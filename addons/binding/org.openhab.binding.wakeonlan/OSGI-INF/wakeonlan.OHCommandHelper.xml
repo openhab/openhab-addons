@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" immediate="true" name="org.openhab.binding.wakeonlan.SmarthomeCommandHelper">
+	<service>
+		<provide interface="org.openhab.binding.wakeonlan.SmarthomeCommandHelper"/>
+	</service>
+	<reference cardinality="1..1" field="eventPublisher" interface="org.eclipse.smarthome.core.events.EventPublisher" name="eventPublisher" policy="dynamic"/>
+	<reference cardinality="1..1" field="itemChannelLinkRegistry" interface="org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry" name="itemChannelLinkRegistry" policy="dynamic"/>
+	<reference cardinality="1..1" field="itemRegistry" interface="org.eclipse.smarthome.core.items.ItemRegistry" name="itemRegistry" policy="dynamic"/>
+	<reference cardinality="1..1" field="thingRegistry" interface="org.eclipse.smarthome.core.thing.ThingRegistry" name="thingRegistry" policy="dynamic"/>
+	<implementation class="org.openhab.binding.wakeonlan.internal.SmarthomeCommandHelperImpl"/>
+</scr:component>
