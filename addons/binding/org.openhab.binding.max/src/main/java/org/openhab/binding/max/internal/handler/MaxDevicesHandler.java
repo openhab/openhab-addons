@@ -357,7 +357,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         if (!device.getSerialNumber().equals(maxDeviceSerial)) {
             return;
         }
-        if (device.isLinkStatusError()) {
+        if (device.isError() || device.isLinkStatusError()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
         } else if (!refreshingActuals) {
             updateStatus(ThingStatus.ONLINE);
