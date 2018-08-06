@@ -140,4 +140,9 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
         }
     }
 
+    @Override
+    protected boolean applyPeriod() {
+        return true;
+    }
+
 }

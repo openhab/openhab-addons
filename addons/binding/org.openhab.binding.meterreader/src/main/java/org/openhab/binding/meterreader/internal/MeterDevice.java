@@ -125,7 +125,7 @@ public abstract class MeterDevice<T> {
      *
      * @throws Exception
      */
-    protected Disposable readValues(ScheduledExecutorService executorService, Duration period) throws Exception {
+    public Disposable readValues(ScheduledExecutorService executorService, Duration period) throws Exception {
         if (connector == null) {
             throw new IllegalArgumentException("{}: connector is not instantiated: " + this.toString());
         }
@@ -134,7 +134,7 @@ public abstract class MeterDevice<T> {
             Flowable<T> meterValuesFlowable = Flowable.fromPublisher(connector.getMeterValues(initMessage, period))
                     .subscribeOn(Schedulers.from(executorService)).timeout(30, TimeUnit.SECONDS);
 
-            return Flowable.fromPublisher(meterValuesFlowable).doOnSubscribe(sub -> {
+            return meterValuesFlowable.doOnSubscribe(sub -> {
                 logger.info("Opening connection to {}", getDeviceId());
                 connector.openConnection();
             }).doOnError(ex -> {

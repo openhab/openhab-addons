@@ -58,12 +58,22 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
      */
     protected abstract T readNext(byte[] initMessage) throws IOException;
 
+    /**
+     * Whether to periodically emit values.
+     *
+     * @return
+     */
     protected boolean applyPeriod() {
-        return true;
+        return false;
     }
 
+    /**
+     * Whether to apply a retry handling whenever the read out failed.
+     *
+     * @return
+     */
     protected boolean applyRetryHandling() {
-        return true;
+        return false;
     }
 
     /**

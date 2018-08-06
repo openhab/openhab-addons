@@ -1,7 +1,7 @@
 package org.openmuc.jrxtx;
 
-import static gnu.io.SerialPort.*;
 import static java.text.MessageFormat.format;
+import static org.eclipse.smarthome.io.transport.serial.SerialPort.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,7 +9,6 @@ import java.io.OutputStream;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
-import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
@@ -54,7 +53,7 @@ class JRxTxPort implements SerialPort {
                 String errMessage = format("Serial port {0} not found or port is busy.", portName);
                 throw new PortNotFoundException(errMessage);
             }
-            SerialPort comPort = serialPortIdentifier.open("meterreader", 0);
+            org.eclipse.smarthome.io.transport.serial.SerialPort comPort = serialPortIdentifier.open("meterreader", 0);
             // if (!(comPort instanceof RXTXPort)) {
             // throw new SerialPortException("Unable to open the serial port. Port is not RXTX.");
             // }
@@ -76,13 +75,14 @@ class JRxTxPort implements SerialPort {
         } catch (PortInUseException e) {
             String errMessage = format("Serial port {0} is already in use.", portName);
             throw new PortNotFoundException(errMessage);
-        } catch (UnsupportedCommOperationException e1) {
-            throw new IOException(e1);
+            // } catch (UnsupportedCommOperationException e1) {
+            // throw new IOException(e1);
         }
 
     }
 
-    private static void setFlowControl(FlowControl flowControl, gnu.io.SerialPort rxtxPort) throws IOException {
+    private static void setFlowControl(FlowControl flowControl,
+            org.eclipse.smarthome.io.transport.serial.SerialPort rxtxPort) throws IOException {
         try {
             switch (flowControl) {
                 case RTS_CTS:
@@ -103,8 +103,8 @@ class JRxTxPort implements SerialPort {
         }
     }
 
-    private JRxTxPort(gnu.io.SerialPort comPort, String portName, int baudRate, Parity parity, DataBits dataBits,
-            StopBits stopBits, FlowControl flowControl) throws IOException {
+    private JRxTxPort(org.eclipse.smarthome.io.transport.serial.SerialPort comPort, String portName, int baudRate,
+            Parity parity, DataBits dataBits, StopBits stopBits, FlowControl flowControl) throws IOException {
         this.rxtxPort = comPort;
         this.portName = portName;
         this.baudRate = baudRate;
