@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	<config-description uri="io:neeo">
+		<parameter name="exposeAll" type="boolean" required="false">
+			<label>Expose All</label>
+			<description>Expose all things</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="exposeNeeoBinding" type="boolean" required="false">
+			<label>Expose NEEO Binding</label>
+			<description>Expose things found by the NEEO Binding</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="searchLimit" type="integer" required="false" min="1">
+			<label>Search Limit</label>
+			<description>The maximum number of results to return for a search</description>
+			<advanced>true</advanced>
+			<default>12</default>
+		</parameter>
+		<parameter name="checkStatusInterval" type="integer" required="false" min="1">
+			<label>Check Status Interval (seconds)</label>
+			<description>The interval (in seconds) to check the status of the brain</description>
+			<advanced>true</advanced>
+			<default>10</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
