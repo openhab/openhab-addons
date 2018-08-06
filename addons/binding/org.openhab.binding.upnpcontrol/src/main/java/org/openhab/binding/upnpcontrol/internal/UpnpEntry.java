@@ -30,7 +30,7 @@ public class UpnpEntry {
     private final String albumArtUri;
     private final String creator;
     private final int originalTrackNumber;
-    private String desc;
+    private volatile String desc;
 
     public UpnpEntry(String id, String title, String parentId, String album, String albumArtUri, String creator,
             String upnpClass, List<UpnpEntryRes> resList) {
@@ -140,5 +140,4 @@ public class UpnpEntry {
     public void setDesc(String desc) {
         this.desc = desc;
     }
-
 }

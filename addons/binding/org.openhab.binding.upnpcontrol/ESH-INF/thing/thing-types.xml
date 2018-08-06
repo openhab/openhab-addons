@@ -13,6 +13,12 @@
 			<channel id="mute" typeId="mute" />
 			<channel id="control" typeId="control" />
 			<channel id="stop" typeId="stop" />
+			<channel id="title" typeId="title" />
+			<channel id="album" typeId="album" />
+			<channel id="albumArt" typeId="albumArt" />
+			<channel id="creator" typeId="creator" />
+			<channel id="trackNumber" typeId="trackNumber" />
+			<channel id="desc" typeId="desc" />
 		</channels>
 	</thing-type>
 	<thing-type id="upnpserver">
@@ -24,9 +30,23 @@
 			<channel id="select" typeId="select" />
 			<channel id="serve" typeId="serve" />
 		</channels>
+		<config-description>
+			<parameter name="filter" type="boolean" required="false">
+				<label>Filter content</label>
+				<description>Only list content which is playable on the selected renderer</description>
+				<default>false</default>
+				<advanced>false</advanced>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<!-- Channel Types -->
+	<channel-type id="volume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Set or get the master volume</description>
+		<category>SoundVolume</category>
+	</channel-type>
 	<channel-type id="mute">
 		<item-type>Switch</item-type>
 		<label>Mute</label>
@@ -41,14 +61,45 @@
 	<channel-type id="stop">
 		<item-type>Switch</item-type>
 		<label>Stop</label>
-		<description>Stop the player. ON if the player is stopped.</description>
+		<description>Stop the player. ON if the player is stopped</description>
 	</channel-type>
-	<channel-type id="volume">
-		<item-type>Dimmer</item-type>
-		<label>Volume</label>
-		<description>Set or get the master volume</description>
-		<category>SoundVolume</category>
+	<channel-type id="title">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>Now playing title</description>
+		<state readOnly="true" />
 	</channel-type>
+	<channel-type id="album">
+		<item-type>String</item-type>
+		<label>Album</label>
+		<description>Now playing album</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="albumArt">
+		<item-type>Image</item-type>
+		<label>Album Art</label>
+		<description>Now playing album art</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="creator">
+		<item-type>String</item-type>
+		<label>Creator</label>
+		<description>Now playing creator</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="trackNumber">
+		<item-type>Number</item-type>
+		<label>Track Number</label>
+		<description>Now playing track number</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="desc">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>Now playing description</description>
+		<state readOnly="true" />
+	</channel-type>
+
 	<channel-type id="upnprenderer">
 		<item-type>String</item-type>
 		<label>Renderer</label>

@@ -33,10 +33,10 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected UpnpIOService service;
-    private String transportState = "";
-    protected int connectionId;
-    protected int avTransportId;
-    protected int rcsId;
+    protected volatile String transportState = "";
+    protected volatile int connectionId;
+    protected volatile int avTransportId;
+    protected volatile int rcsId;
 
     public UpnpHandler(Thing thing, UpnpIOService upnpIOService) {
         super(thing);
@@ -49,9 +49,6 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     public void initialize() {
         if (service.isRegistered(this)) {
             updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not initialize communication with " + thing.getLabel());
         }
     }
 
@@ -84,14 +81,14 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         return;
     }
 
-    protected String getTransportState() {
+    protected void getTransportState() {
         HashMap<String, String> inputs = new HashMap<String, String>();
         inputs.put("InstanceID", Integer.toString(avTransportId));
         Map<String, String> result = service.invokeAction(this, "AVTransport", "GetTransportInfo", inputs);
         for (String variable : result.keySet()) {
             onValueReceived(variable, result.get(variable), "AVTransport");
         }
-        return transportState;
+        return;
     }
 
     @Override
@@ -115,10 +112,16 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         return getThing().getProperties().get("udn");
     }
 
-    protected Map<String, String> invokeAction(String serviceId, String actionId, Map<String, String> inputs) {
-        logger.debug("Upnp device {} invoke upnp action {} on service {} with inputs {}", thing.getLabel(), actionId,
-                serviceId, inputs);
-        return service.invokeAction(this, serviceId, actionId, inputs);
+    protected void invokeAction(String serviceId, String actionId, Map<String, String> inputs) {
+        scheduler.submit(() -> {
+            logger.debug("Upnp device {} invoke upnp action {} on service {} with inputs {}", thing.getLabel(),
+                    actionId, serviceId, inputs);
+            Map<String, String> result = service.invokeAction(this, serviceId, actionId, inputs);
+            for (String variable : result.keySet()) {
+                onValueReceived(variable, result.get(variable), serviceId);
+            }
+        });
+        return;
     }
 
     @Override
@@ -151,13 +154,15 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         service.addSubscription(this, serviceId, duration);
     }
 
+    protected void removeSubscription(String serviceId) {
+        if (service.isRegistered(this)) {
+            service.removeSubscription(this, serviceId);
+        }
+    }
+
     public void getProtocolInfo() {
         Map<String, String> inputs = new HashMap<>();
 
-        Map<String, String> result = invokeAction("ConnectionManager", "GetProtocolInfo", inputs);
-
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), "ConnectionManager");
-        }
+        invokeAction("ConnectionManager", "GetProtocolInfo", inputs);
     }
 }

@@ -42,4 +42,18 @@ class UpnpEntryRes {
     public String getProtocolInfo() {
         return protocolInfo;
     }
+
+    /**
+     * @return the size
+     */
+    public Integer getSize() {
+        return size;
+    }
+
+    /**
+     * @return the importUri
+     */
+    public String getImportUri() {
+        return importUri;
+    }
 }

@@ -8,8 +8,8 @@
  */
 package org.openhab.binding.upnpcontrol.internal;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -21,30 +21,14 @@ public final class UpnpProtocolMatcher {
     }
 
     public static boolean testProtocol(String protocol, List<String> protocolSet) {
-        for (String p : protocolSet) {
-            if (protocol.equals(p)) {
-                return true;
-            }
-        }
-        return false;
+        return protocolSet.contains(protocol);
     }
 
     public static boolean testProtocolList(List<String> protocolList, List<String> protocolSet) {
-        for (String p : protocolList) {
-            if (testProtocol(p, protocolSet)) {
-                return true;
-            }
-        }
-        return false;
+        return protocolList.stream().anyMatch(p -> testProtocol(p, protocolSet));
     }
 
     public static List<String> getProtocols(List<String> protocolList, List<String> protocolSet) {
-        List<String> list = new ArrayList<>();
-        for (String protocol : protocolList) {
-            if (testProtocol(protocol, protocolSet)) {
-                list.add(protocol);
-            }
-        }
-        return list;
+        return protocolList.stream().filter(p -> testProtocol(p, protocolSet)).collect(Collectors.toList());
     }
 }

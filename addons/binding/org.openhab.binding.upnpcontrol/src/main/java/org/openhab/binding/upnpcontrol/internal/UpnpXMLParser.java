@@ -65,7 +65,7 @@ public class UpnpXMLParser {
      * @throws IOException
      * @throws SAXException
      */
-    public static List<UpnpEntry> getEntriesFromString(String xml) {
+    public static List<UpnpEntry> getEntriesFromXML(String xml) {
         EntryHandler handler = new EntryHandler();
         try {
             XMLReader reader = XMLReaderFactory.createXMLReader();
@@ -76,58 +76,10 @@ public class UpnpXMLParser {
         } catch (SAXException s) {
             LOGGER.debug("Could not parse Entries from string '{}'", xml);
         }
-
         return handler.getEntries();
     }
 
     private static class AVTransportEventHandler extends DefaultHandler {
-
-        /*
-         * <Event xmlns="urn:schemas-upnp-org:metadata-1-0/AVT/" xmlns:r="urn:schemas-rinconnetworks-com:metadata-1-0/">
-         * <InstanceID val="0">
-         * <TransportState val="PLAYING"/>
-         * <CurrentPlayMode val="NORMAL"/>
-         * <CurrentPlayMode val="0"/>
-         * <NumberOfTracks val="29"/>
-         * <CurrentTrack val="12"/>
-         * <CurrentSection val="0"/>
-         * <CurrentTrackURI val=
-         * "x-file-cifs://192.168.1.1/Storage4/Sonos%20Music/Queens%20Of%20The%20Stone%20Age/Lullabies%20To%20Paralyze/Queens%20Of%20The%20Stone%20Age%20-%20Lullabies%20To%20Paralyze%20-%2012%20-%20Broken%20Box.wma"
-         * />
-         * <CurrentTrackDuration val="0:03:02"/>
-         * <CurrentTrackMetaData val=
-         * "&lt;DIDL-Lite xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot; xmlns:r=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot; xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item id=&quot;-1&quot; parentID=&quot;-1&quot; restricted=&quot;true&quot;&gt;&lt;res protocolInfo=&quot;x-file-cifs:*:audio/x-ms-wma:*&quot; duration=&quot;0:03:02&quot;&gt;x-file-cifs://192.168.1.1/Storage4/Sonos%20Music/Queens%20Of%20The%20Stone%20Age/Lullabies%20To%20Paralyze/Queens%20Of%20The%20Stone%20Age%20-%20Lullabies%20To%20Paralyze%20-%2012%20-%20Broken%20Box.wma&lt;/res&gt;&lt;r:streamContent&gt;&lt;/r:streamContent&gt;&lt;dc:title&gt;Broken Box&lt;/dc:title&gt;&lt;upnp:class&gt;object.item.audioItem.musicTrack&lt;/upnp:class&gt;&lt;dc:creator&gt;Queens Of The Stone Age&lt;/dc:creator&gt;&lt;upnp:album&gt;Lullabies To Paralyze&lt;/upnp:album&gt;&lt;r:albumArtist&gt;Queens Of The Stone Age&lt;/r:albumArtist&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;"
-         * /><r:NextTrackURI val=
-         * "x-file-cifs://192.168.1.1/Storage4/Sonos%20Music/Queens%20Of%20The%20Stone%20Age/Lullabies%20To%20Paralyze/Queens%20Of%20The%20Stone%20Age%20-%20Lullabies%20To%20Paralyze%20-%2013%20-%20&apos;&apos;You%20Got%20A%20Killer%20Scene%20There,%20Man...&apos;&apos;.wma"
-         * /><r:NextTrackMetaData val=
-         * "&lt;DIDL-Lite xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot; xmlns:r=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot; xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item id=&quot;-1&quot; parentID=&quot;-1&quot; restricted=&quot;true&quot;&gt;&lt;res protocolInfo=&quot;x-file-cifs:*:audio/x-ms-wma:*&quot; duration=&quot;0:04:56&quot;&gt;x-file-cifs://192.168.1.1/Storage4/Sonos%20Music/Queens%20Of%20The%20Stone%20Age/Lullabies%20To%20Paralyze/Queens%20Of%20The%20Stone%20Age%20-%20Lullabies%20To%20Paralyze%20-%2013%20-%20&amp;apos;&amp;apos;You%20Got%20A%20Killer%20Scene%20There,%20Man...&amp;apos;&amp;apos;.wma&lt;/res&gt;&lt;dc:title&gt;&amp;apos;&amp;apos;You Got A Killer Scene There, Man...&amp;apos;&amp;apos;&lt;/dc:title&gt;&lt;upnp:class&gt;object.item.audioItem.musicTrack&lt;/upnp:class&gt;&lt;dc:creator&gt;Queens Of The Stone Age&lt;/dc:creator&gt;&lt;upnp:album&gt;Lullabies To Paralyze&lt;/upnp:album&gt;&lt;r:albumArtist&gt;Queens Of The Stone Age&lt;/r:albumArtist&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;"
-         * /><r:EnqueuedTransportURI
-         * val="x-rincon-playlist:RINCON_000E582126EE01400#A:ALBUMARTIST/Queens%20Of%20The%20Stone%20Age"/><r:
-         * EnqueuedTransportURIMetaData val=
-         * "&lt;DIDL-Lite xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot; xmlns:r=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot; xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item id=&quot;A:ALBUMARTIST/Queens%20Of%20The%20Stone%20Age&quot; parentID=&quot;A:ALBUMARTIST&quot; restricted=&quot;true&quot;&gt;&lt;dc:title&gt;Queens Of The Stone Age&lt;/dc:title&gt;&lt;upnp:class&gt;object.container&lt;/upnp:class&gt;&lt;desc id=&quot;cdudn&quot; nameSpace=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot;&gt;RINCON_AssociatedZPUDN&lt;/desc&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;"
-         * />
-         * <PlaybackStorageMedium val="NETWORK"/>
-         * <AVTransportURI val="x-rincon-queue:RINCON_000E5812BC1801400#0"/>
-         * <AVTransportURIMetaData val=""/>
-         * <CurrentTransportActions val="Play, Stop, Pause, Seek, Next, Previous"/>
-         * <TransportStatus val="OK"/>
-         * <r:SleepTimerGeneration val="0"/>
-         * <r:AlarmRunning val="0"/>
-         * <r:SnoozeRunning val="0"/>
-         * <r:RestartPending val="0"/>
-         * <TransportPlaySpeed val="NOT_IMPLEMENTED"/>
-         * <CurrentMediaDuration val="NOT_IMPLEMENTED"/>
-         * <RecordStorageMedium val="NOT_IMPLEMENTED"/>
-         * <PossiblePlaybackStorageMedia val="NONE, NETWORK"/>
-         * <PossibleRecordStorageMedia val="NOT_IMPLEMENTED"/>
-         * <RecordMediumWriteStatus val="NOT_IMPLEMENTED"/>
-         * <CurrentRecordQualityMode val="NOT_IMPLEMENTED"/>
-         * <PossibleRecordQualityModes val="NOT_IMPLEMENTED"/>
-         * <NextAVTransportURI val="NOT_IMPLEMENTED"/>
-         * <NextAVTransportURIMetaData val="NOT_IMPLEMENTED"/>
-         * </InstanceID>
-         * </Event>
-         */
 
         private final Map<String, String> changes = new HashMap<String, String>();
 
@@ -163,6 +115,7 @@ public class UpnpXMLParser {
         private String parentId;
         private StringBuilder upnpClass = new StringBuilder();
         private List<UpnpEntryRes> resList = new ArrayList<>();
+        private StringBuilder res = new StringBuilder();
         private StringBuilder title = new StringBuilder();
         private StringBuilder album = new StringBuilder();
         private StringBuilder albumArtUri = new StringBuilder();
@@ -234,7 +187,7 @@ public class UpnpXMLParser {
                     upnpClass.append(ch, start, length);
                     break;
                 case RES:
-                    resList.get(0).setRes(new String(ch, start, length));
+                    res.append(ch, start, length);
                     break;
                 case ALBUM:
                     album.append(ch, start, length);
@@ -277,6 +230,9 @@ public class UpnpXMLParser {
                 creator = new StringBuilder();
                 trackNumber = new StringBuilder();
                 desc = new StringBuilder();
+            } else if (qName.equals("res")) {
+                resList.get(0).setRes(res.toString());
+                res = new StringBuilder();
             }
         }
 

@@ -24,11 +24,13 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
  org.eclipse.smarthome.io.transport.upnp,
  org.jupnp.model.meta,
  org.jupnp.model.types,
  org.openhab.binding.upnpcontrol,
  org.openhab.binding.upnpcontrol.handler,
+ org.openhab.core.library.types,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j

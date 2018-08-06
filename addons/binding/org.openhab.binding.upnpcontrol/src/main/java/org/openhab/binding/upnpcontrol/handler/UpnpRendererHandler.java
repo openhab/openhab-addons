@@ -18,12 +18,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.audio.AudioFormat;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -36,6 +39,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.openhab.binding.upnpcontrol.internal.UpnpAudioSinkReg;
 import org.openhab.binding.upnpcontrol.internal.UpnpEntry;
@@ -53,19 +57,29 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private boolean audioSupport;
-    protected Set<AudioFormat> supportedFormats = new HashSet<AudioFormat>();
-    private boolean audioSinkRegistered;
+    private static final int SUBSCRIPTION_DURATION = 3600;
 
-    private UpnpAudioSinkReg audioSinkReg;
+    private volatile boolean audioSupport;
+    protected volatile Set<AudioFormat> supportedFormats = new HashSet<AudioFormat>();
+    private volatile boolean audioSinkRegistered;
+
+    private volatile UpnpAudioSinkReg audioSinkReg;
+
+    private volatile boolean upnpSubscribed;
 
     private static final String UPNP_CHANNEL = "Master";
 
-    private OnOffType soundMute = OnOffType.OFF;
-    private PercentType soundVolume = new PercentType();
-    private List<String> sink = new ArrayList<>();
+    private volatile OnOffType soundMute = OnOffType.OFF;
+    private volatile PercentType soundVolume = new PercentType();
+    private volatile List<String> sink = new ArrayList<>();
 
-    private @Nullable Queue<UpnpEntry> currentQueue;
+    private volatile @Nullable Queue<UpnpEntry> currentQueue;
+
+    private volatile @Nullable ScheduledFuture<?> subscriptionRefreshJob;
+    private final Runnable subscriptionRefresh = () -> {
+        removeSubscription("AVTransport");
+        addSubscription("AVTransport", SUBSCRIPTION_DURATION);
+    };
 
     public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpAudioSinkReg audioSinkReg) {
         super(thing, upnpIOService);
@@ -83,14 +97,27 @@ public class UpnpRendererHandler extends UpnpHandler {
         super.initialize();
     }
 
+    @Override
+    public void dispose() {
+        if (subscriptionRefreshJob != null) {
+            subscriptionRefreshJob.cancel(true);
+        }
+        subscriptionRefreshJob = null;
+        removeSubscription("AVTransport");
+        upnpSubscribed = false;
+        super.dispose();
+    }
+
     private void initRenderer() {
-        addSubscription("AVTransport", 3600);
+        if (!upnpSubscribed) {
+            addSubscription("AVTransport", SUBSCRIPTION_DURATION);
+            upnpSubscribed = true;
+
+            subscriptionRefreshJob = scheduler.scheduleWithFixedDelay(subscriptionRefresh, SUBSCRIPTION_DURATION / 2,
+                    SUBSCRIPTION_DURATION / 2, TimeUnit.SECONDS);
+        }
         getProtocolInfo();
         getTransportState();
-
-        if (audioSupport) {
-            registerAudioSink();
-        }
     }
 
     protected void handlePlayUri(Command command) {
@@ -120,11 +147,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", Integer.toString(avTransportId));
 
-        Map<String, String> result = invokeAction("AVTransport", "Stop", inputs);
-
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        invokeAction("AVTransport", "Stop", inputs);
     }
 
     public void play() {
@@ -132,44 +155,28 @@ public class UpnpRendererHandler extends UpnpHandler {
         inputs.put("InstanceID", Integer.toString(avTransportId));
         inputs.put("Speed", "1");
 
-        Map<String, String> result = invokeAction("AVTransport", "Play", inputs);
-
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        invokeAction("AVTransport", "Play", inputs);
     }
 
     public void pause() {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", Integer.toString(avTransportId));
 
-        Map<String, String> result = invokeAction("AVTransport", "Pause", inputs);
-
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        invokeAction("AVTransport", "Pause", inputs);
     }
 
     protected void next() {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", Integer.toString(avTransportId));
 
-        Map<String, String> result = invokeAction("AVTransport", "Next", inputs);
-
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        invokeAction("AVTransport", "Next", inputs);
     }
 
     protected void previous() {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", Integer.toString(avTransportId));
 
-        Map<String, String> result = invokeAction("AVTransport", "Previous", inputs);
-
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        invokeAction("AVTransport", "Previous", inputs);
     }
 
     public void setCurrentURI(String URI, String URIMetaData) {
@@ -182,23 +189,18 @@ public class UpnpRendererHandler extends UpnpHandler {
             logger.error("Action Invalid Value Format Exception {}", ex.getMessage());
         }
 
-        Map<String, String> result = invokeAction("AVTransport", "SetAVTransportURI", inputs);
-
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        invokeAction("AVTransport", "SetAVTransportURI", inputs);
     }
 
-    public PercentType getVolume() {
+    protected void getUpnpVolume() {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", Integer.toString(rcsId));
         inputs.put("Channel", UPNP_CHANNEL);
 
-        Map<String, String> result = invokeAction("RenderingControl", "GetVolume", inputs);
+        invokeAction("RenderingControl", "GetVolume", inputs);
+    }
 
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), "RenderingControl");
-        }
+    public PercentType getVolume() {
         return soundVolume;
     }
 
@@ -208,24 +210,15 @@ public class UpnpRendererHandler extends UpnpHandler {
         inputs.put("Channel", UPNP_CHANNEL);
         inputs.put("DesiredVolume", String.valueOf(volume.intValue()));
 
-        Map<String, String> result = invokeAction("RenderingControl", "SetVolume", inputs);
-
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), "RenderingControl");
-        }
+        invokeAction("RenderingControl", "SetVolume", inputs);
     }
 
-    protected OnOffType getMute() {
+    protected void getUpnpMute() {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", Integer.toString(rcsId));
         inputs.put("Channel", UPNP_CHANNEL);
 
-        Map<String, String> result = invokeAction("RenderingControl", "GetMute", inputs);
-
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), "RenderingControl");
-        }
-        return soundMute;
+        invokeAction("RenderingControl", "GetMute", inputs);
     }
 
     protected void setMute(OnOffType mute) {
@@ -234,11 +227,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         inputs.put("Channel", UPNP_CHANNEL);
         inputs.put("DesiredMute", mute == OnOffType.ON ? "1" : "0");
 
-        Map<String, String> result = invokeAction("RenderingControl", "SetMute", inputs);
-
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), "RenderingControl");
-        }
+        invokeAction("RenderingControl", "SetMute", inputs);
     }
 
     @Override
@@ -249,18 +238,24 @@ public class UpnpRendererHandler extends UpnpHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case VOLUME:
-                    updateState(channelUID, getVolume());
+                    getUpnpVolume();
                     break;
                 case MUTE:
-                    updateState(channelUID, getMute());
+                    getUpnpMute();
                     break;
                 case CONTROL:
-                    transportState = getTransportState();
+                    transportState = this.transportState;
                     State newState = UnDefType.UNDEF;
                     if (transportState.equals("PLAYING")) {
                         newState = PlayPauseType.PLAY;
                     } else if (transportState.equals("STOPPED")) {
-                        newState = PlayPauseType.PLAY;
+                        newState = PlayPauseType.PAUSE;
+                        updateState(TITLE, StringType.EMPTY);
+                        updateState(ALBUM, StringType.EMPTY);
+                        updateState(ALBUM_ART, UnDefType.NULL);
+                        updateState(CREATOR, StringType.EMPTY);
+                        updateState(TRACK_NUMBER, DecimalType.ZERO);
+                        updateState(DESC, StringType.EMPTY);
                     } else if (transportState.equals("PAUSED_PLAYBACK")) {
                         newState = PlayPauseType.PAUSE;
                     }
@@ -310,6 +305,12 @@ public class UpnpRendererHandler extends UpnpHandler {
         logger.debug("Renderer status changed to {}", status);
         if (status) {
             initRenderer();
+        } else {
+            if (subscriptionRefreshJob != null) {
+                subscriptionRefreshJob.cancel(true);
+            }
+            subscriptionRefreshJob = null;
+            upnpSubscribed = false;
         }
         super.onStatusChanged(status);
     }
@@ -336,7 +337,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                 break;
             case "Sink":
                 if (!((value == null) || (value.isEmpty()))) {
-                    sink = Arrays.asList(value.split(","));
+                    updateProtocolInfo(value);
                 }
                 break;
             case "LastChange":
@@ -370,15 +371,36 @@ public class UpnpRendererHandler extends UpnpHandler {
                     updateState(CONTROL, PlayPauseType.PLAY);
                 }
                 break;
+            case "CurrentURI":
+                break;
+            case "CurrentURIMetaData":
+                List<UpnpEntry> list = UpnpXMLParser.getEntriesFromXML(value);
+                if (list.size() > 0) {
+                    UpnpEntry entry = list.get(0);
+                    updateState(TITLE, StringType.valueOf(entry.getTitle()));
+                    updateState(ALBUM, StringType.valueOf(entry.getAlbum()));
+                    State albumArt;
+                    try {
+                        albumArt = HttpUtil.downloadImage(entry.getAlbumArtUri());
+                    } catch (IllegalArgumentException e) {
+                        albumArt = UnDefType.UNDEF;
+                        logger.debug("Failed to download the content of URL {}", entry.getAlbumArtUri());
+                    }
+                    updateState(ALBUM_ART, albumArt);
+                    updateState(CREATOR, StringType.valueOf(entry.getCreator()));
+                    updateState(TRACK_NUMBER, new DecimalType(entry.getOriginalTrackNumber()));
+                    updateState(DESC, StringType.valueOf(entry.getDesc()));
+                }
+                break;
             default:
                 super.onValueReceived(variable, value, service);
                 break;
         }
     }
 
-    @Override
-    public void getProtocolInfo() {
-        super.getProtocolInfo();
+    public void updateProtocolInfo(String value) {
+        sink.clear();
+        sink.addAll(Arrays.asList(value.split(",")));
 
         Pattern pattern = Pattern.compile("(?:.*):(?:.*):(.*):(?:.*)");
         for (String protocol : sink) {
@@ -402,6 +424,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
         if (audioSupport) {
             logger.debug("Device {} supports audio", thing.getLabel());
+            registerAudioSink();
         }
     }
 
@@ -425,11 +448,28 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     public void serveNext() {
-        logger.debug("Serve next media from queue on renderer {}", thing.getLabel());
         Queue<UpnpEntry> queue = currentQueue;
         if (queue != null) {
             UpnpEntry nextMedia = queue.poll();
-            setCurrentURI(nextMedia.getRes(), "");
+            logger.debug("Serve next media {} from queue on renderer {}", nextMedia, thing.getLabel());
+            if (nextMedia != null) {
+                setCurrentURI(nextMedia.getRes(), "");
+                updateState(TITLE, StringType.valueOf(nextMedia.getTitle()));
+                updateState(ALBUM, StringType.valueOf(nextMedia.getAlbum()));
+                State albumArt;
+                try {
+                    albumArt = HttpUtil.downloadImage(nextMedia.getAlbumArtUri());
+                } catch (IllegalArgumentException e) {
+                    albumArt = UnDefType.UNDEF;
+                    logger.debug("Failed to download the content of URL {}", nextMedia.getAlbumArtUri());
+                }
+                updateState(ALBUM_ART, albumArt);
+                updateState(CREATOR, StringType.valueOf(nextMedia.getCreator()));
+                updateState(TRACK_NUMBER, new DecimalType(nextMedia.getOriginalTrackNumber()));
+                updateState(DESC, StringType.valueOf(nextMedia.getDesc()));
+            }
+        } else {
+            logger.debug("Queue empty on renderer {}", thing.getLabel());
         }
     }
 
