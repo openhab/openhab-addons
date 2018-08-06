@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.grohe.ondus.api.OndusService;
-import org.openhab.binding.groheondus.internal.AccountBridgeGroheOndusConfiguration;
+import org.openhab.binding.groheondus.internal.GroheOndusAccountConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,13 +29,13 @@ import org.slf4j.LoggerFactory;
  * @author Florian Schmidt and Arne Wohlert - Initial contribution
  */
 @NonNullByDefault
-public class AccountBridgeGroheOndusHandler extends BaseBridgeHandler {
+public class GroheOndusAccountHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(AccountBridgeGroheOndusHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(GroheOndusAccountHandler.class);
 
     private @Nullable OndusService ondusService;
 
-    public AccountBridgeGroheOndusHandler(Bridge bridge) {
+    public GroheOndusAccountHandler(Bridge bridge) {
         super(bridge);
     }
 
@@ -62,7 +62,7 @@ public class AccountBridgeGroheOndusHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        AccountBridgeGroheOndusConfiguration config = getConfigAs(AccountBridgeGroheOndusConfiguration.class);
+        GroheOndusAccountConfiguration config = getConfigAs(GroheOndusAccountConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
         try {
@@ -70,7 +70,7 @@ public class AccountBridgeGroheOndusHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
 
             scheduler.submit(() -> getThing().getThings().forEach(thing -> {
-                ApplianceGroheOndusHandler thingHandler = (ApplianceGroheOndusHandler) thing.getHandler();
+                GroheOndusApplianceHandler thingHandler = (GroheOndusApplianceHandler) thing.getHandler();
                 if (thingHandler != null) {
                     thingHandler.updateChannels();
                 }

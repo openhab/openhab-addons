@@ -26,7 +26,7 @@ import org.grohe.ondus.api.OndusService;
 import org.grohe.ondus.api.model.Appliance;
 import org.grohe.ondus.api.model.Location;
 import org.grohe.ondus.api.model.Room;
-import org.openhab.binding.groheondus.internal.handler.AccountBridgeGroheOndusHandler;
+import org.openhab.binding.groheondus.internal.handler.GroheOndusAccountHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,9 +43,9 @@ public class GroheOndusDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(GroheOndusDiscoveryService.class);
 
-    private final AccountBridgeGroheOndusHandler bridgeHandler;
+    private final GroheOndusAccountHandler bridgeHandler;
 
-    public GroheOndusDiscoveryService(AccountBridgeGroheOndusHandler bridgeHandler) {
+    public GroheOndusDiscoveryService(GroheOndusAccountHandler bridgeHandler) {
         super(Collections.singleton(THING_TYPE_APPLIANCE), 30);
         logger.debug("initialize discovery service");
         this.bridgeHandler = bridgeHandler;

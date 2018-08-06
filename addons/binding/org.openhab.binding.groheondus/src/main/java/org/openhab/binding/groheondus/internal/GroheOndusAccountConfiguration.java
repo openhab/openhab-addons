@@ -11,10 +11,8 @@ package org.openhab.binding.groheondus.internal;
 /**
  * @author Florian Schmidt and Arne Wohlert - Initial contribution
  */
-public class ApplianceGroheOndusConfiguration {
+public class GroheOndusAccountConfiguration {
 
-    public String applianceId;
-    public int roomId;
-    public int locationId;
-    public int pollingInterval;
+    public String username;
+    public String password;
 }

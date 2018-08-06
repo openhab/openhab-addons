@@ -52,11 +52,11 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE_ACCOUNT.equals(thingTypeUID)) {
-            AccountBridgeGroheOndusHandler handler = new AccountBridgeGroheOndusHandler((Bridge) thing);
+            GroheOndusAccountHandler handler = new GroheOndusAccountHandler((Bridge) thing);
             registerDeviceDiscoveryService(handler);
             return handler;
         } else if (THING_TYPE_APPLIANCE.equals(thingTypeUID)) {
-            return new ApplianceGroheOndusHandler(thing);
+            return new GroheOndusApplianceHandler(thing);
         }
 
         return null;
@@ -64,7 +64,7 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof AccountBridgeGroheOndusHandler) {
+        if (thingHandler instanceof GroheOndusAccountHandler) {
             ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(thingHandler.getThing().getUID());
 
             if (serviceReg == null) {
@@ -75,7 +75,7 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private void registerDeviceDiscoveryService(AccountBridgeGroheOndusHandler handler) {
+    private void registerDeviceDiscoveryService(GroheOndusAccountHandler handler) {
         GroheOndusDiscoveryService discoveryService = new GroheOndusDiscoveryService(handler);
         discoveryServiceRegs.put(handler.getThing().getUID(),
                 bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));

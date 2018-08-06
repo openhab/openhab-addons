@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="account">
-		<label>GROHE ONDUS Account Interface</label>
+		<label>GROHE ONDUS Account</label>
 		<description>This is an interface to the GROHE ONDUS Account as it is used by the app.</description>
 
 		<config-description>
@@ -28,7 +28,7 @@
 			<bridge-type-ref id="account" />
 		</supported-bridge-type-refs>
 
-		<label>GROHE Appliance Thing</label>
+		<label>GROHE Appliance</label>
 		<description>An appliance from GROHE</description>
 
 		<channels>
