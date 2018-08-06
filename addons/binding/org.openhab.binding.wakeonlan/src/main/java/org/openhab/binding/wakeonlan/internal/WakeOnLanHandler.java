@@ -287,7 +287,7 @@ public class WakeOnLanHandler extends BaseThingHandler {
     }
 
     protected void startOrCleanupPeriodicPing() {
-        if (!periodicPing || pingHostnameOrIp == null || invalidCfg) {
+        if ((!periodicPing && !externalPing) || pingHostnameOrIp == null || invalidCfg) {
             if (periodicPingTimer != null) {
                 periodicPingTimer.cancel();
                 periodicPingTimer = null;
@@ -307,14 +307,14 @@ public class WakeOnLanHandler extends BaseThingHandler {
                 if ((System.currentTimeMillis() - lastPingAt) >= pingIntervalMinutes * 60000
                         || (pingForSomeTimeAtHigherFreq
                                 && (System.currentTimeMillis() - lastPingAt) >= HIGHER_FREQ_PING_INTERVAL_MILLIS)) {
-                    // configuration changed
                     lastPingAt = System.currentTimeMillis();
                     highFreqPingCount++;
-                    if (highFreqPingCount >= 10) {
+                    if (highFreqPingCount >= MAX_HIGHER_FREQ_PING_COUNT) {
                         pingForSomeTimeAtHigherFreq = false;
                         highFreqPingCount = 0;
                     }
-                    if (!periodicPing || pingHostnameOrIp == null || invalidCfg) {
+                    if ((!periodicPing && !externalPing) || pingHostnameOrIp == null || invalidCfg) {
+                        // configuration changed, ping disabled
                         periodicPingTimer.cancel();
                         periodicPingTimer = null;
                         pingForSomeTimeAtHigherFreq = false;

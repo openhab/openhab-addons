@@ -25,6 +25,7 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +95,7 @@ public class ExecUtil {
      * @throws ExecuteException     if there is error during command line execution
      */
     public static Map<Integer, String> executeCommandLineAndWaitResponse(String commandLine, int timeoutMillis,
-            Logger logger) throws InterruptedException, ExecuteException, IOException {
+            @Nullable Logger logger) throws InterruptedException, ExecuteException, IOException {
         String retval = null;
 
         CommandLine cmdLine = null;

@@ -18,7 +18,7 @@ import java.net.UnknownHostException;
 import java.util.Map;
 
 import org.apache.commons.exec.ExecuteException;
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 
 /**
@@ -87,24 +87,30 @@ public class PingHelper {
         }
     }
 
-    public static boolean isHostOnline(String hostnameOrIp, @NonNull Logger logger)
+    public static boolean isHostOnline(String hostnameOrIp, @Nullable Logger logger)
             throws UnsupportedOSException, ExecuteException, InterruptedException, IOException {
         String cmdLine = getPingCommandByOS(hostnameOrIp);
         Map<Integer, String> ret = ExecUtil.executeCommandLineAndWaitResponse(cmdLine, TIMEOUT_MILLIS + 1000, logger);
         if (ret == null || ret.size() == 0) {
             String cmdWithSpaces = cmdLine.replaceAll("@@", " ");
-            logger.warn("Ping command failed: {}", cmdWithSpaces);
+            if (logger != null) {
+                logger.warn("Ping command failed: {}", cmdWithSpaces);
+            }
             return false;
         } else if (ret.keySet().iterator().next() != 0) {
-            logger.debug("Host {} seems to be down.", hostnameOrIp);
+            if (logger != null) {
+                logger.debug("Host {} seems to be down.", hostnameOrIp);
+            }
             return false;
         } else {
-            logger.debug("Host {} seems to be online.", hostnameOrIp);
+            if (logger != null) {
+                logger.debug("Host {} seems to be online.", hostnameOrIp);
+            }
             return true;
         }
     }
 
-    public static boolean isHostOnlineJava(String hostnameOrIp, Logger thingLogger)
+    public static boolean isHostOnlineJava(String hostnameOrIp, @Nullable Logger thingLogger)
             throws UnknownHostException, IOException {
         InetAddress inet = InetAddress.getByName(hostnameOrIp);
         return inet.isReachable(TIMEOUT_MILLIS);
