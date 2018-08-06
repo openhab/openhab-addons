@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="energenie"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="motionSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Motion Detector</label>
+		<description>A motion detector that allows you to monitor movement in your home.</description>
+
+		<channels>
+			<channel typeId="motionState" id="state"/>
+		</channels>
+
+		<properties>
+			<property name="deviceID">Energenie Mi|Home device ID (retrieved after registration)</property>
+			<property name="type">Energenie Mi|Home device type</property>
+			<property name="gatewayID">Energenie Mi|Home gateway ID</property>
+		</properties>
+
+		<config-description-ref uri="energenie:subdevices"/>
+	</thing-type>
+
+	<channel-type id="motionState">
+		<item-type>Switch</item-type>
+		<label>Motion detection</label>
+		<description>Set to ON when movement starts and OFF when movement stops</description>
+		<category>Motion</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

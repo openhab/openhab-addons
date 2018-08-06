@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="energenie"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="energyMonitor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>House Energy Monitor</label>
+		<description>A house energy monitor that allows you to monitor the power and energy usage of your entire home.</description>
+
+		<channels>
+			<channel typeId="voltage" id="voltage"/>
+			<channel typeId="power" id="realPower"/>
+			<channel typeId="consumption" id="todayConsumption"/>
+		</channels>
+
+		<properties>
+			<property name="deviceID">Mi|Home device ID (received after registration)</property>
+			<property name="type">Mi|Home device type</property>
+			<property name="gatewayID">Mi|Home gateway ID</property>
+		</properties>
+
+		<config-description-ref uri="energenie:subdevices"/>
+	</thing-type>
+
+	<channel-type id="voltage">
+		<item-type>Number</item-type>
+		<label>Voltage</label>
+		<description>Voltage</description>
+		<state pattern="%.2f V" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<description>Real power</description>
+		<state pattern="%d W" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="consumption">
+		<item-type>Number</item-type>
+		<label>Consumption</label>
+		<description>Today consumption</description>
+		<state pattern="%d Wh" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

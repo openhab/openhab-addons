@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="energenie" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>Energenie Mi|Home Binding</name>
+	<description>This is the binding for the Energenie Mi|Home house home automation solution</description>
+	<author>Musala Soft JSC</author>
+
+	<config-description-ref uri="energenie:binding:config" />
+</binding:binding>

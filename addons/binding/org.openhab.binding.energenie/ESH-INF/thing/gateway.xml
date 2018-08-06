@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="energenie"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="gateway">
+		<label>Home Gateway</label>
+		<description>The Gateway provides the communications between all your Mi|Home devices and the internet.</description>
+
+		<channels>
+			<channel typeId="lastSeen" id="lastSeen"/>
+		</channels>
+
+		<properties>
+			<property name="deviceID">Mi|Home device ID (retrieved after registration)</property>
+			<property name="type">Mi|Home device type</property>
+			<property name="userID">Mi|Home user ID (retrieved after registration)</property>
+			<property name="mac">Mac address</property>
+			<property name="ip">IP v4 address</property>
+			<property name="port">Port</property>
+			<property name="firmwareVersion">Firmware version id:</property>
+		</properties>
+
+		<config-description-ref uri="energenie:gateway"/>
+	</bridge-type>
+
+	<channel-type id="lastSeen">
+		<item-type>DateTime</item-type>
+		<label>Last seen</label>
+		<description>Time when the device was last seen from the Mi|Home server</description>
+		<state pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>
