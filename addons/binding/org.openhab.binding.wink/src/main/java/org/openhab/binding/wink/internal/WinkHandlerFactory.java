@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -37,40 +37,40 @@ import com.google.common.collect.ImmutableSet;
  */
 public class WinkHandlerFactory extends BaseThingHandlerFactory {
 
-	private Logger logger = LoggerFactory.getLogger(WinkHandlerFactory.class);
+    private Logger logger = LoggerFactory.getLogger(WinkHandlerFactory.class);
 
-	public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_LIGHT_BULB,
-			THING_TYPE_REMOTE, THING_TYPE_BINARY_SWITCH, THING_TYPE_LOCK, THING_TYPE_DOORBELL, THING_TYPE_THERMOSTAT);
+    public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_LIGHT_BULB,
+            THING_TYPE_REMOTE, THING_TYPE_BINARY_SWITCH, THING_TYPE_LOCK, THING_TYPE_DOORBELL, THING_TYPE_THERMOSTAT);
 
-	private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_WINK_HUB_2);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_WINK_HUB_2);
 
-	@Override
-	public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-		logger.debug("Checking if the factory supports {}", thingTypeUID.toString());
-		return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
-				|| DISCOVERABLE_DEVICE_TYPES_UIDS.contains(thingTypeUID);
-	}
+    @Override
+    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+        logger.debug("Checking if the factory supports {}", thingTypeUID.toString());
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
+                || DISCOVERABLE_DEVICE_TYPES_UIDS.contains(thingTypeUID);
+    }
 
-	@Override
-	protected ThingHandler createHandler(Thing thing) {
-		ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+    @Override
+    protected ThingHandler createHandler(Thing thing) {
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-		if (thingTypeUID.equals(THING_TYPE_WINK_HUB_2)) {
-			return new WinkHub2BridgeHandler((Bridge) thing);
-		} else if (thingTypeUID.equals(THING_TYPE_LIGHT_BULB)) {
-			return new LightBulbHandler(thing);
-		} else if (thingTypeUID.equals(THING_TYPE_REMOTE)) {
-			return new RemoteHandler(thing);
-		} else if (thingTypeUID.equals(THING_TYPE_BINARY_SWITCH)) {
-			return new BinarySwitchHandler(thing);
-		} else if (thingTypeUID.equals(THING_TYPE_LOCK)) {
-			return new LockHandler(thing);
-		} else if (thingTypeUID.equals(THING_TYPE_DOORBELL)) {
-			return new DoorBellHandler(thing);
-		} else if (thingTypeUID.equals(THING_TYPE_THERMOSTAT)) {
-			return new ThermostatHandler(thing);
-		}
+        if (thingTypeUID.equals(THING_TYPE_WINK_HUB_2)) {
+            return new WinkHub2BridgeHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(THING_TYPE_LIGHT_BULB)) {
+            return new LightBulbHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_REMOTE)) {
+            return new RemoteHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_BINARY_SWITCH)) {
+            return new BinarySwitchHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_LOCK)) {
+            return new LockHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_DOORBELL)) {
+            return new DoorBellHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_THERMOSTAT)) {
+            return new ThermostatHandler(thing);
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

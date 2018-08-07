@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -37,7 +37,7 @@ import com.google.gson.JsonParser;
  * The authentication service is hosted in Heroku and owned current by Shawn Crosby (sacrosby@gmail.com) and
  * based on the python-social-auth django app.
  *
- * @author Shawn Crosby
+ * @author Shawn Crosby - Initial contribution
  *
  */
 public class DelegatedAuthenticationService implements IWinkAuthenticationService {
@@ -78,6 +78,8 @@ public class DelegatedAuthenticationService implements IWinkAuthenticationServic
         Response response = tokenPath.request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", "Token " + this.auth_token).get();
         client.close();
+        
+        logger.debug("Refresh token response status: {}", response.getStatus());
         JsonElement json = getResultAsJson(response);
 
         if (json.getAsJsonObject().get("access_token") != null) {
@@ -89,6 +91,9 @@ public class DelegatedAuthenticationService implements IWinkAuthenticationServic
 
     private JsonElement getResultAsJson(Response response) {
         String result = response.readEntity(String.class);
+        
+        logger.debug("DelegatedAuthenticationService::getResultAsJson() response passed in = {}", result);
+
         JsonParser parser = new JsonParser();
         JsonObject resultJson = parser.parse(result).getAsJsonObject();
 

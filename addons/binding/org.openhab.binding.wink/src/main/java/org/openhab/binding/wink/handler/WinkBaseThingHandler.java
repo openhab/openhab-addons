@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,6 +24,7 @@ import org.openhab.binding.wink.client.AuthenticationException;
 import org.openhab.binding.wink.client.IWinkDevice;
 import org.openhab.binding.wink.client.JsonWinkDevice;
 import org.openhab.binding.wink.client.WinkSupportedDevice;
+import org.openhab.binding.wink.client.WinkAuthenticationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +43,7 @@ import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
  * This is the base class for devices connected to the wink hub. Implements pubnub registration
  * and initialization for all wink devices.
  *
- * @author Shawn Crosby
+ * @author Shawn Crosby - Initial contribution
  *
  */
 public abstract class WinkBaseThingHandler extends BaseThingHandler {
@@ -60,17 +61,34 @@ public abstract class WinkBaseThingHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing Device {}", getThing());
         bridgeHandler = (WinkHub2BridgeHandler) getBridge().getHandler();
+        
+        // Wait for the WinkAuthenticationService to complete. Otherwise the code below will throw and not be attempted again.
+        long start = System.nanoTime();
+        logger.debug("start time: {}", start);
+        long timeout = 2000000000; // 2 seconds
+        while (null == WinkAuthenticationService.getInstance().getAuthToken() &&
+                (System.nanoTime() - start) < timeout){
+            logger.debug("Waiting for WinkAuthenticationService to get setup.");
+            try{
+                TimeUnit.MILLISECONDS.sleep(250);
+            } 
+            catch(InterruptedException ex) 
+            {
+                Thread.currentThread().interrupt();
+            }
+        }
+    
         if (getThing().getConfiguration().get("uuid") == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "UUID must be specified in Config");
         } else {
             try {
-                    if (getDevice().getCurrentState().get("connection").equals("true")) {
-                        updateStatus(ThingStatus.ONLINE);
-                        logger.debug("Thing is online, calling updateDeviceState()");
-                        updateDeviceState(getDevice());
-                        logger.debug("updateDeviceState() returned.  Calling registerToPubNub");
-                        registerToPubNub();
+                if (getDevice().getCurrentState().get("connection").equals("true")) {
+                    updateStatus(ThingStatus.ONLINE);
+                    logger.debug("Thing is online, calling updateDeviceState()");
+                    updateDeviceState(getDevice());
+                    logger.debug("updateDeviceState() returned.  Calling registerToPubNub");
+                    registerToPubNub();
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device Not Connected");
                 }
@@ -121,7 +139,7 @@ public abstract class WinkBaseThingHandler extends BaseThingHandler {
      * @param command
      */
     protected abstract void handleWinkCommand(ChannelUID channelUID, Command command);
-	
+
     @Override
     public void channelLinked(ChannelUID channelUID) {
         try {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * This object represents a device connected to a wink hub. Currently abstracts away the json bits
  *
- * @author scrosby
+ * @author scrosby - Initial contribution
  *
  */
 public interface IWinkDevice {
