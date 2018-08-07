@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UpnpRendererHandler extends UpnpHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(UpnpRendererHandler.class);
 
     private static final int SUBSCRIPTION_DURATION = 3600;
 
@@ -467,9 +467,18 @@ public class UpnpRendererHandler extends UpnpHandler {
                 updateState(CREATOR, StringType.valueOf(nextMedia.getCreator()));
                 updateState(TRACK_NUMBER, new DecimalType(nextMedia.getOriginalTrackNumber()));
                 updateState(DESC, StringType.valueOf(nextMedia.getDesc()));
+            } else {
+                updateState(CONTROL, PlayPauseType.PAUSE);
+                stop();
+                updateState(TITLE, UnDefType.UNDEF);
+                updateState(ALBUM, UnDefType.UNDEF);
+                updateState(ALBUM_ART, UnDefType.UNDEF);
+                updateState(CREATOR, UnDefType.UNDEF);
+                updateState(TRACK_NUMBER, UnDefType.UNDEF);
+                updateState(DESC, UnDefType.UNDEF);
+
+                logger.debug("Queue empty on renderer {}", thing.getLabel());
             }
-        } else {
-            logger.debug("Queue empty on renderer {}", thing.getLabel());
         }
     }
 

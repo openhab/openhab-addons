@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UpnpServerHandler extends UpnpHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(UpnpServerHandler.class);
 
     private ConcurrentMap<String, UpnpRendererHandler> upnpRenderers;
     private volatile @Nullable UpnpRendererHandler currentRendererHandler;
@@ -67,7 +67,8 @@ public class UpnpServerHandler extends UpnpHandler {
 
     private volatile String currentId = DIRECTORY_ROOT;
     private volatile @Nullable String currentSelection;
-    private volatile Map<String, String> parentMap = new HashMap<>();
+    private volatile @Nullable String searchCriteria;
+    private volatile Map<String, UpnpEntry> entryMap = new HashMap<>();
 
     private List<String> source = new ArrayList<>();
 
@@ -79,14 +80,12 @@ public class UpnpServerHandler extends UpnpHandler {
         super(thing, upnpIOService);
         this.upnpRenderers = upnpRenderers;
         this.upnpStateDescriptionProvider = upnpStateDescriptionProvider;
-        this.parentMap.put(DIRECTORY_ROOT, DIRECTORY_ROOT);
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing handler for media server device {}", thing.getLabel());
 
-        // rendererChannelUID = new ChannelUID(thing.getUID(), UPNPRENDERER);
         rendererChannelUID = thing.getChannel(UPNPRENDERER).getUID();
         currentTitleChannelUID = thing.getChannel(CURRENTTITLE).getUID();
 
@@ -98,6 +97,7 @@ public class UpnpServerHandler extends UpnpHandler {
     }
 
     private void initServer() {
+        rendererStateOptionList = new ArrayList<>();
         upnpRenderers.forEach((key, value) -> {
             StateOption stateOption = new StateOption(key, value.getThing().getLabel());
             rendererStateOptionList.add(stateOption);
@@ -105,6 +105,8 @@ public class UpnpServerHandler extends UpnpHandler {
         updateStateDescription(rendererChannelUID, rendererStateOptionList);
 
         getProtocolInfo();
+
+        browse(currentId, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
     }
 
     @Override
@@ -115,9 +117,13 @@ public class UpnpServerHandler extends UpnpHandler {
             case UPNPRENDERER:
                 if (command instanceof StringType) {
                     currentRendererHandler = (upnpRenderers.get(((StringType) command).toString()));
-                    updateTitleSelection(currentId, currentTitleChannelUID);
+                    if (Boolean.parseBoolean(getConfig().get(CONFIG_FILTER).toString())) {
+                        // only refresh title list if filtering by renderer capabilities
+                        browse(currentId, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
+                    }
                 }
                 updateState(SELECT, OnOffType.OFF);
+                updateState(SEARCH, OnOffType.OFF);
                 updateState(SERVE, OnOffType.OFF);
                 break;
             case CURRENTTITLE:
@@ -125,6 +131,7 @@ public class UpnpServerHandler extends UpnpHandler {
                     currentSelection = command.toString();
                 }
                 updateState(SELECT, OnOffType.OFF);
+                updateState(SEARCH, OnOffType.OFF);
                 updateState(SERVE, OnOffType.OFF);
                 break;
             case SELECT:
@@ -132,21 +139,57 @@ public class UpnpServerHandler extends UpnpHandler {
                     String browseTarget = currentSelection;
                     if (browseTarget != null) {
                         if (browseTarget.equals(UP)) {
-                            browseTarget = parentMap.get(currentId);
+                            if (entryMap.get(currentId) != null) {
+                                browseTarget = entryMap.get(currentId).getParentId();
+                            } else {
+                                browseTarget = DIRECTORY_ROOT;
+                            }
                         }
-                        logger.debug("browse target {}", browseTarget);
-                        updateTitleSelection(browseTarget, currentTitleChannelUID);
+                        logger.debug("Browse target {}", browseTarget);
+                        currentId = browseTarget;
+                        browse(currentId, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
                     }
                 }
                 updateState(SERVE, OnOffType.OFF);
+                break;
+            case SEARCHCRITERIA:
+                if (command instanceof StringType) {
+                    searchCriteria = command.toString();
+                }
+                updateState(SELECT, OnOffType.OFF);
+                updateState(SEARCH, OnOffType.OFF);
+                updateState(SERVE, OnOffType.OFF);
+                break;
+            case SEARCH:
+                if (command == OnOffType.ON) {
+                    String criteria = this.searchCriteria;
+                    if (criteria != null) {
+                        String searchContainer;
+                        if (entryMap.get(currentId) != null) {
+                            if (entryMap.get(currentId).isContainer()) {
+                                searchContainer = currentId;
+                            } else {
+                                searchContainer = entryMap.get(currentId).getParentId();
+                            }
+                        } else {
+                            searchContainer = DIRECTORY_ROOT;
+                        }
+                        logger.debug("Search container {} for {}", searchContainer, criteria);
+                        search(searchContainer, criteria, "*", "0", "0", "+dc:title");
+                    } else {
+                        logger.warn("No search criteria defined.");
+                    }
+                }
                 break;
             case SERVE:
                 if (command == OnOffType.ON) {
                     serveMedia();
                 }
                 updateState(SELECT, OnOffType.OFF);
+                updateState(SEARCH, OnOffType.OFF);
                 break;
         }
+
     }
 
     public void addRendererOption(String key) {
@@ -166,9 +209,7 @@ public class UpnpServerHandler extends UpnpHandler {
         logger.debug("Renderer option {} removed from {}", key, thing.getLabel());
     }
 
-    private void updateTitleSelection(String browseTarget, ChannelUID currentTitleChannelUID) {
-        browse(browseTarget, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
-        currentId = browseTarget;
+    private void updateTitleSelection() {
         logger.debug("Navigating to node {} on server {}", currentId, thing.getLabel());
 
         List<UpnpEntry> list;
@@ -195,11 +236,7 @@ public class UpnpServerHandler extends UpnpHandler {
             stateOptionList.add(stateOption);
             logger.debug("{} added to selection list", value.getId());
 
-            // update the parentMap, so we can retract when UP gets selected
-            String newSelection = value.getId();
-            String parentId = value.getParentId();
-            parentMap.put(newSelection, parentId);
-            logger.debug("{} with parent {} added to parent map", newSelection, parentId);
+            entryMap.put(value.getId(), value);
         });
         updateStateDescription(currentTitleChannelUID, stateOptionList);
 
@@ -235,6 +272,17 @@ public class UpnpServerHandler extends UpnpHandler {
         upnpStateDescriptionProvider.setDescription(channelUID, stateDescription);
     }
 
+    /**
+     * Method that does a UPnP browse on a content directory. Results will be retrieved in the {@link onValueReceived}
+     * method
+     *
+     * @param objectID content directory object
+     * @param browseFlag BrowseMetaData or BrowseDirectChildren
+     * @param filter properties to be returned
+     * @param startingIndex starting index of objects to return
+     * @param requestedCount number of objects to return, 0 for all
+     * @param sortCriteria sort criteria, example: +dc:title
+     */
     public void browse(String objectID, String browseFlag, String filter, String startingIndex, String requestedCount,
             String sortCriteria) {
         Map<String, String> inputs = new HashMap<>();
@@ -246,6 +294,34 @@ public class UpnpServerHandler extends UpnpHandler {
         inputs.put("SortCriteria", sortCriteria);
 
         invokeAction("ContentDirectory", "Browse", inputs);
+    }
+
+    /**
+     * Method that does a UPnP search on a content directory. Results will be retrieved in the {@link onValueReceived}
+     * method
+     *
+     * @param containerID content directory container
+     * @param searchCriteria search criteria, examples:
+     *            dc:title contains "song"
+     *            dc:creator contains "Springsteen"
+     *            upnp:class = "object.item.audioItem"
+     *            upnp:album contains "Born in"
+     * @param filter properties to be returned
+     * @param startingIndex starting index of objects to return
+     * @param requestedCount number of objects to return, 0 for all
+     * @param sortCriteria sort criteria, example: +dc:title
+     */
+    public void search(String containerID, String searchCriteria, String filter, String startingIndex,
+            String requestedCount, String sortCriteria) {
+        Map<String, String> inputs = new HashMap<>();
+        inputs.put("ContainerID", containerID);
+        inputs.put("SearchCriteria", searchCriteria);
+        inputs.put("Filter", filter);
+        inputs.put("StartingIndex", startingIndex);
+        inputs.put("RequestedCount", requestedCount);
+        inputs.put("SortCriteria", sortCriteria);
+
+        invokeAction("ContentDirectory", "Search", inputs);
     }
 
     @Override
@@ -270,6 +346,7 @@ public class UpnpServerHandler extends UpnpHandler {
                 }
                 resultList.clear();
                 resultList.addAll(UpnpXMLParser.getEntriesFromXML(value));
+                updateTitleSelection();
                 break;
             case "NumberReturned":
                 numberReturned = Integer.parseInt(value);
@@ -304,7 +381,7 @@ public class UpnpServerHandler extends UpnpHandler {
             logger.debug("Serving media queue {} from server {} to renderer {}.", mediaQueue, thing.getLabel(),
                     handler.getThing().getLabel());
         } else {
-            logger.debug("Cannot serve media from server {}, no renderer selected.", thing.getLabel());
+            logger.warn("Cannot serve media from server {}, no renderer selected.", thing.getLabel());
         }
     }
 }

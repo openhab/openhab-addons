@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOParticipant {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(UpnpHandler.class);
 
     protected UpnpIOService service;
     protected volatile String transportState = "";
@@ -64,31 +64,19 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         inputs.put("PeerConnectionManager", peerConnectionManager);
         inputs.put("PeerConnectionID", Integer.toString(peerConnectionId));
         inputs.put("Direction", direction);
-        Map<String, String> result = service.invokeAction(this, "ConnectionManager", "PrepareForConnection", inputs);
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), "ConnectionManager");
-        }
-        return;
+        invokeAction("ConnectionManager", "PrepareForConnection", inputs);
     }
 
     protected void connectionComplete(int connectionId) {
         HashMap<String, String> inputs = new HashMap<String, String>();
         inputs.put("ConnectionID", String.valueOf(connectionId));
-        Map<String, String> result = service.invokeAction(this, "ConnectionManager", "connectionComplete", inputs);
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), "ConnectionManager");
-        }
-        return;
+        invokeAction("ConnectionManager", "connectionComplete", inputs);
     }
 
     protected void getTransportState() {
         HashMap<String, String> inputs = new HashMap<String, String>();
         inputs.put("InstanceID", Integer.toString(avTransportId));
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "GetTransportInfo", inputs);
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), "AVTransport");
-        }
-        return;
+        invokeAction("AVTransport", "GetTransportInfo", inputs);
     }
 
     @Override

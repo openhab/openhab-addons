@@ -15,9 +15,9 @@
 			<channel id="stop" typeId="stop" />
 			<channel id="title" typeId="title" />
 			<channel id="album" typeId="album" />
-			<channel id="albumArt" typeId="albumArt" />
+			<channel id="albumart" typeId="albumart" />
 			<channel id="creator" typeId="creator" />
-			<channel id="trackNumber" typeId="trackNumber" />
+			<channel id="tracknumber" typeId="tracknumber" />
 			<channel id="desc" typeId="desc" />
 		</channels>
 	</thing-type>
@@ -28,6 +28,8 @@
 			<channel id="upnprenderer" typeId="upnprenderer" />
 			<channel id="currenttitle" typeId="currenttitle" />
 			<channel id="select" typeId="select" />
+            <channel id="searchcriteria" typeId="searchcriteria" />
+            <channel id="search" typeId="search" />
 			<channel id="serve" typeId="serve" />
 		</channels>
 		<config-description>
@@ -75,7 +77,7 @@
 		<description>Now playing album</description>
 		<state readOnly="true" />
 	</channel-type>
-	<channel-type id="albumArt">
+	<channel-type id="albumart">
 		<item-type>Image</item-type>
 		<label>Album Art</label>
 		<description>Now playing album art</description>
@@ -87,7 +89,7 @@
 		<description>Now playing creator</description>
 		<state readOnly="true" />
 	</channel-type>
-	<channel-type id="trackNumber">
+	<channel-type id="tracknumber">
 		<item-type>Number</item-type>
 		<label>Track Number</label>
 		<description>Now playing track number</description>
@@ -115,6 +117,16 @@
 		<label>Select</label>
 		<description>Select item from directory</description>
 	</channel-type>
+    <channel-type id="searchcriteria">
+        <item-type>String</item-type>
+        <label>Search Criteria</label>
+        <description>Search criteria for searching the directory</description>
+    </channel-type>
+    <channel-type id="search">
+        <item-type>Switch</item-type>
+        <label>Search</label>
+        <description>Execute search with search criteria</description>
+    </channel-type>
 	<channel-type id="serve">
 		<item-type>Switch</item-type>
 		<label>Serve</label>
