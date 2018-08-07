@@ -59,7 +59,22 @@ public class GroheOndusApplianceHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(GroheOndusApplianceConfiguration.class);
-        scheduler.submit(() -> updateChannels());
+
+        OndusService ondusService = getOndusService();
+        if (ondusService == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    "No initialized OndusService available from bridge.");
+            return;
+        }
+
+        Appliance appliance = getAppliance(ondusService);
+        if (appliance == null) {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, "Could not load appliance");
+            return;
+        }
+        int pollingInterval = getPollingInterval(appliance);
+        scheduler.scheduleAtFixedRate(this::updateChannels, 0, pollingInterval, TimeUnit.SECONDS);
+
         updateStatus(ThingStatus.UNKNOWN);
     }
 
@@ -95,8 +110,6 @@ public class GroheOndusApplianceHandler extends BaseThingHandler {
         Measurement measurement = getLastMeasurement(appliance);
         getThing().getChannels().forEach(channel -> updateChannel(channel.getUID(), appliance, measurement));
 
-        int pollingInterval = getPollingInterval(appliance);
-        scheduler.schedule(this::updateChannels, pollingInterval, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
     }
 
