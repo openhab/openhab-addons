@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.tado.handler;
 
+import static org.openhab.binding.tado.internal.api.TadoApiTypeUtils.terminationConditionTemplateToTerminationCondition;
+
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -35,9 +37,10 @@ import org.openhab.binding.tado.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.TadoBindingConstants.ZoneType;
 import org.openhab.binding.tado.internal.TadoHvacChange;
 import org.openhab.binding.tado.internal.adapter.TadoZoneStateAdapter;
-import org.openhab.binding.tado.internal.api.TadoClientException;
+import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.internal.api.model.Overlay;
+import org.openhab.binding.tado.internal.api.model.OverlayTemplate;
 import org.openhab.binding.tado.internal.api.model.OverlayTerminationCondition;
 import org.openhab.binding.tado.internal.api.model.Zone;
 import org.openhab.binding.tado.internal.api.model.ZoneState;
@@ -77,12 +80,13 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         return ZoneType.valueOf(zoneTypeStr);
     }
 
-    public OverlayTerminationCondition getDefaultTerminationCondition() throws IOException, TadoClientException {
-        return getApi().getDefaultTerminationCondition(getHomeId(), getZoneId());
+    public OverlayTerminationCondition getDefaultTerminationCondition() throws IOException, ApiException {
+        OverlayTemplate overlayTemplate = getApi().showZoneDefaultOverlay(getHomeId(), getZoneId());
+        return terminationConditionTemplateToTerminationCondition(overlayTemplate.getTerminationCondition());
     }
 
-    public ZoneState getZoneState() throws IOException, TadoClientException {
-        return getApi().getZoneState(getHomeId(), getZoneId());
+    public ZoneState getZoneState() throws IOException, ApiException {
+        return getApi().showZoneState(getHomeId(), getZoneId());
     }
 
     public GenericZoneCapabilities getZoneCapabilities() {
@@ -93,14 +97,14 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         return getHomeHandler().getTemperatureUnit();
     }
 
-    public Overlay setOverlay(Overlay overlay) throws IOException, TadoClientException {
+    public Overlay setOverlay(Overlay overlay) throws IOException, ApiException {
         logger.debug("Setting overlay of home {} and zone {}", getHomeId(), getZoneId());
-        return getApi().setOverlay(getHomeId(), getZoneId(), overlay);
+        return getApi().updateZoneOverlay(getHomeId(), getZoneId(), overlay);
     }
 
-    public void removeOverlay() throws IOException, TadoClientException {
+    public void removeOverlay() throws IOException, ApiException {
         logger.debug("Removing overlay of home {} and zone {}", getHomeId(), getZoneId());
-        getApi().removeOverlay(getHomeId(), getZoneId());
+        getApi().deleteZoneOverlay(getHomeId(), getZoneId());
     }
 
     @Override
@@ -177,8 +181,8 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             try {
-                Zone zoneDetails = getApi().getZoneDetails(getHomeId(), getZoneId());
-                GenericZoneCapabilities capabilities = getApi().getZoneCapabilities(getHomeId(), getZoneId());
+                Zone zoneDetails = getApi().showZoneDetails(getHomeId(), getZoneId());
+                GenericZoneCapabilities capabilities = getApi().showZoneCapabilities(getHomeId(), getZoneId());
 
                 if (zoneDetails == null || capabilities == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -189,7 +193,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_NAME, zoneDetails.getName());
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_TYPE, zoneDetails.getType().name());
                 this.capabilities = capabilities;
-            } catch (IOException | TadoClientException e) {
+            } catch (IOException | ApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not connect to server due to " + e.getMessage());
                 cancelScheduledZoneStateUpdate();
@@ -238,7 +242,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             updateState(TadoBindingConstants.CHANNEL_ZONE_OVERLAY_EXPIRY, state.getOverlayExpiration());
 
             onSuccessfulOperation();
-        } catch (IOException | TadoClientException e) {
+        } catch (IOException | ApiException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to server due to " + e.getMessage());
         }
@@ -273,7 +277,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 change.apply();
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            } catch (TadoClientException e) {
+            } catch (ApiException e) {
                 logger.error("Could not apply HVAC change on home {} and zone {}: " + e.getMessage(), e, getHomeId(),
                         getZoneId());
             } finally {

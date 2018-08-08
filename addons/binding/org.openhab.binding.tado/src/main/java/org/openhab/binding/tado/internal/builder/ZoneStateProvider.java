@@ -11,7 +11,7 @@ package org.openhab.binding.tado.internal.builder;
 import java.io.IOException;
 
 import org.openhab.binding.tado.handler.TadoZoneHandler;
-import org.openhab.binding.tado.internal.api.TadoClientException;
+import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.ZoneState;
 
 /**
@@ -27,7 +27,7 @@ public class ZoneStateProvider {
         this.zoneHandler = zoneHandler;
     }
 
-    ZoneState getZoneState() throws IOException, TadoClientException {
+    ZoneState getZoneState() throws IOException, ApiException {
         if (this.zoneState == null) {
             ZoneState retrievedZoneState = zoneHandler.getZoneState();
             // empty zone state behaves like a NULL object

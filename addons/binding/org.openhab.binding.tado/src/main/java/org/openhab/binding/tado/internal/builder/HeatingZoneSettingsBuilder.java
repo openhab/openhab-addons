@@ -14,7 +14,7 @@ import java.io.IOException;
 
 import org.openhab.binding.tado.TadoBindingConstants.FanSpeed;
 import org.openhab.binding.tado.TadoBindingConstants.HvacMode;
-import org.openhab.binding.tado.internal.api.TadoClientException;
+import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
 import org.openhab.binding.tado.internal.api.model.HeatingZoneSetting;
@@ -43,7 +43,7 @@ public class HeatingZoneSettingsBuilder extends ZoneSettingsBuilder {
 
     @Override
     public GenericZoneSetting build(ZoneStateProvider zoneStateProvider, GenericZoneCapabilities capabilities)
-            throws IOException, TadoClientException {
+            throws IOException, ApiException {
         if (mode == HvacMode.OFF) {
             return heatingSetting(false);
         }
@@ -60,7 +60,7 @@ public class HeatingZoneSettingsBuilder extends ZoneSettingsBuilder {
     }
 
     private void addMissingSettingParts(HeatingZoneSetting setting, ZoneStateProvider zoneStateProvider)
-            throws IOException, TadoClientException {
+            throws IOException, ApiException {
         if (setting.getTemperature() == null) {
             TemperatureObject temperatureObject = getCurrentOrDefaultTemperature(zoneStateProvider);
             setting.setTemperature(temperatureObject);
@@ -68,7 +68,7 @@ public class HeatingZoneSettingsBuilder extends ZoneSettingsBuilder {
     }
 
     private TemperatureObject getCurrentOrDefaultTemperature(ZoneStateProvider zoneStateProvider)
-            throws IOException, TadoClientException {
+            throws IOException, ApiException {
         HeatingZoneSetting zoneSetting = (HeatingZoneSetting) zoneStateProvider.getZoneState().getSetting();
 
         if (zoneSetting != null && zoneSetting.getTemperature() != null) {

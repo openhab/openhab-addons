@@ -412,6 +412,7 @@ definitions:
     - type
 
   HeatingZoneSetting:
+    x-discriminator-value: HEATING
     allOf:
     - $ref: "#/definitions/GenericZoneSetting"
     - properties:
@@ -444,6 +445,7 @@ definitions:
     - AUTO
 
   CoolingZoneSetting:
+    x-discriminator-value: AIR_CONDITIONING
     allOf:
     - $ref: "#/definitions/GenericZoneSetting"
     - properties:
@@ -466,6 +468,7 @@ definitions:
       - power
 
   HotWaterZoneSetting:
+    x-discriminator-value: HOT_WATER
     allOf:
     - $ref: "#/definitions/GenericZoneSetting"
     - properties:
@@ -630,16 +633,19 @@ definitions:
 
   ManualTerminationCondition:
     description: The overlay only terminates when it is manually removed.
+    x-discriminator-value: MANUAL
     allOf:
     - $ref: "#/definitions/OverlayTerminationCondition"
 
   TadoModeTerminationCondition:
     description: The overlay terminates when the tado mode changes or when the setting (power, temperature, ...) of the underlying block schedule changes (or when removed manually).
+    x-discriminator-value: TADO_MODE
     allOf:
     - $ref: "#/definitions/OverlayTerminationCondition"
 
   TimerTerminationCondition:
     description: The overlay terminates at a certain point in time (or when removed manually).
+    x-discriminator-value: TIMER
     allOf:
     - $ref: "#/definitions/OverlayTerminationCondition"
     - properties:
@@ -697,6 +703,7 @@ definitions:
     - type
 
   TimerTerminationConditionTemplate:
+    x-discriminator-value: TIMER
     allOf:
     - $ref: "#/definitions/OverlayTerminationConditionTemplate"
     - properties:
@@ -817,6 +824,7 @@ definitions:
     - type
 
   AirConditioningCapabilities:
+    x-discriminator-value: AIR_CONDITIONING
     allOf:
     - $ref: "#/definitions/GenericZoneCapabilities"
     - properties:
@@ -847,6 +855,7 @@ definitions:
           $ref: "#/definitions/Power"
 
   HeatingCapabilities:
+    x-discriminator-value: HEATING
     allOf:
     - $ref: "#/definitions/GenericZoneCapabilities"
     - properties:
@@ -856,6 +865,7 @@ definitions:
       - temperatures
 
   HotWaterCapabilities:
+    x-discriminator-value: HOT_WATER
     allOf:
     - $ref: "#/definitions/GenericZoneCapabilities"
     - properties:
