@@ -311,12 +311,11 @@ public abstract class Device {
         this.valid = valid;
     }
 
-    private void setError(boolean error) {
+    public void setError(boolean error) {
         if (this.error != error) {
             this.updated = true;
         }
         this.error = error;
-
     }
 
     public String getSerialNumber() {
