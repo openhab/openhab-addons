@@ -12,6 +12,8 @@ import static org.openhab.binding.plugwise.PlugwiseBindingConstants.*;
 
 import java.time.Duration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -36,13 +38,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public class PlugwiseSwitchHandler extends AbstractSleepingEndDeviceHandler {
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseSwitchHandler.class);
+    private final DeviceType deviceType = DeviceType.SWITCH;
 
-    private PlugwiseSwitchConfig configuration;
-    private DeviceType deviceType = DeviceType.SWITCH;
-    private MACAddress macAddress;
+    private @NonNullByDefault({}) PlugwiseSwitchConfig configuration;
+    private @NonNullByDefault({}) MACAddress macAddress;
 
     // Flag that keeps track of the pending "sleep parameters" Switch configuration update. When the corresponding
     // Thing configuration parameters change it is set to true. When the Switch goes online a command is sent to
@@ -120,7 +123,8 @@ public class PlugwiseSwitchHandler extends AbstractSleepingEndDeviceHandler {
         super.sendConfigurationUpdateCommands();
     }
 
-    private void setUpdateCommandFlags(PlugwiseSwitchConfig oldConfiguration, PlugwiseSwitchConfig newConfiguration) {
+    private void setUpdateCommandFlags(@Nullable PlugwiseSwitchConfig oldConfiguration,
+            PlugwiseSwitchConfig newConfiguration) {
         boolean fullUpdate = newConfiguration.isUpdateConfiguration() && !isConfigurationPending();
         if (fullUpdate) {
             logger.debug("Updating all configuration properties of {} ({})", deviceType, macAddress);

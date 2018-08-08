@@ -19,7 +19,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -57,9 +56,8 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Michael Geramb - Initial contribution
  */
+@Component(service = { DynamicStateDescriptionProvider.class, AmazonEchoDynamicStateDescriptionProvider.class })
 @NonNullByDefault
-@Component(service = { DynamicStateDescriptionProvider.class,
-        AmazonEchoDynamicStateDescriptionProvider.class }, immediate = true)
 public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
 
     private final Logger logger = LoggerFactory.getLogger(AmazonEchoDynamicStateDescriptionProvider.class);
@@ -148,7 +146,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             ArrayList<StateOption> options = new ArrayList<>();
             options.add(new StateOption("", ""));
             @Nullable
-            Map<@NonNull String, @Nullable PlayList @Nullable []> playlistMap = playLists.playlists;
+            Map<String, @Nullable PlayList @Nullable []> playlistMap = playLists.playlists;
             if (playlistMap != null) {
                 for (PlayList[] innerLists : playlistMap.values()) {
                     if (innerLists != null && innerLists.length > 0) {
@@ -208,8 +206,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             if (accountHandler == null) {
                 return originalStateDescription;
             }
-            @NonNull
-            List<@NonNull Device> devices = accountHandler.getLastKnownDevices();
+            List<Device> devices = accountHandler.getLastKnownDevices();
             if (devices.size() == 0) {
                 return originalStateDescription;
             }
@@ -262,8 +259,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             if (account == null) {
                 return originalStateDescription;
             }
-            @NonNull
-            List<@NonNull FlashBriefingProfileHandler> flashbriefings = account.getFlashBriefingProfileHandlers();
+            List<FlashBriefingProfileHandler> flashbriefings = account.getFlashBriefingProfileHandlers();
             if (flashbriefings.isEmpty()) {
                 return originalStateDescription;
             }

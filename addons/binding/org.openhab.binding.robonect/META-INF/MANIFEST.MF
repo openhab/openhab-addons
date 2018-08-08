@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.robonect
 Bundle-ManifestVersion: 2
 Bundle-Name: Robonect Binding
 Bundle-SymbolicName: org.openhab.binding.robonect;singleton:=true
@@ -7,6 +8,7 @@ Bundle-Version: 2.4.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.library.unit,

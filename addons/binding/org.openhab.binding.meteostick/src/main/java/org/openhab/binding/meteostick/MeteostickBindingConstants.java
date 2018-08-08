@@ -36,10 +36,19 @@ public class MeteostickBindingConstants {
     public static final String CHANNEL_RAIN_LASTHOUR = "rain-lasthour";
     public static final String CHANNEL_WIND_SPEED = "wind-speed";
     public static final String CHANNEL_WIND_DIRECTION = "wind-direction";
+    public static final String CHANNEL_WIND_SPEED_LAST2MIN_AVERAGE = "wind-speed-last2min-average";
+    public static final String CHANNEL_WIND_SPEED_LAST2MIN_MAXIMUM = "wind-speed-last2min-maximum";
+    public static final String CHANNEL_WIND_DIRECTION_LAST2MIN_AVERAGE = "wind-direction-last2min-average";
     public static final String CHANNEL_SOLAR_POWER = "solar-power";
     public static final String CHANNEL_SIGNAL_STRENGTH = "signal-strength";
     public static final String CHANNEL_LOW_BATTERY = "low-battery";
 
     // List of parameters
     public static final String PARAMETER_CHANNEL = "channel";
+    public static final String PARAMETER_SPOON = "spoon";
+    public static final String PARAMETER_SPOON_DEFAULT = "0.254";
+
+    // Miscellaneous constants
+    public static final long HOUR_IN_SEC = 60 * 60;
+    public static final long HOUR_IN_MSEC = HOUR_IN_SEC * 1000;
 }

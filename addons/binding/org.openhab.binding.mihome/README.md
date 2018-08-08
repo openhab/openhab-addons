@@ -7,7 +7,7 @@ from the [Google Play](https://play.google.com/store/apps/details?id=com.xiaomi.
 
 ## Supported devices
 
-*   Xiaomi Smart Gateway v2 (with radio support)
+*   Xiaomi Smart Gateway v2 (with radio support) or v3
 *   Xiaomi Smart Temperature and Humidity Sensor (round one)
 *   Xiaomi Smart Door/Window Sensor (round one)
 *   Xiaomi Wireless Switch (round one)
@@ -32,20 +32,18 @@ from the [Google Play](https://play.google.com/store/apps/details?id=com.xiaomi.
 ## Setup
 
 *   Install the binding
-*   Setup Gateway to be discoverable
-
-    1.  Add Gateway 2 or 3 to your WiFi Network
-    2.  Install MiHome app from [Google Play](https://play.google.com/store/apps/details?id=com.xiaomi.smarthome) or [AppStore](https://itunes.apple.com/app/mi-home-xiaomi-for-your-smarthome/id957323480) (your phone may need to be changed to English language first)
-    3.  Set your region to Mainland China under Settings -> Locale (seems to be required)
-    4.  Update gateway to the latest firmware (note that update window may pop up sequentially)
-    5.  Enable developer mode:
+*   Is your gateway already configured to connect to your WiFi? If not:
+    	1. Install MiHome app from [Google Play](https://play.google.com/store/apps/details?id=com.xiaomi.smarthome) or [AppStore](https://itunes.apple.com/app/mi-home-xiaomi-for-your-smarthome/id957323480) (your phone may need to be changed to English language first)
+    	2.  In the app create a Mi Home account and make sure to set your region to Mainland (China) under Settings -> Locale
+    	3.  If asked, update your gateway to the latest firmware (note that update window may pop up sequentially)
+*   Enable developer mode of your gateway:
 
         1.  Select your Gateway in the MiHome app
         2.  Go to the "..." menu on the top right corner and click "About"
-        3.  Tap the version number "Version : 2.XX" at the bottom of the screen repeatedly until you enable developer mode
-        4.  You should now have 2 extra options listed: `local area network communication protocol` and `gateway information`
-        5.  Choose `local area network communication protocol`
-        6.  Tap the toggle switch to enable LAN functions. Note down the developer key (something like: 91bg8zfkf9vd6uw7)
+        3.  Tap the version number "Plug-in version : 2.XX.X" at the bottom of the screen repeatedly until you enable developer mode
+        4.  You should now have 2 extra options listed: `wireless communication protocol` and `hub info`
+        5.  Choose `wireless communication protocol`
+        6.  Tap the toggle switch to enable WiFi functions. Note down the developer key (aka password), something like: 91bg8zfkf9vd6uw7
         7.  Make sure you hit the OK button (to the right of the cancel button) to save your changes
 
 *   In openHAB you should now be able to discover the Xiaomi Gateway
@@ -123,6 +121,15 @@ Number MotionSensor_MotionTimer <clock> { channel="mihome:sensor_motion:<ID>:mot
 DateTime MotionSensor_LastMotion "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_motion:<ID>:lastMotion" }
 Number MotionSensor_Battery <battery> { channel="mihome:sensor_motion:<ID>:batteryLevel" }
 Switch MotionSensor_BatteryLow <energy> { channel="mihome:sensor_motion:<ID>:lowBattery" }
+
+// Xiaomi Aqara Motion Sensor
+Switch MotionSensor_MotionStatus <motion>  { channel="mihome:sensor_motion_aq2:<ID>:motion" }
+// minimum 5 seconds - remember that the sensor only triggers every minute to save energy
+Number MotionSensor_MotionTimer <clock> { channel="mihome:sensor_motion_aq2:<ID>:motionOffTimer" }
+DateTime MotionSensor_LastMotion "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_motion_aq2:<ID>:lastMotion" }
+Number MotionSensor_Battery <battery> { channel="mihome:sensor_motion_aq2:<ID>:batteryLevel" }
+Switch MotionSensor_BatteryLow <energy> { channel="mihome:sensor_motion_aq2:<ID>:lowBattery" }
+Number MotionSensor_Lux "LUX [%.1f]" <sun> { channel="mihome:sensor_motion_aq2:<ID>:illumination" }
 
 // Xiaomi Plug
 Switch Plug_Switch <switch> { channel="mihome:sensor_plug:<ID>:power" }

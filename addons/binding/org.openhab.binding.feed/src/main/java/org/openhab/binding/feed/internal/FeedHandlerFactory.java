@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Svilen Valkanov - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.feed")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.feed")
 public class FeedHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(FEED_THING_TYPE_UID);

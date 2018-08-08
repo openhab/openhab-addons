@@ -32,7 +32,7 @@ import com.google.common.collect.Sets;
  *
  * @author Karel Goderis - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.hdanywhere")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.hdanywhere")
 public class HDanywhereHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_MULTIROOMPLUS,

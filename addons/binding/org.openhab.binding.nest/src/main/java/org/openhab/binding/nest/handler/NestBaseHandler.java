@@ -8,12 +8,14 @@
  */
 package org.openhab.binding.nest.handler;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 import java.util.TimeZone;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Collectors;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -31,17 +33,13 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nest.internal.config.NestDeviceConfiguration;
-import org.openhab.binding.nest.internal.data.Camera;
 import org.openhab.binding.nest.internal.data.NestIdentifiable;
-import org.openhab.binding.nest.internal.data.SmokeDetector;
-import org.openhab.binding.nest.internal.data.Structure;
-import org.openhab.binding.nest.internal.data.Thermostat;
-import org.openhab.binding.nest.internal.listener.NestDeviceDataListener;
+import org.openhab.binding.nest.internal.listener.NestThingDataListener;
 import org.openhab.binding.nest.internal.rest.NestUpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,35 +47,35 @@ import org.slf4j.LoggerFactory;
 /**
  * Deals with the structures on the Nest API, turning them into a thing in openHAB.
  *
- * @author David Bennett - initial contribution
+ * @author David Bennett - Initial contribution
  * @author Martin van Wingerden - Splitted of NestBaseHandler
  * @author Wouter Born - Add generic update data type
  *
  * @param <T> the type of update data
  */
 @NonNullByDefault
-abstract class NestBaseHandler<T> extends BaseThingHandler implements NestDeviceDataListener, NestIdentifiable {
+abstract class NestBaseHandler<T> extends BaseThingHandler implements NestThingDataListener<T>, NestIdentifiable {
     private final Logger logger = LoggerFactory.getLogger(NestBaseHandler.class);
+    private final Set<ChannelUID> linkedChannelUIDs = new CopyOnWriteArraySet<>();
 
-    private @Nullable T lastUpdate;
+    private @Nullable String deviceId;
+    private Class<T> dataClass;
 
-    NestBaseHandler(Thing thing) {
+    NestBaseHandler(Thing thing, Class<T> dataClass) {
         super(thing);
-    }
-
-    protected @Nullable T getLastUpdate() {
-        return lastUpdate;
-    }
-
-    protected void setLastUpdate(T lastUpdate) {
-        this.lastUpdate = lastUpdate;
+        this.dataClass = dataClass;
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing handler for {}", getClass().getName());
-        if (getNestBridgeHandler() != null) {
-            boolean success = getNestBridgeHandler().addDeviceDataListener(this);
+        linkedChannelUIDs.clear();
+        linkedChannelUIDs.addAll(this.getThing().getChannels().stream().filter(c -> isLinked(c.getUID()))
+                .map(c -> c.getUID()).collect(Collectors.toSet()));
+
+        NestBridgeHandler handler = getNestBridgeHandler();
+        if (handler != null) {
+            boolean success = handler.addThingDataListener(dataClass, getId(), this);
             logger.debug("Adding {} with ID '{}' as device data listener, result: {}", getClass().getSimpleName(),
                     getId(), success);
         } else {
@@ -85,14 +83,27 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestDevice
         }
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Waiting for refresh");
+
+        T lastUpdate = getLastUpdate();
+        if (lastUpdate != null) {
+            update(null, lastUpdate);
+        }
     }
 
     @Override
     public void dispose() {
         NestBridgeHandler handler = getNestBridgeHandler();
         if (handler != null) {
-            handler.removeDeviceDataListener(this);
+            handler.removeThingDataListener(dataClass, getId(), this);
         }
+    }
+
+    protected @Nullable T getLastUpdate() {
+        NestBridgeHandler handler = getNestBridgeHandler();
+        if (handler != null) {
+            return handler.getLastUpdate(dataClass, getId());
+        }
+        return null;
     }
 
     protected void addUpdateRequest(String updatePath, String field, Object value) {
@@ -108,20 +119,18 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestDevice
         }
     }
 
-    protected <U extends Quantity<U>> QuantityType<U> commandToQuantityType(Command command, Unit<U> defaultUnit) {
-        if (command instanceof QuantityType) {
-            return (QuantityType<U>) command;
-        }
-        return new QuantityType<U>(new BigDecimal(command.toString()), defaultUnit);
-    }
-
     @Override
     public String getId() {
         return getDeviceId();
     }
 
     protected String getDeviceId() {
-        return getConfigAs(NestDeviceConfiguration.class).deviceId;
+        String localDeviceId = deviceId;
+        if (localDeviceId == null) {
+            localDeviceId = getConfigAs(NestDeviceConfiguration.class).deviceId;
+            deviceId = localDeviceId;
+        }
+        return localDeviceId;
     }
 
     protected @Nullable NestBridgeHandler getNestBridgeHandler() {
@@ -157,7 +166,7 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestDevice
         return value == null ? UnDefType.NULL : new StringType(value.toString());
     }
 
-    protected State getAsStringTypeListOrNull(@Nullable Collection<? extends Object> values) {
+    protected State getAsStringTypeListOrNull(@Nullable Collection<?> values) {
         return values == null || values.isEmpty() ? UnDefType.NULL : new StringType(StringUtils.join(values, ","));
     }
 
@@ -165,27 +174,44 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestDevice
         return !(getId().equals(nestIdentifiable.getId()));
     }
 
-    protected void updateChannels(T data) {
-        getThing().getChannels().forEach(c -> updateState(c.getUID(), getChannelState(c.getUID(), data)));
+    protected void updateLinkedChannels(T oldData, T data) {
+        linkedChannelUIDs.forEach(channelUID -> {
+            State newState = getChannelState(channelUID, data);
+            if (oldData == null || !getChannelState(channelUID, oldData).equals(newState)) {
+                logger.debug("Updating {}", channelUID);
+                updateState(channelUID, newState);
+            }
+        });
     }
 
     @Override
-    public void onNewNestCameraData(Camera camera) {
-        // can be overridden by subclasses for handling new camera data
+    public void channelLinked(ChannelUID channelUID) {
+        super.channelLinked(channelUID);
+        linkedChannelUIDs.add(channelUID);
     }
 
     @Override
-    public void onNewNestSmokeDetectorData(SmokeDetector smokeDetector) {
-        // can be overridden by subclasses for handling new smoke detector data
+    public void channelUnlinked(ChannelUID channelUID) {
+        super.channelUnlinked(channelUID);
+        linkedChannelUIDs.remove(channelUID);
     }
 
     @Override
-    public void onNewNestStructureData(Structure structure) {
-        // can be overridden by subclasses for handling new structure data
+    public void onNewData(T data) {
+        update(null, data);
     }
 
     @Override
-    public void onNewNestThermostatData(Thermostat thermostat) {
-        // can be overridden by subclasses for handling new thermostat data
+    public void onUpdatedData(T oldData, T data) {
+        update(oldData, data);
     }
+
+    @Override
+    public void onMissingData(String nestId) {
+        thing.setStatusInfo(
+                new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Missing from streaming updates"));
+    }
+
+    protected abstract void update(T oldData, T data);
+
 }

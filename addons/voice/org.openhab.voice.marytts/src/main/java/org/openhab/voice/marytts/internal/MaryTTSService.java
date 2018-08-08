@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioStream;
 import org.eclipse.smarthome.core.voice.TTSException;
 import org.eclipse.smarthome.core.voice.TTSService;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ import marytts.modules.synthesis.Voice;
  * @author Kelly Davis - Initial contribution and API
  * @author Kai Kreuzer - Refactored to updated APIs and moved to openHAB
  */
+@Component
 public class MaryTTSService implements TTSService {
 
     private final Logger logger = LoggerFactory.getLogger(MaryTTSService.class);

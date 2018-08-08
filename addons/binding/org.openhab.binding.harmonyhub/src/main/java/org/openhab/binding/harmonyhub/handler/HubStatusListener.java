@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.harmonyhub.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 
 /**
@@ -15,8 +16,9 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
  * to be called back when a HarmonyHub status changes
  *
  * @author Dan Cunningham - Initial contribution
- *
+ * @author Wouter Born - Add null annotations
  */
+@NonNullByDefault
 public interface HubStatusListener {
     public void hubStatusChanged(ThingStatus status);
 }

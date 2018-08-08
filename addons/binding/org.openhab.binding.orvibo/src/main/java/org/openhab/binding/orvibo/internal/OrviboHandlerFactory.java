@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Daniel Walters - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.orvibo")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.orvibo")
 public class OrviboHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_S20);

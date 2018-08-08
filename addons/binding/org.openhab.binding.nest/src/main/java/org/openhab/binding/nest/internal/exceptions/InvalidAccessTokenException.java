@@ -11,8 +11,10 @@ package org.openhab.binding.nest.internal.exceptions;
 /**
  * Will be thrown when there is no valid access token and it was not possible to refresh it
  *
+ * @author Martin van Wingerden - Initial contribution
  * @author Martin van Wingerden - Added more centralized handling of invalid access tokens
  */
+@SuppressWarnings("serial")
 public class InvalidAccessTokenException extends Exception {
     public InvalidAccessTokenException(Exception cause) {
         super(cause);

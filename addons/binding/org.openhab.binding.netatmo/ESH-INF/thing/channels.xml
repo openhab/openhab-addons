@@ -208,11 +208,11 @@
 	</channel-type>
 
 	<channel-type id="planning" advanced="false">
- 		<item-type>String</item-type>
- 		<label>Planning</label>
- 		<description>Heat planning currently used</description>
- 		<state pattern="%s" />
- 	</channel-type>	
+		<item-type>String</item-type>
+		<label>Planning</label>
+		<description>Heat planning currently used</description>
+		<state pattern="%s" />
+	</channel-type>	
 
 	<channel-type id="absolutePressure" advanced="true">
 		<item-type>Number:Pressure</item-type>
@@ -299,6 +299,21 @@
 		<description>Current 5 minutes average wind speed</description>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="MaxWindStrength" advanced="true">
+		<item-type>Number:Speed</item-type>
+		<label>Max Wind Strength</label>
+		<description>Maximum wind strength recorded</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="DateMaxWindStrength" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Date Max Wind Strength</label>
+		<description>Timestamp when MaxWindStrength was recorded.</description>
+		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM" />
 	</channel-type>
 
 	<channel-type id="GustAngle">

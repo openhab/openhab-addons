@@ -8,14 +8,15 @@
  */
 package org.openhab.binding.plugwise.internal.protocol;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.plugwise.internal.protocol.field.MessageType;
 
 /**
  * Creates instances of messages received from the Plugwise network.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class MessageFactory {
 
     public Message createMessage(MessageType messageType, int sequenceNumber, String payload)

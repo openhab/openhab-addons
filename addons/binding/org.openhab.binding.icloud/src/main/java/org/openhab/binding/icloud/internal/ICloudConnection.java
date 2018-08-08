@@ -15,9 +15,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
 import java.util.Properties;
+
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.icloud.internal.json.request.ICloudAccountDataRequest;
 import org.openhab.binding.icloud.internal.json.request.ICloudFindMyDeviceRequest;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -26,13 +28,14 @@ import com.google.gson.GsonBuilder;
  * get device information and to find a device.
  *
  * @author Patrik Gfeller - Initial Contribution
+ * @author Patrik Gfeller - SOCKET_TIMEOUT changed from 2500 to 10000
  */
 public class ICloudConnection {
     private static final String ICLOUD_URL = "https://www.icloud.com";
     private static final String ICLOUD_API_URL = "https://fmipmobile.icloud.com/fmipservice/device/";
     private static final String ICLOUD_API_COMMAND_PING_DEVICE = "/playSound";
     private static final String ICLOUD_API_COMMAND_REQUEST_DATA = "/initClient";
-    private static final int SOCKET_TIMEOUT = 2500;
+    private static final int SOCKET_TIMEOUT = 10000;
 
     private final Gson gson = new GsonBuilder().create();
     private final String iCloudDataRequest = gson.toJson(ICloudAccountDataRequest.defaultInstance());

@@ -48,7 +48,7 @@ import com.google.common.collect.Sets;
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Garnier - several thing types and handlers + discovery service
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.freebox")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.freebox")
 public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxHandlerFactory.class);
@@ -85,7 +85,7 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
             return super.createThing(thingTypeUID, configuration, thingUID, null);
         } else if (FreeboxBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             ThingUID newThingUID;
-            if (bridgeUID != null) {
+            if (bridgeUID != null && thingUID != null) {
                 newThingUID = new ThingUID(thingTypeUID, bridgeUID, thingUID.getId());
             } else {
                 newThingUID = thingUID;

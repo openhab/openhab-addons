@@ -26,12 +26,13 @@ public class Z_Command extends CubeCommand {
     }
 
     private static final int DEFAULT_WAKETIME = 30;
-    private String Address;
-    private WakeUpType wakeUpType;
-    private int wakeUpTime;
+
+    private final String address;
+    private final WakeUpType wakeUpType;
+    private final int wakeUpTime;
 
     public Z_Command(WakeUpType wakeUpType, String address, int wakeupTime) {
-        this.Address = address;
+        this.address = address;
         this.wakeUpType = wakeUpType;
         this.wakeUpTime = wakeupTime;
     }
@@ -63,19 +64,22 @@ public class Z_Command extends CubeCommand {
     @Override
     public String getCommandString() {
 
-        String commandString = "";
-        if (wakeUpType.equals(WakeUpType.ALL)) {
-            commandString = "A";
-        }
-        if (wakeUpType.equals(WakeUpType.ROOM)) {
-            commandString = "G," + Address;
-        }
-        if (wakeUpType.equals(WakeUpType.DEVICE)) {
-            commandString = "D," + Address;
+        final String commandString;
+        switch (wakeUpType) {
+            case ALL:
+                commandString = "A";
+                break;
+            case ROOM:
+                commandString = "G," + address;
+                break;
+            case DEVICE:
+                commandString = "D," + address;
+                break;
+            default:
+                throw new IllegalStateException("Unknown wakeup type: " + wakeUpType);
         }
 
-        String cmd = "z:" + Utils.toHex(wakeUpTime) + "," + commandString + '\r' + '\n';
-        return cmd;
+        return "z:" + Utils.toHex(wakeUpTime) + "," + commandString + '\r' + '\n';
     }
 
     @Override

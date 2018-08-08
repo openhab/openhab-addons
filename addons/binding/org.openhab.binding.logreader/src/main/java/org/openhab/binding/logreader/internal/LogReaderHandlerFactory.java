@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Miika Jukka - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.logreader")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.logreader")
 @NonNullByDefault
 public class LogReaderHandlerFactory extends BaseThingHandlerFactory {
 

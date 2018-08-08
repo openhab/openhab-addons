@@ -10,14 +10,15 @@ package org.openhab.binding.max.internal.message;
 
 import static org.openhab.binding.max.MaxBinding.*;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.util.Base64;
@@ -25,8 +26,6 @@ import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.DeviceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Strings;
 
 /**
  * The {@link C_Message} contains configuration about a MAX! device.
@@ -58,7 +57,7 @@ public final class C_Message extends Message {
     private BigDecimal boostValve = null;
     private String programData = null;
 
-    private HashMap<String, Object> properties = new HashMap<>();
+    private Map<String, Object> properties = new HashMap<>();
 
     public C_Message(String raw) {
         super(raw);
@@ -66,7 +65,7 @@ public final class C_Message extends Message {
 
         rfAddress = tokens[0];
 
-        byte[] bytes = Base64.decodeBase64(tokens[1].getBytes());
+        byte[] bytes = Base64.decodeBase64(tokens[1].getBytes(StandardCharsets.UTF_8));
 
         int[] data = new int[bytes.length];
 
@@ -110,13 +109,7 @@ public final class C_Message extends Message {
             sn[i] = bytes[i + 8];
         }
 
-        try {
-            return new String(sn, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            logger.debug("Cannot encode serial number from C message due to encoding issues.");
-        }
-
-        return "";
+        return new String(sn, StandardCharsets.UTF_8);
     }
 
     private String parseData(byte[] bytes) {
@@ -131,11 +124,7 @@ public final class C_Message extends Message {
                 sn[i] = bytes[i + DataStart];
             }
             logger.trace("DataBytes: {}", Utils.getHex(sn));
-            try {
-                return new String(sn, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                logger.debug("Cannot encode device string from C message due to encoding issues.");
-            }
+            return new String(sn, StandardCharsets.UTF_8);
 
         } catch (Exception e) {
             logger.debug("Exception occurred during parsing: {}", e.getMessage(), e);
@@ -150,10 +139,12 @@ public final class C_Message extends Message {
         }
         try {
             properties.put("Portal Enabled", Integer.toString(bytes[0x18] & 0xFF));
-            properties.put("Portal URL", new String(Arrays.copyOfRange(bytes, 0x55, 0xD5), "UTF-8").trim());
-            properties.put("TimeZone (Winter)", new String(Arrays.copyOfRange(bytes, 0xD6, 0xDA), "UTF-8").trim());
+            properties.put("Portal URL",
+                    new String(Arrays.copyOfRange(bytes, 0x55, 0xD5), StandardCharsets.UTF_8).trim());
+            properties.put("TimeZone (Winter)",
+                    new String(Arrays.copyOfRange(bytes, 0xD6, 0xDA), StandardCharsets.UTF_8).trim());
             properties.put("TimeZone (Daylight)",
-                    new String(Arrays.copyOfRange(bytes, 0x00E2, 0x00E6), "UTF-8").trim());
+                    new String(Arrays.copyOfRange(bytes, 0x00E2, 0x00E6), StandardCharsets.UTF_8).trim());
 
             properties.put("Unknown1", Utils.getHex(Arrays.copyOfRange(bytes, 0x13, 0x33))); // Pushbutton Up config
                                                                                              // 0=auto, 1=eco, 2=comfort
@@ -166,8 +157,6 @@ public final class C_Message extends Message {
                                                                                                                       // of
                                                                                                                       // summertime
 
-        } catch (UnsupportedEncodingException e) {
-            logger.debug("Cannot encode device string from C message due to encoding issues.");
         } catch (Exception e) {
             logger.debug("Exception occurred during parsing: {}", e.getMessage(), e);
         }
@@ -271,7 +260,7 @@ public final class C_Message extends Message {
         return deviceType;
     }
 
-    public HashMap<String, Object> getProperties() {
+    public Map<String, Object> getProperties() {
         return properties;
     }
 
@@ -290,10 +279,9 @@ public final class C_Message extends Message {
         for (String key : properties.keySet()) {
             if (!key.startsWith("Unknown")) {
                 String propertyName = StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(key), ' ');
-                logger.debug("{}:{}{}", propertyName, Strings.repeat(" ", 25 - propertyName.length()),
-                        properties.get(key));
+                logger.debug("{}: {}", propertyName, properties.get(key));
             } else {
-                logger.debug("{}:{}{}", key, Strings.repeat(" ", 25 - key.length()), properties.get(key));
+                logger.debug("{}: {}", key, properties.get(key));
             }
         }
         if (programData != null) {

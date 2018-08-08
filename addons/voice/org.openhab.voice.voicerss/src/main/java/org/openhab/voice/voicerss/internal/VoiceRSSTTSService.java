@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.smarthome.config.core.ConfigConstants;
+import org.eclipse.smarthome.config.core.ConfigurableService;
 import org.eclipse.smarthome.core.audio.AudioException;
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioStream;
@@ -23,6 +24,9 @@ import org.eclipse.smarthome.core.voice.TTSException;
 import org.eclipse.smarthome.core.voice.TTSService;
 import org.eclipse.smarthome.core.voice.Voice;
 import org.openhab.voice.voicerss.internal.cloudapi.CachedVoiceRSSCloudImplementation;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +36,10 @@ import org.slf4j.LoggerFactory;
  * @author Jochen Hiller - Initial contribution and API
  * @author Laurent Garnier - add support for OGG and AAC audio formats
  */
+@Component(configurationPid = "org.openhab.voicerss", property = { Constants.SERVICE_PID + "=org.openhab.voicerss",
+        ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=voice:voicerss",
+        ConfigurableService.SERVICE_PROPERTY_LABEL + "=VoiceRSS",
+        ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=voice" })
 public class VoiceRSSTTSService implements TTSService {
 
     /** Cache folder name is below userdata/voicerss/cache. */
@@ -74,6 +82,7 @@ public class VoiceRSSTTSService implements TTSService {
         }
     }
 
+    @Modified
     protected void modified(Map<String, Object> config) {
         if (config != null) {
             this.apiKey = config.containsKey(CONFIG_API_KEY) ? config.get(CONFIG_API_KEY).toString() : null;
@@ -98,10 +107,13 @@ public class VoiceRSSTTSService implements TTSService {
             throw new TTSException("Missing API key, configure it first before using");
         }
         // Validate arguments
+        if (text == null) {
+            throw new TTSException("The passed text is null");
+        }
         // trim text
-        text = text.trim();
-        if ((null == text) || text.isEmpty()) {
-            throw new TTSException("The passed text is null or empty");
+        String trimmedText = text.trim();
+        if (trimmedText.isEmpty()) {
+            throw new TTSException("The passed text is empty");
         }
         if (!this.voices.contains(voice)) {
             throw new TTSException("The passed voice is unsupported");
@@ -120,7 +132,7 @@ public class VoiceRSSTTSService implements TTSService {
         // now create the input stream for given text, locale, format. There is
         // only a default voice
         try {
-            File cacheAudioFile = voiceRssImpl.getTextToSpeechAsFile(this.apiKey, text,
+            File cacheAudioFile = voiceRssImpl.getTextToSpeechAsFile(this.apiKey, trimmedText,
                     voice.getLocale().toLanguageTag(), getApiAudioFormat(requestedFormat));
             if (cacheAudioFile == null) {
                 throw new TTSException("Could not read from VoiceRSS service");
@@ -224,5 +236,4 @@ public class VoiceRSSTTSService implements TTSService {
     public String getLabel(Locale locale) {
         return "VoiceRSS Text-to-Speech Engine";
     }
-
 }

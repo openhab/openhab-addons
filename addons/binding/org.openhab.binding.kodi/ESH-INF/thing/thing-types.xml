@@ -28,6 +28,7 @@
 			<channel id="album" typeId="album" />
 			<channel id="artist" typeId="artist" />
 			<channel id="mediatype" typeId="mediatype" />
+			<channel id="genreList" typeId="genreList" />
 			<channel id="thumbnail" typeId="thumbnail" />
 			<channel id="fanart" typeId="fanart" />
 			<channel id="playfavorite" typeId="playfavorite" />
@@ -107,32 +108,33 @@
 	<channel-type id="input" advanced="true">
 		<item-type>String</item-type>
 		<label>Send a key</label>
-		<description>Sends a key stroke to the Kodi Player to navigate in the UI</description>
+		<description>Sends a key stroke to Kodi to navigate in the UI</description>
 		<state>
 			<options>
+				<option value="Back">Back</option>
+				<option value="ContextMenu">Show context Menu</option>
+				<option value="Down">Down</option>
+				<option value="Home">Home</option>
+				<option value="Info">Show information dialog</option>
 				<option value="Left">Left</option>
 				<option value="Right">Right</option>
-				<option value="Up">Up</option>
-				<option value="Down">Down</option>
 				<option value="Select">Select</option>
-				<option value="Back">Back</option>
-				<option value="Home">Home</option>
-				<option value="ContextMenu">Context Menu</option>
-				<option value="Info">Info</option>
-				<option value="ShowCodec">Show Codec</option>
-				<option value="ShowOSD">Show OSD</option>
+				<option value="ShowCodec">Show codec information</option>
+				<option value="ShowOSD">Show on-screen display</option>
+				<option value="ShowPlayerProcessInfo">Show player process info</option>
+				<option value="Up">Up</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="inputtext" advanced="true">
 		<item-type>String</item-type>
 		<label>Sends text as input</label>
-		<description>Sends a text to the Kodi Player to simulate keyboard text entry</description>
+		<description>Sends a generic input (unicode) text to Kodi</description>
 	</channel-type>
 	<channel-type id="inputaction" advanced="true">
 		<item-type>String</item-type>
 		<label>Execute an action</label>
-		<description>Send a predefined action to the Kodi Player to control the UI and/or perform other tasks</description>
+		<description>Sends a predefined action to Kodi to control the UI and/or perform other tasks</description>
 		<state>
 			<options>
 				<option value="left">left</option>
@@ -387,6 +389,12 @@
 		<label>Media Type</label>
 		<description>Media type of the current file</description>
 		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="genreList">
+		<item-type>String</item-type>
+		<label>Genres</label>
+		<description>Comma-separated list of genres of the current file</description>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="thumbnail">
 		<item-type>Image</item-type>

@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.avmfritz
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
@@ -19,10 +20,7 @@ Import-Package:
  org.eclipse.jetty.client.api,
  org.eclipse.jetty.client.util,
  org.eclipse.jetty.http,
- org.eclipse.jetty.io,
  org.eclipse.jetty.util,
- org.eclipse.jetty.util.component,
- org.eclipse.jetty.util.ssl,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.config.discovery.upnp,
@@ -31,6 +29,8 @@ Import-Package:
  org.eclipse.smarthome.core.library.unit,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
  org.jupnp.model.meta,

@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 
+import static org.eclipse.jetty.http.HttpMethod.GET;
+
 import java.io.StringReader;
 
 import javax.xml.bind.JAXBException;
@@ -42,10 +44,10 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
      * Constructor
      *
      * @param webIface Webinterface to FRITZ!Box
-     * @param handler Bridge handler that will update things.
+     * @param handler  Bridge handler that will update things.
      */
     public FritzAhaUpdateXmlCallback(FritzAhaWebInterface webIface, AVMFritzBaseBridgeHandler handler) {
-        super(WEBSERVICE_PATH, "switchcmd=getdevicelistinfos", webIface, Method.GET, 1);
+        super(WEBSERVICE_PATH, "switchcmd=getdevicelistinfos", webIface, GET, 1);
         this.handler = handler;
     }
 

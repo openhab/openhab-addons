@@ -13,7 +13,8 @@ import java.util.Date;
 /**
  * Default properties shared across all Nest devices.
  *
- * @author David Bennett
+ * @author David Bennett - Initial contribution
+ * @author Wouter Born - Add equals and hashCode methods
  */
 public class BaseNestDevice implements NestIdentifiable {
 
@@ -24,6 +25,7 @@ public class BaseNestDevice implements NestIdentifiable {
     private Boolean isOnline;
     private String softwareVersion;
     private String structureId;
+
     private String whereId;
 
     @Override
@@ -61,6 +63,92 @@ public class BaseNestDevice implements NestIdentifiable {
 
     public String getWhereId() {
         return whereId;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        BaseNestDevice other = (BaseNestDevice) obj;
+        if (deviceId == null) {
+            if (other.deviceId != null) {
+                return false;
+            }
+        } else if (!deviceId.equals(other.deviceId)) {
+            return false;
+        }
+        if (isOnline == null) {
+            if (other.isOnline != null) {
+                return false;
+            }
+        } else if (!isOnline.equals(other.isOnline)) {
+            return false;
+        }
+        if (lastConnection == null) {
+            if (other.lastConnection != null) {
+                return false;
+            }
+        } else if (!lastConnection.equals(other.lastConnection)) {
+            return false;
+        }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        if (nameLong == null) {
+            if (other.nameLong != null) {
+                return false;
+            }
+        } else if (!nameLong.equals(other.nameLong)) {
+            return false;
+        }
+        if (softwareVersion == null) {
+            if (other.softwareVersion != null) {
+                return false;
+            }
+        } else if (!softwareVersion.equals(other.softwareVersion)) {
+            return false;
+        }
+        if (structureId == null) {
+            if (other.structureId != null) {
+                return false;
+            }
+        } else if (!structureId.equals(other.structureId)) {
+            return false;
+        }
+        if (whereId == null) {
+            if (other.whereId != null) {
+                return false;
+            }
+        } else if (!whereId.equals(other.whereId)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((deviceId == null) ? 0 : deviceId.hashCode());
+        result = prime * result + ((isOnline == null) ? 0 : isOnline.hashCode());
+        result = prime * result + ((lastConnection == null) ? 0 : lastConnection.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((nameLong == null) ? 0 : nameLong.hashCode());
+        result = prime * result + ((softwareVersion == null) ? 0 : softwareVersion.hashCode());
+        result = prime * result + ((structureId == null) ? 0 : structureId.hashCode());
+        result = prime * result + ((whereId == null) ? 0 : whereId.hashCode());
+        return result;
     }
 
     @Override

@@ -99,13 +99,14 @@ public class CreateTTSCache {
             System.err.println("Ignore msg=null");
             return;
         }
-        msg = msg.trim();
-        if (msg.length() == 0) {
+        String trimmedMsg = msg.trim();
+        if (trimmedMsg.length() == 0) {
             System.err.println("Ignore msg=''");
             return;
         }
         CachedVoiceRSSCloudImplementation impl = new CachedVoiceRSSCloudImplementation(cacheDir);
-        File cachedFile = impl.getTextToSpeechAsFile(apiKey, msg, locale, "MP3");
-        System.out.println("Created cached audio for locale='" + locale + "', msg='" + msg + "' to file=" + cachedFile);
+        File cachedFile = impl.getTextToSpeechAsFile(apiKey, trimmedMsg, locale, "MP3");
+        System.out.println(
+                "Created cached audio for locale='" + locale + "', msg='" + trimmedMsg + "' to file=" + cachedFile);
     }
 }

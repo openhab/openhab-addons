@@ -22,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -41,15 +43,18 @@ import org.slf4j.LoggerFactory;
  * These are individual Things inside the bridge.
  *
  * @author Angus Gratton - Initial contribution
+ * @author Wouter Born - Fix null pointer exceptions and stop refresh job on update/dispose
  */
+@NonNullByDefault
 public class ControllerHandler extends BaseBridgeHandler {
     private static final int SOCKET_TIMEOUT = 2000;
+
     private final Logger logger = LoggerFactory.getLogger(ControllerHandler.class);
-    private String host;
-    private int port;
-    private Socket socket;
-    private final Object lock = new Object();
-    private ScheduledFuture<?> refreshJob;
+    private final Object refreshLock = new Object();
+    private final Object socketLock = new Object();
+
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable Socket socket;
 
     public ControllerHandler(Bridge thing) {
         super(thing);
@@ -57,33 +62,49 @@ public class ControllerHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initialising CoolMasterNet Controller handler...");
-
-        ControllerConfiguration config = getConfigAs(ControllerConfiguration.class);
-        host = config.host;
-        port = config.port;
-
-        Runnable refreshHVACUnits = () -> {
-            try {
-                checkConnection();
-                updateStatus(ThingStatus.ONLINE);
-                for (Thing t : getThing().getThings()) {
-                    HVACHandler h = (HVACHandler) t.getHandler();
-                    h.refresh();
-                }
-            } catch (CoolMasterClientError e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-        };
-        scheduler.scheduleWithFixedDelay(refreshHVACUnits, 0, config.refresh, TimeUnit.SECONDS);
+        logger.debug("Initializing CoolMasterNet Controller handler...");
+        stopRefresh();
+        startRefresh();
     }
 
     @Override
     public void dispose() {
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
-        }
+        stopRefresh();
         super.dispose();
+    }
+
+    private void startRefresh() {
+        synchronized (refreshLock) {
+            ControllerConfiguration config = getConfigAs(ControllerConfiguration.class);
+            logger.debug("Scheduling new refresh job");
+            refreshJob = scheduler.scheduleWithFixedDelay(this::refreshHVACUnits, 0, config.refresh, TimeUnit.SECONDS);
+        }
+    }
+
+    private void stopRefresh() {
+        synchronized (refreshLock) {
+            ScheduledFuture<?> localRefreshJob = refreshJob;
+            if (localRefreshJob != null && !localRefreshJob.isCancelled()) {
+                logger.debug("Cancelling existing refresh job");
+                localRefreshJob.cancel(true);
+                refreshJob = null;
+            }
+        }
+    }
+
+    private void refreshHVACUnits() {
+        try {
+            checkConnection();
+            updateStatus(ThingStatus.ONLINE);
+            for (Thing t : getThing().getThings()) {
+                HVACHandler h = (HVACHandler) t.getHandler();
+                if (h != null) {
+                    h.refresh();
+                }
+            }
+        } catch (CoolMasterClientError e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
     }
 
     /*
@@ -93,8 +114,9 @@ public class ControllerHandler extends BaseBridgeHandler {
      * and try to re-establish the connection if possible.
      */
     public boolean isConnected() {
-        synchronized (this.lock) {
-            return socket != null && socket.isConnected() && !socket.isClosed();
+        synchronized (socketLock) {
+            Socket localSocket = socket;
+            return localSocket != null && localSocket.isConnected() && !localSocket.isClosed();
         }
     }
 
@@ -104,18 +126,24 @@ public class ControllerHandler extends BaseBridgeHandler {
      * If the "OK" prompt is not received then a CoolMasterClientError is thrown that contains whatever
      * error message was printed by the CoolMasterNet.
      */
-    public String sendCommand(String command) throws CoolMasterClientError {
-        synchronized (this.lock) {
+    @SuppressWarnings("resource")
+    public @Nullable String sendCommand(String command) throws CoolMasterClientError {
+        synchronized (socketLock) {
             checkConnection();
 
             StringBuilder response = new StringBuilder();
             try {
+                Socket localSocket = socket;
+                if (localSocket == null || !isConnected()) {
+                    throw new CoolMasterClientError(String.format("No connection for sending command %s", command));
+                }
+
                 logger.trace("Sending command '{}'", command);
-                OutputStream out = socket.getOutputStream();
+                OutputStream out = localSocket.getOutputStream();
                 out.write(command.getBytes());
                 out.write("\r\n".getBytes());
 
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(localSocket.getInputStream()));
                 while (true) {
                     String line = in.readLine();
                     logger.trace("Read result '{}'", line);
@@ -148,25 +176,33 @@ public class ControllerHandler extends BaseBridgeHandler {
      * May block for 1-2 seconds.
      *
      * Throws CoolMasterNetClientError if there is a connection problem.
-     *
      */
-    public void checkConnection() throws CoolMasterClientError {
-        synchronized (this.lock) {
+    @SuppressWarnings("resource")
+    private void checkConnection() throws CoolMasterClientError {
+        synchronized (socketLock) {
+            ControllerConfiguration config = getConfigAs(ControllerConfiguration.class);
             try {
                 if (!isConnected()) {
                     connect();
                     if (!isConnected()) {
-                        throw new CoolMasterClientError(String.format("Failed to connect to %s:%s", host, port));
+                        throw new CoolMasterClientError(
+                                String.format("Failed to connect to %s:%s", config.host, config.port));
                     }
                 }
 
-                InputStream in = socket.getInputStream();
+                Socket localSocket = socket;
+                if (localSocket == null) {
+                    throw new CoolMasterClientError(
+                            String.format("Failed to connect to %s:%s", config.host, config.port));
+                }
+
+                InputStream in = localSocket.getInputStream();
                 /* Flush anything pending in the input stream */
                 while (in.available() > 0) {
                     in.read();
                 }
                 /* Send a CRLF, expect a > prompt (and a CRLF) back */
-                OutputStream out = socket.getOutputStream();
+                OutputStream out = localSocket.getOutputStream();
                 out.write("\r\n".getBytes(StandardCharsets.US_ASCII));
                 /*
                  * this will time out with IOException if it doesn't see that prompt
@@ -178,36 +214,42 @@ public class ControllerHandler extends BaseBridgeHandler {
                 }
             } catch (IOException e) {
                 disconnect();
-                logger.error("{}", e.getLocalizedMessage(), e);
-                throw new CoolMasterClientError(String.format("No response from CoolMasterNet unit %s:%s", host, port));
+                logger.debug("{}", e.getLocalizedMessage(), e);
+                throw new CoolMasterClientError(
+                        String.format("No response from CoolMasterNet unit %s:%s", config.host, config.port));
             }
         }
     }
 
     private void connect() throws IOException {
-        synchronized (this.lock) {
+        synchronized (socketLock) {
+            ControllerConfiguration config = getConfigAs(ControllerConfiguration.class);
             try {
-                socket = new Socket();
-                socket.connect(new InetSocketAddress(host, port), SOCKET_TIMEOUT);
-                socket.setSoTimeout(SOCKET_TIMEOUT);
+                Socket localSocket = new Socket();
+                localSocket.connect(new InetSocketAddress(config.host, config.port), SOCKET_TIMEOUT);
+                localSocket.setSoTimeout(SOCKET_TIMEOUT);
+                socket = localSocket;
             } catch (UnknownHostException e) {
-                logger.error("unknown socket host {}", host);
+                logger.error("Unknown socket host: {}", config.host);
                 socket = null;
             } catch (SocketException e) {
-                logger.error("{}", e.getLocalizedMessage(), e);
+                logger.error("Failed to connect to {}:{}: {}", config.host, config.port, e.getLocalizedMessage(), e);
                 socket = null;
             }
         }
     }
 
-    public void disconnect() {
-        synchronized (this.lock) {
-            try {
-                socket.close();
-            } catch (IOException e1) {
-                logger.error("{}", e1.getLocalizedMessage(), e1);
+    private void disconnect() {
+        synchronized (socketLock) {
+            Socket localSocket = socket;
+            if (localSocket != null) {
+                try {
+                    localSocket.close();
+                } catch (IOException e1) {
+                    logger.error("{}", e1.getLocalizedMessage(), e1);
+                }
+                socket = null;
             }
-            socket = null;
         }
     }
 

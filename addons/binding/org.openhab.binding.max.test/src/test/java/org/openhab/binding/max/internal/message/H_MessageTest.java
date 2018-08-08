@@ -21,13 +21,13 @@ import org.junit.Test;
  */
 public class H_MessageTest {
 
-    public final String rawData = "H:KEQ0565026,0b5951,0113,00000000,4eed6795,01,32,0f0113,0f34,03,0000";
+    public static final String RAW_DATA = "H:KEQ0565026,0b5951,0113,00000000,4eed6795,01,32,0f0113,0f34,03,0000";
 
-    private H_Message message = null;
+    private H_Message message;
 
     @Before
     public void Before() {
-        message = new H_Message(rawData);
+        message = new H_Message(RAW_DATA);
     }
 
     @Test

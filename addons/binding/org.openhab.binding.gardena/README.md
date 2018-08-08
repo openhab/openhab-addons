@@ -7,14 +7,15 @@ This binding allows you to integrate, view and control Gardena Smart Home device
 
 Devices connected to Gardena Smart Home, currently:
 
-| Thing type               | Name                  |
-|--------------------------|-----------------------|
-| bridge                   | smart Home Gateway    |
-| mower                    | smart Sileno(+) Mower |
-| watering_computer        | smart Water Control   |
-| sensor                   | smart Sensor          |
-| electronic_pressure_pump | smart Pressure Pump   |
-| power                    | smart Power Plug      |
+| Thing type               | Name                     |
+|--------------------------|--------------------------|
+| bridge                   | smart Home Gateway       |
+| mower                    | smart Sileno(+) Mower    |
+| watering_computer        | smart Water Control      |
+| sensor                   | smart Sensor             |
+| electronic_pressure_pump | smart Pressure Pump      |
+| power                    | smart Power Plug         |
+| ic24                     | smart Irrigation Control |
 
 The schedules are not yet integrated!
 
@@ -103,20 +104,26 @@ sendCommand(ITEM_NAME, RefreshType.REFRESH)
 
 ```shell
 // smart Water Control
-Switch  Watering_Valve      "Valve"             { channel="gardena:watering_computer:home:myvalve:outlet#valve_open"}
-Number  Watering_Duration   "Duration [%d min]" { channel="gardena:watering_computer:home:wasserhahn:outlet#button_manual_override_time"}
+Switch  Watering_Valve      "Valve"             { channel="gardena:watering_computer:home:myValve:outlet#valve_open" }
+Number  Watering_Duration   "Duration [%d min]" { channel="gardena:watering_computer:home:myValve:outlet#button_manual_override_time" }
 
 // smart Power Plug
-String Power_Timer          "Power Timer [%s]"  { channel="gardena:power:home:myPowerplug:power#power_timer"}
+String Power_Timer          "Power Timer [%s]"  { channel="gardena:power:home:myPowerplug:power#power_timer" }
+
+// smart Irrigation Control
+Number Watering_Timer_1     "Watering Timer 1 [%d min]  { channel="gardena:ic24:home:myIrrigationController:watering#watering_timer_1" }
 ```
 
 ```shell
-Watering_Valve.sendCommand(30) // 30 minutes
-Watering_Duration.sendCommand(ON)
+Watering_Duration.sendCommand(30) // 30 minutes
+Watering_Valve.sendCommand(ON)
 
 Power_Timer.sendCommand("on")
 Power_Timer.sendCommand("off")
 Power_Timer.sendCommand("180") // on for 180 seconds
+
+Watering_Timer_1.sendCommand(0) // turn off watering
+Watering_Timer_1.sendCommand(30) // turn on for 30 minutes
 ```
 
 ### Debugging and Tracing

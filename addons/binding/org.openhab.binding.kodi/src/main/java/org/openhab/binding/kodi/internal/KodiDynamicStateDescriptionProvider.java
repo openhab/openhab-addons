@@ -29,11 +29,10 @@ import org.osgi.service.component.annotations.Deactivate;
  * @author Gregory Moyer - Initial contribution
  * @author Christoph Weitkamp - Adapted to Kodi binding
  */
-@Component(service = { DynamicStateDescriptionProvider.class,
-        KodiDynamicStateDescriptionProvider.class }, immediate = true)
+@Component(service = { DynamicStateDescriptionProvider.class, KodiDynamicStateDescriptionProvider.class })
 @NonNullByDefault
 public class KodiDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
-    private final Map<ChannelUID, List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
+    private final Map<ChannelUID, @Nullable List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
 
     public void setStateOptions(ChannelUID channelUID, List<StateOption> options) {
         channelOptionsMap.put(channelUID, options);
@@ -43,12 +42,14 @@ public class KodiDynamicStateDescriptionProvider implements DynamicStateDescript
     public @Nullable StateDescription getStateDescription(Channel channel, @Nullable StateDescription original,
             @Nullable Locale locale) {
         List<StateOption> options = channelOptionsMap.get(channel.getUID());
+        if (options == null) {
+            return null;
+        }
 
         if (original != null) {
             return new StateDescription(original.getMinimum(), original.getMaximum(), original.getStep(),
                     original.getPattern(), original.isReadOnly(), options);
         }
-
         return new StateDescription(null, null, null, null, false, options);
     }
 

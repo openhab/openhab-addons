@@ -8,13 +8,17 @@
  */
 package org.openhab.binding.nest.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The configuration for structures.
  *
+ * @author Wouter Born - Initial contribution
  * @author Wouter Born - Add device configuration to allow file based configuration
  */
+@NonNullByDefault
 public class NestStructureConfiguration {
     public static final String STRUCTURE_ID = "structureId";
     /** Structure ID which can be retrieved with the Nest API. */
-    public String structureId;
+    public String structureId = "";
 }

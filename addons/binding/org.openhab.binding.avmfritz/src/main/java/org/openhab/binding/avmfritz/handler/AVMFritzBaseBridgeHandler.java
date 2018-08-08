@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +25,9 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -214,14 +217,18 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             thing.setProperty(PROPERTY_MEMBERS, ((GroupModel) device).getGroupinfo().getMembers());
         }
         if (device instanceof DeviceModel && device.isTempSensor() && ((DeviceModel) device).getTemperature() != null) {
-            updateThingChannelState(thing, CHANNEL_TEMP,
+            updateThingChannelState(thing, CHANNEL_TEMPERATURE,
                     new QuantityType<>(((DeviceModel) device).getTemperature().getCelsius(), CELSIUS));
+            updateThingChannelConfiguration(thing, CHANNEL_TEMPERATURE, CONFIG_CHANNEL_TEMP_OFFSET,
+                    ((DeviceModel) device).getTemperature().getOffset());
         }
         if (device.isPowermeter() && device.getPowermeter() != null) {
             updateThingChannelState(thing, CHANNEL_ENERGY,
                     new QuantityType<>(device.getPowermeter().getEnergy(), SmartHomeUnits.WATT_HOUR));
             updateThingChannelState(thing, CHANNEL_POWER,
                     new QuantityType<>(device.getPowermeter().getPower(), SmartHomeUnits.WATT));
+            updateThingChannelState(thing, CHANNEL_VOLTAGE,
+                    new QuantityType<>(device.getPowermeter().getVoltage(), SmartHomeUnits.VOLT));
         }
         if (device.isSwitchableOutlet() && device.getSwitch() != null) {
             updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getSwitch().getMode()));
@@ -231,9 +238,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                     BigDecimal.ZERO.equals(device.getSwitch().getDevicelock()) ? OpenClosedType.OPEN
                             : OpenClosedType.CLOSED);
             if (device.getSwitch().getState() == null) {
-                updateThingChannelState(thing, CHANNEL_SWITCH, UnDefType.UNDEF);
+                updateThingChannelState(thing, CHANNEL_OUTLET, UnDefType.UNDEF);
             } else {
-                updateThingChannelState(thing, CHANNEL_SWITCH,
+                updateThingChannelState(thing, CHANNEL_OUTLET,
                         SwitchModel.ON.equals(device.getSwitch().getState()) ? OnOffType.ON : OnOffType.OFF);
             }
         }
@@ -259,7 +266,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                 } else {
                     updateThingChannelState(thing, CHANNEL_NEXTCHANGE,
                             new DateTimeType(ZonedDateTime.ofInstant(
-                                    Instant.ofEpochMilli(device.getHkr().getNextchange().getEndperiod()),
+                                    Instant.ofEpochSecond(device.getHkr().getNextchange().getEndperiod()),
                                     ZoneId.systemDefault())));
                 }
                 if (HeatingModel.TEMP_FRITZ_UNDEFINED.equals(device.getHkr().getNextchange().getTchange())) {
@@ -269,10 +276,15 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                             HeatingModel.toCelsius(device.getHkr().getNextchange().getTchange()), CELSIUS));
                 }
             }
-            if (device.getHkr().getBatterylow() == null) {
+            if (device.getHkr().getBattery() == null) {
                 updateThingChannelState(thing, CHANNEL_BATTERY, UnDefType.UNDEF);
             } else {
-                updateThingChannelState(thing, CHANNEL_BATTERY,
+                updateThingChannelState(thing, CHANNEL_BATTERY, new DecimalType(device.getHkr().getBattery()));
+            }
+            if (device.getHkr().getBatterylow() == null) {
+                updateThingChannelState(thing, CHANNEL_BATTERY_LOW, UnDefType.UNDEF);
+            } else {
+                updateThingChannelState(thing, CHANNEL_BATTERY_LOW,
                         HeatingModel.BATTERY_ON.equals(device.getHkr().getBatterylow()) ? OnOffType.ON : OnOffType.OFF);
             }
         }
@@ -286,11 +298,33 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      * @param state State to be set.
      */
     private void updateThingChannelState(Thing thing, String channelId, State state) {
-        final Channel channel = thing.getChannel(channelId);
+        Channel channel = thing.getChannel(channelId);
         if (channel != null) {
             updateState(channel.getUID(), state);
         } else {
-            logger.warn("Channel {} in thing {} does not exist, please recreate the thing", channelId, thing.getUID());
+            logger.warn("Channel '{}' in thing '{}' does not exist, recreating thing.", channelId, thing.getUID());
+            AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
+            if (handler != null) {
+                handler.createChannel(channelId);
+            }
+        }
+    }
+
+    /**
+     * Updates thing channel configurations.
+     *
+     * @param thing Thing which channel configuration should be updated.
+     * @param channelId ID of the channel which configuration to be updated.
+     * @param configId ID of the configuration to be updated.
+     * @param value Value to be set.
+     */
+    private void updateThingChannelConfiguration(Thing thing, String channelId, String configId, Object value) {
+        Channel channel = thing.getChannel(channelId);
+        if (channel != null) {
+            Configuration config = channel.getConfiguration();
+            Configuration editConfig = new Configuration(new HashMap<>(config.getProperties()));
+            editConfig.put(configId, value);
+            config.setProperties(editConfig.getProperties());
         }
     }
 

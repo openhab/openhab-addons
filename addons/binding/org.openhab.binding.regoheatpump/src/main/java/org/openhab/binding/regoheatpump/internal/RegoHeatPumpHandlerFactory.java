@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Boris Krivonog - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.regoheatpump")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.regoheatpump")
 public class RegoHeatPumpHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream

@@ -26,4 +26,29 @@ public interface SystemControl extends IStateUpdatable {
      * @throws ReceivedMessageParseException
      */
     void setPower(boolean power) throws IOException, ReceivedMessageParseException;
+
+    /**
+     * Enables party mode.
+     * @param on
+     * @throws IOException
+     * @throws ReceivedMessageParseException
+     */
+    void setPartyMode(boolean on) throws IOException, ReceivedMessageParseException;
+
+    /**
+     * Enables mute for party mode.
+     * @param on
+     * @throws IOException
+     * @throws ReceivedMessageParseException
+     */
+    void setPartyModeMute(boolean on) throws IOException, ReceivedMessageParseException;
+
+    /**
+     * Increment or decrement the volume for party mode.
+     * @param increment
+     * @throws IOException
+     * @throws ReceivedMessageParseException
+     */
+    void setPartyModeVolume(boolean increment) throws IOException, ReceivedMessageParseException;
+
 }

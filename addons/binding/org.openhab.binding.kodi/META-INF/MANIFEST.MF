@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.kodi
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
@@ -12,6 +13,7 @@ Export-Package:
  org.openhab.binding.kodi.handler
 Import-Package: 
  com.google.gson,
+ javax.measure,
  javax.measure.quantity,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,

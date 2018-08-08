@@ -20,7 +20,6 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.i18n.UnitProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -36,7 +35,6 @@ import org.openhab.binding.nest.handler.NestThermostatHandler;
 import org.openhab.binding.nest.internal.discovery.NestDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link NestHandlerFactory} is responsible for creating things and thing
@@ -46,24 +44,12 @@ import org.osgi.service.component.annotations.Reference;
  * @author David Bennett - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.nest")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.nest")
 public class NestHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_THERMOSTAT,
             THING_TYPE_CAMERA, THING_TYPE_BRIDGE, THING_TYPE_STRUCTURE, THING_TYPE_SMOKE_DETECTOR).collect(toSet());
 
     private Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryService = new HashMap<>();
-
-    @NonNullByDefault({})
-    private UnitProvider unitProvider;
-
-    @Reference
-    protected void setUnitProvider(UnitProvider unitProvider) {
-        this.unitProvider = unitProvider;
-    }
-
-    protected void unsetUnitProvider(UnitProvider unitProvider) {
-        this.unitProvider = null;
-    }
 
     /**
      * The things this factory supports creating.
@@ -82,7 +68,7 @@ public class NestHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_THERMOSTAT.equals(thingTypeUID)) {
-            return new NestThermostatHandler(thing, unitProvider);
+            return new NestThermostatHandler(thing);
         }
 
         if (THING_TYPE_CAMERA.equals(thingTypeUID)) {

@@ -18,7 +18,7 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Christian Schneider - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.kostalinverter")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.kostalinverter")
 public class WebscrapeHandlerFactory extends BaseThingHandlerFactory {
     public static final ThingTypeUID KOSTAL_INVERTER = new ThingTypeUID("kostalinverter", "kostalinverter");
 

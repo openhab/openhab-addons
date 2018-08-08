@@ -23,8 +23,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
  * Contains the real-time clock value of a Circle+. This message is the response of a
  * {@link RealTimeClockGetRequestMessage}. The Circle+ is the only device that holds a real-time clock value.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class RealTimeClockGetResponseMessage extends Message {
 

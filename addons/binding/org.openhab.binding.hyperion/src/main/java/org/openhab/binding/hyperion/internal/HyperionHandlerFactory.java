@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Daniel Walters - Initial contribution
  */
 
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.hyperion", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.hyperion", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class HyperionHandlerFactory extends BaseThingHandlerFactory {
 
     private HyperionStateDescriptionProvider stateDescriptionProvider;

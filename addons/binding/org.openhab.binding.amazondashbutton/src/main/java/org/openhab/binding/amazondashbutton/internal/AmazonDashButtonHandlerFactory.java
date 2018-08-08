@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Oliver Libutzki - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.amazondashbutton")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.amazondashbutton")
 public class AmazonDashButtonHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(DASH_BUTTON_THING_TYPE);

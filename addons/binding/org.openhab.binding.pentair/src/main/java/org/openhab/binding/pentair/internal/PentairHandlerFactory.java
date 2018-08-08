@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Jeff James - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.pentair")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.pentair")
 public class PentairHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
