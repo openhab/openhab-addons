@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -121,6 +122,8 @@ public class UpnpServerHandler extends UpnpHandler {
                         // only refresh title list if filtering by renderer capabilities
                         browse(currentId, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
                     }
+                } else if (command instanceof RefreshType) {
+                    updateState(channelUID, StringType.valueOf(currentRendererHandler.getThing().getLabel()));
                 }
                 updateState(SELECT, OnOffType.OFF);
                 updateState(SEARCH, OnOffType.OFF);
@@ -129,6 +132,8 @@ public class UpnpServerHandler extends UpnpHandler {
             case CURRENTTITLE:
                 if (command instanceof StringType) {
                     currentSelection = command.toString();
+                } else if (command instanceof RefreshType) {
+                    updateState(channelUID, StringType.valueOf(currentSelection));
                 }
                 updateState(SELECT, OnOffType.OFF);
                 updateState(SEARCH, OnOffType.OFF);
@@ -155,6 +160,8 @@ public class UpnpServerHandler extends UpnpHandler {
             case SEARCHCRITERIA:
                 if (command instanceof StringType) {
                     searchCriteria = command.toString();
+                } else if (command instanceof RefreshType) {
+                    updateState(channelUID, StringType.valueOf(searchCriteria));
                 }
                 updateState(SELECT, OnOffType.OFF);
                 updateState(SEARCH, OnOffType.OFF);
@@ -180,6 +187,7 @@ public class UpnpServerHandler extends UpnpHandler {
                         logger.warn("No search criteria defined.");
                     }
                 }
+                updateState(SERVE, OnOffType.OFF);
                 break;
             case SERVE:
                 if (command == OnOffType.ON) {
@@ -241,14 +249,14 @@ public class UpnpServerHandler extends UpnpHandler {
         updateStateDescription(currentTitleChannelUID, stateOptionList);
 
         // put the selector to first entry in list if available
-        String current = null;
+        StateOption current = null;
         if (!stateOptionList.isEmpty()) {
-            current = stateOptionList.get(0).getLabel();
-            if (current.equals(UP) && (stateOptionList.size() > 1)) {
-                current = stateOptionList.get(1).getLabel();
+            current = stateOptionList.get(0);
+            if (current.getLabel().equals(UP) && (stateOptionList.size() > 1)) {
+                current = stateOptionList.get(1);
             }
         }
-        currentSelection = current;
+        currentSelection = (current != null) ? current.getValue() : null;
         logger.debug("Current selection: {}", currentSelection);
         updateState(currentTitleChannelUID, new StringType(currentSelection));
     }

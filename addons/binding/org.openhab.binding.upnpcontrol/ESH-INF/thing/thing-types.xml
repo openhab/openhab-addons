@@ -28,8 +28,8 @@
 			<channel id="upnprenderer" typeId="upnprenderer" />
 			<channel id="currenttitle" typeId="currenttitle" />
 			<channel id="select" typeId="select" />
-            <channel id="searchcriteria" typeId="searchcriteria" />
-            <channel id="search" typeId="search" />
+			<channel id="searchcriteria" typeId="searchcriteria" />
+			<channel id="search" typeId="search" />
 			<channel id="serve" typeId="serve" />
 		</channels>
 		<config-description>
@@ -117,16 +117,16 @@
 		<label>Select</label>
 		<description>Select item from directory</description>
 	</channel-type>
-    <channel-type id="searchcriteria">
-        <item-type>String</item-type>
-        <label>Search Criteria</label>
-        <description>Search criteria for searching the directory</description>
-    </channel-type>
-    <channel-type id="search">
-        <item-type>Switch</item-type>
-        <label>Search</label>
-        <description>Execute search with search criteria</description>
-    </channel-type>
+	<channel-type id="searchcriteria">
+		<item-type>String</item-type>
+		<label>Search Criteria</label>
+		<description>Search criteria for searching the directory</description>
+	</channel-type>
+	<channel-type id="search">
+		<item-type>Switch</item-type>
+		<label>Search</label>
+		<description>Execute search with search criteria</description>
+	</channel-type>
 	<channel-type id="serve">
 		<item-type>Switch</item-type>
 		<label>Serve</label>

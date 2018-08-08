@@ -30,7 +30,6 @@ Import-Package:
  org.jupnp.model.types,
  org.openhab.binding.upnpcontrol,
  org.openhab.binding.upnpcontrol.handler,
- org.openhab.core.library.types,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j
