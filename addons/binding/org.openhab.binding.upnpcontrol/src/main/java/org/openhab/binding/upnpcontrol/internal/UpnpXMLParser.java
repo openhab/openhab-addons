@@ -140,7 +140,7 @@ public class UpnpXMLParser {
                 parentId = attributes.getValue("parentID");
             } else if (qName.equals("res")) {
                 String protocolInfo = attributes.getValue("protocolInfo");
-                Integer size = Integer.parseInt(attributes.getValue("size"));
+                Long size = Long.parseLong(attributes.getValue("size"));
                 String importUri = attributes.getValue("importUri");
                 resList.add(0, new UpnpEntryRes(protocolInfo, size, importUri));
                 element = Element.RES;

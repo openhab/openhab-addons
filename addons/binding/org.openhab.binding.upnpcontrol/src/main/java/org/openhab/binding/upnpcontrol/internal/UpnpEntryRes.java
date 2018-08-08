@@ -15,11 +15,11 @@ package org.openhab.binding.upnpcontrol.internal;
 class UpnpEntryRes {
 
     private String protocolInfo;
-    private Integer size;
+    private Long size;
     private String importUri;
     private String res;
 
-    UpnpEntryRes(String protocolInfo, Integer size, String importUri) {
+    UpnpEntryRes(String protocolInfo, Long size, String importUri) {
         this.protocolInfo = protocolInfo;
         this.size = size;
         this.importUri = importUri;
@@ -46,7 +46,7 @@ class UpnpEntryRes {
     /**
      * @return the size
      */
-    public Integer getSize() {
+    public Long getSize() {
         return size;
     }
 
