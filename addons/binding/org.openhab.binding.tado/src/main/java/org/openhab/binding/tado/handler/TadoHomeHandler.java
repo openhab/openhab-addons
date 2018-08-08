@@ -20,9 +20,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.tado.TadoBindingConstants;
 import org.openhab.binding.tado.TadoBindingConstants.TemperatureUnit;
-import org.openhab.binding.tado.internal.api.TadoApiClient;
-import org.openhab.binding.tado.internal.api.TadoApiClientFactory;
-import org.openhab.binding.tado.internal.api.TadoClientException;
+import org.openhab.binding.tado.internal.api.ApiException;
+import org.openhab.binding.tado.internal.api.HomeApiFactory;
+import org.openhab.binding.tado.internal.api.client.HomeApi;
 import org.openhab.binding.tado.internal.api.model.HomeInfo;
 import org.openhab.binding.tado.internal.api.model.User;
 import org.openhab.binding.tado.internal.config.TadoHomeConfig;
@@ -39,7 +39,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     private Logger logger = LoggerFactory.getLogger(TadoHomeHandler.class);
 
     private TadoHomeConfig configuration;
-    private TadoApiClient api;
+    private HomeApi api;
     private Long homeId;
 
     private ScheduledFuture<?> initializationFuture;
@@ -56,7 +56,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         configuration = getConfigAs(TadoHomeConfig.class);
-        api = new TadoApiClientFactory().create(configuration.username, configuration.password);
+        api = new HomeApiFactory().create(configuration.username, configuration.password);
 
         if (this.initializationFuture == null || this.initializationFuture.isDone()) {
             initializationFuture = scheduler.scheduleWithFixedDelay(this::initializeBridgeStatusAndPropertiesIfOffline,
@@ -72,7 +72,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
 
         try {
             // Get user info to verify successful authentication and connection to server
-            User user = api.getUserDetails();
+            User user = api.showUser();
             if (user == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Cannot connect to server. Username and/or password might be invalid");
@@ -87,11 +87,11 @@ public class TadoHomeHandler extends BaseBridgeHandler {
 
             homeId = user.getHomes().get(0).getId().longValue();
 
-            HomeInfo homeInfo = api.getHomeDetails(homeId);
+            HomeInfo homeInfo = api.showHome(homeId);
             TemperatureUnit temperatureUnit = org.openhab.binding.tado.internal.api.model.TemperatureUnit.FAHRENHEIT == homeInfo
                     .getTemperatureUnit() ? TemperatureUnit.FAHRENHEIT : TemperatureUnit.CELSIUS;
             updateProperty(TadoBindingConstants.PROPERTY_HOME_TEMPERATURE_UNIT, temperatureUnit.name());
-        } catch (IOException | TadoClientException e) {
+        } catch (IOException | ApiException e) {
             logger.debug("Error accessing tado server: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to server due to " + e.getMessage());
@@ -110,7 +110,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         }
     }
 
-    public TadoApiClient getApi() {
+    public HomeApi getApi() {
         return api;
     }
 
