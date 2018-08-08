@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2010-2018 by the respective copyright holders.
- *
+ * <p>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,37 +8,37 @@
  */
 package org.openhab.binding.netatmo.internal.station;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
-
+import io.rudolph.netatmo.api.aircare.model.DashboardData;
+import io.rudolph.netatmo.api.common.model.Device;
+import io.rudolph.netatmo.api.common.model.StationResults;
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
+import org.openhab.binding.netatmo.handler.BaseDeviceHandler;
 import org.openhab.binding.netatmo.internal.WeatherUtils;
 
-import io.swagger.client.model.NADashboardData;
-import io.swagger.client.model.NAMain;
-import io.swagger.client.model.NAStationDataBody;
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
 /**
  * {@link NAMainHandler} is the base class for all current Netatmo
  * weather station equipments (both modules and devices)
  *
  * @author Gaël L'hopital - Initial contribution OH2 version
- *
  */
-public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
+public class NAMainHandler extends BaseDeviceHandler {
 
     public NAMainHandler(@NonNull Thing thing) {
         super(thing);
     }
 
     @Override
-    protected NAMain updateReadings() {
-        NAMain result = null;
-        NAStationDataBody stationDataBody = getBridgeHandler().getStationsDataBody(getId());
+    protected Device updateReadings() {
+        Device result = null;
+        StationResults stationDataBody = getBridgeHandler().api
+                .getWeatherApi()
+                .getStationData(getId(), false)
+                .executeSync();
         if (stationDataBody != null) {
             result = stationDataBody.getDevices().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
                     .findFirst().orElse(null);
@@ -50,14 +50,14 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
     }
 
     @Override
-    protected void updateProperties(NAMain deviceData) {
-        updateProperties(deviceData.getFirmware(), deviceData.getType());
+    protected void updateProperties(Device deviceData) {
+        updateProperties(deviceData.getFirmware(), deviceData.getType().getValue());
     }
 
     @Override
     protected State getNAThingProperty(String channelId) {
         if (device != null) {
-            NADashboardData dashboardData = device.getDashboardData();
+            DashboardData dashboardData = device.getDashboardData();
             switch (channelId) {
                 case CHANNEL_CO2:
                     return toQuantityType(dashboardData.getCO2(), API_CO2_UNIT);
@@ -105,16 +105,4 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
         }
         return super.getNAThingProperty(channelId);
     }
-
-    @Override
-    protected @Nullable Integer getDataTimestamp() {
-        if (device != null) {
-            Integer lastStored = device.getLastStatusStore();
-            if (lastStored != null) {
-                return lastStored;
-            }
-        }
-        return null;
-    }
-
 }

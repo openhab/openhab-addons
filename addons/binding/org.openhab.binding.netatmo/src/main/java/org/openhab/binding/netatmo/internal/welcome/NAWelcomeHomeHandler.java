@@ -8,30 +8,29 @@
  */
 package org.openhab.binding.netatmo.internal.welcome;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
-
-import java.util.Calendar;
-import java.util.Optional;
-
+import io.rudolph.netatmo.api.presence.model.Event;
+import io.rudolph.netatmo.api.presence.model.PresenceHome;
+import io.rudolph.netatmo.api.presence.model.SecurityHome;
+import io.rudolph.netatmo.api.presence.model.Snapshot;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.netatmo.handler.AbstractNetatmoThingHandler;
 import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.swagger.client.model.NAWelcomeEvent;
-import io.swagger.client.model.NAWelcomeHome;
-import io.swagger.client.model.NAWelcomeHomeData;
-import io.swagger.client.model.NAWelcomeSnapshot;
+import java.util.Calendar;
+import java.util.Optional;
+
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
 /**
  * {@link NAWelcomeHomeHandler} is the class used to handle the Welcome Home Data
@@ -40,26 +39,26 @@ import io.swagger.client.model.NAWelcomeSnapshot;
  * @author Ing. Peter Weiss - Welcome camera implementation
  *
  */
-public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
+public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<PresenceHome> {
     private Logger logger = LoggerFactory.getLogger(NAWelcomeHomeHandler.class);
 
     private int iPersons = -1;
     private int iUnknowns = -1;
-    private NAWelcomeEvent lastEvent;
-    private Integer dataTimeStamp;
+    private Event lastEvent;
+    private Long dataTimeStamp;
 
     public NAWelcomeHomeHandler(@NonNull Thing thing) {
         super(thing);
     }
 
     @Override
-    protected NAWelcomeHome updateReadings() {
-        NAWelcomeHome result = null;
-        NAWelcomeHomeData homeDataBody = getBridgeHandler().getWelcomeDataBody(getId());
+    protected PresenceHome updateReadings() {
+        PresenceHome result = null;
+        SecurityHome homeDataBody = getBridgeHandler().api.getWelcomeApi().getHomeData(getId(), null).executeSync();
         if (homeDataBody != null) {
             // data time stamp is updated to now as WelcomeDataBody does not provide any information according to this
             // need
-            dataTimeStamp = (int) (Calendar.getInstance().getTimeInMillis() / 1000);
+            dataTimeStamp = Calendar.getInstance().getTimeInMillis() / 1000;
             result = homeDataBody.getHomes().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
                     .findFirst().orElse(null);
             if (result != null) {
@@ -103,7 +102,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
             case CHANNEL_WELCOME_HOME_UNKNOWNCOUNT:
                 return iUnknowns != -1 ? new DecimalType(iUnknowns) : UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_TYPE:
-                return lastEvent != null ? toStringType(lastEvent.getType()) : UnDefType.UNDEF;
+                return lastEvent != null ? toStringType(lastEvent.getType().getValue()) : UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_TIME:
                 return lastEvent != null ? toDateTimeType(lastEvent.getTime()) : UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_CAMERAID:
@@ -124,8 +123,11 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                 }
             case CHANNEL_WELCOME_EVENT_SNAPSHOT:
                 if (lastEvent != null) {
-                    String url = getSnapshotURL(lastEvent.getSnapshot());
-                    return url != null ? HttpUtil.downloadImage(url) : UnDefType.UNDEF;
+                    String picture = getBridgeHandler().api
+                            .getWelcomeApi()
+                            .getCameraPicture(lastEvent.getSnapshot().getId(), lastEvent.getSnapshot().getKey())
+                            .executeSync();
+                    return picture != null ? new RawType(picture.getBytes()) : UnDefType.UNDEF;
                 } else {
                     return UnDefType.UNDEF;
                 }
@@ -152,7 +154,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
             case CHANNEL_WELCOME_EVENT_VIDEOSTATUS:
                 return lastEvent != null ? toStringType(lastEvent.getVideoStatus()) : UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_ISARRIVAL:
-                return lastEvent != null ? lastEvent.getIsArrival() != null ? OnOffType.ON : OnOffType.OFF
+                return lastEvent != null ? lastEvent.isArrival() != null ? OnOffType.ON : OnOffType.OFF
                         : UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_MESSAGE:
                 return lastEvent != null && lastEvent.getMessage() != null
@@ -169,7 +171,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
      *
      * @return Url of the picture or null
      */
-    protected String getSnapshotURL(NAWelcomeSnapshot snapshot) {
+    protected String getSnapshotURL(Snapshot snapshot) {
         String result = null;
 
         if (snapshot != null && snapshot.getId() != null && snapshot.getKey() != null) {
@@ -182,7 +184,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     }
 
     @Override
-    protected @Nullable Integer getDataTimestamp() {
+    protected @Nullable Long getDataTimestamp() {
         return dataTimeStamp;
     }
 

@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2010-2018 by the respective copyright holders.
- *
+ * <p>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,11 +8,13 @@
  */
 package org.openhab.binding.netatmo.internal.discovery;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
-
-import java.util.HashMap;
-import java.util.Map;
-
+import io.rudolph.netatmo.api.common.model.*;
+import io.rudolph.netatmo.api.energy.model.HomeStatusBody;
+import io.rudolph.netatmo.api.energy.model.HomesDataBody;
+import io.rudolph.netatmo.api.energy.model.module.ThermostatModule;
+import io.rudolph.netatmo.api.energy.model.module.ValveModule;
+import io.rudolph.netatmo.api.presence.model.PresenceHome;
+import io.rudolph.netatmo.api.presence.model.SecurityHome;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -24,14 +26,10 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.handler.NetatmoDataListener;
 
-import io.swagger.client.model.NAHealthyHomeCoach;
-import io.swagger.client.model.NAHealthyHomeCoachDataBody;
-import io.swagger.client.model.NAMain;
-import io.swagger.client.model.NAPlug;
-import io.swagger.client.model.NAStationDataBody;
-import io.swagger.client.model.NAThermostatDataBody;
-import io.swagger.client.model.NAWelcomeHome;
-import io.swagger.client.model.NAWelcomeHomeData;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
 /**
  * The {@link NetatmoModuleDiscoveryService} searches for available Netatmo
@@ -39,7 +37,6 @@ import io.swagger.client.model.NAWelcomeHomeData;
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Ing. Peter Weiss - Welcome camera implementation
- *
  */
 public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService implements NetatmoDataListener {
     private static final int SEARCH_TIME = 2;
@@ -66,35 +63,30 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
     @Override
     public void startScan() {
         if (netatmoBridgeHandler.configuration.readStation) {
-            NAStationDataBody stationDataBody = netatmoBridgeHandler.getStationsDataBody(null);
+            StationResults stationDataBody = netatmoBridgeHandler.api.getWeatherApi().getStationData(null, null).executeSync();
             if (stationDataBody != null) {
-                stationDataBody.getDevices().forEach(station -> {
-                    discoverWeatherStation(station);
-                });
+                stationDataBody.getDevices().forEach(this::discoverWeatherStation);
             }
         }
         if (netatmoBridgeHandler.configuration.readHealthyHomeCoach) {
-            NAHealthyHomeCoachDataBody homecoachDataBody = netatmoBridgeHandler.getHomecoachDataBody(null);
+            StationResults homecoachDataBody = netatmoBridgeHandler.api.getAirCareApi().getHomeCoachsData(null).executeSync();
             if (homecoachDataBody != null) {
-                homecoachDataBody.getDevices().forEach(homecoach -> {
-                    discoverHomeCoach(homecoach);
-                });
+                homecoachDataBody.getDevices().forEach(this::discoverHomeCoach);
             }
         }
         if (netatmoBridgeHandler.configuration.readThermostat) {
-            NAThermostatDataBody thermostatsDataBody = netatmoBridgeHandler.getThermostatsDataBody(null);
+            HomesDataBody thermostatsDataBody = netatmoBridgeHandler.api.getEnergyApi().getHomesData(null, null).executeSync();
             if (thermostatsDataBody != null) {
-                thermostatsDataBody.getDevices().forEach(plug -> {
-                    discoverThermostat(plug);
+                thermostatsDataBody.getHomes().forEach(home -> {
+                    HomeStatusBody homeStatusBody = netatmoBridgeHandler.api.getEnergyApi().getHomeStatus(home.getId(), null).executeSync();
+                    homeStatusBody.getHome().forEach(homestatus -> homestatus.getModules().forEach(module -> discoverModule(module, home.getId())));
                 });
             }
         }
         if (netatmoBridgeHandler.configuration.readWelcome) {
-            NAWelcomeHomeData welcomeHomeData = netatmoBridgeHandler.getWelcomeDataBody(null);
+            SecurityHome welcomeHomeData = netatmoBridgeHandler.api.getWelcomeApi().getHomeData(null, null).executeSync();
             if (welcomeHomeData != null) {
-                welcomeHomeData.getHomes().forEach(home -> {
-                    discoverWelcomeHome(home);
-                });
+                welcomeHomeData.getHomes().forEach(this::discoverWelcomeHome);
             }
         }
         stopScan();
@@ -102,40 +94,78 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
 
     @Override
     public void onDataRefreshed(Object data) {
-        if (data instanceof NAMain) {
-            discoverWeatherStation((NAMain) data);
-        } else if (data instanceof NAPlug) {
-            discoverThermostat((NAPlug) data);
-        } else if (data instanceof NAHealthyHomeCoach) {
-            discoverHomeCoach((NAHealthyHomeCoach) data);
-        } else if (data instanceof NAWelcomeHome) {
-            discoverWelcomeHome((NAWelcomeHome) data);
+        if (data instanceof Device) {
+            Device deviceData = (Device) data;
+            if (deviceData.getType() == DeviceType.BASESTATION) {
+                discoverWeatherStation(deviceData);
+            }
+            return;
+        }
+
+        if (data instanceof Module) {
+            Module moduleData = (Module) data;
+            switch (moduleData.getType()) {
+                case RELAY:
+                case VALVE:
+                case INDOORMODULE:
+                    discoverModule(moduleData, null);
+                    break;
+            }
+        }
+
+        if (data instanceof PresenceHome) {
+            PresenceHome home = (PresenceHome) data;
+            discoverWelcomeHome(home);
         }
     }
 
-    private void discoverThermostat(NAPlug plug) {
-        onDeviceAddedInternal(plug.getId(), null, plug.getType(), plug.getStationName(), plug.getFirmware());
-        plug.getModules().forEach(thermostat -> {
-            onDeviceAddedInternal(thermostat.getId(), plug.getId(), thermostat.getType(), thermostat.getModuleName(),
-                    thermostat.getFirmware());
-        });
+    private void discoverModule(Module module, String parentId) {
+        switch (module.getType()) {
+            case INDOORMODULE:
+                ClimateModule indoorModule = (ClimateModule) module;
+                onDeviceAddedInternal(module.getId(), parentId, module.getType(), module.getModuleName(), indoorModule.getFirmware());
+            case VALVE:
+                ThermostatModule thermostatModule = (ThermostatModule) module;
+                onDeviceAddedInternal(module.getId(), thermostatModule.getBridgeId(), module.getType(), module.getModuleName(), thermostatModule.getFirmwareRevision());
+                break;
+            case THERMOSTAT:
+                ValveModule energyModule = (ValveModule) module;
+                onDeviceAddedInternal(module.getId(), energyModule.getBridgeId(), module.getType(), module.getModuleName(), energyModule.getFirmwareRevision());
+                break;
+            case RELAY:
+                onDeviceAddedInternal(module.getId(), parentId, module.getType(), module.getModuleName(), null);
+
+        }
     }
 
-    private void discoverHomeCoach(NAHealthyHomeCoach homecoach) {
-        onDeviceAddedInternal(homecoach.getId(), null, homecoach.getType(), homecoach.getName(),
-                homecoach.getFirmware());
+    private void discoverHomeCoach(Device device) {
+        onDeviceAddedInternal(device.getId(), null, device.getType(), device.getModuleName(),
+                device.getFirmware());
+
     }
 
-    private void discoverWeatherStation(NAMain station) {
+    private void discoverWeatherStation(Device station) {
         onDeviceAddedInternal(station.getId(), null, station.getType(), station.getStationName(),
                 station.getFirmware());
+        if (station.getModules() == null) {
+            return;
+        }
         station.getModules().forEach(module -> {
+            Integer firmware = null;
+            switch (module.getType()) {
+                case INDOORMODULE:
+                case OUTDOORMODULE:
+                case RAINGAUGEMODULE:
+                case WINDMODULE:
+                    firmware = ((ClimateModule) module).getFirmware();
+
+            }
             onDeviceAddedInternal(module.getId(), station.getId(), module.getType(), module.getModuleName(),
-                    module.getFirmware());
+                    firmware);
         });
     }
 
-    private void discoverWelcomeHome(NAWelcomeHome home) {
+    private void discoverWelcomeHome(PresenceHome home) {
         // I observed that Thermostat homes are also reported here by Netatmo API
         // So I ignore homes that have an empty list of cameras
         if (home.getCameras().size() > 0) {
@@ -151,6 +181,11 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
                         person.getPseudo(), null);
             });
         }
+    }
+
+
+    private void onDeviceAddedInternal(String id, String parentId, DeviceType type, String name, Integer firmwareVersion) {
+        onDeviceAddedInternal(id, parentId, type.getValue(), name, firmwareVersion);
     }
 
     private void onDeviceAddedInternal(String id, String parentId, String type, String name, Integer firmwareVersion) {

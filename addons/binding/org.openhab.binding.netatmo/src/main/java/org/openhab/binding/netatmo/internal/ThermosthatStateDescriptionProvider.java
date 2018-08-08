@@ -24,14 +24,14 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 
 /**
- * Dynamic provider of state options for NATherm1Handler.
+ * Dynamic provider of state options for ThermosthatHandler.
  *
  * @author Gregory Moyer - Initial contribution
  * @author Gaël L'hopital - Ported as-is in Netatmo binding
  */
-@Component(service = { DynamicStateDescriptionProvider.class, NATherm1StateDescriptionProvider.class })
+@Component(service = { DynamicStateDescriptionProvider.class, ThermosthatStateDescriptionProvider.class })
 @NonNullByDefault
-public class NATherm1StateDescriptionProvider implements DynamicStateDescriptionProvider {
+public class ThermosthatStateDescriptionProvider implements DynamicStateDescriptionProvider {
     private final Map<ChannelUID, @Nullable List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
 
     public void setStateOptions(ChannelUID channelUID, List<StateOption> options) {

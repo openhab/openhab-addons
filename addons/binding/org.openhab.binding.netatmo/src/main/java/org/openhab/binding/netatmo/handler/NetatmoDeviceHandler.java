@@ -8,17 +8,7 @@
  */
 package org.openhab.binding.netatmo.handler;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
+import io.rudolph.netatmo.api.aircare.model.Place;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -34,8 +24,16 @@ import org.openhab.binding.netatmo.internal.RefreshStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.swagger.client.model.NAPlace;
-import retrofit.RetrofitError;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
 /**
  * {@link NetatmoDeviceHandler} is the handler for a given
@@ -115,24 +113,13 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                 childs.clear();
 
                 DEVICE newDeviceReading = null;
-                try {
-                    newDeviceReading = updateReadings();
-                } catch (RetrofitError e) {
-                    if (logger.isDebugEnabled()) {
-                        // we also attach the stack trace
-                        logger.error("Unable to connect Netatmo API : {}", e.getMessage(), e);
-                    } else {
-                        logger.error("Unable to connect Netatmo API : {}", e.getMessage());
-                    }
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Unable to connect Netatmo API : " + e.getLocalizedMessage());
-                }
+                newDeviceReading = updateReadings();
                 if (newDeviceReading != null) {
                     updateStatus(ThingStatus.ONLINE);
                     logger.debug("Successfully updated device {} readings! Now updating channels", getId());
                     this.device = newDeviceReading;
                     updateProperties(device);
-                    Integer dataTimeStamp = getDataTimestamp();
+                    Long dataTimeStamp = getDataTimestamp();
                     if (dataTimeStamp != null) {
                         refreshStrategy.setDataTimeStamp(dataTimeStamp);
                     }
@@ -174,7 +161,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                 case CHANNEL_LOCATION:
                     if (device != null) {
                         Method getPlace = device.getClass().getMethod("getPlace");
-                        NAPlace place = (NAPlace) getPlace.invoke(device);
+                        Place place = (Place) getPlace.invoke(device);
                         PointType point = new PointType(new DecimalType(place.getLocation().get(1)),
                                 new DecimalType(place.getLocation().get(0)));
                         if (place.getAltitude() != null) {
@@ -220,7 +207,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
         refreshStrategy = new RefreshStrategy(dataValidityPeriod.intValue());
     }
 
-    protected abstract @Nullable Integer getDataTimestamp();
+    protected abstract @Nullable Long getDataTimestamp();
 
     public void expireData() {
         refreshStrategy.expireData();

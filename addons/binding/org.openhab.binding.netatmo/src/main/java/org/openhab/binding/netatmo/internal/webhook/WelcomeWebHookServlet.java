@@ -8,21 +8,19 @@
  */
 package org.openhab.binding.netatmo.internal.webhook;
 
-import java.io.IOException;
-import java.util.Scanner;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.gson.Gson;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Scanner;
 
 /**
  * Main OSGi service and HTTP servlet for Netatmo Welcome Webhook.
@@ -50,7 +48,7 @@ public class WelcomeWebHookServlet extends HttpServlet {
     /**
      * OSGi activation callback.
      *
-     * @param config Service config.
+     * @param bridgeHandler Service config.
      */
     public void activate(NetatmoBridgeHandler bridgeHandler) {
         this.bridgeHandler = bridgeHandler;

@@ -8,11 +8,11 @@
  */
 package org.openhab.binding.netatmo.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * {@link RefreshStrategy} is the class used to embed the refreshing
@@ -33,7 +33,7 @@ public class RefreshStrategy {
         expireData();
     }
 
-    public void setDataTimeStamp(Integer dataTimestamp) {
+    public void setDataTimeStamp(Long dataTimestamp) {
         this.dataTimeStamp = ChannelTypeUtils.toZonedDateTime(dataTimestamp).toInstant().toEpochMilli();
     }
 

@@ -8,17 +8,16 @@
  */
 package org.openhab.binding.netatmo.internal.station;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
-
+import io.rudolph.netatmo.api.aircare.model.DashboardData;
+import io.rudolph.netatmo.api.common.model.ClimateModule;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
 import org.openhab.binding.netatmo.internal.WeatherUtils;
 
-import io.swagger.client.model.NADashboardData;
-import io.swagger.client.model.NAStationModule;
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
 /**
  * {@link NAModule1Handler} is the class used to handle the outdoor module
@@ -27,21 +26,21 @@ import io.swagger.client.model.NAStationModule;
  * @author Gaël L'hopital - Initial contribution OH2 version
  *
  */
-public class NAModule1Handler extends NetatmoModuleHandler<NAStationModule> {
+public class NAModule1Handler extends NetatmoModuleHandler<ClimateModule> {
 
     public NAModule1Handler(@NonNull Thing thing) {
         super(thing);
     }
 
     @Override
-    protected void updateProperties(NAStationModule moduleData) {
-        updateProperties(moduleData.getFirmware(), moduleData.getType());
+    protected void updateProperties(ClimateModule moduleData) {
+        updateProperties(moduleData.getFirmware(), moduleData.getType().getValue());
     }
 
     @Override
     protected State getNAThingProperty(String channelId) {
         if (module != null) {
-            NADashboardData dashboardData = module.getDashboardData();
+            DashboardData dashboardData = module.getDashboardData();
             switch (channelId) {
                 case CHANNEL_TEMP_TREND:
                     return toStringType(dashboardData.getTempTrend());

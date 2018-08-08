@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2010-2018 by the respective copyright holders.
- *
+ * <p>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,28 +8,10 @@
  */
 package org.openhab.binding.netatmo.handler;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
-
-import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
+import io.rudolph.netatmo.NetatmoApi;
+import io.rudolph.netatmo.oauth2.model.Scope;
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.netatmo.internal.config.NetatmoBridgeConfiguration;
@@ -39,21 +21,12 @@ import org.openhab.binding.netatmo.internal.webhook.WelcomeWebHookServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.swagger.client.ApiClient;
-import io.swagger.client.api.HealthyhomecoachApi;
-import io.swagger.client.api.PartnerApi;
-import io.swagger.client.api.StationApi;
-import io.swagger.client.api.ThermostatApi;
-import io.swagger.client.api.WelcomeApi;
-import io.swagger.client.auth.OAuth;
-import io.swagger.client.auth.OAuthFlow;
-import io.swagger.client.model.NAHealthyHomeCoachDataBody;
-import io.swagger.client.model.NAStationDataBody;
-import io.swagger.client.model.NAThermostatDataBody;
-import io.swagger.client.model.NAWelcomeHomeData;
-import retrofit.RestAdapter.LogLevel;
-import retrofit.RetrofitError;
-import retrofit.RetrofitError.Kind;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Stream;
+
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
 /**
  * {@link NetatmoBridgeHandler} is the handler for a Netatmo API and connects it
@@ -61,36 +34,16 @@ import retrofit.RetrofitError.Kind;
  * {@link NetatmoBridgeHandler} to request informations about their status
  *
  * @author Gaël L'hopital - Initial contribution OH2 version
- *
  */
 public class NetatmoBridgeHandler extends BaseBridgeHandler {
     private Logger logger = LoggerFactory.getLogger(NetatmoBridgeHandler.class);
 
     public NetatmoBridgeConfiguration configuration;
     private ScheduledFuture<?> refreshJob;
-    private APIMap apiMap;
+    public NetatmoApi api;
     private WelcomeWebHookServlet webHookServlet;
     private List<NetatmoDataListener> dataListeners = new CopyOnWriteArrayList<>();
 
-    @NonNullByDefault
-    private class APIMap extends HashMap<Class<?>, Object> {
-        private static final long serialVersionUID = -2024031764691952343L;
-        private ApiClient apiClient;
-
-        public APIMap(ApiClient apiClient) {
-            super();
-            this.apiClient = apiClient;
-        }
-
-        public Object get(Class<?> apiClass) {
-            if (!super.containsKey(apiClass)) {
-                Object api = apiClient.createService(apiClass);
-                super.put(apiClass, api);
-            }
-            return super.get(apiClass);
-        }
-
-    }
 
     public NetatmoBridgeHandler(@NonNull Bridge bridge, WelcomeWebHookServlet webHookServlet) {
         super(bridge);
@@ -102,7 +55,18 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         logger.debug("Initializing Netatmo API bridge handler.");
 
         configuration = getConfigAs(NetatmoBridgeConfiguration.class);
-        scheduleTokenInitAndRefresh();
+
+        api = new NetatmoApi(configuration.username,
+                configuration.password,
+                configuration.clientId,
+                configuration.clientSecret,
+                getApiScope());
+        api.getEnergyApi().getHomesData(null, null).onError(s -> {
+            return null;
+        }).executeAsync(homesDataBody -> {
+            connectionSucceed();
+            return null;
+        });
     }
 
     private void connectionSucceed() {
@@ -111,99 +75,33 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         if (webHookURI != null) {
             webHookServlet.activate(this);
             logger.debug("Setting up Netatmo Welcome WebHook");
-            getWelcomeApi().addwebhook(webHookURI, WEBHOOK_APP);
+            api.getPresenceApi().addWebHook(webHookURI, WEBHOOK_APP);
         }
     }
 
-    private void scheduleTokenInitAndRefresh() {
-        refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-            logger.debug("Initializing API Connection and scheduling token refresh every {}s",
-                    configuration.reconnectInterval);
-            try {
-                initializeApiClient();
-                // I use a connection to Netatmo API using PartnerAPI to ensure that API is reachable
-                getPartnerApi().partnerdevices();
-                connectionSucceed();
-            } catch (RetrofitError e) {
-                if (e.getKind() == Kind.NETWORK) {
-                    logger.warn("Network error while connecting to Netatmo API, will retry in {} s",
-                            configuration.reconnectInterval);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Netatmo Access Failed, will retry in " + configuration.reconnectInterval + " seconds.");
-                } else {
-                    switch (e.getResponse().getStatus()) {
-                        case 404: // If no partner station has been associated - likely to happen - we'll have this
-                                  // error
-                                  // but it means connection to API is OK
-                            connectionSucceed();
-                            break;
-                        case 403: // Forbidden Access maybe too many requests ? Let's wait next cycle
-                            logger.warn("Error 403 while connecting to Netatmo API, will retry in {} s",
-                                    configuration.reconnectInterval);
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "Netatmo Access Forbidden, will retry in " + configuration.reconnectInterval
-                                            + " seconds.");
-                            break;
-                        default:
-                            if (logger.isDebugEnabled()) {
-                                // we also attach the stack trace
-                                logger.error("Unable to connect Netatmo API : {}", e.getMessage(), e);
-                            } else {
-                                logger.error("Unable to connect Netatmo API : {}", e.getMessage());
-                            }
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "Unable to connect Netatmo API : " + e.getLocalizedMessage());
-                            return;
-                    }
-                }
-            }
-            // We'll do this every x seconds to guaranty token refresh
-        }, 2, configuration.reconnectInterval, TimeUnit.SECONDS);
-    }
-
-    // We'll use TrustingOkHttpClient because Netatmo certificate is a StartTTLS
-    // not trusted by default java certificate control mechanism
-    private void initializeApiClient() throws RetrofitError {
-        ApiClient apiClient = new ApiClient();
-
-        OAuth auth = new OAuth(new TrustingOkHttpClient(),
-                OAuthClientRequest.tokenLocation("https://api.netatmo.net/oauth2/token"));
-        auth.setFlow(OAuthFlow.password);
-        auth.setAuthenticationRequestBuilder(OAuthClientRequest.authorizationLocation(""));
-
-        apiClient.getApiAuthorizations().put("password_oauth", auth);
-        apiClient.getTokenEndPoint().setClientId(configuration.clientId).setClientSecret(configuration.clientSecret)
-                .setUsername(configuration.username).setPassword(configuration.password).setScope(getApiScope());
-
-        apiClient.configureFromOkclient(new TrustingOkHttpClient());
-        apiClient.getAdapterBuilder().setLogLevel(logger.isDebugEnabled() ? LogLevel.FULL : LogLevel.NONE);
-
-        apiMap = new APIMap(apiClient);
-    }
-
-    private String getApiScope() {
-        List<String> scopes = new ArrayList<>();
+    private List<Scope> getApiScope() {
+        List<Scope> scopes = new ArrayList<>();
 
         if (configuration.readStation) {
-            scopes.add("read_station");
+            scopes.add(Scope.READ_STATION);
         }
 
         if (configuration.readThermostat) {
-            scopes.add("read_thermostat");
-            scopes.add("write_thermostat");
+            scopes.add(Scope.READ_THERMOSTAT);
+            scopes.add(Scope.WRITE_THERMOSTAT);
         }
 
         if (configuration.readHealthyHomeCoach) {
-            scopes.add("read_homecoach");
+            scopes.add(Scope.READ_HOMECOACH);
         }
 
         if (configuration.readWelcome) {
-            scopes.add("read_camera");
-            scopes.add("access_camera");
-            scopes.add("write_camera");
+            scopes.add(Scope.READ_CAMERA);
+            scopes.add(Scope.ACCESS_CAMERA);
+            scopes.add(Scope.WRITE_CAMERA);
         }
 
-        return String.join(" ", scopes);
+        return scopes;
     }
 
     @Override
@@ -211,25 +109,6 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         logger.debug("Netatmo Bridge is read-only and does not handle commands");
     }
 
-    public PartnerApi getPartnerApi() {
-        return (PartnerApi) apiMap.get(PartnerApi.class);
-    }
-
-    private StationApi getStationApi() {
-        return (StationApi) apiMap.get(StationApi.class);
-    }
-
-    private HealthyhomecoachApi getHomeCoachApi() {
-        return (HealthyhomecoachApi) apiMap.get(HealthyhomecoachApi.class);
-    }
-
-    public ThermostatApi getThermostatApi() {
-        return (ThermostatApi) apiMap.get(ThermostatApi.class);
-    }
-
-    public WelcomeApi getWelcomeApi() {
-        return (WelcomeApi) apiMap.get(WelcomeApi.class);
-    }
 
     @Override
     public void dispose() {
@@ -238,37 +117,13 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         if (getWebHookURI() != null) {
             logger.debug("Releasing Netatmo Welcome WebHook");
             webHookServlet.deactivate();
-            getWelcomeApi().dropwebhook(WEBHOOK_APP);
+            api.getPresenceApi().dropWebHook(WEBHOOK_APP);
         }
 
         if (refreshJob != null && !refreshJob.isCancelled()) {
             refreshJob.cancel(true);
             refreshJob = null;
         }
-    }
-
-    public NAStationDataBody getStationsDataBody(String equipmentId) {
-        NAStationDataBody data = getStationApi().getstationsdata(equipmentId).getBody();
-        updateStatus(ThingStatus.ONLINE);
-        return data;
-    }
-
-    public NAHealthyHomeCoachDataBody getHomecoachDataBody(String equipmentId) {
-        NAHealthyHomeCoachDataBody data = getHomeCoachApi().gethomecoachsdata(equipmentId).getBody();
-        updateStatus(ThingStatus.ONLINE);
-        return data;
-    }
-
-    public NAThermostatDataBody getThermostatsDataBody(String equipmentId) {
-        NAThermostatDataBody data = getThermostatApi().getthermostatsdata(equipmentId).getBody();
-        updateStatus(ThingStatus.ONLINE);
-        return data;
-    }
-
-    public NAWelcomeHomeData getWelcomeDataBody(String homeId) {
-        NAWelcomeHomeData data = getWelcomeApi().gethomedata(homeId, null).getBody();
-        updateStatus(ThingStatus.ONLINE);
-        return data;
     }
 
     /**

@@ -8,18 +8,16 @@
  */
 package org.openhab.binding.netatmo.handler;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.MEASURABLE_CHANNELS;
+import io.rudolph.netatmo.api.common.model.MeasureRequestResponse;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
-
-import io.swagger.client.CollectionFormats.CSVParams;
-import io.swagger.client.model.NAMeasureResponse;
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.MEASURABLE_CHANNELS;
 
 /**
  * {@link MeasurableChannels} is a helper class designed to handle
@@ -30,7 +28,7 @@ import io.swagger.client.model.NAMeasureResponse;
  *
  */
 public class MeasurableChannels {
-    protected NAMeasureResponse measures;
+    protected List<MeasureRequestResponse> measures;
     protected List<String> measuredChannels = new ArrayList<>();
 
     /*
@@ -56,8 +54,8 @@ public class MeasurableChannels {
     protected Optional<State> getNAThingProperty(String channelId) {
         int index = measuredChannels.indexOf(channelId);
         if (index != -1 && measures != null) {
-            if (measures.getBody().size() > 0) {
-                List<List<Float>> valueList = measures.getBody().get(0).getValue();
+            if (measures.size() > 0) {
+                List<List<Float>> valueList = measures.get(0).getValue();
                 if (valueList.size() > 0) {
                     List<Float> values = valueList.get(0);
                     if (values.size() >= index) {
@@ -70,14 +68,7 @@ public class MeasurableChannels {
         return Optional.empty();
     }
 
-    public Optional<CSVParams> getAsCsv() {
-        if (measuredChannels.size() > 0) {
-            return Optional.of(new CSVParams(measuredChannels));
-        }
-        return Optional.empty();
-    }
-
-    public void setMeasures(NAMeasureResponse measures) {
+    public void setMeasures(List<MeasureRequestResponse> measures) {
         this.measures = measures;
     }
 }

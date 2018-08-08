@@ -1,15 +1,17 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.binding.netatmo
 Bundle-ClassPath: .,
- lib/retrofit-1.9.0.jar,
- lib/okhttp-2.3.0.jar,
- lib/org.apache.oltu.oauth2.client-1.0.0.jar,
- lib/org.apache.oltu.oauth2.common-1.0.0.jar,
- lib/okio-1.3.0.jar,
- lib/json-20131018.jar,
- lib/commons-codec-1.8.jar,
- lib/gson-2.3.1.jar,
- lib/netatmo-java-retrofit-1.1.3.jar
+ lib/commons-logging-1.2.jar
+ lib/jackson-annotations-2.9.6.jar
+ lib/jackson-module-kotlin-2.9.6.jar
+ lib/kotlin-stdlib-1.2.51.jar
+ lib/kotlin-stdlib-jdk8-1.2.51.jar
+ lib/kotlinx-coroutines-core-0.24.0.jar
+ lib/logging-interceptor-3.11.0.jar
+ lib/netatmo-java-api-0.2.0.jar
+ lib/okhttp-3.11.0.jar
+ lib/retrofit-2.4.0.jar
+ lib/slf4j-simple-1.7.25.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: Netatmo Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

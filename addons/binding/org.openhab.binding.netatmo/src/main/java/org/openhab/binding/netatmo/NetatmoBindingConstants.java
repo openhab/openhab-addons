@@ -8,13 +8,14 @@
  */
 package org.openhab.binding.netatmo;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import io.rudolph.netatmo.api.common.model.DeviceType;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent.EventTypeEnum;
+
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The {@link NetatmoBinding} class defines common constants, which are used
@@ -41,22 +42,23 @@ public class NetatmoBindingConstants {
     public static final ThingTypeUID APIBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "netatmoapi");
 
     // List of Weather Station Things Type UIDs
-    public static final ThingTypeUID MAIN_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAMain");
-    public static final ThingTypeUID MODULE1_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAModule1");
-    public static final ThingTypeUID MODULE2_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAModule2");
-    public static final ThingTypeUID MODULE3_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAModule3");
-    public static final ThingTypeUID MODULE4_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAModule4");
+    public static final ThingTypeUID BASESTATION = new ThingTypeUID(BINDING_ID, DeviceType.BASESTATION.getValue());
+    public static final ThingTypeUID OUTDOORMODULE = new ThingTypeUID(BINDING_ID, DeviceType.OUTDOORMODULE.getValue());
+    public static final ThingTypeUID WINDMODULE = new ThingTypeUID(BINDING_ID, DeviceType.WINDMODULE.getValue());
+    public static final ThingTypeUID RAINGAUGEMODULE = new ThingTypeUID(BINDING_ID, DeviceType.RAINGAUGEMODULE.getValue());
+    public static final ThingTypeUID INDOORMODULE = new ThingTypeUID(BINDING_ID, DeviceType.INDOORMODULE.getValue());
 
     // Netatmo Health Coach
-    public static final ThingTypeUID HOMECOACH_THING_TYPE = new ThingTypeUID(BINDING_ID, "NHC");
+    public static final ThingTypeUID HOMECOACH = new ThingTypeUID(BINDING_ID, DeviceType.HOMECOACH.getValue());
 
     // List of Thermostat Things Type UIDs
-    public static final ThingTypeUID PLUG_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAPlug");
-    public static final ThingTypeUID THERM1_THING_TYPE = new ThingTypeUID(BINDING_ID, "NATherm1");
+    public static final ThingTypeUID RELAY = new ThingTypeUID(BINDING_ID, DeviceType.RELAY.getValue());
+    public static final ThingTypeUID THERMOSTAT = new ThingTypeUID(BINDING_ID, DeviceType.THERMOSTAT.getValue());
+    public static final ThingTypeUID VALVE = new ThingTypeUID(BINDING_ID, DeviceType.VALVE.getValue());
 
     // List of Welcome Home Things Type UIDs
     public static final ThingTypeUID WELCOME_HOME_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAWelcomeHome");
-    public static final ThingTypeUID WELCOME_CAMERA_THING_TYPE = new ThingTypeUID(BINDING_ID, "NACamera");
+    public static final ThingTypeUID WELCOME_CAMERA = new ThingTypeUID(BINDING_ID, DeviceType.WELCOME_CAMERA.getValue());
     public static final ThingTypeUID WELCOME_PERSON_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAWelcomePerson");
 
     // Weather Station Channel ids
@@ -165,9 +167,9 @@ public class NetatmoBindingConstants {
 
     // List of all supported physical devices and modules
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Stream
-            .of(MAIN_THING_TYPE, MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE,
-                    HOMECOACH_THING_TYPE, PLUG_THING_TYPE, THERM1_THING_TYPE, WELCOME_HOME_THING_TYPE,
-                    WELCOME_CAMERA_THING_TYPE, WELCOME_PERSON_THING_TYPE)
+            .of(BASESTATION, OUTDOORMODULE, WINDMODULE, RAINGAUGEMODULE, INDOORMODULE,
+                    HOMECOACH, RELAY, THERMOSTAT, WELCOME_HOME_THING_TYPE,
+                    WELCOME_CAMERA, WELCOME_PERSON_THING_TYPE)
             .collect(Collectors.toSet());
 
     // List of all adressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge

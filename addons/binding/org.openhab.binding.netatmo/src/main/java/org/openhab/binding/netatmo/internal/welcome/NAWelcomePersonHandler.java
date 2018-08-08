@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2010-2018 by the respective copyright holders.
- *
+ * <p>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,11 +8,11 @@
  */
 package org.openhab.binding.netatmo.internal.welcome;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
-
-import java.util.List;
-
+import io.rudolph.netatmo.api.presence.model.Event;
+import io.rudolph.netatmo.api.presence.model.Events;
+import io.rudolph.netatmo.api.presence.model.Face;
+import io.rudolph.netatmo.api.presence.model.Person;
+import io.rudolph.netatmo.api.welcome.WelcomeConnector;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -23,11 +23,10 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
 
-import io.swagger.client.api.WelcomeApi;
-import io.swagger.client.model.NAWelcomeEvent;
-import io.swagger.client.model.NAWelcomeEventResponse;
-import io.swagger.client.model.NAWelcomeFace;
-import io.swagger.client.model.NAWelcomePerson;
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toDateTimeType;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toStringType;
+
 
 /**
  * {@link NAWelcomePersonHandler} is the class used to handle the Welcome Home Data
@@ -35,9 +34,9 @@ import io.swagger.client.model.NAWelcomePerson;
  * @author Ing. Peter Weiss - Initial contribution
  *
  */
-public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson> {
+public class NAWelcomePersonHandler extends NetatmoModuleHandler<Person> {
     private String avatarURL;
-    private NAWelcomeEvent lastEvent;
+    private Event lastEvent;
 
     public NAWelcomePersonHandler(@NonNull Thing thing) {
         super(thing);
@@ -46,12 +45,11 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
     @Override
     public void updateChannels(Object module) {
         if (isRefreshRequired()) {
-            WelcomeApi welcomeApi = getBridgeHandler().getWelcomeApi();
-            NAWelcomeEventResponse eventResponse = welcomeApi.getlasteventof(getParentId(), getId(), 10);
+            WelcomeConnector welcomeApi = getBridgeHandler().api.getWelcomeApi();
+            Events events = welcomeApi.getLastEventOf(getParentId(), getId(), 10).executeSync();
 
             // Search the last event for this person
-            List<NAWelcomeEvent> rawEventList = eventResponse.getBody().getEventsList();
-            rawEventList.forEach(event -> {
+            events.getEventsList().forEach(event -> {
                 if (event.getPersonId() != null && event.getPersonId().equalsIgnoreCase(getId())
                         && (lastEvent == null || lastEvent.getTime() < event.getTime())) {
                     lastEvent = event;
@@ -97,7 +95,7 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
 
     private String getAvatarURL() {
         if (avatarURL == null && module != null) {
-            NAWelcomeFace face = module.getFace();
+            Face face = module.getFace();
             if (face != null) {
                 avatarURL = getBridgeHandler().getPictureUrl(face.getId(), face.getKey());
             }
@@ -110,9 +108,9 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
         super.handleCommand(channelUID, command);
         if ((command instanceof OnOffType) && (CHANNEL_WELCOME_PERSON_ATHOME.equalsIgnoreCase(channelUID.getId()))) {
             if ((OnOffType) command == OnOffType.OFF) {
-                getBridgeHandler().getWelcomeApi().setpersonsaway(getParentId(), getId());
+                getBridgeHandler().api.getWelcomeApi().setPersonsAway(getParentId(), getId());
             } else {
-                getBridgeHandler().getWelcomeApi().setpersonshome(getParentId(), "[\"" + getId() + "\"]");
+                getBridgeHandler().api.getWelcomeApi().setPersonsHome(getParentId(), getId());
             }
             invalidateParentCacheAndRefresh();
         }

@@ -8,14 +8,6 @@
  */
 package org.openhab.binding.netatmo.internal;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
-
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
-import javax.servlet.http.HttpServlet;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -27,14 +19,11 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.discovery.NetatmoModuleDiscoveryService;
+import org.openhab.binding.netatmo.internal.energy.RelayHandler;
+import org.openhab.binding.netatmo.internal.energy.ThermosthatHandler;
+import org.openhab.binding.netatmo.internal.energy.ValveHandler;
 import org.openhab.binding.netatmo.internal.homecoach.NAHealthyHomeCoachHandler;
-import org.openhab.binding.netatmo.internal.station.NAMainHandler;
-import org.openhab.binding.netatmo.internal.station.NAModule1Handler;
-import org.openhab.binding.netatmo.internal.station.NAModule2Handler;
-import org.openhab.binding.netatmo.internal.station.NAModule3Handler;
-import org.openhab.binding.netatmo.internal.station.NAModule4Handler;
-import org.openhab.binding.netatmo.internal.thermostat.NAPlugHandler;
-import org.openhab.binding.netatmo.internal.thermostat.NATherm1Handler;
+import org.openhab.binding.netatmo.internal.station.*;
 import org.openhab.binding.netatmo.internal.webhook.WelcomeWebHookServlet;
 import org.openhab.binding.netatmo.internal.welcome.NAWelcomeCameraHandler;
 import org.openhab.binding.netatmo.internal.welcome.NAWelcomeHomeHandler;
@@ -45,6 +34,13 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServlet;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
 /**
  * The {@link NetatmoHandlerFactory} is responsible for creating things and
@@ -60,7 +56,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
     private HttpService httpService;
-    private NATherm1StateDescriptionProvider stateDescriptionProvider;
+    private ThermosthatStateDescriptionProvider stateDescriptionProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -75,25 +71,27 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             NetatmoBridgeHandler bridgeHandler = new NetatmoBridgeHandler((Bridge) thing, servlet);
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
-        } else if (thingTypeUID.equals(MODULE1_THING_TYPE)) {
+        } else if (thingTypeUID.equals(OUTDOORMODULE)) {
             return new NAModule1Handler(thing);
-        } else if (thingTypeUID.equals(MODULE2_THING_TYPE)) {
+        } else if (thingTypeUID.equals(WINDMODULE)) {
             return new NAModule2Handler(thing);
-        } else if (thingTypeUID.equals(MODULE3_THING_TYPE)) {
+        } else if (thingTypeUID.equals(RAINGAUGEMODULE)) {
             return new NAModule3Handler(thing);
-        } else if (thingTypeUID.equals(MODULE4_THING_TYPE)) {
+        } else if (thingTypeUID.equals(INDOORMODULE)) {
             return new NAModule4Handler(thing);
-        } else if (thingTypeUID.equals(MAIN_THING_TYPE)) {
+        } else if (thingTypeUID.equals(BASESTATION)) {
             return new NAMainHandler(thing);
-        } else if (thingTypeUID.equals(HOMECOACH_THING_TYPE)) {
+        } else if (thingTypeUID.equals(HOMECOACH)) {
             return new NAHealthyHomeCoachHandler(thing);
-        } else if (thingTypeUID.equals(PLUG_THING_TYPE)) {
-            return new NAPlugHandler(thing);
-        } else if (thingTypeUID.equals(THERM1_THING_TYPE)) {
-            return new NATherm1Handler(thing, stateDescriptionProvider);
+        } else if (thingTypeUID.equals(VALVE)) {
+            return new ValveHandler(thing);
+        } else if (thingTypeUID.equals(RELAY)) {
+            return new RelayHandler(thing);
+        } else if (thingTypeUID.equals(THERMOSTAT)) {
+            return new ThermosthatHandler(thing, stateDescriptionProvider);
         } else if (thingTypeUID.equals(WELCOME_HOME_THING_TYPE)) {
             return new NAWelcomeHomeHandler(thing);
-        } else if (thingTypeUID.equals(WELCOME_CAMERA_THING_TYPE)) {
+        } else if (thingTypeUID.equals(WELCOME_CAMERA)) {
             return new NAWelcomeCameraHandler(thing);
         } else if (thingTypeUID.equals(WELCOME_PERSON_THING_TYPE)) {
             return new NAWelcomePersonHandler(thing);
@@ -161,11 +159,11 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Reference
-    protected void setDynamicStateDescriptionProvider(NATherm1StateDescriptionProvider provider) {
+    protected void setDynamicStateDescriptionProvider(ThermosthatStateDescriptionProvider provider) {
         this.stateDescriptionProvider = provider;
     }
 
-    protected void unsetDynamicStateDescriptionProvider(NATherm1StateDescriptionProvider provider) {
+    protected void unsetDynamicStateDescriptionProvider(ThermosthatStateDescriptionProvider provider) {
         this.stateDescriptionProvider = null;
     }
 

@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2010-2018 by the respective copyright holders.
- *
+ * <p>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,9 +8,7 @@
  */
 package org.openhab.binding.netatmo.internal.welcome;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
-
+import io.rudolph.netatmo.api.presence.model.Camera;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -20,7 +18,10 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
 
-import io.swagger.client.model.NAWelcomeCamera;
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toStringType;
+
 
 /**
  * {@link NAWelcomeCameraHandler} is the class used to handle the Welcome Camera Data
@@ -28,7 +29,7 @@ import io.swagger.client.model.NAWelcomeCamera;
  * @author Ing. Peter Weiss - Initial contribution
  *
  */
-public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
+public class NAWelcomeCameraHandler extends NetatmoModuleHandler<Camera> {
     private static final String LIVE_PICTURE = "/live/snapshot_720.jpg";
     private String livePictureURL;
     private String vpnUrl;
@@ -40,8 +41,8 @@ public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
     }
 
     @Override
-    protected void updateProperties(NAWelcomeCamera moduleData) {
-        updateProperties(null, moduleData.getType());
+    protected void updateProperties(Camera moduleData) {
+        updateProperties(null, moduleData.getType().getValue());
     }
 
     @Override
@@ -54,8 +55,8 @@ public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
             case CHANNEL_WELCOME_CAMERA_ALIMSTATUS:
                 return module != null ? toOnOffType(module.getAlimStatus()) : UnDefType.UNDEF;
             case CHANNEL_WELCOME_CAMERA_ISLOCAL:
-                return (module == null || module.getIsLocal() == null) ? UnDefType.UNDEF
-                        : module.getIsLocal() ? OnOffType.ON : OnOffType.OFF;
+                return (module == null || module.isLocal() == null) ? UnDefType.UNDEF
+                        : module.isLocal() ? OnOffType.ON : OnOffType.OFF;
             case CHANNEL_WELCOME_CAMERA_LIVEPICTURE_URL:
                 return getLivePictureURL() == null ? UnDefType.UNDEF : toStringType(getLivePictureURL());
             case CHANNEL_WELCOME_CAMERA_LIVEPICTURE:
@@ -99,7 +100,7 @@ public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
         if (vpnUrl == null && module != null) {
             vpnUrl = module.getVpnUrl();
             if (vpnUrl != null) {
-                isLocal = module.getIsLocal();
+                isLocal = module.isLocal();
             }
         }
         return vpnUrl;
