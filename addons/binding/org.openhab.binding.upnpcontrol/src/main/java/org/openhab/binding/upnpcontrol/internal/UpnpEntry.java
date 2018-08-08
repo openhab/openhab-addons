@@ -23,24 +23,26 @@ public class UpnpEntry {
 
     private final String id;
     private final String title;
+    private final String refId;
     private final String parentId;
     private final String upnpClass;
     private final List<UpnpEntryRes> resList;
     private final String album;
     private final String albumArtUri;
     private final String creator;
-    private final int originalTrackNumber;
+    private final Integer originalTrackNumber;
     private volatile String desc;
 
-    public UpnpEntry(String id, String title, String parentId, String album, String albumArtUri, String creator,
-            String upnpClass, List<UpnpEntryRes> resList) {
-        this(id, title, parentId, album, albumArtUri, creator, upnpClass, resList, -1);
+    public UpnpEntry(String id, String title, String refId, String parentId, String album, String albumArtUri,
+            String creator, String upnpClass, List<UpnpEntryRes> resList) {
+        this(id, title, refId, parentId, album, albumArtUri, creator, upnpClass, resList, null);
     }
 
-    public UpnpEntry(String id, String title, String parentId, String album, String albumArtUri, String creator,
-            String upnpClass, List<UpnpEntryRes> resList, int originalTrackNumber) {
+    public UpnpEntry(String id, String title, String refId, String parentId, String album, String albumArtUri,
+            String creator, String upnpClass, List<UpnpEntryRes> resList, Integer originalTrackNumber) {
         this.id = id;
         this.title = title;
+        this.refId = refId;
         this.parentId = parentId;
         this.album = album;
         this.albumArtUri = albumArtUri;
@@ -71,6 +73,13 @@ public class UpnpEntry {
      */
     public String getTitle() {
         return title;
+    }
+
+    /**
+     * @return the identifier of the entry this reference intry refers to.
+     */
+    public String getRefId() {
+        return refId;
     }
 
     /**
@@ -129,7 +138,7 @@ public class UpnpEntry {
         return creator;
     }
 
-    public int getOriginalTrackNumber() {
+    public Integer getOriginalTrackNumber() {
         return originalTrackNumber;
     }
 

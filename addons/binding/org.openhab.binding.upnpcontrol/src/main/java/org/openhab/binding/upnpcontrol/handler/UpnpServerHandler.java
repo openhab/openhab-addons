@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
@@ -120,14 +119,12 @@ public class UpnpServerHandler extends UpnpHandler {
                     currentRendererHandler = (upnpRenderers.get(((StringType) command).toString()));
                     if (Boolean.parseBoolean(getConfig().get(CONFIG_FILTER).toString())) {
                         // only refresh title list if filtering by renderer capabilities
-                        browse(currentId, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
+                        browse(currentId, "BrowseDirectChildren", "*", "0", "0",
+                                getConfig().get(SORT_CRITERIA).toString());
                     }
-                } else if (command instanceof RefreshType) {
+                } else if ((command instanceof RefreshType) && (currentRendererHandler != null)) {
                     updateState(channelUID, StringType.valueOf(currentRendererHandler.getThing().getLabel()));
                 }
-                updateState(SELECT, OnOffType.OFF);
-                updateState(SEARCH, OnOffType.OFF);
-                updateState(SERVE, OnOffType.OFF);
                 break;
             case CURRENTTITLE:
                 if (command instanceof StringType) {
@@ -135,9 +132,6 @@ public class UpnpServerHandler extends UpnpHandler {
                 } else if (command instanceof RefreshType) {
                     updateState(channelUID, StringType.valueOf(currentSelection));
                 }
-                updateState(SELECT, OnOffType.OFF);
-                updateState(SEARCH, OnOffType.OFF);
-                updateState(SERVE, OnOffType.OFF);
                 break;
             case SELECT:
                 if (command == OnOffType.ON) {
@@ -152,10 +146,11 @@ public class UpnpServerHandler extends UpnpHandler {
                         }
                         logger.debug("Browse target {}", browseTarget);
                         currentId = browseTarget;
-                        browse(currentId, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
+                        browse(currentId, "BrowseDirectChildren", "*", "0", "0",
+                                getConfig().get(SORT_CRITERIA).toString());
                     }
                 }
-                updateState(SERVE, OnOffType.OFF);
+                updateState(SELECT, OnOffType.OFF);
                 break;
             case SEARCHCRITERIA:
                 if (command instanceof StringType) {
@@ -163,9 +158,6 @@ public class UpnpServerHandler extends UpnpHandler {
                 } else if (command instanceof RefreshType) {
                     updateState(channelUID, StringType.valueOf(searchCriteria));
                 }
-                updateState(SELECT, OnOffType.OFF);
-                updateState(SEARCH, OnOffType.OFF);
-                updateState(SERVE, OnOffType.OFF);
                 break;
             case SEARCH:
                 if (command == OnOffType.ON) {
@@ -182,19 +174,18 @@ public class UpnpServerHandler extends UpnpHandler {
                             searchContainer = DIRECTORY_ROOT;
                         }
                         logger.debug("Search container {} for {}", searchContainer, criteria);
-                        search(searchContainer, criteria, "*", "0", "0", "+dc:title");
+                        search(searchContainer, criteria, "*", "0", "0", getConfig().get(SORT_CRITERIA).toString());
                     } else {
                         logger.warn("No search criteria defined.");
                     }
                 }
-                updateState(SERVE, OnOffType.OFF);
+                updateState(SEARCH, OnOffType.OFF);
                 break;
             case SERVE:
                 if (command == OnOffType.ON) {
                     serveMedia();
                 }
-                updateState(SELECT, OnOffType.OFF);
-                updateState(SEARCH, OnOffType.OFF);
+                updateState(SERVE, OnOffType.OFF);
                 break;
         }
 
@@ -352,8 +343,7 @@ public class UpnpServerHandler extends UpnpHandler {
                 if (value != null) {
                     uriMetaData = value;
                 }
-                resultList.clear();
-                resultList.addAll(UpnpXMLParser.getEntriesFromXML(value));
+                resultList = removeDuplicates(UpnpXMLParser.getEntriesFromXML(value));
                 updateTitleSelection();
                 break;
             case "NumberReturned":
@@ -376,6 +366,30 @@ public class UpnpServerHandler extends UpnpHandler {
         }
     }
 
+    /**
+     * Remove double entries by checking the refId if it exists as Id in the list and only keeping the original entry if
+     * available.
+     * If the original entry is not in the list, only keep one referring entry.
+     *
+     * @param list
+     * @return filtered list
+     */
+    private List<UpnpEntry> removeDuplicates(List<UpnpEntry> list) {
+        List<UpnpEntry> newList = new ArrayList<>();
+        List<String> refIdList = new ArrayList<>();
+        list.forEach(entry -> {
+            String refId = entry.getRefId();
+            if ((refId == null) || refId.isEmpty()
+                    || (list.stream().noneMatch(any -> (any.getId().equals(refId))) && !refIdList.contains(refId))) {
+                newList.add(entry);
+            }
+            if ((refId != null) && !refId.isEmpty()) {
+                refIdList.add(refId);
+            }
+        });
+        return newList;
+    }
+
     public String getURIMetaData() {
         return uriMetaData;
     }
@@ -383,7 +397,7 @@ public class UpnpServerHandler extends UpnpHandler {
     private void serveMedia() {
         UpnpRendererHandler handler = currentRendererHandler;
         if (handler != null) {
-            Queue<UpnpEntry> mediaQueue = new LinkedList<>();
+            LinkedList<UpnpEntry> mediaQueue = new LinkedList<>();
             mediaQueue.addAll(filterEntries(resultList, false));
             handler.registerQueue(mediaQueue);
             logger.debug("Serving media queue {} from server {} to renderer {}.", mediaQueue, thing.getLabel(),

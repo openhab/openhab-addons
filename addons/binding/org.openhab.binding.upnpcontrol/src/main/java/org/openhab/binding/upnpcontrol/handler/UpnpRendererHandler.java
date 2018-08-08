@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -73,7 +73,8 @@ public class UpnpRendererHandler extends UpnpHandler {
     private volatile PercentType soundVolume = new PercentType();
     private volatile List<String> sink = new ArrayList<>();
 
-    private volatile @Nullable Queue<UpnpEntry> currentQueue;
+    private volatile LinkedList<UpnpEntry> currentQueue = new LinkedList<>();
+    private volatile int queuePosition = -1;
 
     private volatile @Nullable ScheduledFuture<?> subscriptionRefreshJob;
     private final Runnable subscriptionRefresh = () -> {
@@ -250,12 +251,6 @@ public class UpnpRendererHandler extends UpnpHandler {
                         newState = PlayPauseType.PLAY;
                     } else if (transportState.equals("STOPPED")) {
                         newState = PlayPauseType.PAUSE;
-                        updateState(TITLE, StringType.EMPTY);
-                        updateState(ALBUM, StringType.EMPTY);
-                        updateState(ALBUM_ART, UnDefType.NULL);
-                        updateState(CREATOR, StringType.EMPTY);
-                        updateState(TRACK_NUMBER, DecimalType.ZERO);
-                        updateState(DESC, StringType.EMPTY);
                     } else if (transportState.equals("PAUSED_PLAYBACK")) {
                         newState = PlayPauseType.PAUSE;
                     }
@@ -289,7 +284,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                         if (command == NextPreviousType.NEXT) {
                             serveNext();
                         } else if (command == NextPreviousType.PREVIOUS) {
-                            previous();
+                            servePrevious();
                         }
                     } else if (command instanceof RewindFastforwardType) {
                     }
@@ -365,7 +360,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                 break;
             case "TransportState":
                 if ("STOPPED".equals(value)) {
-                    serveNext();
+                    // No need to do anything: this will allow restarting to play same item
                 } else if ("PLAYING".equals(value)) {
                     updateState(STOP, OnOffType.OFF);
                     updateState(CONTROL, PlayPauseType.PLAY);
@@ -376,22 +371,11 @@ public class UpnpRendererHandler extends UpnpHandler {
             case "CurrentURIMetaData":
                 List<UpnpEntry> list = UpnpXMLParser.getEntriesFromXML(value);
                 if (list.size() > 0) {
-                    UpnpEntry entry = list.get(0);
-                    updateState(TITLE, StringType.valueOf(entry.getTitle()));
-                    updateState(ALBUM, StringType.valueOf(entry.getAlbum()));
-                    State albumArt;
-                    try {
-                        albumArt = HttpUtil.downloadImage(entry.getAlbumArtUri());
-                    } catch (IllegalArgumentException e) {
-                        albumArt = UnDefType.UNDEF;
-                        logger.debug("Failed to download the content of URL {}", entry.getAlbumArtUri());
-                    }
-                    updateState(ALBUM_ART, albumArt);
-                    updateState(CREATOR, StringType.valueOf(entry.getCreator()));
-                    updateState(TRACK_NUMBER, new DecimalType(entry.getOriginalTrackNumber()));
-                    updateState(DESC, StringType.valueOf(entry.getDesc()));
+                    updateMetaDataState(list.get(0));
                 }
                 break;
+            case "CurrentTrackDuration":
+                updateState(TRACK_DURATION, StringType.valueOf(value));
             default:
                 super.onValueReceived(variable, value, service);
                 break;
@@ -441,45 +425,78 @@ public class UpnpRendererHandler extends UpnpHandler {
         audioSinkRegistered = true;
     }
 
-    public void registerQueue(Queue<UpnpEntry> queue) {
+    public void registerQueue(LinkedList<UpnpEntry> queue) {
         logger.debug("Registering queue on renderer {}", thing.getLabel());
         currentQueue = queue;
+        queuePosition = -1;
         serveNext();
     }
 
-    public void serveNext() {
-        Queue<UpnpEntry> queue = currentQueue;
-        if (queue != null) {
-            UpnpEntry nextMedia = queue.poll();
-            logger.debug("Serve next media {} from queue on renderer {}", nextMedia, thing.getLabel());
-            if (nextMedia != null) {
-                setCurrentURI(nextMedia.getRes(), "");
-                updateState(TITLE, StringType.valueOf(nextMedia.getTitle()));
-                updateState(ALBUM, StringType.valueOf(nextMedia.getAlbum()));
-                State albumArt;
-                try {
-                    albumArt = HttpUtil.downloadImage(nextMedia.getAlbumArtUri());
-                } catch (IllegalArgumentException e) {
-                    albumArt = UnDefType.UNDEF;
-                    logger.debug("Failed to download the content of URL {}", nextMedia.getAlbumArtUri());
-                }
-                updateState(ALBUM_ART, albumArt);
-                updateState(CREATOR, StringType.valueOf(nextMedia.getCreator()));
-                updateState(TRACK_NUMBER, new DecimalType(nextMedia.getOriginalTrackNumber()));
-                updateState(DESC, StringType.valueOf(nextMedia.getDesc()));
-            } else {
-                updateState(CONTROL, PlayPauseType.PAUSE);
-                stop();
-                updateState(TITLE, UnDefType.UNDEF);
-                updateState(ALBUM, UnDefType.UNDEF);
-                updateState(ALBUM_ART, UnDefType.UNDEF);
-                updateState(CREATOR, UnDefType.UNDEF);
-                updateState(TRACK_NUMBER, UnDefType.UNDEF);
-                updateState(DESC, UnDefType.UNDEF);
+    private void serveNext() {
+        LinkedList<UpnpEntry> queue = currentQueue;
+        if (queuePosition >= (queue.size() - 1)) {
+            updateState(CONTROL, PlayPauseType.PAUSE);
+            stop();
+            updateState(TITLE, UnDefType.UNDEF);
+            updateState(ALBUM, UnDefType.UNDEF);
+            updateState(ALBUM_ART, UnDefType.UNDEF);
+            updateState(CREATOR, UnDefType.UNDEF);
+            updateState(TRACK_NUMBER, UnDefType.UNDEF);
+            updateState(TRACK_DURATION, UnDefType.UNDEF);
+            updateState(DESC, UnDefType.UNDEF);
 
-                logger.debug("Queue empty on renderer {}", thing.getLabel());
-            }
+            currentQueue = new LinkedList<>();
+            queuePosition = -1;
+            logger.debug("Cannot serve next, end of queue on renderer {}", thing.getLabel());
+
+            return;
         }
+
+        UpnpEntry nextMedia = queue.get(++queuePosition);
+        logger.debug("Serve next media {} from queue on renderer {}", nextMedia, thing.getLabel());
+        serve(nextMedia);
+    }
+
+    private void servePrevious() {
+        LinkedList<UpnpEntry> queue = currentQueue;
+        if (queue.isEmpty()) {
+            logger.debug("Cannot serve previous, empty queue on renderer {}", thing.getLabel());
+            return;
+        }
+        if (queuePosition == 0) {
+            serve(queue.get(0));
+            logger.debug("Cannot serve previous, already at start of queue on renderer {}", thing.getLabel());
+            return;
+        }
+
+        UpnpEntry previousMedia = queue.get(--queuePosition);
+        logger.debug("Serve previous media {} from queue on renderer {}", previousMedia, thing.getLabel());
+        serve(previousMedia);
+    }
+
+    private void serve(UpnpEntry media) {
+        if (media != null) {
+            setCurrentURI(media.getRes(), "");
+            updateMetaDataState(media);
+        }
+    }
+
+    private void updateMetaDataState(UpnpEntry media) {
+        updateState(TITLE, StringType.valueOf(media.getTitle()));
+        updateState(ALBUM, StringType.valueOf(media.getAlbum()));
+        State albumArt;
+        try {
+            albumArt = HttpUtil.downloadImage(media.getAlbumArtUri());
+        } catch (IllegalArgumentException e) {
+            albumArt = UnDefType.UNDEF;
+            logger.debug("Failed to download the content of URL {}", media.getAlbumArtUri());
+        }
+        updateState(ALBUM_ART, albumArt);
+        updateState(CREATOR, StringType.valueOf(media.getCreator()));
+        Integer trackNumber = media.getOriginalTrackNumber();
+        State trackNumberState = (trackNumber != null) ? new DecimalType(trackNumber) : UnDefType.UNDEF;
+        updateState(TRACK_NUMBER, trackNumberState);
+        updateState(DESC, StringType.valueOf(media.getDesc()));
     }
 
     public Set<AudioFormat> getSupportedAudioFormats() {

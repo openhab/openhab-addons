@@ -112,6 +112,7 @@ public class UpnpXMLParser {
         private static List<String> ignore = null;
 
         private String id;
+        private String refId;
         private String parentId;
         private StringBuilder upnpClass = new StringBuilder();
         private List<UpnpEntryRes> resList = new ArrayList<>();
@@ -135,6 +136,7 @@ public class UpnpXMLParser {
                 throws SAXException {
             if (qName.equals("container") || qName.equals("item")) {
                 id = attributes.getValue("id");
+                refId = attributes.getValue("refID");
                 parentId = attributes.getValue("parentID");
             } else if (qName.equals("res")) {
                 String protocolInfo = attributes.getValue("protocolInfo");
@@ -214,14 +216,15 @@ public class UpnpXMLParser {
             if (qName.equals("container") || qName.equals("item")) {
                 element = null;
 
-                int trackNumberVal = 0;
+                Integer trackNumberVal;
                 try {
                     trackNumberVal = Integer.parseInt(trackNumber.toString());
-                } catch (Exception e) {
+                } catch (NumberFormatException e) {
+                    trackNumberVal = null;
                 }
 
-                entries.add(new UpnpEntry(id, title.toString(), parentId, album.toString(), albumArtUri.toString(),
-                        creator.toString(), upnpClass.toString(), resList, trackNumberVal));
+                entries.add(new UpnpEntry(id, title.toString(), refId, parentId, album.toString(),
+                        albumArtUri.toString(), creator.toString(), upnpClass.toString(), resList, trackNumberVal));
                 title = new StringBuilder();
                 upnpClass = new StringBuilder();
                 resList = new ArrayList<>();

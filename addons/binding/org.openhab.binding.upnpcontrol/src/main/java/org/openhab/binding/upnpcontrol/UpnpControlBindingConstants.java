@@ -48,6 +48,7 @@ public class UpnpControlBindingConstants {
     public static final String ALBUM_ART = "albumart";
     public static final String CREATOR = "creator";
     public static final String TRACK_NUMBER = "tracknumber";
+    public static final String TRACK_DURATION = "trackduration";
     public static final String DESC = "desc";
 
     public static final String UPNPRENDERER = "upnprenderer";
@@ -59,4 +60,5 @@ public class UpnpControlBindingConstants {
 
     // Thing config properties
     public static final String CONFIG_FILTER = "filter";
+    public static final String SORT_CRITERIA = "sortcriteria";
 }
