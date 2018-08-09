@@ -10,9 +10,7 @@ package org.openhab.voice.gtts.internal;
 
 import com.google.cloud.texttospeech.v1beta1.AudioEncoding;
 import org.eclipse.smarthome.config.core.ConfigConstants;
-import org.eclipse.smarthome.config.core.ConfigOptionProvider;
 import org.eclipse.smarthome.config.core.ConfigurableService;
-import org.eclipse.smarthome.config.core.ParameterOption;
 import org.eclipse.smarthome.core.audio.AudioException;
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioStream;
@@ -27,8 +25,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.net.URI;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import static org.openhab.voice.gtts.internal.GoogleTTSService.*;
 
@@ -42,7 +42,7 @@ import static org.openhab.voice.gtts.internal.GoogleTTSService.*;
         ConfigurableService.SERVICE_PROPERTY_LABEL + "=" + SERVICE_NAME,
         ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=" + SERVICE_CATEGORY + ":" + SERVICE_ID,
         ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=" + SERVICE_CATEGORY })
-public class GoogleTTSService implements TTSService, ConfigOptionProvider {
+public class GoogleTTSService implements TTSService {
     /**
      * Service name
      */
@@ -71,7 +71,7 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
     /**
      * Configuration parameters
      */
-    private static final String PARAM_SERVICE_KEY_FILE_NAME = "serviceAccountKeyName";
+    private static final String PARAM_SERVICE_ACCOUNT_KEY = "serviceAccountKey";
     private static final String PARAM_PITCH = "pitch";
     private static final String PARAM_SPEAKING_RATE = "speakingRate";
     private static final String PARAM_VOLUME_GAIN_DB = "volumeGainDb";
@@ -125,7 +125,7 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
             }
             logger.info("Using cache folder {}", cacheFolder.getAbsolutePath());
 
-            apiImpl = new GoogleCloudAPI(homeFolder, cacheFolder);
+            apiImpl = new GoogleCloudAPI(cacheFolder);
             updateConfig(config);
         } catch (Throwable t) {
             logger.error("Failed to activate Google Cloud TTS Service: {}", t.getMessage(), t);
@@ -189,9 +189,9 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
         logger.debug("Updating configuration");
         if (newConfig != null) {
             //account key
-            String param = newConfig.containsKey(PARAM_SERVICE_KEY_FILE_NAME) ? newConfig.get(PARAM_SERVICE_KEY_FILE_NAME).toString() : null;
+            String param = newConfig.containsKey(PARAM_SERVICE_ACCOUNT_KEY) ? newConfig.get(PARAM_SERVICE_ACCOUNT_KEY).toString() : null;
             if (param != null) {
-                config.setServiceKeyFileName(param);
+                config.setServiceAccountKey(param);
 
                 apiImpl.setConfig(config);
                 if (apiImpl.isInitialized()) {
@@ -219,7 +219,7 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
             if (param != null) {
                 config.setVolumeGainDb(Double.parseDouble(param));
             }
-            logger.debug("New configuration: {}", config.toString());
+            logger.trace("New configuration: {}", config.toString());
         } else {
             logger.error("Missing Google Cloud TTS configuration.");
         }
@@ -311,7 +311,7 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
         // now create the input stream for given text, locale, format. There is
         // only a default voice
         try {
-            File audioFile = apiImpl.synthesizeSpeech(text, new GoogleTTSVoice(voice), requestedFormat.getCodec());
+            File audioFile = apiImpl.synthesizeSpeech(text, (GoogleTTSVoice) voice, requestedFormat.getCodec());
             if (audioFile == null) {
                 throw new TTSException("Could not read from Google Cloud TTS Service");
             }
@@ -319,45 +319,5 @@ public class GoogleTTSService implements TTSService, ConfigOptionProvider {
         } catch (AudioException ex) {
             throw new TTSException("Could not create AudioStream", ex);
         }
-    }
-
-    @Override
-    public Collection<ParameterOption> getParameterOptions(URI uri, String s, Locale locale) {
-        return getParameterOptions(uri, s, null, locale);
-    }
-
-    /**
-     * Implementing ConfigOptionProvider to help the configuration by listing all JSON files under service home.
-     *
-     * @param uri Configuration URI
-     * @param param Param name.
-     * @param context Context.
-     * @param locale Locale
-     *
-     * @return Collection of options.
-     */
-    @Override
-    public Collection<ParameterOption> getParameterOptions(URI uri, String param, String context, Locale locale) {
-        if (uri.toString().equals("voice:gtts")) {
-            if (PARAM_SERVICE_KEY_FILE_NAME.equals(param)) {
-                List<ParameterOption> options = new ArrayList<>();
-                String userDataFolder = ConfigConstants.getUserDataFolder();
-                File homeFolder = new File(userDataFolder, SERVICE_ID);
-
-                String[] jsonFiles = homeFolder.list((dir, name) -> name.endsWith(".json"));
-
-                options.add(new ParameterOption("", "Select the service account key"));
-
-                if (jsonFiles != null) {
-                    for (String keyFile : jsonFiles) {
-                        ParameterOption option = new ParameterOption(keyFile, keyFile);
-                        options.add(option);
-                    }
-                }
-
-                return options;
-            }
-        }
-        return null;
     }
 }

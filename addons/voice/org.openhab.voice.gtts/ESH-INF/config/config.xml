@@ -6,9 +6,11 @@
 		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="voice:gtts">
-		<parameter name="serviceAccountKeyName" type="text" required="true">
-			<label>Service Account Key Name</label>
-			<description>Google Cloud TTS API service account key name. The addon will try to load this file from $USER_DATA/gtts folder.</description>
+		<parameter name="serviceAccountKey" type="text" required="true">
+			<context>script</context>
+			<label>Service Account Key (JSON)</label>
+			<description>Google Cloud TTS API service account key. A JSON content is expected here copied from the
+			downloaded key file.</description>
 		</parameter>
 		<parameter name="pitch" type="decimal" min="-20" max="20" step="0.1">
 			<label>Pitch</label>

@@ -29,6 +29,16 @@ import java.util.*;
  */
 class GoogleCloudAPI {
     /**
+     * Stream buffer size
+     */
+    private static final int READ_BUFFER_SIZE = 4096;
+
+    /**
+     * Default encoding
+     */
+    private static final String UTF_8 = "UTF-8";
+
+    /**
      * Logger
      */
     private final Logger logger = LoggerFactory.getLogger(GoogleCloudAPI.class);
@@ -54,11 +64,6 @@ class GoogleCloudAPI {
     private GoogleTTSConfig config;
 
     /**
-     * Home folder.
-     */
-    private File homeFolder;
-
-    /**
      * Status flag
      */
     private boolean initialized;
@@ -66,11 +71,9 @@ class GoogleCloudAPI {
     /**
      * Constructor.
      *
-     * @param homeFolder  Service home folder.
      * @param cacheFolder Service cache folder
      */
-    GoogleCloudAPI(File homeFolder, File cacheFolder) {
-        this.homeFolder = homeFolder;
+    GoogleCloudAPI(File cacheFolder) {
         this.cacheFolder = cacheFolder;
 
     }
@@ -83,17 +86,11 @@ class GoogleCloudAPI {
     void setConfig(GoogleTTSConfig config) {
         this.config = config;
         if (checkArch()) {
-            if (config.getServiceKeyFileName() != null) {
-                File keyFile;
-                if (config.getServiceKeyFileName().contains(File.separator)) {
-                    keyFile = new File(config.getServiceKeyFileName());
-                } else {
-
-                    keyFile = new File(homeFolder, config.getServiceKeyFileName());
-                }
-                logger.debug("Loading service key file from {}", keyFile.getAbsoluteFile());
+            String serviceAccountKey = config.getServiceAccountKey();
+            if (serviceAccountKey != null) {
                 try {
-                    GoogleCredentials credential = GoogleCredentials.fromStream(new FileInputStream(keyFile));
+                    ByteArrayInputStream bis = new ByteArrayInputStream(serviceAccountKey.getBytes());
+                    GoogleCredentials credential = GoogleCredentials.fromStream(bis);
                     FixedCredentialsProvider credentialProvider = FixedCredentialsProvider.create(credential);
                     TextToSpeechSettings settings = TextToSpeechSettings.newBuilder().setCredentialsProvider(credentialProvider)
                             .build();
@@ -101,7 +98,7 @@ class GoogleCloudAPI {
                     initialized = true;
                     initVoices();
                 } catch (Exception e) {
-                    logger.error("Error initializing the service using {}", keyFile.getAbsoluteFile(), e);
+                    logger.error("Error initializing the service using", e);
                     initialized = false;
                 }
             } else {
@@ -112,41 +109,13 @@ class GoogleCloudAPI {
     }
 
     private boolean checkArch() {
-        String arch = System.getProperty("os.arch");
-        String normalizedArch = arch.toLowerCase(Locale.US).replaceAll("[^a-z0-9]+", "");
-        String commonArch;
-        if (normalizedArch.matches("^(x8664|amd64|ia32e|em64t|x64)$")) {
-            commonArch = "x86_64";
-        } else if (normalizedArch.matches("^(x8632|x86|i[3-6]86|ia32|x32)$")) {
-            commonArch =  "x86_32";
-        } else if (normalizedArch.matches("^(ia64|itanium64)$")) {
-            commonArch =  "itanium_64";
-        } else if (normalizedArch.matches("^(sparc|sparc32)$")) {
-            commonArch =  "sparc_32";
-        } else if (normalizedArch.matches("^(sparcv9|sparc64)$")) {
-            commonArch =  "sparc_64";
-        } else if (normalizedArch.matches("^(arm|arm32)$")) {
-            commonArch =  "arm_32";
-        } else if ("aarch64".equals(normalizedArch)) {
-            commonArch =  "aarch_64";
-        } else if (normalizedArch.matches("^(ppc|ppc32)$")) {
-            commonArch =  "ppc_32";
-        } else if ("ppc64".equals(normalizedArch)) {
-            commonArch =  "ppc_64";
-        } else if ("ppc64le".equals(normalizedArch)) {
-            commonArch =  "ppcle_64";
-        } else if ("s390".equals(normalizedArch)) {
-            commonArch =  "s390_32";
-        } else {
-            commonArch =  "s390x".equals(normalizedArch) ? "s390_64" : "unknown";
-        }
+        PlatformUtil.Architecture architecture = PlatformUtil.checkArchitecture();
 
-        if (!"x86_64".equals(commonArch)) {
-            logger.error("The architecture underneath the OH is not x86_64 but {}. Only x86_64 platforms are supported. " +
-                    "The os.arch value is {}.", commonArch, arch);
+        if (PlatformUtil.Architecture.X86_64 != architecture) {
+            logger.error("The architecture is not x86_64 but {}. Only x86_64 platforms are supported. " , architecture);
             return false;
         } else {
-            logger.info("OH is running on architecture {} - supported by Google Cloud TTS API", commonArch);
+            logger.debug("openHAB is running on architecture {} - supported by Google Cloud TTS API", architecture);
             return true;
         }
     }
@@ -253,10 +222,10 @@ class GoogleCloudAPI {
             // return from cache
             return audioFileInCache;
         } catch (FileNotFoundException ex) {
-            logger.warn("Could not write {} to cache, return null", audioFileInCache, ex);
+            logger.warn("Could not write {} to cache", audioFileInCache, ex);
             return null;
         } catch (IOException ex) {
-            logger.error("Could not write {} to cache, return null", audioFileInCache, ex);
+            logger.error("Could not write {} to cache", audioFileInCache, ex);
             return null;
         }
     }
@@ -311,7 +280,7 @@ class GoogleCloudAPI {
      */
     private String getUniqueFilenameForText(String text, Locale locale) {
         try {
-            byte[] bytesOfMessage = text.getBytes("UTF-8");
+            byte[] bytesOfMessage = text.getBytes(UTF_8);
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] md5Hash = md.digest(bytesOfMessage);
             BigInteger bigInt = new BigInteger(1, md5Hash);
@@ -330,17 +299,17 @@ class GoogleCloudAPI {
     }
 
     private void copyStream(InputStream inputStream, OutputStream outputStream) throws IOException {
-        byte[] bytes = new byte[4096];
-        int read = inputStream.read(bytes, 0, 4096);
+        byte[] bytes = new byte[READ_BUFFER_SIZE];
+        int read = inputStream.read(bytes, 0, READ_BUFFER_SIZE);
         while (read > 0) {
             outputStream.write(bytes, 0, read);
-            read = inputStream.read(bytes, 0, 4096);
+            read = inputStream.read(bytes, 0, READ_BUFFER_SIZE);
         }
     }
 
     private void writeText(File file, String text) throws IOException {
         try (OutputStream outputStream = new FileOutputStream(file)) {
-            outputStream.write(text.getBytes("UTF-8"));
+            outputStream.write(text.getBytes(UTF_8));
         }
     }
 

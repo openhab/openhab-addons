@@ -15,9 +15,9 @@ package org.openhab.voice.gtts.internal;
  */
 class GoogleTTSConfig {
     /**
-     * Key file name under $userdata/gtts
+     * JSON key to access Google service
      */
-    private String serviceKeyFileName;
+    private String serviceAccountKey;
 
     /**
      * Pitch
@@ -34,12 +34,12 @@ class GoogleTTSConfig {
      */
     private Double volumeGainDb = 0d;
 
-    String getServiceKeyFileName() {
-        return serviceKeyFileName;
+    String getServiceAccountKey() {
+        return serviceAccountKey;
     }
 
-    void setServiceKeyFileName(String serviceKeyFileName) {
-        this.serviceKeyFileName = serviceKeyFileName;
+    void setServiceAccountKey(String serviceAccountKey) {
+        this.serviceAccountKey = serviceAccountKey;
     }
 
     Double getPitch() {
@@ -69,7 +69,7 @@ class GoogleTTSConfig {
     @Override
     public String toString() {
         return "GoogleTTSConfig{" +
-                "serviceKeyFileName='" + serviceKeyFileName + '\'' +
+                "serviceAccountKey='" + serviceAccountKey + '\'' +
                 ", pitch=" + pitch +
                 ", speakingRate=" + speakingRate +
                 ", volumeGainDb=" + volumeGainDb +
