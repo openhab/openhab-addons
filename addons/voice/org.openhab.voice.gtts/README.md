@@ -2,8 +2,8 @@
 
 Google Cloud TTS Service uses Google's Cloud Text-to-Speech API to convert text or Speech Synthesis Markup Language 
 (SSML) input into audio data of natural human speech. 
-It provides 30 voices, available in multiple languages and 
-variants and applies DeepMind’s groundbreaking research in WaveNet and Google’s powerful neural networks. 
+It provides 30 voices, available in multiple languages and variants and applies DeepMind’s groundbreaking research in 
+WaveNet and Google’s powerful neural networks. 
 The implementation caches the converted texts to reduce the load on the API and make the conversion faster.
 
 ## Table of Contents
@@ -56,4 +56,4 @@ Using your favourite configuration UI
 * Edit **System** settings
 * Edit **Voice** settings
 * Set **Google Cloud TTS Service** as **Default Text-to-Speech**
-* Choose default voice for the setup. **Wavenet** voices available for en-US location
+* Choose default voice for the setup.
