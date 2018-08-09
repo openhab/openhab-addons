@@ -153,7 +153,7 @@ class GoogleCloudAPI {
      */
     Set<GoogleTTSVoice> getVoicesForLocale(Locale l) {
         Set<GoogleTTSVoice> set = voices.get(l);
-        return set != null ? Collections.unmodifiableSet(set) : Collections.EMPTY_SET;
+        return set != null ? Collections.unmodifiableSet(set) : Collections.emptySet();
     }
 
     /**
