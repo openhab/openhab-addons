@@ -41,7 +41,7 @@ import static org.openhab.voice.googletts.internal.GoogleTTSService.*;
         Constants.SERVICE_PID + "=" + SERVICE_PID,
         ConfigurableService.SERVICE_PROPERTY_LABEL + "=" + SERVICE_NAME,
         ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=" + SERVICE_CATEGORY + ":" + SERVICE_ID,
-        ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=" + SERVICE_CATEGORY })
+        ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=" + SERVICE_CATEGORY})
 public class GoogleTTSService implements TTSService {
     /**
      * Service name
@@ -106,30 +106,26 @@ public class GoogleTTSService implements TTSService {
      */
     @SuppressWarnings("unused")
     protected void activate(Map<String, Object> config) {
-        try {
-            //create home folder
-            File userData = new File(ConfigConstants.getUserDataFolder());
-            File homeFolder = new File(userData, SERVICE_ID);
+        //create home folder
+        File userData = new File(ConfigConstants.getUserDataFolder());
+        File homeFolder = new File(userData, SERVICE_ID);
 
-            if (!homeFolder.exists()) {
-                //noinspection ResultOfMethodCallIgnored
-                homeFolder.mkdirs();
-            }
-            logger.info("Using home folder: {}", homeFolder.getAbsolutePath());
-
-            //create cache folder
-            File cacheFolder = new File(new File(userData, CACHE_FOLDER_NAME), SERVICE_PID);
-            if (!cacheFolder.exists()) {
-                //noinspection ResultOfMethodCallIgnored
-                cacheFolder.mkdirs();
-            }
-            logger.info("Using cache folder {}", cacheFolder.getAbsolutePath());
-
-            apiImpl = new GoogleCloudAPI(cacheFolder);
-            updateConfig(config);
-        } catch (Throwable t) {
-            logger.error("Failed to activate Google Cloud TTS Service: {}", t.getMessage(), t);
+        if (!homeFolder.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            homeFolder.mkdirs();
         }
+        logger.info("Using home folder: {}", homeFolder.getAbsolutePath());
+
+        //create cache folder
+        File cacheFolder = new File(new File(userData, CACHE_FOLDER_NAME), SERVICE_PID);
+        if (!cacheFolder.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            cacheFolder.mkdirs();
+        }
+        logger.info("Using cache folder {}", cacheFolder.getAbsolutePath());
+
+        apiImpl = new GoogleCloudAPI(cacheFolder);
+        updateConfig(config);
     }
 
     /**

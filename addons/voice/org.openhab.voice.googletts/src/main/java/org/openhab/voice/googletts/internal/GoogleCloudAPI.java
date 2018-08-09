@@ -75,7 +75,6 @@ class GoogleCloudAPI {
      */
     GoogleCloudAPI(File cacheFolder) {
         this.cacheFolder = cacheFolder;
-
     }
 
     /**
