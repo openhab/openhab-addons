@@ -186,15 +186,8 @@ public class GoogleTTSService implements TTSService {
         if (newConfig != null) {
             //account key
             String param = newConfig.containsKey(PARAM_SERVICE_ACCOUNT_KEY) ? newConfig.get(PARAM_SERVICE_ACCOUNT_KEY).toString() : null;
-            if (param != null) {
-                config.setServiceAccountKey(param);
-
-                apiImpl.setConfig(config);
-                if (apiImpl.isInitialized()) {
-                    allVoices = initVoices();
-                    audioFormats = initAudioFormats();
-                }
-            } else {
+            config.setServiceAccountKey(param);
+            if (param == null) {
                 logger.error("Missing service account key configuration to access Google Cloud TTS API.");
             }
 
@@ -216,6 +209,14 @@ public class GoogleTTSService implements TTSService {
                 config.setVolumeGainDb(Double.parseDouble(param));
             }
             logger.trace("New configuration: {}", config.toString());
+
+            if (config.getServiceAccountKey() != null) {
+                apiImpl.setConfig(config);
+                if (apiImpl.isInitialized()) {
+                    allVoices = initVoices();
+                    audioFormats = initAudioFormats();
+                }
+            }
         } else {
             logger.error("Missing Google Cloud TTS configuration.");
         }

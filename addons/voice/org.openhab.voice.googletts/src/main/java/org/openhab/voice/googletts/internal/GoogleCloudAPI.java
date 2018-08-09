@@ -96,8 +96,8 @@ class GoogleCloudAPI {
                     googleClient = TextToSpeechClient.create(settings);
                     initialized = true;
                     initVoices();
-                } catch (Exception e) {
-                    logger.error("Error initializing the service using", e);
+                } catch (IOException e) {
+                    logger.error("Error initializing the service", e);
                     initialized = false;
                 }
             } else {
