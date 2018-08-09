@@ -1,10 +1,10 @@
 # Google Cloud Text-to-Speech
 
 Google Cloud TTS Service uses Google's Cloud Text-to-Speech API to convert text or Speech Synthesis Markup Language 
-(SSML) input into audio data of natural human speech. It provides 30 voices, available in multiple languages and 
+(SSML) input into audio data of natural human speech. 
+It provides 30 voices, available in multiple languages and 
 variants and applies DeepMind’s groundbreaking research in WaveNet and Google’s powerful neural networks. 
-The implementation caches the converted texts under $userdata/ gtts/cache folder to reduce the load on the API and 
-make the conversion faster.
+The implementation caches the converted texts to reduce the load on the API and make the conversion faster.
 
 ## Table of Contents
 
@@ -19,8 +19,9 @@ make the conversion faster.
 
 ## Prerequisites
 
-Please make sure your OH installation runs on x86_64 Linux/Windows/Mac. Dependencies of Google Cloud Java support only 
-these platforms. For details please visit [Google Cloud Java](https://github.com/GoogleCloudPlatform/google-cloud-java/blob/master/README.md)/Supported platforms.
+Please make sure your installation runs on x86_64 Linux/Windows/Mac. 
+Dependencies of Google Cloud Java support only these platforms. 
+For details please visit [Google Cloud Java](https://github.com/GoogleCloudPlatform/google-cloud-java/blob/master/README.md)/Supported platforms.
 
 ## Obtaining Credentials
 
@@ -39,8 +40,9 @@ Before you can integrate this service with your Google Cloud Text-to-Speech, you
 
 ## Service Configuration
 
-After the Google TTS addon is installed it creates a **$USERDATA/gtts** folder. Place the downloaded key JSON file in this 
-folder. Using your favourite configuration UI (e.g. PaperUI) edit **services/voice/Google Cloud TTS Service** settings and set 
+After the Google TTS addon is installed it creates a **$USERDATA/gtts** folder. 
+Place the downloaded key JSON file in this folder. 
+Using your favourite configuration UI (e.g. PaperUI) edit **services/voice/Google Cloud TTS Service** settings and set 
 
 * **Service Account Key Name** - Key file name located in service home folder.
 * **Pitch** - The pitch of selected voice, up to 20 semitones
