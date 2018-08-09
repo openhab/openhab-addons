@@ -49,6 +49,9 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     public void initialize() {
         if (service.isRegistered(this)) {
             updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Communication cannot be established with " + thing.getLabel());
         }
     }
 

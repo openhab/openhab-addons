@@ -45,6 +45,10 @@ public class UpnpXMLParser {
     }
 
     public static Map<String, String> getAVTransportFromXML(String xml) {
+        if ((xml == null) || (xml.isEmpty())) {
+            LOGGER.debug("Could not parse AV Transport from empty xml");
+            return new HashMap<String, String>();
+        }
         AVTransportEventHandler handler = new AVTransportEventHandler();
         try {
             XMLReader reader = XMLReaderFactory.createXMLReader();
@@ -66,6 +70,10 @@ public class UpnpXMLParser {
      * @throws SAXException
      */
     public static List<UpnpEntry> getEntriesFromXML(String xml) {
+        if ((xml == null) || (xml.isEmpty())) {
+            LOGGER.debug("Could not parse Entries from empty xml");
+            return new ArrayList<UpnpEntry>();
+        }
         EntryHandler handler = new EntryHandler();
         try {
             XMLReader reader = XMLReaderFactory.createXMLReader();
