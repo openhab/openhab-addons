@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.voice.gtts.internal;
+package org.openhab.voice.googletts.internal;
 
 import org.eclipse.smarthome.core.voice.Voice;
 
@@ -70,7 +70,7 @@ public class GoogleTTSVoice implements Voice {
     @Override
     public String getUID() {
         String voiceName = label.replaceAll("[^a-zA-Z0-9_]", "");
-        return "gtts:" + voiceName;
+        return "googletts:" + voiceName;
     }
 
     /**

@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
 		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="voice:gtts">
+	<config-description uri="voice:googletts">
 		<parameter name="serviceAccountKey" type="text" required="true">
 			<context>script</context>
 			<label>Service Account Key (JSON)</label>

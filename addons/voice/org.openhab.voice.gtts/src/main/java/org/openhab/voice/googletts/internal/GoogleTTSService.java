@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.voice.gtts.internal;
+package org.openhab.voice.googletts.internal;
 
 import com.google.cloud.texttospeech.v1beta1.AudioEncoding;
 import org.eclipse.smarthome.config.core.ConfigConstants;
@@ -30,7 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import static org.openhab.voice.gtts.internal.GoogleTTSService.*;
+import static org.openhab.voice.googletts.internal.GoogleTTSService.*;
 
 /**
  * Voice service implementation.
@@ -51,7 +51,7 @@ public class GoogleTTSService implements TTSService {
     /**
      * Service id
      */
-    static final String SERVICE_ID = "gtts";
+    static final String SERVICE_ID = "googletts";
 
     /**
      * Service category

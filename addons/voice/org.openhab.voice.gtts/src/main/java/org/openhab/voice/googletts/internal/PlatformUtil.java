@@ -6,11 +6,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.voice.gtts.internal;
+package org.openhab.voice.googletts.internal;
 
 import java.util.Locale;
 
-import static org.openhab.voice.gtts.internal.PlatformUtil.Architecture.*;
+import static org.openhab.voice.googletts.internal.PlatformUtil.Architecture.*;
 
 /**
  * Utility to check system architecture.
