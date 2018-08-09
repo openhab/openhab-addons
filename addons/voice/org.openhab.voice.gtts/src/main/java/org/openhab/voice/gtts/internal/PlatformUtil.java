@@ -1,4 +1,3 @@
-package org.openhab.voice.gtts.internal;
 /**
  * Copyright (c) 2010-2018 by the respective copyright holders.
  *
@@ -7,6 +6,8 @@ package org.openhab.voice.gtts.internal;
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
+package org.openhab.voice.gtts.internal;
+
 import java.util.Locale;
 
 import static org.openhab.voice.gtts.internal.PlatformUtil.Architecture.*;
