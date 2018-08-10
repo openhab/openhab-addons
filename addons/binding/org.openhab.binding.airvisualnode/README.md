@@ -4,7 +4,7 @@ This is an openHAB binding for the [AirVisual Node Air Quality Monitor](https://
 
 ## Supported Things
 
-There is one supported Thing, the "AirVisual Node".
+There is one supported Thing, the "avnode".
 
 ## Discovery
 

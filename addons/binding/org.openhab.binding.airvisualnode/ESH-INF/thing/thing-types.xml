@@ -27,7 +27,7 @@
 		<config-description>
 			<!-- Required parameters -->
 			<parameter name="address" type="text" required="true">
-				<context>network_address</context>
+				<context>network-address</context>
 				<label>Node Network Address</label>
 				<description>Node network address</description>
 			</parameter>
@@ -105,7 +105,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="Used_memory">
+	<channel-type id="Used_memory" advanced="true">
 		<item-type>Number</item-type>
 		<label>Used Memory</label>
 		<description>Used memory</description>
