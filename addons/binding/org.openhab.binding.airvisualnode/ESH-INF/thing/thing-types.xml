@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="airvisualnode"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="avnode">
+		<label>AirVisual Node</label>
+		<description>AirVisual Node air quality monitor</description>
+
+		<!-- Channels -->
+
+		<channels>
+			<channel id="co2" typeId="Co2" />
+			<channel id="humidity" typeId="Humidity" />
+			<channel id="aqi" typeId="Aqi" />
+			<channel id="pm_25" typeId="Pm_25" />
+			<channel id="temperature" typeId="Temperature" />
+			<channel id="timestamp" typeId="Timestamp" />
+			<channel id="used_memory" typeId="Used_memory" />
+			<channel id="signal-strength" typeId="system.signal-strength" />
+			<channel id="battery-level" typeId="system.battery-level" />
+		</channels>
+
+		<!-- Configuration parameters -->
+
+		<config-description>
+			<!-- Required parameters -->
+			<parameter name="address" type="text" required="true">
+				<context>network-address</context>
+				<label>Node Network Address</label>
+				<description>Node network address</description>
+			</parameter>
+			<parameter name="username" type="text">
+				<label>Node Username</label>
+				<description>Node network username</description>
+				<default>airvisual</default>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Node Password</label>
+				<description>Node network password</description>
+			</parameter>
+			<!-- Advanced parameters -->
+			<parameter name="share" type="text">
+				<label>Share Name</label>
+				<description>Node network share name</description>
+				<default>airvisual</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refresh" type="integer" min="30" unit="s">
+				<label>Refresh Interval</label>
+				<description>Node data fetches interval (in seconds)</description>
+				<default>60</default>
+				<unitLabel>s</unitLabel>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel types -->
+
+	<channel-type id="Co2">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CO₂ Level</label>
+		<description>CO&#8322; level, ppm</description>
+		<category>CarbonDioxide</category>
+		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+
+	<channel-type id="Humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Humidity, %</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+
+	<channel-type id="Aqi">
+		<item-type>Number:Dimensionless</item-type>
+		<label>AQI</label>
+		<description>Air Quality Index (US)</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="Pm_25">
+		<item-type>Number:Density</item-type>
+		<label>PM2.5</label>
+		<description>PM2.5 level, μg/m&#179;</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="Temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="Timestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>Status timestamp</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="Used_memory" advanced="true">
+		<item-type>Number</item-type>
+		<label>Used Memory</label>
+		<description>Used memory</description>
+		<state readOnly="true" />
+	</channel-type>
+
+</thing:thing-descriptions>
