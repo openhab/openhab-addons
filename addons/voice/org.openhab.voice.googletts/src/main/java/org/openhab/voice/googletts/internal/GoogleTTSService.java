@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.voice.TTSException;
 import org.eclipse.smarthome.core.voice.TTSService;
 import org.eclipse.smarthome.core.voice.Voice;
 import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
@@ -104,7 +105,7 @@ public class GoogleTTSService implements TTSService {
     /**
      * DS activate, with access to ConfigAdmin
      */
-    @SuppressWarnings("unused")
+    @Activate
     protected void activate(Map<String, Object> config) {
         //create home folder
         File userData = new File(ConfigConstants.getUserDataFolder());
