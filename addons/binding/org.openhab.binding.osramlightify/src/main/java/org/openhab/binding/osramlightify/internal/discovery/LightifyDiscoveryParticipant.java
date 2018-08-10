@@ -24,6 +24,8 @@ import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_TYPE_LIGHTIFY_GATEWAY;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
  * Auto-discovery participant to find Lightify gateway devices on the local network.
  * Devices are discovered using mDNS with looking for _http._tcp.local services with a
@@ -31,6 +33,7 @@ import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_T
  *
  * @author Mike Jagdis - Initial contribution
  */
+@Component
 public final class LightifyDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private static final String SERVICE_TYPE = "_http._tcp.local.";

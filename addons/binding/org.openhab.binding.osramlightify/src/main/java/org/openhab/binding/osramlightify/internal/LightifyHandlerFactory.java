@@ -13,6 +13,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS;
@@ -25,6 +26,8 @@ import org.openhab.binding.osramlightify.handler.LightifyDeviceHandler;
 import org.openhab.binding.osramlightify.handler.LightifyGroupHandler;
 import org.openhab.binding.osramlightify.handler.LightifyMotionSensorHandler;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
  * The {@link org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory} implementation
  * to create new instances of the {@link LightifyBridgeHandler} or {@link LightifyDeviceHandler} based on
@@ -32,6 +35,7 @@ import org.openhab.binding.osramlightify.handler.LightifyMotionSensorHandler;
  *
  * @author Mike Jagdis - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.osramlightify")
 public final class LightifyHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
