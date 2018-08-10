@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.somfytahoma.handler;
 
-import com.google.gson.Gson;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -34,8 +33,6 @@ public class SomfyTahomaActionGroupHandler extends SomfyTahomaBaseThingHandler {
     public SomfyTahomaActionGroupHandler(Thing thing) {
         super(thing);
     }
-
-    private Gson gson = new Gson();
 
     @Override
     public Hashtable<String, String> getStateNames() {

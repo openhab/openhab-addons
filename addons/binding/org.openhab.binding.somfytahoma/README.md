@@ -42,9 +42,9 @@ If the supplied TahomaLink credentials are correct, the automatic discovery star
 
 ## Thing Configuration
 
-To manually configure the thing you have to specify bridge and things in *.things file in conf/addons directory of your OpenHAB 2.x installation.
-To manually link the thing channels to items just use the *.items file in conf/items directory of your OpenHAB 2.x installation. 
-To retrieve thing configuration and url parameter, just add the automatically discovered device from you inbox and copy its values from thing edit page. (the url parameter is visible on edit page only)
+To manually configure the thing you have to specify bridge and things in *.things file in conf/addons directory of your openHAB 2.x installation.
+To manually link the thing channels to items just use the *.items file in conf/items directory of your openHAB 2.x installation. 
+To retrieve thing configuration and url parameter, just add the automatically discovered device from your inbox and copy its values from thing edit page. (the url parameter is visible on edit page only)
 Please see the example below.
 
 ## Channels

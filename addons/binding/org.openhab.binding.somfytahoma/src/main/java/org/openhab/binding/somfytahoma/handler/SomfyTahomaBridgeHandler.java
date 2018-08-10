@@ -27,7 +27,6 @@ import org.openhab.binding.somfytahoma.internal.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -136,7 +135,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unauthorized. Please check credentials");
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.info("Cannot get login cookie!", e);
+            logger.debug("Cannot get login cookie!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot get login cookie");
         } catch (Exception e) {
             logger.debug("Cannot start http client", e);

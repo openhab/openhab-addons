@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.somfytahoma;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -19,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 public class SomfyTahomaBindingConstants {
 
-    public static final @NonNull String BINDING_ID = "somfytahoma";
+    public static final String BINDING_ID = "somfytahoma";
 
     // Things
     // Bridge
