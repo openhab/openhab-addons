@@ -18,7 +18,6 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -28,6 +27,7 @@ import org.openhab.binding.somfytahoma.internal.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -340,14 +340,6 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             login();
         }
 
-        for (Thing th : getThing().getThings()) {
-            logger.debug("Updating thing {} with UID {}", th.getLabel(), th.getThingTypeUID());
-            if (th.getThingTypeUID().equals(THING_TYPE_GATEWAY)) {
-                String id = th.getConfiguration().get("id").toString();
-                updateGatewayState(th, id);
-            }
-        }
-
         ArrayList<SomfyTahomaEvent> events = getEvents();
         logger.debug("Got total of {} events", events.size());
         for (SomfyTahomaEvent event : events) {
@@ -368,7 +360,18 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             } else {
                 logger.debug("Thing handler is null, probably not bound thing.");
             }
+        }
 
+        //force update states of things which have not sent any event for a long time
+        for (Thing th : getThing().getThings()) {
+            updateThingStates(th);
+        }
+    }
+
+    private void updateThingStates(Thing th) {
+        SomfyTahomaBaseThingHandler handler = (SomfyTahomaBaseThingHandler) th.getHandler();
+        for (Channel ch : th.getChannels()) {
+            handler.updateChannelState(ch.getUID());
         }
     }
 
@@ -580,33 +583,6 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
         return null;
-    }
-
-    private void updateGatewayState(Thing thing, String id) {
-        if (thing.getChannels().size() == 0) {
-            return;
-        }
-        String version = getTahomaVersion(id);
-        if (StringUtils.equals(version, UNAUTHORIZED)) {
-            version = getTahomaVersion(id);
-        }
-
-        if (version == null || version.equals(UNAUTHORIZED)) {
-            return;
-        }
-
-        String status = getTahomaStatus(id);
-
-        for (Channel channel : thing.getChannels()) {
-            if (channel.getUID().getId().equals(VERSION)) {
-                logger.debug("Updating version channel");
-                updateState(channel.getUID(), new StringType(version));
-            } else if (channel.getUID().getId().equals(STATUS)) {
-                logger.debug("Updating status channel");
-                updateState(channel.getUID(), new StringType(status));
-            }
-        }
-
     }
 
     public String getTahomaVersion(String gatewayId) {

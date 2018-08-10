@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.NumberFormat;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -36,6 +37,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaBaseThingHandler.class);
     private Hashtable<String, Integer> typeTable = new Hashtable<>();
+    protected LocalTime lastUpdated = LocalTime.MIN;
 
     //cache
     private ExpiringCache<List<SomfyTahomaState>> thingStates;
@@ -252,8 +254,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
     }
 
     public void updateChannelState(ChannelUID channelUID) {
-        String url = getURL();
-        if (getStateNames() != null) {
+        if (getStateNames() != null && LocalTime.now().minusMinutes(STATUS_EXPIRY).isAfter(lastUpdated)) {
             String stateName = getStateNames().get(channelUID.getId());
             Channel channel = getChannelByChannelUID(channelUID);
             if (channel == null) {
@@ -270,6 +271,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
             }
 
             updateState(channelUID, state);
+            lastUpdated = LocalTime.now();
         }
     }
 
@@ -288,6 +290,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
                 State channelState = getChannelState(channel, states);
                 if (channelState != null) {
                     updateState(channel.getUID(), channelState);
+                    lastUpdated = LocalTime.now();
                 } else {
                     logger.debug("Cannot find state for channel {}", channel.getUID());
                 }

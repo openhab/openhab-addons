@@ -16,9 +16,11 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalTime;
 import java.util.Hashtable;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.STATUS;
+import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.STATUS_EXPIRY;
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.VERSION;
 
 /**
@@ -48,12 +50,20 @@ public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command.equals(RefreshType.REFRESH)) {
+            updateChannelState(channelUID);
+        }
+    }
+
+    @Override
+    public void updateChannelState(ChannelUID channelUID) {
+        if (LocalTime.now().minusMinutes(STATUS_EXPIRY).isAfter(lastUpdated)) {
             String id = getThing().getConfiguration().get("id").toString();
             if (channelUID.getId().equals(VERSION)) {
                 updateState(channelUID, new StringType(getTahomaVersion(id)));
             } else if (channelUID.getId().equals(STATUS)) {
                 updateState(channelUID, new StringType(getTahomaStatus(id)));
             }
+            lastUpdated = LocalTime.now();
         }
     }
 
