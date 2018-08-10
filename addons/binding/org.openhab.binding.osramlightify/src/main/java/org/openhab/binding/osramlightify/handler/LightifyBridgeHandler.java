@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -57,14 +58,17 @@ public final class LightifyBridgeHandler extends BaseBridgeHandler {
     private ServiceRegistration<?> serviceRegistration;
     private LightifyDeviceDiscoveryService discoveryService;
 
+    private ThingRegistry globalThingRegistry;
+
     private LightifyBridgeConfiguration configuration = null;
     private LightifyConnector connector;
 
     public final HashMap<IEEEAddress, Object> knownDevices = new HashMap<>();
     public final HashMap<Short, Object> knownGroups = new HashMap<>();
 
-    public LightifyBridgeHandler(Bridge bridge) {
+    public LightifyBridgeHandler(Bridge bridge, ThingRegistry thingRegistry) {
         super(bridge);
+        globalThingRegistry = thingRegistry;
     }
 
     @Override
@@ -146,7 +150,7 @@ public final class LightifyBridgeHandler extends BaseBridgeHandler {
     }
 
     public Thing getThingByUIDGlobally(ThingUID thingUID) {
-        return thingRegistry.get(thingUID);
+        return globalThingRegistry.get(thingUID);
     }
 
     public void modifyProperty(String name, String value) {

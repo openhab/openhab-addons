@@ -10,6 +10,7 @@ package org.openhab.binding.osramlightify.internal;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -28,6 +29,9 @@ import org.openhab.binding.osramlightify.handler.LightifyMotionSensorHandler;
 
 import org.osgi.service.component.annotations.Component;
 
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 /**
  * The {@link org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory} implementation
  * to create new instances of the {@link LightifyBridgeHandler} or {@link LightifyDeviceHandler} based on
@@ -38,12 +42,14 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.osramlightify")
 public final class LightifyHandlerFactory extends BaseThingHandlerFactory {
 
+    private ThingRegistry globalThingRegistry;
+
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_BRIDGE_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new LightifyBridgeHandler((Bridge) thing);
+            return new LightifyBridgeHandler((Bridge) thing, globalThingRegistry);
         }
         if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new LightifyDeviceHandler(thing);
@@ -64,5 +70,14 @@ public final class LightifyHandlerFactory extends BaseThingHandlerFactory {
             || thingTypeUID.equals(THING_TYPE_LIGHTIFY_ALLPAIRED)
             || thingTypeUID.equals(THING_TYPE_LIGHTIFY_GROUP)
             || thingTypeUID.equals(THING_TYPE_LIGHTIFY_MOTION_SENSOR);
+    }
+
+    @Reference
+    protected void setThingRegistry(ThingRegistry thingRegistry) {
+        globalThingRegistry = thingRegistry;
+    }
+
+    protected void unsetThingRegistry(ThingRegistry thingRegistry) {
+        globalThingRegistry = null;
     }
 }
