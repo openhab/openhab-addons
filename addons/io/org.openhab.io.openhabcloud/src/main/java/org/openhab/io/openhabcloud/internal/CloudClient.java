@@ -583,10 +583,17 @@ public class CloudClient {
         public void onComplete(Result result) {
             // Remove this request from list of running requests
             runningRequests.remove(mRequestId);
-            if (result.isFailed() && result.getResponse().getStatus() != HttpStatus.OK_200) {
-                logger.warn("Jetty request {} failed: {}", mRequestId, result.getFailure().getMessage());
-                logger.warn("{}", result.getRequestFailure().getMessage());
-                logger.warn("{}", result.getResponseFailure().getMessage());
+            if ((result != null && result.isFailed())
+                    && (result.getResponse() != null && result.getResponse().getStatus() != HttpStatus.OK_200)) {
+                if (result.getFailure() != null) {
+                    logger.warn("Jetty request {} failed: {}", mRequestId, result.getFailure().getMessage());
+                }
+                if (result.getRequestFailure() != null) {
+                    logger.warn("Request Failure: {}", result.getRequestFailure().getMessage());
+                }
+                if (result.getResponseFailure() != null) {
+                    logger.warn("Response Failure: {}", result.getResponseFailure().getMessage());
+                }
             }
 
             /**
