@@ -169,7 +169,7 @@ In contrast to the standard channels above, the control channel types are used f
 #### Group Address Notation
 
 ```
-<config>="[<][<dpt>:]<mainGA>[[+[<]<listeningGA>]+[<]<listeningGA>..]]"
+<config>="[<dpt>:][<]<mainGA>[[+[<]<listeningGA>]+[<]<listeningGA>..]]"
 ```
 
 where parts in brackets `[]` denote optional information.

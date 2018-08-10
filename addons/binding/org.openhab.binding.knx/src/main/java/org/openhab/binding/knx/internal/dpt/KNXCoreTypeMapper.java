@@ -595,7 +595,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                             return "activate " + intVal;
                         }
                     default:
-                        return type.toString();
+                        return ((DecimalType) type).toBigDecimal().stripTrailingZeros().toPlainString();
                 }
             } else if (type instanceof StringType) {
                 return type.toString();

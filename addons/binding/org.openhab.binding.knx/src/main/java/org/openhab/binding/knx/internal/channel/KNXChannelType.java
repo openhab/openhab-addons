@@ -43,10 +43,10 @@ import tuwien.auto.calimero.KNXFormatException;
 public abstract class KNXChannelType {
 
     private static final Pattern PATTERN = Pattern.compile(
-            "^((?<dpt>[0-9]{1,2}\\.[0-9]{3}):)?(?<read>\\<)?(?<mainGA>[0-9]{1,3}/[0-9]{1,3}/[0-9]{1,3})(?<listenGAs>(\\+(\\<?[0-9]{1,3}/[0-9]{1,3}/[0-9]{1,3}))*)$");
+            "^((?<dpt>[0-9]{1,2}\\.[0-9]{3}):)?(?<read>\\<)?(?<mainGA>[0-9]{1,5}(/[0-9]{1,4}){0,2})(?<listenGAs>(\\+(\\<?[0-9]{1,5}(/[0-9]{1,4}){0,2}))*)$");
 
     private static final Pattern PATTERN_LISTEN = Pattern
-            .compile("\\+((?<read>\\<)?(?<GA>[0-9]{1,3}/[0-9]{1,3}/[0-9]{1,3}))");
+            .compile("\\+((?<read>\\<)?(?<GA>[0-9]{1,5}(/[0-9]{1,4}){0,2}))");
 
     private final Logger logger = LoggerFactory.getLogger(KNXChannelType.class);
     private final Set<String> channelTypeIDs;
