@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="voice:googletts">
+		<parameter name="serviceAccountKey" type="text" required="true">
+			<context>script</context>
+			<label>Service Account Key (JSON)</label>
+			<description>Google Cloud TTS API service account key. A JSON content is expected here copied from the
+			downloaded key file.</description>
+		</parameter>
+		<parameter name="pitch" type="decimal" min="-20" max="20" step="0.1">
+			<label>Pitch</label>
+			<description>Customize the pitch of your selected voice, up to 20 semitones more or less than the default output</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="volumeGain" type="decimal" min="-96" max="16">
+			<label>Volume Gain</label>
+			<description>Increase the volume of the output by up to 16db or decrease the volume up to -96db</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="speakingRate" type="decimal" min="0.25" max="4">
+			<label>Speaking Rate</label>
+			<description>Speaking rate can be 4x faster or slower than the normal rate</description>
+			<default>1</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
