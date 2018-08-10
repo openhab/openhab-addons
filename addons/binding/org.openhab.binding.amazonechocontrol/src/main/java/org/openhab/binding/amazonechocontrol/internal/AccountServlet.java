@@ -65,6 +65,7 @@ public class AccountServlet extends HttpServlet {
 
     private static final long serialVersionUID = -1453738923337413163L;
     private static final String FORWARD_URI_PART = "/FORWARD/";
+    private static final String PROXY_URI_PART = "/PROXY/";
 
     private final Logger logger = LoggerFactory.getLogger(AccountServlet.class);
 
@@ -74,7 +75,8 @@ public class AccountServlet extends HttpServlet {
     AccountHandler account;
     AccountConfiguration configuration;
     String id;
-    Connection connection;
+    @Nullable
+    Connection connectionToInitialize;
 
     public AccountServlet(HttpService httpService, String id, AccountHandler account,
             AccountConfiguration configuration) {
@@ -82,7 +84,6 @@ public class AccountServlet extends HttpServlet {
         this.account = account;
         this.id = id;
         this.configuration = configuration;
-        this.connection = reCreateConnection();
         try {
             servletUrlWithoutRoot = "amazonechocontrol/" + URLEncoder.encode(id, "UTF8");
         } catch (UnsupportedEncodingException e) {
@@ -110,7 +111,24 @@ public class AccountServlet extends HttpServlet {
     }
 
     @Override
+    protected void doPut(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
+            throws ServletException, IOException {
+        doVerb("PUT", req, resp);
+    }
+
+    @Override
+    protected void doDelete(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
+            throws ServletException, IOException {
+        doVerb("DELETE", req, resp);
+    }
+
+    @Override
     protected void doPost(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
+            throws ServletException, IOException {
+        doVerb("POST", req, resp);
+    }
+
+    void doVerb(String verb, @Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
             throws ServletException, IOException {
         if (req == null) {
             return;
@@ -118,6 +136,35 @@ public class AccountServlet extends HttpServlet {
         if (resp == null) {
             return;
         }
+        String baseUrl = req.getRequestURI().substring(servletUrl.length());
+        String uri = baseUrl;
+        String queryString = req.getQueryString();
+        if (queryString != null && queryString.length() > 0) {
+            uri += "?" + queryString;
+        }
+
+        Connection connection = this.account.findConnection();
+        if (uri.startsWith(PROXY_URI_PART)) {
+            // handle proxy request
+
+            if (connection == null) {
+                returnError(resp, "Account not online");
+                return;
+            }
+            String getUrl = "https://alexa." + connection.getAmazonSite() + "/"
+                    + uri.substring(PROXY_URI_PART.length());
+
+            this.HandleProxyRequest(connection, resp, verb, getUrl, null, null);
+            return;
+        }
+
+        // handle post of login page
+        connection = this.connectionToInitialize;
+        if (connection == null) {
+            returnError(resp, "Connection not in intialize mode.");
+            return;
+        }
+
         resp.addHeader("content-type", "text/html;charset=UTF-8");
 
         Map<String, String[]> map = req.getParameterMap();
@@ -143,7 +190,7 @@ public class AccountServlet extends HttpServlet {
             }
         }
 
-        String uri = req.getRequestURI();
+        uri = req.getRequestURI();
         if (!uri.startsWith(servletUrl)) {
             returnError(resp, "Invalid request uri '" + uri + "'");
             return;
@@ -151,13 +198,13 @@ public class AccountServlet extends HttpServlet {
         String relativeUrl = uri.substring(servletUrl.length()).replace(FORWARD_URI_PART, "/");
 
         String postUrl = "https://www." + connection.getAmazonSite() + relativeUrl;
-        String queryString = req.getQueryString();
+        queryString = req.getQueryString();
         if (queryString != null && queryString.length() > 0) {
             postUrl += "?" + queryString;
         }
         String referer = "https://www." + connection.getAmazonSite();
         String postData = postDataBuilder.toString();
-        HandleProxyRequest(resp, "POST", postUrl, referer, postData);
+        HandleProxyRequest(connection, resp, "POST", postUrl, referer, postData);
     }
 
     @Override
@@ -177,16 +224,31 @@ public class AccountServlet extends HttpServlet {
         }
         logger.debug("doGet {}", uri);
         try {
-            if (uri.startsWith(FORWARD_URI_PART)) {
+            Connection connection = this.connectionToInitialize;
+            if (uri.startsWith(FORWARD_URI_PART) && connection != null) {
 
                 String getUrl = "https://www." + connection.getAmazonSite() + "/"
                         + uri.substring(FORWARD_URI_PART.length());
 
-                this.HandleProxyRequest(resp, "GET", getUrl, null, null);
+                this.HandleProxyRequest(connection, resp, "GET", getUrl, null, null);
                 return;
             }
 
-            Connection connection = this.account.findConnection();
+            connection = this.account.findConnection();
+            if (uri.startsWith(PROXY_URI_PART)) {
+                // handle proxy request
+
+                if (connection == null) {
+                    returnError(resp, "Account not online");
+                    return;
+                }
+                String getUrl = "https://alexa." + connection.getAmazonSite() + "/"
+                        + uri.substring(PROXY_URI_PART.length());
+
+                this.HandleProxyRequest(connection, resp, "GET", getUrl, null, null);
+                return;
+            }
+
             if (connection != null && connection.verifyLogin()) {
 
                 // handle diagnostic commands
@@ -209,6 +271,11 @@ public class AccountServlet extends HttpServlet {
                 handleDefaultPageResult(resp, "The Account is already logged in.");
                 return;
             }
+            connection = this.connectionToInitialize;
+            if (connection == null) {
+                connection = this.reCreateConnection();
+                this.connectionToInitialize = connection;
+            }
 
             if (!uri.equals("/")) {
                 String newUri = req.getServletPath() + "/";
@@ -216,8 +283,8 @@ public class AccountServlet extends HttpServlet {
                 return;
             }
 
-            String html = this.connection.getLoginPage();
-            returnHtml(resp, html);
+            String html = connection.getLoginPage();
+            returnHtml(connection, resp, html);
         } catch (URISyntaxException e) {
             logger.warn("get failed with uri syntax error {}", e);
         }
@@ -283,7 +350,8 @@ public class AccountServlet extends HttpServlet {
     }
 
     private void handleDevices(HttpServletResponse resp, Connection connection) throws IOException, URISyntaxException {
-        returnHtml(resp, "<html>" + StringEscapeUtils.escapeHtml(connection.getDeviceListJson()) + "</html>");
+        returnHtml(connection, resp,
+                "<html>" + StringEscapeUtils.escapeHtml(connection.getDeviceListJson()) + "</html>");
     }
 
     private String nullReplacement(@Nullable String text) {
@@ -440,8 +508,8 @@ public class AccountServlet extends HttpServlet {
         }
     }
 
-    void HandleProxyRequest(HttpServletResponse resp, String verb, String url, @Nullable String referer,
-            @Nullable String postData) throws IOException {
+    void HandleProxyRequest(Connection connection, HttpServletResponse resp, String verb, String url,
+            @Nullable String referer, @Nullable String postData) throws IOException {
         HttpsURLConnection urlConnection;
         try {
             Map<String, String> headers = null;
@@ -456,15 +524,17 @@ public class AccountServlet extends HttpServlet {
                     String location = urlConnection.getHeaderField("location");
                     if (location.contains("//alexa.")) {
                         if (connection.verifyLogin()) {
+                            account.setConnection(connection);
                             handleDefaultPageResult(resp, "Login succeeded");
-                            account.setConnection(this.connection);
-                            this.connection = reCreateConnection();
+                            this.connectionToInitialize = null;
                             return;
                         }
                     }
                     String startString = "https://www." + connection.getAmazonSite() + "/";
                     String newLocation = null;
                     if (location.startsWith(startString)) {
+                        newLocation = servletUrl + PROXY_URI_PART + location.substring(startString.length());
+                    } else if (location.startsWith(startString)) {
                         newLocation = servletUrl + FORWARD_URI_PART + location.substring(startString.length());
                     } else {
                         startString = "/";
@@ -487,10 +557,10 @@ public class AccountServlet extends HttpServlet {
             return;
         }
         String response = connection.convertStream(urlConnection.getInputStream());
-        returnHtml(resp, response);
+        returnHtml(connection, resp, response);
     }
 
-    private void returnHtml(HttpServletResponse resp, String html) {
+    private void returnHtml(Connection connection, HttpServletResponse resp, String html) {
         String resultHtml = html.replace("https://www." + connection.getAmazonSite() + "/", servletUrl + "/");
         resp.addHeader("content-type", "text/html;charset=UTF-8");
         try {

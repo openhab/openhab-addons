@@ -363,9 +363,12 @@ public class Connection {
                         if (key.equalsIgnoreCase("Set-Cookie")) {
                             // store cookie
                             for (String cookieHeader : header.getValue()) {
-                                List<HttpCookie> cookies = HttpCookie.parse(cookieHeader);
-                                for (HttpCookie cookie : cookies) {
-                                    cookieManager.getCookieStore().add(uri, cookie);
+                                if (StringUtils.isNotEmpty(cookieHeader)) {
+
+                                    List<HttpCookie> cookies = HttpCookie.parse(cookieHeader);
+                                    for (HttpCookie cookie : cookies) {
+                                        cookieManager.getCookieStore().add(uri, cookie);
+                                    }
                                 }
                             }
                         }

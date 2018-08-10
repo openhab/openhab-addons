@@ -149,7 +149,7 @@ public class AccountHandler extends BaseBridgeHandler {
         }
         Connection connection = this.connection;
         if (connection != null) {
-            initializeEchoHandler(echoHandler, connection);
+            updateEchoHandler(echoHandler, connection);
         }
     }
 
@@ -177,9 +177,7 @@ public class AccountHandler extends BaseBridgeHandler {
         }
     }
 
-    private void initializeEchoHandler(EchoHandler echoHandler, Connection connection) {
-        intializeChildDevice(connection, echoHandler);
-
+    private void updateEchoHandler(EchoHandler echoHandler, Connection connection) {
         @Nullable
         Device device = findDeviceJson(echoHandler);
 
@@ -192,14 +190,7 @@ public class AccountHandler extends BaseBridgeHandler {
         if (states != null) {
             state = states.findStateByDevice(device);
         }
-        echoHandler.updateState(device, state);
-    }
-
-    private void intializeChildDevice(Connection connection, EchoHandler child) {
-        Device deviceJson = this.findDeviceJson(child);
-        if (deviceJson != null) {
-            child.intialize(connection, deviceJson);
-        }
+        echoHandler.updateState(this, device, state);
     }
 
     @Override
@@ -401,7 +392,7 @@ public class AccountHandler extends BaseBridgeHandler {
                 if (states != null) {
                     state = states.findStateByDevice(device);
                 }
-                child.updateState(device, state);
+                child.updateState(this, device, state);
             }
 
             // update account state
@@ -473,7 +464,7 @@ public class AccountHandler extends BaseBridgeHandler {
         }
         synchronized (echoHandlers) {
             for (EchoHandler child : echoHandlers) {
-                initializeEchoHandler(child, currentConnection);
+                updateEchoHandler(child, currentConnection);
             }
         }
         if (devices != null) {

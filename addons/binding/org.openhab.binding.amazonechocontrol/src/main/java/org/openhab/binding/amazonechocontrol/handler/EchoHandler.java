@@ -12,6 +12,8 @@ import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingCons
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -64,7 +66,6 @@ public class EchoHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
 
     private @Nullable Device device;
-    private @Nullable Connection connection;
     private @Nullable AccountHandler account;
     private @Nullable ScheduledFuture<?> updateStateJob;
     private @Nullable String lastKnownRadioStationId;
@@ -93,7 +94,7 @@ public class EchoHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Amazon Echo Control Binding initialized");
 
-        if (this.connection != null) {
+        if (this.device != null) {
             setDeviceAndUpdateThingState(this.device);
         } else {
             updateStatus(ThingStatus.UNKNOWN);
@@ -106,11 +107,6 @@ public class EchoHandler extends BaseThingHandler {
                 }
             }
         }
-    }
-
-    public void intialize(Connection connection, @Nullable Device deviceJson) {
-        this.connection = connection;
-        setDeviceAndUpdateThingState(deviceJson);
     }
 
     boolean setDeviceAndUpdateThingState(@Nullable Device device) {
@@ -143,7 +139,11 @@ public class EchoHandler extends BaseThingHandler {
     }
 
     public @Nullable Connection findConnection() {
-        return this.connection;
+        AccountHandler accountHandler = this.account;
+        if (accountHandler != null) {
+            return accountHandler.findConnection();
+        }
+        return null;
     }
 
     public @Nullable AccountHandler findAccount() {
@@ -174,8 +174,11 @@ public class EchoHandler extends BaseThingHandler {
             if (updateStateJob != null) {
                 updateStateJob.cancel(false);
             }
-
-            Connection connection = this.connection;
+            AccountHandler account = this.account;
+            if (account == null) {
+                return;
+            }
+            Connection connection = account.findConnection();
             if (connection == null) {
                 return;
             }
@@ -208,30 +211,38 @@ public class EchoHandler extends BaseThingHandler {
             }
             // Volume commands
             if (channelId.equals(CHANNEL_VOLUME)) {
+                Integer volume = null;
                 if (command instanceof PercentType) {
                     PercentType value = (PercentType) command;
-                    int volume = value.intValue();
-                    connection.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + volume
-                            + ",\"contentFocusClientId\":\"Default\"}");
+                    volume = value.intValue();
+
                 } else if (command == OnOffType.OFF) {
-                    connection.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + 0
-                            + ",\"contentFocusClientId\":\"Default\"}");
+                    volume = 0;
+
                 } else if (command == OnOffType.ON) {
-                    connection.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + lastKnownVolume
-                            + ",\"contentFocusClientId\":\"Default\"}");
+                    volume = lastKnownVolume;
                 } else if (command == IncreaseDecreaseType.INCREASE) {
                     if (lastKnownVolume < 100) {
                         lastKnownVolume++;
                         updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
-                        connection.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + lastKnownVolume
-                                + ",\"contentFocusClientId\":\"Default\"}");
+                        volume = lastKnownVolume;
                     }
                 } else if (command == IncreaseDecreaseType.DECREASE) {
                     if (lastKnownVolume > 0) {
                         lastKnownVolume--;
                         updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
-                        connection.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + lastKnownVolume
+                        volume = lastKnownVolume;
+                    }
+                }
+                if (volume != null) {
+                    if (StringUtils.equals(device.deviceFamily, "WHA")) {
+                        connection.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + volume
                                 + ",\"contentFocusClientId\":\"Default\"}");
+
+                    } else {
+                        Map<String, Object> parameters = new Hashtable<String, Object>();
+                        parameters.put("value", volume);
+                        connection.executeSequenceCommand(device, "Alexa.DeviceControls.Volume", parameters);
                     }
                 }
             }
@@ -430,7 +441,6 @@ public class EchoHandler extends BaseThingHandler {
                             // Handle custom flashbriefings commands
                             String flashbriefing = commandText.substring(FLASH_BRIEFING_COMMAND_PREFIX.length());
 
-                            AccountHandler account = this.account;
                             if (account != null) {
                                 for (FlashBriefingProfileHandler flashBriefing : account
                                         .getFlashBriefingProfileHandlers()) {
@@ -477,7 +487,7 @@ public class EchoHandler extends BaseThingHandler {
 
                 }
                 this.disableUpdate = false;
-                updateState(device, state);
+                updateState(account, device, state);
             };
             if (command instanceof RefreshType) {
                 waitForUpdate = 0;
@@ -487,7 +497,9 @@ public class EchoHandler extends BaseThingHandler {
             } else {
                 this.updateStateJob = scheduler.schedule(doRefresh, waitForUpdate, TimeUnit.MILLISECONDS);
             }
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException |
+
+                URISyntaxException e) {
             logger.info("handleCommand fails: {}", e);
         }
     }
@@ -501,7 +513,7 @@ public class EchoHandler extends BaseThingHandler {
         JsonNotificationResponse currentNotification = this.currentNotification;
         if (currentNotification != null) {
             this.currentNotification = null;
-            Connection currentConnection = this.connection;
+            Connection currentConnection = this.findConnection();
             if (currentConnection != null) {
                 try {
                     currentConnection.stopNotification(currentNotification);
@@ -517,7 +529,7 @@ public class EchoHandler extends BaseThingHandler {
         JsonNotificationResponse currentNotification = this.currentNotification;
         try {
             if (currentNotification != null) {
-                Connection currentConnection = connection;
+                Connection currentConnection = this.findConnection();
                 if (currentConnection != null) {
                     JsonNotificationResponse newState = currentConnection.getNotificationState(currentNotification);
                     if (StringUtils.equals(newState.status, "ON")) {
@@ -546,7 +558,9 @@ public class EchoHandler extends BaseThingHandler {
         }
     }
 
-    public void updateState(@Nullable Device device, @Nullable BluetoothState bluetoothState) {
+    public void updateState(AccountHandler accountHandler, @Nullable Device device,
+            @Nullable BluetoothState bluetoothState) {
+        this.account = accountHandler;
         if (this.disableUpdate) {
             return;
         }
@@ -557,7 +571,7 @@ public class EchoHandler extends BaseThingHandler {
             return;
         }
 
-        Connection connection = this.connection;
+        Connection connection = this.findConnection();
         if (connection == null) {
             return;
         }
@@ -742,7 +756,8 @@ public class EchoHandler extends BaseThingHandler {
         Integer volume = null;
         if (mediaState != null) {
             volume = mediaState.volume;
-        } else if (playerInfo != null) {
+        }
+        if (playerInfo != null && volume == null) {
 
             Volume volumnInfo = playerInfo.volume;
             if (volumnInfo != null) {
@@ -751,6 +766,9 @@ public class EchoHandler extends BaseThingHandler {
         }
         if (volume != null && volume > 0) {
             lastKnownVolume = volume;
+        }
+        if (volume == null) {
+            volume = lastKnownVolume;
         }
 
         // Update states
