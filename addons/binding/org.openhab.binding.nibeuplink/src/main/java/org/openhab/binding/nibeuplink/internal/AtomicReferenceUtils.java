@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * utility class which contains useful helper methods. Thus, the interface can be implemented and methods are available
  * within the class.
  *
- * @author afriese
+ * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
 public interface AtomicReferenceUtils {

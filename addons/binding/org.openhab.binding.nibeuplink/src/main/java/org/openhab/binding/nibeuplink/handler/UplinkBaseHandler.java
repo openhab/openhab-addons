@@ -58,7 +58,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     private int houseKeepingInterval = 1;
 
     /**
-     * Interface object for querying the FRITZ!Box web interface
+     * Interface object for querying the NibeUplink web interface
      */
     private UplinkWebInterface webInterface;
 
