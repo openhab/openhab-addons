@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.nibeuplink.internal.model;
 
-import javax.measure.Unit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -25,30 +23,8 @@ public class Channel {
     private final String id;
     private final String name;
     private final ChannelGroup channelGroup;
-    private final @Nullable Unit<?> unit;
     private final @Nullable String writeApiUrl;
     private final @Nullable String validationExpression;
-
-    /**
-     * constructor for channels with write access enabled + unit
-     *
-     * @param id
-     * @param name
-     * @param channelGroup
-     * @param unit
-     * @param writeApiUrl
-     * @param validationExpression
-     */
-    Channel(String id, String name, ChannelGroup channelGroup, @Nullable Unit<?> unit, @Nullable String writeApiUrl,
-            @Nullable String validationExpression) {
-        this.channelCode = id;
-        this.id = id;
-        this.name = name;
-        this.channelGroup = channelGroup;
-        this.unit = unit;
-        this.writeApiUrl = writeApiUrl;
-        this.validationExpression = validationExpression;
-    }
 
     /**
      * constructor for channels with write access enabled wihtout a unit
@@ -59,20 +35,14 @@ public class Channel {
      * @param writeApiUrl
      * @param validationExpression
      */
-    Channel(String id, String name, ChannelGroup channelGroup, String writeApiUrl, String validationExpression) {
-        this(id, name, channelGroup, null, writeApiUrl, validationExpression);
-    }
-
-    /**
-     * constructor for channels without write access
-     *
-     * @param id
-     * @param name
-     * @param channelGroup
-     * @param unit
-     */
-    Channel(String id, String name, ChannelGroup channelGroup, Unit<?> unit) {
-        this(id, name, channelGroup, unit, null, null);
+    Channel(String id, String name, ChannelGroup channelGroup, @Nullable String writeApiUrl,
+            @Nullable String validationExpression) {
+        this.channelCode = id;
+        this.id = id;
+        this.name = name;
+        this.channelGroup = channelGroup;
+        this.writeApiUrl = writeApiUrl;
+        this.validationExpression = validationExpression;
     }
 
     /**
@@ -83,7 +53,7 @@ public class Channel {
      * @param channelGroup
      */
     Channel(String id, String name, ChannelGroup channelGroup) {
-        this(id, name, channelGroup, null, null, null);
+        this(id, name, channelGroup, null, null);
     }
 
     public final String getName() {
@@ -100,10 +70,6 @@ public class Channel {
 
     public ChannelGroup getChannelGroup() {
         return channelGroup;
-    }
-
-    public @Nullable Unit<?> getUnit() {
-        return unit;
     }
 
     public String getFQName() {

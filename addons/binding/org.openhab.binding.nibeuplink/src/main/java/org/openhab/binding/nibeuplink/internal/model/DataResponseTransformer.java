@@ -15,6 +15,7 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -51,15 +52,19 @@ public class DataResponseTransformer {
             } else {
                 try {
                     double value = Double.parseDouble(valueAsString);
-                    Unit<?> unit = channel.getUnit();
 
-                    if (unit == null) {
-                        logger.debug("Channel {} transformed to NumberType ({})", channel.getFQName(), value);
-                        result.put(channel, new DecimalType(value));
-                    } else {
+                    if (channel instanceof QuantityChannel) {
+                        Unit<?> unit = ((QuantityChannel) channel).getUnit();
                         logger.debug("Channel {} transformed to QuantityType ({} {})", channel.getFQName(), value,
                                 unit.toString());
                         result.put(channel, new QuantityType<>(value, unit));
+                    } else if (channel instanceof SwitchChannel) {
+                        OnOffType mapped = ((SwitchChannel) channel).mapValue(value);
+                        result.put(channel, mapped);
+                    } else {
+                        logger.debug("Channel {} transformed to NumberType ({})", channel.getFQName(), value);
+                        result.put(channel, new DecimalType(value));
+
                     }
                 } catch (NumberFormatException ex) {
                     logger.info("Could not parse value '{}' as double. Channel: {}", valueAsString,

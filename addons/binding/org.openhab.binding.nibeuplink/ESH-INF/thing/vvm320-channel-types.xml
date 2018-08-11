@@ -228,11 +228,9 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm320-type-47394">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Use room sensor S1</label>
 		<description>When activated the system uses the room sensor 0=Off 1=On</description>
-		<state pattern="%d" readOnly="false">
-		</state>
 	</channel-type>
 	<channel-type id="vvm320-type-47402">
 		<item-type>Number:Dimensionless</item-type>

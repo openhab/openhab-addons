@@ -21,11 +21,13 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.nibeuplink.handler.NibeUplinkHandler;
 import org.openhab.binding.nibeuplink.internal.callback.AbstractUplinkCommandCallback;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
+import org.openhab.binding.nibeuplink.internal.model.SwitchChannel;
 import org.openhab.binding.nibeuplink.internal.model.ValidationException;
 
 /**
@@ -52,6 +54,8 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
         // this is necessary because we must not send the unit to the nibe backend
         if (command instanceof QuantityType<?>) {
             return String.valueOf(((QuantityType<?>) command).doubleValue());
+        } else if (command instanceof OnOffType && channel instanceof SwitchChannel) {
+            return ((SwitchChannel) channel).mapValue((OnOffType) command);
         } else {
             return command.toString();
         }
