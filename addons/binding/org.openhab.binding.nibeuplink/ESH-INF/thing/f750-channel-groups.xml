@@ -3,13 +3,6 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-	<channel-group-type id="f750-general">
-		<label>General Channels</label>
-		<channels>
-			<!-- just one channel to fill the group it does not exist in this model -->
-			<channel id="44302" typeId="f1145-type-44302" />
-		</channels>
-	</channel-group-type>
 	<channel-group-type id="f750-compressor">
 		<label>Compressor Channels</label>
 		<channels>
