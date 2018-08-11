@@ -68,11 +68,4 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="battery">
-		<item-type>Number</item-type>
-		<label>Battery</label>
-		<description>Battery charge remaining.</description>
-		<state readOnly="true" pattern="%d %%" />
-	</channel-type>
-
 </thing:thing-descriptions>
