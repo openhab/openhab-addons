@@ -20,12 +20,12 @@
 		<config-description>
 			<parameter name="transitionTime" type="decimal" min="0.0" max="6553.5">
 				<label>Transition Time</label>
-				<description>Time taken to fade from one state to another in seconds to 1 d.p. May be left blank to default. Minimum is 0, maximum is 6553.5 seconds.</description>
+				<description>Time taken to fade from one state to another in seconds to 1 d.p. Minimum is 0, maximum is 6553.5 seconds. Leave blank to use the default for the gateway.</description>
 			</parameter>
 
 			<parameter name="transitionToOffTime" type="decimal" min="0.0" max="6553.5">
 				<label>Transition To Off Time</label>
-				<description>Time taken to fade to off in seconds to 1 d.p. May be left blank to default. Minimum is 0, maximum is 6553.5 seconds.</description>
+				<description>Time taken to fade to off in seconds to 1 d.p. Minimum is 0, maximum is 6553.5 seconds. Leave blank to use the default for the gateway.</description>
 			</parameter>
 
 			<parameter name="increaseDecreaseStep" type="integer" min="0" max="100">
