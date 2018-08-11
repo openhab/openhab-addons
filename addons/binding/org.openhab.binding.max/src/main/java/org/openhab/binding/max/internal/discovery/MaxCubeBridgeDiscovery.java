@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.max.internal.discovery;
 
-import static org.openhab.binding.max.MaxBinding.CUBEBRIDGE_THING_TYPE;
+import static org.openhab.binding.max.MaxBinding.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -30,7 +30,6 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.max.MaxBinding;
 import org.openhab.binding.max.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +39,6 @@ import org.slf4j.LoggerFactory;
  * Cube LAN gateway devices on the network
  *
  * @author Marcel Verpaalen - Initial contribution
- *
  */
 public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
@@ -54,12 +52,6 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
     /** The refresh interval for discovery of MAX! Cubes */
     private static final long SEARCH_INTERVAL = 600;
     private ScheduledFuture<?> cubeDiscoveryJob;
-    private Runnable cubeDiscoveryRunnable = new Runnable() {
-        @Override
-        public void run() {
-            discoverCube();
-        }
-    };
 
     public MaxCubeBridgeDiscovery() {
         super(SEARCH_TIME);
@@ -67,7 +59,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return MaxBinding.SUPPORTED_BRIDGE_THING_TYPES_UIDS;
+        return SUPPORTED_BRIDGE_THING_TYPES_UIDS;
     }
 
     @Override
@@ -89,7 +81,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
     protected void startBackgroundDiscovery() {
         logger.debug("Start MAX! Cube background discovery");
         if (cubeDiscoveryJob == null || cubeDiscoveryJob.isCancelled()) {
-            cubeDiscoveryJob = scheduler.scheduleWithFixedDelay(cubeDiscoveryRunnable, 0, SEARCH_INTERVAL,
+            cubeDiscoveryJob = scheduler.scheduleWithFixedDelay(this::discoverCube, 0, SEARCH_INTERVAL,
                     TimeUnit.SECONDS);
         }
     }
@@ -160,12 +152,12 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
             logger.trace("Adding new MAX! Cube Lan Gateway on {} with id '{}' to Smarthome inbox", IpAddress,
                     cubeSerialNumber);
             Map<String, Object> properties = new HashMap<>(2);
-            properties.put(MaxBinding.PROPERTY_IP_ADDRESS, IpAddress);
-            properties.put(MaxBinding.PROPERTY_SERIAL_NUMBER, cubeSerialNumber);
-            properties.put(MaxBinding.PROPERTY_RFADDRESS, rfAddress);
-            ThingUID uid = new ThingUID(MaxBinding.CUBEBRIDGE_THING_TYPE, cubeSerialNumber);
+            properties.put(PROPERTY_IP_ADDRESS, IpAddress);
+            properties.put(PROPERTY_SERIAL_NUMBER, cubeSerialNumber);
+            properties.put(PROPERTY_RFADDRESS, rfAddress);
+            ThingUID uid = new ThingUID(CUBEBRIDGE_THING_TYPE, cubeSerialNumber);
             thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withRepresentationProperty(MaxBinding.PROPERTY_SERIAL_NUMBER).withThingType(CUBEBRIDGE_THING_TYPE)
+                    .withRepresentationProperty(PROPERTY_SERIAL_NUMBER).withThingType(CUBEBRIDGE_THING_TYPE)
                     .withLabel("MAX! Cube LAN Gateway").build());
         }
     }

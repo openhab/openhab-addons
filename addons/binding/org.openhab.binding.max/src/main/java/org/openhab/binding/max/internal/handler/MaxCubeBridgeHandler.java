@@ -153,12 +153,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     private final Set<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArraySet<>();
 
     private ScheduledFuture<?> pollingJob;
-    private final Runnable pollingRunnable = new Runnable() {
-        @Override
-        public void run() {
-            refreshData();
-        }
-    };
 
     private Thread queueConsumerThread;
 
@@ -311,7 +305,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     private synchronized void startAutomaticRefresh() {
         if (pollingJob == null || pollingJob.isCancelled()) {
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, refreshInterval, TimeUnit.SECONDS);
         }
         if (queueConsumerThread == null || !queueConsumerThread.isAlive()) {
             queueConsumerThread = new Thread(new QueueConsumer(commandQueue), "max-queue-consumer");
@@ -440,7 +434,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             if (command instanceof StringType) {
                 String commandContent = command.toString().trim().toUpperCase();
                 ThermostatModeType commandThermoType = null;
-                Double setTemp = Double.parseDouble(device.getTemperatureSetpoint().toString());
+                double setTemp = device.getTemperatureSetpoint();
                 if (commandContent.contentEquals(ThermostatModeType.AUTOMATIC.toString())) {
                     commandThermoType = ThermostatModeType.AUTOMATIC;
                     cmd = new S_Command(rfAddress, device.getRoomId(), commandThermoType, 0D);

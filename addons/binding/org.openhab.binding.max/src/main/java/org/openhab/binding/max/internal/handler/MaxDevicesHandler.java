@@ -8,20 +8,27 @@
  */
 package org.openhab.binding.max.internal.handler;
 
+import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.binding.max.MaxBinding.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -48,8 +55,6 @@ import org.openhab.binding.max.internal.device.ThermostatModeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Maps;
-
 /**
  * The {@link MaxDevicesHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -74,15 +79,8 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
     private int refreshActualRate;
     private boolean refreshingActuals;
     private ScheduledFuture<?> refreshActualsJob;
-    private DecimalType originalSetTemp;
+    private double originalSetTemp;
     private ThermostatModeType originalMode;
-
-    private Runnable refreshActualsRestoreRunnable = new Runnable() {
-        @Override
-        public void run() {
-            refreshActualsRestore();
-        }
-    };
 
     public MaxDevicesHandler(Thing thing) {
         super(thing);
@@ -152,7 +150,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         boolean temperaturePropertyUpdateNeeded = false;
         final Device device = getMaxCubeBridgeHandler().getDevice(maxDeviceSerial);
 
-        final Map<String, Object> deviceProperties = device == null ? Maps.newHashMap() : device.getProperties();
+        final Map<String, Object> deviceProperties = device == null ? new HashMap<>() : device.getProperties();
         final Configuration configuration = editConfiguration();
         for (final Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
             logger.debug("MAX! Device {}: Configuration update {} to {}", getThing().getUID().toString(),
@@ -233,13 +231,10 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
      * This command is delayed as it takes time to have the updates back from the thermostat
      */
     private void sendCCommand() {
-        scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                C_Command cmd = new C_Command(rfAddress);
-                bridgeHandler.queueCommand(new SendCommand(maxDeviceSerial, cmd, "Refresh Thermostat Properties"));
-                configSet = false;
-            }
+        scheduler.schedule(() -> {
+            C_Command cmd = new C_Command(rfAddress);
+            bridgeHandler.queueCommand(new SendCommand(maxDeviceSerial, cmd, "Refresh Thermostat Properties"));
+            configSet = false;
         }, COMMUNICATION_DELAY_TIME, TimeUnit.SECONDS);
     }
 
@@ -340,15 +335,27 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
             logger.warn("Serial number missing. Can't send command to device '{}'", getThing());
             return;
         }
-
-        if (channelUID.getId().equals(CHANNEL_SETTEMP) || channelUID.getId().equals(CHANNEL_MODE)) {
-            if (refreshingActuals) {
-                refreshActualsRestore();
-            }
-            SendCommand sendCommand = new SendCommand(maxDeviceSerial, channelUID, command);
-            maxCubeBridge.queueCommand(sendCommand);
-        } else {
-            logger.warn("Setting of channel {} not possible. Read-only", channelUID);
+        switch (channelUID.getId()) {
+            case CHANNEL_SETTEMP:
+                if (refreshingActuals) {
+                    refreshActualsRestore();
+                }
+                Command tempCommand = command;
+                if (command instanceof QuantityType) {
+                    tempCommand = new QuantityType<>(((QuantityType<Temperature>) command).toUnit(CELSIUS)
+                            .toBigDecimal().setScale(1, RoundingMode.HALF_UP), CELSIUS);
+                }
+                maxCubeBridge.queueCommand(new SendCommand(maxDeviceSerial, channelUID, tempCommand));
+                break;
+            case CHANNEL_MODE:
+                if (refreshingActuals) {
+                    refreshActualsRestore();
+                }
+                maxCubeBridge.queueCommand(new SendCommand(maxDeviceSerial, channelUID, command));
+                break;
+            default:
+                logger.warn("Setting of channel {} not possible. Read-only", channelUID);
+                break;
         }
     }
 
@@ -384,16 +391,17 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                     updateState(new ChannelUID(getThing().getUID(), CHANNEL_LOCKED),
                             ((HeatingThermostat) device).isPanelLocked() ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
                     updateState(new ChannelUID(getThing().getUID(), CHANNEL_SETTEMP),
-                            ((HeatingThermostat) device).getTemperatureSetpoint());
+                            new QuantityType<>(((HeatingThermostat) device).getTemperatureSetpoint(), CELSIUS));
                     updateState(new ChannelUID(getThing().getUID(), CHANNEL_MODE),
-                            ((HeatingThermostat) device).getModeString());
+                            new StringType(((HeatingThermostat) device).getModeString()));
                     updateState(new ChannelUID(getThing().getUID(), CHANNEL_BATTERY),
                             ((HeatingThermostat) device).getBatteryLow());
                     updateState(new ChannelUID(getThing().getUID(), CHANNEL_VALVE),
-                            ((HeatingThermostat) device).getValvePosition());
-                    DecimalType actualTemp = ((HeatingThermostat) device).getTemperatureActual();
-                    if (!actualTemp.equals(DecimalType.ZERO)) {
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_ACTUALTEMP), actualTemp);
+                            new DecimalType(((HeatingThermostat) device).getValvePosition()));
+                    double actualTemp = ((HeatingThermostat) device).getTemperatureActual();
+                    if (actualTemp != 0) {
+                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_ACTUALTEMP),
+                                new QuantityType<>(actualTemp, CELSIUS));
                     }
                     break;
                 case ShutterContact:
@@ -437,9 +445,10 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                 originalMode = device.getMode();
 
                 if (originalMode == ThermostatModeType.MANUAL || originalMode == ThermostatModeType.AUTOMATIC) {
-                    BigDecimal temporaryTemp = originalSetTemp.toBigDecimal().add(BigDecimal.valueOf(0.5));
-                    logger.debug("Actuals Refresh: Setting Temp {}", temporaryTemp);
-                    handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_SETTEMP), new DecimalType(temporaryTemp));
+                    double tempSetTemp = originalSetTemp + 0.5;
+                    logger.debug("Actuals Refresh: Setting Temp {}", tempSetTemp);
+                    handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_SETTEMP),
+                            new QuantityType<>(tempSetTemp, CELSIUS));
                     refreshingActuals = true;
                 } else {
                     logger.debug("Defer Actuals refresh. Only manual refresh for mode AUTOMATIC & MANUAL");
@@ -450,7 +459,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Updating Actual Temperature");
 
                     if (refreshActualsJob == null || refreshActualsJob.isCancelled()) {
-                        refreshActualsJob = scheduler.schedule(refreshActualsRestoreRunnable, REFRESH_ACTUAL_DURATION,
+                        refreshActualsJob = scheduler.schedule(this::refreshActualsRestore, REFRESH_ACTUAL_DURATION,
                                 TimeUnit.SECONDS);
                     }
 
@@ -477,7 +486,8 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
             refreshingActuals = false;
             if (originalMode == ThermostatModeType.AUTOMATIC || originalMode == ThermostatModeType.MANUAL) {
                 logger.debug("Finished Actuals Refresh: Restoring Temp {}", originalSetTemp);
-                handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_SETTEMP), originalSetTemp);
+                handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_SETTEMP),
+                        new QuantityType<>(originalSetTemp, CELSIUS));
             }
 
             if (refreshActualsJob != null && !refreshActualsJob.isCancelled()) {

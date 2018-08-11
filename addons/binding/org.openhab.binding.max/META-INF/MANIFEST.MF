@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.binding.max
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: MaxCube Binding
@@ -9,7 +10,7 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Export-Package: org.openhab.binding.max
 Import-Package: 
- com.google.common.collect,
+ javax.measure.quantity,
  org.apache.commons.lang,
  org.apache.commons.lang.builder,
  org.apache.commons.net.util,
@@ -19,6 +20,7 @@ Import-Package:
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.library.items,
  org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
