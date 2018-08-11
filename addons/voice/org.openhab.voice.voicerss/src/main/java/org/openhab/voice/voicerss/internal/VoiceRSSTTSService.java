@@ -10,6 +10,7 @@ package org.openhab.voice.voicerss.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -91,12 +92,12 @@ public class VoiceRSSTTSService implements TTSService {
 
     @Override
     public Set<Voice> getAvailableVoices() {
-        return voices;
+        return Collections.unmodifiableSet(voices);
     }
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return audioFormats;
+        return Collections.unmodifiableSet(audioFormats);
     }
 
     @Override
@@ -152,10 +153,8 @@ public class VoiceRSSTTSService implements TTSService {
      */
     private Set<Voice> initVoices() {
         Set<Voice> voices = new HashSet<>();
-        Set<Locale> locales = voiceRssImpl.getAvailableLocales();
-        for (Locale locale : locales) {
-            Set<String> voiceLabels = voiceRssImpl.getAvailableVoices(locale);
-            for (String voiceLabel : voiceLabels) {
+        for (Locale locale : voiceRssImpl.getAvailableLocales()) {
+            for (String voiceLabel : voiceRssImpl.getAvailableVoices(locale)) {
                 voices.add(new VoiceRSSVoice(locale, voiceLabel));
             }
         }
@@ -169,8 +168,7 @@ public class VoiceRSSTTSService implements TTSService {
      */
     private Set<AudioFormat> initAudioFormats() {
         Set<AudioFormat> audioFormats = new HashSet<>();
-        Set<String> formats = voiceRssImpl.getAvailableAudioFormats();
-        for (String format : formats) {
+        for (String format : voiceRssImpl.getAvailableAudioFormats()) {
             audioFormats.add(getAudioFormat(format));
         }
         return audioFormats;
