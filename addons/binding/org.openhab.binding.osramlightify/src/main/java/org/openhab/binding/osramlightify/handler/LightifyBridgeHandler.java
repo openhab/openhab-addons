@@ -27,6 +27,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_TYPE_LIGHTIFY_GROUP;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.PROPERTY_CURRENT_ADDRESS;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.OLD_PROPERTY_CURRENT_ADDRESS;
 
 import org.openhab.binding.osramlightify.handler.LightifyBridgeConfiguration;
 import org.openhab.binding.osramlightify.internal.LightifyConnector;
@@ -73,6 +75,13 @@ public final class LightifyBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        // Convert old properties to new.
+        String old = thing.getProperties().get(OLD_PROPERTY_CURRENT_ADDRESS);
+        if (old != null) {
+            updateProperty(PROPERTY_CURRENT_ADDRESS, old);
+            updateProperty(OLD_PROPERTY_CURRENT_ADDRESS, null);
+        }
+
         thingUpdated(getThing());
         registerDeviceDiscoveryService();
         connector = new LightifyConnector(this);

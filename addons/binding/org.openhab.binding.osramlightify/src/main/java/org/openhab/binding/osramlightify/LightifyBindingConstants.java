@@ -66,10 +66,15 @@ public final class LightifyBindingConstants {
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_LIGHT_RGBW = new ThingTypeUID(BINDING_ID, "rgbw");
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, "motionsensor");
 
-    public static final String PROPERTY_CURRENT_ADDRESS = "Current address";
-    public static final String PROPERTY_MINIMUM_WHITE_TEMPERATURE = "Minimum white temperature";
-    public static final String PROPERTY_MAXIMUM_WHITE_TEMPERATURE = "Maximum white temperature";
-    public static final String PROPERTY_IEEE_ADDRESS = "IEEE address";
+    public static final String PROPERTY_CURRENT_ADDRESS = "address";
+    public static final String PROPERTY_MINIMUM_WHITE_TEMPERATURE = "minWhiteTemperature";
+    public static final String PROPERTY_MAXIMUM_WHITE_TEMPERATURE = "maxWhiteTemperature";
+    public static final String PROPERTY_IEEE_ADDRESS = "IEEEaddress";
+
+    public static final String OLD_PROPERTY_CURRENT_ADDRESS = "Current address";
+    public static final String OLD_PROPERTY_MINIMUM_WHITE_TEMPERATURE = "Minimum white temperature";
+    public static final String OLD_PROPERTY_MAXIMUM_WHITE_TEMPERATURE = "Maximum white temperature";
+    public static final String OLD_PROPERTY_IEEE_ADDRESS = "IEEE address";
 
     @SuppressWarnings("unchecked")
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(

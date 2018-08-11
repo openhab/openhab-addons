@@ -47,6 +47,10 @@ import static org.openhab.binding.osramlightify.LightifyBindingConstants.PROPERT
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.PROPERTY_MAXIMUM_WHITE_TEMPERATURE;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.PROPERTY_MINIMUM_WHITE_TEMPERATURE;
 
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.OLD_PROPERTY_IEEE_ADDRESS;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.OLD_PROPERTY_MAXIMUM_WHITE_TEMPERATURE;
+import static org.openhab.binding.osramlightify.LightifyBindingConstants.OLD_PROPERTY_MINIMUM_WHITE_TEMPERATURE;
+
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_TYPE_LIGHTIFY_LIGHT_RGBW;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_TYPE_LIGHTIFY_LIGHT_TUNABLE;
 
@@ -95,6 +99,18 @@ public class LightifyDeviceHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         Thing thing = getThing();
+
+        // Convert old properties to new.
+        if (thing.getProperties().get(PROPERTY_IEEE_ADDRESS) == null) {
+            updateProperty(PROPERTY_IEEE_ADDRESS, thing.getProperties().get(OLD_PROPERTY_IEEE_ADDRESS));
+            updateProperty(OLD_PROPERTY_IEEE_ADDRESS, null);
+
+            updateProperty(PROPERTY_MINIMUM_WHITE_TEMPERATURE, thing.getProperties().get(OLD_PROPERTY_MINIMUM_WHITE_TEMPERATURE));
+            updateProperty(OLD_PROPERTY_MINIMUM_WHITE_TEMPERATURE, null);
+
+            updateProperty(PROPERTY_MAXIMUM_WHITE_TEMPERATURE, thing.getProperties().get(OLD_PROPERTY_MAXIMUM_WHITE_TEMPERATURE));
+            updateProperty(OLD_PROPERTY_MAXIMUM_WHITE_TEMPERATURE, null);
+        }
 
         // The IEEE address is constant.
         deviceAddress = new IEEEAddress(thing.getProperties().get(PROPERTY_IEEE_ADDRESS));
