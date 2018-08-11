@@ -8,31 +8,33 @@
  */
 package org.openhab.binding.chromecast.internal;
 
-import org.eclipse.smarthome.core.library.types.*;
+import static org.eclipse.smarthome.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
+import static org.openhab.binding.chromecast.ChromecastBindingConstants.*;
+
+import java.io.IOException;
+
+import org.eclipse.smarthome.core.library.types.NextPreviousType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import su.litvak.chromecast.api.v2.Application;
 import su.litvak.chromecast.api.v2.ChromeCast;
 import su.litvak.chromecast.api.v2.MediaStatus;
 import su.litvak.chromecast.api.v2.Status;
 
-import java.io.IOException;
-
-import static org.eclipse.smarthome.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.CHANNEL_CONTROL;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.CHANNEL_MUTE;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.CHANNEL_PLAY_URI;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.CHANNEL_VOLUME;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.MEDIA_PLAYER;
-
 /**
  * This sends the various commands to the Chromecast.
  *
- * @author Jason Holmes - Initial Author.
+ * @author Jason Holmes - Initial contribution
  */
 public class ChromecastCommander {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -40,7 +42,8 @@ public class ChromecastCommander {
     private final ChromecastScheduler scheduler;
     private final ChromecastStatusUpdater statusUpdater;
 
-    public ChromecastCommander(ChromeCast chromeCast, ChromecastScheduler scheduler, ChromecastStatusUpdater statusUpdater) {
+    public ChromecastCommander(ChromeCast chromeCast, ChromecastScheduler scheduler,
+            ChromecastStatusUpdater statusUpdater) {
         this.chromeCast = chromeCast;
         this.scheduler = scheduler;
         this.statusUpdater = statusUpdater;
@@ -52,7 +55,7 @@ public class ChromecastCommander {
         }
 
         if (command instanceof RefreshType) {
-            handleRefresh();
+            scheduler.scheduleRefresh();
             return;
         }
 
@@ -102,8 +105,7 @@ public class ChromecastCommander {
                 MediaStatus mediaStatus = chromeCast.getMediaStatus();
                 statusUpdater.updateMediaStatus(mediaStatus);
 
-                if (mediaStatus != null &&
-                        mediaStatus.playerState == MediaStatus.PlayerState.IDLE
+                if (mediaStatus != null && mediaStatus.playerState == MediaStatus.PlayerState.IDLE
                         && mediaStatus.idleReason != null
                         && mediaStatus.idleReason != MediaStatus.IdleReason.INTERRUPTED) {
                     stopMediaPlayerApp();
@@ -114,7 +116,6 @@ public class ChromecastCommander {
             // We were just able to request status, so let's not put the device OFFLINE.
         }
     }
-
 
     private void handlePlayUri(Command command) {
         if (command instanceof StringType) {
