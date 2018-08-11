@@ -12,8 +12,8 @@
 		<description>A motion sensor.</description>
 
 		<channels>
-			<channel id="enabled" typeId="enabled" />
-			<channel id="triggered" typeId="triggered" />
+			<channel id="enabled" typeId="motionEnabled" />
+			<channel id="triggered" typeId="motionTriggered" />
 			<channel id="battery" typeId="system.battery-level" />
 		</channels>
 	</thing-type>

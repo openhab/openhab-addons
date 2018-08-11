@@ -52,7 +52,7 @@
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="enabled">
+	<channel-type id="motionEnabled">
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>Whether the motion sensor is currently enabled. (This may only be changed via the Lightify app.)</description>
@@ -60,7 +60,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="triggered">
+	<channel-type id="motionTriggered">
 		<item-type>Switch</item-type>
 		<label>Triggered</label>
 		<description>Whether activities associated with this motion sensor are currently triggered. (Note this is not just whether motion is detected - there must be an activity defined and it must be within its time window as well.)</description>
