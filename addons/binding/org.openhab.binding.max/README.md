@@ -83,8 +83,8 @@ Group gMAX 			"MAX Heating" 	<temperature>	[ "home-group" ]
 
 Switch maxBattery "Battery Low" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:battery_low"}
 String maxMode "Thermostat Mode Setting" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:mode"}
-Number:temperature maxActual "Actual measured room temperature  [%.1f %unit%]" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:actual_temp"}
-Number:temperature maxSetTemp "Thermostat temperature setpoint [%.1f %unit%]" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:set_temp"}
+Number:Temperature maxActual "Actual measured room temperature  [%.1f %unit%]" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:actual_temp"}
+Number:Temperature maxSetTemp "Thermostat temperature setpoint [%.1f %unit%]" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:set_temp"}
 Contact maxShuttercontactState "Contact State" (gMAX) {channel="max:shuttercontact:KEQ0565026:NEQ1150510:contact_state"}
 Switch maxShuttercontactBattery "Contact Battery Low" <battery> (gMAX) {channel="max:shuttercontact:KEQ0565026:NEQ1150510:battery_low"}
 ```
