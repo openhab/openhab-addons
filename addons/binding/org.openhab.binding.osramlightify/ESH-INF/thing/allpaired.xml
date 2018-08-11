@@ -34,17 +34,17 @@
 		-->
 
 		<config-description>
-			<parameter name="transitionTime" type="decimal" required="false" min="0.0" max="6553.5">
+			<parameter name="transitionTime" type="decimal" min="0.0" max="6553.5">
 				<label>Transition Time</label>
 				<description>Time taken to fade from one state to another in seconds to 1 d.p. May be left blank to default. Minimum is 0, maximum is 6553.5 seconds.</description>
 			</parameter>
 
-			<parameter name="transitionToOffTime" type="decimal" required="false" min="0.0" max="6553.5">
+			<parameter name="transitionToOffTime" type="decimal" min="0.0" max="6553.5">
 				<label>Transition To Off Time</label>
 				<description>Time taken to fade to off in seconds to 1 d.p. May be left blank to default. Minimum is 0, maximum is 6553.5 seconds.</description>
 			</parameter>
 
-			<parameter name="increaseDecreaseStep" type="integer" required="false" min="0" max="100">
+			<parameter name="increaseDecreaseStep" type="integer" min="0" max="100">
 				<label>Step size for INCREASE/DECREASE commands</label>
 				<description>How much to step brightness or temperature percentage in response to an INCREASE or DECREASE command. Leave blank to use the default for the gateway.</description>
 			</parameter>

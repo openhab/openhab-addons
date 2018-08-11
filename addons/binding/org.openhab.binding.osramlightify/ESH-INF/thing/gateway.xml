@@ -16,22 +16,21 @@
 				<context>network-address</context>
 				<label>Hostname / Network Address</label>
 				<description>Optional hostname or network address of the gateway device. The binding will ALWAYS attempt to use any address discovered via mDNS first but if mDNS does not work in your environment you may configure a static address here as a fallback.</description>
-				<required>false</required>
 			</parameter>
 
-			<parameter name="discoveryInterval" type="decimal" required="true" min="0">
+			<parameter name="discoveryInterval" type="decimal" min="0">
 				<default>5.0</default>
 				<label>Discovery Interval</label>
 				<description>Time between device discovery updates in seconds to 3 d.p. Minimum is 0. There is no maximum.</description>
 			</parameter>
 
-			<parameter name="transitionTime" type="decimal" required="false" min="0.0" max="6553.5">
+			<parameter name="transitionTime" type="decimal" min="0.0" max="6553.5">
 				<default>0.3</default>
 				<label>Transition Time</label>
 				<description>Time taken to fade from one state to another in seconds to 1 d.p. May be left blank to default. Minimum is 0, maximum is 6553.5 seconds.</description>
 			</parameter>
 
-			<parameter name="transitionToOffTime" type="decimal" required="false" min="0.0" max="6553.5">
+			<parameter name="transitionToOffTime" type="decimal" min="0.0" max="6553.5">
 				<default>0.3</default>
 				<label>Transition To Off Time</label>
 				<description>Time taken to fade to off in seconds to 1 d.p. May be left blank to default. Minimum is 0, maximum is 6553.5 seconds.</description>
@@ -49,23 +48,23 @@
 				<description>Default maximum white temperature in Kelvin for devices unless otherwise specified.</description>
 			</parameter>
 
-			<parameter name="increaseDecreaseStep" type="integer" required="false" min="0" max="100">
+			<parameter name="increaseDecreaseStep" type="integer" min="0" max="100">
 				<default>5</default>
 				<label>Step size for INCREASE/DECREASE commands</label>
 				<description>How much to step brightness or temperature percentage in response to an INCREASE or DECREASE command.</description>
 			</parameter>
 
-			<parameter name="minPollInterval" type="decimal" min="0.01" required="true">
+			<parameter name="minPollInterval" type="decimal" min="0.01">
+				<default>0.1</default>
 				<label>Minimum polling interval (seconds to 3 d.p. minimum is 0.01s or 10ms)</label>
 				<description>The minimum interval between polls of the gateway for changes to device states or pairings. If changes are seen that have not been initiate by openHAB the polling interval is set to this value. Each poll that does not find changes doubles the polling interval until it reaches the maximum polling interval.</description>
-				<default>0.1</default>
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="maxPollInterval" type="decimal" min="0.01" required="true">
+			<parameter name="maxPollInterval" type="decimal" min="0.01">
+				<default>1.0</default>
 				<label>Maximum polling interval (seconds to 3 d.p.)</label>
 				<description>The maximum interval between polls of the gateway for changes to device states or pairings. Setting this too low effectively means "as fast as possible" and will keep your cpu busy. It is recommended not to go below 0.5s unless you really need to track changes being made externally at high speed.</description>
-				<default>1.0</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
