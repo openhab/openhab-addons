@@ -8,7 +8,9 @@
  */
 package org.openhab.binding.max.internal.message;
 
-import java.util.Calendar;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,13 +20,13 @@ import org.slf4j.Logger;
 /**
  * The H message contains information about the MAX! Cube.
  *
- * @author Andreas Heil (info@aheil.de) - Initial version
+ * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - Details parsing, OH2 version
  * @since 1.4.0
  */
 public final class H_Message extends Message {
 
-    private Calendar cal = Calendar.getInstance();
+    private ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.systemDefault());
     public Map<String, Object> properties = new HashMap<>();
 
     private String rawSerialNumber = null;
@@ -104,22 +106,26 @@ public final class H_Message extends Message {
     }
 
     private final void setDateTime(String hexDate, String hexTime) {
-
-        int year = Utils.fromHex(hexDate.substring(0, 2));
+        // we have to add 2000, otherwise we get a wrong timestamp
+        int year = 2000 + Utils.fromHex(hexDate.substring(0, 2));
         int month = Utils.fromHex(hexDate.substring(2, 4));
-        int date = Utils.fromHex(hexDate.substring(4, 6));
+        int dayOfMonth = Utils.fromHex(hexDate.substring(4, 6));
 
         int hours = Utils.fromHex(hexTime.substring(0, 2));
         int minutes = Utils.fromHex(hexTime.substring(2, 4));
 
-        cal.set(year, month, date, hours, minutes, 0);
+        zonedDateTime = ZonedDateTime.of(year, month, dayOfMonth, hours, minutes, 0, 0, ZoneId.systemDefault());
+    }
+
+    public Date getDateTime() {
+        return Date.from(zonedDateTime.toInstant());
     }
 
     @Override
     public void debug(Logger logger) {
         logger.debug("=== H_Message === ");
-        logger.trace("\tRAW:            : {}", this.getPayload());
-        logger.trace("\tReading Time    : {}", cal.getTime());
+        logger.trace("\tRAW:            : {}", getPayload());
+        logger.trace("\tReading Time    : {}", getDateTime());
         for (String key : properties.keySet()) {
             logger.debug("\t{}: {}", key, properties.get(key));
         }
