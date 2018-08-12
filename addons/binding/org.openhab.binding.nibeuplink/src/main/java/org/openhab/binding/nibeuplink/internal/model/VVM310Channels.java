@@ -53,7 +53,7 @@ public final class VVM310Channels extends BaseChannels {
     public static final Channel CH_47011 = INSTANCE.addChannel(
             new Channel("47011", "Heat Offset S1", ChannelGroup.GENERAL, "/Manage/1.9.1.1-S1", "[-1]*[0-9]"));
     public static final Channel CH_47394 = INSTANCE
-            .addChannel(new Channel("47394", "Room Sensor", ChannelGroup.GENERAL, "/Manage/1.9.4", "[01]"));
+            .addChannel(new SwitchChannel("47394", "Room Sensor", ChannelGroup.GENERAL, "/Manage/1.9.4"));
     public static final Channel CH_47402 = INSTANCE.addChannel(new QuantityChannel("47402", "Room sensor factor",
             ChannelGroup.GENERAL, MetricPrefix.DECI(SmartHomeUnits.ONE), "/Manage/1.9.4", "[0123456]*[0-9]"));
     public static final Channel CH_48793 = INSTANCE.addChannel(new QuantityChannel("48793", "Room sensor cool factor",
@@ -115,7 +115,7 @@ public final class VVM310Channels extends BaseChannels {
     public static final Channel CH_40312 = INSTANCE.addChannel(new QuantityChannel("40312",
             "External ERS accessory GQ3speed", ChannelGroup.AIRSUPPLY, SmartHomeUnits.PERCENT));
     public static final Channel CH_40942 = INSTANCE
-            .addChannel(new Channel("40942", "External ERS accessory blockstatus", ChannelGroup.AIRSUPPLY));
+            .addChannel(new SwitchChannel("40942", "External ERS accessory blockstatus", ChannelGroup.AIRSUPPLY));
     public static final Channel CH_47260 = INSTANCE
             .addChannel(new Channel("47260", "Selected Fan speed", ChannelGroup.AIRSUPPLY, "/Manage/1.2", "[01234]"));
 }

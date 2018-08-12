@@ -5,7 +5,7 @@
 | general#43437 | Number:Dimensionless | 0 | 255 | No | Supply Pump Speed EP14 |  |
 | general#44302 | Number:Energy | 0 | 9999999 | No | Heat Meter - Cooling Cpr EP14 |  |
 | general#47011 | Number | -10 | 10 | Yes | Heat Offset S1 | values between -10 and 10 |
-| general#47394 | Number | --- | --- | Yes | Use room sensor S1 | 0=off, 1=on |
+| general#47394 | Switch | --- | --- | Yes | Use room sensor S1 | 0=off, 1=on |
 | general#47402 | Number | 0 | 60 | Yes | Room sensor factor S1 | Values between 0 and 6 |
 | general#48793 | Number | 0 | 60 | Yes | Room sensor cool factor S1 | Values between 0 and 6 |
 | compressor#44362 | Number:Temperature | -32767 | 32767 | No | EB101-EP14-BT28 Outdoor Temp |  |
@@ -33,5 +33,5 @@
 | airsupply#40183 | Number:Temperature | -32767 | 32767 | No | AZ30-BT23 Outdoor temp. ERS |  |
 | airsupply#40311 | Number:Dimensionless | 0 | 255 | No | External ERS accessory GQ2 speed |  |
 | airsupply#40312 | Number:Dimensionless | 0 | 255 | No | External ERS accessory GQ3 speed |  |
-| airsupply#40942 | Number | --- | --- | No | External ERS accessory block status |  |
+| airsupply#40942 | Switch | --- | --- | No | External ERS accessory block status |  |
 | airsupply#47260 | Number | --- | --- | Yes | Selected fan speed | 0=normal, 1=speed 1, 2=speed 2, 3=speed 3, 4=speed 4 |

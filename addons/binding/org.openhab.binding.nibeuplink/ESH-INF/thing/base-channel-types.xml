@@ -4,18 +4,16 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="base-type-10012">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Compressor blocked</label>
 		<description>states if the compressor is blocked</description>
-		<state pattern="%d" readOnly="true">
-		</state>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="base-type-10033">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Int. el.add. blocked</label>
 		<description>states if internal electric additional heater is blocked</description>
-		<state pattern="%d" readOnly="true">
-		</state>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="base-type-40004">
 		<item-type>Number:Temperature</item-type>
@@ -130,11 +128,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="base-type-43161">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>External adjustment activated via input S1</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
-		</state>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="base-type-44298">
 		<item-type>Number:Energy</item-type>

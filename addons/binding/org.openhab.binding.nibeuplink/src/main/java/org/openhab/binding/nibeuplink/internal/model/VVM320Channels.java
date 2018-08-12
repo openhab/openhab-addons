@@ -116,7 +116,7 @@ public final class VVM320Channels extends BaseChannels {
     public static final Channel CH_40312 = INSTANCE.addChannel(new QuantityChannel("40312",
             "External ERS accessory GQ3speed", ChannelGroup.AIRSUPPLY, SmartHomeUnits.PERCENT));
     public static final Channel CH_40942 = INSTANCE
-            .addChannel(new Channel("40942", "External ERS accessory blockstatus", ChannelGroup.AIRSUPPLY));
+            .addChannel(new SwitchChannel("40942", "External ERS accessory blockstatus", ChannelGroup.AIRSUPPLY));
     public static final Channel CH_47260 = INSTANCE
             .addChannel(new Channel("47260", "Selected Fan speed", ChannelGroup.AIRSUPPLY, "/Manage/1.2", "[01234]"));
 }

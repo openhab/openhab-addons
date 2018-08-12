@@ -67,11 +67,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-40942">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>External ERS accessory block status</label>
 		<description>Indicates if the ERS accessory is externaly blocked.</description>
-		<state pattern="%d" readOnly="true">
-		</state>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="vvm310-type-43437">
 		<item-type>Number:Dimensionless</item-type>
@@ -228,11 +227,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-47394">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Use room sensor S1</label>
 		<description>When activated the system uses the room sensor 0=Off 1=On</description>
-		<state pattern="%d" readOnly="false">
-		</state>
+		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="vvm310-type-47402">
 		<item-type>Number:Dimensionless</item-type>

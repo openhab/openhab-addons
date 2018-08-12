@@ -94,7 +94,7 @@ public class BaseChannels extends AbstractChannels {
     public static final Channel CH_40033 = INSTANCE.addChannel(
             new QuantityChannel("40033", "BT50 Room Temp S1", ChannelGroup.BASE, MetricPrefix.DECI(SIUnits.CELSIUS)));
     public static final Channel CH_43161 = INSTANCE
-            .addChannel(new Channel("43161", "External adjustment activated via input S1", ChannelGroup.BASE));
+            .addChannel(new SwitchChannel("43161", "External adjustment activated via input S1", ChannelGroup.BASE));
     public static final Channel CH_40008 = INSTANCE.addChannel(
             new QuantityChannel("40008", "BT2 Supply temp S1", ChannelGroup.BASE, MetricPrefix.DECI(SIUnits.CELSIUS)));
     public static final Channel CH_40012 = INSTANCE.addChannel(new QuantityChannel("40012",
@@ -108,7 +108,7 @@ public class BaseChannels extends AbstractChannels {
     public static final Channel CH_40083 = INSTANCE.addChannel(new QuantityChannel("40083", "EB100-BE1 Current",
             ChannelGroup.BASE, MetricPrefix.DECI(SmartHomeUnits.AMPERE)));
     public static final Channel CH_10033 = INSTANCE
-            .addChannel(new Channel("10033", "Int. el.add. blocked", ChannelGroup.BASE));
+            .addChannel(new SwitchChannel("10033", "Int. el.add. blocked", ChannelGroup.BASE));
 
     // additional heater
     public static final Channel CH_43081 = INSTANCE.addChannel(
@@ -147,6 +147,6 @@ public class BaseChannels extends AbstractChannels {
 
     // Compressor
     public static final Channel CH_10012 = INSTANCE
-            .addChannel(new Channel("10012", "Compressor blocked", ChannelGroup.COMPRESSOR));
+            .addChannel(new SwitchChannel("10012", "Compressor blocked", ChannelGroup.COMPRESSOR));
 
 }
