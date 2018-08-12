@@ -267,17 +267,17 @@
 	</channel-type>
 
 	<channel-type id="batteryVoltage-channel" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
 		<description>Current Battery Voltage for the device</description>
-		<state readOnly="true" pattern="%.1f V" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="demandPercent-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Current Heat Demand</label>
 		<description>Current heat demand in %</description>
-		<state readOnly="true" pattern="%d %%"></state>
+		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
 	<channel-type id="heatRequest-channel">
@@ -330,10 +330,10 @@
 	</channel-type>
 
 	<channel-type id="heatChannelDemand-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Channel 1 Heat Demand</label>
 		<description>Current heat demand in %</description>
-		<state readOnly="true" pattern="%d %%"></state>
+		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
 	<channel-type id="demandState-channel">

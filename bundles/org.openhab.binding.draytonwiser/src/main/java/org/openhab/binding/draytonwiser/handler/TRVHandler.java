@@ -15,6 +15,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -123,7 +124,7 @@ public class TRVHandler extends DraytonWiserThingHandler {
 
     private State getDemand() {
         if (smartValve != null) {
-            return new DecimalType(smartValve.getPercentageDemand());
+            return new QuantityType<>(smartValve.getPercentageDemand(), SmartHomeUnits.PERCENT);
         }
         return UnDefType.UNDEF;
     }
@@ -189,7 +190,7 @@ public class TRVHandler extends DraytonWiserThingHandler {
         if (smartValve != null && bridgeHandler != null) {
             Device device = bridgeHandler.getExtendedDeviceProperties(smartValve.getId());
             if (device != null) {
-                return new DecimalType((float) device.getBatteryVoltage() / 10);
+                return new QuantityType<>((float) device.getBatteryVoltage() / 10, SmartHomeUnits.VOLT);
             }
         }
 

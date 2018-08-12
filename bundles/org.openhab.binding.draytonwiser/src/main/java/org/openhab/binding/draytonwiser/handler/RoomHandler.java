@@ -16,6 +16,7 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -171,7 +172,7 @@ public class RoomHandler extends DraytonWiserThingHandler {
 
     private State getDemand() {
         if (room != null) {
-            return new DecimalType(room.getPercentageDemand());
+            return new QuantityType<>(room.getPercentageDemand(), SmartHomeUnits.PERCENT);
         }
 
         return UnDefType.UNDEF;

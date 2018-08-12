@@ -14,7 +14,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -173,7 +175,7 @@ public class ControllerHandler extends DraytonWiserThingHandler {
     @SuppressWarnings("null")
     private State getHeatChannel1Demand() {
         if (heatingChannels != null && heatingChannels.size() >= 1) {
-            return new DecimalType(heatingChannels.get(0).getPercentageDemand());
+            return new QuantityType<>(heatingChannels.get(0).getPercentageDemand(), SmartHomeUnits.PERCENT);
         }
 
         return UnDefType.UNDEF;
@@ -182,7 +184,7 @@ public class ControllerHandler extends DraytonWiserThingHandler {
     @SuppressWarnings("null")
     private State getHeatChannel2Demand() {
         if (heatingChannels != null && heatingChannels.size() >= 2) {
-            return new DecimalType(heatingChannels.get(1).getPercentageDemand());
+            return new QuantityType<>(heatingChannels.get(1).getPercentageDemand(), SmartHomeUnits.PERCENT);
         }
 
         return UnDefType.UNDEF;
