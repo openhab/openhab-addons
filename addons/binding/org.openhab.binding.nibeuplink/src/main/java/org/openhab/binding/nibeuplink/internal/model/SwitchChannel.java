@@ -12,6 +12,42 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 @NonNullByDefault
 public class SwitchChannel extends Channel {
 
+    private static final double DEFAULT_OFF = 0;
+    private static final double DEFAULT_ON = 1;
+
+    private final double offValue;
+    private final double onValue;
+
+    /**
+     * constructor for channels with write access enabled. custom on/off mapping
+     *
+     * @param id
+     * @param name
+     * @param channelGroup
+     * @param offValue
+     * @param onValue
+     * @param writeApiUrl
+     */
+    SwitchChannel(String id, String name, ChannelGroup channelGroup, double offValue, double onValue,
+            @Nullable String writeApiUrl) {
+        super(id, name, channelGroup, writeApiUrl, ".*");
+        this.offValue = offValue;
+        this.onValue = onValue;
+    }
+
+    /**
+     * constructor for channels without write access. custom on/off mapping
+     *
+     * @param id
+     * @param name
+     * @param channelGroup
+     * @param offValue
+     * @param onValue
+     */
+    SwitchChannel(String id, String name, ChannelGroup channelGroup, double offValue, double onValue) {
+        this(id, name, channelGroup, offValue, onValue, null);
+    }
+
     /**
      * constructor for channels with write access enabled
      *
@@ -21,7 +57,7 @@ public class SwitchChannel extends Channel {
      * @param writeApiUrl
      */
     SwitchChannel(String id, String name, ChannelGroup channelGroup, @Nullable String writeApiUrl) {
-        super(id, name, channelGroup, writeApiUrl, ".*");
+        this(id, name, channelGroup, DEFAULT_OFF, DEFAULT_ON, writeApiUrl);
     }
 
     /**
@@ -36,7 +72,7 @@ public class SwitchChannel extends Channel {
     }
 
     public OnOffType mapValue(double value) {
-        if (value == 0.0) {
+        if (value == offValue) {
             return OnOffType.OFF;
         } else {
             return OnOffType.ON;
@@ -45,9 +81,9 @@ public class SwitchChannel extends Channel {
 
     public String mapValue(OnOffType value) {
         if (value.equals(OnOffType.OFF)) {
-            return "0";
+            return String.valueOf(offValue);
         } else {
-            return "1";
+            return String.valueOf(onValue);
         }
     }
 

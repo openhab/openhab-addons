@@ -183,11 +183,9 @@
 		</state>
 	</channel-type>
 	<channel-type id="base-type-48043">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Holiday</label>
-		<description>0=inactive, 10=active</description>
-		<state pattern="%d" readOnly="false">
-		</state>
+		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="base-type-48132">
 		<item-type>Number</item-type>

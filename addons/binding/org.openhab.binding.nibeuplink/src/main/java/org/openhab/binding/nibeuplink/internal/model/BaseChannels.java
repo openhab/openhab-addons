@@ -129,7 +129,7 @@ public class BaseChannels extends AbstractChannels {
             "Heat Meter - Heat Cpr and Add EP14", ChannelGroup.BASE, MetricPrefix.HECTO(SmartHomeUnits.WATT_HOUR)));
 
     public static final Channel CH_48043 = INSTANCE
-            .addChannel(new Channel("48043", "Holiday Mode", ChannelGroup.BASE, "/Manage/4.7", "[1]*[0]"));
+            .addChannel(new SwitchChannel("48043", "Holiday Mode", ChannelGroup.BASE, 0, 10, "/Manage/4.7"));
 
     // Hotwater
     public static final Channel CH_40013 = INSTANCE.addChannel(

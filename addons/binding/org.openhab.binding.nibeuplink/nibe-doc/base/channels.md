@@ -21,7 +21,7 @@
 | base#44308 | Number:Energy | 0 | 9999999 | No | Heat Meter - Heat Cpr EP14 |  |
 | base#44304 | Number:Energy | 0 | 9999999 | No | Heat Meter - Pool Cpr EP14 |  |
 | base#44300 | Number:Energy | 0 | 9999999 | No | Heat Meter - Heat Cpr and Add EP14 |  |
-| base#48043 | Number | --- | --- | Yes | vacation mode | 0=off, 10=on |
+| base#48043 | Switch | --- | --- | Yes | vacation mode |  |
 | base#10012 | Switch | --- | --- | No | Compressor blocked |  |
 | hotwater#40013 | Number:Temperature | -32767 | 32767 | No | BT7 HW Top |  |
 | hotwater#40014 | Number:Temperature | -32767 | 32767 | No | BT6 HW Load |  |
