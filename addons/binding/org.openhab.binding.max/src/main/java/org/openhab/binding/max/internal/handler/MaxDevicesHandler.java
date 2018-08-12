@@ -41,11 +41,11 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.max.MaxBinding;
-import org.openhab.binding.max.internal.command.C_Command;
-import org.openhab.binding.max.internal.command.Q_Command;
-import org.openhab.binding.max.internal.command.S_ConfigCommand;
-import org.openhab.binding.max.internal.command.S_ConfigCommand.ConfigCommandType;
-import org.openhab.binding.max.internal.command.Z_Command;
+import org.openhab.binding.max.internal.command.CCommand;
+import org.openhab.binding.max.internal.command.QCommand;
+import org.openhab.binding.max.internal.command.SConfigCommand;
+import org.openhab.binding.max.internal.command.SConfigCommand.ConfigCommandType;
+import org.openhab.binding.max.internal.command.ZCommand;
 import org.openhab.binding.max.internal.device.Device;
 import org.openhab.binding.max.internal.device.DeviceType;
 import org.openhab.binding.max.internal.device.EcoSwitch;
@@ -196,6 +196,11 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
     }
 
     private void sendPropertyUpdate(Map<String, Object> configurationParameters, Map<String, Object> deviceProperties) {
+        if (getMaxCubeBridgeHandler() == null) {
+            logger.warn("MAX! Cube LAN gateway bridge handler not found. Cannot handle update without bridge.");
+            return;
+        }
+
         try {
             Device device = getMaxCubeBridgeHandler().getDevice(maxDeviceSerial);
             rfAddress = device.getRFAddress();
@@ -214,13 +219,11 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                     PROPERTY_THERMO_WINDOW_OPEN_TEMP, deviceProperties.get(PROPERTY_THERMO_WINDOW_OPEN_TEMP));
             BigDecimal durationOpenWindow = (BigDecimal) configurationParameters.getOrDefault(
                     PROPERTY_THERMO_WINDOW_OPEN_DURATION, deviceProperties.get(PROPERTY_THERMO_WINDOW_OPEN_DURATION));
-            S_ConfigCommand cmd = new S_ConfigCommand(rfAddress, roomId, tempComfort.doubleValue(),
-                    tempEco.doubleValue(), tempSetpointMax.doubleValue(), tempSetpointMin.doubleValue(),
-                    tempOffset.doubleValue(), tempOpenWindow.doubleValue(), durationOpenWindow.intValue());
+            SConfigCommand cmd = new SConfigCommand(rfAddress, roomId, tempComfort.doubleValue(), tempEco.doubleValue(),
+                    tempSetpointMax.doubleValue(), tempSetpointMin.doubleValue(), tempOffset.doubleValue(),
+                    tempOpenWindow.doubleValue(), durationOpenWindow.intValue());
             bridgeHandler.queueCommand(new SendCommand(maxDeviceSerial, cmd, "Update Thermostat Properties"));
             sendCCommand();
-        } catch (NullPointerException e) {
-            logger.warn("MAX! Cube LAN gateway bridge handler not found. Cannot handle update without bridge.");
         } catch (Exception e) {
             logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
         }
@@ -232,7 +235,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
      */
     private void sendCCommand() {
         scheduler.schedule(() -> {
-            C_Command cmd = new C_Command(rfAddress);
+            CCommand cmd = new CCommand(rfAddress);
             bridgeHandler.queueCommand(new SendCommand(maxDeviceSerial, cmd, "Refresh Thermostat Properties"));
             configSet = false;
         }, COMMUNICATION_DELAY_TIME, TimeUnit.SECONDS);
@@ -266,7 +269,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                         logger.info("Updating device name for {} to {}", getThing().getUID().toString(), name);
                         device.setName(name);
                         bridgeHandler.sendDeviceAndRoomNameUpdate(name);
-                        bridgeHandler.queueCommand(new SendCommand(maxDeviceSerial, new Q_Command(), "Reload Data"));
+                        bridgeHandler.queueCommand(new SendCommand(maxDeviceSerial, new QCommand(), "Reload Data"));
                     }
                     break;
 
@@ -281,15 +284,15 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                         // is no longer valid as the related device is movd to another room
                         bridgeHandler.sendDeviceAndRoomNameUpdate(Integer.toString(roomId));
                         SendCommand sendCommand = new SendCommand(maxDeviceSerial,
-                                Z_Command.wakeupDevice(device.getRFAddress()),
+                                ZCommand.wakeupDevice(device.getRFAddress()),
                                 "WakeUp device" + getThing().getUID().getAsString());
                         bridgeHandler.queueCommand(sendCommand);
                         sendCommand = new SendCommand(maxDeviceSerial,
-                                new S_ConfigCommand(device.getRFAddress(), roomId, ConfigCommandType.SetRoom),
+                                new SConfigCommand(device.getRFAddress(), roomId, ConfigCommandType.SetRoom),
                                 "Set Room");
                         bridgeHandler.queueCommand(sendCommand);
 
-                        sendCommand = new SendCommand(maxDeviceSerial, new Q_Command(), "Reload Data");
+                        sendCommand = new SendCommand(maxDeviceSerial, new QCommand(), "Reload Data");
                         bridgeHandler.queueCommand(sendCommand);
                         sendCCommand();
                     }
@@ -300,7 +303,6 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
     }
 
     private synchronized MaxCubeBridgeHandler getMaxCubeBridgeHandler() {
-
         if (this.bridgeHandler == null) {
             final Bridge bridge = getBridge();
             if (bridge == null) {
@@ -437,7 +439,6 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         long timediff = Calendar.getInstance().getTime().getTime() - device.getActualTempLastUpdated().getTime();
         if (timediff > ((long) refreshActualRate) * 1000 * 60) {
             if (!refreshingActuals) {
-
                 logger.debug("Actual needs updating for {} {} ({}) id: {}", device.getType(), device.getName(),
                         device.getSerialNumber(), getThing().getUID());
 
@@ -543,9 +544,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("Bridge Status updated to {} for device: {}", bridgeStatusInfo.getStatus().toString(),
                 getThing().getUID().toString());
-        if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
-            // No action
-        } else {
+        if (!bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             forceRefresh = true;
         }

@@ -16,7 +16,6 @@ import org.openhab.binding.max.MaxBinding;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-
 public class MaxCubeBridgeConfiguration {
 
     /** The IP address of the MAX! Cube LAN gateway */

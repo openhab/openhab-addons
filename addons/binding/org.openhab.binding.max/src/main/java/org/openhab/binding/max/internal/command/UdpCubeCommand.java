@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  * @since 2.0
- *
  */
 public class UdpCubeCommand {
 
@@ -99,7 +98,6 @@ public class UdpCubeCommand {
     }
 
     private void receiveUdpCommandResponse() {
-
         commandRunning = true;
 
         try (DatagramSocket bcReceipt = new DatagramSocket(23272)) {
@@ -120,7 +118,6 @@ public class UdpCubeCommand {
 
                 // Check if the message is correct
                 if (message.startsWith("eQ3Max") && !message.equals(MAXCUBE_COMMAND_STRING)) {
-
                     commandResponse.put("maxCubeIP", receivePacket.getAddress().getHostAddress().toString());
                     commandResponse.put("maxCubeState", message.substring(0, 8));
                     commandResponse.put("serialNumber", message.substring(8, 18));

@@ -11,10 +11,9 @@ package org.openhab.binding.max.internal.device;
 /**
  * Cube Lan Gateway.
  *
- * @author Marcel Verpaalen
+ * @author Marcel Verpaalen - Initial contribution
  * @since 2.0.0
  */
-
 public class Cube extends Device {
 
     private boolean portalEnabled;

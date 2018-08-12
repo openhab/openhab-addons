@@ -30,7 +30,7 @@ import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler;
 /**
  * Tests for {@link MaxCubeBridgeHandler}.
  *
- * @author Marcel Verpaalen - Initial version
+ * @author Marcel Verpaalen - Initial contribution
  * @author Wouter Born - Migrate Groovy to Java tests
  * @since 2.0
  */

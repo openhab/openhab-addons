@@ -28,9 +28,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.max.internal.Utils;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.max")
 public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
     private static final String MAXCUBE_DISCOVER_STRING = "eQ3Max*\0**********I";
@@ -95,7 +98,6 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
     }
 
     private void receiveDiscoveryMessage() {
-
         try (final DatagramSocket bcReceipt = new DatagramSocket(23272)) {
             discoveryRunning = true;
             bcReceipt.setReuseAddress(true);

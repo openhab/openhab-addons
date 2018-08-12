@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 /**
  * Base message for the messages received from the MAX! Cube.
  *
- * @author Andreas Heil (info@aheil.de)
+ * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @since 1.4.0
  */
 public abstract class Message {
