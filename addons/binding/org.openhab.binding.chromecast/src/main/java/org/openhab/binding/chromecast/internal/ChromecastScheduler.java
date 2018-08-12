@@ -8,18 +8,19 @@
  */
 package org.openhab.binding.chromecast.internal;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles scheduling of connect and refresh events.
  *
- * @author Jason Holmes - Initial Author.
+ * @author Jason Holmes - Initial contribution
+ * @author Wouter Born - Make sure only at most one refresh job is scheduled and running
  */
 public class ChromecastScheduler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -33,7 +34,8 @@ public class ChromecastScheduler {
     private ScheduledFuture<?> connectFuture;
     private ScheduledFuture<?> refreshFuture;
 
-    public ChromecastScheduler(ScheduledExecutorService scheduler, Integer connectDelay, Runnable connectRunnable, Integer refreshRate, Runnable refreshRunnable) {
+    public ChromecastScheduler(ScheduledExecutorService scheduler, Integer connectDelay, Runnable connectRunnable,
+            Integer refreshRate, Runnable refreshRunnable) {
         this.scheduler = scheduler;
         this.connectDelay = connectDelay;
         this.connectRunnable = connectRunnable;
@@ -41,18 +43,18 @@ public class ChromecastScheduler {
         this.refreshRunnable = refreshRunnable;
     }
 
-    public void destroy() {
+    public synchronized void destroy() {
         cancelConnect();
         cancelRefresh();
     }
 
-    public void scheduleConnect() {
+    public synchronized void scheduleConnect() {
         logger.debug("Scheduling connection");
         cancelConnect();
         connectFuture = scheduler.schedule(connectRunnable, connectDelay, SECONDS);
     }
 
-    private void cancelConnect() {
+    private synchronized void cancelConnect() {
         logger.debug("Canceling connection");
         if (connectFuture != null) {
             connectFuture.cancel(true);
@@ -60,13 +62,15 @@ public class ChromecastScheduler {
         }
     }
 
-    public void scheduleRefresh() {
+    public synchronized void scheduleRefresh() {
         cancelRefresh();
         logger.debug("Scheduling refresh in {} seconds", refreshRate);
-        refreshFuture = scheduler.scheduleAtFixedRate(refreshRunnable, 0, refreshRate, SECONDS);
+        // With an initial delay of 1 second the refresh job can be restarted when several channels
+        // are refreshed at once e.g. due to channel linking
+        refreshFuture = scheduler.scheduleWithFixedDelay(refreshRunnable, 1, refreshRate, SECONDS);
     }
 
-    public void cancelRefresh() {
+    public synchronized void cancelRefresh() {
         logger.debug("Canceling refresh");
         if (refreshFuture != null) {
             refreshFuture.cancel(true);
