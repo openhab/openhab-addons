@@ -8,15 +8,14 @@
  */
 package org.openhab.binding.max.internal.config;
 
-import org.openhab.binding.max.MaxBinding;
+import org.openhab.binding.max.MaxBindingConstants;
 
 /**
- * Configuration class for {@link MaxBinding} bridge used to connect to the
+ * Configuration class for {@link MaxBindingConstants} bridge used to connect to the
  * maxCube device.
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-
 public class MaxCubeBridgeConfiguration {
 
     /** The IP address of the MAX! Cube LAN gateway */

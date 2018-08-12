@@ -16,8 +16,7 @@ import org.openhab.binding.max.internal.command.CubeCommand;
 /**
  * Class for sending a command.
  *
- * @author Marcel Verpaalen
- *
+ * @author Marcel Verpaalen - Initial contribution
  */
 public final class SendCommand {
 

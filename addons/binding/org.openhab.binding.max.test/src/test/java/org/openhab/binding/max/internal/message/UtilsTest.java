@@ -20,7 +20,7 @@ import org.openhab.binding.max.internal.Utils;
 /**
  * Tests cases for {@link Utils}.
  *
- * @author Andreas Heil (info@aheil.de)
+ * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 Version and updates
  * @since 1.4.0
  */
@@ -36,7 +36,6 @@ public class UtilsTest {
 
     @Test
     public void fromByteTest() {
-
         byte b0 = 0;
         byte b127 = 127;
         byte b128 = (byte) 128; // overflow due to
@@ -58,32 +57,25 @@ public class UtilsTest {
 
     @Test
     public void toHexNoArgTest() {
-
         String actualResult = Utils.toHex();
-
         assertEquals("", actualResult);
     }
 
     @Test
     public void toHexOneArgTest() {
-
         String actualResult = Utils.toHex(15);
-
         assertEquals("0F", actualResult);
     }
 
     @Test
     public void toHexMultipleArgTest() {
-
         String actualResult = Utils.toHex(4863);
-
         assertEquals("12FF", actualResult);
     }
 
     @SuppressWarnings("deprecation")
     @Test
     public void resolveDateTimeTest() {
-
         int date = Utils.fromHex("858B"); // 05-09-2011
         int time = Utils.fromHex("2E"); // 23:00
 

@@ -15,9 +15,10 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.max.MaxBinding;
+import org.openhab.binding.max.MaxBindingConstants;
 import org.openhab.binding.max.internal.device.Device;
 import org.openhab.binding.max.internal.handler.DeviceStatusListener;
 import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler;
@@ -38,7 +39,7 @@ public class MaxDeviceDiscoveryService extends AbstractDiscoveryService implemen
     private MaxCubeBridgeHandler maxCubeBridgeHandler;
 
     public MaxDeviceDiscoveryService(MaxCubeBridgeHandler maxCubeBridgeHandler) {
-        super(MaxBinding.SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME, true);
+        super(MaxBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME, true);
         this.maxCubeBridgeHandler = maxCubeBridgeHandler;
     }
 
@@ -54,7 +55,7 @@ public class MaxDeviceDiscoveryService extends AbstractDiscoveryService implemen
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return MaxBinding.SUPPORTED_DEVICE_THING_TYPES_UIDS;
+        return MaxBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS;
     }
 
     @Override
@@ -63,23 +64,24 @@ public class MaxDeviceDiscoveryService extends AbstractDiscoveryService implemen
         ThingUID thingUID = null;
         switch (device.getType()) {
             case WallMountedThermostat:
-                thingUID = new ThingUID(MaxBinding.WALLTHERMOSTAT_THING_TYPE, bridge.getUID(),
+                thingUID = new ThingUID(MaxBindingConstants.WALLTHERMOSTAT_THING_TYPE, bridge.getUID(),
                         device.getSerialNumber());
                 break;
             case HeatingThermostat:
-                thingUID = new ThingUID(MaxBinding.HEATINGTHERMOSTAT_THING_TYPE, bridge.getUID(),
+                thingUID = new ThingUID(MaxBindingConstants.HEATINGTHERMOSTAT_THING_TYPE, bridge.getUID(),
                         device.getSerialNumber());
                 break;
             case HeatingThermostatPlus:
-                thingUID = new ThingUID(MaxBinding.HEATINGTHERMOSTATPLUS_THING_TYPE, bridge.getUID(),
+                thingUID = new ThingUID(MaxBindingConstants.HEATINGTHERMOSTATPLUS_THING_TYPE, bridge.getUID(),
                         device.getSerialNumber());
                 break;
             case ShutterContact:
-                thingUID = new ThingUID(MaxBinding.SHUTTERCONTACT_THING_TYPE, bridge.getUID(),
+                thingUID = new ThingUID(MaxBindingConstants.SHUTTERCONTACT_THING_TYPE, bridge.getUID(),
                         device.getSerialNumber());
                 break;
             case EcoSwitch:
-                thingUID = new ThingUID(MaxBinding.ECOSWITCH_THING_TYPE, bridge.getUID(), device.getSerialNumber());
+                thingUID = new ThingUID(MaxBindingConstants.ECOSWITCH_THING_TYPE, bridge.getUID(),
+                        device.getSerialNumber());
                 break;
             default:
                 break;
@@ -90,9 +92,9 @@ public class MaxDeviceDiscoveryService extends AbstractDiscoveryService implemen
                 name = device.getSerialNumber();
             }
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                    .withProperty(MaxBinding.PROPERTY_SERIAL_NUMBER, device.getSerialNumber())
-                    .withBridge(bridge.getUID()).withLabel(device.getType() + ": " + name)
-                    .withRepresentationProperty(MaxBinding.PROPERTY_SERIAL_NUMBER).build();
+                    .withProperty(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber()).withBridge(bridge.getUID())
+                    .withLabel(device.getType() + ": " + name).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
+                    .build();
             thingDiscovered(discoveryResult);
         } else {
             logger.debug("Discovered MAX! device is unsupported: type '{}' with id '{}'", device.getType(),
