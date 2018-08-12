@@ -57,7 +57,7 @@ public final class SMessage extends Message {
 
     @Override
     public void debug(Logger logger) {
-        logger.trace("=== S_Message === ");
+        logger.trace("=== S Message === ");
         logger.trace("\tRAW : {}", this.getPayload());
         logger.trace("\tDutyCycle         : {}", this.dutyCycle);
         logger.trace("\tCommand Discarded : {}", this.commandDiscarded);

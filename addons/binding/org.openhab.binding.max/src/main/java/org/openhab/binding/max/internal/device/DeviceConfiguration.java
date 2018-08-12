@@ -15,7 +15,7 @@ import org.openhab.binding.max.internal.message.CMessage;
 import org.openhab.binding.max.internal.message.Message;
 
 /**
- * Base class for configuration provided by the MAX! Cube C_Message.
+ * Base class for configuration provided by the MAX! Cube C Message.
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @since 1.4.0

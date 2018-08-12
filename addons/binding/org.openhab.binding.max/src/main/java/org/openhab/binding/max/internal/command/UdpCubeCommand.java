@@ -85,11 +85,11 @@ public class UdpCubeCommand {
         } else if (commandType.equals(UdpCommandType.DEFAULTNET)) {
             commandString = MAXCUBE_COMMAND_STRING + serialNumber + "c";
         } else {
-            logger.info("Unknown Command {}", commandType.toString());
+            logger.info("Unknown Command {}", commandType);
             return false;
         }
         commandResponse.clear();
-        logger.debug("Send {} command to MAX! Cube {}", commandType.toString(), serialNumber);
+        logger.debug("Send {} command to MAX! Cube {}", commandType, serialNumber);
         sendUdpCommand(commandString, ipAddress);
         logger.trace("Done sending command.");
         receiveUdpCommandResponse();

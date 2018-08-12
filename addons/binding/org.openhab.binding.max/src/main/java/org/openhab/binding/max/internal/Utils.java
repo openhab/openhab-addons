@@ -142,7 +142,7 @@ public final class Utils {
      *
      * @param s
      * @return byte array equivalent to hex string
-     **/
+     */
     public static byte[] hexStringToByteArray(String s) {
         int len = s.length();
         byte[] data = new byte[len / 2];
@@ -162,7 +162,7 @@ public final class Utils {
      *
      * @param byte array
      * @return String equivalent to hex string
-     **/
+     */
     static final String HEXES = "0123456789ABCDEF";
 
     public static String getHex(byte[] raw) {

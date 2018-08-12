@@ -55,7 +55,7 @@ public class MCommand extends CubeCommand {
 
     public void listRooms() {
         for (RoomInformation room : rooms) {
-            logger.debug("M-Command room info: {}", room.toString());
+            logger.debug("M Command room info: {}", room);
         }
     }
 
@@ -118,8 +118,7 @@ public class MCommand extends CubeCommand {
                             message.write(roomName);
                             message.write(rfAddress);
                         } else {
-                            logger.warn("{} exceeds max number of rooms ({}). Ignored", room.toString(),
-                                    MAX_GROUP_COUNT);
+                            logger.warn("{} exceeds max number of rooms ({}). Ignored", room, MAX_GROUP_COUNT);
                         }
                         roomCount++;
                     }
@@ -129,7 +128,7 @@ public class MCommand extends CubeCommand {
                 if (deviceCount < MAX_DEVICES_COUNT) {
                     deviceCount++;
                 } else {
-                    logger.warn("{} exceeds max number of devices ({}). Ignored", di.toString(), MAX_DEVICES_COUNT);
+                    logger.warn("{} exceeds max number of devices ({}). Ignored", di, MAX_DEVICES_COUNT);
                 }
             }
             message.write((byte) deviceCount);
@@ -150,7 +149,7 @@ public class MCommand extends CubeCommand {
                     message.write(deviceName);
                     message.write(roomId);
                 } else {
-                    logger.warn("{} exceeds max number of devices ({}). Ignored", di.toString(), MAX_DEVICES_COUNT);
+                    logger.warn("{} exceeds max number of devices ({}). Ignored", di, MAX_DEVICES_COUNT);
                 }
                 deviceCount--;
             }

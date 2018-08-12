@@ -47,7 +47,7 @@ public final class HMessage extends Message {
         String[] tokens = this.getPayload().split(Message.DELIMETER);
 
         if (tokens.length < 11) {
-            throw new ArrayIndexOutOfBoundsException("MAX!Cube raw H_Message corrupt");
+            throw new ArrayIndexOutOfBoundsException("MAX!Cube raw H Message corrupt");
         }
 
         rawSerialNumber = tokens[0];
@@ -123,7 +123,7 @@ public final class HMessage extends Message {
 
     @Override
     public void debug(Logger logger) {
-        logger.debug("=== H_Message === ");
+        logger.debug("=== H Message === ");
         logger.trace("\tRAW:            : {}", getPayload());
         logger.trace("\tReading Time    : {}", getDateTime());
         for (String key : properties.keySet()) {

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.max.internal.handler;
 
-import static org.openhab.binding.max.MaxBinding.*;
+import static org.openhab.binding.max.MaxBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,7 +47,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.max.MaxBinding;
+import org.openhab.binding.max.MaxBindingConstants;
 import org.openhab.binding.max.internal.command.ACommand;
 import org.openhab.binding.max.internal.command.CCommand;
 import org.openhab.binding.max.internal.command.CubeCommand;
@@ -166,7 +166,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             logger.debug("Refresh command received.");
             refreshData();
         } else {
-            logger.warn("No bridge commands defined. Cannot process '{}'.", command.toString());
+            logger.warn("No bridge commands defined. Cannot process '{}'.", command);
         }
     }
 
@@ -256,7 +256,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     }
 
     private void cubeConfigReset() {
-        logger.info("Resetting configuration for MAX! Cube {}", getThing().getUID());
+        logger.debug("Resetting configuration for MAX! Cube {}", getThing().getUID());
         sendCubeCommand(new ACommand());
         for (Device di : devices) {
             for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
@@ -286,13 +286,13 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     public void deviceInclusion() {
         if (previousOnline && socket != null) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Inclusion");
-            logger.info("Start MAX! inclusion mode for 60 seconds");
+            logger.debug("Start MAX! inclusion mode for 60 seconds");
             try {
                 socket.setSoTimeout(80000);
                 if (!sendCubeCommand(new NCommand())) {
                     logger.debug("Error during Inclusion mode");
                 }
-                logger.info("End MAX! inclusion mode");
+                logger.debug("End MAX! inclusion mode");
                 socket.setSoTimeout(NETWORK_TIMEOUT);
             } catch (SocketException e) {
                 logger.debug("Timeout during MAX! inclusion mode");
@@ -682,28 +682,28 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void processCMessage(CMessage c_Message) {
+    private void processCMessage(CMessage cMessage) {
         DeviceConfiguration c = null;
         for (DeviceConfiguration conf : configurations) {
-            if (conf.getSerialNumber().equalsIgnoreCase(c_Message.getSerialNumber())) {
+            if (conf.getSerialNumber().equalsIgnoreCase(cMessage.getSerialNumber())) {
                 c = conf;
                 break;
             }
         }
 
         if (c == null) {
-            configurations.add(DeviceConfiguration.create(c_Message));
+            configurations.add(DeviceConfiguration.create(cMessage));
         } else {
-            c.setValues(c_Message);
-            Device di = getDevice(c_Message.getSerialNumber());
+            c.setValues(cMessage);
+            Device di = getDevice(cMessage.getSerialNumber());
             if (di != null) {
-                di.setProperties(c_Message.getProperties());
+                di.setProperties(cMessage.getProperties());
             }
         }
         if (exclusive) {
             for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
                 try {
-                    Device di = getDevice(c_Message.getSerialNumber());
+                    Device di = getDevice(cMessage.getSerialNumber());
                     if (di != null) {
                         deviceStatusListener.onDeviceConfigUpdate(getThing(), di);
                     }
@@ -769,7 +769,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     private void processNMessage(NMessage nMessage) {
         if (nMessage.getRfAddress() != null) {
-            logger.info("New {} found. Serial: {}, rfaddress: {}", nMessage.getDeviceType().toString(),
+            logger.debug("New {} found. Serial: {}, rfaddress: {}", nMessage.getDeviceType(),
                     nMessage.getSerialNumber(), nMessage.getRfAddress());
             // Send C command to get the configuration so it will be added to discovery
             String newSerial = nMessage.getSerialNumber();
@@ -815,15 +815,15 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             properties.put(Thing.PROPERTY_MODEL_ID, DeviceType.Cube.toString());
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, message.getFirmwareVersion());
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, message.getSerialNumber());
-            properties.put(Thing.PROPERTY_VENDOR, MaxBinding.PROPERTY_VENDOR_NAME);
+            properties.put(Thing.PROPERTY_VENDOR, MaxBindingConstants.PROPERTY_VENDOR_NAME);
             updateProperties(properties);
             // TODO: Remove this once UI is displaying this info
             for (Map.Entry<String, String> entry : properties.entrySet()) {
                 logger.debug("key: {}  : {}", entry.getKey(), entry.getValue());
             }
             Configuration configuration = editConfiguration();
-            configuration.put(MaxBinding.PROPERTY_RFADDRESS, message.getRFAddress());
-            configuration.put(MaxBinding.PROPERTY_SERIAL_NUMBER, message.getSerialNumber());
+            configuration.put(MaxBindingConstants.PROPERTY_RFADDRESS, message.getRFAddress());
+            configuration.put(Thing.PROPERTY_SERIAL_NUMBER, message.getSerialNumber());
             updateConfiguration(configuration);
             logger.debug("properties updated");
             propertiesSet = true;

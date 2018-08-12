@@ -9,7 +9,7 @@
 package org.openhab.binding.max.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
-import static org.openhab.binding.max.MaxBinding.*;
+import static org.openhab.binding.max.MaxBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -40,7 +40,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.max.MaxBinding;
+import org.openhab.binding.max.MaxBindingConstants;
 import org.openhab.binding.max.internal.command.CCommand;
 import org.openhab.binding.max.internal.command.QCommand;
 import org.openhab.binding.max.internal.command.SConfigCommand;
@@ -90,10 +90,11 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
     public void initialize() {
         try {
             final Configuration config = getThing().getConfiguration();
-            final String configDeviceId = (String) config.get(MaxBinding.PROPERTY_SERIAL_NUMBER);
+            final String configDeviceId = (String) config.get(Thing.PROPERTY_SERIAL_NUMBER);
 
             try {
-                refreshActualRate = ((BigDecimal) config.get(MaxBinding.PROPERTY_REFRESH_ACTUAL_RATE)).intValueExact();
+                refreshActualRate = ((BigDecimal) config.get(MaxBindingConstants.PROPERTY_REFRESH_ACTUAL_RATE))
+                        .intValueExact();
             } catch (Exception e) {
                 refreshActualRate = 0;
             }
@@ -146,29 +147,29 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        logger.debug("MAX! Device {}: Configuration update received", getThing().getUID().toString());
+        logger.debug("MAX! Device {}: Configuration update received", getThing().getUID());
         boolean temperaturePropertyUpdateNeeded = false;
         final Device device = getMaxCubeBridgeHandler().getDevice(maxDeviceSerial);
 
         final Map<String, Object> deviceProperties = device == null ? new HashMap<>() : device.getProperties();
         final Configuration configuration = editConfiguration();
         for (final Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
-            logger.debug("MAX! Device {}: Configuration update {} to {}", getThing().getUID().toString(),
+            logger.debug("MAX! Device {}: Configuration update {} to {}", getThing().getUID(),
                     configurationParameter.getKey(), configurationParameter.getValue());
 
             // Test if it is a part of the configuration properties.
             // As paperUI sends all parameters as changed, we need to determine which ones really changed.
             if (deviceProperties.containsKey(configurationParameter.getKey())) {
                 if (deviceProperties.get(configurationParameter.getKey()).equals(configurationParameter.getValue())) {
-                    logger.trace("Device {} Property {} value {} unchanged.", getThing().getUID().toString(),
+                    logger.trace("Device {} Property {} value {} unchanged.", getThing().getUID(),
                             configurationParameter.getKey(), configurationParameter.getValue());
                 } else if (configurationParameter.getValue().getClass() == BigDecimal.class
                         && ((BigDecimal) deviceProperties.get(configurationParameter.getKey()))
                                 .compareTo((BigDecimal) configurationParameter.getValue()) == 0) {
-                    logger.trace("Device {} Property {} value {} unchanged.", getThing().getUID().toString(),
+                    logger.trace("Device {} Property {} value {} unchanged.", getThing().getUID(),
                             configurationParameter.getKey(), configurationParameter.getValue());
                 } else {
-                    logger.debug("Device {} Property {} value {} -> {} changed.", getThing().getUID().toString(),
+                    logger.debug("Device {} Property {} value {} -> {} changed.", getThing().getUID(),
                             configurationParameter.getKey(), deviceProperties.get(configurationParameter.getKey()),
                             configurationParameter.getValue());
                     temperaturePropertyUpdateNeeded = true;
@@ -266,7 +267,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                 case PROPERTY_DEVICENAME:
                     final String name = configurationParameter.getValue().toString();
                     if (!name.equals(device.getName())) {
-                        logger.info("Updating device name for {} to {}", getThing().getUID().toString(), name);
+                        logger.debug("Updating device name for {} to {}", getThing().getUID(), name);
                         device.setName(name);
                         bridgeHandler.sendDeviceAndRoomNameUpdate(name);
                         bridgeHandler.queueCommand(new SendCommand(maxDeviceSerial, new QCommand(), "Reload Data"));
@@ -527,11 +528,11 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
      */
     private void setProperties(Device device) {
         try {
-            logger.debug("MAX! {} {} properties update", device.getType().toString(), device.getSerialNumber());
+            logger.debug("MAX! {} {} properties update", device.getType(), device.getSerialNumber());
             Map<String, String> properties = editProperties();
             properties.put(Thing.PROPERTY_MODEL_ID, device.getType().toString());
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber());
-            properties.put(Thing.PROPERTY_VENDOR, MaxBinding.PROPERTY_VENDOR_NAME);
+            properties.put(Thing.PROPERTY_VENDOR, MaxBindingConstants.PROPERTY_VENDOR_NAME);
             updateProperties(properties);
             logger.debug("properties updated");
             propertiesSet = true;
@@ -542,8 +543,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("Bridge Status updated to {} for device: {}", bridgeStatusInfo.getStatus().toString(),
-                getThing().getUID().toString());
+        logger.debug("Bridge Status updated to {} for device: {}", bridgeStatusInfo.getStatus(), getThing().getUID());
         if (!bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             forceRefresh = true;
@@ -555,12 +555,12 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
      */
     private void setDeviceConfiguration(Device device) {
         try {
-            logger.debug("MAX! {} {} configuration update", device.getType().toString(), device.getSerialNumber());
+            logger.debug("MAX! {} {} configuration update", device.getType(), device.getSerialNumber());
             Configuration configuration = editConfiguration();
-            configuration.put(MaxBinding.PROPERTY_ROOMNAME, device.getRoomName());
-            configuration.put(MaxBinding.PROPERTY_ROOMID, new BigDecimal(device.getRoomId()));
-            configuration.put(MaxBinding.PROPERTY_DEVICENAME, device.getName());
-            configuration.put(MaxBinding.PROPERTY_RFADDRESS, device.getRFAddress());
+            configuration.put(MaxBindingConstants.PROPERTY_ROOMNAME, device.getRoomName());
+            configuration.put(MaxBindingConstants.PROPERTY_ROOMID, new BigDecimal(device.getRoomId()));
+            configuration.put(MaxBindingConstants.PROPERTY_DEVICENAME, device.getName());
+            configuration.put(MaxBindingConstants.PROPERTY_RFADDRESS, device.getRFAddress());
             // Add additional device config entries
             for (Map.Entry<String, Object> entry : device.getProperties().entrySet()) {
                 configuration.put(entry.getKey(), entry.getValue());

@@ -18,13 +18,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link MaxBinding} class defines common constants, which are
+ * The {@link MaxBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Marcel Verpaalen - Initial contribution
  */
 @NonNullByDefault
-public class MaxBinding {
+public class MaxBindingConstants {
 
     public static final String BINDING_ID = "max";
 
@@ -57,7 +57,6 @@ public class MaxBinding {
     public static final String CHANNEL_DUTY_CYCLE = "duty_cycle";
 
     // Custom Properties
-    public static final String PROPERTY_SERIAL_NUMBER = "serialNumber";
     public static final String PROPERTY_IP_ADDRESS = "ipAddress";
     public static final String PROPERTY_VENDOR_NAME = "eQ-3 AG";
     public static final String PROPERTY_RFADDRESS = "rfAddress";

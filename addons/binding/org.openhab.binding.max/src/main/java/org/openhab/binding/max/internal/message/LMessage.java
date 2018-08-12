@@ -86,7 +86,7 @@ public final class LMessage extends Message {
 
     @Override
     public void debug(Logger logger) {
-        logger.trace("=== L_Message === ");
+        logger.trace("=== L Message === ");
         logger.trace("\tRAW: {}", this.getPayload());
     }
 

@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link: N_Message} contains information about a newly discovered Device
+ * The {@link: NMessage} contains information about a newly discovered Device
  * This is the response to a n: command
  *
  * @author Marcel Verpaalen - Initial contribution
@@ -32,7 +32,7 @@ public final class NMessage extends Message {
     private String serialnr;
 
     /**
-     * The {@link: N_Message} contains information about a newly discovered Device
+     * The {@link: NMessage} contains information about a newly discovered Device
      *
      * @param raw String with raw message
      */
@@ -74,13 +74,13 @@ public final class NMessage extends Message {
     @Override
     public void debug(Logger logger) {
         if (this.rfAddress != null) {
-            logger.debug("=== N_Message === ");
+            logger.debug("=== N Message === ");
             logger.trace("\tRAW : {}", this.decodedPayload);
-            logger.debug("\tDevice Type    : {}", this.deviceType.toString());
+            logger.debug("\tDevice Type    : {}", this.deviceType);
             logger.debug("\tRF Address     : {}", this.rfAddress);
             logger.debug("\tSerial         : {}", this.serialnr);
         } else {
-            logger.trace("=== N_Message === ");
+            logger.trace("=== N Message === ");
             logger.trace("\tRAW : {}", this.decodedPayload);
         }
     }

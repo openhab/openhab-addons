@@ -11,7 +11,7 @@ package org.openhab.binding.max.internal.message;
 import org.slf4j.Logger;
 
 /**
- * The {@link: F_Message} contains information about the Cube NTP Configuration
+ * The {@link: FMessage} contains information about the Cube NTP Configuration
  * This is the response to a f: command
  *
  * @author Marcel Verpaalen - Initial contribution
@@ -23,7 +23,7 @@ public final class FMessage extends Message {
     private String ntpServer2 = "";
 
     /**
-     * The {@link: F_Message} contains information about the Cube NTP Configuration
+     * The {@link: FMessage} contains information about the Cube NTP Configuration
      *
      * @param raw String with raw message
      */
@@ -55,7 +55,7 @@ public final class FMessage extends Message {
 
     @Override
     public void debug(Logger logger) {
-        logger.debug("=== F_Message === ");
+        logger.debug("=== F Message === ");
         logger.trace("\tRAW : {}", this.getPayload());
         logger.debug("\tNTP Server1    : {}", this.ntpServer1);
         logger.debug("\tNTP Server2    : {}", this.ntpServer2);

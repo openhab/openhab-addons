@@ -49,7 +49,7 @@ public final class MMessage extends Message {
             byte[] bytes = Base64.decodeBase64(tokens[2].getBytes(StandardCharsets.UTF_8));
 
             hasConfiguration = true;
-            logger.trace("*** M_Message trace**** ");
+            logger.trace("*** M Message trace**** ");
             logger.trace("\tMagic? (expect 86) : {}", (int) bytes[0]);
             logger.trace("\tVersion? (expect 2): {}", (int) bytes[1]);
             logger.trace("\t#defined rooms in M: {}", (int) bytes[2]);
@@ -115,7 +115,7 @@ public final class MMessage extends Message {
 
     @Override
     public void debug(Logger logger) {
-        logger.debug("=== M_Message === ");
+        logger.debug("=== M Message === ");
         if (hasConfiguration) {
             logger.trace("\tRAW : {}", this.getPayload());
             for (RoomInformation room : rooms) {
@@ -136,7 +136,7 @@ public final class MMessage extends Message {
 
             }
         } else {
-            logger.debug("M-Message empty. No Configuration");
+            logger.debug("M Message empty. No Configuration");
         }
     }
 

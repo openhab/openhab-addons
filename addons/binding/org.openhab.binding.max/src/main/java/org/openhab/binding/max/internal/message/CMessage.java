@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.max.internal.message;
 
-import static org.openhab.binding.max.MaxBinding.*;
+import static org.openhab.binding.max.MaxBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -75,13 +75,13 @@ public final class CMessage extends Message {
 
         length = data[0];
         if (length != data.length - 1) {
-            logger.debug("C_Message malformed: wrong data length. Expected bytes {}, actual bytes {}", length,
+            logger.debug("C Message malformed: wrong data length. Expected bytes {}, actual bytes {}", length,
                     data.length - 1);
         }
 
         String rfAddress2 = Utils.toHex(data[1], data[2], data[3]);
         if (!rfAddress.toUpperCase().equals(rfAddress2.toUpperCase())) {
-            logger.debug("C_Message malformed: wrong RF address. Expected address {}, actual address {}",
+            logger.debug("C Message malformed: wrong RF address. Expected address {}, actual address {}",
                     rfAddress.toUpperCase(), rfAddress2.toUpperCase());
         }
 
@@ -98,7 +98,7 @@ public final class CMessage extends Message {
             parseCubeData(bytes);
         }
         if (deviceType == DeviceType.EcoSwitch || deviceType == DeviceType.ShutterContact) {
-            logger.trace("Device {} type {} Data: '{}'", rfAddress, deviceType.toString(), parseData(bytes));
+            logger.trace("Device {} type {} Data: '{}'", rfAddress, deviceType, parseData(bytes));
         }
     }
 
@@ -266,9 +266,9 @@ public final class CMessage extends Message {
 
     @Override
     public void debug(Logger logger) {
-        logger.debug("=== C_Message === ");
+        logger.debug("=== C Message === ");
         logger.trace("\tRAW:                    {}", this.getPayload());
-        logger.debug("DeviceType:               {}", deviceType.toString());
+        logger.debug("DeviceType:               {}", deviceType);
         logger.debug("SerialNumber:             {}", serialNumber);
         logger.debug("RFAddress:                {}", rfAddress);
         logger.debug("RoomID:                   {}", roomId);

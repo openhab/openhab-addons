@@ -145,8 +145,8 @@ public abstract class Device {
         device.setLinkStatusError(bits2[6]);
         device.setBatteryLow(bits2[7]);
 
-        LOGGER.trace("Device {} ({}): L Message length: {} content: {}", rfAddress, device.getType().toString(),
-                raw.length, Utils.getHex(raw));
+        LOGGER.trace("Device {} ({}): L Message length: {} content: {}", rfAddress, device.getType(), raw.length,
+                Utils.getHex(raw));
 
         // TODO move the device specific readings into the sub classes
         switch (device.getType()) {
@@ -164,7 +164,7 @@ public abstract class Device {
                 } else if (bits2[1] && bits2[0]) {
                     heatingThermostat.setMode(ThermostatModeType.BOOST);
                 } else {
-                    LOGGER.debug("Device {} ({}): Unknown mode", rfAddress, device.getType().toString());
+                    LOGGER.debug("Device {} ({}): Unknown mode", rfAddress, device.getType());
                 }
 
                 heatingThermostat.setValvePosition(raw[6] & 0xFF);
@@ -188,29 +188,28 @@ public abstract class Device {
                             && heatingThermostat.getMode() != ThermostatModeType.BOOST) {
                         actualTemp = (raw[8] & 0xFF) * 256 + (raw[9] & 0xFF);
                     } else {
-                        LOGGER.debug("Device {} ({}): No temperature reading in {} mode", rfAddress,
-                                device.getType().toString(), heatingThermostat.getMode());
+                        LOGGER.debug("Device {} ({}): No temperature reading in {} mode", rfAddress, device.getType(),
+                                heatingThermostat.getMode());
                     }
                 }
-                LOGGER.debug("Device {} ({}): Actual Temperature : {}", rfAddress, device.getType().toString(),
+                LOGGER.debug("Device {} ({}): Actual Temperature : {}", rfAddress, device.getType(),
                         (double) actualTemp / 10);
                 heatingThermostat.setTemperatureActual((double) actualTemp / 10);
                 break;
             case EcoSwitch:
                 String eCoSwitchData = Utils.toHex(raw[3] & 0xFF, raw[4] & 0xFF, raw[5] & 0xFF);
-                LOGGER.trace("Device {} ({}): Status bytes : {}", rfAddress, device.getType().toString(),
-                        eCoSwitchData);
+                LOGGER.trace("Device {} ({}): Status bytes : {}", rfAddress, device.getType(), eCoSwitchData);
                 EcoSwitch ecoswitch = (EcoSwitch) device;
                 // xxxx xx10 = shutter open, xxxx xx00 = shutter closed
                 if (bits2[1] && !bits2[0]) {
                     ecoswitch.setEcoMode(OnOffType.ON);
-                    LOGGER.trace("Device {} ({}): status: ON", rfAddress, device.getType().toString());
+                    LOGGER.trace("Device {} ({}): status: ON", rfAddress, device.getType());
                 } else if (!bits2[1] && !bits2[0]) {
                     ecoswitch.setEcoMode(OnOffType.OFF);
-                    LOGGER.trace("Device {} ({}): Status: OFF", rfAddress, device.getType().toString());
+                    LOGGER.trace("Device {} ({}): Status: OFF", rfAddress, device.getType());
                 } else {
                     LOGGER.trace("Device {} ({}): Status switch status Unknown (true-true)", rfAddress,
-                            device.getType().toString());
+                            device.getType());
                 }
                 break;
             case ShutterContact:
@@ -218,13 +217,13 @@ public abstract class Device {
                 // xxxx xx10 = shutter open, xxxx xx00 = shutter closed
                 if (bits2[1] && !bits2[0]) {
                     shutterContact.setShutterState(OpenClosedType.OPEN);
-                    LOGGER.debug("Device {} ({}): Status: Open", rfAddress, device.getType().toString());
+                    LOGGER.debug("Device {} ({}): Status: Open", rfAddress, device.getType());
                 } else if (!bits2[1] && !bits2[0]) {
                     shutterContact.setShutterState(OpenClosedType.CLOSED);
-                    LOGGER.debug("Device {} ({}): Status: Closed", rfAddress, device.getType().toString());
+                    LOGGER.debug("Device {} ({}): Status: Closed", rfAddress, device.getType());
                 } else {
                     LOGGER.trace("Device {} ({}): Status switch status Unknown (true-true)", rfAddress,
-                            device.getType().toString());
+                            device.getType());
                 }
 
                 break;
