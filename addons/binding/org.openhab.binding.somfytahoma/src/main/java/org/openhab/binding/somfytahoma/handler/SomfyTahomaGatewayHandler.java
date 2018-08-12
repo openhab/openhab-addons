@@ -20,7 +20,6 @@ import java.time.LocalTime;
 import java.util.Hashtable;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.STATUS;
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.STATUS_EXPIRY;
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.VERSION;
 
 /**
@@ -56,7 +55,7 @@ public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
 
     @Override
     public void updateChannelState(ChannelUID channelUID) {
-        if (LocalTime.now().minusMinutes(STATUS_EXPIRY).isAfter(lastUpdated)) {
+        if (isStatusExpired()) {
             String id = getThing().getConfiguration().get("id").toString();
             if (channelUID.getId().equals(VERSION)) {
                 updateState(channelUID, new StringType(getTahomaVersion(id)));

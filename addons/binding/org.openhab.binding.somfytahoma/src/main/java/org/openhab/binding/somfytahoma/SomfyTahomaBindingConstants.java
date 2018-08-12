@@ -191,7 +191,4 @@ public class SomfyTahomaBindingConstants {
 
     // cache timeout
     final public static int CACHE_EXPIRY = 10000;
-
-    // force status refresh after 30 minutes of thing inactivity
-    final public static int STATUS_EXPIRY = 30;
 }

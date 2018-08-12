@@ -19,12 +19,10 @@ import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.NumberFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 
@@ -76,7 +74,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
         return getBridgeHandler() != null ? getBridgeHandler().getAllStates(getStateNames().values(), getURL()) : null;
     }
 
-    private SomfyTahomaBridgeHandler getBridgeHandler() {
+    protected SomfyTahomaBridgeHandler getBridgeHandler() {
         return this.getBridge() != null ? (SomfyTahomaBridgeHandler) this.getBridge().getHandler() : null;
     }
 
@@ -254,7 +252,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
     }
 
     public void updateChannelState(ChannelUID channelUID) {
-        if (getStateNames() != null && LocalTime.now().minusMinutes(STATUS_EXPIRY).isAfter(lastUpdated)) {
+        if (getStateNames() != null && isStatusExpired()) {
             String stateName = getStateNames().get(channelUID.getId());
             Channel channel = getChannelByChannelUID(channelUID);
             if (channel == null) {
@@ -273,6 +271,10 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
             updateState(channelUID, state);
             lastUpdated = LocalTime.now();
         }
+    }
+
+    protected boolean isStatusExpired() {
+        return LocalTime.now().minusSeconds(getBridgeHandler().thingConfig.getStatusTimeout()).isAfter(lastUpdated);
     }
 
     private Channel getChannelByChannelUID(ChannelUID channelUID) {

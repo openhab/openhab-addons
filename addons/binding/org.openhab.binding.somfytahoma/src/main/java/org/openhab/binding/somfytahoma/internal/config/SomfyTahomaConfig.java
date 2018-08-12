@@ -19,6 +19,7 @@ public class SomfyTahomaConfig {
     private String password;
     private String thingUid;
     private int refresh = 30;
+    private int statusTimeout = 300;
 
     public String getEmail() {
         return email;
@@ -38,5 +39,9 @@ public class SomfyTahomaConfig {
 
     public int getRefresh() {
         return refresh;
+    }
+
+    public int getStatusTimeout() {
+        return statusTimeout;
     }
 }
