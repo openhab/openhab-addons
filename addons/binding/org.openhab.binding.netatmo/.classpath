@@ -10,7 +10,7 @@
 	<classpathentry kind="lib" path="lib/kotlin-stdlib-jdk8-1.2.51.jar"/>
 	<classpathentry kind="lib" path="lib/kotlinx-coroutines-core-0.24.0.jar"/>
 	<classpathentry kind="lib" path="lib/logging-interceptor-3.11.0.jar"/>
-	<classpathentry kind="lib" path="lib/netatmo-java-api-0.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/netatmo-java-api-0.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/okhttp-3.11.0.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-simple-1.7.25.jar"/>
 	<classpathentry kind="output" path="target/classes"/>

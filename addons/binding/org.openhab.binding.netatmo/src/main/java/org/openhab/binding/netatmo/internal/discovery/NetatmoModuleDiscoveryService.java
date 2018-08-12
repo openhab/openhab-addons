@@ -63,28 +63,34 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
     @Override
     public void startScan() {
         if (netatmoBridgeHandler.configuration.readStation) {
-            StationResults stationDataBody = netatmoBridgeHandler.api.getWeatherApi().getStationData(null, null).executeSync();
+            StationResults stationDataBody = netatmoBridgeHandler.api.getWeatherApi().getStationData(null, null)
+                    .executeSync();
             if (stationDataBody != null) {
                 stationDataBody.getDevices().forEach(this::discoverWeatherStation);
             }
         }
         if (netatmoBridgeHandler.configuration.readHealthyHomeCoach) {
-            StationResults homecoachDataBody = netatmoBridgeHandler.api.getAirCareApi().getHomeCoachsData(null).executeSync();
+            StationResults homecoachDataBody = netatmoBridgeHandler.api.getAirCareApi().getHomeCoachsData(null)
+                    .executeSync();
             if (homecoachDataBody != null) {
                 homecoachDataBody.getDevices().forEach(this::discoverHomeCoach);
             }
         }
         if (netatmoBridgeHandler.configuration.readThermostat) {
-            HomesDataBody thermostatsDataBody = netatmoBridgeHandler.api.getEnergyApi().getHomesData(null, null).executeSync();
+            HomesDataBody thermostatsDataBody = netatmoBridgeHandler.api.getEnergyApi().getHomesData(null, null)
+                    .executeSync();
             if (thermostatsDataBody != null) {
                 thermostatsDataBody.getHomes().forEach(home -> {
-                    HomeStatusBody homeStatusBody = netatmoBridgeHandler.api.getEnergyApi().getHomeStatus(home.getId(), null).executeSync();
-                    homeStatusBody.getHome().forEach(homestatus -> homestatus.getModules().forEach(module -> discoverModule(module, home.getId())));
+                    HomeStatusBody homeStatusBody = netatmoBridgeHandler.api.getEnergyApi()
+                            .getHomeStatus(home.getId(), null).executeSync();
+                    homeStatusBody.getHome().forEach(homestatus -> homestatus.getModules()
+                            .forEach(module -> discoverModule(module, home.getId())));
                 });
             }
         }
         if (netatmoBridgeHandler.configuration.readWelcome) {
-            SecurityHome welcomeHomeData = netatmoBridgeHandler.api.getWelcomeApi().getHomeData(null, null).executeSync();
+            SecurityHome welcomeHomeData = netatmoBridgeHandler.api.getWelcomeApi().getHomeData(null, null)
+                    .executeSync();
             if (welcomeHomeData != null) {
                 welcomeHomeData.getHomes().forEach(this::discoverWelcomeHome);
             }
@@ -123,14 +129,17 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
         switch (module.getType()) {
             case INDOORMODULE:
                 ClimateModule indoorModule = (ClimateModule) module;
-                onDeviceAddedInternal(module.getId(), parentId, module.getType(), module.getModuleName(), indoorModule.getFirmware());
+                onDeviceAddedInternal(module.getId(), parentId, module.getType(), module.getModuleName(),
+                        indoorModule.getFirmware());
             case VALVE:
                 ThermostatModule thermostatModule = (ThermostatModule) module;
-                onDeviceAddedInternal(module.getId(), thermostatModule.getBridgeId(), module.getType(), module.getModuleName(), thermostatModule.getFirmwareRevision());
+                onDeviceAddedInternal(module.getId(), thermostatModule.getBridgeId(), module.getType(),
+                        module.getModuleName(), thermostatModule.getFirmwareRevision());
                 break;
             case THERMOSTAT:
                 ValveModule energyModule = (ValveModule) module;
-                onDeviceAddedInternal(module.getId(), energyModule.getBridgeId(), module.getType(), module.getModuleName(), energyModule.getFirmwareRevision());
+                onDeviceAddedInternal(module.getId(), energyModule.getBridgeId(), module.getType(),
+                        module.getModuleName(), energyModule.getFirmwareRevision());
                 break;
             case RELAY:
                 onDeviceAddedInternal(module.getId(), parentId, module.getType(), module.getModuleName(), null);
@@ -139,8 +148,7 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
     }
 
     private void discoverHomeCoach(Device device) {
-        onDeviceAddedInternal(device.getId(), null, device.getType(), device.getModuleName(),
-                device.getFirmware());
+        onDeviceAddedInternal(device.getId(), null, device.getType(), device.getModuleName(), device.getFirmware());
 
     }
 
@@ -160,8 +168,7 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
                     firmware = ((ClimateModule) module).getFirmware();
 
             }
-            onDeviceAddedInternal(module.getId(), station.getId(), module.getType(), module.getModuleName(),
-                    firmware);
+            onDeviceAddedInternal(module.getId(), station.getId(), module.getType(), module.getModuleName(), firmware);
         });
     }
 
@@ -183,8 +190,8 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
         }
     }
 
-
-    private void onDeviceAddedInternal(String id, String parentId, DeviceType type, String name, Integer firmwareVersion) {
+    private void onDeviceAddedInternal(String id, String parentId, DeviceType type, String name,
+                                       Integer firmwareVersion) {
         onDeviceAddedInternal(id, parentId, type.getValue(), name, firmwareVersion);
     }
 

@@ -8,7 +8,7 @@ Bundle-ClassPath: .,
  lib/kotlin-stdlib-jdk8-1.2.51.jar
  lib/kotlinx-coroutines-core-0.24.0.jar
  lib/logging-interceptor-3.11.0.jar
- lib/netatmo-java-api-0.2.0.jar
+ lib/netatmo-java-api-0.3.1.jar
  lib/okhttp-3.11.0.jar
  lib/retrofit-2.4.0.jar
  lib/slf4j-simple-1.7.25.jar
