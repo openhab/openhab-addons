@@ -42,8 +42,8 @@
 				<description>Action Buttons</description>
 			</parameter-group>
 			<!-- Experimental - Enable when also removing rooms is implemented <parameter
-			        name="roomId" type="integer" required="false" groupName="device"> <label>Room Id</label>
-			        <description>The room name Id.</description> <advanced>true</advanced> </parameter> -->
+				name="roomId" type="integer" required="false" groupName="device"> <label>Room Id</label>
+				<description>The room name Id.</description> <advanced>true</advanced> </parameter> -->
 			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
 				<description>The room name.</description>
@@ -171,8 +171,8 @@
 				<description>Action Buttons</description>
 			</parameter-group>
 			<!-- Experimental - Enable when also removing rooms is implemented <parameter
-			        name="roomId" type="integer" required="false" groupName="device"> <label>Room Id</label>
-			        <description>The room name Id.</description> <advanced>true</advanced> </parameter> -->
+				name="roomId" type="integer" required="false" groupName="device"> <label>Room Id</label>
+				<description>The room name Id.</description> <advanced>true</advanced> </parameter> -->
 			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
 				<description>The room name.</description>
