@@ -8,6 +8,8 @@
  */
 package org.openhab.voice.voicerss.internal.cloudapi;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,70 +44,67 @@ import org.slf4j.LoggerFactory;
  * @author Laurent Garnier - add support for all API languages
  * @author Laurent Garnier - add support for OGG and AAC audio formats
  */
-public class VoiceRSSCloudImplementation implements VoiceRSSCloudAPI {
+public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
 
-    private final Logger logger = LoggerFactory.getLogger(VoiceRSSCloudImplementation.class);
+    private final Logger logger = LoggerFactory.getLogger(VoiceRSSCloudImpl.class);
 
-    private static Set<String> supportedAudioFormats = new HashSet<String>();
+    private static final Set<String> SUPPORTED_AUDIO_FORMATS = Stream.of("MP3", "OGG", "AAC").collect(toSet());
+
+    private static final Set<Locale> SUPPORTED_LOCALES = new HashSet<>();
     static {
-        supportedAudioFormats.add("MP3");
-        supportedAudioFormats.add("OGG");
-        supportedAudioFormats.add("AAC");
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("ca-es"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("da-dk"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("de-de"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("en-au"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("en-ca"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("en-gb"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("en-in"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("en-us"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("es-es"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("es-mx"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("fi-fi"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("fr-ca"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("fr-fr"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("it-it"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("ja-jp"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("ko-kr"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("nb-no"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("nl-nl"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("pl-pl"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("pt-br"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("pt-pt"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("ru-ru"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("sv-se"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("zh-cn"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("zh-hk"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("zh-tw"));
     }
-    private static Set<Locale> supportedLocales = new HashSet<Locale>();
-    static {
-        supportedLocales.add(Locale.forLanguageTag("ca-es"));
-        supportedLocales.add(Locale.forLanguageTag("da-dk"));
-        supportedLocales.add(Locale.forLanguageTag("de-de"));
-        supportedLocales.add(Locale.forLanguageTag("en-au"));
-        supportedLocales.add(Locale.forLanguageTag("en-ca"));
-        supportedLocales.add(Locale.forLanguageTag("en-gb"));
-        supportedLocales.add(Locale.forLanguageTag("en-in"));
-        supportedLocales.add(Locale.forLanguageTag("en-us"));
-        supportedLocales.add(Locale.forLanguageTag("es-es"));
-        supportedLocales.add(Locale.forLanguageTag("es-mx"));
-        supportedLocales.add(Locale.forLanguageTag("fi-fi"));
-        supportedLocales.add(Locale.forLanguageTag("fr-ca"));
-        supportedLocales.add(Locale.forLanguageTag("fr-fr"));
-        supportedLocales.add(Locale.forLanguageTag("it-it"));
-        supportedLocales.add(Locale.forLanguageTag("ja-jp"));
-        supportedLocales.add(Locale.forLanguageTag("ko-kr"));
-        supportedLocales.add(Locale.forLanguageTag("nb-no"));
-        supportedLocales.add(Locale.forLanguageTag("nl-nl"));
-        supportedLocales.add(Locale.forLanguageTag("pl-pl"));
-        supportedLocales.add(Locale.forLanguageTag("pt-br"));
-        supportedLocales.add(Locale.forLanguageTag("pt-pt"));
-        supportedLocales.add(Locale.forLanguageTag("ru-ru"));
-        supportedLocales.add(Locale.forLanguageTag("sv-se"));
-        supportedLocales.add(Locale.forLanguageTag("zh-cn"));
-        supportedLocales.add(Locale.forLanguageTag("zh-hk"));
-        supportedLocales.add(Locale.forLanguageTag("zh-tw"));
-    }
-    private static Set<String> supportedVoices = Collections.singleton("VoiceRSS");
+
+    private static final Set<String> SUPPORTED_VOICES = Collections.singleton("VoiceRSS");
 
     @Override
     public Set<String> getAvailableAudioFormats() {
-        return supportedAudioFormats;
+        return SUPPORTED_AUDIO_FORMATS;
     }
 
     @Override
     public Set<Locale> getAvailableLocales() {
-        return supportedLocales;
+        return SUPPORTED_LOCALES;
     }
 
     @Override
     public Set<String> getAvailableVoices() {
-        return supportedVoices;
+        return SUPPORTED_VOICES;
     }
 
     @Override
     public Set<String> getAvailableVoices(Locale locale) {
-        for (Locale voiceLocale : supportedLocales) {
+        for (Locale voiceLocale : SUPPORTED_LOCALES) {
             if (voiceLocale.toLanguageTag().equalsIgnoreCase(locale.toLanguageTag())) {
-                return supportedVoices;
+                return SUPPORTED_VOICES;
             }
         }
-        return new HashSet<String>();
+        return new HashSet<>();
     }
 
     /**
@@ -127,7 +127,7 @@ public class VoiceRSSCloudImplementation implements VoiceRSSCloudAPI {
         int status = ((HttpURLConnection) connection).getResponseCode();
         if (HttpURLConnection.HTTP_OK != status) {
             logger.error("Call {} returned HTTP {}", url, status);
-            throw new IOException("Could not read from service: HTTP code" + status);
+            throw new IOException("Could not read from service: HTTP code " + status);
         }
         if (logger.isTraceEnabled()) {
             for (Entry<String, List<String>> header : connection.getHeaderFields().entrySet()) {
@@ -144,7 +144,7 @@ public class VoiceRSSCloudImplementation implements VoiceRSSCloudAPI {
             try {
                 is.close();
             } catch (IOException ex) {
-                // ignore
+                logger.debug("Failed to close inputstream", ex);
             }
             throw new IOException(
                     "Could not read audio content, service return an error: " + new String(bytes, "UTF-8"));
@@ -161,7 +161,7 @@ public class VoiceRSSCloudImplementation implements VoiceRSSCloudAPI {
      *
      * It is in package scope to be accessed by tests.
      */
-    String createURL(String apiKey, String text, String locale, String audioFormat) {
+    private String createURL(String apiKey, String text, String locale, String audioFormat) {
         String encodedMsg;
         try {
             encodedMsg = URLEncoder.encode(text, "UTF-8");
