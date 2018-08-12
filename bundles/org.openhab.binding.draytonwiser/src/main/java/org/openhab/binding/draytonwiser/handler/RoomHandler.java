@@ -13,7 +13,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -133,7 +135,7 @@ public class RoomHandler extends DraytonWiserThingHandler {
 
     private State getSetPoint() {
         if (room != null) {
-            return new DecimalType((float) room.getCurrentSetPoint() / 10);
+            return new QuantityType<>((float) room.getCurrentSetPoint() / 10, SIUnits.CELSIUS);
         }
 
         return UnDefType.UNDEF;
@@ -161,7 +163,7 @@ public class RoomHandler extends DraytonWiserThingHandler {
             if (fullScaleTemp.equals(DraytonWiserBindingConstants.OFFLINE_TEMPERATURE)) {
                 return UnDefType.UNDEF;
             }
-            return new DecimalType((float) fullScaleTemp / 10);
+            return new QuantityType<>((float) fullScaleTemp / 10, SIUnits.CELSIUS);
         }
 
         return UnDefType.UNDEF;

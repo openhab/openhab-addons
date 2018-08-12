@@ -12,7 +12,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -113,7 +115,7 @@ public class TRVHandler extends DraytonWiserThingHandler {
 
     private State getSetPoint() {
         if (smartValve != null) {
-            return new DecimalType((float) smartValve.getSetPoint() / 10);
+            return new QuantityType<>((float) smartValve.getSetPoint() / 10, SIUnits.CELSIUS);
         }
 
         return UnDefType.UNDEF;
@@ -132,7 +134,7 @@ public class TRVHandler extends DraytonWiserThingHandler {
             if (fullScaleTemp.equals(DraytonWiserBindingConstants.OFFLINE_TEMPERATURE)) {
                 return UnDefType.UNDEF;
             }
-            return new DecimalType((float) fullScaleTemp / 10);
+            return new QuantityType<>((float) fullScaleTemp / 10, SIUnits.CELSIUS);
         }
 
         return UnDefType.UNDEF;
