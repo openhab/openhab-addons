@@ -1,11 +1,13 @@
 # NibeUplink Binding
 
-The NibeUplink binding is used to get "live data" from from Nibe heat pumps without plugging any custom devices into your heat pump. This avoids the risk of losing your warranty. Instead data is retrieved from Nibe Uplink. This binding should in general be compatible with heat pump models that support Nibe Uplink.
+The NibeUplink binding is used to get "live data" from from Nibe heat pumps without plugging any custom devices into your heat pump.
+This avoids the risk of losing your warranty. Instead data is retrieved from Nibe Uplink. This binding should in general be compatible with heat pump models that support Nibe Uplink.
 In general read access is supported for all channels. Write access is only supported for a small subset of channels.
 
 ## Supported Things
 
-This binding provides only one thing type: The Nibe heat pump. Create one Nibe heat pump thing per physical heat pump installation available in your home(s). If your setup contains an outdoor unit such as F2030 or F2040 and an indoor unit such as VVM320 this is one installation where the indoor unit is the master that has access to all data produced by the outdoor unit (slave).
+This binding provides only one thing type: The Nibe heat pump. Create one Nibe heat pump thing per physical heat pump installation available in your home(s).
+If your setup contains an outdoor unit such as F2030 or F2040 and an indoor unit such as VVM320 this is one installation where the indoor unit is the master that has access to all data produced by the outdoor unit (slave).
 
 ## Discovery
 
@@ -20,7 +22,7 @@ nibeuplink:<MODEL>:<NAME>
 ```
 
 - **nibeuplink** the binding id, fixed
-- **model** the heatpump model (Openhab Model)
+- **model** the heatpump model (Binding Model)
 - **name** the name of the heatpump (choose any name)
 
 Following models (indoor / main units) are currently supported:
@@ -34,7 +36,7 @@ Following models (indoor / main units) are currently supported:
 | F1145 / 1245      | f1145             | reduced set of channels based on NibeUplink website   |
 | F1155 / 1255      | f1155             | reduced set of channels based on NibeUplink website   |
 
-There are a few settings this thing:
+The following configuration parameters are available for this thing:
 
 - **user** (required)  
 username used to login on NibeUplink
@@ -101,14 +103,16 @@ nibeuplink:vvm320:mynibe     [ user="nibe@my-domain.de", password="secret123", n
 ### Items
 
 As the binding supports UoM you might define units in the item's label. An automatic conversion is applied e.g. from °C to °F then.
-Channels which epresent states (such as on/off) are internally represented as number. You need to define a map file which also gives you the opportunity to translate the state into your preferred language.
+Channels which represent states two states (such as on/off) are represented as Switch.
+Channels which have more than two states are internally represented as number.
+You need to define a map file which also gives you the opportunity to translate the state into your preferred language.
 
 ```
 Number:Temperature      NIBE_SUPPLY            "Vorlauf"                         { channel="nibeuplink:vvm320:mynibe:base#40008" }
 Number:Temperature      NIBE_RETURN            "Rücklauf [%.2f °F]"              { channel="nibeuplink:vvm320:mynibe:base#40012" }
 Number:Temperature      NIBE_HW_TOP            "Brauchwasser oben"               { channel="nibeuplink:vvm320:mynibe:hotwater#40013" }
 Number:Energy           NIBE_HM_HEAT           "WM Heizung"                      { channel="nibeuplink:vvm320:mynibe:base#44308" }
-Number                  NIBE_COMP_DEFROST      "Enteisung [MAP(onoff.map):%s]"   { channel="nibeuplink:vvm320:mynibe:compressor#44703" }
+Switch                  NIBE_COMP_DEFROST      "Enteisung"                       { channel="nibeuplink:vvm320:mynibe:compressor#44703" }
 Number                  NIBE_HW_MODE           "Modus [MAP(hwmode.map):%s]"      { channel="nibeuplink:vvm320:mynibe:hotwater#47041" }
 
 Number                  NIBE_CUSTOM_01         "Custom 01"                       { channel="nibeuplink:vvm320:mynibe:custom#CH01" }
