@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 update + enhancements
- * @since 1.4.0
  */
 public abstract class Device {
 

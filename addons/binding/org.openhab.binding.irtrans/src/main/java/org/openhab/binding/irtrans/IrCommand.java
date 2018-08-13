@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
  * in various formats
  *
  * @author Karel Goderis - Initial contribution
- * @since 2.3.0
  *
  */
 public class IrCommand {

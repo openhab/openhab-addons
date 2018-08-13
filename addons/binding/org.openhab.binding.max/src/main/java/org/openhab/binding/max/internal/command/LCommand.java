@@ -12,7 +12,6 @@ package org.openhab.binding.max.internal.command;
  * The {@link LCommand} request a status update for MAX! devices.
  *
  * @author Marcel Verpaalen - Initial Contribution
- * @since 2.0
  */
 public class LCommand extends CubeCommand {
 

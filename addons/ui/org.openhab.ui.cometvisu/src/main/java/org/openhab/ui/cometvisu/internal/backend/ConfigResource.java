@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
  * Allows certain actions to configure the CometVisu backend through the REST api.
  *
  * @author Tobias Bräutigam
- * @since 2.2.0
  */
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_CONFIG_ALIAS)
 public class ConfigResource implements RESTResource {

@@ -12,7 +12,6 @@ package org.openhab.binding.max.internal.command;
  * The {@link ACommand} deletes the device and room configuration from the Cube.
  *
  * @author Marcel Verpaalen - Initial Contribution
- * @since 2.0
  */
 public class ACommand extends CubeCommand {
 

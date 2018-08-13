@@ -20,7 +20,6 @@ import org.openhab.binding.max.internal.exceptions.UnsupportedMessageTypeExcepti
 
 /**
  * @author Christian Rockrohr <christian@rockrohr.de>
- * @since 1.7.0
  */
 public class MessageProcessorTest {
 

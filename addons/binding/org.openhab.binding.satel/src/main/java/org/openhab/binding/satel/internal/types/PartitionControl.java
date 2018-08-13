@@ -14,7 +14,6 @@ import java.util.BitSet;
  * Available partition control types.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public enum PartitionControl implements ControlType {
     ARM_MODE_0(0x80),

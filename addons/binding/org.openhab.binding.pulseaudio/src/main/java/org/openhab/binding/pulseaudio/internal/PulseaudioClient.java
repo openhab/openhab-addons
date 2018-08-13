@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
  * On the pulseaudio server the module-cli-protocol-tcp has to be loaded.
  *
  * @author Tobias Bräutigam - Initial contribution
- * @since 1.2.0
  */
 public class PulseaudioClient {
 

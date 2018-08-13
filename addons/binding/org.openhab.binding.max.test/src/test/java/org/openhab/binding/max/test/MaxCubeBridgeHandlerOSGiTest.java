@@ -33,7 +33,6 @@ import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler;
  *
  * @author Marcel Verpaalen - Initial contribution
  * @author Wouter Born - Migrate Groovy to Java tests
- * @since 2.0
  */
 public class MaxCubeBridgeHandlerOSGiTest extends JavaOSGiTest {
 

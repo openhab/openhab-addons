@@ -17,7 +17,6 @@ import org.openhab.binding.max.internal.device.ThermostatModeType;
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 update + simplification
- * @since 1.4.0
  */
 public class SCommand extends CubeCommand {
 

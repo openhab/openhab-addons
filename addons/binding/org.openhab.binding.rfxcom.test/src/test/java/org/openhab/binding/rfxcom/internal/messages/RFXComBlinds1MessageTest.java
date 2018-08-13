@@ -20,7 +20,6 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComBlinds1Message.SubType
  * Test for RFXCom-binding
  *
  * @author Martin van Wingerden
- * @since 1.9.0
  */
 public class RFXComBlinds1MessageTest {
     private void testMessage(String hexMsg, SubType subType, int seqNbr, String deviceId, int signalLevel,

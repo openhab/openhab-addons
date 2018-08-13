@@ -18,7 +18,6 @@ import org.openhab.binding.max.internal.command.SConfigCommand.ConfigCommandType
  * Tests cases for {@link SConfigCommand}.
  *
  * @author Marcel Verpaalen - Initial contribution
- * @since 2.0
  */
 public class SConfigCommandTest {
 

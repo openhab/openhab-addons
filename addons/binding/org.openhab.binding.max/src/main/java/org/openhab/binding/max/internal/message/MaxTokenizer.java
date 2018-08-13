@@ -19,7 +19,6 @@ import java.util.Enumeration;
  * tokens length.
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
- * @since 1.4.0
  */
 public final class MaxTokenizer implements Enumeration<byte[]> {
 

@@ -15,7 +15,6 @@ import java.util.List;
  * {@link Entry} is used by the CometVisu rss-plugin
  *
  * @author Tobias Bräutigam
- * @since 2.0.0
  */
 public class Entry {
     public String id;

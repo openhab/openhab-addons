@@ -17,7 +17,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * Test for RFXCom-binding
  *
  * @author James Hewitt-Thomas
- * @since 1.9.0
  */
 public class RFXComInvalidMessageTypeTest {
 

@@ -18,7 +18,6 @@ import org.openhab.binding.max.internal.device.DeviceType;
  * Tests cases for {@link NMessage}.
  *
  * @author Marcel Verpaalen - Initial Version
- * @since 2.0
  */
 public class NMessageTest {
 

@@ -23,7 +23,6 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComHomeConfortMessage.Sub
  *
  * @author Martin van Wingerden - Initial contribution of empty test
  * @author Mike Jagdis - added message handling and real test
- * @since 2.0.0
  */
 public class RFXComHomeConfortTest {
     private void testMessage(SubType subType, Commands command, String deviceId, String data)

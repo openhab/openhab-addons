@@ -12,7 +12,6 @@ package org.openhab.binding.max.internal.command;
  * The {@link F_CubeCommand} is used to query and update the NTP servers used by the Cube.
  *
  * @author Marcel Verpaalen - Initial Contribution
- * @since 2.0
  */
 public class FCommand extends CubeCommand {
 

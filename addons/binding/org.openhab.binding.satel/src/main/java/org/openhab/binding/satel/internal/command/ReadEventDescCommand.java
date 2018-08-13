@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
  * code.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.9.0
  */
 public class ReadEventDescCommand extends SatelCommandBase {
 
