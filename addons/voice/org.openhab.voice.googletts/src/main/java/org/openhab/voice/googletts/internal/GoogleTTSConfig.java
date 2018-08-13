@@ -30,6 +30,11 @@ class GoogleTTSConfig {
     private Double speakingRate = 1d;
 
     /**
+     * Purge cache after configuration changes.
+     */
+    private Boolean purgeCache;
+
+    /**
      * Volume gain
      */
     private Double volumeGainDb = 0d;
@@ -66,6 +71,14 @@ class GoogleTTSConfig {
         this.volumeGainDb = volumeGainDb;
     }
 
+    Boolean getPurgeCache() {
+        return purgeCache;
+    }
+
+    void setPurgeCache(Boolean purgeCache) {
+        this.purgeCache = purgeCache;
+    }
+
     @Override
     public String toString() {
         return "GoogleTTSConfig{" +
@@ -73,6 +86,11 @@ class GoogleTTSConfig {
                 ", pitch=" + pitch +
                 ", speakingRate=" + speakingRate +
                 ", volumeGainDb=" + volumeGainDb +
+                ", purgeCache=" + purgeCache +
                 '}';
+    }
+
+    String toConfigString() {
+        return String.format("pitch=%f,speakingRate=%f,volumeGainDb=%f", pitch, speakingRate, volumeGainDb);
     }
 }

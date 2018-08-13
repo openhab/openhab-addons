@@ -27,6 +27,11 @@
 			<description>Speaking rate can be 4x faster or slower than the normal rate</description>
 			<default>1</default>
 		</parameter>
+		<parameter name="purgeCache" type="boolean">
+			<label>Purge the cache</label>
+			<description>Purge the cache after configuration changes</description>
+			<default>false</default>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>
