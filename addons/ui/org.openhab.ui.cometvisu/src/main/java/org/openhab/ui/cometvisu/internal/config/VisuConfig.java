@@ -73,7 +73,6 @@ import org.xml.sax.SAXException;
  * multi-column-layouts)
  *
  * @author Tobias Bräutigam
- * @since 2.0.0
  *
  */
 public class VisuConfig {

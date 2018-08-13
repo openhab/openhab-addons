@@ -12,7 +12,6 @@ package org.openhab.binding.satel.internal.types;
  * Available partition states.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public enum PartitionState implements StateType {
     ARMED(0x09),

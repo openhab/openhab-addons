@@ -15,7 +15,6 @@ import org.slf4j.Logger;
  * This is the response to a f: command
  *
  * @author Marcel Verpaalen - Initial contribution
- * @since 2.0.0
  */
 public final class FMessage extends Message {
 

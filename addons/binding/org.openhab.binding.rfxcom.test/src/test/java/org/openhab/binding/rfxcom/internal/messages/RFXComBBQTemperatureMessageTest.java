@@ -19,7 +19,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
  * Test for RFXCom-binding
  *
  * @author Mike Jagdis
- * @since 2.2.0
  */
 public class RFXComBBQTemperatureMessageTest {
     @Test

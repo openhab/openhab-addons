@@ -20,7 +20,6 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComSecurity2Message.SubTy
  *
  * @author Martin van Wingerden - Initial contribution of empty test
  * @author Mike Jagdis - added message handling and real test
- * @since 2.0.0
  */
 public class RFXComSecurity2MessageTest {
 

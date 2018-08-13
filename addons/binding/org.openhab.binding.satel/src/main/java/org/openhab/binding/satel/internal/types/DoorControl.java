@@ -14,7 +14,6 @@ import java.util.BitSet;
  * Available door control types.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.9.0
  */
 public enum DoorControl implements ControlType {
     OPEN(0x8A, DoorState.OPENED);

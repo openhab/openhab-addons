@@ -16,7 +16,6 @@ import java.util.Date;
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 update
  *
- * @since 1.4.0
  */
 public final class Utils {
 

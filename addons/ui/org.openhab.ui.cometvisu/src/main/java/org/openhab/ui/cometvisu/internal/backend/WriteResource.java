@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
  * handles state updates send by the CometVisu client and forwars them to the EventPublisher
  *
  * @author Tobias Bräutigam
- * @since 2.0.0
  */
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_WRITE_ALIAS)
 public class WriteResource implements RESTResource {

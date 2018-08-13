@@ -17,7 +17,6 @@ import org.eclipse.smarthome.core.types.State;
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 update
- * @since 1.4.0
  */
 public enum ThermostatModeType implements PrimitiveType, State, Command {
     AUTOMATIC,

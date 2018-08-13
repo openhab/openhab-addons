@@ -28,7 +28,6 @@ import org.openhab.binding.max.internal.exceptions.UnsupportedMessageTypeExcepti
  * processed.
  *
  * @author Christian Rockrohr <christian@rockrohr.de> - Initial contribution
- * @since 1.7.0
  */
 public class MessageProcessor {
 

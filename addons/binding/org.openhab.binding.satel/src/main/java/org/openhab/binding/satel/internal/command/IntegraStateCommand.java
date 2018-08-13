@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
  * outputs and doors (opened, opened long).
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public class IntegraStateCommand extends SatelCommandBase {
 

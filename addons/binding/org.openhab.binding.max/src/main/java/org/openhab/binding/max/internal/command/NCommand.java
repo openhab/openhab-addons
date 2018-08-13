@@ -12,7 +12,6 @@ package org.openhab.binding.max.internal.command;
  * The {@link N_CubeCommand} starts the inclusion mode for new MAX! devices.
  * 
  * @author Marcel Verpaalen - Initial Contribution
- * @since 2.0
  */
 public class NCommand extends CubeCommand {
     // Example n:003c = start inclusion, timeout 003c = 60 sec

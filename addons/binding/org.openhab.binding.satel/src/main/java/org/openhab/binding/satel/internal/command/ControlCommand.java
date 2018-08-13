@@ -15,7 +15,6 @@ import org.openhab.binding.satel.internal.protocol.SatelMessage;
  * Base class for all commands that return result code in the response.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.9.0
  */
 public abstract class ControlCommand extends SatelCommandBase {
 

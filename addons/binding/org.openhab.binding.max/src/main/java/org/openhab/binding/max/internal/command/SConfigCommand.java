@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
  * The {@link SConfigCommand} for setting MAX! thermostat configuration.
  *
  * @author Marcel Verpaalen - Initial contribution
- * @since 2.0
  */
 public class SConfigCommand extends CubeCommand {
 

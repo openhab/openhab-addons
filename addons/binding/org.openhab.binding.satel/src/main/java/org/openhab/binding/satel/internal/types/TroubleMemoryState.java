@@ -12,7 +12,6 @@ package org.openhab.binding.satel.internal.types;
  * Supported memory of troubles.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.10.0
  */
 public enum TroubleMemoryState implements StateType {
     // part 1

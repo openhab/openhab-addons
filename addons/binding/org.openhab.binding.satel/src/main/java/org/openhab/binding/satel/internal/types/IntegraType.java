@@ -12,7 +12,6 @@ package org.openhab.binding.satel.internal.types;
  * Available Integra types.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public enum IntegraType {
     UNKNOWN(-1, "Unknown", 0, 0),

@@ -21,7 +21,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
  * Test for RFXCom-binding
  *
  * @author Mike Jagdis
- * @since 2.1.0
  */
 public class RFXComInterfaceControlMessageTest {
     private RFXComBridgeConfiguration configuration = new RFXComBridgeConfiguration();

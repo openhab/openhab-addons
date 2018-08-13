@@ -14,7 +14,6 @@ import java.util.BitSet;
  * Base of all kinds of Integra state.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public interface StateType {
 

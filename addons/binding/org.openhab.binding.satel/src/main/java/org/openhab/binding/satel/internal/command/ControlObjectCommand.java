@@ -24,7 +24,6 @@ import org.openhab.binding.satel.internal.types.ControlType;
  * switch), etc.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public class ControlObjectCommand extends ControlCommand {
 

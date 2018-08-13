@@ -24,7 +24,6 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.SubTy
  * Test for RFXCom-binding
  *
  * @author Martin van Wingerden
- * @since 2.0.0
  */
 public class RFXComInterfaceMessageTest {
     private RFXComInterfaceMessage testMessage(String hexMsg, SubType subType, int seqNbr, Commands command,

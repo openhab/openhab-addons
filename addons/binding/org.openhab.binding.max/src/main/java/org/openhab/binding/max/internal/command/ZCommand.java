@@ -14,7 +14,6 @@ import org.openhab.binding.max.internal.Utils;
  * The {@link ZCommand} send a wakeup request to MAX! devices.
  *
  * @author Marcel Verpaalen - Initial Contribution
- * @since 2.0
  */
 public class ZCommand extends CubeCommand {
 

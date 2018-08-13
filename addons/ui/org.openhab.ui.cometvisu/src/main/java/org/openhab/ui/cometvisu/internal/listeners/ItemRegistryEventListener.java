@@ -20,7 +20,6 @@ import org.openhab.ui.cometvisu.internal.backend.EventBroadcaster;
  * in the ItemRegistry
  * 
  * @author Tobias Bräutigam - Initial Contribution and API
- * @since 2.0.0
  */
 public class ItemRegistryEventListener implements ItemRegistryChangeListener {
     private ItemRegistry itemRegistry;

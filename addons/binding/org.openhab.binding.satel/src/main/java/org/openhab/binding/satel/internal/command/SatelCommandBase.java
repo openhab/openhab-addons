@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
  * Base class for all command classes.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public abstract class SatelCommandBase extends SatelMessage implements SatelCommand {
 

@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
  * registers the CometVisuServlet-Service
  *
  * @author Tobias Bräutigam
- * @since 2.0.0
  */
 public class CometVisuApp {
 

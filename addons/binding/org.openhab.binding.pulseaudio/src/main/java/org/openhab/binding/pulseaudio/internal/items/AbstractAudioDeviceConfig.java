@@ -13,7 +13,6 @@ package org.openhab.binding.pulseaudio.internal.items;
  * muted or their volume can be changed.
  *
  * @author Tobias Bräutigam - Initial contribution
- * @since 1.2.0
  */
 public abstract class AbstractAudioDeviceConfig extends AbstractDeviceConfig {
 

@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
  * message checksum.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public class SatelMessage {
     private static final Logger LOGGER = LoggerFactory.getLogger(SatelMessage.class);

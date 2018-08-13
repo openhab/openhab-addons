@@ -31,7 +31,6 @@ import org.openhab.ui.cometvisu.internal.backend.beans.StateBean;
  * for the CometVisu client
  *
  * @author Tobias Bräutigam
- * @since 2.0.0
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)

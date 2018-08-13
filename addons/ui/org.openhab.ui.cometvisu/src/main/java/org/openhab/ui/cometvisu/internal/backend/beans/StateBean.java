@@ -12,7 +12,6 @@ package org.openhab.ui.cometvisu.internal.backend.beans;
  * Item bean for broadcasted item states.
  * 
  * @author Tobias Bräutigam - Initial Contribution and API
- * @since 2.0.0
  */
 public class StateBean {
 

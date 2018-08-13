@@ -13,7 +13,6 @@ package org.openhab.binding.satel.internal.event;
  * implement this interface.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public interface SatelEventListener {
 

@@ -15,7 +15,6 @@ import org.openhab.binding.milight.internal.MilightThingState;
  * control. It still allows more colours than the old v3 rgbw bulb (16320 (255*64) vs 4080 (255*16) colors).
  *
  * @author David Graeff - Initial contribution
- * @since 2.1
  */
 public class MilightV6RGBW extends MilightV6 {
     private static final int ADDR = 0x07;

@@ -24,7 +24,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  *
  * @author Damien Servant
  * @author Martin van Wingerden - ported to openHAB 2.0
- * @since 1.9.0
  */
 public class RFXComTemperatureHumidityBarometricMessage
         extends RFXComBatteryDeviceMessage<RFXComTemperatureHumidityBarometricMessage.SubType> {

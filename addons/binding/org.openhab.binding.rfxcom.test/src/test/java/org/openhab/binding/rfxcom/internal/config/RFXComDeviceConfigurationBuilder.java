@@ -12,7 +12,6 @@ package org.openhab.binding.rfxcom.internal.config;
  * Test helper for RFXCom-binding
  *
  * @author Martin van Wingerden
- * @since 2.1.0
  */
 public class RFXComDeviceConfigurationBuilder {
     private final RFXComDeviceConfiguration config;

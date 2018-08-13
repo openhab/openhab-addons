@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
  * as well as test the binding to be conformant to the protocol.
  *
  * @author David Graeff - Initial contribution
- * @since 2.1
  */
 public class EmulatedV6Bridge {
     protected final Logger logger = LoggerFactory.getLogger(EmulatedV6Bridge.class);

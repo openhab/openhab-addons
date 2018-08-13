@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
  * currently this is just a placeholder and does no real authentification
  *
  * @author Tobias Bräutigam
- * @since 2.0.0
  */
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_LOGIN_ALIAS)
 public class LoginResource implements RESTResource {

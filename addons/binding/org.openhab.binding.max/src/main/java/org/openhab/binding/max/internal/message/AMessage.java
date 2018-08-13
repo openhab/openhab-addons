@@ -14,7 +14,6 @@ import org.slf4j.Logger;
  * The {@link AMessage} Acknowledge the execution of a command
  *
  * @author Marcel Verpaalen - Initial contribution
- * @since 2.0.0
  */
 public final class AMessage extends Message {
 

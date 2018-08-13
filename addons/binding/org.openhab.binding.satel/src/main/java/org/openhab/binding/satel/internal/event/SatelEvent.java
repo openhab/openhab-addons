@@ -12,7 +12,6 @@ package org.openhab.binding.satel.internal.event;
  * Simple interface that all event classes must implement.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public interface SatelEvent {
 }

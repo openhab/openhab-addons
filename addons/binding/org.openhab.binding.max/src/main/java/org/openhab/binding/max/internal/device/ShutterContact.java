@@ -15,7 +15,6 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 update
- * @since 1.4.0
  */
 public class ShutterContact extends Device {
 

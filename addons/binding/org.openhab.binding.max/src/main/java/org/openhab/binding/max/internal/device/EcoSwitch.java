@@ -14,7 +14,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
  * MAX! EcoSwitch.
  *
  * @author Marcel Verpaalen - Initial contribution
- * @since 1.6.0
  */
 public class EcoSwitch extends ShutterContact {
 

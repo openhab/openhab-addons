@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
  * This is the response to a n: command
  *
  * @author Marcel Verpaalen - Initial contribution
- * @since 2.0.0
  */
 public final class NMessage extends Message {
     private final Logger logger = LoggerFactory.getLogger(NMessage.class);

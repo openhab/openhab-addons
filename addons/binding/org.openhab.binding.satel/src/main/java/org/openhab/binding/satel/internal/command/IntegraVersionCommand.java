@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
  * Command class for command that returns Integra version and type.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public class IntegraVersionCommand extends SatelCommandBase {
 

@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
  * The class is state-less, use {@link MilightThingState} instead.
  *
  * @author David Graeff - Initial contribution
- * @since 2.0
  */
 public abstract class MilightV3 extends AbstractBulbInterface {
     public static final int MAX_ANIM_MODES = 10;

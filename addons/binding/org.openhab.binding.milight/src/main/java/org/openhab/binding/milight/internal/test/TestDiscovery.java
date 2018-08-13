@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
  * Enable this in OSGI-INF/TestDiscovery.xml with enabled="true".
  *
  * @author David Graeff - Initial contribution
- * @since 2.1
  */
 @Component(service = DiscoveryService.class, immediate = true, enabled = false)
 public class TestDiscovery extends AbstractDiscoveryService {

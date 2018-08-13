@@ -12,7 +12,6 @@ package org.openhab.binding.satel.internal.command;
  * Command class for command that clear troubles memory.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public class ClearTroublesCommand extends ControlCommand {
 

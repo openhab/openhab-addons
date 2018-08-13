@@ -49,7 +49,6 @@ import org.slf4j.LoggerFactory;
  * SSE communication
  *
  * @author Tobias Bräutigam
- * @since 2.0.0
  */
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_READ_ALIAS)
 public class ReadResource implements EventBroadcaster, RESTResource {

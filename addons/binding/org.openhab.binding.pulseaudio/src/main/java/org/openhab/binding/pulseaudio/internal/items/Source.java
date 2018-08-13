@@ -13,7 +13,6 @@ package org.openhab.binding.pulseaudio.internal.items;
  * device) For example microphones or line-in jacks.
  *
  * @author Tobias Bräutigam - Initial contribution
- * @since 1.2.0
  */
 public class Source extends AbstractAudioDeviceConfig {
 

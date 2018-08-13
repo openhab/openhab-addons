@@ -12,7 +12,6 @@ package org.openhab.binding.max.internal.command;
  * The {@link QCommand} Quits the connection to the MAX! Cube.
  *
  * @author Marcel Verpaalen - Initial Contribution
- * @since 2.0
  */
 public class QCommand extends CubeCommand {
 

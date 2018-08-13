@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
  * module. Each command class must extend {@link SatelCommand}.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public abstract class SatelModule extends EventDispatcher implements SatelEventListener {
 

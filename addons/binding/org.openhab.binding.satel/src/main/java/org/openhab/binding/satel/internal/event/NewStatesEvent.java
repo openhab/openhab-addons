@@ -14,7 +14,6 @@ import java.util.BitSet;
  * Event class describing changes in Integra state since last state read.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public class NewStatesEvent implements SatelEvent {
 

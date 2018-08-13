@@ -21,7 +21,6 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType
  *
  * @author Martin van Wingerden
  * @author James Hewitt-Thomas
- * @since 1.9.0
  */
 public class RFXComUndecodedRFMessageTest {
 

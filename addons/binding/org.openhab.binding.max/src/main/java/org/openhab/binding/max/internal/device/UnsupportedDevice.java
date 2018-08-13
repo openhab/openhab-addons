@@ -13,7 +13,6 @@ package org.openhab.binding.max.internal.device;
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 update
- * @since 1.4.0
  */
 
 public class UnsupportedDevice extends Device {

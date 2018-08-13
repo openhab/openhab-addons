@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
  * The {@link MCommand} Creates the MAX! Cube the room & device name information update message.
  *
  * @author Marcel Verpaalen - Initial Contribution
- * @since 2.0
  */
 public class MCommand extends CubeCommand {
     private final Logger logger = LoggerFactory.getLogger(MCommand.class);

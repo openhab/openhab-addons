@@ -17,7 +17,6 @@ import org.junit.Test;
  * Tests cases for {@link FMessage}.
  *
  * @author Marcel Verpaalen - Initial contribution
- * @since 2.0
  */
 public class FMessageTest {
 

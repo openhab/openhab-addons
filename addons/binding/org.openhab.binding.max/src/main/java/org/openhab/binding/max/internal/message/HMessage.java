@@ -22,7 +22,6 @@ import org.slf4j.Logger;
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - Details parsing, OH2 version
- * @since 1.4.0
  */
 public final class HMessage extends Message {
 

@@ -12,7 +12,6 @@ package org.openhab.binding.satel.internal.event;
  * Event class describing connection status to Satel module.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public class ConnectionStatusEvent implements SatelEvent {
 

@@ -22,7 +22,6 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComTransmitterMessage.Sub
  * Test for RFXCom-binding
  *
  * @author Martin van Wingerden
- * @since 1.9.0
  */
 public class RFXComTransmitterMessageTest {
     private void testMessage(String hexMsg, Response response, SubType subType, int seqNbr) throws RFXComException {

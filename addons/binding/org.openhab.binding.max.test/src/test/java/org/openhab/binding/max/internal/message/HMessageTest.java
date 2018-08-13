@@ -22,7 +22,6 @@ import org.openhab.binding.max.internal.Utils;
  * Tests cases for {@link HMessage}.
  *
  * @author Marcel Verpaalen - Initial contribution
- * @since 2.0
  */
 public class HMessageTest {
 

@@ -12,7 +12,6 @@ package org.openhab.binding.satel.internal.types;
  * Available zone states.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public enum ZoneState implements StateType {
     VIOLATION(0x00),

@@ -22,7 +22,6 @@ import org.openhab.binding.max.internal.device.RoomInformation;
  * Tests cases for {@link MMessage}.
  *
  * @author Marcel Verpaalen - Initial version
- * @since 2.0
  */
 public class MMessageTest {
 

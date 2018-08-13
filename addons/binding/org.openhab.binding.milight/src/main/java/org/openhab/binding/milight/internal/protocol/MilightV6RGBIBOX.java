@@ -15,7 +15,6 @@ import org.openhab.binding.milight.internal.MilightThingState;
  * saturation or colour temperature available.
  *
  * @author David Graeff - Initial contribution
- * @since 2.1
  */
 public class MilightV6RGBIBOX extends MilightV6 {
     private static final byte ADDR = 0x00;
