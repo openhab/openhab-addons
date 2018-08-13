@@ -143,7 +143,7 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
         };
 
         LaCrosseTemperatureSensorConfig cfg = getConfigAs(LaCrosseTemperatureSensorConfig.class);
-        if (cfg.bufferSize > 1) {
+        if (cfg.bufferSize > 1 && cfg.updateInterval > 0) {
             publisher = new RollingAveragePublisher<LaCrosseTemperatureReading>(cfg.bufferSize, cfg.updateInterval,
                     publisher, scheduler) {
                 @Override

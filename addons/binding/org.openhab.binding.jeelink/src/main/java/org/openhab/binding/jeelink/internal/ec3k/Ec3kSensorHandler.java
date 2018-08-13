@@ -70,7 +70,7 @@ public class Ec3kSensorHandler extends JeeLinkSensorHandler<Ec3kReading> {
         };
 
         JeeLinkSensorConfig cfg = getConfigAs(JeeLinkSensorConfig.class);
-        if (cfg.bufferSize > 1) {
+        if (cfg.bufferSize > 1 && cfg.updateInterval > 0) {
             publisher = new RollingAveragePublisher<Ec3kReading>(cfg.bufferSize, cfg.updateInterval, publisher,
                     scheduler) {
                 @Override
