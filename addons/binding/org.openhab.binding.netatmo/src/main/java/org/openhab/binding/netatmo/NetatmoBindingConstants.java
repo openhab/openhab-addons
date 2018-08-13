@@ -170,7 +170,7 @@ public class NetatmoBindingConstants {
     // List of all supported physical devices and modules
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Stream
             .of(BASESTATION, OUTDOORMODULE, WINDMODULE, RAINGAUGEMODULE, INDOORMODULE, HOMECOACH, RELAY, THERMOSTAT,
-                    WELCOME_HOME_THING_TYPE, WELCOME_CAMERA, WELCOME_PERSON_THING_TYPE)
+                    WELCOME_HOME_THING_TYPE, WELCOME_CAMERA, WELCOME_PERSON_THING_TYPE, VALVE)
             .collect(Collectors.toSet());
 
     // List of all adressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge

@@ -127,7 +127,21 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:netatmo:welcomehome">
+    <config-description uri="thing-type:netatmo:valve">
+        <parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})">
+            <label>Module ID</label>
+            <description>Id of the Module</description>
+            <required>true</required>
+        </parameter>
+
+        <parameter name="parentId" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})">
+            <label>Device ID</label>
+            <description>Id of the main device</description>
+            <required>true</required>
+        </parameter>
+    </config-description>
+
+    <config-description uri="thing-type:netatmo:welcomehome">
 		<parameter name="id" type="text" required="true">
 			<label>Home ID</label>
 			<description>UUID of the home</description>

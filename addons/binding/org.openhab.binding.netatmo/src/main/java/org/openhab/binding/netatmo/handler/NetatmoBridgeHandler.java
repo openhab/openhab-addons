@@ -52,11 +52,8 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
 
         configuration = getConfigAs(NetatmoBridgeConfiguration.class);
 
-        logger.debug("Initializing lib");
-
         api = new NetatmoApi(configuration.username, configuration.password, configuration.clientId,
                 configuration.clientSecret, getApiScope());
-        logger.debug("Initialized lib");
 
         api.getEnergyApi()
                 .getHomesData(null, null).onError(s -> null)

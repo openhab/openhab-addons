@@ -32,7 +32,31 @@
 		<config-description-ref uri="thing-type:netatmo:plug" />
 	</thing-type>
 
-	<thing-type id="NATherm1">
+    <thing-type id="NRV">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="netatmoapi"/>
+        </supported-bridge-type-refs>
+
+        <label>Valve</label>
+        <description>This represents the valve</description>
+
+        <channels>
+            <!--  Common to all devices -->
+            <channel id="LastStatusStore" typeId="lastStatusStore"/>
+            <channel id="WifiStatus" typeId="system.signal-strength"/>
+            <channel id="Location" typeId="location"/>
+        </channels>
+
+        <properties>
+            <property name="signalLevels">86,71,56</property>
+            <property name="refreshPeriod">3600000</property>
+        </properties>
+
+        <representation-property>id</representation-property>
+        <config-description-ref uri="thing-type:netatmo:valve"/>
+    </thing-type>
+
+    <thing-type id="NATherm1">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="netatmoapi" />
 		</supported-bridge-type-refs>

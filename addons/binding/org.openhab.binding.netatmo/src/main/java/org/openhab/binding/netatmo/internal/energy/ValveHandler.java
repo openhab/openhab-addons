@@ -14,8 +14,11 @@ import io.rudolph.netatmo.api.common.model.ScaleType;
 import io.rudolph.netatmo.api.energy.EnergyConnector;
 import io.rudolph.netatmo.api.energy.model.module.ValveModule;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
@@ -66,6 +69,13 @@ public class ValveHandler extends NetatmoModuleHandler<ValveModule> {
         if (module != null) {
             updateStateDescription(module);
         }
+    }
+
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        //TODO: Add Valve status updates
+        super.updateStatus(status, statusDetail, description);
     }
 
     private void updateStateDescription(ValveModule valve) {

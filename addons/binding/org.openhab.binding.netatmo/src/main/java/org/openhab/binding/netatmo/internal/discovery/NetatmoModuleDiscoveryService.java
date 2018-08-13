@@ -131,12 +131,12 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
                 ClimateModule indoorModule = (ClimateModule) module;
                 onDeviceAddedInternal(module.getId(), parentId, module.getType(), module.getModuleName(),
                         indoorModule.getFirmware());
-            case VALVE:
+            case THERMOSTAT:
                 ThermostatModule thermostatModule = (ThermostatModule) module;
                 onDeviceAddedInternal(module.getId(), thermostatModule.getBridgeId(), module.getType(),
                         module.getModuleName(), thermostatModule.getFirmwareRevision());
                 break;
-            case THERMOSTAT:
+            case VALVE:
                 ValveModule energyModule = (ValveModule) module;
                 onDeviceAddedInternal(module.getId(), energyModule.getBridgeId(), module.getType(),
                         module.getModuleName(), energyModule.getFirmwareRevision());
