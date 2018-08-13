@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andreas Heil (info@aheil.de) - Initial Contribution
  * @author Marcel Verpaalen - Room details parse
- * @since 1.4.0
  */
 public final class MMessage extends Message {
     private final Logger logger = LoggerFactory.getLogger(MMessage.class);

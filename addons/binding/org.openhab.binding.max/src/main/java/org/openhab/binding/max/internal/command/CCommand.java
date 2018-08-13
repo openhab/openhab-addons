@@ -12,7 +12,6 @@ package org.openhab.binding.max.internal.command;
  * The {@link C_CubeCommand} to request configuration of a new MAX! device after inclusion.
  *
  * @author Marcel Verpaalen - Initial Contribution
- * @since 2.0
  */
 public class CCommand extends CubeCommand {
     private final String rfAddress;

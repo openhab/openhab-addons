@@ -12,7 +12,6 @@ package org.openhab.binding.max.internal.device;
  * Device information provided by the M message meta information.
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
- * @since 1.4.0
  */
 public class DeviceInformation {
 

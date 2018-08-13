@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
  * Cube LAN gateway.
  *
  * @author Marcel Verpaalen - Initial contribution
- * @since 2.0
  */
 public class UdpCubeCommand {
 

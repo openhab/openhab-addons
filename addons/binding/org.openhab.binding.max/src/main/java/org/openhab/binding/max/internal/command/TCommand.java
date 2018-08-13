@@ -19,7 +19,6 @@ import org.openhab.binding.max.internal.Utils;
  * The {@link T_CubeCommand} is used to unlink MAX! devices from the Cube.
  *
  * @author Marcel Verpaalen - Initial Contribution
- * @since 2.0
  */
 public class TCommand extends CubeCommand {
 

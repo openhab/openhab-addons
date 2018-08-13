@@ -13,7 +13,6 @@ package org.openhab.ui.cometvisu.internal.backend.beans;
  * Cometvisu client.
  *
  * @author Tobias Bräutigam
- * @since 2.0.0
  *
  */
 public class ConfigBean {

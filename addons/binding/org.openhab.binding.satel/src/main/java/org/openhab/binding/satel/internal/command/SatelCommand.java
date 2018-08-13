@@ -15,7 +15,6 @@ import org.openhab.binding.satel.internal.protocol.SatelMessage;
  * Interface for commands sent to communication module.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.9.0
  */
 public interface SatelCommand {
 

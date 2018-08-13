@@ -16,7 +16,6 @@ import org.openhab.binding.milight.internal.MilightThingState;
  * Implement this bulb interface for each new bulb type. It is used by {@see MilightLedHandler} to handle commands.
  *
  * @author David Graeff - Initial contribution
- * @since 2.1
  */
 public abstract class AbstractBulbInterface {
     /**

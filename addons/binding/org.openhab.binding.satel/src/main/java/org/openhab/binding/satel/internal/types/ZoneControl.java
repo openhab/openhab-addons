@@ -14,7 +14,6 @@ import java.util.BitSet;
  * Available zone control types.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.9.0
  */
 public enum ZoneControl implements ControlType {
     BYPASS(0x86, ZoneState.BYPASS),

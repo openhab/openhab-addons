@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bernd Michael Helm (bernd.helm at helmundwalter.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 version + parsing of the message
- * @since 1.6.0
  */
 public final class SMessage extends Message {
     private final Logger logger = LoggerFactory.getLogger(SMessage.class);

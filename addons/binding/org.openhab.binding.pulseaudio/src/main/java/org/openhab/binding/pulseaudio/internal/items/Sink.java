@@ -17,7 +17,6 @@ import java.util.List;
  * combined to one playback device
  *
  * @author Tobias Bräutigam - Initial contribution
- * @since 1.2.0
  */
 public class Sink extends AbstractAudioDeviceConfig {
 

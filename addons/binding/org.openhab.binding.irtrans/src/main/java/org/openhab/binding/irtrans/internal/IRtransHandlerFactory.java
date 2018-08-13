@@ -30,7 +30,6 @@ import com.google.common.collect.Lists;
  * thing handlers.
  *
  * @author Karel Goderis - Initial contribution
- * @since 2.3.0
  *
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.irtrans")

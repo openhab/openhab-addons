@@ -55,7 +55,6 @@ import org.slf4j.LoggerFactory;
  * are sent to one of the channels.
  *
  * @author Karel Goderis - Initial contribution
- * @since 2.3.0
  *
  */
 public class EthernetBridgeHandler extends BaseBridgeHandler implements TransceiverStatusListener {

@@ -12,7 +12,6 @@ package org.openhab.binding.pulseaudio.internal.items;
  * A SinkInput is an audio stream which can be routed to a {@link Sink}
  *
  * @author Tobias Bräutigam - Initial contribution
- * @since 1.2.0
  */
 public class SinkInput extends AbstractAudioDeviceConfig {
 

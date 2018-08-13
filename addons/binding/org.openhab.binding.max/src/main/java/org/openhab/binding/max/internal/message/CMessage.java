@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - Detailed parsing, OH2 Update
- * @since 1.4.0
  */
 public final class CMessage extends Message {
 
