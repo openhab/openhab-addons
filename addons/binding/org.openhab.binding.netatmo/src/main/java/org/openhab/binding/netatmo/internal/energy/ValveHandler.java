@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2010-2018 by the respective copyright holders.
- * <p>
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,39 +12,17 @@ import io.rudolph.netatmo.api.common.model.MeasureRequestResponse;
 import io.rudolph.netatmo.api.common.model.Scale;
 import io.rudolph.netatmo.api.common.model.ScaleType;
 import io.rudolph.netatmo.api.energy.EnergyConnector;
-import io.rudolph.netatmo.api.energy.model.ThermPointMode;
-import io.rudolph.netatmo.api.energy.model.Timetable;
-import io.rudolph.netatmo.api.energy.model.Zone;
-import io.rudolph.netatmo.api.energy.model.module.SetPoint;
-import io.rudolph.netatmo.api.energy.model.module.ThermProgram;
 import io.rudolph.netatmo.api.energy.model.module.ValveModule;
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.types.*;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
-import org.openhab.binding.netatmo.internal.ThermosthatStateDescriptionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.measure.quantity.Temperature;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
 /**
  * {@link ValveHandler} is the class used to handle the energy

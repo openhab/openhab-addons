@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.netatmo.internal.webhook;
 
-import com.google.gson.Gson;
+import io.rudolph.netatmo.api.presence.model.PersonsEvent;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
@@ -32,7 +32,6 @@ public class WelcomeWebHookServlet extends HttpServlet {
     private static final String PATH = "/netatmo/%s/camera";
     private static final String APPLICATION_JSON = "application/json";
     private static final String CHARSET = "utf-8";
-    private final Gson gson = new Gson();
 
     private final Logger logger = LoggerFactory.getLogger(WelcomeWebHookServlet.class);
 
@@ -73,7 +72,7 @@ public class WelcomeWebHookServlet extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String data = inputStreamToString(req);
         if (data != null && bridgeHandler != null) {
-            NAWebhookCameraEvent event = gson.fromJson(data, NAWebhookCameraEvent.class);
+            PersonsEvent event = this.bridgeHandler.api.getWelcomeApi().onExternalCameraEvent(data);
             logger.debug("Event transmitted from restService");
             bridgeHandler.webHookEvent(event);
         }

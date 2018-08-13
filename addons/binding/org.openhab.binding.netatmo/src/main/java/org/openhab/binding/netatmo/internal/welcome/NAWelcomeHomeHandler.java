@@ -161,7 +161,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<PresenceHome> {
                         ? new StringType(lastEvent.getMessage().replace("<b>", "").replace("</b>", ""))
                         : UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_SUBTYPE:
-                return lastEvent != null ? toDecimalType(lastEvent.getSubType()) : UnDefType.UNDEF;
+                return lastEvent != null ? toDecimalType(lastEvent.getSubType().getValue()) : UnDefType.UNDEF;
         }
         return super.getNAThingProperty(channelId);
     }

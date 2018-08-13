@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2010-2018 by the respective copyright holders.
- * <p>
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,14 +9,15 @@
 package org.openhab.binding.netatmo.handler;
 
 import io.rudolph.netatmo.NetatmoApi;
+import io.rudolph.netatmo.api.presence.model.AppType;
+import io.rudolph.netatmo.api.presence.model.PersonsEvent;
+import io.rudolph.netatmo.api.presence.model.PersonsEventPerson;
 import io.rudolph.netatmo.oauth2.model.Scope;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.netatmo.internal.config.NetatmoBridgeConfiguration;
-import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent;
-import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEventPerson;
 import org.openhab.binding.netatmo.internal.webhook.WelcomeWebHookServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,26 +45,22 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     private WelcomeWebHookServlet webHookServlet;
     private List<NetatmoDataListener> dataListeners = new CopyOnWriteArrayList<>();
 
-
     public NetatmoBridgeHandler(@NonNull Bridge bridge, WelcomeWebHookServlet webHookServlet) {
         super(bridge);
         this.webHookServlet = webHookServlet;
-    }
-
-    @Override
-    public void initialize() {
         logger.debug("Initializing Netatmo API bridge handler.");
 
         configuration = getConfigAs(NetatmoBridgeConfiguration.class);
 
-        api = new NetatmoApi(configuration.username,
-                configuration.password,
-                configuration.clientId,
-                configuration.clientSecret,
-                getApiScope());
-        api.getEnergyApi().getHomesData(null, null).onError(s -> {
-            return null;
-        }).executeAsync(homesDataBody -> {
+        logger.debug("Initializing lib");
+
+        api = new NetatmoApi(configuration.username, configuration.password, configuration.clientId,
+                configuration.clientSecret, getApiScope());
+        logger.debug("Initialized lib");
+
+        api.getEnergyApi()
+                .getHomesData(null, null).onError(s -> null)
+                .executeAsync(homesDataBody -> {
             connectionSucceed();
             return null;
         });
@@ -109,7 +106,6 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         logger.debug("Netatmo Bridge is read-only and does not handle commands");
     }
 
-
     @Override
     public void dispose() {
         logger.debug("Running dispose()");
@@ -148,26 +144,26 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         return naHandlers.findAny();
     }
 
-    public void webHookEvent(NAWebhookCameraEvent event) {
+    public void webHookEvent(PersonsEvent event) {
         // This currently the only known event type but I suspect usage can grow in the future...
-        if (event.getAppType() == NAWebhookCameraEvent.AppTypeEnum.CAMERA) {
+        if (event.getAppType() == AppType.CAMERA) {
             Set<AbstractNetatmoThingHandler> modules = new HashSet<>();
-            if (WELCOME_EVENTS.contains(event.getEventType()) || PRESENCE_EVENTS.contains(event.getEventType())) {
+            if (WELCOME_EVENTS.contains(event.getType()) || PRESENCE_EVENTS.contains(event.getType())) {
                 String cameraId = event.getCameraId();
                 if (cameraId != null) {
                     Optional<AbstractNetatmoThingHandler> camera = findNAThing(cameraId);
                     camera.ifPresent(modules::add);
                 }
             }
-            if (HOME_EVENTS.contains(event.getEventType())) {
+            if (HOME_EVENTS.contains(event.getType())) {
                 String homeId = event.getHomeId();
                 if (homeId != null) {
                     Optional<AbstractNetatmoThingHandler> home = findNAThing(homeId);
                     home.ifPresent(modules::add);
                 }
             }
-            if (PERSON_EVENTS.contains(event.getEventType())) {
-                List<NAWebhookCameraEventPerson> persons = event.getPersons();
+            if (PERSON_EVENTS.contains(event.getType())) {
+                List<PersonsEventPerson> persons = event.getPersons();
                 persons.forEach(person -> {
                     String personId = person.getId();
                     if (personId != null) {
@@ -179,7 +175,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
             modules.forEach(module -> {
                 Channel channel = module.getThing().getChannel(CHANNEL_WELCOME_HOME_EVENT);
                 if (channel != null) {
-                    triggerChannel(channel.getUID(), event.getEventType().toString());
+                    triggerChannel(channel.getUID(), event.getType().toString());
                 }
             });
         }
