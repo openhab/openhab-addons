@@ -1,18 +1,13 @@
 /**
- * Copyright (c) 2014,2018 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
- * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.leapmotion.internal;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.profiles.ProfileCallback;
@@ -37,17 +32,17 @@ public class LeapMotionSwitchProfile implements TriggerProfile {
     }
 
     @Override
-    public @NonNull ProfileTypeUID getProfileTypeUID() {
+    public ProfileTypeUID getProfileTypeUID() {
         return LeapMotionProfileFactory.UID_SWITCH;
     }
 
     @Override
-    public void onStateUpdateFromItem(@NonNull State state) {
+    public void onStateUpdateFromItem(State state) {
         lastState = OnOffType.ON.equals(state.as(OnOffType.class));
     }
 
     @Override
-    public void onTriggerFromHandler(@NonNull String event) {
+    public void onTriggerFromHandler(String event) {
         if (event.equals(LeapMotionBindingConstants.GESTURE_TAP)) {
             callback.sendCommand(lastState ? OnOffType.OFF : OnOffType.ON);
         }

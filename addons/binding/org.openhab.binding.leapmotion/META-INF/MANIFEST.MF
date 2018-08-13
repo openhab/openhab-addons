@@ -29,6 +29,6 @@ Import-Package:
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Bundle-NativeCode: 
- lib/libLeapJava.dylib;osname=macosx; processor=x86_64,
- lib/libLeap.dylib;osname=macosx; processor=x86_64
+ lib/libLeapJava.dylib;osname=macosx;processor=x86_64,
+ lib/libLeap.dylib;osname=macosx;processor=x86_64,*
 Automatic-Module-Name: org.openhab.binding.leapmotion
