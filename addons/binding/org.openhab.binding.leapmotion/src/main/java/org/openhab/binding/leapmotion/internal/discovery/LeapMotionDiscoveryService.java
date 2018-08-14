@@ -83,7 +83,7 @@ public class LeapMotionDiscoveryService extends AbstractDiscoveryService {
     private void createDiscoveryResult() {
         DiscoveryResult result = DiscoveryResultBuilder
                 .create(new ThingUID(LeapMotionBindingConstants.THING_TYPE_CONTROLLER, "local"))
-                .withLabel("LeapMotion Controller").build();
+                .withLabel("Leap Motion Controller").build();
         thingDiscovered(result);
     }
 

@@ -79,7 +79,7 @@ public class LeapMotionHandler extends BaseThingHandler {
 
     private class LeapMotionListener extends Listener {
 
-        private final static int RATE_LIMIT_IN_MS = 200;
+        private static final int RATE_LIMIT_IN_MS = 200;
         private long lastEvent = 0;
         private boolean noHand;
 
@@ -127,9 +127,7 @@ public class LeapMotionHandler extends BaseThingHandler {
                         }
 
                         // Calculate angle swept since last frame
-                        if (circle.state() == com.leapmotion.leap.Gesture.State.STATE_START) {
-                            // nothing to do
-                        } else if (circle.state() == com.leapmotion.leap.Gesture.State.STATE_UPDATE) {
+                        if (circle.state() == com.leapmotion.leap.Gesture.State.STATE_UPDATE) {
                             if (System.nanoTime() > lastEvent + TimeUnit.MILLISECONDS.toNanos(RATE_LIMIT_IN_MS)) {
                                 logger.debug("Circle (clockwise={})", clockwiseness);
                                 if (clockwiseness) {
@@ -139,10 +137,7 @@ public class LeapMotionHandler extends BaseThingHandler {
                                 }
                                 lastEvent = System.nanoTime();
                             }
-                        } else if (circle.state() == com.leapmotion.leap.Gesture.State.STATE_STOP) {
-                            // nothing to do
                         }
-
                         break;
                     default:
                         logger.debug("Unknown gesture type.");

@@ -3,7 +3,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/LeapJava.jar
 Bundle-ManifestVersion: 2
-Bundle-Name: LeapMotion Binding
+Bundle-Name: Leap Motion Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.leapmotion;singleton:=true
 Bundle-Vendor: openHAB

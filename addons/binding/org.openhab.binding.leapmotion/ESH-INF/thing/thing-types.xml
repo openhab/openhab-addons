@@ -4,8 +4,8 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="controller">
-		<label>LeapMotion Controller</label>
-		<description>A LeapMotion Gesture Sensor</description>
+		<label>Leap Motion Controller</label>
+		<description>A Leap Motion Gesture Sensor</description>
 
 		<channels>
 			<channel id="gesture" typeId="gesture" />

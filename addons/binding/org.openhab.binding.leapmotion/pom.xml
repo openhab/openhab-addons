@@ -12,7 +12,7 @@
 
 	<artifactId>org.openhab.binding.leapmotion</artifactId>
 
-	<name>LeapMotion Binding</name>
+	<name>Leap Motion Binding</name>
 	<packaging>eclipse-plugin</packaging>
 
 </project>
