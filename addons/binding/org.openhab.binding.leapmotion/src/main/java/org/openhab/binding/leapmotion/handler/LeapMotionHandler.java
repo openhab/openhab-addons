@@ -12,6 +12,8 @@ import static org.openhab.binding.leapmotion.LeapMotionBindingConstants.*;
 
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -37,12 +39,13 @@ import com.leapmotion.leap.Listener;
  * @author Thomas Eichstädt-Engelen - Initial version of listener logic
  *
  */
+@NonNullByDefault
 public class LeapMotionHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LeapMotionHandler.class);
 
-    private LeapMotionListener listener;
-    private Controller leapController;
+    private @NonNullByDefault({}) LeapMotionListener listener;
+    private @NonNullByDefault({}) Controller leapController;
 
     public LeapMotionHandler(Thing thing) {
         super(thing);
@@ -84,19 +87,24 @@ public class LeapMotionHandler extends BaseThingHandler {
         }
 
         @Override
-        public void onConnect(Controller controller) {
-            controller.enableGesture(Gesture.Type.TYPE_KEY_TAP);
-            controller.enableGesture(Gesture.Type.TYPE_CIRCLE);
+        public void onConnect(@Nullable Controller controller) {
+            if (controller != null) {
+                controller.enableGesture(Gesture.Type.TYPE_KEY_TAP);
+                controller.enableGesture(Gesture.Type.TYPE_CIRCLE);
+            }
             updateStatus(ThingStatus.ONLINE);
         }
 
         @Override
-        public void onDisconnect(Controller arg0) {
+        public void onDisconnect(@Nullable Controller controller) {
             updateStatus(ThingStatus.OFFLINE);
         }
 
         @Override
-        public void onFrame(Controller controller) {
+        public void onFrame(@Nullable Controller controller) {
+            if (controller == null) {
+                return;
+            }
             Frame frame = controller.frame();
 
             GestureList gestures = frame.gestures();
