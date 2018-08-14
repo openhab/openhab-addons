@@ -34,7 +34,7 @@
 
 		<properties>
 			<property name="signalLevels">86,71,56</property>
-			<property name="refreshPeriod">600000</property>
+			<property name="refreshPeriod">auto</property>
 		</properties>
 
 		<representation-property>id</representation-property>

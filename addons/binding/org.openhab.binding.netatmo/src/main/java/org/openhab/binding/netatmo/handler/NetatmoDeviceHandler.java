@@ -212,7 +212,11 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
         BigDecimal dataValidityPeriod;
         if (thing.getProperties().containsKey(PROPERTY_REFRESH_PERIOD)) {
             String refreshPeriodProperty = thing.getProperties().get(PROPERTY_REFRESH_PERIOD);
-            dataValidityPeriod = new BigDecimal(refreshPeriodProperty);
+            if ("auto".equalsIgnoreCase(refreshPeriodProperty)) {
+                dataValidityPeriod = new BigDecimal(-1);
+            } else {
+                dataValidityPeriod = new BigDecimal(refreshPeriodProperty);
+            }
         } else {
             Object interval = config.get(REFRESH_INTERVAL);
             dataValidityPeriod = (BigDecimal) interval;
