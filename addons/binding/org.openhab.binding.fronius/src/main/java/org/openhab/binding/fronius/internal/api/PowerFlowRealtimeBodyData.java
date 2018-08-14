@@ -27,6 +27,9 @@ public class PowerFlowRealtimeBodyData {
     private HashMap<String, PowerFlowRealtimeInverter> inverters;
 
     public HashMap<String, PowerFlowRealtimeInverter> getInverters() {
+        if (inverters == null) {
+            inverters = new HashMap<String, PowerFlowRealtimeInverter>();
+        }
         return inverters;
     }
 
@@ -35,6 +38,9 @@ public class PowerFlowRealtimeBodyData {
     }
 
     public PowerFlowRealtimeSite getSite() {
+        if (site == null) {
+            site = new PowerFlowRealtimeSite();
+        }
         return site;
     }
 

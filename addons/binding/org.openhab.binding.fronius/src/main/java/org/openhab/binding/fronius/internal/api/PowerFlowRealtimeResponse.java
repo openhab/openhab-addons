@@ -24,6 +24,9 @@ public class PowerFlowRealtimeResponse {
     private PowerFlowRealtimeBody body;
 
     public Head getHead() {
+        if (head == null) {
+            head = new Head();
+        }
         return head;
     }
 
@@ -32,6 +35,9 @@ public class PowerFlowRealtimeResponse {
     }
 
     public PowerFlowRealtimeBody getBody() {
+        if (body == null) {
+            body = new PowerFlowRealtimeBody();
+        }
         return body;
     }
 

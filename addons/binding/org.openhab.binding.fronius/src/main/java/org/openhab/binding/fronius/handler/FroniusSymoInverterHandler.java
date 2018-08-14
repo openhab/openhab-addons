@@ -74,13 +74,12 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     protected Object getValue(String channelId) {
         String[] fields = StringUtils.split(channelId, "#");
 
+        String fieldName = fields[0];
+
         if (inverterRealtimeResponse == null || inverterRealtimeResponse.getBody() == null
                 || inverterRealtimeResponse.getBody().getData() == null) {
             return null;
         }
-
-        String fieldName = fields[0];
-
         switch (fieldName) {
             case FroniusBindingConstants.InverterDataChannelDayEnergy:
                 ValueUnit day = inverterRealtimeResponse.getBody().getData().getDayEnergy();
@@ -107,7 +106,6 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             case FroniusBindingConstants.InverterDataChannelUdc:
                 return inverterRealtimeResponse.getBody().getData().getUdc();
         }
-
         if (powerFlowResponse == null || powerFlowResponse.getBody() == null
                 || powerFlowResponse.getBody().getData() == null
                 || powerFlowResponse.getBody().getData().getSite() == null) {
@@ -149,6 +147,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                     StringUtils.trimToEmpty(ip));
             logger.debug("URL = {}", location);
             String response = HttpUtil.executeUrl("GET", location, API_TIMEOUT);
+
             if (response != null) {
                 logger.debug("aqiResponse = {}", response);
                 result = gson.fromJson(response, PowerFlowRealtimeResponse.class);
@@ -157,7 +156,15 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             if (result == null) {
                 errorMsg = "no data returned";
             } else if (result.getBody() != null) {
-                resultOk = true;
+                if (result.getHead() == null) {
+                    errorMsg = "no header";
+                } else {
+                    if (result.getHead().getStatus().getCode() == 0) {
+                        resultOk = true;
+                    } else {
+                        errorMsg = result.getHead().getStatus().getReason();
+                    }
+                }
             } else {
                 errorMsg = "missing data sub-object";
             }
@@ -193,6 +200,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             logger.debug("URL = {}", location);
 
             String response = HttpUtil.executeUrl("GET", location, API_TIMEOUT);
+
             if (response != null) {
                 logger.debug("aqiResponse = {}", response);
                 result = gson.fromJson(response, InverterRealtimeResponse.class);
@@ -201,7 +209,15 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             if (result == null) {
                 errorMsg = "no data returned";
             } else if (result.getBody() != null) {
-                resultOk = true;
+                if (result.getHead() == null) {
+                    errorMsg = "no header";
+                } else {
+                    if (result.getHead().getStatus().getCode() == 0) {
+                        resultOk = true;
+                    } else {
+                        errorMsg = result.getHead().getStatus().getReason();
+                    }
+                }
             } else {
                 errorMsg = "missing data sub-object";
             }
