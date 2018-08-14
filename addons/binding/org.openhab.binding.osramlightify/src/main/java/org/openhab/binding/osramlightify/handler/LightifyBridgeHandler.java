@@ -30,9 +30,10 @@ import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_T
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.PROPERTY_CURRENT_ADDRESS;
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.OLD_PROPERTY_CURRENT_ADDRESS;
 
-import org.openhab.binding.osramlightify.handler.LightifyBridgeConfiguration;
 import org.openhab.binding.osramlightify.internal.LightifyConnector;
 import org.openhab.binding.osramlightify.internal.discovery.LightifyDeviceDiscoveryService;
+
+import org.openhab.binding.osramlightify.internal.config.LightifyBridgeConfiguration;
 
 import org.openhab.binding.osramlightify.internal.messages.LightifyActivateSceneMessage;
 

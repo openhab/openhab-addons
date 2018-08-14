@@ -55,10 +55,12 @@ import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_T
 import static org.openhab.binding.osramlightify.LightifyBindingConstants.THING_TYPE_LIGHTIFY_LIGHT_TUNABLE;
 
 import org.openhab.binding.osramlightify.handler.LightifyBridgeHandler;
-import org.openhab.binding.osramlightify.handler.LightifyDeviceConfiguration;
 
 import org.openhab.binding.osramlightify.internal.LightifyDeviceState;
 import org.openhab.binding.osramlightify.internal.exceptions.LightifyException;
+
+import org.openhab.binding.osramlightify.internal.config.LightifyBridgeConfiguration;
+import org.openhab.binding.osramlightify.internal.config.LightifyDeviceConfiguration;
 
 import org.openhab.binding.osramlightify.internal.messages.LightifyMessage;
 import org.openhab.binding.osramlightify.internal.messages.LightifyGetDeviceInfoMessage;
