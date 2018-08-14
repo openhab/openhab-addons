@@ -25,7 +25,6 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.leapmotion,
  org.openhab.binding.leapmotion.handler,
- org.openhab.core.library.types,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Bundle-NativeCode: 
