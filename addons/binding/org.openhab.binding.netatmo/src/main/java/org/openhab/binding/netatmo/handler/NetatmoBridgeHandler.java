@@ -56,7 +56,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
                 configuration.clientSecret, getApiScope());
 
         api.getEnergyApi()
-                .getHomesData(null, null).onError(s -> null)
+                .getHomesData().onError(s -> null)
                 .executeAsync(homesDataBody -> {
             connectionSucceed();
             return null;

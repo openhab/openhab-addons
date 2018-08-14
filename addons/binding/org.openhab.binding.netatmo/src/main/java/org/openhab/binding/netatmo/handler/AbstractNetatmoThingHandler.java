@@ -63,8 +63,8 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     public static final Unit<Dimensionless> API_NOISE_UNIT = SmartHomeUnits.DECIBEL;
 
     protected final MeasurableChannels measurableChannels = new MeasurableChannels();
-    protected Optional<RadioHelper> radioHelper;
-    protected Optional<BatteryHelper> batteryHelper;
+    protected final Optional<RadioHelper> radioHelper = Optional.of(new RadioHelper());
+    protected Optional<BatteryHelper> batteryHelper = Optional.of(new BatteryHelper());
     protected Configuration config;
     protected NetatmoBridgeHandler bridgeHandler;
 
@@ -75,13 +75,6 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getThing().getConfiguration();
-
-        radioHelper = thing.getProperties().containsKey(PROPERTY_SIGNAL_LEVELS)
-                ? Optional.of(new RadioHelper(thing.getProperties().get(PROPERTY_SIGNAL_LEVELS)))
-                : Optional.empty();
-        batteryHelper = thing.getProperties().containsKey(PROPERTY_BATTERY_LEVELS)
-                ? Optional.of(new BatteryHelper(thing.getProperties().get(PROPERTY_BATTERY_LEVELS)))
-                : Optional.empty();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Pending parent object initialization");
     }
 
@@ -155,6 +148,14 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
         } else {
             return null;
         }
+    }
+
+    protected String getParentId() {
+        if (config != null && config.containsKey(PARENT_ID)) {
+            String parentId = (String) config.get(PARENT_ID);
+            return parentId.toLowerCase();
+        }
+        return null;
     }
 
     protected void updateProperties(Integer firmware, String modelId) {

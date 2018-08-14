@@ -63,7 +63,7 @@ public class ThermosthatHandler extends NetatmoModuleHandler<ThermostatModule> {
 
     @Override
     protected void updateProperties(ThermostatModule moduleData) {
-        updateProperties(moduleData.getFirmwareRevision(), moduleData.getType().getValue());
+        updateProperties(moduleData.getFirmware(), moduleData.getType().getValue());
     }
 
     @Override

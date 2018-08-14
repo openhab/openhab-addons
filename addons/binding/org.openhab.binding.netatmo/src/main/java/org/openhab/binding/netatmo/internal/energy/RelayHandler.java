@@ -9,7 +9,7 @@
 package org.openhab.binding.netatmo.internal.energy;
 
 import io.rudolph.netatmo.api.common.model.Module;
-import io.rudolph.netatmo.api.energy.model.HomeStatusBody;
+import io.rudolph.netatmo.api.energy.model.HomesDataBody;
 import io.rudolph.netatmo.api.energy.model.module.RelayModule;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -17,11 +17,15 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_CONNECTED_BOILER;
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.EQUIPMENT_ID;
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.PARENT_ID;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
 
 /**
@@ -36,26 +40,29 @@ public class RelayHandler extends NetatmoDeviceHandler<RelayModule> {
         super(thing);
     }
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+
     @Override
     protected RelayModule updateReadings() {
-        final HomeStatusBody thermostatDataBody = getBridgeHandler().api
+
+        logger.debug("start update readings with ID " + getId() + " and home: " + getParentId());
+        final HomesDataBody thermostatDataBody = getBridgeHandler().api
                 .getEnergyApi()
-                .getHomeStatus(getId(), null)
+                .getCombinedHome(getParentId())
                 .executeSync();
 
+        logger.debug("received Data: " + thermostatDataBody);
+
         if (thermostatDataBody == null
-                || thermostatDataBody.getHome() == null
-                || thermostatDataBody.getHome().get(0) == null) {
+                || thermostatDataBody.getHomes().get(0) == null) {
+            logger.debug("exiting 0");
             return null;
         }
 
-        List<Module> modules = thermostatDataBody.getHome()
+        List<Module> modules = thermostatDataBody.getHomes()
                 .get(0)
                 .getModules();
-
-        if (modules == null) {
-            return null;
-        }
 
         RelayModule result = null;
 
@@ -63,10 +70,15 @@ public class RelayHandler extends NetatmoDeviceHandler<RelayModule> {
 
             if (getId().equalsIgnoreCase(getId()) && module instanceof RelayModule) {
                 result = (RelayModule) module;
+                config.put(PARENT_ID, thermostatDataBody.getHomes()
+                        .get(0).getId());
             } else {
                 childs.put(module.getId(), module);
             }
         }
+
+        logger.debug("module " + result + "\n childs: " + childs.size());
+
         return result;
     }
 
@@ -87,7 +99,7 @@ public class RelayHandler extends NetatmoDeviceHandler<RelayModule> {
 
     @Override
     protected @Nullable Long getDataTimestamp() {
-        if (device != null && device.getSetupDate()!= null) {
+        if (device != null && device.getSetupDate() != null) {
             return device.getSetupDate().toEpochSecond(ZoneOffset.UTC);
         }
         return null;

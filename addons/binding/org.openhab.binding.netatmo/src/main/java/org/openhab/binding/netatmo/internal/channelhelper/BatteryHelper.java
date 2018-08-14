@@ -12,10 +12,11 @@ import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
+import io.rudolph.netatmo.api.common.model.BatteryState;
+import io.rudolph.netatmo.api.common.model.ClimateModule;
+import io.rudolph.netatmo.api.energy.model.module.ValveModule;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -32,14 +33,8 @@ import org.slf4j.LoggerFactory;
  */
 public class BatteryHelper {
     private Logger logger = LoggerFactory.getLogger(BatteryHelper.class);
-    private int batteryLow;
 
     private Object module;
-
-    public BatteryHelper(String batteryLevels) {
-        List<String> thresholds = Arrays.asList(batteryLevels.split(","));
-        batteryLow = Integer.parseInt(thresholds.get(1));
-    }
 
     public void setModule(Object module) {
         this.module = module;
@@ -52,13 +47,19 @@ public class BatteryHelper {
                         || CHANNEL_LOW_BATTERY.equalsIgnoreCase(channelId)) {
                     switch (channelId) {
                         case CHANNEL_BATTERY_LEVEL:
-                            Method getBatteryPercent = module.getClass().getMethod("getBatteryPercent");
-                            Integer batteryPercent = (Integer) getBatteryPercent.invoke(module);
-                            return Optional.of(ChannelTypeUtils.toDecimalType(batteryPercent));
+                            Integer batteryLevel;
+                            if (module instanceof ValveModule) {
+                                batteryLevel = ((ValveModule) module).getBatteryLevel();
+                            } else if (module instanceof ClimateModule) {
+                                batteryLevel = ((ClimateModule) module).getBatteryVP();
+                            } else {
+                                break;
+                            }
+                            return Optional.of(ChannelTypeUtils.toDecimalType(batteryLevel));
                         case CHANNEL_LOW_BATTERY:
-                            Method getBatteryVp = module.getClass().getMethod("getBatteryVp");
-                            Integer batteryVp = (Integer) getBatteryVp.invoke(module);
-                            return Optional.of(batteryVp < batteryLow ? OnOffType.ON : OnOffType.OFF);
+                            Method getBatteryVp = module.getClass().getMethod("getGetBatteryState");
+                            BatteryState batteryVp = (BatteryState) getBatteryVp.invoke(module);
+                            return Optional.of(batteryVp == BatteryState.NO_DATA ? OnOffType.OFF : OnOffType.ON);
                     }
                 }
             } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException

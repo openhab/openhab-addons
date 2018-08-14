@@ -9,7 +9,6 @@
 package org.openhab.binding.netatmo.internal.discovery;
 
 import io.rudolph.netatmo.api.common.model.*;
-import io.rudolph.netatmo.api.energy.model.HomeStatusBody;
 import io.rudolph.netatmo.api.energy.model.HomesDataBody;
 import io.rudolph.netatmo.api.energy.model.module.ThermostatModule;
 import io.rudolph.netatmo.api.energy.model.module.ValveModule;
@@ -25,6 +24,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.handler.NetatmoDataListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +43,7 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
     private static final int SEARCH_TIME = 2;
     @NonNull
     private final NetatmoBridgeHandler netatmoBridgeHandler;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public NetatmoModuleDiscoveryService(@NonNull NetatmoBridgeHandler netatmoBridgeHandler) {
         super(SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME);
@@ -77,17 +79,16 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
             }
         }
         if (netatmoBridgeHandler.configuration.readThermostat) {
-            HomesDataBody thermostatsDataBody = netatmoBridgeHandler.api.getEnergyApi().getHomesData(null, null)
+            HomesDataBody thermostatsDataBody = netatmoBridgeHandler.api
+                    .getEnergyApi()
+                    .getCombinedHome(null)
                     .executeSync();
             if (thermostatsDataBody != null) {
-                thermostatsDataBody.getHomes().forEach(home -> {
-                    HomeStatusBody homeStatusBody = netatmoBridgeHandler.api.getEnergyApi()
-                            .getHomeStatus(home.getId(), null).executeSync();
-                    homeStatusBody.getHome().forEach(homestatus -> homestatus.getModules()
-                            .forEach(module -> discoverModule(module, home.getId())));
-                });
+                thermostatsDataBody.getHomes().forEach(home -> home.getModules()
+                        .forEach(module -> discoverModule(module, home.getId())));
             }
         }
+
         if (netatmoBridgeHandler.configuration.readWelcome) {
             SecurityHome welcomeHomeData = netatmoBridgeHandler.api.getWelcomeApi().getHomeData(null, null)
                     .executeSync();
@@ -95,7 +96,9 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
                 welcomeHomeData.getHomes().forEach(this::discoverWelcomeHome);
             }
         }
+
         stopScan();
+
     }
 
     @Override
@@ -134,12 +137,12 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
             case THERMOSTAT:
                 ThermostatModule thermostatModule = (ThermostatModule) module;
                 onDeviceAddedInternal(module.getId(), thermostatModule.getBridgeId(), module.getType(),
-                        module.getModuleName(), thermostatModule.getFirmwareRevision());
+                        module.getModuleName(), thermostatModule.getFirmware());
                 break;
             case VALVE:
                 ValveModule energyModule = (ValveModule) module;
                 onDeviceAddedInternal(module.getId(), energyModule.getBridgeId(), module.getType(),
-                        module.getModuleName(), energyModule.getFirmwareRevision());
+                        module.getModuleName(), energyModule.getFirmware());
                 break;
             case RELAY:
                 onDeviceAddedInternal(module.getId(), parentId, module.getType(), module.getModuleName(), null);
@@ -199,6 +202,7 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
         ThingUID thingUID = findThingUID(type, id);
         Map<String, Object> properties = new HashMap<>();
 
+        logger.debug("set Equipment_ID: " + id);
         properties.put(EQUIPMENT_ID, id);
         if (parentId != null) {
             properties.put(PARENT_ID, parentId);
@@ -213,8 +217,11 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
     }
 
     private void addDiscoveredThing(ThingUID thingUID, Map<String, Object> properties, String displayLabel) {
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withBridge(netatmoBridgeHandler.getThing().getUID()).withLabel(displayLabel)
+        logger.debug("Add module " + thingUID.getThingTypeId() + " label: " + displayLabel);
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
+                .withProperties(properties)
+                .withBridge(netatmoBridgeHandler.getThing().getUID())
+                .withLabel(displayLabel)
                 .withRepresentationProperty(EQUIPMENT_ID).build();
 
         thingDiscovered(discoveryResult);

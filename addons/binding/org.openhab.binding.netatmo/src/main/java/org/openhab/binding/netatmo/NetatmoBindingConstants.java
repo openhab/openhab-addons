@@ -111,6 +111,11 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_LAST_PLUG_SEEN = "LastPlugSeen";
     public static final String CHANNEL_LAST_BILAN = "LastBilan";
 
+    // Valve specific channels
+    public static final String CHANNEL_ANTICIPATION = "Anticipation";
+    public static final String CHANNEL_REACHABLE = "Reachable";
+
+
     public static final String CHANNEL_PLANNING = "Planning";
 
     public static final String CHANNEL_SETPOINT_MODE_MANUAL = "manual";
