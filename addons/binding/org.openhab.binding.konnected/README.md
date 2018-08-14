@@ -51,16 +51,11 @@ _Provide a full usage example based on textual configuration files (*.things, *.
 *.items
 
 Contact Front_Door_Sensor " Front Door" {channel="konnected:module:16631321:Zone_2"}
-Contact Back_Door_Sensor "Back Door"   {channel="konnected:module:16631321:Zone_1"}
-Contact Konnected_Zone_4 "Back M"    {channel="konnected:module:16631321:Zone_4"}
-Contact Konnected_Zone_5 "Front M"   {channel="konnected:module:16631321:Zone_5"}
-Contact Konnected_Zone_6 "Kitchen M" {channel="konnected:module:16631321:Zone_6"}
+Switch Siren "Siren"   {channel="konnected:module:16631321:Zone_1"}
+
 
 *.sitemap
 
-Switch item=Front_Door_Sensor label="Front Door" icon="door" mappings=["1"="Open", "0"="Closed"]
-            Switch item=Back_Door_Sensor label="Back Door" icon="door" mappings=["1"="Open", "0"="Closed"]
-            Switch item=Konnected_Zone_4 icon="door" mappings=["1"="Open", "0"="Closed"]
-            Switch item=Konnected_Zone_5 icon="door" mappings=["1"="Open", "0"="Closed"]
-            Switch item=Konnected_Zone_6 icon="door" mappings=["1"="Open", "0"="Closed"]
+Switch item=Front_Door_Sensor label="Front Door" icon="door" mappings=[OPEN="Open", CLOSED="Closed"]
+Switch item=Siren label="Alarm Siren" icon="Siren" mappings=[ON="Open", OFF="Closed"]
             
