@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enocean"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- RockerSwitch -->
+	<thing-type id="rockerSwitch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serialbridge" />
+			<bridge-type-ref id="tcpbridge" />
+		</supported-bridge-type-refs>
+
+		<label>F6-02 - Rocker Switch</label>
+		<description>Represents a physical Rocker Switch</description>
+
+		<properties>
+			<property name="enoceanId" />
+		</properties>
+		<config-description>
+			<parameter name="receivingEEPId" type="text">
+				<label>EEP</label>
+				<description>EEP which is used by rocker switch</description>
+				<options>
+					<option value="F6_02_01">F6-02-01 (upper rocker => DIR1)</option>
+					<option value="F6_02_02">F6-02-02 (upper rocker => DIR2)</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
