@@ -23,6 +23,9 @@ public class InverterRealtimeResponse {
     private InverterRealtimeBody body;
 
     public Head getHead() {
+        if (head == null) {
+            head = new Head();
+        }
         return head;
     }
 
@@ -31,6 +34,9 @@ public class InverterRealtimeResponse {
     }
 
     public InverterRealtimeBody getBody() {
+        if (body == null) {
+            body = new InverterRealtimeBody();
+        }
         return body;
     }
 
