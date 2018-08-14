@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.konnected.internal.discovery;
 
-import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.*;
+import static org.openhab.binding.konnected.KonnectedBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link KonnectedUPnPServer} is responsible for discovering new
- * Konnectedmodules bridges. It uses the central {@link UpnpDiscoveryService}.
+ * Konnectedmodules modules. It uses the central {@link UpnpDiscoveryService}.
  *
  * @author Zachary Christainsen - Initial contribution
  *
@@ -54,7 +54,8 @@ public class KonnectedUPnPServer implements UpnpDiscoveryParticipant {
             properties.put(HOST, device.getDetails().getBaseURL());
             properties.put(MAC_ADDR, device.getDetails().getSerialNumber());
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(MAC_ADDR).build();
+                    .withLabel(device.getDetails().getFriendlyName() + ":" + device.getDetails().getSerialNumber())
+                    .withRepresentationProperty(MAC_ADDR).build();
             return result;
         } else {
             return null;
@@ -63,7 +64,6 @@ public class KonnectedUPnPServer implements UpnpDiscoveryParticipant {
 
     @Override
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
-
         DeviceDetails details = device.getDetails();
         if (details != null) {
             ModelDetails modelDetails = details.getModelDetails();

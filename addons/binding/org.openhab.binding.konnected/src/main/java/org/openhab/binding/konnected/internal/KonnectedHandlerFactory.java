@@ -8,9 +8,10 @@
  */
 package org.openhab.binding.konnected.internal;
 
-import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.THING_TYPE_MODULE;
+import static org.openhab.binding.konnected.KonnectedBindingConstants.THING_TYPE_MODULE;
 
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -19,18 +20,23 @@ import java.util.Set;
 import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.net.HttpServiceUtil;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.konnected.internal.handler.KonnectedHandler;
+import org.openhab.binding.konnected.handler.KonnectedHandler;
 import org.openhab.binding.konnected.internal.servelet.KonnectedHTTPServlet;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link KonnectedHandlerFactory} is responsible for creating things and thing
@@ -38,15 +44,14 @@ import org.osgi.service.http.HttpService;
  *
  * @author Zachary Christiansen - Initial contribution
  */
-@Component(service = { ThingHandlerFactory.class,
-        KonnectedHandlerFactory.class }, immediate = true, configurationPid = "binding.konnected")
-
+@Component(configurationPid = "binding.konnected", service = ThingHandlerFactory.class)
 public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
-
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MODULE);
     private Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
     private HttpService httpService;
-    private KonnectedDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
+    private String callbackUrl = null;
+    private NetworkAddressService networkAddressService;
+    private final Logger logger = LoggerFactory.getLogger(KonnectedHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -54,15 +59,28 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        Dictionary<String, Object> properties = componentContext.getProperties();
+        callbackUrl = (String) properties.get("callbackUrl");
+    }
+
+    @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         KonnectedHTTPServlet servlet = registerWebHookServlet(thing.getUID());
-        return new KonnectedHandler(thing, servlet, dynamicStateDescriptionProvider);
+        return new KonnectedHandler(thing, servlet, createCallbackUrl(), createCallbackPort());
+    }
 
+    /**
+     * @param thingHandler thing handler to be removed
+     */
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        unregisterWebHookServlet(thingHandler.getThing().getUID());
     }
 
     private KonnectedHTTPServlet registerWebHookServlet(ThingUID thingUID) {
         KonnectedHTTPServlet servlet = null;
-
         servlet = new KonnectedHTTPServlet(httpService, thingUID.getId());
         if (bundleContext != null) {
             webHookServiceRegs.put(thingUID, bundleContext.registerService(HttpServlet.class.getName(), servlet,
@@ -88,12 +106,36 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
         this.httpService = null;
     }
 
-    @Reference
-    protected void setDynamicStateDescriptionProvider(KonnectedDynamicStateDescriptionProvider provider) {
-        this.dynamicStateDescriptionProvider = provider;
+    private String createCallbackUrl() {
+        if (callbackUrl != null) {
+            return callbackUrl;
+        } else {
+            final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
+            if (ipAddress == null) {
+                logger.warn("No network interface could be found.");
+                return null;
+            }
+
+            return ipAddress;
+        }
     }
 
-    protected void unsetDynamicStateDescriptionProvider(KonnectedDynamicStateDescriptionProvider provider) {
-        this.dynamicStateDescriptionProvider = null;
+    private String createCallbackPort() {
+        // we do not use SSL as it can cause certificate validation issues.
+        final int port = HttpServiceUtil.getHttpServicePort(bundleContext);
+        if (port == -1) {
+            logger.warn("Cannot find port of the http service.");
+            return null;
+        }
+        return Integer.toString(port);
+    }
+
+    @Reference
+    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = networkAddressService;
+    }
+
+    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = null;
     }
 }

@@ -14,16 +14,23 @@ Import-Package:
  javax.servlet.http,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.core.validation,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.config.discovery.upnp,
  org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.net,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
  org.jupnp.model.meta,
+ org.openhab.binding.konnected,
+ org.openhab.binding.konnected.handler,
  org.osgi.framework,
+ org.osgi.service.component,
  org.osgi.service.http,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
+Export-Package: org.openhab.binding.konnected,
+ org.openhab.binding.konnected.handler

@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.konnected.internal;
+package org.openhab.binding.konnected;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -34,7 +34,4 @@ public class KonnectedBindingConstants {
     public static final Integer[] PIN_TO_ZONE = { 0, 1, 2, 5, 6, 7, 9, 8 };
 
     public static final String WEBHOOK_APP = "app_security";
-
-    // the number of pins which can be zones on the Konnected Modules
-    public static final int numberPin = 6;
 }

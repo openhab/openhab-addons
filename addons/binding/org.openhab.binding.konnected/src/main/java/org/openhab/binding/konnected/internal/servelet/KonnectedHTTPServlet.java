@@ -16,7 +16,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openhab.binding.konnected.internal.handler.KonnectedHandler;
+import org.openhab.binding.konnected.handler.KonnectedHandler;
+import org.openhab.binding.konnected.internal.gson.KonnectedModuleGson;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ public class KonnectedHTTPServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(KonnectedHTTPServlet.class);
 
     private HttpService httpService;
-    private KonnectedHandler bridgeHandler;
+    private KonnectedHandler thingHandler;
     private String path;
 
     public KonnectedHTTPServlet(HttpService httpService, String id) {
@@ -48,38 +49,38 @@ public class KonnectedHTTPServlet extends HttpServlet {
     }
 
     /**
-     * OSGi activation callback.
+     * Activation callback.
      *
      * @param config Service config.
      **/
-    public void activate(KonnectedHandler bridgeHandler) {
-        this.bridgeHandler = bridgeHandler;
+    public void activate(KonnectedHandler thingHandler) throws KonnectedWebHookFail {
+        this.thingHandler = thingHandler;
 
         try {
             logger.debug("Trying to Start Webhook.");
             httpService.registerServlet(path, this, null, httpService.createDefaultHttpContext());
             logger.debug("Started Konnected Webhook servlet at {}", path);
         } catch (ServletException | NamespaceException e) {
-            logger.error("Could not start Netatmo Webhook servlet: {}", e.getMessage(), e);
+            throw new KonnectedWebHookFail("Could not start Konnected Webhook servlet: " + e.getMessage());
         }
     }
 
     /**
-     * OSGi deactivation callback.
+     * Webhook Deactivation callback.
      */
     public void deactivate() {
         httpService.unregister(path);
         logger.debug("Konnected webhook servlet stopped");
-        this.bridgeHandler = null;
+        this.thingHandler = null;
     }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String data = inputStreamToString(req);
-        if (data != null && bridgeHandler != null) {
-            KonnectedModuleEvent event = gson.fromJson(data, KonnectedModuleEvent.class);
+        if (data != null && thingHandler != null) {
+            KonnectedModuleGson event = gson.fromJson(data, KonnectedModuleGson.class);
             String auth = req.getHeader("Authorization");
-            this.bridgeHandler.handleWebHookEvent(event.getPin(), event.getState(), auth);
+            this.thingHandler.handleWebHookEvent(event.getPin(), event.getState(), auth);
         }
 
         setHeaders(resp);
@@ -102,6 +103,15 @@ public class KonnectedHTTPServlet extends HttpServlet {
 
     public String getPath() {
         return path;
+    }
+
+    /**
+     * Custom exception class to be thrown by servlet when unable to start.
+     */
+    public class KonnectedWebHookFail extends Exception {
+        public KonnectedWebHookFail(String message) {
+            super(message);
+        }
     }
 
 }

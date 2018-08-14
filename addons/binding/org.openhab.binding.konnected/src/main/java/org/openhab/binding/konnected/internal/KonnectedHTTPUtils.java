@@ -10,18 +10,11 @@ package org.openhab.binding.konnected.internal;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.konnected.internal.handler.KonnectedHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,11 +24,11 @@ import org.slf4j.LoggerFactory;
  * @author Zachary Christiansen - Initial contribution
  */
 public class KonnectedHTTPUtils {
-    private final Logger logger = LoggerFactory.getLogger(KonnectedHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(KonnectedHTTPUtils.class);
     private static final int REQUEST_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(30);
+    private String logTest = "";
 
     public KonnectedHTTPUtils() {
-
     }
 
     /**
@@ -43,18 +36,16 @@ public class KonnectedHTTPUtils {
      *
      * @param urlAddress the address to send the request
      *
-     * @param payload the json payload to include with the request
-     *
+     * @param payload    the json payload to include with the request
      */
-    // TO DO: for some reason here on my production machine i get an error on the second attempt to doPut
     public String doPut(String urlAddress, String payload) throws IOException {
         logger.debug("The String url we want to put is : {}", urlAddress);
         logger.debug("The payload we want to put is: {}", payload);
         ByteArrayInputStream input = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
-        String test = HttpUtil.executeUrl("PUT", urlAddress, getHttpHeaders(), input, "application/json",
+        logTest = HttpUtil.executeUrl("PUT", urlAddress, getHttpHeaders(), input, "application/json",
                 KonnectedHTTPUtils.REQUEST_TIMEOUT);
-        logger.debug(test);
-        return test;
+        logger.debug(logTest);
+        return logTest;
     }
 
     protected Properties getHttpHeaders() {
@@ -71,27 +62,8 @@ public class KonnectedHTTPUtils {
 
     public synchronized String doGet(String urlAddress) throws IOException {
         logger.debug("The String url we want to get is : {}", urlAddress);
-        String test = HttpUtil.executeUrl("GET", urlAddress, KonnectedHTTPUtils.REQUEST_TIMEOUT);
-        logger.debug(test);
-        return test;
+        logTest = HttpUtil.executeUrl("GET", urlAddress, KonnectedHTTPUtils.REQUEST_TIMEOUT);
+        logger.debug(logTest);
+        return logTest;
     }
-
-    public String getHostAddresses() {
-        Set<String> HostAddresses = new HashSet<>();
-        try {
-            for (NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())) {
-                if (!ni.isLoopback() && ni.isUp() && ni.getHardwareAddress() != null) {
-                    for (InterfaceAddress ia : ni.getInterfaceAddresses()) {
-                        if (ia.getBroadcast() != null) { // If limited to IPV4
-                            HostAddresses.add(ia.getAddress().getHostAddress());
-                        }
-                    }
-                }
-            }
-        } catch (SocketException e) {
-        }
-
-        return HostAddresses.toArray(new String[0]).toString();
-    }
-
 }

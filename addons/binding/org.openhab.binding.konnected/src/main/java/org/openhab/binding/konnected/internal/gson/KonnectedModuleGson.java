@@ -6,24 +6,28 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.konnected.internal.servelet;
+package org.openhab.binding.konnected.internal.gson;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link KonnectedModuleEvent} is responsible to hold
- * data given back by the Konnected API when calling the webhook
+ * The {@link KonnectedModuleGson} is responsible to hold
+ * data that models pin information which can be sent to a Konnected Module
  *
  * @author Zachary Christiansen - Initial contribution
  *
  */
-public class KonnectedModuleEvent {
+public class KonnectedModuleGson {
 
     @SerializedName("pin")
     String pin;
 
     public String getPin() {
         return pin;
+    }
+
+    public void setPin(String setPin) {
+        this.pin = setPin;
     }
 
     @SerializedName("state")
@@ -33,11 +37,14 @@ public class KonnectedModuleEvent {
         return state;
     }
 
+    public void setState(String setState) {
+        this.state = setState;
+    }
+
     @SerializedName("Auth_Token")
     String authToken;
 
     public String getAuthToken() {
         return authToken;
     }
-
 }

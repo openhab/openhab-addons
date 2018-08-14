@@ -1,53 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config-description:config-descriptions
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
-        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+	http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	<config-description uri="thing-type:konnected:module">
+		<parameter-group name="Actuators">
+			<label>Actuators</label>
+			<advanced>true</advanced>
+		</parameter-group>
+		<parameter name="authToken" type="text" required="true">
+			<label>Auth_Token</label>
+			<description>This is the Authority Token used to communicate with the Konnected Module.</description>
+		</parameter>
+		<parameter name="hostAddress" type="text">
+			<label>OpenHAB Address</label>
+			<description> The host address and port of openhab: example 192.168.1.180:8080.  If blank the binding will auto determine the address based on the address and port the server is bound to.</description>
+			<advanced>true</advanced>
+		</parameter>
 
-    <config-description uri="thing-type:konnected:module">
-      <parameter-group name="Actuators">
-      <label>Actuators</label>
-      <advanced>true</advanced>
-    </parameter-group>
-        <parameter name="authToken" type="text" required="true">
-            <label>Auth_Token</label>
-            <description>This is the Authority Token used to communicate with the Konnected Module.</description>
-        </parameter>
-        <parameter name="isAct1" type="boolean" groupName="Actuators">
-            <label>Zone 1</label>
-            <description>Is Zone 1 an Actuator?</description>
-            <default>false</default>
-        </parameter>
-        <parameter name="isAct2" type="boolean" groupName="Actuators">
-            <label>Zone 2</label>
-            <description>Is Zone 2 an Actuator?</description>
-            <default>false</default>
-        </parameter>
-
-        <parameter name="isAct3" type="boolean" groupName="Actuators">
-            <label>Zone 3</label>
-            <description>Is Zone 3 an Actuator?</description>
-            <default>false</default>
-        </parameter>
-
-        <parameter name="isAct4" type="boolean" groupName="Actuators">
-            <label>Zone 4</label>
-            <description>Is Zone 4 an Actuator?</description>
-            <default>false</default>
-        </parameter>
-
-        <parameter name="isAct5" type="boolean" groupName="Actuators">
-            <label>Zone 5</label>
-            <description>Is Zone 5 an Actuator?</description>
-            <default>false</default>
-        </parameter>  
-         <parameter name="hostAddress" type="text" >
-            <label>OpenHAB Address</label>
-            <description> The host address and port of openhab: example 192.168.1.180:8080.  If blank the binding will auto determine the address based on the address and port the server is bound to.</description>
-        <advanced>true</advanced>
-        </parameter>
-    </config-description>
+	</config-description>
 
 </config-description:config-descriptions>
- 
