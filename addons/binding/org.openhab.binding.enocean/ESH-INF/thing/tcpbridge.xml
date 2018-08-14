@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enocean"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- EnOcean Bridge -->
+	<bridge-type id="tcpbridge">
+		<label>EnOcean TCP Bridge</label>
+		<description>The EnOcean bridge connects over TCP/IP to an ESP3 device.</description>
+
+		<channels>
+			<channel id="repeaterMode" typeId="repeaterMode" />
+			<channel typeId="setBaseId" id="setBaseId" />
+		</channels>
+
+		<properties>
+			<property name="Base ID" />
+			<property name="Remaining Base ID Write Cycles" />
+			<property name="APP Version" />
+			<property name="API Version" />
+			<property name="Chip ID" />
+			<property name="Description" />
+		</properties>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host</label>
+				<description>Host where ESP3 device is connected.</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>Port where ESP3 device is connected.</description>
+				<default>123</default>
+			</parameter>
+			<parameter name="rs485" type="boolean">
+				<advanced>true</advanced>
+				<label>Gateway connected directly to RS485 BUS</label>
+				<default>false</default>
+			</parameter>
+			<parameter name="nextDeviceId" type="integer">
+				<advanced>true</advanced>
+				<label>Next device Id</label>
+				<description>Defines the next device Id, if empty, the next device id is automatically determined</description>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,46 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.enocean
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-ManifestVersion: 2
+Bundle-Name: EnOcean Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.enocean;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.4.0.qualifier
+Export-Package: 
+ org.openhab.binding.enocean,
+ org.openhab.binding.enocean.handler,
+ org.openhab.binding.enocean.profiles
+Import-Package: 
+ com.google.common.collect,
+ gnu.io,
+ javax.measure.quantity,
+ org.apache.commons.io,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.core.status,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.usbserial,
+ org.eclipse.smarthome.core.items,
+ org.eclipse.smarthome.core.library,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.profiles,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.transform,
+ org.eclipse.smarthome.core.transform.actions,
+ org.eclipse.smarthome.core.types,
+ org.junit;version="4.0.0";resolution:=optional,
+ org.eclipse.smarthome.core.util,
+ org.eclipse.smarthome.model.script.engine.action,
+ org.openhab.binding.enocean,
+ org.openhab.binding.enocean.handler,
+ org.openhab.binding.enocean.profiles,
+ org.osgi.framework,
+ org.osgi.service.component.annotations;resolution:=optional,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
