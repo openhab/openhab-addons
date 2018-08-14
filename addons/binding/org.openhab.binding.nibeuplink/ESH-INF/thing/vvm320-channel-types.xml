@@ -181,14 +181,14 @@
 		<item-type>Number:Pressure</item-type>
 		<label>EB101-EP14-BP4 Pressure Sensor</label>
 		<description></description>
-		<state pattern="%d kPa" readOnly="true">
+		<state pattern="%.1f bar" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm320-type-44700">
 		<item-type>Number:Pressure</item-type>
 		<label>EB101-EP14 Low Pressure Sensor Outdoor Unit</label>
 		<description></description>
-		<state pattern="%d kPa" readOnly="true">
+		<state pattern="%.1f bar" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm320-type-44701">

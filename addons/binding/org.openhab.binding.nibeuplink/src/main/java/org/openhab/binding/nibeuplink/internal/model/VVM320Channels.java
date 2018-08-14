@@ -86,9 +86,8 @@ public final class VVM320Channels extends BaseChannels {
             "EB101-EP14-BT3 Return Temp.", ChannelGroup.COMPRESSOR, MetricPrefix.DECI(SIUnits.CELSIUS)));
     public static final Channel CH_44363 = INSTANCE.addChannel(new QuantityChannel("44363",
             "EB101-EP14-BT16 Evaporator", ChannelGroup.COMPRESSOR, MetricPrefix.DECI(SIUnits.CELSIUS)));
-    public static final Channel CH_44699 = INSTANCE
-            .addChannel(new QuantityChannel("44699", "EB101-EP14-BP4 Pressure Sensor", ChannelGroup.COMPRESSOR,
-                    MetricPrefix.CENTI(MetricPrefix.MEGA(SIUnits.PASCAL))));
+    public static final Channel CH_44699 = INSTANCE.addChannel(new QuantityChannel("44699",
+            "EB101-EP14-BP4 Pressure Sensor", ChannelGroup.COMPRESSOR, MetricPrefix.DECI(SmartHomeUnits.BAR)));
     public static final Channel CH_40782 = INSTANCE.addChannel(new QuantityChannel("40782",
             "EB101 Cpr Frequency Desired F2040", ChannelGroup.COMPRESSOR, SmartHomeUnits.HERTZ));
     public static final Channel CH_44701 = INSTANCE
@@ -98,7 +97,7 @@ public final class VVM320Channels extends BaseChannels {
             new Channel("44702", "EB101-EP14 Protection Status Register Outdoor Unit", ChannelGroup.COMPRESSOR));
     public static final Channel CH_44700 = INSTANCE
             .addChannel(new QuantityChannel("44700", "EB101-EP14 Low Pressure Sensor Outdoor Unit",
-                    ChannelGroup.COMPRESSOR, MetricPrefix.CENTI(MetricPrefix.MEGA(SIUnits.PASCAL))));
+                    ChannelGroup.COMPRESSOR, MetricPrefix.DECI(SmartHomeUnits.BAR)));
     public static final Channel CH_44457 = INSTANCE
             .addChannel(new Channel("44457", "EB101-EP14 Compressor State", ChannelGroup.COMPRESSOR));
 
