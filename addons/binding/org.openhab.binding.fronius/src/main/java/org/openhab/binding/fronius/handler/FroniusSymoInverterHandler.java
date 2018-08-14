@@ -74,11 +74,6 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     protected Object getValue(String channelId) {
         String[] fields = StringUtils.split(channelId, "#");
 
-        if (inverterRealtimeResponse == null || inverterRealtimeResponse.getBody() == null
-                || inverterRealtimeResponse.getBody().getData() == null) {
-            return null;
-        }
-
         String fieldName = fields[0];
 
         switch (fieldName) {
@@ -108,11 +103,6 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 return inverterRealtimeResponse.getBody().getData().getUdc();
         }
 
-        if (powerFlowResponse == null || powerFlowResponse.getBody() == null
-                || powerFlowResponse.getBody().getData() == null
-                || powerFlowResponse.getBody().getData().getSite() == null) {
-            return null;
-        }
         switch (fieldName) {
             case FroniusBindingConstants.PowerFlowpGrid:
                 return powerFlowResponse.getBody().getData().getSite().getPgrid();
@@ -201,7 +191,15 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             if (result == null) {
                 errorMsg = "no data returned";
             } else if (result.getBody() != null) {
-                resultOk = true;
+                if (result.getHead() == null) {
+                    errorMsg = "no header";
+                } else {
+                    if (result.getHead().getStatus().getCode() == 0) {
+                        resultOk = true;
+                    } else {
+                        errorMsg = result.getHead().getStatus().getReason();
+                    }
+                }
             } else {
                 errorMsg = "missing data sub-object";
             }

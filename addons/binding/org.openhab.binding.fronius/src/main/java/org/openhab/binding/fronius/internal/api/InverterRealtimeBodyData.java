@@ -40,6 +40,9 @@ public class InverterRealtimeBodyData {
     private DeviceStatus deviceStatus;
 
     public ValueUnit getDayEnergy() {
+        if (dayEnergy == null) {
+            dayEnergy = new ValueUnit();
+        }
         return dayEnergy;
     }
 
@@ -48,6 +51,9 @@ public class InverterRealtimeBodyData {
     }
 
     public ValueUnit getPac() {
+        if (pac == null) {
+            pac = new ValueUnit();
+        }
         return pac;
     }
 
@@ -56,6 +62,9 @@ public class InverterRealtimeBodyData {
     }
 
     public ValueUnit getTotalEnergy() {
+        if (totalEnergy == null) {
+            totalEnergy = new ValueUnit();
+        }
         return totalEnergy;
     }
 
@@ -64,6 +73,9 @@ public class InverterRealtimeBodyData {
     }
 
     public ValueUnit getYearEnergy() {
+        if (yearEnergy == null) {
+            yearEnergy = new ValueUnit();
+        }
         return yearEnergy;
     }
 
@@ -72,6 +84,9 @@ public class InverterRealtimeBodyData {
     }
 
     public DeviceStatus getDeviceStatus() {
+        if (deviceStatus == null) {
+            deviceStatus = new DeviceStatus();
+        }
         return deviceStatus;
     }
 
@@ -80,6 +95,9 @@ public class InverterRealtimeBodyData {
     }
 
     public ValueUnit getFac() {
+        if (fac == null) {
+            fac = new ValueUnit();
+        }
         return fac;
     }
 
@@ -88,6 +106,9 @@ public class InverterRealtimeBodyData {
     }
 
     public ValueUnit getIac() {
+        if (iac == null) {
+            iac = new ValueUnit();
+        }
         return iac;
     }
 
@@ -96,6 +117,9 @@ public class InverterRealtimeBodyData {
     }
 
     public ValueUnit getIdc() {
+        if (idc == null) {
+            idc = new ValueUnit();
+        }
         return idc;
     }
 
@@ -104,6 +128,9 @@ public class InverterRealtimeBodyData {
     }
 
     public ValueUnit getUac() {
+        if (uac == null) {
+            uac = new ValueUnit();
+        }
         return uac;
     }
 
@@ -112,6 +139,9 @@ public class InverterRealtimeBodyData {
     }
 
     public ValueUnit getUdc() {
+        if (udc == null) {
+            udc = new ValueUnit();
+        }
         return udc;
     }
 
