@@ -220,11 +220,15 @@ public class UplinkWebInterface implements AtomicReferenceUtils {
      */
     private boolean preCheck() {
         String preCheckStatusMessage = "";
-        if (this.config.getPassword() == null || this.config.getPassword().isEmpty()) {
+        String localPassword = this.config.getPassword();
+        String localUser = this.config.getUser();
+        String localNibeId = this.config.getNibeId();
+
+        if (localPassword == null || localPassword.isEmpty()) {
             preCheckStatusMessage = "please configure password first";
-        } else if (this.config.getUser() == null || this.config.getUser().isEmpty()) {
+        } else if (localUser == null || localUser.isEmpty()) {
             preCheckStatusMessage = "please configure user first";
-        } else if (this.config.getNibeId() == null || this.config.getNibeId().isEmpty()) {
+        } else if (localNibeId == null || localNibeId.isEmpty()) {
             preCheckStatusMessage = "please configure nibeId first";
         } else {
             return true;
