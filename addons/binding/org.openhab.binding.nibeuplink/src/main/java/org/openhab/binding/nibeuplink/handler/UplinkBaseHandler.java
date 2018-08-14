@@ -45,6 +45,9 @@ import org.slf4j.LoggerFactory;
 public abstract class UplinkBaseHandler extends BaseThingHandler implements NibeUplinkHandler, AtomicReferenceUtils {
     private final Logger logger = LoggerFactory.getLogger(UplinkBaseHandler.class);
 
+    private final long POLLING_INITIAL_DELAY = 30;
+    private final long HOUSE_KEEPING_INITIAL_DELAY = 300;
+
     private Set<Channel> deadChannels = new HashSet<>(100);
 
     /**
@@ -103,6 +106,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
 
         startPolling();
         webInterface.start();
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting for web api login");
     }
 
     /**
@@ -125,10 +129,10 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
      * Start the polling.
      */
     private void startPolling() {
-        updateJobReference(pollingJobReference,
-                scheduler.scheduleWithFixedDelay(new UplinkPolling(this), 30, refreshInterval, TimeUnit.SECONDS));
-        updateJobReference(deadChannelHouseKeepingReference,
-                scheduler.scheduleWithFixedDelay(deadChannels::clear, 300, houseKeepingInterval, TimeUnit.SECONDS));
+        updateJobReference(pollingJobReference, scheduler.scheduleWithFixedDelay(new UplinkPolling(this),
+                POLLING_INITIAL_DELAY, refreshInterval, TimeUnit.SECONDS));
+        updateJobReference(deadChannelHouseKeepingReference, scheduler.scheduleWithFixedDelay(deadChannels::clear,
+                HOUSE_KEEPING_INITIAL_DELAY, houseKeepingInterval, TimeUnit.SECONDS));
     }
 
     /**
