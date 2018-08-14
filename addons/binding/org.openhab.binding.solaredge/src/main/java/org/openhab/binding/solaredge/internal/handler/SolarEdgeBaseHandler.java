@@ -39,8 +39,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements SolarEdgeHandler, AtomicReferenceUtils {
-
     private final Logger logger = LoggerFactory.getLogger(SolarEdgeBaseHandler.class);
+
+    private final long LIVE_POLLING_INITIAL_DELAY = 1;
+    private final long AGGREGATE_POLLING_INITIAL_DELAY = 2;
 
     /**
      * Interface object for querying the Solaredge web interface
@@ -76,12 +78,9 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
         SolarEdgeConfiguration config = getConfiguration();
         logger.debug("Solaredge initialized with configuration: {}", config);
 
-        if (config.getTokenOrApiKey() != null) {
-            startPolling();
-            webInterface.start();
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no username/password set");
-        }
+        startPolling();
+        webInterface.start();
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting for web api login");
     }
 
     /**
@@ -89,12 +88,13 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
      */
     private void startPolling() {
         updateJobReference(liveDataPollingJobReference,
-                scheduler.scheduleWithFixedDelay(new SolarEdgeLiveDataPolling(this), 1,
+                scheduler.scheduleWithFixedDelay(new SolarEdgeLiveDataPolling(this), LIVE_POLLING_INITIAL_DELAY,
                         getConfiguration().getLiveDataPollingInterval(), TimeUnit.MINUTES));
 
         updateJobReference(aggregateDataPollingJobReference,
-                scheduler.scheduleWithFixedDelay(new SolarEdgeAggregateDataPolling(this), 2,
-                        getConfiguration().getAggregateDataPollingInterval(), TimeUnit.MINUTES));
+                scheduler.scheduleWithFixedDelay(new SolarEdgeAggregateDataPolling(this),
+                        AGGREGATE_POLLING_INITIAL_DELAY, getConfiguration().getAggregateDataPollingInterval(),
+                        TimeUnit.MINUTES));
     }
 
     /**
