@@ -38,6 +38,11 @@ import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.WebSocketListener;
+import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -75,7 +80,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
-public class Connection {
+public class Connection implements WebSocketListener {
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
 
     private final CookieManager cookieManager = new CookieManager();
@@ -551,8 +556,106 @@ public class Connection {
             if (loginTime == null) {
                 loginTime = verifyTime;
             }
+            try {
+                String deviceSerial = "";
+
+                String host;
+                if (StringUtils.equalsIgnoreCase(this.amazonSite, "amazon.com")) {
+                    host = "dp-gw-na-js." + this.amazonSite;
+                } else {
+                    host = "dp-gw-na." + this.amazonSite;
+                }
+
+                StringBuilder cookieHeaderBuilder = new StringBuilder();
+                for (HttpCookie cookie : cookieManager.getCookieStore().get(new URI("wss://" + host))) {
+                    if (cookieHeaderBuilder.length() > 0) {
+                        cookieHeaderBuilder.insert(0, "; ");
+                    }
+                    cookieHeaderBuilder.insert(0, cookie);
+                    if (cookie.getName().equals("ubid-acbde")) {
+                        deviceSerial = cookie.getValue();
+                    }
+
+                }
+                String cookie = cookieHeaderBuilder.toString();
+
+                deviceSerial += "-" + new Date().getTime();
+
+                SslContextFactory sslContextFactory = new SslContextFactory();
+                WebSocketClient webSocketClient = new WebSocketClient(sslContextFactory);
+
+                webSocketClient.start();
+
+                URI uri = new URI(
+                        "wss://" + host + "/?x-amz-device-type=ALEGCNGL9K0HM&x-amz-device-serial=" + deviceSerial);
+                // Logger.debug("Connecting to: {}...", uri);
+                ClientUpgradeRequest request = new ClientUpgradeRequest();
+                webSocketClient.setCookieStore(cookieManager.getCookieStore());
+                // request.setHeader("cookie", cookie);
+                request.setHeader("host", host);
+                request.setHeader("Cache-Control", "no-cache");
+                request.setHeader("Pragma", "no-cache");
+                request.setHeader("Origin", alexaServer);
+
+                Session session = webSocketClient.connect(this, uri, request).get();
+                long timeout = session.getPolicy().getIdleTimeout();
+
+                /*
+                 * MqttClient client = new MqttClient(
+                 * "wss://dp-gw-na.amazon.de/?x-amz-device-type=ALEGCNGL9K0HM&x-amz-device-serial=" + deviceSerial,
+                 * MqttClient.generateClientId());
+                 * MqttConnectOptions options = new MqttConnectOptions();
+                 * Properties customHeaders = new Properties();
+                 * String cookie = cookieHeaderBuilder.toString();
+                 * customHeaders.setProperty("cookie", cookie);
+                 *
+                 * client.connect(options);
+                 */
+
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
         }
         return result;
+    }
+
+    @Override
+    public void onWebSocketConnect(@Nullable Session session) {
+        // TODO Auto-generated method stub
+        try {
+            if (session != null) {
+                session.getRemote().sendString("0x99d4f71a 0x0000001d A:HTUNE");
+            }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onWebSocketBinary(byte @Nullable [] data, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onWebSocketText(@Nullable String textMessage) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onWebSocketClose(int code, @Nullable String message) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onWebSocketError(@Nullable Throwable error) {
+        // TODO Auto-generated method stub
+
     }
 
     public void logout() {
