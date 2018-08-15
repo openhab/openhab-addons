@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.modbus
 Bundle-ManifestVersion: 2
 Bundle-Name: Modbus Binding
 Bundle-SymbolicName: org.openhab.binding.modbus;singleton:=true
