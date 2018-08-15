@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.voice.googletts
 Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
-Bundle-Name: Google Cloud TTS Service
+Bundle-Name: Google Cloud Text-to-Speech
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.voice.googletts;singleton:=true
 Bundle-Vendor: openHAB

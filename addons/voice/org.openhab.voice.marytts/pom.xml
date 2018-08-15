@@ -12,7 +12,7 @@
   <artifactId>org.openhab.voice.marytts</artifactId>
   <packaging>eclipse-plugin</packaging>
 
-  <name>Mary TTS Integration</name>
+  <name>Mary Text-to-Speech</name>
 
   <build>
 
