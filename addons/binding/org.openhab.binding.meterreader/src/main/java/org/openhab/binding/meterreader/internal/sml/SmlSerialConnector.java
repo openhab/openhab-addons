@@ -99,8 +99,9 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
                 serialPort.notifyOnDataAvailable(true);
                 is = new DataInputStream(new BufferedInputStream(serialPort.getInputStream()));
                 os = new DataOutputStream(new BufferedOutputStream(serialPort.getOutputStream()));
+            } else {
+                throw new IllegalStateException(MessageFormat.format("No provider for port {0} found", getPortName()));
             }
-            throw new IllegalStateException(MessageFormat.format("Cannot open connection to {0}", getPortName()));
 
         } catch (Exception e) {
             throw new IOException(MessageFormat.format(
