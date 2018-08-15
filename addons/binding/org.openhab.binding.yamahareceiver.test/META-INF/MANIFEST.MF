@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.yamahareceiver.test
 Bundle-ManifestVersion: 2
 Bundle-Name: YamahaReceiver Binding Tests
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -29,4 +30,3 @@ Import-Package:
  org.osgi.framework,
  org.osgi.service.device,
  org.slf4j
-
