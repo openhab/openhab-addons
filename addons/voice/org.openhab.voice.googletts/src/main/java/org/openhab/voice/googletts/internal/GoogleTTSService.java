@@ -47,7 +47,7 @@ public class GoogleTTSService implements TTSService {
     /**
      * Service name
      */
-    static final String SERVICE_NAME = "Google Cloud TTS Service";
+    static final String SERVICE_NAME = "Google Cloud";
 
     /**
      * Service id
