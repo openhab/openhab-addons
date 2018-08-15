@@ -218,7 +218,7 @@ public class MaryTTSService implements TTSService {
 
     @Override
     public String getLabel(Locale locale) {
-        return "Mary Text-to-Speech Engine";
+        return "MaryTTS";
     }
 
 }
