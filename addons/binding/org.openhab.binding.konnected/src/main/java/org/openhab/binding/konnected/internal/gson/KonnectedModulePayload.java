@@ -9,6 +9,7 @@
 package org.openhab.binding.konnected.internal.gson;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -21,6 +22,12 @@ import com.google.gson.annotations.SerializedName;
  */
 public class KonnectedModulePayload {
 
+    private Set<KonnectedModuleGson> sensors;
+    private Set<KonnectedModuleGson> actuators;
+    @SerializedName("token")
+    private String authToken;
+    private String apiUrl;
+
     public KonnectedModulePayload(String authTokenPassed, String apiURLPassed) {
         this.authToken = authTokenPassed;
         this.apiUrl = apiURLPassed;
@@ -28,10 +35,7 @@ public class KonnectedModulePayload {
         this.actuators = new HashSet<KonnectedModuleGson>();
     }
 
-    @SerializedName("sensors")
-    HashSet<KonnectedModuleGson> sensors;
-
-    public HashSet<KonnectedModuleGson> getSensors() {
+    public Set<KonnectedModuleGson> getSensors() {
         return sensors;
     }
 
@@ -43,10 +47,7 @@ public class KonnectedModulePayload {
         this.sensors.remove(sensor);
     }
 
-    @SerializedName("actuators")
-    HashSet<KonnectedModuleGson> actuators;
-
-    public HashSet<KonnectedModuleGson> getActuators() {
+    public Set<KonnectedModuleGson> getActuators() {
         return actuators;
     }
 
@@ -58,15 +59,9 @@ public class KonnectedModulePayload {
         this.actuators.remove(actuator);
     }
 
-    @SerializedName("token")
-    String authToken;
-
     public String getToken() {
         return authToken;
     }
-
-    @SerializedName("apiUrl")
-    String apiUrl;
 
     public String getapiUrl() {
         return apiUrl;

@@ -46,12 +46,12 @@ import org.slf4j.LoggerFactory;
  */
 @Component(configurationPid = "binding.konnected", service = ThingHandlerFactory.class)
 public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
+    private final Logger logger = LoggerFactory.getLogger(KonnectedHandlerFactory.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MODULE);
     private Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
     private HttpService httpService;
     private String callbackUrl = null;
     private NetworkAddressService networkAddressService;
-    private final Logger logger = LoggerFactory.getLogger(KonnectedHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

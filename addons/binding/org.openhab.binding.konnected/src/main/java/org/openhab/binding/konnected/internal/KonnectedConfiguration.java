@@ -25,9 +25,6 @@ public class KonnectedConfiguration extends Configuration {
      *                        Allows for manual identification of the host ip address of the openHAB server the
      *                        Konnected module
      *                        should send messages to
-     *
-     * @param isAct1
-     *                        Boolean parameter that indicates that zone 1 is an actuator
      */
     public String authToken;
     public String hostAddress;

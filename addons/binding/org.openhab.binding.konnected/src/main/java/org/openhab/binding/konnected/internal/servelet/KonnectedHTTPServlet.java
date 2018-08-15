@@ -31,17 +31,17 @@ import com.google.gson.Gson;
  * @author Zachary Christiansen - Initial contribution
  */
 public class KonnectedHTTPServlet extends HttpServlet {
+    private final Logger logger = LoggerFactory.getLogger(KonnectedHTTPServlet.class);
+
     private static final long serialVersionUID = 1288539782077957954L;
     private static final String PATH = "/Konnected";
     private static final String APPLICATION_JSON = "application/json";
     private static final String CHARSET = "utf-8";
     private final Gson gson = new Gson();
 
-    private final Logger logger = LoggerFactory.getLogger(KonnectedHTTPServlet.class);
-
-    private HttpService httpService;
+    private final HttpService httpService;
     private KonnectedHandler thingHandler;
-    private String path;
+    private final String path;
 
     public KonnectedHTTPServlet(HttpService httpService, String id) {
         this.httpService = httpService;
@@ -61,7 +61,7 @@ public class KonnectedHTTPServlet extends HttpServlet {
             httpService.registerServlet(path, this, null, httpService.createDefaultHttpContext());
             logger.debug("Started Konnected Webhook servlet at {}", path);
         } catch (ServletException | NamespaceException e) {
-            throw new KonnectedWebHookFail("Could not start Konnected Webhook servlet: " + e.getMessage());
+            throw new KonnectedWebHookFail("Could not start Konnected Webhook servlet: " + e.getMessage(), e);
         }
     }
 
@@ -109,8 +109,8 @@ public class KonnectedHTTPServlet extends HttpServlet {
      * Custom exception class to be thrown by servlet when unable to start.
      */
     public class KonnectedWebHookFail extends Exception {
-        public KonnectedWebHookFail(String message) {
-            super(message);
+        public KonnectedWebHookFail(String message, Throwable cause) {
+            super(message, cause);
         }
     }
 

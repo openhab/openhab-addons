@@ -19,8 +19,10 @@ import com.google.gson.annotations.SerializedName;
  */
 public class KonnectedModuleGson {
 
-    @SerializedName("pin")
-    String pin;
+    private String pin;
+    private String state;
+    @SerializedName("Auth_Token")
+    private String authToken;
 
     public String getPin() {
         return pin;
@@ -30,9 +32,6 @@ public class KonnectedModuleGson {
         this.pin = setPin;
     }
 
-    @SerializedName("state")
-    String state;
-
     public String getState() {
         return state;
     }
@@ -40,9 +39,6 @@ public class KonnectedModuleGson {
     public void setState(String setState) {
         this.state = setState;
     }
-
-    @SerializedName("Auth_Token")
-    String authToken;
 
     public String getAuthToken() {
         return authToken;

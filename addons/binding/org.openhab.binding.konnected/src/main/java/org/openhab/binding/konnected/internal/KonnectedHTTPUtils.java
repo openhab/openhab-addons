@@ -28,9 +28,6 @@ public class KonnectedHTTPUtils {
     private static final int REQUEST_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(30);
     private String logTest = "";
 
-    public KonnectedHTTPUtils() {
-    }
-
     /**
      * Sends a {@link doPut} request with a timeout of 30 seconds
      *
