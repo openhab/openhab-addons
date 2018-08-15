@@ -276,13 +276,22 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
 
             synchronized (storage) {
                 for (int value : storage.values()) {
+
+                    /*
+                     * Rain counters have been seen to wrap at 127 and also at 255.
+                     * The Meteostick documentation only mentions 255 at the time of
+                     * this writing. This potential difference is solved by having
+                     * all rain counters wrap at 127 (0x7F) by removing the high bit.
+                     */
+                    value &= 0x7F;
+
                     if (least == -1) {
                         least = value;
                         continue;
                     }
 
                     if (value < least) {
-                        total = 256 - least + value;
+                        total = 128 - least + value;
                     } else {
                         total = value - least;
                     }
