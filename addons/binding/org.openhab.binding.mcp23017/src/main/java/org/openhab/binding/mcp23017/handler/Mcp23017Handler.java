@@ -15,6 +15,7 @@ import java.io.IOException;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -57,13 +58,10 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
 
     public Mcp23017Handler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public void initialize() {
         checkConfiguration();
         mcpProvider = initializeMcpProvider();
         pinStateHolder = new Mcp23017PinStateHolder(mcpProvider, this.thing);
+
     }
 
     @Override
@@ -85,6 +83,21 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
                 handleOutputCommand(channelUID, command);
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
+        for (Channel channel : this.thing.getChannels()) {
+            if (isLinked(channel.getUID())) {
+                String channelGroup = channel.getUID().getGroupId();
+
+                if (channelGroup.equals(CHANNEL_GROUP_INPUT)) {
+                    channelLinked(channel.getUID());
+                }
+            }
         }
     }
 
@@ -158,7 +171,7 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
         Pin pin = PinMapper.get(channel.getIdWithoutGroup());
 
         String pullMode = DEFAULT_PULL_MODE;
-        if (thing.getChannel(channel.getId ()) != null) {
+        if (thing.getChannel(channel.getId()) != null) {
             Configuration configuration = thing.getChannel(channel.getId()).getConfiguration();
             pullMode = ((String) configuration.get(PULL_MODE)) != null ? ((String) configuration.get(PULL_MODE))
                     : DEFAULT_PULL_MODE;
@@ -192,18 +205,22 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        logger.debug("channel linked {}", channelUID.getAsString());
-        if (!verifyChannel(channelUID)) {
-            return;
-        }
-        String channelGroup = channelUID.getGroupId();
+        synchronized (this) {
+            logger.debug("channel linked {}", channelUID.getAsString());
+            if (!verifyChannel(channelUID)) {
+                return;
+            }
+            String channelGroup = channelUID.getGroupId();
 
-        if (channelGroup.equals(CHANNEL_GROUP_INPUT)) {
-            GpioPinDigitalInput inputPin = initializeInputPin(channelUID);
-            pinStateHolder.addInputPin(inputPin, channelUID);
+            if (channelGroup != null && channelGroup.equals(CHANNEL_GROUP_INPUT)) {
+                if (pinStateHolder.getInputPin(channelUID) != null) {
+                    return;
+                }
+                GpioPinDigitalInput inputPin = initializeInputPin(channelUID);
+                pinStateHolder.addInputPin(inputPin, channelUID);
 
+            }
+            super.channelLinked(channelUID);
         }
-        super.channelLinked(channelUID);
     }
-
 }
