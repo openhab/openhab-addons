@@ -244,6 +244,7 @@ public class EchoHandler extends BaseThingHandler {
                         parameters.put("value", volume);
                         connection.executeSequenceCommand(device, "Alexa.DeviceControls.Volume", parameters);
                     }
+                    lastKnownVolume = volume;
                 }
             }
             // shuffle command
