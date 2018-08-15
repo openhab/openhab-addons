@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.modbus.test
 Bundle-ManifestVersion: 2
 Bundle-Name: Modbus Binding Tests
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

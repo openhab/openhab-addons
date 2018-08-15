@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.io.neeo
 Bundle-ManifestVersion: 2
 Bundle-Name: Neeo Integration
 Bundle-SymbolicName: org.openhab.io.neeo;singleton:=true
