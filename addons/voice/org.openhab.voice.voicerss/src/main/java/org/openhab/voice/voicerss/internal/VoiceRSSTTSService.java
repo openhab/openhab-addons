@@ -226,6 +226,6 @@ public class VoiceRSSTTSService implements TTSService {
 
     @Override
     public String getLabel(Locale locale) {
-        return "VoiceRSS Text-to-Speech Engine";
+        return "VoiceRSS";
     }
 }
