@@ -70,7 +70,7 @@
 		<item-type>Switch</item-type>
 		<label>External ERS accessory block status</label>
 		<description>Indicates if the ERS accessory is externaly blocked.</description>
-	<state readOnly="true"></state>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="vvm320-type-43437">
 		<item-type>Number:Dimensionless</item-type>
@@ -199,17 +199,21 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm320-type-44702">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>EB101-EP14 Protection Status Register Outdoor Unit</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
-		</state>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="vvm320-type-44703">
 		<item-type>Number</item-type>
 		<label>EB101-EP14 Defrosting Outdoor Unit</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state readOnly="true">
+			<options>
+				<option value="0">No</option>
+				<option value="1">Active</option>
+				<option value="2">Passive</option>
+			</options>
 		</state>
 	</channel-type>
 	<channel-type id="vvm320-type-47011">
@@ -223,7 +227,14 @@
 		<item-type>Number</item-type>
 		<label>Selected Fan speed</label>
 		<description></description>
-		<state pattern="%d" readOnly="false">
+		<state readOnly="false">
+			<options>
+				<option value="0">normal</option>
+				<option value="1">speed 1</option>
+				<option value="2">speed 2</option>
+				<option value="3">speed 3</option>
+				<option value="4">speed 4</option>
+			</options>
 		</state>
 	</channel-type>
 	<channel-type id="vvm320-type-47394">
