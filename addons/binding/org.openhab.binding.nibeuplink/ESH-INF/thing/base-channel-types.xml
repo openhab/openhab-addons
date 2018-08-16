@@ -180,6 +180,55 @@
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="base-type-47043">
+		<item-type>Number:Temperature</item-type>
+		<label>Start temperature HW Luxury</label>
+		<description>Start temperature for heating water in Luxory mode</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-47044">
+		<item-type>Number:Temperature</item-type>
+		<label>Start temperature HW Normal</label>
+		<description>Start temperature for heating water in Normal mode</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-47045">
+		<item-type>Number:Temperature</item-type>
+		<label>Start temperature HW Economy</label>
+		<description>Start temperature for heating water in Economy mode</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-47046">
+		<item-type>Number:Temperature</item-type>
+		<label>Stop temperature Periodic HW</label>
+		<description>Stop temperature for heating water in periodic heating</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-47047">
+		<item-type>Number:Temperature</item-type>
+		<label>Stop temperature HW Luxury</label>
+		<description>Stop temperature for heating water in Luxory mode</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-47048">
+		<item-type>Number:Temperature</item-type>
+		<label>Stop temperature HW Normal</label>
+		<description>Stop temperature for heating water in Normal mode</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-47049">
+		<item-type>Number:Temperature</item-type>
+		<label>Stop temperature HW Economy</label>
+		<description>Stop temperature for heating water in Economy mode</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="base-type-47212">
 		<item-type>Number:Power</item-type>
 		<label>Max int add. power</label>

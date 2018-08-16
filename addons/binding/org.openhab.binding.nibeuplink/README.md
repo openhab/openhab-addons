@@ -114,6 +114,13 @@ Available channels depend on the specific heatpump model. Following models/chann
 | hotwater#44298  | Number:Energy          | 0      | 9999999    | No       | Heat Meter - HW Cpr and Add EP14           |                                               |
 | hotwater#48132  | Number                 | ---    | ---        | Yes      | Temporary Lux                              | 0=Off, 1=3h, 2=6h, 3=12h, 4=One time increase |
 | hotwater#47041  | Number                 | ---    | ---        | Yes      | Hot water mode                             | 0=Economy, 1=Normal, 2=Luxury                 |
+| hotwater#47045  | Number                 | 5      | 70         | No       | Start temperature HW Economy               |                                               |
+| hotwater#47049  | Number                 | 5      | 70         | No       | Stop temperature HW Economy                |                                               |
+| hotwater#47044  | Number                 | 5      | 70         | No       | Start temperature HW Normal                |                                               |
+| hotwater#47048  | Number                 | 5      | 70         | No       | Stop temperature HW Normal                 |                                               |
+| hotwater#47043  | Number                 | 5      | 70         | No       | Start temperature HW Luxury                |                                               |
+| hotwater#47047  | Number                 | 5      | 70         | No       | Stop temperature HW Luxury                 |                                               |
+| hotwater#47046  | Number                 | 55     | 70         | No       | Stop temperature Periodic HW               |                                               |
 
 ### F730
 
