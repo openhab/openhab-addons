@@ -32,7 +32,7 @@ public class GenericDataResponse implements DataResponse {
         @SerializedName("CurrentValue")
         private String currentValue;
         @SerializedName("CurrentIntValue")
-        private String currentIntValue;
+        private Long currentIntValue;
         @SerializedName("IsLoading")
         private boolean isLoading;
     }
@@ -49,8 +49,8 @@ public class GenericDataResponse implements DataResponse {
     private List<Value> values = new ArrayList<>();
 
     @Override
-    public Map<String, String> getValues() {
-        Map<String, String> valueMap = new HashMap<>();
+    public Map<String, Long> getValues() {
+        Map<String, Long> valueMap = new HashMap<>();
         for (Value value : values) {
             if (!value.isLoading) {
                 if (logger.isDebugEnabled()) {

@@ -19,5 +19,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface DataResponse {
-    Map<String, String> getValues();
+    Map<String, Long> getValues();
 }

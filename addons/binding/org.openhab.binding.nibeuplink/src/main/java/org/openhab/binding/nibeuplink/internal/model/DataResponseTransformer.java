@@ -18,7 +18,6 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nibeuplink.handler.ChannelProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,37 +38,30 @@ public class DataResponseTransformer {
     }
 
     public Map<Channel, State> transform(DataResponse response) {
-        Map<String, String> source = response.getValues();
+        Map<String, Long> source = response.getValues();
         Map<Channel, State> result = new HashMap<>(source.size());
 
         for (String channelId : source.keySet()) {
-            String valueAsString = source.get(channelId);
+            Long value = source.get(channelId);
 
             Channel channel = channelProvider.getSpecificChannel(channelId);
             if (channel == null) {
                 // This should not happen but we want to get informed about it
                 logger.warn("Channel not found: {}", channelId);
             } else {
-                try {
-                    double value = Double.parseDouble(valueAsString);
+                if (channel instanceof QuantityChannel) {
+                    Unit<?> unit = ((QuantityChannel) channel).getUnit();
+                    logger.debug("Channel {} transformed to QuantityType ({} {})", channel.getFQName(), value,
+                            unit.toString());
+                    result.put(channel, new QuantityType<>(value, unit));
+                } else if (channel instanceof SwitchChannel) {
+                    logger.debug("Channel {} transformed to OnOffType ({})", channel.getFQName(), value);
+                    OnOffType mapped = ((SwitchChannel) channel).mapValue(value);
+                    result.put(channel, mapped);
+                } else {
+                    logger.debug("Channel {} transformed to NumberType ({})", channel.getFQName(), value);
+                    result.put(channel, new DecimalType(value));
 
-                    if (channel instanceof QuantityChannel) {
-                        Unit<?> unit = ((QuantityChannel) channel).getUnit();
-                        logger.debug("Channel {} transformed to QuantityType ({} {})", channel.getFQName(), value,
-                                unit.toString());
-                        result.put(channel, new QuantityType<>(value, unit));
-                    } else if (channel instanceof SwitchChannel) {
-                        OnOffType mapped = ((SwitchChannel) channel).mapValue(value);
-                        result.put(channel, mapped);
-                    } else {
-                        logger.debug("Channel {} transformed to NumberType ({})", channel.getFQName(), value);
-                        result.put(channel, new DecimalType(value));
-
-                    }
-                } catch (NumberFormatException ex) {
-                    logger.info("Could not parse value '{}' as double. Channel: {}", valueAsString,
-                            channel.getFQName());
-                    result.put(channel, UnDefType.UNDEF);
                 }
             }
         }
