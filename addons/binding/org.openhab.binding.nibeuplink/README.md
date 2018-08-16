@@ -120,22 +120,19 @@ Number                  NIBE_CUSTOM_01         "Custom 01"                      
 
 ### Transformations
 
-Please define each state both as integer and decimal value. Otherwise you might run into issues.
+Please define each state both as integer.
 
 ```
 0=Eco
-0.0=Eco
 1=Norm
-1.0=Norm
 2=Lux
-2.0=lux
 ```
 
 
 ### Sitemaps
 
-Please take care of the status channels. Although all values are integers those values should be mapped to decimals like this:
+Please take care of the status channels. If you use selection items an automatic mapping will be applied. If you prefer switch items a mapping must be applied like this:
 
 ```
-Switch item=NIBE_HW_MODE mappings=[0.0="Eco", 1.0="Norm"]
+Switch item=NIBE_HW_MODE mappings=[0="Eco", 1="Norm"]
 ```

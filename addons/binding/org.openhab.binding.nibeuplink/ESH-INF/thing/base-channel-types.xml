@@ -171,8 +171,13 @@
 	<channel-type id="base-type-47041">
 		<item-type>Number</item-type>
 		<label>Hot water mode</label>
-		<description> 0=Economy 1=Normal 2=Luxury</description>
-		<state pattern="%d" readOnly="false">
+		<description>The currently active hotwater mode</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Economy</option>
+				<option value="1">Normal</option>
+				<option value="2">Luxury</option>
+			</options>
 		</state>
 	</channel-type>
 	<channel-type id="base-type-47212">
@@ -190,8 +195,15 @@
 	<channel-type id="base-type-48132">
 		<item-type>Number</item-type>
 		<label>Temporary Lux</label>
-		<description>0=Off, 1=3h, 2=6h, 3=12h, 4=One time increase</description>
-		<state min="0" max="4" step="1" pattern="%d" readOnly="false">
+		<description>Temporary hot water lux mode</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">3h</option>
+				<option value="2">6h</option>
+				<option value="3">12h</option>
+				<option value="4">One time</option>
+			</options>
 		</state>
 	</channel-type>
 	<channel-type id="base-type-48914">

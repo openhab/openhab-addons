@@ -178,14 +178,14 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-44699">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number:Pressure</item-type>
 		<label>EB101-EP14-BP4 Pressure Sensor</label>
 		<description></description>
 		<state pattern="%.1f bar" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-44700">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number:Pressure</item-type>
 		<label>EB101-EP14 Low Pressure Sensor Outdoor Unit</label>
 		<description></description>
 		<state pattern="%.1f bar" readOnly="true">
@@ -202,13 +202,12 @@
 		<item-type>Switch</item-type>
 		<label>EB101-EP14 Protection Status Register Outdoor Unit</label>
 		<description></description>
-		<state readOnly="true">
-		</state>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="vvm310-type-44703">
 		<item-type>Number</item-type>
 		<label>EB101-EP14 Defrosting Outdoor Unit</label>
-		<description></description>
+		<description>Defrosting state of the outdoor unit</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">No</option>
@@ -227,7 +226,7 @@
 	<channel-type id="vvm310-type-47260">
 		<item-type>Number</item-type>
 		<label>Selected Fan speed</label>
-		<description></description>
+		<description>Currently selected fan speed</description>
 		<state readOnly="false">
 			<options>
 				<option value="0">normal</option>

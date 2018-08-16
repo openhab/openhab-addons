@@ -207,7 +207,7 @@
 	<channel-type id="vvm320-type-44703">
 		<item-type>Number</item-type>
 		<label>EB101-EP14 Defrosting Outdoor Unit</label>
-		<description></description>
+		<description>Defrosting state of the outdoor unit</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">No</option>
@@ -226,7 +226,7 @@
 	<channel-type id="vvm320-type-47260">
 		<item-type>Number</item-type>
 		<label>Selected Fan speed</label>
-		<description></description>
+		<description>Currently selected fan speed</description>
 		<state readOnly="false">
 			<options>
 				<option value="0">normal</option>
