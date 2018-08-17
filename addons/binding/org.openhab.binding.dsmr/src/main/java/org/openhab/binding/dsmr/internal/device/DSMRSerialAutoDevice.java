@@ -65,7 +65,7 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
     /*
      * Februari 2017
      * Due to the Dutch Smart Meter program where every residence is provided
-     * a smart for free and the meters are DSMR V4 or higher
+     * a smart for free and the smart meters are DSMR V4 or higher
      * we assume the majority of meters communicate with HIGH_SPEED_SETTINGS
      * For older meters this means initializing is taking probably 1 minute
      */
@@ -82,7 +82,7 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
 
     /**
      * Time in seconds in which period valid data is expected during discovery. If exceeded without success the baudrate
-     * is switches
+     * is switched
      */
     private final int baudrateSwitchTimeoutSeconds;
 

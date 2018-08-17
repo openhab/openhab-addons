@@ -25,6 +25,6 @@ public enum DSMRConnectorErrorEvent {
      * @return the event details
      */
     public String getEventDetails() {
-        return "@text/error.connector" + name().toLowerCase();
+        return "@text/error.connector." + name().toLowerCase();
     }
 }

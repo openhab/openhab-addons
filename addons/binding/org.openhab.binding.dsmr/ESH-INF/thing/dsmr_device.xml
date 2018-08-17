@@ -3,7 +3,7 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="dsmrBridge" listed="true">
+	<bridge-type id="dsmrBridge">
 		<label>Dutch Smart Meter</label>
 		<description>The Dutch Smart Meter device</description>
 

@@ -60,7 +60,6 @@ public class DSMRSerialSettings {
     private final int stopbits;
 
     /**
-     *
      * Construct a new {@link DSMRSerialSettings} object.
      *
      * @param baudrate baudrate of the port

@@ -201,7 +201,6 @@ public class OBISIdentifier {
         }
 
         return result;
-
     }
 
     @Override

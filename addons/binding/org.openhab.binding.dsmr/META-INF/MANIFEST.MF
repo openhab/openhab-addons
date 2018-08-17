@@ -30,6 +30,5 @@ Import-Package:
  org.openhab.binding.dsmr,
  org.openhab.binding.dsmr.handler,
  org.osgi.framework,
- org.slf4j,
- tec.uom.se.quantity
+ org.slf4j
 Service-Component: OSGI-INF/*.xml

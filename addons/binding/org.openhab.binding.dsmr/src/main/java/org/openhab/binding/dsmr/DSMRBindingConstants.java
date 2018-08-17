@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.dsmr;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author M. Volaart - Initial contribution
  * @author Hilbrand Bouwkamp - Removed time constants
  */
+@NonNullByDefault
 public final class DSMRBindingConstants {
     /**
      * Binding id.

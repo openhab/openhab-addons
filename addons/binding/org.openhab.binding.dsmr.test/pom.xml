@@ -14,11 +14,6 @@
 
 	<name>DSMR Binding Tests</name>
 
-	<properties>
-		<bundle.symbolicName>org.openhab.binding.dsmr.test</bundle.symbolicName>
-		<bundle.namespace>org.openhab.binding.dsmr</bundle.namespace>
-	</properties>
-
 	<build>
 		<plugins>
 			<plugin>

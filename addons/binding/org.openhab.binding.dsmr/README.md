@@ -2,19 +2,29 @@
 
 ## Introduction
 
-The DSMR-binding is targeted towards Dutch users having a smart meter (Dutch: 'Slimme meter'). Data of Dutch smart meters can be obtained via the P1-port. When connecting this port from a serial port the data can be read out.
+The DSMR-binding is targeted towards Dutch users having a smart meter (Dutch: 'Slimme meter').
+Data of Dutch smart meters can be obtained via the P1-port.
+When connecting this port from a serial port the data can be read out.
 
-This binding reads the P1-port of the Dutch Smart Meters that comply to NTA8130, DSMR v2.1, DSMR v2.2, DSMR v3.0, DSMR v4.0, DSMR v4.04, and DSMR 5.0. Although DSMR v4.2 is not an official specification, the binding has support for this version.
+This binding reads the P1-port of the Dutch Smart Meters that comply to NTA8130, DSMR v2.1, DSMR v2.2, DSMR v3.0, DSMR v4.0, DSMR v4.04, and DSMR 5.0.
+Although DSMR v4.2 is not an official specification, the binding has support for this version.
 
-If you are not living in the Netherlands but do want to read a meter please have look at the [IEC-62056-21 Meter Binding](https://github.com/openhab/openhab1-addons/wiki/IEC-62056---21-Meter-Binding). Because the Dutch Meter standard is based on the IEC-62056-21 standard it might be desirable to build support for other country metering systems based on that standard in this binding.
+If you are not living in the Netherlands but do want to read a meter please have look at the [IEC-62056-21 Meter Binding](https://github.com/openhab/openhab1-addons/wiki/IEC-62056---21-Meter-Binding).
+Because the Dutch Meter standard is based on the IEC-62056-21 standard it might be desirable to build support for other country metering systems based on that standard in this binding.
 
 ## Supported Things
 
-- dsmrBridge: This is the device that communicated between the binding (serial) and its internal meters. You always have to have a 'Dutch Smart Meter'-bridge. The bridge contains the serial port configuration. Specific meters are bound via the bridge to the smart meter. A smart meter consists typically out of minimal 2 meters. A generic meter and the electricity meter. Each meter is bound to the DSMR protocol the physical meter supports. For each meter it is possible to set a refresh rate at which the status is updated. The physical meter might update with a high frequency per second, while it's desired to have only values per minute.
+`dsmrBridge`: This is the device that communicated between the binding (serial) and its internal meters.
+You always have to have a 'Dutch Smart Meter'-bridge. The bridge contains the serial port configuration.
+Specific meters are bound via the bridge to the smart meter. A smart meter consists typically out of minimal 2 meters.
+A generic meter and the electricity meter. Each meter is bound to the DSMR protocol the physical meter supports.
+For each meter it is possible to set a refresh rate at which the status is updated.
+The physical meter might update with a high frequency per second, while it's desired to have only values per minute.
 
 ### Discovery
 
-Both bridges and meters can be discovered via the discovery process. If a bridge is manually configured it is possible to auto detect available meters.
+Both bridges and meters can be discovered via the discovery process.
+If a bridge is manually configured it is possible to auto detect available meters.
 
 
 #### Configuration
@@ -28,7 +38,7 @@ The configuration for the Bridge consists of the following parameters:
 | enableAutoDetection | When true serial port configuration is auto detected, default is true                                       |
 | baudrate            | Baudrate when no auto detect. valid values: 4800, 9600, 19200, 38400, 57600, 115200                         |
 | databits            | Data bits when no auto detect. valid values: 5, 6, 7, 8                                                     |
-| parity              | Parity when no auto detect. valid values: E(even), N(one), O(dd)                                            |
+| parity              | Parity when no auto detect. valid values: E(ven), N(one), O(dd)                                            |
 | stopbits            | Stop bits when no auto detect. valid values: 1, 1.5, 2                                                      |
 
 Only when `enableAutoDetection` is set to false the manual port configuration settings will be active.
@@ -76,7 +86,8 @@ Supported meters:
 | DSMR V4.x m3 meter (gas or water)               | `m3_v4`                      | *note 1*      | 1 hour       |
 | DSMR V5 m3 meter (gas or water)                 | `m3_v5_0`                    | *note 1*      | 5 minutes    |
 
-*note 1*. The channel of these meters is dependent on the physical installation and corresponds to the M-Bus channel. You can ask your supplier / installer for this information or you can retrieve it from the logfiles (see *Determine M-Bus channel*).
+*note 1*. The channel of these meters is dependent on the physical installation and corresponds to the M-Bus channel.
+You can ask your supplier / installer for this information or you can retrieve it from the logfiles (see *Determine M-Bus channel*).
 
 #### Configuration
 

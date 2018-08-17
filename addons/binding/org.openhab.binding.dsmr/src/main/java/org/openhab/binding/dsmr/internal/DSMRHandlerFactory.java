@@ -114,8 +114,8 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
 
         discoveryService.setLocaleProvider(localeProvider);
         discoveryService.setTranslationProvider(i18nProvider);
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     @Override

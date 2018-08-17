@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.dsmr.internal.meter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Class containing constants that are applicable to the DSMRMeter
  *
  * @author M. Volaart - Initial contribution
  */
+@NonNullByDefault
 public final class DSMRMeterConstants {
 
     /**

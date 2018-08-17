@@ -145,7 +145,6 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
                 logger.debug("Failed to get inputstream for serialPort", ioe);
 
                 errorEvent = DSMRConnectorErrorEvent.READ_ERROR;
-                // return;
             } catch (TooManyListenersException tmle) {
                 logger.warn("Possible bug because a listener was added while one already set.", tmle);
 

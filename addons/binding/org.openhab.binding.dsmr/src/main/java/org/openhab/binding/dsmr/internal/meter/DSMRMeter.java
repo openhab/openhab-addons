@@ -40,7 +40,7 @@ public class DSMRMeter {
     /**
      * List of supported message identifiers for this meter
      */
-    private List<OBISIdentifier> supportedIdentifiers;
+    private List<OBISIdentifier> supportedIdentifiers = new ArrayList<>();
 
     /**
      * Creates a new DSMRMeter
@@ -49,8 +49,6 @@ public class DSMRMeter {
      */
     public DSMRMeter(DSMRMeterDescriptor meterDescriptor) {
         this.meterDescriptor = meterDescriptor;
-
-        supportedIdentifiers = new ArrayList<>();
 
         for (CosemObjectType msgType : meterDescriptor.getMeterType().supportedCosemObjects) {
             OBISIdentifier obisId = msgType.obisId;
