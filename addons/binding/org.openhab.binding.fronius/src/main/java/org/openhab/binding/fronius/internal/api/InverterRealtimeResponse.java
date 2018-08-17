@@ -16,12 +16,13 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Thomas Rokohl - Initial contribution
  */
-public class InverterRealtimeResponse {
+public class InverterRealtimeResponse implements IBaseFroniusResponse {
     @SerializedName("Head")
     private Head head;
     @SerializedName("Body")
     private InverterRealtimeBody body;
 
+    @Override
     public Head getHead() {
         if (head == null) {
             head = new Head();

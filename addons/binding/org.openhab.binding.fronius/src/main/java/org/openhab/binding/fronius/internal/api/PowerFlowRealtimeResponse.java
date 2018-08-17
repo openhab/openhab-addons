@@ -16,13 +16,14 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Thomas Rokohl - Initial contribution
  */
-public class PowerFlowRealtimeResponse {
+public class PowerFlowRealtimeResponse implements IBaseFroniusResponse {
     @SerializedName("Head")
     private Head head;
 
     @SerializedName("Body")
     private PowerFlowRealtimeBody body;
 
+    @Override
     public Head getHead() {
         if (head == null) {
             head = new Head();

@@ -43,7 +43,7 @@ public class PowerFlowRealtimeSite {
 
     public String getMode() {
         if (mode == null) {
-            mode = new String();
+            mode = "";
         }
         return mode;
     }
