@@ -58,7 +58,7 @@ public class MaryTTSVoice implements Voice {
      */
     @Override
     public String getLabel() {
-        return this.label;
+        return label;
     }
 
     /**
@@ -66,6 +66,6 @@ public class MaryTTSVoice implements Voice {
      */
     @Override
     public Locale getLocale() {
-        return this.locale;
+        return locale;
     }
 }
