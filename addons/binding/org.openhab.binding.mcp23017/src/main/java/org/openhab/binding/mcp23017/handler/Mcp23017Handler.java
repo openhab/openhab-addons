@@ -58,9 +58,6 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
 
     public Mcp23017Handler(Thing thing) {
         super(thing);
-        checkConfiguration();
-        mcpProvider = initializeMcpProvider();
-        pinStateHolder = new Mcp23017PinStateHolder(mcpProvider, this.thing);
 
     }
 
@@ -88,16 +85,14 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
 
     @Override
     public void initialize() {
-        super.initialize();
-
-        for (Channel channel : this.thing.getChannels()) {
-            if (isLinked(channel.getUID())) {
-                String channelGroup = channel.getUID().getGroupId();
-
-                if (channelGroup.equals(CHANNEL_GROUP_INPUT)) {
-                    channelLinked(channel.getUID());
-                }
-            }
+        try {
+            checkConfiguration();
+            mcpProvider = initializeMcpProvider();
+            pinStateHolder = new Mcp23017PinStateHolder(mcpProvider, this.thing);
+            updateStatus(ThingStatus.ONLINE);
+        } catch (IllegalArgumentException | SecurityException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "An exception occurred while adding pin. Check pin configuration. Exception: " + e.getMessage());
         }
     }
 
@@ -144,12 +139,6 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
         Configuration configuration = getConfig();
         address = Integer.parseInt((configuration.get(ADDRESS)).toString(), 16);
         busNumber = Integer.parseInt((configuration.get(BUS_NUMBER)).toString());
-        try {
-            updateStatus(ThingStatus.ONLINE);
-        } catch (IllegalArgumentException | SecurityException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "An exception occurred while adding pin. Check pin configuration. Exception: " + e.getMessage());
-        }
     }
 
     private MCP23017GpioProvider initializeMcpProvider() {
