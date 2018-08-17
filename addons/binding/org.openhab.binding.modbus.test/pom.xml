@@ -12,7 +12,7 @@
   <artifactId>org.openhab.binding.modbus.test</artifactId>
   <packaging>eclipse-test-plugin</packaging>
 
-  <name>modbus Binding Tests</name>
+  <name>Modbus Binding Tests</name>
 
   <dependencies>
     <dependency>
