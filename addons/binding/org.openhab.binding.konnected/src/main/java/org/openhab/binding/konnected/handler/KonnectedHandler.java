@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -28,7 +29,7 @@ import org.openhab.binding.konnected.internal.KonnectedHTTPUtils;
 import org.openhab.binding.konnected.internal.gson.KonnectedModuleGson;
 import org.openhab.binding.konnected.internal.gson.KonnectedModulePayload;
 import org.openhab.binding.konnected.internal.servelet.KonnectedHTTPServlet;
-import org.openhab.binding.konnected.internal.servelet.KonnectedHTTPServlet.KonnectedWebHookFail;
+import org.openhab.binding.konnected.internal.servelet.KonnectedWebHookFail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,19 +62,23 @@ public class KonnectedHandler extends BaseThingHandler {
         super(thing);
         this.webHookServlet = webHookServlet;
         callbackIpAddress = hostAddress + ":" + port;
+        logger.debug("The callback ip address is: {}", callbackIpAddress);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // get the zone number in integer form
         Integer zone = Integer.parseInt(channelUID.getId().substring((channelUID.getId().length() - 1)));
+        logger.debug("The channelUID is: {} and the zone is :", channelUID.getAsString(), zone);
         // convert the zone to the pin based on value at index of zone
         Integer pin = Arrays.asList(PIN_TO_ZONE).get(zone);
         String scommand = command.toString();
         if (scommand.equalsIgnoreCase("ON")) {
             sendActuatorCommand("1", pin);
+            logger.trace("The command being sent to pin {} for channel:  is 1", channelUID.getAsString(), pin);
         } else if (scommand.equalsIgnoreCase("OFF")) {
             sendActuatorCommand("0", pin);
+            logger.trace("The command being sent to pin {} for channel:  is 0", channelUID.getAsString(), pin);
         } else if ((scommand.equalsIgnoreCase("OPEN")) || (scommand.equalsIgnoreCase("CLOSED"))) {
             logger.debug("A command was sent to a sensor type so we are ignoring the command");
         }
@@ -88,14 +93,43 @@ public class KonnectedHandler extends BaseThingHandler {
      */
     public void handleWebHookEvent(String pin, String State, String sentAuth) {
         // get the zone number based off of the index location of the pin value
-        String channelid = "Zone_" + Integer.toString(Arrays.asList(PIN_TO_ZONE).indexOf(Integer.parseInt(pin)));
-        logger.debug("The channelid of the event is: {}, the Auth Token is: {}", channelid, sentAuth);
-        StringType channelstate = new StringType(State);
-        if (sentAuth.endsWith(config.authToken)) {
-            updateState(channelid, channelstate);
-        } else {
-            logger.debug("The auth token sent did not match what was expected so the state was not accepted.");
-        }
+        String sentZone = Integer.toString(Arrays.asList(PIN_TO_ZONE).indexOf(Integer.parseInt(pin)));
+        // check that the zone number is in one of the channelUID definitions
+        getThing().getChannels().forEach(channel -> {
+            ChannelUID channelId = channel.getUID();
+            String zoneNumber = channelId.getId().substring((channelId.getId().length() - 1));
+            // if the string zone that was sent equals the last digit of the channelId found process it as the
+            // channelId else do nothing
+            if (sentZone.equalsIgnoreCase(zoneNumber)) {
+                logger.debug("The channelID of the event is: {}, the Auth Token is: {}", channelId, sentAuth);
+                // check that the auth token sent matches the authToken configured on the Thing
+                if (sentAuth.endsWith(config.authToken)) {
+                    String itemType = channel.getAcceptedItemType();
+                    // check if the itemType has been defined for the zone received
+                    if (itemType == null) {
+                        logger.error(
+                                "The itemType is not configured for channel {} on thing {}, please get your configuration.",
+                                channelId, getThing().getThingTypeUID().toString());
+                    } else {
+                        // if it is itemType contact update as OpenClose if Switch send OnOfftype
+                        if (itemType.equalsIgnoreCase("Contact")) {
+                            OpenClosedType openClosedType = State.equalsIgnoreCase("1") ? OpenClosedType.OPEN
+                                    : OpenClosedType.CLOSED;
+                            updateState(channelId, openClosedType);
+                        }
+                    }
+                } else {
+                    logger.warn(
+                            "The auth token: {}  did not match {} configured in the thing {} so the state was not accepted.",
+                            sentAuth, config.authToken, getThing().getThingTypeUID().toString());
+                }
+            } else {
+                // by logging all of the ones that don't match in debug we can see all of the channel ids that have been
+                // defined
+                logger.debug("The channel sent by the module: {} did not match channelId: {} for thing {}", sentZone,
+                        channelId, getThing().getThingTypeUID().toString());
+            }
+        });
     }
 
     @Override
@@ -104,6 +138,8 @@ public class KonnectedHandler extends BaseThingHandler {
         super.handleConfigurationUpdate(configurationParameters);
         try {
             String response = updateKonnectedModule();
+            logger.trace("The response from the konnected module with thingID {} was {}",
+                    getThing().getUID().toString(), response);
             if (response == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Unable to communicate with Konnected Module confirm settings.");
@@ -165,7 +201,7 @@ public class KonnectedHandler extends BaseThingHandler {
             hostPath = getHostName() + webHookServlet.getPath();
             logger.debug("The host path is: {}", hostPath);
         } catch (UnknownHostException e) {
-            logger.debug("Unable to obtain hostname: {}", e);
+            logger.debug("Unable to obtain hostname: {}", e.getMessage());
             return "none";
         }
         String authToken = config.authToken;
@@ -185,12 +221,13 @@ public class KonnectedHandler extends BaseThingHandler {
                 // This is determined based off of the accepted item type, contact types are sensors
                 // switch types are actuators
                 String itemType = channel.getAcceptedItemType();
-                logger.debug("The itemType is: {} ", itemType);
+                logger.trace("The itemType is: {} ", itemType);
                 // if the itemType is a contact then the user has configured this to be a sensor
                 if (itemType.equalsIgnoreCase("contact")) {
                     KonnectedModuleGson module = new KonnectedModuleGson();
                     module.setPin(Integer.toString(pin));
                     payload.addSensor(module);
+                    logger.trace("Channel {} is of type Contact", channel.toString());
                 }
                 // if the itemType is a switch then the user has configure this to be a switch
                 if (itemType.equalsIgnoreCase("Switch")) {
@@ -199,7 +236,7 @@ public class KonnectedHandler extends BaseThingHandler {
                     payload.addActuators(module);
                     StringType state = new StringType("0");
                     updateState(channelId, state);
-                    logger.debug("Channel {} is of type Switch", channel.toString());
+                    logger.trace("Channel {} is of type Switch", channel.toString());
                 } else {
                     logger.debug("Channel {} is of type {} which is not supported by the konnected binding",
                             channel.toString(), itemType);

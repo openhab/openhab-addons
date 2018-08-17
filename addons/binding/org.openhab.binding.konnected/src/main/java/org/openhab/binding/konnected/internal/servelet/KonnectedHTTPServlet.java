@@ -104,14 +104,4 @@ public class KonnectedHTTPServlet extends HttpServlet {
     public String getPath() {
         return path;
     }
-
-    /**
-     * Custom exception class to be thrown by servlet when unable to start.
-     */
-    public class KonnectedWebHookFail extends Exception {
-        public KonnectedWebHookFail(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
 }
