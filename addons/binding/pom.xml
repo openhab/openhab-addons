@@ -45,6 +45,7 @@
     <module>org.openhab.binding.fronius</module>
     <module>org.openhab.binding.ftpupload</module>
     <module>org.openhab.binding.gardena</module>
+    <module>org.openhab.binding.gpstracker</module>
     <module>org.openhab.binding.groheondus</module>
     <module>org.openhab.binding.harmonyhub</module>
     <module>org.openhab.binding.hdanywhere</module>

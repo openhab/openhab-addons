@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	<config-description uri="thing-type:geofence:device">
+		<parameter-group name="networkSettings">
+			<label>Network settings</label>
+			<description>Device network settings</description>
+			<advanced>false</advanced>
+		</parameter-group>
+		<parameter name="ipAddress" type="text" required="false" groupName="networkSettings">
+			<context>network-address</context>
+			<label>Device IP address</label>
+			<description>IP address used by the device for the last report. The binding will update this address
+				until it is declared as static (next flag)
+			</description>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="ipAddressStatic" type="boolean" required="false" groupName="networkSettings">
+			<label>Static IP address</label>
+			<description>Declares the device IP address as static. If set to true the binding will start checking
+				if the device and the openHAB server are on the same local network.
+			</description>
+			<default>false</default>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="pingInterval" type="integer" min="15" max="60" required="false" groupName="networkSettings">
+			<label>Background ping interval</label>
+			<description>Interval of background network pings.</description>
+			<default>15</default>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="externalRegionsJSON" type="text" required="false" readOnly="true">
+			<context>script</context>
+			<label>External regions</label>
+			<description>External region definition received from device</description>
+			<default>[]</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+	<config-description uri="binding:geofence">
+		<parameter-group name="primaryRegion">
+			<label>Primary location</label>
+			<description>Primary location e.g. HOME</description>
+			<advanced>false</advanced>
+		</parameter-group>
+		<parameter name="name" type="text" required="false" groupName="primaryRegion">
+			<label>Name</label>
+			<description>Primary location name. This location uses the coordinates defined at System/Regional
+				settings.
+			</description>
+			<advanced>false</advanced>
+			<default>Home</default>
+		</parameter>
+		<parameter name="location" type="text" required="false" readOnly="true" groupName="primaryRegion">
+			<label>Location</label>
+			<description>This is read-only here. To change the primary location edit the
+				System/Regional Settings.
+			</description>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="radius" type="integer" required="false" groupName="primaryRegion">
+			<label>Radius</label>
+			<description>Radius of the primary location</description>
+			<default>100</default>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="triggerEvent" type="boolean" required="false" groupName="primaryRegion">
+			<label>Use trigger events</label>
+			<description>If set to TRUE entering and leaving the location will trigger an event instead of switching
+				ON/OFF the region switch.
+			</description>
+			<advanced>false</advanced>
+			<default>true</default>
+		</parameter>
+		<parameter name="additionalRegionsJSON" type="text" required="false">
+			<context>script</context>
+			<label>Additional region definition array in JSON format</label>
+			<description>JSON object containing monitored regions definitions.</description>
+			<default>[]</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
