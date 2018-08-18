@@ -89,12 +89,12 @@ The available init commands depend on the sketch that is running on the USB stic
 
 #### LaCrosse temperature sensors
 
-| Channel Type ID | Item Type | Description                                       |
-|-----------------|-----------|---------------------------------------------------|
-| temperature     | Number    | Temperature reading                               |
-| humidity        | Number    | Humidity reading                                  |
-| batteryNew      | Contact   | Whether the battery is new (CLOSED) or not (OPEN) |
-| batteryLow      | Contact   | Whether the battery is low (CLOSED) or not (OPEN) |
+| Channel Type ID | Item Type             | Description                                       |
+|-----------------|-----------------------|---------------------------------------------------|
+| temperature     | Number:Temperature    | Temperature reading                               |
+| humidity        | Number                | Humidity reading                                  |
+| batteryNew      | Contact               | Whether the battery is new (CLOSED) or not (OPEN) |
+| batteryLow      | Contact               | Whether the battery is low (CLOSED) or not (OPEN) |
 
 #### EC3000 power monitors
 
@@ -152,7 +152,7 @@ A typical item configuration for a LaCrosse temperature sensor looks like this:
 
 ```
 Number Humidty_LR "Living Room" <humidity> {channel="jeelink:lacrosse:42:humidity"}
-Number Temperature_LR "Living Room" <temperature> {channel="jeelink:lacrosse:42:temperature"}
+Number:Temperature Temperature_LR "Living Room [%.1f %unit%]" <temperature> {channel="jeelink:lacrosse:42:temperature"}
 Contact Battery_Low_LR "Battery Low Living Room" {channel="jeelink:lacrosse:42:batteryLow"}
 Contact Battery_New_LR "Battery New Living Room" {channel="jeelink:lacrosse:42:batteryLow"}
 ```
