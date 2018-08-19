@@ -149,9 +149,13 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
 
                     sendCommand(command);
                     remainingRetries--;
-                } else if (state != command) {
-                    logger.debug("giving up command for thing {} ({}): {}", getThing().getLabel(),
-                            getThing().getUID().getId(), command);
+                } else {
+                    // we get here when the state is as expected or when the state is still not as expected after
+                    // the configured number of retries. we should cancel the retry for both cases
+                    if (state != command) {
+                        logger.debug("giving up command for thing {} ({}): {}", getThing().getLabel(),
+                                getThing().getUID().getId(), command);
+                    }
 
                     cancelRetry();
                 }
