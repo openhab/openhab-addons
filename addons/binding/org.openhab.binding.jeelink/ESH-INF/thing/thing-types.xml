@@ -323,11 +323,11 @@
 
 	<!-- Humidity Channel Type -->
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>@text/channel-type.humidity.label</label>
 		<description>@text/channel-type.humidity.description</description>
 		<category>Humidity</category>
-		<state readOnly="true" pattern="%.1f" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<!-- Battery New Channel Type -->
