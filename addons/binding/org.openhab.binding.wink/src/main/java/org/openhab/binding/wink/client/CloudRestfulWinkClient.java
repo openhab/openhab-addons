@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,7 +34,7 @@ import com.google.gson.JsonParser;
 /**
  * This implementation communicates with the wink rest api.
  *
- * @author Shawn Crosby
+ * @author Shawn Crosby - Initial contribution
  *
  */
 public class CloudRestfulWinkClient implements IWinkClient {
@@ -111,10 +111,14 @@ public class CloudRestfulWinkClient implements IWinkClient {
     private JsonElement executeGet(WebTarget target) {
         String token = WinkAuthenticationService.getInstance().getAuthToken();
         Response response = doGet(target, token);
-        if (response.getStatus() != 200) {
+
+        if(response.getStatus() != 200){
             log.debug("Got status {}, retrying with new token", response.getStatus());
+            log.debug("Initial token: {}", token);
             token = WinkAuthenticationService.getInstance().refreshToken();
+            log.debug("New token: {}", token);
             response = doGet(target, token);
+            log.debug("Status after retry with refreshed token: {}", response.getStatus());
         }
 
         return getResultAsJson(response);
@@ -136,11 +140,14 @@ public class CloudRestfulWinkClient implements IWinkClient {
 
     private JsonElement getResultAsJson(Response response) {
         String result = response.readEntity(String.class);
+
+        log.debug("CloudRestfulWinkClient::getResultAsJson() response passed in = {}", result);
+
         JsonParser parser = new JsonParser();
         JsonObject resultJson = parser.parse(result).getAsJsonObject();
 
         JsonElement ret = resultJson.get("data");
-        log.trace("Json Result: {}", ret);
+        log.info("Json Result: {}", ret);
 
         return ret;
     }

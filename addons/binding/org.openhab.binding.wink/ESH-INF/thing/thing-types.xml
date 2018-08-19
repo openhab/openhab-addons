@@ -12,7 +12,6 @@
         </supported-bridge-type-refs>
         <label>Light Bulb (Dimmable)</label>
         <description>Controls dimmable light bulb</description>
-
         <channels>
             <channel id="lightlevel" typeId="lightDimmer" />
             <channel id="lightstate" typeId="lightSwitch" />
@@ -118,4 +117,5 @@
         <description>Button Pressed</description>
         <category>Button</category>
     </channel-type>
+	
 </thing:thing-descriptions>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="thermostat">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="wink_hub_2"/>
+        </supported-bridge-type-refs>
+        <label>Thermostat</label>
+        <description>Connected Thermostat</description>
+        <channels>
+            <channel typeId="thermostat_online" id="thermostat_online"/>
+            <channel typeId="thermostat_currenttemperature" id="thermostat_currenttemperature"/>
+            <channel typeId="thermostat_currentsetpoint" id="thermostat_currentsetpoint"/>
+            <channel typeId="thermostat_humidity" id="thermostat_humidity"/>
+            <channel typeId="thermostat_smarttemperature" id="thermostat_smarttemperature"/>
+            <channel typeId="thermostat_externaltemperature" id="thermostat_externaltemperature"/>
+            <channel typeId="thermostat_hasfan" id="thermostat_hasfan"/>
+            <channel typeId="thermostat_ecomode" id="thermostat_ecomode"/>
+            <channel typeId="thermostat_techname" id="thermostat_techname"/>
+            <channel typeId="thermostat_techphone" id="thermostat_techphone"/>
+            <channel typeId="thermostat_currentmode" id="thermostat_currentmode"/>
+            <channel typeId="thermostat_runningmode" id="thermostat_runningmode"/>
+            <channel typeId="thermostat_fanactive" id="thermostat_fanactive"/>
+            <channel typeId="thermostat_lasterror" id="thermostat_lasterror"/>
+            <channel typeId="thermostat_occupied" id="thermostat_occupied"/>
+        </channels>
+        <config-description>
+            <parameter name="uuid" type="text" required="true">
+                <label>UUID</label>
+                <description>Unique Identifier assigned by Wink</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <channel-type id="thermostat_online">
+        <item-type>Switch</item-type>
+        <label>Online Status</label>
+        <description>Whether or not the device is reachable remotely
+		</description>
+        <category>Light</category>
+        <state readOnly="true" />
+    </channel-type>
+	
+    <channel-type id="thermostat_currentsetpoint">
+        <item-type>Number</item-type>
+        <label>Current Desired Temperature Set</label>
+        <description>Thermostat Current Desired Temperature
+		</description>
+        <category>Temperature</category>
+        <state pattern="%.1f °F" />
+    </channel-type>
+	
+    <channel-type id="thermostat_currenttemperature">
+        <item-type>Number</item-type>
+        <label>Current Temperature</label>
+        <description>Thermostat Current Temperature, maps to room temperature last read from device itself
+		</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °F" />
+    </channel-type>
+	
+    <channel-type id="thermostat_humidity">
+        <item-type>Number</item-type>
+        <label>Current Humidity</label>
+        <description>Thermostat Current Humidity</description>
+        <category>Humidity</category>
+        <state readOnly="true" pattern="%.1f" />
+    </channel-type>
+	
+    <channel-type id="thermostat_smarttemperature" advanced="true">
+        <item-type>Number</item-type>
+        <label>Smart Temperature</label>
+        <description>Ecobee only, mean temp of all remote sensors and thermostat
+		</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °F" />
+    </channel-type>
+	
+    <channel-type id="thermostat_externaltemperature" advanced="true">
+        <item-type>Number</item-type>
+        <label>External Temperature</label>
+        <description>The outdoor temperature/weather</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °F" />
+    </channel-type>
+
+	<channel-type id="thermostat_hasfan" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Has Fan</label>
+		<description>Whether or not the thermostat unit has a fan</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="thermostat_ecomode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Eco Mode</label>
+		<description>Whether or not the thermostat is running in an energy efficient mode
+		</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="thermostat_techname" advanced="true">
+		<item-type>String</item-type>
+		<label>Technician Name</label>
+		<description>Contractor contact data</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="thermostat_techphone" advanced="true">
+		<item-type>String</item-type>
+		<label>Technician Phone Number</label>
+		<description>Contractor contact data</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="thermostat_currentmode">
+		<item-type>String</item-type>
+		<label>Current Set Mode</label>
+		<description>The current set mode: Cool, Heat, or Auto</description>
+		<state>
+			<options>
+				<option value="Heat">Heating Mode</option>
+				<option value="Cool">Cooling Mode</option>
+				<option value="Auto">Auto Mode</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="thermostat_runningmode">
+		<item-type>String</item-type>
+		<label>Current Running Mode</label>
+		<description>The current running mode: Aux, Cool, Heat, or Idle</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="thermostat_fanactive">
+		<item-type>Switch</item-type>
+		<label>Fan Active</label>
+		<description>Whether or not the fan is actively running</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="thermostat_lasterror" advanced="true">
+		<item-type>String</item-type>
+		<label>Error message</label>
+		<description>The current alert/warning on the thermostat</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="thermostat_occupied" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Occupancy detected</label>
+		<description>Whether or not the thermostat has detected occupancy in the last 30 minutes
+		</description>
+		<state readOnly="true" />
+	</channel-type>
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,7 +11,7 @@ package org.openhab.binding.wink.client;
 /**
  * This is a singleton instance of the authentication service to get tokens from the wink rest api
  *
- * @author Shawn Crosby
+ * @author Shawn Crosby - Initial contribution
  *
  */
 public class WinkAuthenticationService {
@@ -24,9 +24,8 @@ public class WinkAuthenticationService {
      */
     public static synchronized IWinkAuthenticationService getInstance() {
         if (instance == null) {
-            if (instance == null) {
-                instance = new DummyService();
-            }
+            // The actual service used will call setInstance once it is configured.
+            instance = new DummyService();
         }
         return instance;
     }

@@ -24,6 +24,7 @@ When devices are connected to the wink hub they become discoverable by the bindi
 <tr><td>remote</td><td>Thing</td><td>Remote for hub</td></tr>
 <tr><td>lock</td><td>Thing</td><td>Connected Lock</td></tr>
 <tr><td>door_bell</td><td>Thing</td><td>Door Bell</td></tr>
+<tr><td>thermostat</td><td>Thing</td><td>Thermostat</td></tr>
 </table>
 
 ## Discovery
@@ -72,6 +73,21 @@ Depending on the device being configured, there are different channels available
 <tr><td rowspan="2">light_bulb</td><td>lightstate</td><td>The powered stated of the light (On/Off)</td></tr>
 <tr><td>lightlevel</td><td>The dimmer percentage</td></tr>
 <tr><td>lock</td><td>lockstate</td><td>The position of the lock (ON == Locked)</td></tr>
+<tr><td rowspan="15">thermostat</td><td>thermostat_currentsetpoint</td><td>Thermostat Current Desired Temperature</td></tr>
+<tr><td>thermostat_currentmode</td><td>The current set mode: Cool, Heat, or Auto</td></tr>
+<tr><td>thermostat_hasfan</td><td>Whether or not the thermostat unit has a fan, Readonly</td></tr>
+<tr><td>thermostat_online</td><td>Whether or not the device is reachable remotely, Readonly</td></tr>
+<tr><td>thermostat_ecomode</td><td>Whether or not the thermostat is running in an energy efficient mode, Readonly</td></tr>
+<tr><td>thermostat_humidity</td><td>Thermostat Current Humidity, Readonly</td></tr>
+<tr><td>thermostat_occupied</td><td>Whether or not the thermostat has detected occupancy in the last 30 minutes, Readonly</td></tr>
+<tr><td>thermostat_techname</td><td>Contractor contact data, Readonly</td></tr>
+<tr><td>thermostat_techphone</td><td>Contractor contact data, Readonly</td></tr>
+<tr><td>thermostat_lasterror</td><td>The current alert/warning on the thermostat, Readonly</td></tr>
+<tr><td>thermostat_fanactive</td><td>Whether or not the fan is actively running, Readonly</td></tr>
+<tr><td>thermostat_runningmode</td><td>The current running mode: Aux, Cool, Heat, or Idle, Readonly</td></tr>
+<tr><td>thermostat_smarttemperature</td><td>Ecobee only, mean temp of all remote sensors and thermostat, Readonly</td></tr>
+<tr><td>thermostat_currenttemperature</td><td>Thermostat Current Temperature, maps to room temperature last read from device itself, Readonly</td></tr>
+<tr><td>thermostat_externaltemperature</td><td>The outdoor temperature/weather, Readonly</td></tr>
 </table>
 
 Your items file will look like:
@@ -79,4 +95,18 @@ Your items file will look like:
 ```
 Item Switch MyLightSwitch "My Light Switch"  {channel="wink:light_bulb:MyLight:lightstate"}
 Item Dimmer MyLightDimmer "My Light Dimmer"  {channel="wink:light_bulb:MyLight:lightlevel"}
+```
+
+If you add your thermostat Thing through Paper UI, then you do not need anything in your things file.  You can copy the channel info from Paper UI for the channel you are interested in.  In this case, your items file will look like:
+
+```
+Number ThermostatSetpoint "Temperature [%.1f °F]" {channel="wink:thermostat:8316ea86-cabb-447b-94f4-fakeUUIDabab:thermostat_currentsetpoint"}
+String ThermostatMode "Thermostat Mode [%s]" {channel="wink:thermostat:8316ea86-cabb-447b-94f4-fakeUUIDabab:thermostat_currentmode"}
+```
+
+Your sitemap file will look like:
+
+```
+Setpoint item=ThermostatSetpoint minValue=60 maxValue=77 step=1.0
+Selection item=ThermostatMode label="Thermostat Mode" mappings=["Heat"=heat, "Cool"=cool, "Auto"=auto]
 ```

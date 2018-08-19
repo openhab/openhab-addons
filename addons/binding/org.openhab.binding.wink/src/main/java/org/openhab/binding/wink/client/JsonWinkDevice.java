@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,19 +10,24 @@ package org.openhab.binding.wink.client;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class parses json from the wink api and from pubnub and produces an IWinkDevice
  *
- * @author Shawn Crosby
+ * @author Shawn Crosby - Initial contribution
  *
  */
 public class JsonWinkDevice implements IWinkDevice {
     private JsonObject json;
+
+    private final Logger logger = LoggerFactory.getLogger(JsonWinkDevice.class);
 
     public JsonWinkDevice(JsonObject element) {
         this.json = element;
@@ -50,6 +55,8 @@ public class JsonWinkDevice implements IWinkDevice {
             return WinkSupportedDevice.REMOTE;
         } else if (json.get("door_bell_id") != null) {
             return WinkSupportedDevice.DOORBELL;
+        } else if (json.get("thermostat_id") != null) {
+            return WinkSupportedDevice.THERMOSTAT;
         } else {
             return WinkSupportedDevice.HUB;
         }
@@ -84,8 +91,15 @@ public class JsonWinkDevice implements IWinkDevice {
     }
 
     private Map<String, String> toMap(JsonObject json) {
-        return new Gson().fromJson(json, new TypeToken<HashMap<String, String>>() {
+        Map<String, Object> theMap = new Gson().fromJson(json, new TypeToken<HashMap<String, Object>>() {
         }.getType());
+
+        Map<String, String> mapString = new HashMap<String,String>();
+        for(Map.Entry entry : theMap.entrySet()){
+            mapString.put(entry.getKey().toString(), entry.getValue() == null ? null : entry.getValue().toString());
+        }
+
+        return mapString;
     }
 
     @Override

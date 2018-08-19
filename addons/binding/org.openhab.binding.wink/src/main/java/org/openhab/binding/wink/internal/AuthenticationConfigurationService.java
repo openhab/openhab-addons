@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * This service reads configuration from the services/wink.cfg file and uses it to instantiate the
  * authentication service needed by the binding in order to retrieve and refresh access_tokens
  *
- * @author Shawn Crosby
+ * @author Shawn Crosby - Initial contribution
  *
  */
 public class AuthenticationConfigurationService implements ManagedService {
@@ -58,6 +58,7 @@ public class AuthenticationConfigurationService implements ManagedService {
             service = new CloudOauthWinkAuthenticationService(props);
         }
 
+        logger.debug("WinkAuth instance set");
         WinkAuthenticationService.setInstance(service);
     }
 

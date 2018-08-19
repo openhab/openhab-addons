@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.wink.handler;
 
+import java.util.Map;
 import java.util.Arrays;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +24,7 @@ import org.openhab.binding.wink.client.AuthenticationException;
 import org.openhab.binding.wink.client.IWinkDevice;
 import org.openhab.binding.wink.client.JsonWinkDevice;
 import org.openhab.binding.wink.client.WinkSupportedDevice;
+import org.openhab.binding.wink.client.WinkAuthenticationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +43,7 @@ import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
  * This is the base class for devices connected to the wink hub. Implements pubnub registration
  * and initialization for all wink devices.
  *
- * @author Shawn Crosby
+ * @author Shawn Crosby - Initial contribution
  *
  */
 public abstract class WinkBaseThingHandler extends BaseThingHandler {
@@ -59,6 +61,23 @@ public abstract class WinkBaseThingHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing Device {}", getThing());
         bridgeHandler = (WinkHub2BridgeHandler) getBridge().getHandler();
+        
+        // Wait for the WinkAuthenticationService to complete. Otherwise the code below will throw and not be attempted again.
+        long start = System.nanoTime();
+        logger.debug("start time: {}", start);
+        long timeout = 2000000000; // 2 seconds
+        while (null == WinkAuthenticationService.getInstance().getAuthToken() &&
+                (System.nanoTime() - start) < timeout){
+            logger.debug("Waiting for WinkAuthenticationService to get setup.");
+            try{
+                TimeUnit.MILLISECONDS.sleep(250);
+            } 
+            catch(InterruptedException ex) 
+            {
+                Thread.currentThread().interrupt();
+            }
+        }
+    
         if (getThing().getConfiguration().get("uuid") == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "UUID must be specified in Config");
@@ -66,16 +85,18 @@ public abstract class WinkBaseThingHandler extends BaseThingHandler {
             try {
                 if (getDevice().getCurrentState().get("connection").equals("true")) {
                     updateStatus(ThingStatus.ONLINE);
+                    logger.debug("Thing is online, calling updateDeviceState()");
                     updateDeviceState(getDevice());
+                    logger.debug("updateDeviceState() returned.  Calling registerToPubNub");
                     registerToPubNub();
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device Not Connected");
                 }
             } catch (AuthenticationException e) {
-                logger.error("Unable to initialize device: {}", e.getMessage());
+                logger.error("Auth Exception, Unable to initialize device {}: {}", getThing(), e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } catch (RuntimeException e) {
-                logger.error("Unable to initialize device: {}", e.getMessage());
+                logger.error("RuntimeException, Unable to initialize device {}: {}", getThing(), e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -83,6 +104,7 @@ public abstract class WinkBaseThingHandler extends BaseThingHandler {
         pollingJob = this.scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
+                logger.debug("Polling device: {}", getDevice().toString());
                 updateDeviceState(getDevice());
             }
         }, 0, 300, TimeUnit.SECONDS);
@@ -124,12 +146,12 @@ public abstract class WinkBaseThingHandler extends BaseThingHandler {
             for (Channel channel : getThing().getChannels()) {
                 if (channelUID.equals(channel.getUID())) {
                     updateDeviceState(getDevice());
-                    logger.debug("Channel {} Linked", channelUID.getId());
+                    logger.debug("Channel: {} Linked for device: {}", channelUID.getId(), getDevice().toString());
                     break;
                 }
             }
         } catch (AuthenticationException e) {
-            logger.error("Unable to process channel link: {}", e.getMessage());
+            logger.error("Unable to process channel link: {}, for device: {}", e.getMessage(), getDevice().toString());
         }
     }
 
@@ -175,14 +197,16 @@ public abstract class WinkBaseThingHandler extends BaseThingHandler {
                 @Override
                 public void message(PubNub pubnub, PNMessageResult message) {
                     JsonParser parser = new JsonParser();
+                    logger.debug("PubNub.message string to be parsed by json: {}", message.getMessage().getAsString());
                     JsonObject jsonMessage = parser.parse(message.getMessage().getAsString()).getAsJsonObject();
                     IWinkDevice device = new JsonWinkDevice(jsonMessage);
-                    logger.debug("Received update from device: {}", device);
+                    logger.debug("pubnub.addListener: Received update from device: {}", device);
                     updateDeviceState(device);
                 }
 
                 @Override
                 public void presence(PubNub pubnub, PNPresenceEventResult presence) {
+                    logger.debug("pubnub.addListener::presence() from device: {}", device);
                 }
 
                 @Override
