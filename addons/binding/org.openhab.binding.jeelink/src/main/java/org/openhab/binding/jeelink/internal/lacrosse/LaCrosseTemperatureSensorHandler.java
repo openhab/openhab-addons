@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.jeelink.internal.lacrosse;
 
-import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.binding.jeelink.JeeLinkBindingConstants.*;
 
 import java.math.BigDecimal;
@@ -22,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -125,7 +125,7 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
                                 "updating states for thing {} ({}): temp={} ({}), humidity={}, batteryNew={}, batteryLow={}",
                                 getThing().getLabel(), getThing().getUID().getId(), temp, reading.getTemperature(),
                                 reading.getHumidity(), reading.isBatteryNew(), reading.isBatteryLow());
-                        updateState(TEMPERATURE_CHANNEL, new QuantityType<>(temp, CELSIUS));
+                        updateState(TEMPERATURE_CHANNEL, new QuantityType<>(temp, SIUnits.CELSIUS));
                         updateState(HUMIDITY_CHANNEL, new DecimalType(reading.getHumidity()));
                         updateState(BATTERY_NEW_CHANNEL, reading.isBatteryNew() ? OnOffType.ON : OnOffType.OFF);
                         updateState(BATTERY_LOW_CHANNEL, reading.isBatteryLow() ? OnOffType.ON : OnOffType.OFF);
@@ -133,7 +133,8 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
                         logger.debug("updating states for channel {} of thing {} ({}): temp={} ({}), humidity={}",
                                 reading.getChannel(), getThing().getLabel(), getThing().getUID().getId(), temp,
                                 reading.getTemperature(), reading.getHumidity());
-                        updateState(TEMPERATURE_CHANNEL + reading.getChannel(), new QuantityType<>(temp, CELSIUS));
+                        updateState(TEMPERATURE_CHANNEL + reading.getChannel(),
+                                new QuantityType<>(temp, SIUnits.CELSIUS));
                         updateState(HUMIDITY_CHANNEL + reading.getChannel(), new DecimalType(reading.getHumidity()));
                     }
                 }

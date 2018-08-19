@@ -16,8 +16,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -99,8 +100,8 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
                     BigDecimal current = new BigDecimal(reading.getCurrent()).setScale(1, RoundingMode.HALF_UP);
                     state = reading.isOn() ? OnOffType.ON : OnOffType.OFF;
 
-                    updateState(CURRENT_WATT_CHANNEL, new DecimalType(current));
-                    updateState(CONSUMPTION_CHANNEL, new DecimalType(reading.getTotal()));
+                    updateState(CURRENT_POWER_CHANNEL, new QuantityType<>(current, SmartHomeUnits.WATT));
+                    updateState(CONSUMPTION_CHANNEL, new QuantityType<>(reading.getTotal(), SmartHomeUnits.WATT_HOUR));
                     updateState(SWITCHING_STATE_CHANNEL, state);
 
                     logger.debug("updated states for thing {} ({}): state={}, current={}, total={}",

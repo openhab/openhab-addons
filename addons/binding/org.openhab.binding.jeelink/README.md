@@ -98,22 +98,22 @@ The available init commands depend on the sketch that is running on the USB stic
 
 #### EC3000 power monitors
 
-| Channel Type ID  | Item Type | Description                                        |
-|------------------|-----------|----------------------------------------------------|
-| currentWatt      | Number    | Instantaneous power in Watt                        |
-| maxWatt          | Number    | Maximum load power in Watt                         |
-| consumptionTotal | Number    | Total energy  consumption                          |
-| applianceTime    | Number    | Total electrical appliance operating time in hours |
-| sensorTime       | Number    | Total turn on time of power monitor in hours       |
-| resets           | Number    | Number of resets                                   |
+| Channel Type ID  | Item Type     | Description                               |
+|------------------|---------------|-------------------------------------------|
+| currentPower     | Number:Power  | Current power draw                        |
+| maxPower         | Number:Power  | Maximum power draw                        |
+| consumptionTotal | Number:Energy | Total energy consumption                  |
+| applianceTime    | Number:Time   | Total electrical appliance operating time |
+| sensorTime       | Number:Time   | Total turn on time of power monitor       |
+| resets           | Number        | Number of resets                          |
 
 #### PCA301 power monitoring wireless sockets
 
-| Channel Type ID         | Item Type    | Description                                          |
-|-------------------------|--------------|------------------------------------------------------|
-| switchingState          | Switch       | Whether the sockets are currently switched on or off |
-| currentWatt             | Number       | Instantaneous power in Watt                          |
-| consumptionTotal        | Number       | Total energy consumption                             |
+| Channel Type ID         | Item Type     | Description                                          |
+|-------------------------|---------------|------------------------------------------------------|
+| switchingState          | Switch        | Whether the sockets are currently switched on or off |
+| currentPower            | Number:Power  | Current power draw                                   |
+| consumptionTotal        | Number:Energy | Total energy consumption                             |
 
 ## Commands
 
@@ -161,6 +161,6 @@ A typical item configuration for a PCA301 power monitoring wireless sockets look
 
 ```
 Switch SocketSwitch {channel="jeelink:pca301:1-160-236:switchingState"}
-Number SocketWattage {channel="jeelink:pca301:1-160-236:currentWatt"}
-Number SocketConsumption {channel="jeelink:pca301:1-160-236:consumptionTotal"}
+Number:Power SocketWattage {channel="jeelink:pca301:1-160-236:currentPower"}
+Number:Energy SocketConsumption {channel="jeelink:pca301:1-160-236:consumptionTotal"}
 ```
