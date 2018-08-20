@@ -12,6 +12,6 @@
   <artifactId>org.openhab.voice.voicerss</artifactId>
   <packaging>eclipse-plugin</packaging>
 
-  <name>VoiceRSS TTS Integration</name>
+  <name>VoiceRSS Text-to-Speech</name>
 
 </project>

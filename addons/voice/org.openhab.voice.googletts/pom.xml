@@ -13,5 +13,5 @@
     <artifactId>org.openhab.voice.googletts</artifactId>
     <packaging>eclipse-plugin</packaging>
 
-    <name>Google Cloud TTS Service Integration</name>
+    <name>Google Cloud Text-to-Speech</name>
 </project>

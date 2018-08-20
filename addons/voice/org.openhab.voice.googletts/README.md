@@ -40,7 +40,7 @@ Before you can integrate this service with your Google Cloud Text-to-Speech, you
 
 ## Service Configuration
 
-Using your favourite configuration UI (e.g. PaperUI) edit **services/voice/Google Cloud TTS Service** settings and set 
+Using your favourite configuration UI (e.g. PaperUI) edit **Services/Voice/Google Cloud Text-to-Speech** settings and set 
 
 * **Service Account Key** - Copy-paste the content of the downloaded key file.
 * **Pitch** - The pitch of selected voice, up to 20 semitones
@@ -53,5 +53,5 @@ Using your favourite configuration UI
 
 * Edit **System** settings
 * Edit **Voice** settings
-* Set **Google Cloud TTS Service** as **Default Text-to-Speech**
+* Set **Google Cloud** as **Default Text-to-Speech**
 * Choose default voice for the setup.

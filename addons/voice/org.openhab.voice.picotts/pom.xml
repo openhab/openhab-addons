@@ -12,7 +12,7 @@
   <groupId>org.openhab.voice</groupId>
   <artifactId>org.openhab.voice.picotts</artifactId>
 
-  <name>PicoTTS</name>
+  <name>Pico Text-to-Speech</name>
   <packaging>eclipse-plugin</packaging>
 
 </project>
