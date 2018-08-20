@@ -20,7 +20,7 @@ There is no configuration required for the binding.
 
 ## Thing Configuration
 
-The autodiscovery service of the binding will detect the ipAddress and port of the Konnected module.  
+The auto-discovery service of the binding will detect the ipAddress and port of the Konnected module.  
 But once it is added you will need to provide an Authority Token to secure communication between the module and openHAB.  
 The binding will attempt to discover the ip address of your OpenHAB server.  However, if it is unable to determine the ip address you can manually define the ip address and port in the thing configuration.
 
@@ -28,9 +28,9 @@ The binding will attempt to discover the ip address of your OpenHAB server.  How
 
 The auto discovered thing adds two default channels.
 One channel for Zone 6 which is a sensor type channel, and one channel for the out pin that is an actuator type channel.
-These channels represent the two pins on the Konnected module whoose type cannot be changed.
+These channels represent the two pins on the Konnected module whose type cannot be changed.
 For zones 1-5, you will need to add channels for the remaining zones that you have connected.
-The only requirement is that the last charector of the typeId is the corresponding zone number in integer format.  
+The only requirement is that the last character of the typeId is the corresponding zone number in integer format.  
 For example, a sensor hooked up to zone 1.  A new channel of type sensor with a typeID of any of the following names would work:
 Zone1
 Zone_1
@@ -41,7 +41,11 @@ Pin_1
 
 Then you need to link the corresponding item to the channel.
 For sensor type channels the channel type is the contact item.
-For the actuator type channel, the channel type is switch item.
+For the actuator type channel, the channel type is switch item. 
+For the actuator type channels you can also add configuration parameters times, pause and momentary which will be added to the payload that is sent to the Konnected Module.
+These parameters will tell the module to pulse the actuator for certain time period.
+A momentary switch actuates a switch for a specified time (in milliseconds) and then reverts it back to the off state. This is commonly used with a relay module to actuate a garage door opener, or with a doorbell to send a momentary trigger to sound the doorbell.
+A beep/blink switch is like a momentary switch that repeats either a specified number of times or indefinitely. This is commonly used with a a piezo buzzer to make a "beep beep" sound when a door is opened, or to make a repeating beep pattern for an alarm or audible warning. It can also be used to blink lights.
 
 ## Full Example
 

@@ -24,10 +24,25 @@
 		<label>Sensor</label>
 		<description>This zone is a sensor</description>
 		<state readOnly="true"/>
+
 	</channel-type>
 	<channel-type id="actuator">
 		<item-type>Switch</item-type>
 		<label>An actuator</label>
 		<description>This zone is an Actuator</description>
+		<config-description>
+			<parameter name="momentary" type="integer">
+				<label>Momentary</label>
+				<description>The duration of the pulse in millisecods</description>
+			</parameter>
+			<parameter name="pause" type="integer">
+				<label>Pause</label>
+				<description>The time between pulses in millisecods</description>
+			</parameter>
+			<parameter name="times" type="integer">
+				<label>times</label>
+				<description>is the number of times to repeat or `-1` for an infinitely repeating pulse</description>
+			</parameter>
+		</config-description>
 	</channel-type>
 </thing:thing-descriptions>

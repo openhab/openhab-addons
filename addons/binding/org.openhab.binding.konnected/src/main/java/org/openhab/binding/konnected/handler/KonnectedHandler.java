@@ -15,9 +15,11 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Map;
 
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -74,10 +76,10 @@ public class KonnectedHandler extends BaseThingHandler {
         Integer pin = Arrays.asList(PIN_TO_ZONE).get(zone);
         String scommand = command.toString();
         if (scommand.equalsIgnoreCase("ON")) {
-            sendActuatorCommand("1", pin);
+            sendActuatorCommand("1", pin, channelUID);
             logger.trace("The command being sent to pin {} for channel:  is 1", channelUID.getAsString(), pin);
         } else if (scommand.equalsIgnoreCase("OFF")) {
-            sendActuatorCommand("0", pin);
+            sendActuatorCommand("0", pin, channelUID);
             logger.trace("The command being sent to pin {} for channel:  is 0", channelUID.getAsString(), pin);
         } else if ((scommand.equalsIgnoreCase("OPEN")) || (scommand.equalsIgnoreCase("CLOSED"))) {
             logger.debug("A command was sent to a sensor type so we are ignoring the command");
@@ -282,20 +284,62 @@ public class KonnectedHandler extends BaseThingHandler {
     }
 
     /**
-     * @param scommand the string commond, either 0 or 1 to send to the actutor pin on the Konnected module
+     * @param scommand the string command, either 0 or 1 to send to the actutor pin on the Konnected module
      * @param pin      the pin to send the command to on the Konnected Module
      */
-    private void sendActuatorCommand(String scommand, Integer pin) {
+    private void sendActuatorCommand(String scommand, Integer pin, ChannelUID channelId) {
         try {
-            KonnectedModuleGson payload = new KonnectedModuleGson();
-            payload.setState(scommand);
-            payload.setPin(pin.toString());
-            String payloadString = gson.toJson(payload);
-            logger.debug("The command payload  is: {}", payloadString);
-            http.doPut(moduleIpAddress + "/device", payloadString);
+
+            Channel channel = getThing().getChannel(channelId.getId());
+            if (!(channel == null)) {
+                logger.debug("getasstring: {} getID: {} getGroupId: {} toString:{}", channelId.getAsString(),
+                        channelId.getId(), channelId.getGroupId(), channelId.toString());
+                Configuration configuration = channel.getConfiguration();
+                KonnectedModuleGson payload = new KonnectedModuleGson();
+                payload.setState(scommand);
+                payload.setPin(pin.toString());
+
+                if (configuration.get("times") == null) {
+                    logger.debug("The times configuration was not set for channelID: {}, not adding it to the payload.",
+                            channelId.toString());
+                } else {
+                    payload.setTimes(configuration.get("times").toString());
+                    logger.debug("The times configuration was set to: {} for channelID: {}.",
+                            configuration.get("times").toString(), channelId.toString());
+                }
+                if (configuration.get("momentary") == null) {
+                    logger.debug(
+                            "The momentary configuration was not set for channelID: {}, not adding it to the payload.",
+                            channelId.toString());
+                } else {
+
+                    payload.setMomentary(configuration.get("momentary").toString());
+                    logger.debug("The momentary configuration set to: {} channelID: {}.",
+                            configuration.get("momentary").toString(), channelId.toString());
+                }
+                if (configuration.get("pause") == null) {
+                    logger.debug("The pause configuration was not set for channelID: {}, not adding it to the payload.",
+                            channelId.toString());
+                } else {
+                    payload.setPause(configuration.get("pause").toString());
+                    logger.debug("The pause configuration was set to: {} for channelID: {}.",
+                            configuration.get("pause").toString(), channelId.toString());
+                }
+
+                String payloadString = gson.toJson(payload);
+                logger.debug("The command payload  is: {}", payloadString);
+                http.doPut(moduleIpAddress + "/device", payloadString);
+
+            } else {
+                logger.debug("The channel {} returned null for channelId.getID(): {}", channelId.toString(),
+                        channelId.getId());
+                KonnectedModuleGson payload = new KonnectedModuleGson();
+                payload.setState(scommand);
+                payload.setPin(pin.toString());
+            }
+
         } catch (IOException e) {
             logger.debug("Attempting to set the state of the actuator failed: {}", e);
         }
     }
-
 }
