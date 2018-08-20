@@ -32,7 +32,7 @@ class CosemDate extends CosemValueDescriptor<DateTimeType> {
 
     private final Logger logger = LoggerFactory.getLogger(CosemDate.class);
 
-    private CosemDate(String ohChannelId) {
+    public CosemDate(String ohChannelId) {
         super(ohChannelId);
     }
 
