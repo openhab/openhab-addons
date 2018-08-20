@@ -9,10 +9,10 @@
 package org.openhab.binding.tplinksmarthome;
 
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * This class defines common constants, which are used across the whole binding.
@@ -40,16 +40,18 @@ public final class TPLinkSmartHomeBindingConstants {
     public static final int COLOR_TEMPERATURE_LB130_MIN = 2500;
     public static final int COLOR_TEMPERATURE_LB130_MAX = 9000;
 
-    public static final Set<String> CHANNELS_BULB_SWITCH = ImmutableSet.of(CHANNEL_BRIGHTNESS, CHANNEL_COLOR,
-            CHANNEL_COLOR_TEMPERATURE, CHANNEL_SWITCH);
+    public static final Set<String> CHANNELS_BULB_SWITCH = Stream
+            .of(CHANNEL_BRIGHTNESS, CHANNEL_COLOR, CHANNEL_COLOR_TEMPERATURE, CHANNEL_SWITCH)
+            .collect(Collectors.toSet());
 
     // List of all energy channel ids
     public static final String CHANNEL_ENERGY_POWER = "power";
     public static final String CHANNEL_ENERGY_TOTAL = "energyUsage";
     public static final String CHANNEL_ENERGY_VOLTAGE = "voltage";
     public static final String CHANNEL_ENERGY_CURRENT = "current";
-    public static final Set<String> CHANNELS_ENERGY = ImmutableSet.of(CHANNEL_ENERGY_POWER, CHANNEL_ENERGY_TOTAL,
-            CHANNEL_ENERGY_VOLTAGE, CHANNEL_ENERGY_CURRENT);
+    public static final Set<String> CHANNELS_ENERGY = Stream
+            .of(CHANNEL_ENERGY_POWER, CHANNEL_ENERGY_TOTAL, CHANNEL_ENERGY_VOLTAGE, CHANNEL_ENERGY_CURRENT)
+            .collect(Collectors.toSet());
 
     // List of all misc channel ids
     public static final String CHANNEL_RSSI = "rssi";
