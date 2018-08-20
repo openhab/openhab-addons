@@ -49,8 +49,8 @@ public class JeeLinkBindingConstants {
     public static final String PROPERTY_SENSOR_ID = "sensorId";
 
     // List of all additional channel ids for ec3k sensor things
-    public static final String CURRENT_WATT_CHANNEL = "currentWatt";
-    public static final String MAX_WATT_CHANNEL = "maxWatt";
+    public static final String CURRENT_POWER_CHANNEL = "currentPower";
+    public static final String MAX_POWER_CHANNEL = "maxPower";
     public static final String CONSUMPTION_CHANNEL = "consumptionTotal";
     public static final String APPLIANCE_TIME_CHANNEL = "applianceTime";
     public static final String SENSOR_TIME_CHANNEL = "sensorTime";

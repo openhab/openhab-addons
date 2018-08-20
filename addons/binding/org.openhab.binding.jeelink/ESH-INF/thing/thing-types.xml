@@ -196,8 +196,8 @@
 		<description>@text/thing-type.ec3k.description</description>
 
 		<channels>
-			<channel id="currentWatt" typeId="current-watt" />
-			<channel id="maxWatt" typeId="max-watt" />
+			<channel id="currentPower" typeId="current-power" />
+			<channel id="maxPower" typeId="max-power" />
 			<channel id="consumptionTotal" typeId="consumption-total" />
 			<channel id="applianceTime" typeId="appliance-time" />
 			<channel id="sensorTime" typeId="sensor-time" />
@@ -242,7 +242,7 @@
 
 		<channels>
 			<channel id="switchingState" typeId="switching-state" />
-			<channel id="currentWatt" typeId="current-watt" />
+			<channel id="currentPower" typeId="current-power" />
 			<channel id="consumptionTotal" typeId="consumption-total" />
 		</channels>
 
@@ -264,45 +264,44 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Current Watt Channel Type -->
-	<channel-type id="current-watt">
-		<item-type>Number</item-type>
-		<label>@text/channel-type.current-watt.label</label>
-		<description>@text/channel-type.current-watt.description</description>
-		<state readOnly="true" pattern="%.1f W" />
+	<!-- Current Power Channel Type -->
+	<channel-type id="current-power">
+		<item-type>Number:Power</item-type>
+		<label>@text/channel-type.current-power.label</label>
+		<description>@text/channel-type.current-power.description</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
-	<!-- Max Watt Channel Type -->
-	<channel-type id="max-watt">
-		<item-type>Number</item-type>
-		<label>@text/channel-type.max-watt.label</label>
-		<description>@text/channel-type.max-watt.description</description>
-		<state readOnly="true" pattern="%.1f W" />
+	<!-- Max Power Channel Type -->
+	<channel-type id="max-power">
+		<item-type>Number:Power</item-type>
+		<label>@text/channel-type.max-power.label</label>
+		<description>@text/channel-type.max-power.description</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
-	<!-- Total Consumption Channel Type -->
+	<!-- Total Energy Consumption Channel Type -->
 	<channel-type id="consumption-total">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>@text/channel-type.consumption-total.label</label>
 		<description>@text/channel-type.consumption-total.description</description>
-		<state readOnly="true" pattern="%d Wh" />
+		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
 	<!-- Appliance On Time Channel Type -->
 	<channel-type id="appliance-time" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>@text/channel-type.appliance-time.label</label>
 		<description>@text/channel-type.appliance-time.description</description>
-		<state readOnly="true" pattern="%d h" />
-
+		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
 	<!-- Sensor On Time Channel Type -->
 	<channel-type id="sensor-time" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>@text/channel-type.sensor-time.label</label>
 		<description>@text/channel-type.sensor-time.description</description>
-		<state readOnly="true" pattern="%d h" />
+		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
 	<!-- Resets Channel Type -->
@@ -315,20 +314,20 @@
 
 	<!-- Temperature Channel Type -->
 	<channel-type id="temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>@text/channel-type.temperature.label</label>
 		<description>@text/channel-type.temperature.description</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<!-- Humidity Channel Type -->
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>@text/channel-type.humidity.label</label>
 		<description>@text/channel-type.humidity.description</description>
 		<category>Humidity</category>
-		<state readOnly="true" pattern="%.1f" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<!-- Battery New Channel Type -->
