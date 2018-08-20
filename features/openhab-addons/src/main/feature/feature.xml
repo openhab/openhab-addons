@@ -649,7 +649,7 @@
 
     <!-- voice -->
 
-    <feature name="openhab-voice-googletts" description="Google Cloud TTS Service" version="${project.version}">
+    <feature name="openhab-voice-googletts" description="Google Cloud Text-to-Speech" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.googletts/${project.version}</bundle>
     </feature>
