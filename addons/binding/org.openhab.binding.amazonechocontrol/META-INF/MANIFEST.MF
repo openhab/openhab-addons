@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.binding.amazonechocontrol
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .,lib/jsoup-1.10.1.jar
+Bundle-ClassPath: .,lib/jsoup-1.10.1.jar,lib/javax.websocket-client-api-1.1.jar,lib/tyrus-standalone-client-1.13.1.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: Amazon Echo Control Binding
 Bundle-SymbolicName: org.openhab.binding.amazonechocontrol;singleton:=true
@@ -19,7 +19,10 @@ Import-Package: com.google.gson,
  org.eclipse.jetty.util.component,
  org.eclipse.jetty.util.ssl,
  org.eclipse.jetty.websocket.api,
+ org.eclipse.jetty.websocket.api.annotations;version="9.3.22",
+ org.eclipse.jetty.websocket.api.extensions;version="9.3.22",
  org.eclipse.jetty.websocket.client,
+ org.eclipse.jetty.websocket.common.extensions.compress;version="9.3.22",
  org.eclipse.jetty.websocket.common.scopes,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
