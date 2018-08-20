@@ -420,6 +420,7 @@ public class GardenaSmartImpl implements GardenaSmart {
 
             Request request = httpClient.newRequest(url).method(method)
                     .timeout(config.getConnectionTimeout(), TimeUnit.SECONDS)
+                    .idleTimeout(config.getConnectionTimeout(), TimeUnit.SECONDS)
                     .header(HttpHeader.CONTENT_TYPE, "application/json").header(HttpHeader.ACCEPT, "application/json")
                     .header(HttpHeader.ACCEPT_ENCODING, "gzip");
 
