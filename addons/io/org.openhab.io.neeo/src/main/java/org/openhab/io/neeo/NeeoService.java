@@ -67,10 +67,9 @@ import org.slf4j.LoggerFactory;
  * @author Tim Roberts - Initial Contribution
  */
 @NonNullByDefault
-@Component(service = { org.eclipse.smarthome.core.events.EventSubscriber.class,
-        NetworkAddressChangeListener.class }, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true, property = {
-                "service.pid=org.openhab.io.neeo.NeeoService", "service.config.description.uri=io:neeo",
-                "service.config.label=NEEO Integration", "service.config.category=io" }
+@Component(service = org.eclipse.smarthome.core.events.EventSubscriber.class, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true, property = {
+        "service.pid=org.openhab.io.neeo.NeeoService", "service.config.description.uri=io:neeo",
+        "service.config.label=NEEO Integration", "service.config.category=io" }
 
 )
 public class NeeoService implements EventSubscriber, NetworkAddressChangeListener {
@@ -363,6 +362,7 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
     public void setNetworkAddressService(NetworkAddressService networkAddressService) {
         Objects.requireNonNull(networkAddressService, "networkAddressService cannot be null");
         this.networkAddressService = networkAddressService;
+        networkAddressService.addNetworkAddressChangeListener(this);
     }
 
     /**
@@ -371,6 +371,7 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
      * @param networkAddressService address service
      */
     public void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
+        networkAddressService.removeNetworkAddressChangeListener(this);
         this.networkAddressService = null;
     }
 
