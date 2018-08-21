@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ihc2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+
+
+	<thing-type id="multichannel">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" />
+		</supported-bridge-type-refs>
+
+		<label>Multi-channel</label>
+		<description>Placeholder for manually linked Channels</description>
+
+		<channels>
+			<channel id="numberValue" typeId="number" />
+			<channel id="switchStatus" typeId="switchState" />
+			<channel id="contactStatus" typeId="contactState" />
+			<channel id="stringValue" typeId="string" />
+			<channel id="dateTimeValue" typeId="dateTime" />
+			<channel id="percentValue" typeId="percent" />
+		</channels>
+
+	</thing-type>
+
+</thing:thing-descriptions>
+
+

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ihc2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+
+
+	<thing-type id="number">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" />
+		</supported-bridge-type-refs>
+
+		<label>Number</label>
+		<description>Value of: WSFloatingPointValue, WSIntegerValue, WSBooleanValue, WSTimerValue, WSWeekdayValue</description>
+
+		<channels>
+			<channel id="numberValue" typeId="number" />
+		</channels>
+
+		<config-description>
+			<parameter name="resourceId" type="text" pattern="^(0x[0-9A-Fa-f]{1,6}|[0-9]{1,8})$" required="true">
+				<label>Number Resource ID</label>
+				<description>The IHC Projects Resource ID</description>
+			</parameter>
+			<parameter name="minimum" type="integer" required="true">
+				<label>Minimum Value</label>
+				<default>0</default>
+			</parameter>
+			<parameter name="maximum" type="integer" required="true">
+				<label>Maximum Value</label>
+				<default>65535</default>
+			</parameter>
+			<parameter name="step" type="integer" required="true">
+				<label>Step Value</label>
+				<default>1</default>
+			</parameter>
+			<parameter name="pattern" type="text" required="true">
+				<label>Pattern</label>
+				<description>Format the number after this pattern. Ex. MAP(dk.map):%d </description>
+				<default>%d</default>
+			</parameter>
+			<parameter name="readonly" type="boolean" required="true">
+				<label>Read Only</label>
+				<description>Can only read value of this IHC Projects Resource ID</description>
+				<default>true</default>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+
+	<thing-type id="switch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" />
+		</supported-bridge-type-refs>
+
+		<label>Switch</label>
+		<description>Value of: WSBooleanValue</description>
+
+		<channels>
+			<channel id="switchStatus" typeId="switchState" />
+		</channels>
+
+		<config-description>
+			<parameter name="resourceId" type="text" pattern="^(0x[0-9A-Fa-f]{1,6}|[0-9]{1,8})$" required="true">
+				<label>Switch Resource ID</label>
+				<description>The IHC Projects Resource ID</description>
+			</parameter>
+			<parameter name="readonly" type="boolean" required="true">
+				<label>Read Only</label>
+				<description>Can only read value of this IHC Projects Resource ID</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="pulseTime" type="integer">
+				<label>Pulse Time</label>
+				<description>Auto turn off after[ms]. (0 disables this function)</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="contact">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" />
+		</supported-bridge-type-refs>
+
+		<label>Contact</label>
+		<description>Value of: WSBooleanValue</description>
+
+		<channels>
+			<channel id="contactStatus" typeId="contactState" />
+		</channels>
+
+		<config-description>
+			<parameter name="resourceId" type="text" pattern="^(0x[0-9A-Fa-f]{1,6}|[0-9]{1,8})$" required="true">
+				<label>Contact Resource ID</label>
+				<description>The IHC Projects Resource ID</description>
+			</parameter>
+			<parameter name="pattern" type="text" required="true">
+				<label>Pattern</label>
+				<description>Format the status after this pattern. Ex. MAP(dk.map):%s </description>
+				<default>%s</default>
+			</parameter>
+			<parameter name="inverted" type="boolean" required="true">
+				<label>Invert Signal</label>
+				<description>Make NC contacts NO and wise versa</description>
+				<default>false</default>
+			</parameter>
+
+
+		</config-description>
+	</thing-type>
+
+	<thing-type id="string">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" />
+		</supported-bridge-type-refs>
+
+		<label>String</label>
+		<description>Value of: WSEnumValue</description>
+
+		<channels>
+			<channel id="stringValue" typeId="string" />
+		</channels>
+
+		<config-description>
+			<parameter name="resourceId" type="text" pattern="^(0x[0-9A-Fa-f]{1,6}|[0-9]{1,8})$" required="true">
+				<label>Enum Resource ID</label>
+				<description>The IHC Projects Resource ID</description>
+			</parameter>
+			<parameter name="readonly" type="boolean" required="true">
+				<label>Read Only</label>
+				<description>Can only read value of this IHC Projects Resource ID</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="pattern" type="text" required="true">
+				<label>Pattern</label>
+				<description>Format the string after this pattern. Ex. MAP(dk.map):%s </description>
+				<default>%s</default>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+
+	<thing-type id="datetime">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" />
+		</supported-bridge-type-refs>
+
+		<label>DateTime</label>
+		<description>Value of: WSDateValue, WSTimeValue</description>
+
+		<channels>
+			<channel id="dateTimeValue" typeId="dateTime" />
+		</channels>
+
+		<config-description>
+			<parameter name="resourceId" type="text" pattern="^(0x[0-9A-Fa-f]{1,6}|[0-9]{1,8})$" required="true">
+				<label>DateTime Resource ID</label>
+				<description>The IHC Projects Resource ID</description>
+			</parameter>
+			<parameter name="readonly" type="boolean" required="true">
+				<label>Read Only</label>
+				<description>Can only read value of this IHC Projects Resource ID</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="pattern" type="text" required="true">
+				<label>Pattern</label>
+				<description>Format the date after this pattern</description>
+				<default>%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS</default>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+
+	<thing-type id="dimmer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" />
+		</supported-bridge-type-refs>
+
+		<label>Dimmer</label>
+		<description>Value of: WSIntegerValue</description>
+
+		<channels>
+			<channel id="percentValue" typeId="percent" />
+		</channels>
+
+		<config-description>
+			<parameter name="resourceId" type="text" pattern="^(0x[0-9A-Fa-f]{1,6}|[0-9]{1,8})$" required="true">
+				<label>Dimmer Resource ID</label>
+				<description>The IHC Projects Resource ID</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
+</thing:thing-descriptions>
