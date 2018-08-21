@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 @Component(configurationPid = "org.openhab.voicerss", property = { Constants.SERVICE_PID + "=org.openhab.voicerss",
         ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=voice:voicerss",
-        ConfigurableService.SERVICE_PROPERTY_LABEL + "=VoiceRSS",
+        ConfigurableService.SERVICE_PROPERTY_LABEL + "=VoiceRSS Text-to-Speech",
         ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=voice" })
 public class VoiceRSSTTSService implements TTSService {
 
