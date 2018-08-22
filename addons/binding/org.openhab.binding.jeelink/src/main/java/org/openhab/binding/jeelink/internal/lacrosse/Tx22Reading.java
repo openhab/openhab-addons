@@ -14,21 +14,15 @@ package org.openhab.binding.jeelink.internal.lacrosse;
  * @author Volker Bier - Initial contribution
  */
 public class Tx22Reading extends LaCrosseTemperatureReading {
-    private int rain;
-    private float windDirection;
-    private float windSpeed;
-    private float windGust;
-    private float pressure;
+    private Integer rain;
+    private Float windDirection;
+    private Float windSpeed;
+    private Float windGust;
+    private Integer pressure;
 
-    public Tx22Reading(int sensorId, int sensorType, int channel, float temp, int humidity, boolean batteryNew,
-            boolean batteryLow, int rain, float windDirection, float windSpeed, float windGust, float pressure) {
-        this(String.valueOf(sensorId), sensorType, channel, temp, humidity, batteryNew, batteryLow, rain, windDirection,
-                windSpeed, windGust, pressure);
-    }
-
-    public Tx22Reading(String sensorId, int sensorType, int channel, float temp, int humidity, boolean batteryNew,
-            boolean batteryLow, int rain, float windDirection, float windSpeed, float windGust, float pressure) {
-        super(sensorId, sensorType, channel, temp, humidity, batteryNew, batteryLow);
+    public Tx22Reading(int sensorId, int sensorType, int channel, Float temp, Integer humidity, boolean batteryNew,
+            boolean batteryLow, Integer rain, Float windDirection, Float windSpeed, Float windGust, Integer pressure) {
+        super(String.valueOf(sensorId), sensorType, channel, temp, humidity, batteryNew, batteryLow);
 
         this.rain = rain;
         this.windDirection = windDirection;
@@ -37,51 +31,51 @@ public class Tx22Reading extends LaCrosseTemperatureReading {
         this.pressure = pressure;
     }
 
-    public int getRain() {
+    public Integer getRain() {
         return rain;
     }
 
-    public float getWindDirection() {
+    public Float getWindDirection() {
         return windDirection;
     }
 
-    public float getWindSpeed() {
+    public Float getWindSpeed() {
         return windSpeed;
     }
 
-    public float getWindGust() {
+    public Float getWindGust() {
         return windGust;
     }
 
-    public float getPressure() {
+    public Integer getPressure() {
         return pressure;
     }
 
     public boolean hasWindGust() {
-        return windGust != Float.MAX_VALUE;
+        return windGust != null;
     }
 
     public boolean hasWindSpeed() {
-        return windSpeed != Float.MAX_VALUE;
+        return windSpeed != null;
     }
 
     public boolean hasWindDirection() {
-        return windDirection != Float.MAX_VALUE;
+        return windDirection != null;
     }
 
     public boolean hasPressure() {
-        return pressure != Float.MAX_VALUE;
+        return pressure != null;
     }
 
     public boolean hasRain() {
-        return rain != Integer.MAX_VALUE;
+        return rain != null;
     }
 
     public boolean hasHumidity() {
-        return getHumidity() != Integer.MAX_VALUE;
+        return getHumidity() != null;
     }
 
     public boolean hasTemperature() {
-        return getTemperature() != Float.MAX_VALUE;
+        return getTemperature() != null;
     }
 }

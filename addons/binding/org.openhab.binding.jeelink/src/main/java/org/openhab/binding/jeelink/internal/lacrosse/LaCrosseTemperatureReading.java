@@ -19,8 +19,8 @@ public class LaCrosseTemperatureReading implements Reading {
     private String sensorId;
     private int sensorType;
     private int channel;
-    private float temp;
-    private int humidity;
+    private Float temp;
+    private Integer humidity;
     private boolean batteryNew;
     private boolean batteryLow;
 
@@ -49,11 +49,11 @@ public class LaCrosseTemperatureReading implements Reading {
         return sensorType;
     }
 
-    public float getTemperature() {
+    public Float getTemperature() {
         return temp;
     }
 
-    public int getHumidity() {
+    public Integer getHumidity() {
         return humidity;
     }
 
