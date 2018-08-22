@@ -250,6 +250,8 @@
     <feature name="openhab-binding-leapmotion" description="LeapMotion Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.leapmotion/${project.version}</bundle>
+        <configfile finalname="${openhab.userdata}/tmp/lib/libLeap.dylib" override="false">mvn:${project.groupId}/openhab2-addons-external/${project.version}/lib/libLeap</configfile>
+        <configfile finalname="${openhab.userdata}/tmp/lib/libLeapJava.dylib" override="false">mvn:${project.groupId}/openhab2-addons-external/${project.version}/lib/libLeapJava</configfile>
     </feature>
 
     <feature name="openhab-binding-lgtvserial" description="LG TV Serial Binding" version="${project.version}">

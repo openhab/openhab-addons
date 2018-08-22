@@ -45,6 +45,16 @@
                   <type>cfg</type>
                   <classifier>openhabcloud</classifier>
                 </artifact>
+                <artifact>
+                  <file>src/main/resources/lib/libLeap.dylib</file>
+                  <type>lib</type>
+                  <classifier>libLeap</classifier>
+                </artifact>
+                <artifact>
+                  <file>src/main/resources/lib/libLeapJava.dylib</file>
+                  <type>lib</type>
+                  <classifier>libLeapJava</classifier>
+                </artifact>
               </artifacts>
             </configuration>
           </execution>
