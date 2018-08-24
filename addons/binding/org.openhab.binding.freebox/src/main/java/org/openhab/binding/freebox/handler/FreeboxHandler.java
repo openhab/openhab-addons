@@ -13,6 +13,7 @@ import static org.openhab.binding.freebox.FreeboxBindingConstants.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -57,6 +58,7 @@ import org.matmaul.freeboxos.wifi.WifiGlobalConfig;
 import org.openhab.binding.freebox.FreeboxBindingConstants;
 import org.openhab.binding.freebox.FreeboxDataListener;
 import org.openhab.binding.freebox.internal.config.FreeboxServerConfiguration;
+import org.openhab.binding.freebox.internal.discovery.FreeboxDiscoveryService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -68,6 +70,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Garnier - updated to a bridge handler and delegate few things to another handler
+ * @author Laurent Garnier - update discovery configuration
  */
 public class FreeboxHandler extends BaseBridgeHandler {
 
@@ -200,6 +203,17 @@ public class FreeboxHandler extends BaseBridgeHandler {
         logger.debug("initializing Freebox Server handler for thing {}", getThing().getUID());
 
         FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
+
+        // Update the discovery configuration
+        Map<String, Object> configDiscovery = new HashMap<String, Object>();
+        configDiscovery.put(FreeboxDiscoveryService.DISCOVER_PHONE, configuration.discoverPhone);
+        configDiscovery.put(FreeboxDiscoveryService.DISCOVER_NET_DEVICE, configuration.discoverNetDevice);
+        configDiscovery.put(FreeboxDiscoveryService.DISCOVER_NET_INTERFACE, configuration.discoverNetInterface);
+        configDiscovery.put(FreeboxDiscoveryService.DISCOVER_AIRPLAY_RECEIVER, configuration.discoverAirPlayReceiver);
+        for (FreeboxDataListener dataListener : dataListeners) {
+            dataListener.applyConfig(configDiscovery);
+        }
+
         if (StringUtils.isNotEmpty(configuration.fqdn)) {
             updateStatus(ThingStatus.OFFLINE);
 
