@@ -38,7 +38,7 @@ public class OnkyoBindingConstants {
     public static final String ONKYO_TYPE_TXNR626 = "TX-NR626";
     public static final String ONKYO_TYPE_TXNR646 = "TX-NR646";
     public static final String ONKYO_TYPE_TXNR656 = "TX-NR656";
-    public static final String ONKYO_TYPE_TXNR717 = "TX-NR708";
+    public static final String ONKYO_TYPE_TXNR708 = "TX-NR708";
     public static final String ONKYO_TYPE_TXNR717 = "TX-NR717";
     public static final String ONKYO_TYPE_TXNR727 = "TX-NR727";
     public static final String ONKYO_TYPE_TXNR737 = "TX-NR737";
@@ -69,7 +69,7 @@ public class OnkyoBindingConstants {
     public static final ThingTypeUID THING_TYPE_TXNR626 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR626);
     public static final ThingTypeUID THING_TYPE_TXNR646 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR646);
     public static final ThingTypeUID THING_TYPE_TXNR656 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR656);
-    public static final ThingTypeUID THING_TYPE_TXNR717 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR708);
+    public static final ThingTypeUID THING_TYPE_TXNR708 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR708);
     public static final ThingTypeUID THING_TYPE_TXNR717 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR717);
     public static final ThingTypeUID THING_TYPE_TXNR727 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR727);
     public static final ThingTypeUID THING_TYPE_TXNR737 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR737);
