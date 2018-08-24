@@ -32,6 +32,7 @@ import org.openhab.binding.freebox.handler.FreeboxHandler;
 import org.openhab.binding.freebox.internal.config.FreeboxAirPlayDeviceConfiguration;
 import org.openhab.binding.freebox.internal.config.FreeboxNetDeviceConfiguration;
 import org.openhab.binding.freebox.internal.config.FreeboxNetInterfaceConfiguration;
+import org.openhab.binding.freebox.internal.config.FreeboxServerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,11 +50,6 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
     private static final int SEARCH_TIME = 10;
 
     private static final String PHONE_ID = "wired";
-
-    public static final String DISCOVER_PHONE = "discoverPhone";
-    public static final String DISCOVER_NET_DEVICE = "discoverNetDevice";
-    public static final String DISCOVER_NET_INTERFACE = "discoverNetInterface";
-    public static final String DISCOVER_AIRPLAY_RECEIVER = "discoverAirPlayReceiver";
 
     private FreeboxHandler bridgeHandler;
     private boolean discoverPhone;
@@ -89,19 +85,19 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
     @Override
     public void applyConfig(Map<String, Object> configProperties) {
         if (configProperties != null) {
-            Object property = configProperties.get(DISCOVER_PHONE);
+            Object property = configProperties.get(FreeboxServerConfiguration.DISCOVER_PHONE);
             if (property != null) {
                 discoverPhone = ((Boolean) property).booleanValue();
             }
-            property = configProperties.get(DISCOVER_NET_DEVICE);
+            property = configProperties.get(FreeboxServerConfiguration.DISCOVER_NET_DEVICE);
             if (property != null) {
                 discoverNetDevice = ((Boolean) property).booleanValue();
             }
-            property = configProperties.get(DISCOVER_NET_INTERFACE);
+            property = configProperties.get(FreeboxServerConfiguration.DISCOVER_NET_INTERFACE);
             if (property != null) {
                 discoverNetInterface = ((Boolean) property).booleanValue();
             }
-            property = configProperties.get(DISCOVER_AIRPLAY_RECEIVER);
+            property = configProperties.get(FreeboxServerConfiguration.DISCOVER_AIRPLAY_RECEIVER);
             if (property != null) {
                 discoverAirPlayReceiver = ((Boolean) property).booleanValue();
             }

@@ -58,7 +58,6 @@ import org.matmaul.freeboxos.wifi.WifiGlobalConfig;
 import org.openhab.binding.freebox.FreeboxBindingConstants;
 import org.openhab.binding.freebox.FreeboxDataListener;
 import org.openhab.binding.freebox.internal.config.FreeboxServerConfiguration;
-import org.openhab.binding.freebox.internal.discovery.FreeboxDiscoveryService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -206,10 +205,11 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
         // Update the discovery configuration
         Map<String, Object> configDiscovery = new HashMap<String, Object>();
-        configDiscovery.put(FreeboxDiscoveryService.DISCOVER_PHONE, configuration.discoverPhone);
-        configDiscovery.put(FreeboxDiscoveryService.DISCOVER_NET_DEVICE, configuration.discoverNetDevice);
-        configDiscovery.put(FreeboxDiscoveryService.DISCOVER_NET_INTERFACE, configuration.discoverNetInterface);
-        configDiscovery.put(FreeboxDiscoveryService.DISCOVER_AIRPLAY_RECEIVER, configuration.discoverAirPlayReceiver);
+        configDiscovery.put(FreeboxServerConfiguration.DISCOVER_PHONE, configuration.discoverPhone);
+        configDiscovery.put(FreeboxServerConfiguration.DISCOVER_NET_DEVICE, configuration.discoverNetDevice);
+        configDiscovery.put(FreeboxServerConfiguration.DISCOVER_NET_INTERFACE, configuration.discoverNetInterface);
+        configDiscovery.put(FreeboxServerConfiguration.DISCOVER_AIRPLAY_RECEIVER,
+                configuration.discoverAirPlayReceiver);
         for (FreeboxDataListener dataListener : dataListeners) {
             dataListener.applyConfig(configDiscovery);
         }
