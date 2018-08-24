@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.amazonechocontrol.internal;
 
 import java.io.IOException;
@@ -25,9 +33,12 @@ import org.eclipse.jetty.websocket.api.extensions.ExtensionConfig;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.jetty.websocket.common.extensions.compress.PerMessageDeflateExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public class WebSocketConnection {
+    private final Logger logger = LoggerFactory.getLogger(WebSocketConnection.class);
 
     WebSocketClient webSocketClient;
     @Nullable
@@ -85,13 +96,13 @@ public class WebSocketConnection {
             webSocketClient.connect(listener, uri, request);
 
         } catch (URISyntaxException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.warn("Initialize web socket failed: {}", e);
         }
     }
 
     private void setSession(Session session) {
         this.session = session;
+        logger.debug("Web Socket session started");
         Timer pingTimer = new Timer();
         this.pingTimer = pingTimer;
         pingTimer.schedule(new TimerTask() {
@@ -158,11 +169,13 @@ public class WebSocketConnection {
 
         void sendMessage(byte[] buffer) {
             try {
+                logger.info("Send message with length {}", buffer.length);
                 Session session = WebSocketConnection.this.session;
                 if (session != null) {
                     session.getRemote().sendBytes(ByteBuffer.wrap(buffer));
                 }
             } catch (IOException e) {
+                logger.info("Send message failed", e);
                 WebSocketConnection.this.close();
             }
         }
@@ -308,6 +321,8 @@ public class WebSocketConnection {
                 this.msgCounter = -1;
                 setSession(session);
                 sendMessage("0x99d4f71a 0x0000001d A:HTUNE");
+            } else {
+                logger.info("Web Socket connect without session");
             }
         }
 
@@ -335,9 +350,11 @@ public class WebSocketConnection {
                     if (message.service.equals("FABE") && message.content.messageType.equals("PON")
                             && message.content.payloadData.length > 0) {
 
+                        logger.info("Pong received");
                         WebSocketConnection.this.clearPongTimeoutTimer();
                         return;
                     } else {
+                        logger.info("Message received");
                         if (!StringUtils.isEmpty(message.content.payload)) {
 
                         }
@@ -357,27 +374,28 @@ public class WebSocketConnection {
 
         }
 
-        public void sendPing() {
-            WebSocketConnection.this.initPongTimeoutTimer();
-            sendMessage(encodePing());
-        }
-
         @Override
         public void onWebSocketText(@Nullable String message) {
-            // TODO Auto-generated method stub
 
         }
 
         @Override
         public void onWebSocketClose(int code, @Nullable String reason) {
+            logger.info("Web Socket close {}. Reason: {}", code, reason);
             WebSocketConnection.this.close();
         }
 
         @Override
         public void onWebSocketError(@Nullable Throwable error) {
-
+            logger.info("Web Socket error {}", error);
             WebSocketConnection.this.close();
 
+        }
+
+        public void sendPing() {
+            logger.info("Send Ping");
+            WebSocketConnection.this.initPongTimeoutTimer();
+            sendMessage(encodePing());
         }
 
         String encodeNumber(long val) {
@@ -396,22 +414,22 @@ public class WebSocketConnection {
             return "0x" + str;
         }
 
-        long b(long a, long len) {
+        long computeBits(long input, long len) {
 
             long lenCounter = len;
             long value;
-            for (value = toUnsignedInt(a); 0 != lenCounter && 0 != value;) {
+            for (value = toUnsignedInt(input); 0 != lenCounter && 0 != value;) {
                 value = (long) Math.floor(value / 2);
                 lenCounter--;
             }
             return value;
         }
 
-        long toUnsignedInt(long a) {
+        long toUnsignedInt(long value) {
 
-            long result = a;
-            if (0 > a) {
-                result = 4294967295L + a + 1;
+            long result = value;
+            if (0 > value) {
+                result = 4294967295L + value + 1;
             }
             return result;
         }
@@ -427,7 +445,7 @@ public class WebSocketConnection {
             for (h = 0, l = 0, index = 0; index < data.length; index++) {
                 if (index != exclusionStart) {
                     l += toUnsignedInt((data[index] & 0xFF) << ((index & 3 ^ 3) << 3));
-                    h += b(l, 32);
+                    h += computeBits(l, 32);
                     l = toUnsignedInt((int) l & (int) 4294967295L);
                     l = l + 0;
 
@@ -438,7 +456,7 @@ public class WebSocketConnection {
 
             while (h != 0) {
                 l += h;
-                h = b(l, 32);
+                h = computeBits(l, 32);
                 l = (int) l & (int) 4294967295L;
 
             }
