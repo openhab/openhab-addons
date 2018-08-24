@@ -9,6 +9,7 @@
 package org.openhab.binding.freebox;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.matmaul.freeboxos.airmedia.AirMediaReceiver;
@@ -19,8 +20,16 @@ import org.matmaul.freeboxos.lan.LanHostsConfig;
  * with updated data from the Freebox server.
  *
  * @author Laurent Garnier - Initial contribution
+ * @author Laurent Garnier - add discovery configuration
  */
 public interface FreeboxDataListener {
+
+    /**
+     * Update the discovery configuration.
+     *
+     * @param configProperties the configuration
+     */
+    public void applyConfig(Map<String, Object> configProperties);
 
     /**
      * This method is called just after the bridge thing handler fetched new data
