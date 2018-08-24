@@ -39,10 +39,13 @@ import org.openhab.binding.amazonechocontrol.internal.AccountServlet;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.HttpException;
+import org.openhab.binding.amazonechocontrol.internal.IWebSocketCommandHandler;
+import org.openhab.binding.amazonechocontrol.internal.WebSocketConnection;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommand;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,21 +59,24 @@ import com.google.gson.JsonSyntaxException;
  * @author Michael Geramb - Initial Contribution
  */
 @NonNullByDefault
-public class AccountHandler extends BaseBridgeHandler {
+public class AccountHandler extends BaseBridgeHandler implements IWebSocketCommandHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private Storage<String> stateStorage;
     private @Nullable Connection connection;
+    private @Nullable WebSocketConnection webSocketConnection;
     private final Set<EchoHandler> echoHandlers = new HashSet<>();
     private final Set<FlashBriefingProfileHandler> flashBriefingProfileHandlers = new HashSet<>();
     private final Object synchronizeConnection = new Object();
     private Map<String, Device> jsonSerialNumberDeviceMapping = new HashMap<>();
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> refreshLogin;
+    private @Nullable ScheduledFuture<?> refreshDataDelayed;
     private String currentFlashBriefingJson = "";
     private final HttpService httpService;
     private @Nullable AccountServlet accountServlet;
     private final Gson gson = new Gson();
+    private final Object refreshDataLock = new Object();
 
     public AccountHandler(Bridge bridge, HttpService httpService, Storage<String> stateStorage) {
         super(bridge);
@@ -122,6 +128,7 @@ public class AccountHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
 
         refreshLogin = scheduler.scheduleWithFixedDelay(this::checkLogin, 0, 60, TimeUnit.SECONDS);
+        pollingIntervalInSeconds = 3600; // do complete refresh after 60 minutes
         refreshJob = scheduler.scheduleWithFixedDelay(this::refreshData, 4, pollingIntervalInSeconds, TimeUnit.SECONDS);
 
         logger.debug("amazon account bridge handler started.");
@@ -241,11 +248,18 @@ public class AccountHandler extends BaseBridgeHandler {
             refreshLogin.cancel(true);
             this.refreshLogin = null;
         }
+        @Nullable
+        ScheduledFuture<?> refreshDataDelayed = this.refreshDataDelayed;
+        if (refreshDataDelayed != null) {
+            refreshDataDelayed.cancel(true);
+            this.refreshDataDelayed = null;
+        }
         Connection connection = this.connection;
         if (connection != null) {
             connection.logout();
             this.connection = null;
         }
+        closeWebSocketConnection();
     }
 
     private void checkLogin() {
@@ -336,6 +350,7 @@ public class AccountHandler extends BaseBridgeHandler {
                     }
                 }
             }
+            checkWebSocketConnection();
         } catch (HttpException | JsonSyntaxException | ConnectionException e) {
             logger.debug("check login fails {}", e);
         } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
@@ -352,57 +367,85 @@ public class AccountHandler extends BaseBridgeHandler {
     // used to set a valid connection from the web proxy login
     public void setConnection(Connection connection) {
         this.connection = connection;
+        closeWebSocketConnection();
+        checkWebSocketConnection();
+
         String serializedStorage = connection.serializeLoginData();
         this.stateStorage.put("sessionStorage", serializedStorage);
         handleValidLogin();
     }
 
-    private void refreshData() {
-        try {
-            logger.debug("refreshing data {}", getThing().getUID().getAsString());
+    void closeWebSocketConnection() {
+        WebSocketConnection webSocketConnection = this.webSocketConnection;
+        this.webSocketConnection = null;
+        if (webSocketConnection != null) {
+            webSocketConnection.close();
+        }
+    }
 
-            // check if logged in
-            Connection currentConnection = null;
-            synchronized (synchronizeConnection) {
-                currentConnection = connection;
-                if (currentConnection != null) {
-                    if (!currentConnection.getIsLoggedIn()) {
-                        return;
+    void checkWebSocketConnection() {
+        WebSocketConnection webSocketConnection = this.webSocketConnection;
+        if (webSocketConnection == null || webSocketConnection.isClosed()) {
+            Connection connection = this.connection;
+            if (connection != null && connection.getIsLoggedIn()) {
+                try {
+                    this.webSocketConnection = new WebSocketConnection(connection.getAmazonSite(),
+                            connection.getSessionCookies(), this);
+                } catch (IOException e) {
+                    logger.info("Web socket connection starting failed: {}", e);
+                }
+            }
+        }
+    }
+
+    private void refreshData() {
+        synchronized (refreshDataLock) {
+            try {
+                logger.debug("refreshing data {}", getThing().getUID().getAsString());
+
+                // check if logged in
+                Connection currentConnection = null;
+                synchronized (synchronizeConnection) {
+                    currentConnection = connection;
+                    if (currentConnection != null) {
+                        if (!currentConnection.getIsLoggedIn()) {
+                            return;
+                        }
                     }
                 }
-            }
-            if (currentConnection == null) {
-                return;
-            }
-
-            // get all devices registered in the account
-            updateDeviceList();
-            updateFlashBriefingHandlers();
-
-            // update bluetooth states
-            JsonBluetoothStates states = null;
-            if (currentConnection.getIsLoggedIn()) {
-                states = currentConnection.getBluetoothConnectionStates();
-            }
-
-            // forward device information to echo handler
-            for (EchoHandler child : echoHandlers) {
-                Device device = findDeviceJson(child);
-                BluetoothState state = null;
-                if (states != null) {
-                    state = states.findStateByDevice(device);
+                if (currentConnection == null) {
+                    return;
                 }
-                child.updateState(this, device, state);
+
+                // get all devices registered in the account
+                updateDeviceList();
+                updateFlashBriefingHandlers();
+
+                // update bluetooth states
+                JsonBluetoothStates states = null;
+                if (currentConnection.getIsLoggedIn()) {
+                    states = currentConnection.getBluetoothConnectionStates();
+                }
+
+                // forward device information to echo handler
+                for (EchoHandler child : echoHandlers) {
+                    Device device = findDeviceJson(child);
+                    BluetoothState state = null;
+                    if (states != null) {
+                        state = states.findStateByDevice(device);
+                    }
+                    child.updateState(this, device, state);
+                }
+
+                // update account state
+                updateStatus(ThingStatus.ONLINE);
+
+                logger.debug("refresh data {} finished", getThing().getUID().getAsString());
+            } catch (HttpException | JsonSyntaxException | ConnectionException e) {
+                logger.debug("refresh data fails {}", e);
+            } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
+                logger.error("refresh data fails with unexpected error {}", e);
             }
-
-            // update account state
-            updateStatus(ThingStatus.ONLINE);
-
-            logger.debug("refresh data {} finished", getThing().getUID().getAsString());
-        } catch (HttpException | JsonSyntaxException | ConnectionException e) {
-            logger.debug("refresh data fails {}", e);
-        } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
-            logger.error("refresh data fails with unexpected error {}", e);
         }
     }
 
@@ -545,6 +588,21 @@ public class AccountHandler extends BaseBridgeHandler {
             logger.warn("get flash briefing profiles fails {}", e);
         }
 
+    }
+
+    @Override
+    public void webSocketCommandReceived(JsonPushCommand pushCommand) {
+        // refresh data 200ms after last command
+        @Nullable
+        ScheduledFuture<?> refreshDataDelayed = this.refreshDataDelayed;
+        if (refreshDataDelayed != null) {
+            refreshDataDelayed.cancel(false);
+        }
+        this.refreshDataDelayed = scheduler.schedule(this::refreshAfterCommand, 700, TimeUnit.MILLISECONDS);
+    }
+
+    void refreshAfterCommand() {
+        refreshData();
     }
 
 }

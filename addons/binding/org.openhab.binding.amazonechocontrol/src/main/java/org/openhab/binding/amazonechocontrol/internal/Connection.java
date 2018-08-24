@@ -38,8 +38,6 @@ import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -545,11 +543,6 @@ public class Connection {
         return null;
     }
 
-    @Nullable
-    WebSocketClient webSocketClient;
-    @Nullable
-    Session session;
-
     public boolean verifyLogin() throws IOException, URISyntaxException {
         String response = makeRequestAndReturnString(alexaServer + "/api/bootstrap?version=0");
         Boolean result = response.contains("\"authenticated\":true");
@@ -558,15 +551,6 @@ public class Connection {
             if (loginTime == null) {
                 loginTime = verifyTime;
             }
-            try {
-
-                WebSocketConnection connection = new WebSocketConnection(this.amazonSite, getSessionCookies());
-
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
         }
         return result;
     }

@@ -33,13 +33,17 @@ import org.eclipse.jetty.websocket.api.extensions.ExtensionConfig;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.jetty.websocket.common.extensions.compress.PerMessageDeflateExtension;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 @NonNullByDefault
 public class WebSocketConnection {
     private final Logger logger = LoggerFactory.getLogger(WebSocketConnection.class);
-
+    private final Gson gson = new Gson();
     WebSocketClient webSocketClient;
     @Nullable
     Session session;
@@ -48,8 +52,12 @@ public class WebSocketConnection {
     @Nullable
     Timer pongTimeoutTimer;
     Listener listener;
+    boolean closed;
+    IWebSocketCommandHandler webSocketCommandHandler;
 
-    WebSocketConnection(String amazonSite, List<HttpCookie> sessionCookies) throws Exception {
+    public WebSocketConnection(String amazonSite, List<HttpCookie> sessionCookies,
+            IWebSocketCommandHandler webSocketCommandHandler) throws IOException {
+        this.webSocketCommandHandler = webSocketCommandHandler;
         listener = new Listener();
         SslContextFactory sslContextFactory = new SslContextFactory();
         webSocketClient = new WebSocketClient(sslContextFactory);
@@ -80,7 +88,12 @@ public class WebSocketConnection {
 
             webSocketClient.getExtensionFactory().register("permessage-deflate", PerMessageDeflateExtension.class);
 
-            webSocketClient.start();
+            try {
+                webSocketClient.start();
+            } catch (Exception e) {
+                logger.info("Web socket start failed: {}", e);
+                throw new IOException("Web socket start failed");
+            }
 
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setHeader("host", host);
@@ -114,7 +127,12 @@ public class WebSocketConnection {
         }, 180000, 180000);
     }
 
+    public boolean isClosed() {
+        return closed;
+    }
+
     public void close() {
+        closed = true;
         Timer pingTimer = this.pingTimer;
         if (pingTimer != null) {
             pingTimer.cancel();
@@ -227,6 +245,8 @@ public class WebSocketConnection {
             @Nullable
             String payload;
             byte[] payloadData = new byte[0];
+            @Nullable
+            JsonPushCommand pushCommand;
         }
 
         Message parseIncomingMessage(byte[] data) {
@@ -297,12 +317,22 @@ public class WebSocketConnection {
 
                             String[] idDataElements = idData.split(" ", 2);
                             message.content.deviceIdentityUrn = idDataElements[0];
+                            String payload = null;
                             if (idDataElements.length == 2) {
-                                String payload = idDataElements[1];
-                                if (!StringUtils.isEmpty(message.content.payload)) {
-                                    payload = readString(data, idx, data.length - 4 - idx);
+                                payload = idDataElements[1];
+                            }
+                            if (message.content.payload == null) {
+                                payload = readString(data, idx, data.length - 4 - idx);
+                            }
+                            message.content.payload = payload;
+                            if (StringUtils.isNotEmpty(payload)) {
+                                try {
+                                    message.content.pushCommand = gson.fromJson(message.content.payload,
+                                            JsonPushCommand.class);
+                                } catch (JsonSyntaxException e) {
+                                    logger.info("Parsing json failed {}", e);
+                                    logger.info("Illegal json: {}", payload);
                                 }
-                                message.content.payload = payload;
                             }
                         }
                     }
@@ -354,17 +384,11 @@ public class WebSocketConnection {
                         WebSocketConnection.this.clearPongTimeoutTimer();
                         return;
                     } else {
-                        logger.info("Message received");
-                        if (!StringUtils.isEmpty(message.content.payload)) {
-
+                        JsonPushCommand pushCommand = message.content.pushCommand;
+                        logger.info("Message received: {}", message.content.payload);
+                        if (pushCommand != null) {
+                            webSocketCommandHandler.webSocketCommandReceived(pushCommand);
                         }
-                        // let command = message.content.payload.command;
-                        // let payload = message.content.payload.payload;
-
-                        // this._options.logger && this._options.logger('Alexa-Remote WS-MQTT: Command ' + command + ':
-                        // ' +
-                        // JSON.stringify(payload, null, 4));
-                        // this.emit('command', command, payload);
                         return;
                     }
                 } catch (Exception e) {
@@ -403,7 +427,6 @@ public class WebSocketConnection {
         }
 
         String encodeNumber(long val, int len) {
-
             String str = Long.toHexString(val);
             if (str.length() > len) {
                 str = str.substring(str.length() - len);
@@ -415,7 +438,6 @@ public class WebSocketConnection {
         }
 
         long computeBits(long input, long len) {
-
             long lenCounter = len;
             long value;
             for (value = toUnsignedInt(input); 0 != lenCounter && 0 != value;) {
@@ -438,29 +460,25 @@ public class WebSocketConnection {
             if (exclusionEnd < exclusionStart) {
                 return 0;
             }
-
-            long h;
-            long l;
+            long overflow;
+            long sum;
             int index;
-            for (h = 0, l = 0, index = 0; index < data.length; index++) {
+            for (overflow = 0, sum = 0, index = 0; index < data.length; index++) {
                 if (index != exclusionStart) {
-                    l += toUnsignedInt((data[index] & 0xFF) << ((index & 3 ^ 3) << 3));
-                    h += computeBits(l, 32);
-                    l = toUnsignedInt((int) l & (int) 4294967295L);
-                    l = l + 0;
+                    sum += toUnsignedInt((data[index] & 0xFF) << ((index & 3 ^ 3) << 3));
+                    overflow += computeBits(sum, 32);
+                    sum = toUnsignedInt((int) sum & (int) 4294967295L);
 
                 } else {
                     index = exclusionEnd - 1;
                 }
             }
-
-            while (h != 0) {
-                l += h;
-                h = computeBits(l, 32);
-                l = (int) l & (int) 4294967295L;
-
+            while (overflow != 0) {
+                sum += overflow;
+                overflow = computeBits(sum, 32);
+                sum = (int) sum & (int) 4294967295L;
             }
-            long value = toUnsignedInt(l);
+            long value = toUnsignedInt(sum);
             return (int) value;
         }
 
@@ -505,11 +523,6 @@ public class WebSocketConnection {
             msg += "0x00000109 "; // length content
             msg += "GWM MSG 0x0000b479 0x0000003b urn:tcomm-endpoint:device:deviceType:0:deviceSerialNumber:0 0x00000041 urn:tcomm-endpoint:service:serviceName:DeeWebsiteMessagingService {\"command\":\"REGISTER_CONNECTION\"}FABE";
 
-            // msg = "MSG 0x00000362 0x0e414e46 f 0x00000001 0xf904b9f5 0x00000109 GWM MSG 0x0000b479 0x0000003b
-            // urn:tcomm-endpoint:device:deviceType:0:deviceSerialNumber:0 0x00000041
-            // urn:tcomm-endpoint:service:serviceName:DeeWebsiteMessagingService
-            // {\"command\":\"REGISTER_CONNECTION\"}FABE";
-
             byte[] completeBuffer = msg.getBytes(StandardCharsets.US_ASCII);
 
             int checksum = this.computeChecksum(completeBuffer, checkSumStart, checkSumEnd);
@@ -524,25 +537,9 @@ public class WebSocketConnection {
         }
 
         void encode(byte[] data, long b, int offset, int len) {
-            /*
-             * byte[] array;
-             * if (len == 4) {
-             * ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
-             * buffer.putInt((int) b);
-             * array = buffer.array();
-             * } else {
-             * ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-             * buffer.putLong(b);
-             * array = buffer.array();
-             * }
-             * for (int index = 0; index < len; index++) {
-             * data[index + offset] = array[index];
-             * }
-             */
             for (int index = 0; index < len; index++) {
                 data[index + offset] = (byte) (b >> 8 * (len - 1 - index) & 255);
             }
-
         }
 
         byte[] encodePing() {
