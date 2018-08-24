@@ -38,6 +38,7 @@ public class WebSocketConnection {
 
     WebSocketConnection(String amazonSite, List<HttpCookie> sessionCookies) throws Exception {
         listener = new Listener();
+        listener.verify();
         SslContextFactory sslContextFactory = new SslContextFactory();
         webSocketClient = new WebSocketClient(sslContextFactory);
 
@@ -392,6 +393,7 @@ public class WebSocketConnection {
         }
 
         long b(long a, long len) {
+
             long lenCounter = len;
             long value;
             for (value = c(a); 0 != lenCounter && 0 != value;) {
@@ -403,10 +405,11 @@ public class WebSocketConnection {
 
         long c(long a) {
 
+            long result = a;
             if (0 > a) {
-                return 4294967295L + a + 1;
+                result = 4294967295L + a + 1;
             }
-            return a;
+            return result;
         }
 
         int computeChecksum(byte[] data, int exclusionStart, int exclusionEnd) {
@@ -419,20 +422,46 @@ public class WebSocketConnection {
             int index;
             for (h = 0, l = 0, index = 0; index < data.length; index++) {
                 if (index != exclusionStart) {
-                    l += c((data[index]) << ((index & 3 ^ 3) << 3));
+                    l += c(data[index] << ((index & 3 ^ 3) << 3));
                     h += b(l, 32);
-                    l = c(((int) l) & (int) 4294967295L);
+                    l = c((int) l & (int) 4294967295L);
                 } else {
                     index = exclusionEnd - 1;
                 }
             }
-            while (h > 0) {
+
+            while (h != 0) {
                 l += h;
                 h = b(l, 32);
-                l = (int) (l & (int) 4294967295L);
+                l = (int) l & (int) 4294967295L;
 
             }
-            return (int) c(l);
+            long value = c(l);
+            return (int) value;
+        }
+
+        void verify() {
+
+            verifyChecksum(false,
+                    "MSG 0x00000361 0x0e414e45 f 0x00000001 0xd7c62f29 0x0000009b INI 0x00000003 1.0 0x00000024 ff1c4525-c036-4942-bf6c-a098755ac82f 0x00000164d106ce6b END FABE");
+            verifyChecksum(false,
+                    "MSG 0x00000362 0x0e414e46 f 0x00000001 0xf904b9f5 0x00000109 GWM MSG 0x0000b479 0x0000003b urn:tcomm-endpoint:device:deviceType:0:deviceSerialNumber:0 0x00000041 urn:tcomm-endpoint:service:serviceName:DeeWebsiteMessagingService {\"command\":\"REGISTER_CONNECTION\"}FABE");
+
+            verifyChecksum(true,
+                    "4D53472030783030303030303635203078306534313465343720662030783030303030303031203078626332666262356620307830303030303036322050494E00000000D1098D8CD1098D8C000000070052006500670075006C0061007246414245");
+        }
+
+        void verifyChecksum(boolean hex, String message) {
+            byte[] binary = hex ? hexStringToByteArray(message) : message.getBytes(StandardCharsets.US_ASCII);
+            int checksum = computeChecksum(binary, 39, 50);
+
+            String checksumHex = encodeNumber(checksum);
+
+            String original = readString(binary, 39, 10);
+
+            if (!checksumHex.equals(original)) {
+                original += "";
+            }
         }
 
         byte[] encodeGWHandshake() {
@@ -565,6 +594,9 @@ public class WebSocketConnection {
                     "4D53472030783030303030303635203078306534313465343720662030783030303030303031203078626332666262356620307830303030303036322050494E00000000D1098D8CD1098D8C000000070052006500670075006C0061007246414245");
             String test1 = readString(fixedPing, 0, fixedPing.length);
             test1.toString();
+
+            String checksumHex2 = encodeNumber(this.computeChecksum(fixedPing, checkSumStart, checkSumEnd));
+
             String test = readString(completeBuffer, 0, completeBuffer.length);
             test.toString();
             return completeBuffer;

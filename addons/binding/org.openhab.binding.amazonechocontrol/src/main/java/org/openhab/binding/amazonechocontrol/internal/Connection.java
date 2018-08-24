@@ -20,7 +20,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,14 +38,8 @@ import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketListener;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
-import org.eclipse.jetty.websocket.api.extensions.ExtensionConfig;
-import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.eclipse.jetty.websocket.common.extensions.compress.PerMessageDeflateExtension;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -84,7 +77,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
-public class Connection implements WebSocketListener {
+public class Connection {
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
 
     private final CookieManager cookieManager = new CookieManager();
@@ -567,66 +560,7 @@ public class Connection implements WebSocketListener {
             }
             try {
 
-                if (true) {
-                    WebSocketConnection connection = new WebSocketConnection(this.amazonSite, getSessionCookies());
-                } else {
-                    String deviceSerial = "";
-
-                    String host;
-                    if (StringUtils.equalsIgnoreCase(this.amazonSite, "amazon.com")) {
-                        host = "dp-gw-na-js." + this.amazonSite;
-                    } else {
-                        host = "dp-gw-na." + this.amazonSite;
-                    }
-
-                    List<HttpCookie> cookiesForWs = new ArrayList<HttpCookie>();
-
-                    for (HttpCookie cookie : getSessionCookies()) {
-
-                        HttpCookie cookieForWs = new HttpCookie(cookie.getName(), cookie.getValue());
-                        cookiesForWs.add(cookieForWs);
-
-                        if (cookie.getName().equals("ubid-acbde")) {
-                            deviceSerial = cookie.getValue();
-                        }
-                    }
-
-                    deviceSerial += "-" + new Date().getTime();
-                    URI uri = new URI(
-                            "wss://" + host + "/?x-amz-device-type=ALEGCNGL9K0HM&x-amz-device-serial=" + deviceSerial);
-
-                    SslContextFactory sslContextFactory = new SslContextFactory();
-                    webSocketClient = new WebSocketClient(sslContextFactory);
-                    webSocketClient.getExtensionFactory().register("permessage-deflate",
-                            PerMessageDeflateExtension.class);
-
-                    webSocketClient.start();
-
-                    ClientUpgradeRequest request = new ClientUpgradeRequest();
-                    // request.setRequestURI(uri);
-                    request.setHeader("host", host);
-                    request.setHeader("Cache-Control", "no-cache");
-                    request.setHeader("Pragma", "no-cache");
-                    request.setHeader("Origin", alexaServer);
-
-                    request.addExtensions(new ExtensionConfig("permessage-deflate"));
-
-                    request.setCookies(cookiesForWs);
-
-                    webSocketClient.connect(this, uri, request);
-
-                }
-                /*
-                 * MqttClient client = new MqttClient(
-                 * "wss://dp-gw-na.amazon.de/?x-amz-device-type=ALEGCNGL9K0HM&x-amz-device-serial=" + deviceSerial,
-                 * MqttClient.generateClientId());
-                 * MqttConnectOptions options = new MqttConnectOptions();
-                 * Properties customHeaders = new Properties();
-                 * String cookie = cookieHeaderBuilder.toString();
-                 * customHeaders.setProperty("cookie", cookie);
-                 *
-                 * client.connect(options);
-                 */
+                WebSocketConnection connection = new WebSocketConnection(this.amazonSite, getSessionCookies());
 
             } catch (Exception e) {
                 // TODO Auto-generated catch block
@@ -643,92 +577,6 @@ public class Connection implements WebSocketListener {
         } catch (URISyntaxException e) {
             return new ArrayList<HttpCookie>();
         }
-    }
-
-    int msgCounter = -1;
-
-    @Override
-    public void onWebSocketConnect(@Nullable Session session) {
-        msgCounter = -1;
-        this.session = session;
-        sendMessage("0x99d4f71a 0x0000001d A:HTUNE");
-    }
-
-    void sendMessage(String message) {
-        sendMessage(message.getBytes(StandardCharsets.UTF_8));
-    }
-
-    void sendMessageHex(String message) {
-        sendMessage(hexStringToByteArray(message));
-    }
-
-    private void sendMessage(byte[] buffer) {
-        try {
-            Session session = this.session;
-            if (session != null) {
-                session.getRemote().sendBytes(ByteBuffer.wrap(buffer));
-            }
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-    public static byte[] hexStringToByteArray(String str) {
-        byte[] bytes = new byte[str.length() / 2];
-        for (int i = 0; i < bytes.length; i++) {
-            bytes[i] = (byte) Integer.parseInt(str.substring(2 * i, 2 * i + 2), 16);
-        }
-        return bytes;
-    }
-
-    @Override
-    public void onWebSocketBinary(byte @Nullable [] payload, int offset, int len) {
-        this.msgCounter++;
-        if (this.msgCounter == 0) {
-            sendMessage(
-                    "0xa6f6a951 0x0000009c {\"protocolName\":\"A:H\",\"parameters\":{\"AlphaProtocolHandler.receiveWindowSize\":\"16\",\"AlphaProtocolHandler.maxFragmentSize\":\"16000\"}}TUNE");
-
-            sendMessage(
-                    "MSG 0x00000361 0x0e414e45 f 0x00000001 0xd7c62f29 0x0000009b INI 0x00000003 1.0 0x00000024 ff1c4525-c036-4942-bf6c-a098755ac82f 0x00000164d106ce6b END FABE");
-        } else if (this.msgCounter == 1) {
-            sendMessage(
-                    "MSG 0x00000362 0x0e414e46 f 0x00000001 0xf904b9f5 0x00000109 GWM MSG 0x0000b479 0x0000003b urn:tcomm-endpoint:device:deviceType:0:deviceSerialNumber:0 0x00000041 urn:tcomm-endpoint:service:serviceName:DeeWebsiteMessagingService {\"command\":\"REGISTER_CONNECTION\"}FABE");
-            sendMessageHex(
-                    "4D53472030783030303030303635203078306534313465343720662030783030303030303031203078626332666262356620307830303030303036322050494E00000000D1098D8CD1098D8C000000070052006500670075006C0061007246414245");
-        } else {
-            int x = 0;
-            if (x > 0) {
-
-            }
-        }
-
-    }
-
-    @Override
-    public void onWebSocketText(@Nullable String textMessage) {
-        // TODO Auto-generated method stub
-        if (textMessage == null) {
-
-        }
-
-    }
-
-    @Override
-    public void onWebSocketClose(int code, @Nullable String message) {
-        // TODO Auto-generated method stub
-        if (code != 1234) {
-
-        }
-
-    }
-
-    @Override
-    @OnWebSocketError
-    // @Override
-    public void onWebSocketError(@Nullable Throwable error) {
-        // TODO Auto-generated method stub
-
     }
 
     public void logout() {
