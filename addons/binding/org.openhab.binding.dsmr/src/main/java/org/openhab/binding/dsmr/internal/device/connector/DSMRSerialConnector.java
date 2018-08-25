@@ -269,7 +269,7 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
     }
 
     /**
-     * Handles an error event. If open and it's a new value it's should be handled by the listener.
+     * Handles an error event. If open and it's a new value it should be handled by the listener.
      *
      * @param typeName type of the event, used in logging only
      * @param portEvent Serial port event that triggered the error.

@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="gj_v3_0" listed="false">
-		<label>GJ meter (DSMR V3.0)</label>
+		<label>GJ Meter (DSMR V3.0)</label>
 		<description>This is a Giga Joule meter that complies to the DSMR V3.0 specification.</description>
 
 		<channels>

@@ -9,7 +9,7 @@
 			<bridge-type-ref id="dsmrBridge" />
 		</supported-bridge-type-refs>
 
-		<label>Device meter (DSMR V5)</label>
+		<label>Device Meter (DSMR V5)</label>
 		<description>This is the device meter that complies to the DSMR V5 specification.</description>
 
 		<channels>

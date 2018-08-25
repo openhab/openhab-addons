@@ -5,7 +5,7 @@
 
 	<channel-type id="deviceType" advanced="true">
 		<item-type>String</item-type>
-		<label>Device type</label>
+		<label>Device Type</label>
 		<description>The meter device type.</description>
 		<state readOnly="true"></state>
 	</channel-type>

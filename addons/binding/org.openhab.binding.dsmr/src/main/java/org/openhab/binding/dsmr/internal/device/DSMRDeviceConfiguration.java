@@ -43,35 +43,20 @@ public class DSMRDeviceConfiguration {
     public String stopbits;
 
     /**
-     * Serial port auto detection flag
-     */
-    public boolean enableAutoDetection = true;
-
-    /**
      * When no message was received after the configured number of seconds action will be taken.
      */
     public int receivedTimeout;
 
     /**
-     * @return true is serial port speed should be detected automatically.
-     */
-    public boolean isSerialAutoDetection() {
-        return enableAutoDetection;
-    }
-
-    /**
-     * @return true if serial port settings are all set and no auto detecting is enabled.
+     * @return true if serial port settings are all set.
      */
     public boolean isSerialFixedSettings() {
-        return !isSerialAutoDetection() && baudrate > 0 && databits > 0 && !StringUtils.isBlank(parity)
-                && !StringUtils.isBlank(stopbits);
+        return baudrate > 0 && databits > 0 && !StringUtils.isBlank(parity) && !StringUtils.isBlank(stopbits);
     }
 
     @Override
     public String toString() {
-        return "DSMRDeviceConfiguration [serialPort=" + serialPort + ", serialPortBaudrate=" + baudrate
-                + ", serialPortDatabits=" + databits + ", serialPortParity=" + parity + ", serialPortStopbits="
-                + stopbits + ", serialPortEnableAutoDetection=" + enableAutoDetection + ", receivedTimeout="
-                + receivedTimeout + "]";
+        return "DSMRDeviceConfiguration [serialPort=" + serialPort + ", Baudrate=" + baudrate + ", Databits=" + databits
+                + ", Parity=" + parity + ", Stopbits=" + stopbits + ", receivedTimeout=" + receivedTimeout + "]";
     }
 }

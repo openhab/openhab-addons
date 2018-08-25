@@ -11,7 +11,7 @@
 	</channel-type>
 	<channel-type id="genValvePositionType">
 		<item-type>Number</item-type>
-		<label>Valve position</label>
+		<label>Valve Position</label>
 		<description>The valve switch position.</description>
 		<state readOnly="true"></state>
 	</channel-type>

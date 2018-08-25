@@ -1,7 +1,5 @@
 # DSMR Binding
 
-## Introduction
-
 The DSMR-binding is targeted towards Dutch users having a smart meter (Dutch: 'Slimme meter').
 Data of Dutch smart meters can be obtained via the P1-port.
 When connecting this port from a serial port the data can be read out.
@@ -35,13 +33,11 @@ The configuration for the Bridge consists of the following parameters:
 |---------------------|-------------------------------------------------------------------------------------------------------------|
 | serialPort          | The serial port where the P1-port is connected to (e.g. Linux: `/dev/ttyUSB1`, Windows: `COM2`) (mandatory) |
 | receivedTimeout     | The time out period in which messages are expected to arrive, default is 120 seconds.                       |
-| enableAutoDetection | When true serial port configuration is auto detected, default is true                                       |
 | baudrate            | Baudrate when no auto detect. valid values: 4800, 9600, 19200, 38400, 57600, 115200                         |
 | databits            | Data bits when no auto detect. valid values: 5, 6, 7, 8                                                     |
-| parity              | Parity when no auto detect. valid values: E(ven), N(one), O(dd)                                            |
+| parity              | Parity when no auto detect. valid values: E(ven), N(one), O(dd)                                             |
 | stopbits            | Stop bits when no auto detect. valid values: 1, 1.5, 2                                                      |
 
-Only when `enableAutoDetection` is set to false the manual port configuration settings will be active.
 **Note:** *The manual configuration is only needed if the DSMR-device requires non DSMR-standard Serial Port parameters (i.e. something different then `115200 8N1` or `9600 7E1`)*
 
 

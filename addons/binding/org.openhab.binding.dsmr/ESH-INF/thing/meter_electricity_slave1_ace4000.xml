@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="slave_electricity1_ace4000" listed="false">
-		<label>Slave electricity meter 1 (ACE4000)</label>
+		<label>Slave Electricity Meter 1 (ACE4000)</label>
 		<description>This is the first slave electricity meter that complies to the ACE4000 GTMM Mk3 specification.</description>
 
 		<channels>

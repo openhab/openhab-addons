@@ -62,7 +62,7 @@ public class DSMRMeterDescriptor {
     }
 
     /**
-     * @return the id to identify of channel as String or as "default" is it's the unknown channel.
+     * @return the id to identify of channel as String or as "default" is its the unknown channel.
      */
     public String getChannelId() {
         return channel == DSMRMeterConstants.UNKNOWN_CHANNEL ? "default" : String.valueOf(channel);

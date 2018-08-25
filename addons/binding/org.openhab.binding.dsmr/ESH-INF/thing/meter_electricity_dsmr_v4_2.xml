@@ -8,7 +8,7 @@
 			<bridge-type-ref id="dsmrBridge" />
 		</supported-bridge-type-refs>
 
-		<label>Electricity meter (DSMR V4.2)</label>
+		<label>Electricity Meter (DSMR V4.2)</label>
 		<description>This is an electricity meter that complies to the DSMR V4.2 specification.</description>
 
 		<channels>

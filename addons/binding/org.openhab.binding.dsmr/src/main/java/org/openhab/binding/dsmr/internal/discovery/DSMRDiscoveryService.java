@@ -33,7 +33,7 @@ public abstract class DSMRDiscoveryService extends AbstractDiscoveryService {
     /**
      * Timeout for Discovery timeout
      */
-    private static final int DSMR_DISCOVERY_TIMEOUT_SECONDS = 120;
+    private static final int DSMR_DISCOVERY_TIMEOUT_SECONDS = 60;
 
     private final Logger logger = LoggerFactory.getLogger(DSMRDiscoveryService.class);
 

@@ -65,8 +65,7 @@ public class DSMRSerialSettings {
      * @param baudrate baudrate of the port
      * @param databits no data bits to use (use SerialPort.DATABITS_* constant)
      * @param parity parity to use (use SerialPort.PARITY_* constant)
-     * @param stopbits
-     *            no stopbits to use (use SerialPort.STOPBITS_* constant)
+     * @param stopbits no stopbits to use (use SerialPort.STOPBITS_* constant)
      */
     private DSMRSerialSettings(int baudrate, int databits, int parity, int stopbits) {
         this.baudrate = baudrate;
@@ -147,8 +146,7 @@ public class DSMRSerialSettings {
     }
 
     /**
-     * Returns the manual entered port setting, but only if not serialPortEnableAutoDetection is enabled and if all
-     * configuration fields have a value (not null).
+     * Returns the manual entered port setting if all configuration fields have a value (not null).
      *
      * @param deviceConfiguration manual entered device configuration
      * @return serial configuration.

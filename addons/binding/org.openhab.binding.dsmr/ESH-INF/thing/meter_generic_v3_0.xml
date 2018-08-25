@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="generic_v3_0" listed="false">
-		<label>Generic meter (DSMR V3.0)</label>
+		<label>Generic Meter (DSMR V3.0)</label>
 		<description>This is a generic meter that complies to the DSMR V3.0 specification.</description>
 
 		<channels>

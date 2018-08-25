@@ -5,7 +5,7 @@
 
 	<channel-type id="heatingValueType">
 		<item-type>Number:Energy</item-type>
-		<label>Heating delivery (GJ)</label>
+		<label>Heating Delivery</label>
 		<description>The total amount of heating used in the past period.</description>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>

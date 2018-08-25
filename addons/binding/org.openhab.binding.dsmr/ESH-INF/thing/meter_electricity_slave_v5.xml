@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="slave_electricity_v5" listed="false">
-		<label>Slave electricity meter (DSMR V5.x)</label>
+		<label>Slave Electricity Meter (DSMR V5.x)</label>
 		<description>This is the slave electricity meter that complies to the DSMR 5.x specification.</description>
 
 		<channels>

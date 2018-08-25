@@ -73,15 +73,18 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
      * Long running process that controls the DSMR device connection.
      */
     private @Nullable DSMRDeviceRunnable dsmrDeviceRunnable;
+
     /**
      * Thread for {@link DSMRDeviceRunnable}. A thread is used because the {@link DSMRDeviceRunnable} is a blocking
      * process that runs as long as the thing is not disposed.
      */
     private @Nullable Thread dsmrDeviceThread;
+
     /**
      * Watchdog to check if messages received and restart if necessary.
      */
     private @Nullable ScheduledFuture<?> watchdog;
+
     /**
      * Number of nanoseconds after which a timeout is triggered when no messages received.
      */
@@ -153,14 +156,12 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
     private DSMRDevice createDevice(DSMRDeviceConfiguration deviceConfig) {
         DSMRDevice dsmrDevice;
 
-        if (deviceConfig.isSerialAutoDetection()) {
-            dsmrDevice = new DSMRSerialAutoDevice(serialPortManager, deviceConfig.serialPort, this, scheduler,
-                    deviceConfig.receivedTimeout);
-        } else if (deviceConfig.isSerialFixedSettings()) {
+        if (deviceConfig.isSerialFixedSettings()) {
             dsmrDevice = new DSMRFixedConfigDevice(serialPortManager, deviceConfig.serialPort,
                     DSMRSerialSettings.getPortSettingsFromConfiguration(deviceConfig), this);
         } else {
-            throw new IllegalArgumentException("Invalid configuration");
+            dsmrDevice = new DSMRSerialAutoDevice(serialPortManager, deviceConfig.serialPort, this, scheduler,
+                    deviceConfig.receivedTimeout);
         }
         return dsmrDevice;
     }

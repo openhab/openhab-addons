@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
@@ -75,7 +76,9 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // No comments can be handled
+        if (command == RefreshType.REFRESH) {
+            updateState();
+        }
     }
 
     /**

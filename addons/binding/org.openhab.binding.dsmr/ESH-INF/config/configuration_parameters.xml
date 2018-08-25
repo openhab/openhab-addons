@@ -5,32 +5,20 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:dsmr:bridgesettings">
-		<parameter-group name="serialPortAdvanced">
-			<label>Manual Serial Port Settings</label>
-			<description>In case auto detection fails, it is possible to specify the Serial Port manually</description>
-			<context>serial-port</context>
-			<advanced>true</advanced>
-		</parameter-group>
 		<parameter name="serialPort" type="text">
 			<context>serial-port</context>
 			<label>Serial Port</label>
-			<description>The Serial Port where the P1 port of the Smart Meter is connected (e.g. Linux: /dev/ttyUSB0, Windows:
-				COM1)</description>
+			<description>The serial port where the P1 port of the Smart Meter is connected (e.g. Linux: /dev/ttyUSB0, Windows: COM1)</description>
 		</parameter>
 		<parameter name="receivedTimeout" type="integer" required="true" min="1">
 			<default>30</default>
 			<label>Received Timeout</label>
 			<description>The time period within results are expected in seconds</description>
 		</parameter>
-		<parameter name="enableAutoDetection" type="boolean" groupName="serialPortAdvanced">
-			<default>true</default>
-			<label>Enable Serial Port auto detection</label>
-			<description>In case auto detection of the DSMR-device does not work it is possible
-to disable auto detection and use the manual Serial port parameters.</description>
-		</parameter>
-		<parameter name="baudrate" type="integer" groupName="serialPortAdvanced">
-			<label>Serial Port baud rate</label>
-			<description>Specify the Serial Port baud rate.</description>
+		<parameter name="baudrate" type="integer">
+			<advanced>true</advanced>
+			<label>Baud Rate</label>
+			<description>Set the baud rate in case auto detect fails.</description>
 			<options>
 				<option value="4800">4800</option>
 				<option value="9600">9600</option>
@@ -40,9 +28,10 @@ to disable auto detection and use the manual Serial port parameters.</descriptio
 				<option value="115200">115200</option>
 			</options>
 		</parameter>
-		<parameter name="databits" type="integer" groupName="serialPortAdvanced">
-			<label>Serial Port data bits</label>
-			<description>Specify the Serial Port data bits.</description>
+		<parameter name="databits" type="integer">
+			<advanced>true</advanced>
+			<label>Data Bits</label>
+			<description>Set the data bits in case auto detect fails.</description>
 			<options>
 				<option value="5">5</option>
 				<option value="6">6</option>
@@ -50,18 +39,20 @@ to disable auto detection and use the manual Serial port parameters.</descriptio
 				<option value="8">8</option>
 			</options>
 		</parameter>
-		<parameter name="parity" type="text" groupName="serialPortAdvanced">
-			<label>Serial Port parity</label>
-			<description>Specify the Serial Port parity.</description>
+		<parameter name="parity" type="text">
+			<advanced>true</advanced>
+			<label>Parity</label>
+			<description>Set the parity in case auto detect fails.</description>
 			<options>
 				<option value="E">E(ven)</option>
 				<option value="O">O(dd)</option>
 				<option value="N">N(ormal)</option>
 			</options>
 		</parameter>
-		<parameter name="stopbits" type="text" groupName="serialPortAdvanced">
-			<label>Serial Port stop bits</label>
-			<description>Specify the Serial Port stop bits.</description>
+		<parameter name="stopbits" type="text">
+			<advanced>true</advanced>
+			<label>Stop Bits</label>
+			<description>Set the stop bits in case auto detect fails.</description>
 			<options>
 				<option value="1">1</option>
 				<option value="1.5">1.5</option>
@@ -71,12 +62,12 @@ to disable auto detection and use the manual Serial port parameters.</descriptio
 	</config-description>
 
 	<config-description uri="thing-type:dsmr:meterdescriptor">
-		<parameter name="refresh" type="integer" required="true" min="1">
+		<parameter name="refresh" type="integer" min="1">
 			<default>60</default>
 			<label>Refresh</label>
 			<description>The time interval the data is refreshed in seconds</description>
 		</parameter>
-		<parameter name="channel" type="integer" required="true">
+		<parameter name="channel" type="integer">
 			<advanced>true</advanced>
 			<label>Channel</label>
 			<description><![CDATA[ The DSMR-device channel for this meter (M-Bus channel). 
