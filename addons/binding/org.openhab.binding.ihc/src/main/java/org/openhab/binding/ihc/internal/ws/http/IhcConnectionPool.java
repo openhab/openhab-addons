@@ -87,8 +87,7 @@ public class IhcConnectionPool {
 
         logger.debug("Initialize SSL context");
 
-        // Create a trust manager that does not validate certificate chains,
-        // but accept all.
+        // Create a trust manager that does not validate certificate chains, but accept all.
         TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
 
             @Override
@@ -120,9 +119,8 @@ public class IhcConnectionPool {
 
         httpClientBuilder.setSslcontext(sslContext);
 
-        // Controller accepts only HTTPS connections and because normally IP
-        // address are used on home network rather than DNS names, create custom
-        // host name verifier.
+        // Controller accepts only HTTPS connections and because normally IP address are used on home network rather
+        // than DNS names, create custom host name verifier.
         HostnameVerifier hostnameVerifier = new HostnameVerifier() {
 
             @Override
@@ -140,8 +138,7 @@ public class IhcConnectionPool {
         Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
                 .register("https", sslSocketFactory).build();
 
-        // Create connection-manager using our Registry. Allows multi-threaded
-        // use
+        // Create connection-manager using our Registry. Allows multi-threaded use
         PoolingHttpClientConnectionManager connMngr = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
 
         // Increase max connection counts
