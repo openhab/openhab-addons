@@ -38,6 +38,8 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.HttpException;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity.Description;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.PairedDevice;
@@ -815,5 +817,21 @@ public class EchoHandler extends BaseThingHandler {
             updateState(CHANNEL_BLUETOOTH_MAC, new StringType(bluetoothMAC));
             updateState(CHANNEL_BLUETOOTH_DEVICE_NAME, new StringType(bluetoothDeviceName));
         }
+    }
+
+    String lastSpokenText = "";
+
+    public void handlePushActivity(Activity pushActivity) {
+        Description description = pushActivity.ParseDescription();
+
+        String spokenText = description.summary;
+        if (spokenText != null && StringUtils.isNotEmpty(spokenText)) {
+            if (lastSpokenText.equals(spokenText)) {
+                updateState(CHANNEL_LAST_VOICE_COMMAND, new StringType(""));
+            }
+            lastSpokenText = spokenText;
+            updateState(CHANNEL_LAST_VOICE_COMMAND, new StringType(spokenText));
+        }
+
     }
 }

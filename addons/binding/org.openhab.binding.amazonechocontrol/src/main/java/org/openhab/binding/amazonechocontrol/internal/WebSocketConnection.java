@@ -40,6 +40,12 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+/**
+ * The {@link WebSocketConnection} encapsulate the Web Socket connection to the amazon server
+ *
+ * @author Ingo Fischer - (https://github.com/Apollon77/alexa-remote/blob/master/alexa-wsmqtt.js)
+ * @author Michael Geramb - Converted to JAVA
+ */
 @NonNullByDefault
 public class WebSocketConnection {
     private final Logger logger = LoggerFactory.getLogger(WebSocketConnection.class);
@@ -392,7 +398,7 @@ public class WebSocketConnection {
                         return;
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.debug("Handling of push notification failed {}", e);
                 }
             }
 

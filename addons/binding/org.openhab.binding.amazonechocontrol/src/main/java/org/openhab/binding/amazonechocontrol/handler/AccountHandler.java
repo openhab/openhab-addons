@@ -41,11 +41,15 @@ import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.HttpException;
 import org.openhab.binding.amazonechocontrol.internal.IWebSocketCommandHandler;
 import org.openhab.binding.amazonechocontrol.internal.WebSocketConnection;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity.SourceDeviceId;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommand;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommandPayloadPushActivity;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommandPayloadPushActivity.Key;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,10 +165,18 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     public @Nullable Thing findThingBySerialNumber(@Nullable String deviceSerialNumber) {
+        EchoHandler echoHandler = findEchoHandlerBySerialNumber(deviceSerialNumber);
+        if (echoHandler != null) {
+            return echoHandler.getThing();
+        }
+        return null;
+    }
+
+    public @Nullable EchoHandler findEchoHandlerBySerialNumber(@Nullable String deviceSerialNumber) {
         synchronized (echoHandlers) {
             for (EchoHandler echoHandler : echoHandlers) {
                 if (StringUtils.equals(echoHandler.findSerialNumber(), deviceSerialNumber)) {
-                    return echoHandler.getThing();
+                    return echoHandler;
                 }
             }
         }
@@ -599,6 +611,15 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     @Override
     public void webSocketCommandReceived(JsonPushCommand pushCommand) {
+        String command = pushCommand.command;
+        if (command != null) {
+            switch (command) {
+                case "PUSH_ACTIVITY":
+                    handlePushActivity(pushCommand.payload);
+                    return;
+            }
+        }
+
         // refresh data 200ms after last command
         @Nullable
         ScheduledFuture<?> refreshDataDelayed = this.refreshDataDelayed;
@@ -606,6 +627,47 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             refreshDataDelayed.cancel(false);
         }
         this.refreshDataDelayed = scheduler.schedule(this::refreshAfterCommand, 700, TimeUnit.MILLISECONDS);
+    }
+
+    private void handlePushActivity(@Nullable String payload) {
+        JsonPushCommandPayloadPushActivity pushActivity = gson.fromJson(payload,
+                JsonPushCommandPayloadPushActivity.class);
+
+        Key key = pushActivity.key;
+        if (key == null) {
+            return;
+        }
+
+        Connection connection = this.connection;
+        if (connection == null || !connection.getIsLoggedIn()) {
+            return;
+        }
+        Activity[] activities = connection.getActivities(10, pushActivity.timestamp);
+        Activity currentActivity = null;
+        String search = key.registeredUserId + "#" + key.entryId;
+        for (Activity activity : activities) {
+            if (StringUtils.equals(activity.id, search)) {
+                currentActivity = activity;
+                break;
+            }
+        }
+        if (currentActivity == null) {
+            return;
+        }
+
+        @Nullable
+        SourceDeviceId @Nullable [] sourceDeviceIds = currentActivity.sourceDeviceIds;
+        if (sourceDeviceIds != null) {
+            for (SourceDeviceId sourceDeviceId : sourceDeviceIds) {
+                if (sourceDeviceId != null) {
+                    EchoHandler echoHandler = findEchoHandlerBySerialNumber(sourceDeviceId.serialNumber);
+                    if (echoHandler != null) {
+                        echoHandler.handlePushActivity(currentActivity);
+                    }
+                }
+            }
+        }
+
     }
 
     void refreshAfterCommand() {

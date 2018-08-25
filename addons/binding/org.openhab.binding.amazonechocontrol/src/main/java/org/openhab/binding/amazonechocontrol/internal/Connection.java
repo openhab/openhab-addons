@@ -41,6 +41,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Payload;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Trigger;
@@ -619,6 +621,22 @@ public class Connection {
                 + device.serialNumber + "&deviceType=" + device.deviceType);
         JsonMediaState mediaState = parseJson(json, JsonMediaState.class);
         return mediaState;
+    }
+
+    public Activity[] getActivities(int number, @Nullable Long startTime) {
+        String json;
+        try {
+            json = makeRequestAndReturnString(alexaServer + "/api/activities?startTime="
+                    + (startTime != null ? startTime : "") + "&size=" + number + "&offset=1");
+            JsonActivities activities = parseJson(json, JsonActivities.class);
+            Activity[] activiesArray = activities.activities;
+            if (activiesArray != null) {
+                return activiesArray;
+            }
+        } catch (IOException | URISyntaxException e) {
+            logger.info("getting activities failed {}", e);
+        }
+        return new Activity[0];
     }
 
     public JsonBluetoothStates getBluetoothConnectionStates() {

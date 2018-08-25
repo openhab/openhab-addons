@@ -68,6 +68,7 @@ public class AmazonEchoControlBindingConstants {
     public static final String CHANNEL_MUSIC_PROVIDER_ID = "musicProviderId";
     public static final String CHANNEL_PLAY_MUSIC_VOICE_COMMAND = "playMusicVoiceCommand";
     public static final String CHANNEL_START_COMMAND = "startCommand";
+    public static final String CHANNEL_LAST_VOICE_COMMAND = "lastVoiceCommand";
 
     public static final String CHANNEL_SAVE = "save";
     public static final String CHANNEL_ACTIVE = "active";

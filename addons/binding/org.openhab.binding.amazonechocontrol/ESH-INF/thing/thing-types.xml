@@ -68,6 +68,7 @@
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
 			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
+			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
@@ -107,6 +108,7 @@
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
 			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
+            <channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
@@ -146,6 +148,7 @@
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
 			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
+            <channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
@@ -337,6 +340,12 @@
 		<label>Speak</label>
 		<description>Speak the text (Write only)</description>
 	</channel-type>
+    <channel-type id="lastVoiceCommand" advanced="true">
+        <item-type>String</item-type>
+        <label>Last voice command</label>
+        <description>Last voice command spoken to the device</description>
+        <state readOnly="true" />
+    </channel-type>	
 	<channel-type id="startCommand">
 		<item-type>String</item-type>
 		<label>Start</label>
