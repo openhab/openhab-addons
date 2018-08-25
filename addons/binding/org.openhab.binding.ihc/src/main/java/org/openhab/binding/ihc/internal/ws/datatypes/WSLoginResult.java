@@ -26,6 +26,17 @@ public class WSLoginResult extends WSBaseDataType {
     public WSLoginResult() {
     }
 
+    public WSLoginResult(WSUser loggedInUser, boolean loginWasSuccessful,
+            boolean loginFailedDueToConnectionRestrictions, boolean loginFailedDueToInsufficientUserRights,
+            boolean loginFailedDueToAccountInvalid) {
+        
+        this.loggedInUser = loggedInUser;
+        this.loginWasSuccessful = loginWasSuccessful;
+        this.loginFailedDueToConnectionRestrictions = loginFailedDueToConnectionRestrictions;
+        this.loginFailedDueToInsufficientUserRights = loginFailedDueToInsufficientUserRights;
+        this.loginFailedDueToAccountInvalid = loginFailedDueToAccountInvalid;
+    }
+
     /**
      * Gets the value of the loggedInUser property.
      *

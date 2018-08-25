@@ -26,6 +26,24 @@ public class WSUser {
     protected WSUserGroup group;
     protected String project;
 
+    public WSUser() {
+    }
+
+    public WSUser(WSDate createdDate, WSDate loginDate, String username, String password, String email,
+            String firstname, String lastname, String phone, WSUserGroup group, String project) {
+
+        this.createdDate = createdDate;
+        this.loginDate = loginDate;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.phone = phone;
+        this.group = group;
+        this.project = project;
+    }
+
     /**
      * Gets the value of the createdDate property.
      *

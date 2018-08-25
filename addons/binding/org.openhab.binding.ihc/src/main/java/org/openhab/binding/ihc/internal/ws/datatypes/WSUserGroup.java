@@ -17,6 +17,13 @@ public class WSUserGroup {
 
     protected String type;
 
+    public WSUserGroup() {
+    }
+
+    public WSUserGroup(String type) {
+        this.type = type;
+    }
+
     /**
      * Gets the value of the type property.
      *
